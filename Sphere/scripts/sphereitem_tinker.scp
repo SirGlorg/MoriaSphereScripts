@@ -1,0 +1,2284 @@
+[itemdef i_truhla_heslo] // dialogy truhly jsou v secure_truhla.scp
+NAME=Truhla
+ID=0e40
+TYPE=t_container
+FLIP=1
+WEIGHT=10.0
+SKILLMAKE=CARPENTRY 80.0, BLACKSMITHING 85.0, TINKERING 85.0, t_carpentry, t_tinker_tools
+RESOURCES=9 i_log
+RESOURCES2=5 i_board
+DUPELIST=0e41
+
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Secure truhla
+
+on=@create
+color=color_o_verite
+tag(majitel,0)
+src.newitem=i_chest_metal
+arg(truhla_safe,<lastnew>)
+truhla_safe.cont=<uid>
+truhla_safe.attr=010
+truhla_safe.color=color_o_verite
+tag(truhla_id,<arg(truhla_safe)>)
+
+on=@userDclick
+f_truhla_heslo_dclick
+return 1
+
+on=@targon_char
+f_truhla_heslo_targonChar
+
+ON=@TargOn_Ground
+src.redmessage("At se divas, jak se divas, na tom miste nikoho nevidis.")
+return 1
+
+ON=@TargOn_Item
+src.redmessage("Pochybujes, ze uvnitr toho predmetu bude novy majitel truhly.")
+return 1
+
+ON=@stackon
+src.redmessage("Truhlu musis nejdrive otevrit.")
+argo.bounce
+return 1
+
+//////////////////////////////////
+
+[ITEMDEF i_rune_tinker]
+//recall rune
+ID=01f14 //i_rune_marker
+NAME=Neaktivni runa
+TYPE=T_GEM
+VALUE={16 20}
+WEIGHT=1.0
+RESOURCES=1 i_ingot_mithril, 5 i_gem_ruby, 5 i_gem_citrine, 5 i_gem_amethyst
+SKILLMAKE=TINKERING 99.0,t_tinker_tools
+
+CATEGORY=Unique Items
+SUBSECTION=Tinker
+DESCRIPTION=Neaktivni runa
+
+ON=@userCLICK
+src.sysmessage("Tato runa jako by postradala magicke obrazce potrebne pro sve pouziti.")
+ON=@userdCLICK
+if (<src.Inscription> < 85.0)&&(<SRC.RESTEST 1 i_magicke_pero> )
+SRC.SYSMESSAGE("Tve znalosti inskripce nejsou dostatecne.")
+elseif (<SRC.RESTEST 1 i_rune_tinker> )&&(<src.Inscription> > 84.9)
+SRC.SYSMESSAGE("Nemas nic, cim by se runa dala popsat. Hledej magicke pero, jen ono umozni popsani runy.")
+elseif (<SRC.RESTEST 1 i_rune_tinker> )&&(<SRC.RESTEST 1 i_magicke_pero> )&&(<src.Inscription> > 84.9)
+src.consume=i_rune_tinker
+src.newitem=i_rune_marker
+src.act.bounce
+ELSE
+SRC.SYSMESSAGE("Runu je zrejme nutne necim aktivovat. Je mozne, ze magicka formule napsana na jeji povrch magicke schopnosti ozivi.")
+endif
+
+[ITEMDEF i_keg_potion]
+NAME=potion keg
+ID=i_KEG_WOOD
+TYPE=t_keg_potion
+VALUE={200 300}
+WEIGHT=40.0
+RESOURCES=8 i_BOARD, 1 i_BARREL_TAP, 1 i_BARREL_HOOPS
+SKILLMAKE=TINKERING 65.0,t_tinker_tools
+CATEGORY=Unique Items
+SUBSECTION=Tinker
+DESCRIPTION=empty potion Keg
+
+on=@create
+f_potionkeg_empty
+
+[ITEMDEF 0995]
+DEFNAME=i_mug_ceramic
+RESOURCES=3 i_ingot_iron
+RESOURCES2=1 I_CLAY
+SKILLMAKE=TINKERING 42.0,t_tinker_tools
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Ceramic Mug
+DUPELIST=0996,0997,09ca
+
+[ITEMDEF 0996]
+//ceramic mug
+DUPEITEM=0995
+
+[ITEMDEF 0997]
+//ceramic mug
+DUPEITEM=0995
+
+
+[ITEMDEF 01876]
+DEFNAME=i_wire_iron
+RESOURCES=1 i_ingot_iron
+WEIGHT=.5
+SKILLMAKE=TINKERING 40.0,t_tinker_tools
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Iron Wire
+
+[ITEMDEF 01877]
+DEFNAME=i_wire_silver
+RESOURCES=1 i_ingot_silver
+WEIGHT=.5
+SKILLMAKE=TINKERING 50.0,t_tinker_tools
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Silver Wire
+
+[ITEMDEF 01878]
+DEFNAME=i_wire_gold
+RESOURCES=1 i_ingot_gold
+WEIGHT=.5
+SKILLMAKE=TINKERING 60.0,t_tinker_tools
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Gold Wire
+
+[ITEMDEF 01879]
+DEFNAME=i_wire_copper
+RESOURCES=1 i_ingot_copper
+WEIGHT=.5
+SKILLMAKE=TINKERING 20.0,t_tinker_tools
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Copper Wire
+
+[ITEMDEF i_wire_verite]
+id=i_wire_iron
+RESOURCES=1 i_ingot_verite
+WEIGHT=.5
+SKILLMAKE=TINKERING 20.0,t_tinker_tools
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Verite Wire
+
+on=@create
+color=color_o_verite
+name=verite wire
+
+[ITEMDEF i_wire_valorite]
+id=i_wire_iron
+RESOURCES=1 i_ingot_valorite
+WEIGHT=.5
+SKILLMAKE=TINKERING 20.0,t_tinker_tools
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Valorite Wire
+
+on=@create
+color=color_o_valorite
+name=valorite wire
+
+[ITEMDEF 099a]
+DEFNAME=i_goblet
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Goblet
+
+SKILLMAKE=TINKERING 42.0,t_tinker_tools
+RESOURCES=3 i_ingot_iron
+RESOURCES2=1 I_SAND
+
+[ITEMDEF 09a8]
+DEFNAME=i_box_brass
+TYPE=T_CONTAINER
+TDATA2=04b
+//TDATA2=043	// no lock?
+FLIP=1
+WEIGHT=5.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Brass Box  (N)
+DUPELIST=0e80
+SKILLMAKE=TINKERING 40.0,t_tinker_tools
+RESOURCES=5 i_ingot_iron, 5 i_log
+RESOURCES2=3 i_ingot_iron,1 i_nails,2 i_hinge
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 09ab]
+//DEFNAME2=METAL_CHEST_4
+DEFNAME=i_chest_metal
+TYPE=T_CONTAINER
+TDATA2=04a
+FLIP=1
+WEIGHT=20.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Metal Chest (N)
+DUPELIST=0e7c
+SKILLMAKE=TINKERING 75.0,t_tinker_tools
+RESOURCES=20 i_ingot_iron, 2 i_board
+RESOURCES2=3 i_ingot_iron,1 i_nails,2 i_hinge
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 09b3]
+DEFNAME=i_goblet_2
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Goblet
+
+SKILLMAKE=TINKERING 42.0,t_tinker_tools
+RESOURCES=3 i_ingot_iron
+RESOURCES2=1 I_SAND
+
+[ITEMDEF 09d6]
+DEFNAME=i_pitcher
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Pitcher
+
+SKILLMAKE=TINKERING 42.0,t_tinker_tools
+RESOURCES=3 i_ingot_iron
+RESOURCES2=2 I_SAND
+
+[ITEMDEF 09fb]
+DEFNAME=i_sconce
+TYPE=t_light_out
+TDATA3=i_sconce_lit
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Torches
+DESCRIPTION=Wall Sconce (Unlit) (W)
+DUPELIST=09fc
+SKILLMAKE=TINKERING 30.0
+RESOURCES=1 i_ingot_iron, 1 I_CANDLE
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 09fc]
+DUPEITEM=09fb
+
+[ITEMDEF 0a01]
+DEFNAME=i_sconce2_empty
+RESOURCES=1 i_ingot_iron
+SKILLMAKE=TINKERING 30.0
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Torches
+DESCRIPTION=Wall Sconce (Empty) (N)
+
+[ITEMDEF 0a06]
+DEFNAME=i_torch_wall_empty
+SKILLMAKE=TINKERING 40.0
+RESOURCES=1 i_ingot_iron
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Torches
+DESCRIPTION=Wall Torch Holder (Empty) (W)
+
+[ITEMDEF 0a0b]
+DEFNAME=i_torch_wall2_empty
+RESOURCES=1 i_ingot_iron
+SKILLMAKE=TINKERING 40.0
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Torches
+DESCRIPTION=Wall Torch Stand (Empty) (N)
+
+[ITEMDEF 0a18]
+DEFNAME=i_lantern
+TYPE=T_LIGHT_OUT
+TDATA3=i_lantern_lit
+WEIGHT=2.0
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Lanterns
+DESCRIPTION=Lantern (Unlit)
+
+SKILLMAKE=CARPENTRY 40.0, t_carpentry
+RESOURCES=5 i_board
+RESOURCES2=1 I_SAND,1 i_ingot_iron,1 i_OIL_FLASK
+DUPELIST=0a1d,0a25
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0a27]
+DEFNAME=i_candleabra
+TYPE=T_LIGHT_OUT
+TDATA3=i_candleabra_lit
+RESOURCES=3 i_ingot_copper, 3 I_CANDLE
+SKILLMAKE=TINKERING 50.0
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Candlabra (Unlit)
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0e1c]
+//DEFNAME2=BACKGAMMON
+DEFNAME=i_backgammon_game
+RESOURCES=3 i_board
+WEIGHT=5.0
+TYPE=T_GAME_BOARD
+TDATA2=092e
+CATEGORY=Items by Professions
+SUBSECTION=Barkeep
+SKILLMAKE=TINKERING 30.0,t_tinker_tools
+DUPELIST=0fad
+
+ON=@Create
+more1=1
+
+[ITEMDEF 0e40]
+// DEFNAME2=METAL_CHEST_1
+DEFNAME=i_chest_metal_brass
+TYPE=T_CONTAINER
+TDATA2=042
+FLIP=1
+WEIGHT=20.0
+SKILLMAKE=TINKERING 80.0,t_tinker_tools
+RESOURCES=15 i_ingot_iron, 5 i_ingot_gold, 2 i_log
+RESOURCES2=9 i_INGOT_IRON,2 I_HINGES_BRASS
+DUPELIST=0e41
+
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=METAL BRASS CHEST (W)
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0e41]
+// DEFNAME2=METAL_CHEST_2
+DUPEITEM=0e40
+
+
+[ITEMDEF 02c15]
+DEFNAME=i_post_box
+TYPE=T_CONTAINER
+TDATA2=042
+FLIP=1
+WEIGHT=20.0
+SKILLMAKE=TINKERING 80.0,t_tinker_tools
+RESOURCES=15 i_ingot_iron, 5 i_ingot_gold, 2 i_log
+RESOURCES2=9 i_INGOT_IRON,2 I_HINGES_BRASS
+DUPELIST=0e41
+
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=postocni shranka (W)
+
+on=@userclick
+return"<allcontainersClick>"
+
+
+[ITEMDEF 0e77]
+// DEFNAME2=big_barrel
+DEFNAME=i_barrel_open
+TYPE=T_CONTAINER
+TDATA2=03E
+FLIP=1
+WEIGHT=10.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Empty Barrel
+SKILLMAKE=TINKERING 55.0,t_tinker_tools
+RESOURCES=10 i_log
+RESOURCES2=10 i_board,4 i_ingot_iron
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0e7f]
+//DEFNAME2=SMALL_KEG
+// Wooden Keg
+DEFNAME=i_keg_small
+RESOURCES=8 i_log
+TYPE=T_CONTAINER
+TDATA2=03e
+FLIP=1
+WEIGHT=5.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Keg
+SKILLMAKE=TINKERING 45.0,t_tinker_tools
+RESOURCES2=8 i_log,4 i_ingot_iron
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0e9b]
+//Mortar & Pestle
+DEFNAME=i_mortar_pestle
+TYPE=T_MORTAR
+RESOURCES=1 i_ingot_copper
+WEIGHT=1.0
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Magical Items
+DESCRIPTION=Mortar and Pestle
+SKILLMAKE=TINKERING 23.3,t_tinker_tools
+RESOURCES2=2 i_ingot_iron
+
+on=@userdclick
+run_cm_alchemy
+return 1
+
+[ITEMDEF 0e9c]
+DEFNAME=i_drum
+TYPE=T_MUSICAL
+TDATA1=038
+TDATA2=039
+WEIGHT=3.0
+CATEGORY=Items by Professions
+SUBSECTION=Bard
+DESCRIPTION=Drum
+RESOURCES=1 i_hides_cut, 5 I_BOARD
+SKILLMAKE=TINKERING 51.0,t_tinker_tools
+
+[ITEMDEF 0e9d]
+//Tambourine
+DEFNAME=i_tambourine
+TYPE=T_MUSICAL
+TDATA1=052
+TDATA2=053
+RESOURCES=1 i_ingot_iron, 2 i_board
+SKILLMAKE=TINKERING 50.0,t_tinker_tools
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Bard
+DESCRIPTION=Tambourine
+
+[ITEMDEF 0e9e]
+//tambourine (tassle)
+DEFNAME=i_tambourine_tas
+RESOURCES=i_tambourine, i_cloth
+SKILLMAKE=CARPENTRY 50.0, MUSICIANSHIP 65.0, t_carpentry
+TYPE=T_MUSICAL
+TDATA1=052
+TDATA2=053
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Bard
+DESCRIPTION=Tambourine Tassle
+
+[ITEMDEF 0eb1]
+//standing harp
+DEFNAME=i_HARP_LARGE
+TYPE=T_MUSICAL
+TDATA1=045
+TDATA2=046
+CATEGORY=Items by Professions
+SUBSECTION=Bard
+DESCRIPTION=Standing Harp
+RESOURCES=10 i_log, 4 i_wire_iron
+SKILLMAKE=TINKERING 56.5,t_tinker_tools
+
+[ITEMDEF 0eb2]
+//Lap Harp
+DEFNAME=i_lyre
+TYPE=T_MUSICAL
+TDATA1=045
+TDATA2=046
+WEIGHT=10.0
+CATEGORY=Items by Professions
+SUBSECTION=Bard
+DESCRIPTION=Lap Harp
+RESOURCES=7 i_log, 2 i_wire_iron
+SKILLMAKE=TINKERING 54.0,t_tinker_tools
+
+[ITEMDEF 0eb3]
+//Lute
+DEFNAME=i_lute
+RESOURCES=6 i_log, 1 i_wire_iron
+TYPE=T_MUSICAL
+TDATA1=04c
+TDATA2=04d
+WEIGHT=5.0
+CATEGORY=Items by Professions
+SUBSECTION=Bard
+DESCRIPTION=Lute
+SKILLMAKE=TINKERING 52.0,t_tinker_tools
+DUPELIST=0eb4
+
+[ITEMDEF 0eb4]
+//lute
+DUPEITEM=0eb3
+
+[typedef t_bottle_empty]
+
+[ITEMDEF 0f0e]
+//Empty Potion Bottle
+DEFNAME=i_bottle_empty
+TYPE=t_bottle_empty
+SKILLMAKE=TINKERING 75.0,t_tinker_tools,t_bottle_form,t_book_bottle
+RESOURCES=2 i_ingot_pisek
+WEIGHT=1.0
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Magical Items
+DESCRIPTION=Empty Alchemist Bottle
+
+[ITEMDEF 0f39]
+//Shovel (unique type of unequipable item)
+//LAYER=0
+DEFNAME=i_shovel
+//TYPE=T_WEAPON_MACE_PICK
+FLIP=1
+WEIGHT=5.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Miner
+DESCRIPTION=Shovel
+
+SKILLMAKE=TINKERING 20.0,t_tinker_tools
+RESOURCES=4 i_ingot_iron,1 i_log
+RESOURCES2=4 i_ingot_iron
+
+DUPELIST=0f3a
+
+ON=@Create
+HITPOINTS={50 60}
+
+[ITEMDEF 0f3a]
+//shovel
+DUPEITEM=0f39
+
+[ITEMDEF 0f9e]
+//Scissors
+DEFNAME=i_scissors
+RESOURCES=4 i_ingot_iron
+TYPE=T_SCISSORS
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Scissors
+SKILLMAKE=TINKERING 14.5,t_tinker_tools
+DUPELIST=0f9f
+
+on=@TargOn_Item
+if (src.targ.color == 01) || (src.targ.color == 0692) || (src.targ.color == 0689) || (<eval src.targ.tag(denyScissoring)>)
+  src.redMessage("Tento material nelze rozstrihat.")
+  return 1
+endif
+
+[ITEMDEF 0f9f]
+//scissors
+DUPEITEM=0f9e
+
+[ITEMDEF 0fa6]
+//checkers/chess game board
+DEFNAME=i_game_board
+RESOURCES=3 i_log
+TYPE=T_GAME_BOARD
+TDATA2=091a
+WEIGHT=5.0
+CATEGORY=Items by Professions
+SUBSECTION=Barkeep
+DESCRIPTION=Game Board
+SKILLMAKE=TINKERING 30.0,t_tinker_tools
+RESOURCES2=1 i_board
+
+[ITEMDEF 0fa7]
+//Dice and Cup
+DEFNAME=i_dice_cup
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Barkeep
+DESCRIPTION=Dice and Cup
+
+RESOURCES=3 i_log
+RESOURCES2=2 i_DIE, 1 i_MUG_CERAMIC
+SKILLMAKE=TINKERING 30.0,t_tinker_tools
+
+ON=@userdCLICK
+	SRC.EMOTE rolls a <EVAL(RAND(6)+1)>,<EVAL(RAND(6)+1)>,<EVAL(RAND(6)+1)>
+	RETURN 1
+
+[ITEMDEF 0fa8]
+//white chess pieces NE
+DUPEITEM=0e12
+
+[ITEMDEF 0fae]
+//barrel (covered)
+DEFNAME=i_barrel
+TYPE=T_CONTAINER
+TDATA2=03E
+FLIP=1
+WEIGHT=10.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Barrel w/Lid
+SKILLMAKE=TINKERING 50.0,t_tinker_tools
+RESOURCES=12 i_log
+RESOURCES2=i_barrel_open,i_barrel_lid
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0faf]
+//anvil
+DEFNAME=i_anvil
+TYPE=T_ANVIL
+SKILLMAKE=BLACKSMITHING 30.0, TINKERING 56.0,t_tinker_tools
+RESOURCES=20 i_ingot_iron, 1 i_LOG
+FLIP=1
+WEIGHT=255.0
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Anvil (N)
+DUPELIST=0fb0
+
+[ITEMDEF 0fb0]
+//anvil
+DUPEITEM=0faf
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Anvil (W)
+
+[ITEMDEF 0ffb]
+//skull mug
+DEFNAME=i_skull_mug
+
+RESOURCES=3 i_ingot_iron
+RESOURCES2=1 i_bone_skull
+SKILLMAKE=TINKERING 42.0,t_tinker_tools
+
+WEIGHT=6.0
+CATEGORY=Items by Professions
+SUBSECTION=Barkeep
+DESCRIPTION=Skull Mug
+DUPELIST=0ffc,0ffd,0ffe
+
+[ITEMDEF 0ffc]
+DUPEITEM=0ffb
+
+[ITEMDEF 0ffd]
+//skull mug
+DUPEITEM=0FFB
+
+[ITEMDEF 0ffe]
+//skull mug
+DUPEITEM=0FFB
+
+[ITEMDEF 01000]
+DEFNAME=i_mug_pewter
+RESOURCES=3 i_ingot_iron
+WEIGHT=1.0
+DUPELIST=0fff,01001,01002
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Pewter Mug
+SKILLMAKE=TINKERING 42.0,t_tinker_tools
+RESOURCES2=1 i_ingot_iron
+
+[ITEMDEF 01001]
+//pewter mug
+DUPEITEM=01000
+
+[ITEMDEF 01002]
+DUPEITEM=01000
+
+
+[ITEMDEF 0fff]
+//pewter mug
+DUPEITEM=01000
+
+[ITEMDEF 01003]
+DEFNAME=i_spittoon
+RESOURCES=3 i_ingot_iron
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Spitton
+SKILLMAKE=TINKERING 42.0,t_tinker_tools
+RESOURCES2=3 i_ingot_iron,1 i_cloth
+
+[ITEMDEF 01004]
+DEFNAME=i_barrel_tap
+RESOURCES=1 i_ingot_iron
+SKILLMAKE=TINKERING 52.0,t_tinker_tools
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Barrel Tap
+
+[ITEMDEF 0100e]
+DEFNAME=i_key_copper
+RESOURCES=1 i_ingot_copper
+WEIGHT=1.0
+TYPE=T_KEY
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Keys
+DESCRIPTION=Copper Key
+SKILLMAKE=TINKERING 25.0,t_tinker_tools
+RESOURCES2=1 i_ingot_copper
+
+[ITEMDEF 0100f]
+DEFNAME=i_key_gold
+RESOURCES=2 i_ingot_iron, 1 i_ingot_gold
+WEIGHT=1.0
+TYPE=T_KEY
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Keys
+DESCRIPTION=Gold Key
+SKILLMAKE=TINKERING 60.0,t_tinker_tools
+RESOURCES2=1 i_ingot_gold
+
+[ITEMDEF 01010]
+// DEFNAME2=IRON_KEY
+DEFNAME=i_key_iron
+RESOURCES=3 i_ingot_iron
+WEIGHT=1.0
+TYPE=T_KEY
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Keys
+DESCRIPTION=Iron Key
+SKILLMAKE=TINKERING 30.0,t_tinker_tools
+RESOURCES2=1 i_ingot_iron
+
+[ITEMDEF 01011]
+DEFNAME=i_key_ring
+TYPE=T_KEYRING
+TDATA2=1
+WEIGHT=1.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Keys
+DESCRIPTION=Key Ring
+RESOURCES=1 i_ingot_iron
+SKILLMAKE=TINKERING 30.0,t_tinker_tools
+
+ON=@userdCLICK
+	SRC.MESSAGE("Drop keys on an empty key ring")
+
+[ITEMDEF 01012]
+// DEFNAME2=MAGIC_Key
+DEFNAME=i_key_magic
+WEIGHT=1.0
+TYPE=T_KEY
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Keys
+DESCRIPTION=Magic Key
+SKILLMAKE=TINKERING 80.0,t_tinker_tools
+RESOURCES=5 i_ingot_gold, 5 i_ingot_silver, 5 i_ingot_copper
+
+ON=@Create
+ATTR=attr_magic|attr_newbie
+
+[ITEMDEF 01013]
+// DEFNAME2=RUSTY_KEY
+DEFNAME=i_key_rusty
+RESOURCES=1 i_INGOT_iron
+WEIGHT=1.0
+TYPE=T_KEY
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Keys
+DESCRIPTION=Rusty Iron Key
+
+[ITEMDEF 01028]
+//DEFNAME2=dovetail
+//DEFNAME2=dovetail_saw
+DEFNAME=i_saw_dovetail
+RESOURCES=3 i_ingot_iron,1 i_log
+TYPE=t_carpentry
+WEIGHT=1.0
+DUPELIST=01029
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Dovetail Saw
+SKILLMAKE=TINKERING 33.2,t_tinker_tools
+RESOURCES2=2 i_ingot_iron
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 01029]
+//dovetail saw
+DUPEITEM=01028
+
+[ITEMDEF 0102c]
+DEFNAME=i_plane_moulding
+WEIGHT=2.0
+TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Moulding Planes
+DUPELIST=0102d
+SKILLMAKE=TINKERING 30.7,t_tinker_tools
+RESOURCES=3 i_board,1 i_ingot_iron
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 0102d]
+//moulding planes
+DUPEITEM=0102c
+
+[ITEMDEF 0102e]
+DEFNAME=i_nails
+WEIGHT=2.0
+//TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Nails
+DUPELIST=0102f
+RESOURCES=1 i_ingot_iron
+SKILLMAKE=TINKERING 5.0, t_tinker_tools
+
+[ITEMDEF 0102f]
+//nails
+DUPEITEM=0102e
+
+[ITEMDEF 01030]
+DEFNAME=i_plane_jointing
+RESOURCES=4 i_log
+WEIGHT=1.0
+TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Jointing Plane
+DUPELIST=01031
+SKILLMAKE=TINKERING 30.8,t_tinker_tools
+RESOURCES2=3 i_board,1 i_ingot_iron
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 01031]
+//jointing plane
+DUPEITEM=01030
+
+[ITEMDEF 01032]
+DEFNAME=i_plane_smoothing
+RESOURCES=4 i_log
+WEIGHT=1.0
+TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Smoothing Plane
+DUPELIST=01033
+SKILLMAKE=TINKERING 30.7,t_tinker_tools
+RESOURCES2=3 i_board,1 i_ingot_iron
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 01033]
+//smoothing plane
+DUPEITEM=01032
+
+[ITEMDEF 01034]
+DEFNAME=i_saw
+WEIGHT=2.0
+TYPE=t_carpentry
+
+RESOURCES=5 i_ingot_iron, 1 i_log
+RESOURCES2=1 i_board,4 i_ingot_iron
+SKILLMAKE=TINKERING 31.3,t_tinker_tools
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Saw
+DUPELIST=01035
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 01035]
+//saw
+DUPEITEM=01034
+
+[ITEMDEF 0104b]
+DEFNAME=i_clock
+RESOURCES=i_CLOCK_FRAME,i_CLOCK_PARTS
+WEIGHT=2.0
+TYPE=T_CLOCK
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 30.7,t_tinker_tools
+RESOURCES2=1 i_clock_frame,1 i_PARCHMENT,2 i_board,1 i_clock_parts
+
+[ITEMDEF 0104c]
+//clock
+DUPEITEM=0104b
+
+[ITEMDEF 0104d]
+DEFNAME=i_clock_frame
+RESOURCES=6 i_log
+WEIGHT=2.0
+//TYPE=T_CLOCK
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+DUPELIST=0104e
+SKILLMAKE=TINKERING 30.4,t_tinker_tools
+RESOURCES2=4 i_board,1 i_nails
+
+[ITEMDEF 0104e]
+//clock frame
+DUPEITEM=0104d
+
+[ITEMDEF 0104f]
+DEFNAME=i_clock_parts
+NAME=Ozubena Kolecka
+RESOURCES=1 i_ingot_iron
+WEIGHT=1.0
+//TYPE=T_CLOCK
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Parts
+DUPELIST=01050
+SKILLMAKE=TINKERING 30.5,t_tinker_tools
+RESOURCES2=1 i_ingot_iron,1 i_board
+
+[ITEMDEF 01050]
+//clock parts
+DUPEITEM=0104f
+
+[ITEMDEF 01051]
+DEFNAME=i_axel_and_gears
+RESOURCES=2 i_log
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Axle with Gears
+DUPELIST=01052
+RESOURCES2=1 i_axel,1 i_gears
+SKILLMAKE=TINKERING 30.4,t_tinker_tools
+
+[ITEMDEF 01052]
+//axle with gears
+DUPEITEM=01051
+
+[ITEMDEF 01053]
+//gears
+DEFNAME=i_gears
+RESOURCES=1 i_ingot_iron
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Gears
+DUPELIST=01054
+SKILLMAKE=TINKERING 14.7,t_tinker_tools
+RESOURCES2=2 i_ingot_iron
+
+[ITEMDEF 01054]
+//gears
+DUPEITEM=01053
+
+[ITEMDEF 01055]
+DEFNAME=i_hinge
+RESOURCES=1 i_ingot_iron
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Hinge
+DUPELIST=01056
+SKILLMAKE=TINKERING 14.8,t_tinker_tools
+
+[ITEMDEF 01056]
+//hinge
+DUPEITEM=01055
+
+[ITEMDEF 01057]
+DEFNAME=i_sextant
+TYPE=T_SEXTANT
+RESOURCES=i_sextant_parts
+WEIGHT=2.0
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Sextant
+DUPELIST=01058
+SKILLMAKE=TINKERING 30.7,t_tinker_tools
+RESOURCES2=2 i_ingot_iron,1 i_sextant_parts
+
+[ITEMDEF 01058]
+//sextant
+DUPEITEM=01057
+
+[ITEMDEF 01059]
+DEFNAME=i_sextant_parts
+RESOURCES=3 i_ingot_iron
+WEIGHT=2.0
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Sextant Parts
+DUPELIST=0105a
+SKILLMAKE=TINKERING 31.0,t_tinker_tools
+RESOURCES2=1 i_ingot_iron
+
+[ITEMDEF 0105a]
+//sextant parts
+DUPEITEM=01059
+
+[ITEMDEF 0105b]
+DEFNAME=i_axel
+RESOURCES=1 i_ingot_iron
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Axle
+DUPELIST=0105c
+SKILLMAKE=TINKERING 20.4,t_tinker_tools
+
+[ITEMDEF 0105c]
+//axle
+DUPEITEM=0105b
+
+[ITEMDEF 0105d]
+DEFNAME=i_springs
+RESOURCES=1 i_ingot_iron
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Springs
+DUPELIST=0105e
+SKILLMAKE=TINKERING 13.7,t_tinker_tools
+
+[ITEMDEF 0105e]
+//springs
+DUPEITEM=0105d
+
+[ITEMDEF 01085]
+//DEFNAME2=NECKLACE3
+DEFNAME=i_necklace_metal_beads
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 61.0,t_tinker_tools
+RESOURCES=i_ingot_iron
+DUPELIST=01f05
+CATEGORY=Provisions - Jewels and Jewelry
+SUBSECTION=Jewelry
+DESCRIPTION=Necklace
+
+[ITEMDEF 01086]
+//DEFNAME2=NECKLACE_GOLD
+DEFNAME=i_bracelet_gold
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 63.5,t_tinker_tools
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Provisions - Jewels and Jewelry
+SUBSECTION=Jewelry
+DESCRIPTION=Bracelet (Gold)
+
+[ITEMDEF 01087]
+//DEFNAME2=i_earings
+DEFNAME=i_earrings_gold
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 62.5,t_tinker_tools
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Provisions - Jewels and Jewelry
+SUBSECTION=Jewelry
+DESCRIPTION=Earrings (Gold)
+
+[ITEMDEF 01088]
+//necklace
+//DEFNAME2=i_NECKLACE_2
+DEFNAME=i_necklace_gold
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 61.0,t_tinker_tools
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+
+CATEGORY=Provisions - Jewels and Jewelry
+SUBSECTION=Jewelry
+DESCRIPTION=Necklace
+
+[ITEMDEF 01089]
+//DEFNAME2=i_NECKLACE_3
+//Gold Bead Necklace
+DEFNAME=i_necklace_gold_beads
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 62.0,t_tinker_tools
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Provisions - Jewels and Jewelry
+SUBSECTION=Jewelry
+DESCRIPTION=Necklace (Gold Bead)
+
+[ITEMDEF 0108a]
+//Gold Ring
+//ORIGINAL DEFNAME=i_RING
+DEFNAME=i_ring_gold
+TYPE=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Provisions - Jewels and Jewelry
+SUBSECTION=Jewelry
+DESCRIPTION=Ring (Gold)
+SKILLMAKE=TINKERING 63.0,t_tinker_tools
+
+[ITEMDEF 0108b]
+DEFNAME=i_beads
+TYPE=t_jewelry
+RESOURCES=i_ingot_iron,3 i_gem_amber
+SKILLMAKE=TINKERING 60.0,t_tinker_tools
+CATEGORY=Provisions - Jewels and Jewelry
+SUBSECTION=Jewelry
+DESCRIPTION=Beads
+//ORIGINAL DEFNAME=i_BEADS
+
+[ITEMDEF 010e1]
+DEFNAME=i_barrel_hoops
+RESOURCES=4 i_ingot_iron
+SKILLMAKE=TINKERING 42.0,t_tinker_tools
+WEIGHT=4.0
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Barrel Hoops
+DUPELIST=010e2
+
+[ITEMDEF 010e2]
+//barrel hoops
+DUPEITEM=010e1
+
+[ITEMDEF 014eb]
+DEFNAME=i_map
+TYPE=T_MAP
+FLIP=1
+RESOURCES=i_PAPER
+SKILLMAKE=CARPENTRY 40.0, TINKERING 40.0
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Cartographer
+DESCRIPTION=Map (Empty)
+DUPELIST=014ec
+
+on=@create
+dispid=014ec
+
+[ITEMDEF 014ec]
+//map
+DUPEITEM=014eb
+
+[ITEMDEF 014fb]
+//DEFNAME2=LOCKPICK
+DEFNAME=i_lockpick
+NAME=Lockpick
+TYPE=T_LOCKPICK
+FLIP=1
+RESOURCES=1 i_ingot_iron
+WEIGHT=.1
+CATEGORY=Items by Professions
+SUBSECTION=Thief
+DESCRIPTION=Lockpick
+DUPELIST=014fc
+SKILLMAKE=TINKERING 45.0,t_tinker_tools
+
+
+
+[ITEMDEF 014fc]
+//lockpick
+
+[ITEMDEF i_lockpick_2]
+ID=i_lockpick
+NAME=Lockpick na 2 pokusy
+TYPE=T_LOCKPICK
+WEIGHT=.1
+
+
+
+[ITEMDEF i_lockpick_3]
+ID=i_lockpick
+NAME=Lockpick
+TYPE=T_LOCKPICK
+WEIGHT=.1
+
+
+[ITEMDEF 01eb8]
+DEFNAME=i_toolkit
+RESOURCES=i_TOOLKIT_EMPTY, 4 i_ingot_iron,1 i_log
+SKILLMAKE=TINKERING 50.0,t_tinker_tools
+WEIGHT=6.0
+TYPE=t_carpentry
+DUPELIST=01eb9
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Tool Kit
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 01eb9]
+DUPEITEM=01eb8
+
+[ITEMDEF 01eba]
+DEFNAME=i_toolcase
+RESOURCES=i_TOOLCASE_EMPTY, 4 i_ingot_iron,1 i_log
+SKILLMAKE=TINKERING 50.0,t_tinker_tools
+WEIGHT=6.0
+TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Tool Case
+DUPELIST=01ebb
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 01ebb]
+DUPEITEM=01eba
+
+[ITEMDEF 01ebc]
+DEFNAME=i_tinker_tools
+TYPE=T_TINKER_TOOLS
+WEIGHT=2.0
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Tinker's Tools
+SKILLMAKE=TINKERING 35.0,t_tinker_tools
+RESOURCES=4 i_ingot_iron
+
+on=@userdclick
+craftmenu(tinkering)
+return 1
+
+[ITEMDEF 01f06]
+DEFNAME=i_bracelet_silver
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 62.0,t_tinker_tools
+RESOURCES=1 i_ingot_silver
+WEIGHT=1.0
+CATEGORY=Provisions - Clothes
+SUBSECTION=Jewelry
+DESCRIPTION=Silver Bracelet
+
+[ITEMDEF 01f07]
+DEFNAME=i_earrings_silver
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 62.0,t_tinker_tools
+RESOURCES=1 i_ingot_silver
+WEIGHT=1.0
+CATEGORY=Provisions - Clothes
+SUBSECTION=Jewelry
+DESCRIPTION=Silver Earrings
+
+[ITEMDEF 01f08]
+DEFNAME=i_necklace_silver
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 62.0,t_tinker_tools
+RESOURCES=1 i_ingot_silver
+WEIGHT=1.0
+CATEGORY=Provisions - Clothes
+SUBSECTION=Jewelry
+DESCRIPTION=Silver Necklace
+
+[ITEMDEF 01f09]
+DEFNAME=i_ring_silver
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 62.0,t_tinker_tools
+RESOURCES=1 i_ingot_silver
+WEIGHT=1.0
+CATEGORY=Provisions - Clothes
+SUBSECTION=Jewelry
+DESCRIPTION=Silver Ring
+
+[ITEMDEF 01f0a]
+DEFNAME=i_necklace_silver_beads
+TYPE=t_jewelry
+SKILLMAKE=TINKERING 62.0,t_tinker_tools
+RESOURCES=1 i_ingot_silver
+WEIGHT=1.0
+CATEGORY=Provisions - Clothes
+SUBSECTION=Jewelry
+DESCRIPTION=Silver Beads
+
+[ITEMDEF 0974]
+DEFNAME=i_cauldron
+RESOURCES=20 i_ingot_iron
+WEIGHT=30.0
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Cauldron
+DUPELIST=0975
+
+[ITEMDEF 0975]
+//cauldron
+DUPEITEM=0974
+
+
+[ITEMDEF 0991]
+DEFNAME=i_tray
+RESOURCES=3 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Tray
+DUPELIST=0992
+
+[ITEMDEF 0992]
+DEFNAME=i_tray_2
+DUPEITEM=0991
+
+[ITEMDEF 097f]
+DEFNAME=i_fry_pan
+RESOURCES=1 i_ore_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Frypan
+
+[ITEMDEF 0998]
+DEFNAME=i_mug
+RESOURCES=1 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Mug
+DUPELIST=0999
+
+[ITEMDEF 0999]
+//mug
+DUPEITEM=0998
+
+[ITEMDEF 09a7]
+DEFNAME=i_pitcher_glass
+TDATA1=i_pitcher_glass
+FLIP=1
+RESOURCES=6 i_GLASS
+RESOURCES2=1 I_SAND
+VALUE=50
+WEIGHT=2.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Empty Glass Pitcher
+DUPELIST=0ff6,0ff7
+
+on=@userDclick
+if (topobj == src)
+  target("Na co chces dzban pouzit?")
+endif
+return 1
+
+on=@targon_char
+if(src.targ.srccanseelos)&&(src.targ.distance<3)
+  if(src.targ.id==c_cow_bw) || (src.targ.id==c_cow_brown)
+    if(<eval <src.targ.tag(lastMilking)>+36000> < <serv.time>)
+      src.newitem(i_pitcher_milk).bounce
+      src.sysMessage("<src.sex("Nadojil","Nadojila")> jsi plny dzban mleka.")
+      src.targ.tag(lastMilking,<serv.time>)
+      remove
+      return 1 
+    else
+      src.sysMessage("<src.targ.name> nema dostatek mleka k dojeni.")
+      return 1
+    endif
+  else
+    src.sysMessage("Tohle asi nepujde.")
+    return 1
+  endif
+else
+  src.sysMessage("Cil neni v dosahu.")
+  return 1
+endif
+
+on=@targon_item
+if(src.targ.srccanseelos)&&(src.targ.distance<3)
+  if(src.targ.id==i_trough_water)
+    src.newitem(i_pitcher_water).bounce
+    src.sysMessage("<src.sex("Nabral","Nabrala")> jsi do dzbanu vodu.")
+    src.targ.tag(LastTakeOff,<serv.time>)
+    remove
+    return 1
+  else
+    src.sysMessage("Tohle asi nepujde.")
+    return 1
+  endif
+else
+  src.sysMessage("Cil neni v dosahu!")
+  return 1
+endif
+
+[ITEMDEF 0ff6]
+//Pitcher (Glass)
+DUPEITEM=09a7
+
+[ITEMDEF 0ff7]
+//glass pitcher
+DUPEITEM=09a7
+
+[ITEMDEF 09bd]
+DEFNAME=i_silverware
+RESOURCES=1 i_ingot_silver
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Silverware
+DUPELIST=09be, 09d4, 09d5
+
+[ITEMDEF 09be]
+//silverware
+DUPEITEM=09bd
+
+[ITEMDEF 09d4]
+//silverware
+DUPELIST=09bd
+
+[ITEMDEF 09d5]
+//silverware
+DUPEITEM=09bd
+
+[ITEMDEF 09bf]
+DEFNAME=i_goblet_3
+RESOURCES=1 I_SAND
+CATEGORY=Items by Professions
+SUBSECTION=BarKeep
+DESCRIPTION=Goblet
+DUPELIST=09cb
+
+[ITEMDEF 09dc]
+DEFNAME=i_pot_dirty
+RESOURCES=1 I_POT, 1 I_DIRT
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Dirty Pot
+
+[ITEMDEF 09dd]
+DEFNAME=i_pot_dirty_2
+RESOURCES=1 I_POT_2, 1 I_DIRT
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Dirty Pot
+
+[ITEMDEF 09de]
+DEFNAME=i_frypan_dirty
+RESOURCES=1 I_FRYPAN, 1 I_DIRT
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Dirty Frypan
+
+[ITEMDEF 09df]
+DEFNAME=i_pot_dirty_3
+RESOURCES=1 I_POT_3, 1 I_DIRT
+
+[ITEMDEF 09e0]
+DEFNAME=i_pot
+RESOURCES=3 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Pot
+
+[ITEMDEF 09e1]
+DEFNAME=i_pot_2
+RESOURCES=3 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Pot
+
+[ITEMDEF 09e2]
+DEFNAME=i_frypan
+RESOURCES=3 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Frypan
+
+[ITEMDEF 09e3]
+//pot
+DEFNAME=i_pot_3
+RESOURCES=3 i_ingot_iron
+
+[ITEMDEF 09e4]
+//pot
+DEFNAME=i_pot_4
+RESOURCES=3 i_ingot_iron
+
+[ITEMDEF 09e5]
+//pot
+DEFNAME=i_pot_5
+RESOURCES=3 i_ingot_iron
+
+[ITEMDEF 09e6]
+DEFNAME=i_pot_dirty_4
+RESOURCES=1 I_POT_4, 1 I_DIRT
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Dirty Pot
+
+[ITEMDEF 09e7]
+DEFNAME=i_pot_dirty_5
+RESOURCES=1 I_POT_5, 1 I_DIRT
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Dirty Pot
+
+[ITEMDEF 09e8]
+DEFNAME=i_pot_dirty_6
+RESOURCES=1 I_PAN, 1 I_DIRT
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Dirty Pot
+
+[ITEMDEF 09d7]
+DEFNAME=i_plate
+RESOURCES=1 I_CLAY
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Plate
+
+[ITEMDEF 09ed]
+DEFNAME=i_kettle
+RESOURCES=5 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Kettle
+
+
+[ITEMDEF 09f3]
+DEFNAME=i_pan
+RESOURCES=3 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Pan
+
+[ITEMDEF 09f8]
+DEFNAME=i_spoon_2
+RESOURCES=1 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Spoon
+
+[ITEMDEF 09f9]
+DEFNAME=i_spoon_3
+RESOURCES=1 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Spoon
+
+[ITEMDEF 09a3]
+DEFNAME=i_fork
+RESOURCES=1 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Fork
+DUPELIST=09a4, 09f4, 09f5
+
+[ITEMDEF 09a4]
+//fork
+DUPEITEM=09a3
+
+[ITEMDEF 09f4]
+//fork
+DUPEITEM=09a3
+
+[ITEMDEF 09f5]
+//fork
+DUPEITEM=09a3
+
+[ITEMDEF 09a5]
+DEFNAME=i_knife
+RESOURCES=1 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Knife
+DUPELIST=09a6, 09f6, 09f7
+
+[ITEMDEF 09a6]
+//knife
+DUPEITEM=09a5
+
+[ITEMDEF 09f6]
+//knife
+DUPEITEM=09a5
+
+[ITEMDEF 09f7]
+//knife
+DUPEITEM=09a5
+
+[ITEMDEF 0a05]
+DEFNAME=i_torch_wall
+RESOURCES=i_torch_wall_empty, I_TORCH
+TYPE=T_LIGHT_OUT
+TDATA3=i_torch_wall_lit
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Torches
+DESCRIPTION=Wall Torch (Unlit) (W)
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0a0a]
+DEFNAME=i_torch_wall2
+TYPE=T_LIGHT_OUT
+TDATA3=i_torch_wall2_lit
+RESOURCES=i_torch_wall2_empty, I_TORCH
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Torches
+DESCRIPTION=Wall Torch (Unlit) (N)
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0a26]
+DEFNAME=i_candle2
+TYPE=T_LIGHT_OUT
+TDATA3=i_candle2_lit
+RESOURCES=1 i_ingot_copper, 1 I_CANDLE
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Long Candle (Unlit)
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0a28]
+DEFNAME=i_candle
+TYPE=T_LIGHT_OUT
+LAYER=layer_hand2	// problem in TILEDATA.MUL
+TDATA3=i_candle_lit
+RESOURCES=1 i_BEESWAX, 1 I_CLOTH
+VALUE={4 8}
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Candle (Unlit)
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0a29]
+DEFNAME=i_candleabra2
+TYPE=T_LIGHT_OUT
+TDATA3=i_candleabra2_lit
+RESOURCES=5 i_ingot_iron, 1 I_BEEHIVE, 1 I_CLOTH
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Candlabra (Unlit) (Stand)
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0dcc]
+//fishing weight
+DEFNAME=i_fishing_weight
+WEIGHT=1.0
+RESOURCES=1 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fishing Weight
+DUPELIST=0dcd,0dce,0dcf
+
+[ITEMDEF 0dcd]
+//fishing weight
+DUPEITEM=0dcc
+
+[ITEMDEF 0dce]
+//fishing weight
+DUPEITEM=0dcc
+
+[ITEMDEF 0dcf]
+//fishing weight
+DUPEITEM=0dcc
+
+[ITEMDEF 0e85]
+//PickAxe //OSI insists skill is Fencing with this axe
+DEFNAME=i_pickaxe
+TYPE=t_weapon_bow_run
+FLIP=1
+DAM=1,15
+SPEED=40
+REQSTR=25
+TWOHANDS=N
+WEIGHT=11.0
+layer=1
+CATEGORY=Provisions - Weapons
+SUBSECTION=Axes
+DESCRIPTION=PickAxe
+
+SKILLMAKE=TINKERING 42.1,t_tinker_tools
+RESOURCES=4 i_ingot_iron
+DUPELIST=0e86
+
+on=@equip
+if (color==0531)
+  if (<more1H> < 300) && !(tag(durachanged)==1) //oldkrump
+   more1H=400
+   more1L=400
+   tag(durachanged,1)
+  endif
+ if (<more1H> > 300) && (!(tag(durachanged))) //newkrump
+  src.sysmessage("<more1H>")
+  src.sysmessage("<(tag(durachanged))>")
+  tag(durachanged,1)
+ endif
+endif
+
+ON=@Create
+HITPOINTS={31 60}
+
+ON=@TargOn_Item
+if (src.targ.type==t_efectedByPickAxe)
+  if (src.targ.distance > 2)
+    src.sysMessage("Jsi prilis daleko.")
+    return 1
+  elseif (<eval src.targ.tag(Pickaxing)>) // another pickaxing is already under go
+    src.sysMessage("Uz se na tom pracuje.")
+    return 1
+  elseif (<eval src.targ.tag(PickaxingStop)>) //another pickaxing is manualy blocked until further change on the targetted object
+    src.sysMessage("Nevis, co by jsi s tim <src.sex("udelal","udelala")>")
+    return 1
+  endif
+  src.targ.tag(PickaxingSrc,<src>) // sets the last player that is pickacking the target
+  if (<src.targ.trigger(@triggerPickaxing)> == 1)) // user denied further action
+    return 1
+  endif
+  src.dismount
+  src.anim(9)
+  src.targ.tag(Pickaxing,1) // turns on the indicator, which tells that somebody is already working with the target and denies other players to temper with it until the first one is done
+  if (<eval src.targ.tag(PickaxingTimer)>)
+    arg(pickaxingTimer,<eval src.targ.tag(PickaxingTimer)>)
+  else
+    arg(pickaxingTimer,2)
+  endif
+  src.newitemsafe(i_pickaxingDelay)
+  lastnew.link=<src.targ>
+  src.equip(<lastnew>)
+  lastnew.timer=<arg(pickaxingTimer)>
+  sfx(0148)
+  return 1
+endif
+
+[ITEMDEF 0e86]
+//pickaxe
+DUPEITEM=0e85
+
+[ITEMDEF 0dfc]
+DEFNAME=i_scissors_barber
+RESOURCES=2 i_ingot_iron, 1 I_SCREW
+WEIGHT=.4
+TYPE=T_SCISSORS
+CATEGORY=Items by Professions
+SUBSECTION=Barber
+DESCRIPTION=Barber Scissors
+DUPELIST=0dfd
+
+on=@TargOn_Item
+if (src.targ.color == 01) || (src.targ.color == 0692) || (src.targ.color == 0689) || (<eval src.targ.tag(denyScissoring)>)
+  src.redMessage("Tento material nelze rozstrihat.")
+  return 1
+endif
+
+[ITEMDEF 0dfd]
+//Barber SCISSORS
+DUPEITEM=0dfc
+
+
+[ITEMDEF 0e24]
+// small test tube
+DEFNAME=i_vial_empty
+RESOURCES=5 I_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=EMPTY VIAL
+
+[ITEMDEF 0fbf]
+//pen and ink
+DEFNAME=i_pen_and_ink
+RESOURCES=1 i_FEATHER, 1 i_INK_POT
+WEIGHT=2.0
+CATEGORY=Items by Professions
+SUBSECTION=Artists
+DESCRIPTION=Pen & Ink (W)
+DUPELIST=0fc0
+
+[ITEMDEF 0fc0]
+//pen and ink
+DUPEITEM=0fbf
+CATEGORY=Items by Professions
+SUBSECTION=Artists
+DESCRIPTION=Pen & Ink (N)
+
+[ITEMDEF 0fc1]
+//paints and brush
+DEFNAME=i_palette
+RESOURCES=1 I_BRUSH, 6 I_DYES, 1 I_BOARD
+WEIGHT=4.0
+CATEGORY=Items by Professions
+SUBSECTION=Artists
+DESCRIPTION=Paints & Brushes
+
+[ITEMDEF 0e31]
+DEFNAME=i_brazier_2
+RESOURCES=15 i_ingot_iron
+TYPE=T_FIRE
+WEIGHT=15.0
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Brazier
+DESCRIPTION=BRAZIER
+DUPELIST=0e32,0e33
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0e32]
+DUPEITEM=0e31
+
+[ITEMDEF 0e33]
+DUPEITEM=0e31
+
+[ITEMDEF 0fbb]
+//Tongs
+DEFNAME=i_tongs
+RESOURCES=2 i_ingot_iron
+TYPE=T_WEAPON_MACE_SMITH
+FLIP=1
+WEIGHT=2.0
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Tongs
+DUPELIST=0fbc
+
+on=@targon_item
+return"<blacksmithing_targon_item>"
+
+[ITEMDEF 0e2d]
+DEFNAME=i_crystal_ball
+RESOURCES=2 I_BOARD, 7 I_SAND
+TYPE=T_CRYSTAL_BALL
+WEIGHT=3.0
+CATEGORY=Items by Professions
+SUBSECTION=Gypsy
+DESCRIPTION=CRYSTAL BALL
+DUPELIST=0e2e,0e2f,0e30
+
+[ITEMDEF 0e2e]
+//crystal ball
+DUPEITEM=0e2d
+
+[ITEMDEF 0e2f]
+//crystal ball
+DUPEITEM=0e2d
+
+[ITEMDEF 0e30]
+//crystal ball
+DUPEITEM=0e2d
+
+[ITEMDEF 0fb6]
+//horse shoes
+DEFNAME=i_horse_shoes
+RESOURCES=4 i_ingot_iron
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Horse Shoes
+
+[ITEMDEF 01005]
+DEFNAME=i_jar_empty
+RESOURCES=2 i_SAND
+WEIGHT=1.0
+//TYPE=T_POTION
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Empty Jar
+
+[ITEMDEF 01006]
+DEFNAME=i_jar_full
+RESOURCES=2 i_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Full Jar
+
+[ITEMDEF 01007]
+DEFNAME=i_jar_half_full
+RESOURCES=2 i_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Half Empty Jar
+
+[ITEMDEF 01008]
+//wash basin
+DEFNAME=i_wash_basin
+RESOURCES=1 i_ingot_iron, 1 i_SAND
+WEIGHT=1.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Wash Basin
+
+[ITEMDEF 01009]
+DEFNAME=i_basin
+RESOURCES=1 i_ingot_iron, 1 i_SAND
+WEIGHT=1.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Basin
+
+[ITEMDEF 01026]
+//chisels
+DEFNAME=i_chisels
+RESOURCES=1 i_ingot_iron
+WEIGHT=1.0
+TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Chisels
+DUPELIST=01027
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 01027]
+//chisels
+DUPEITEM=01026
+
+[ITEMDEF 010e3]
+DEFNAME=i_bowl_dough
+RESOURCES=1 i_CLAY
+WEIGHT=.4
+CATEGORY=Items by Professions
+SUBSECTION=Baker
+DESCRIPTION=Dough Bowl
+
+[ITEMDEF 010e5]
+DEFNAME=i_froe
+RESOURCES=2 i_ingot_iron
+WEIGHT=1.0
+TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Froe
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 010e6]
+DEFNAME=i_inshave
+RESOURCES=2 i_ingot_iron
+WEIGHT=1.0
+TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Inshave
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 010e7]
+DEFNAME=i_scorp
+RESOURCES=2 i_ingot_iron
+WEIGHT=1.0
+TYPE=t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Scorp
+
+on=@userdclick
+craftmenu(carpentry)
+return 1
+
+[ITEMDEF 010e8]
+DEFNAME=i_SPOON_WOOD_SMALL
+RESOURCES=1 i_BOARD
+WEIGHT=.1
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Spoon (Wooden) (Small)
+
+[ITEMDEF 010e9]
+DEFNAME=i_SPOON_WOOD_LARGE
+RESOURCES=1 i_BOARD
+WEIGHT=.2
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Spoon (Wooden) (Large)
+
+[ITEMDEF 012b3]
+DEFNAME=i_mallet_and_chisel
+RESOURCES=2 i_ingot_iron, 1 i_BOARD
+WEIGHT=4.0
+CATEGORY=Items by Professions
+SUBSECTION=Artists
+DESCRIPTION=Mallet and Chisel
+
+[ITEMDEF 01428]
+DEFNAME=i_dipping_stick
+RESOURCES=1 i_STICKS, 1 i_POT_OF_WAX, 1 i_STRING
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Beekeepers/Candlers
+DESCRIPTION=Dipping Stick
+DUPELIST=01429
+
+[ITEMDEF 01429]
+//Dipping Stick
+DUPEITEM=01428
+
+[ITEMDEF 0142f]
+DEFNAME=i_candle_short
+WEIGHT=1.0
+TYPE=T_LIGHT_OUT
+TDATA3=i_candle_short_lit
+RESOURCES=1 i_DIPPING_STICK
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Candle (Unlit)
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 01433]
+DEFNAME=i_candle_lg
+WEIGHT=1.0
+TYPE=T_LIGHT_OUT
+TDATA3=i_candle_lg_lit
+RESOURCES=1 i_DIPPING_STICK
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Candle (Unlit)
+
+ON=@Create
+MOREZ=1
+
+
+[ITEMDEF 01437]
+DEFNAME=i_candle_thin
+TYPE=T_LIGHT_OUT
+TDATA3=i_candle_thin_lit
+RESOURCES=1 i_DIPPING_STICK
+WEIGHT=1.0
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Candle (Burnt Out)
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 014e0]
+DEFNAME=i_bucket
+TYPE=T_CONTAINER
+TDATA2=03e
+RESOURCES=2 i_BOARD, 1 i_ingot_iron, 1 i_NAILS
+WEIGHT=2.0
+CATEGORY=Miscellaneous
+SUBSECTION=Vat
+DESCRIPTION=Bucket
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 014f5]
+DEFNAME=i_spyglass
+TYPE=T_SPY_GLASS
+FLIP=1
+RESOURCES=2 i_ingot_iron, 1 i_GLASS
+WEIGHT=3.0
+CATEGORY=Decoration - Miscellaneous
+SUBSECTION=Nautical
+DESCRIPTION=SpyGlass (N)
+DUPELIST=014f6
+
+[ITEMDEF 014f6]
+//spyglass
+DUPEITEM=014f5
+
+[ITEMDEF 014f7]
+DEFNAME=i_anchor
+FLIP=1
+RESOURCES=40 i_ingot_iron, 1 i_ROPE
+WEIGHT=40.0
+CATEGORY=Decoration - Miscellaneous
+SUBSECTION=Nautical
+DESCRIPTION=Anchor (W)
+DUPELIST=014f9
+
+[ITEMDEF 014f9]
+//anchor
+DUPEITEM=014F7
+
+[ITEMDEF 014fd]
+DEFNAME=i_lockpick_set
+//DEFNAME2=LOCKPICKS
+TYPE=T_LOCKPICK
+FLIP=1
+RESOURCES=3 i_LOCKPICK
+WEIGHT=.1
+CATEGORY=Items by Professions
+SUBSECTION=Thief
+DESCRIPTION=Lockpicks (Set)
+DUPELIST=014fe
+
+[ITEMDEF 014fe]
+//lockpicks
+DUPEITEM=014fd
+
+[ITEMDEF 01769]
+// Key ring with keys on it
+DEFNAME=i_key_ring_1
+TYPE=T_KEYRING
+TDATA2=1
+RESOURCES=1 i_ingot_iron
+WEIGHT=1.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Keys
+DESCRIPTION=Key Ring w/Keys
+DUPELIST=0176a,0176b
+
+[ITEMDEF 0176a]
+//key ring
+DUPEITEM=01769
+
+[ITEMDEF 0176b]
+//key ring
+DUPEITEM=01769
+
+[ITEMDEF 01810]
+DEFNAME=i_hourglass
+RESOURCES=1 i_BOARD, 1 i_GLASS, 1 i_SAND
+WEIGHT=2.0
+TYPE=T_CLOCK
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Hourglass
+DUPELIST=01811,01812,01813,01814,01815,01816,01817,01818,01819,0181a,0181b,0181c
+
+[ITEMDEF 01811]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01812]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01813]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01814]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01815]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01816]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01817]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01818]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01819]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 0181a]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 0181b]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 0181c]
+//hourglass
+DUPEITEM=01810
+
+[ITEMDEF 01829]
+DEFNAME=i_flaskstand
+RESOURCES=1 i_ingot_iron
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask Stand
+
+[ITEMDEF 0182d]
+DEFNAME=i_flask1_empty
+RESOURCES=2 i_SAND
+WEIGHT=1.0
+TYPE=t_bottle_empty
+//TYPE=T_DRINK
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask (Empty)
+
+[ITEMDEF 01849]
+DEFNAME=i_heating_stand
+TYPE=t_light_out
+TDATA3=i_heating_stand_lit
+RESOURCES=1 i_CANDLE, 1 i_ingot_iron, 1 i_ingot_copper
+WEIGHT=3.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Heating stand
+DUPELIST=0184d
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 01851]
+DEFNAME=i_scales
+RESOURCES=3 i_ingot_silver
+WEIGHT=3.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Scales
+DUPELIST=01852
+
+[ITEMDEF 01852]
+//scales
+DUPEITEM=01851
+
+[ITEMDEF 01853]
+DEFNAME=i_skull_candle
+TYPE=t_light_out
+TDATA3=i_skull_candle_lit
+RESOURCES=1 i_bone_skull, 1 i_CANDLE
+WEIGHT=4.0
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Skull Candle (Unlit)
+DUPELIST=01857
+
+ON=@Create
+MOREZ=1
+
+
+[ITEMDEF 0185b]
+DEFNAME=i_testtube_rack
+RESOURCES=1 i_BOARD, 1 i_NAILS, 3 i_vial_empty
+WEIGHT=4.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Rack of Empty Vials
+DUPELIST=0185c
+
+[ITEMDEF 0185c]
+//rack of empty vials facing SE
+DUPEITEM=0185b
+
+[ITEMDEF 0185d]
+//rack of full vials facing sw
+DEFNAME=i_testtube_rack_full
+RESOURCES=1 i_BOARD, 1 i_NAILS, 3 i_vial_empty
+WEIGHT=4.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Rack of Full Vials
+DUPELIST=0185e
+
+[ITEMDEF 0185e]
+//rack of full vials facing se
+DUPEITEM=0185d
+
+[ITEMDEF i_tabulka_skla]
+//sheet music
+DEFNAME=i_tabulka_skla
+ID=i_sheet_music
+NAME=Tabulka Skla
+RESOURCES=5 i_ingot_pisek
+WEIGHT=1
+SKILLMAKE=TINKERING 60.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Tabulka Skla
+
+on=@create
+color=099e
+
+[EOF]

@@ -1,0 +1,69 @@
+//[function web_najmy]
+//return <tr><td ALIGN=center>&nbsp;blah1&nbsp;</a></td><td ALIGN=center>&nbsp;blah3&nbsp;</td><td ALIGN=center>&nbsp;blah4&nbsp;</td></tr>
+//
+////http://localhost:2593/web/war.htt
+////http://195.39.53.131:2593/web/war.htt
+//
+[function web_basestat]
+return"<?eval(<eval(<safe.base_<argv(0)>_<argv(1)>>)>/10)?>.0"
+//
+[function web_maxstat]
+return"<?eval(<class_<argv(0)>.<argv(1)>>/10)?>.0"
+//
+[function web_najmy]
+//var(webs,"")
+//najmy_foreach(f_web_najmy)
+return "najmy" //<?webs?>
+//
+//[function najmy_foreach]
+//arg(u,1)
+//while (<?safe.najmy[arg(u)]?>)
+// if (finduid(<?safe.var.najmy[arg(u)]?>))
+//  finduid(<najmy[arg(u)]>).<?args?>
+// else
+//  array_remove(var.najmy,<arg(u)>)
+// endif
+// arg(u,<arg(u)>+1)
+//endwhile
+//
+//[function f_web_najmy]
+//webstradd(<safe.najmy_webtext_0>)
+//webstradd(<?safe.<safe.najmy_webtext_1>?>)
+//webstradd(<safe.najmy_webtext_2>)
+//webstradd(<?safe.<safe.najmy_webtext_3>?>)
+//webstradd(<safe.najmy_webtext_4>)
+//webstradd(<?safe.<safe.najmy_webtext_5>?>)
+//webstradd(<safe.najmy_webtext_6>)
+//webstradd(<?safe.<safe.najmy_webtext_7>?>)
+//webstradd(<safe.najmy_webtext_8>)
+//webstradd(<?safe.<safe.najmy_webtext_9>?>)
+//webstradd(<safe.najmy_webtext_10>)
+//
+//[function webstradd]
+//var(webs,"<?var.webs?> <?args?>")
+//
+//[function webstraddtag]
+//var(webs,"<?var.webs?> <<?args?>>")
+
+//Log vypisy
+[function web_log_output]//argv0 - od, argv1 - do, argv2 - pro
+if(finduid(<argv(2)>))
+ arg(adresat,<finduid(<argv(2)>)>) //adresát
+ arg(msgs,<eval adresat.tag(messagescount)>)
+ arg(od,<eval argv(0)>)
+ arg(do,<eval argv(1)>)
+ if(do >= msgs)
+  arg(do,<msgs>)
+ endif
+ if(od < msgs) //aby zbytecne neprojizdel az do konce co ma preddefinovano
+  arg(web_afk_out," ")
+  while(od <= do)
+   arg(web_afk_out,<?web_afk_out?><tr><td><?od?></td><td><?adresat.tag(message_<od>)?></td></tr>)
+   arg(od,#+1)
+  endwhile
+  //kermel.sysmessage("Vypisovani zprav <argv(0)> az <argv(1)> done, celkem msg: <adresat.tag(messagescount)>")
+  //adresat.sysmessage(Vysledek: <web_afk_out>)
+  return<web_afk_out>
+ endif
+endif
+[eof]

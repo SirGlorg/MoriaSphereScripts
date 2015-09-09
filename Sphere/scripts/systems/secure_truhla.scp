@@ -1,0 +1,148 @@
+/////////////////////////////////////////////
+////////  S e c u r e   T r u h l a  ////////
+/////////////////////////////////////////////
+
+[itemdef i_truhla_heslo_safe] // vnitrni truhla, itemdef vnejsi je v sphereitem_tinker.scp
+NAME=Truhla
+ID=0e41
+TYPE=T_CONTAINER
+WEIGHT=0
+
+on=@create
+attr=010
+color=color_o_verite
+
+//on=@stackon
+//if argo.type == t_container
+//  if argo.id == i_armoir_dk // vyjimky, ktere nelze do truhly vlozit.
+//    src.sysmessage("Tento predmet se do truhly nevejde.")
+//    argo.bounce
+//    return 1
+//  else
+//    argo.cont=<uid>
+//    return 1
+//  endif
+//endif
+
+[function f_truhla_heslo_dclick]
+if (src.isGM)
+  tag(truhla_id).open
+  dialog(d_truhla_zaheslovana_majitel)
+  return 1
+endif
+if (distance > 2)
+  src.sysmessage("Truhla je prilis daleko")
+  return 1
+elseif !(<safe.tag(majitel)>)
+  dialog(d_truhla_zaheslovana_neni_majitel)
+elseif (<tag(majitel)> == <src>)
+  tag(truhla_id).open
+  dialog(d_truhla_zaheslovana_majitel)
+else
+  src.sysmessage(Nejsi majitel)
+  dialog(d_truhla_zaheslovana)
+endif
+
+[function f_truhla_heslo_targonChar]
+if (<src.targ.npc>)
+  src.redMessage("Bude lepsi predat vlastnictvi truhly nekomu jinemu...")
+  return 1
+else
+  tag(majitel,<src.targ.serial>)
+  src.sysmessage("Predal jsi prava postave jmenem <src.targ.name>") 
+  src.targ.sysmessage("<src.name> ti <src.sex predal predala> vlastnictvi truhly.")
+  return 1
+endif
+
+/////////////////////////////////////////////////////////////
+//////// S e c u r e   T r u h l a   D i a l o g y   ////////
+/////////////////////////////////////////////////////////////
+
+[dialog d_truhla_zaheslovana]
+5,5
+page 0
+resizepic 140 190 2620 200 155 
+gumppic 160 230 02650
+gumppic 220 255 2445 
+
+text 160 205 52 0
+text 220 230 2116 1
+textentry 230 256 85 15 2116 1 2
+
+button 175 305 2311 2312 1 0 1
+button 250 305 2121 2120 1 0 2 
+
+[dialog d_truhla_zaheslovana text]
+Truhla chranena heslem
+Heslo:
+
+
+[dialog d_truhla_zaheslovana button]
+on=1
+if (<STRCMPI(<tag.heslo>,<argtxt(1)>)>==0)
+  tag(truhla_id).open
+else
+src.redmessage(Spatne heslo)
+endif
+
+on=2
+return 0
+
+
+[dialog d_truhla_zaheslovana_majitel]
+160,5
+page 0
+resizepic 140 190 2620 200 185 
+gumppic 160 230 02650
+gumppic 220 255 2445 
+
+text 160 205 52 0
+text 220 230 2116 1
+textentry 230 257 85 15 2116 1 2
+
+button 160 335 0988 0988 1 0 3	//predat prava
+text 185 337 1152 3
+
+button 175 305 2311 2312 1 0 1
+button 250 305 2121 2120 1 0 2 
+
+[dialog d_truhla_zaheslovana_majitel text]
+Zmena hesla
+Nove heslo:
+heslo
+Predat prava
+
+[dialog d_truhla_zaheslovana_majitel button]
+on=1
+tag.heslo=<argtxt(1)>
+src.redmessage(Nove heslo je: <argtxt(1)>)
+
+on=2
+return 0
+
+on=3
+target Zamer komu chces predat prava
+return 0
+
+
+
+[dialog d_truhla_zaheslovana_neni_majitel]
+160,100
+page 0
+resizepic 140 190 2620 200 110
+text 146 205 52 0
+text 160 225 52 1
+
+button 175 260 2311 2312 1 0 1
+button 250 260 2121 2120 1 0 2
+
+[dialog d_truhla_zaheslovana_neni_majitel text]
+Truhla jeste nema majitele
+Chces truhlu pro sebe ?
+
+[dialog d_truhla_zaheslovana_neni_majitel button]
+on=1
+tag.majitel=<src.serial>
+src.sysmessage("<src.sex("Stal jsi se novym majitelem","Stala jsi se novou majitelkou")> truhly.")
+on=2
+return 0

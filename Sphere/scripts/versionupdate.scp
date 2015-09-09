@@ -1,0 +1,381 @@
+[function fixxbows]
+var(item_count,0)
+//nukeall(alterxbow)
+nukecharall(fixxbowplr)
+src.sysmessage("Upraveno <item_count> predmetu.")
+
+[function fixxbowplr]
+//if(isplayer)||(isgm)
+ if(isvendor)
+  if(findlayer(1))
+   findlayer(1).alterxbow
+  endif
+  if(findlayer(2))
+   findlayer(2).alterxbow
+  endif
+  findlayer(21).alterxbow //batoh
+  findlayer(29).alterxbow //banka
+  //vendorovy layery
+  findlayer(60).alterxbow
+  findlayer(61).alterxbow
+  findlayer(62).alterxbow
+  findlayer(63).alterxbow
+  findlayer(64).alterxbow
+  findlayer(65).alterxbow
+ endif
+//endif
+
+[function alterxbow]
+if(type==t_container)||(type==t_eq_bank_box) 
+ if(rescount)
+  arg(u,0)
+  while(u < rescount)
+   findcont(u).alterxbow
+   arg(u,#+1)
+  endwhile
+ endif
+else
+ if(isbow)
+  arg(oname,<name>)
+  arg(ocolor,<color>)
+  trigger(create)
+  more1h=<more1l>
+  color=<arg(ocolor)>
+  name=<arg(oname)>
+  var(item_count,#+1)
+ endif
+endif
+
+[function reassigndurability]
+var(item_count,0)
+var(pocitadlo,0)
+while(pocitadlo < <eval 0ffffff>)
+ arg(pocitadlo2,0)
+ while(pocitadlo2 < 30000)  
+  if(<finduid(<hval pocitadlo>)>)
+   if(<finduid(<hval pocitadlo>).isitem>)
+    arg(item,<finduid(<hval pocitadlo>)>) 
+    //vsechny typy 
+    if (item.isshield)//(item.isweapon)||(item.isarmor)
+     arg(oname,<item.name>)
+     arg(ocolor,<item.color>)
+     item.trigger(create)
+     item.more1h=<item.more1l>
+     item.color=<arg(ocolor)>
+     item.name=<arg(oname)>
+     var(item_count,#+1)     
+    endif    
+   endif  
+  endif
+  var(pocitadlo,#+1)
+  if((pocitadlo % 10000) == 0)
+   logmsg(Napocteno zatim: <pocitadlo>)
+  endif
+  arg(pocitadlo2,#+1)
+ endwhile 
+endwhile
+src.sysmessage("Prevedenych veci je: <item_count>, dopocital jsem do: <pocitadlo>")
+
+
+//knihy:ne newbie!
+//zbrane, armory: trigger @create
+[function prevod]
+allplayers(prevod_player)
+//mapplane=0
+//nukeall(prevod_nukeditems)
+//nukecharall(prevod_char)
+//mapplane=1
+//nukeall(prevod_nukeditems)
+//nukecharall(prevod_char)
+//mapplane=3
+//nukeall(prevod_nukeditems)
+//nukecharall(prevod_char)
+//mapplane=4
+//nukeall(prevod_nukeditems)
+//nukecharall(prevod_char)
+//mapplane=5
+//nukeall(prevod_nukeditems)
+//nukecharall(prevod_char)
+//mapplane=6
+//nukeall(prevod_nukeditems)
+//nukecharall(prevod_char)
+//mapplane=7
+//nukeall(prevod_nukeditems)
+//nukecharall(prevod_char)
+//mapplane=8
+//nukeall(prevod_nukeditems)
+//nukecharall(prevod_char)
+//mapplane=0
+
+[function prevod_player]
+arg(level,<eval tag(level)>)
+arg(experience,<eval tag(experience)>)
+arg(profese,<tag(class)>)
+arg(rank,0)
+if (tag(velmistr))
+  arg(rank,3)
+elseif (tag(mistr))
+  arg(rank,2)
+elseif (tag(expert))
+  arg(rank,1)
+endif
+tag.clear
+tag(level,<arg(level)>)
+tag(experience,<arg(experience)>)
+tag(class,<arg(profese)>)
+tag(skillrank,<arg(rank)>)
+tag(prevest,1)
+tag(startdialog,"seznamras")
+tag(startdialogpage,0)
+
+[function prevod_charsitems]//vsechny veci
+var(probihaprevadeni,1)
+while (var(probihaprevadeni))
+  var(probihaprevadeni,0)
+  contents2(prevod_rozlozit)
+endif
+contents2(prevod_item)
+
+
+[function prevod_char]
+if (npc)
+  prevod_vendor
+endif
+if !(memoryfindtype(2))
+  remove
+endif
+
+[function prevod_vendor]
+if (iscvendor)
+  arg(owner,<memoryfindtype(2).link>)
+  if (tag(mainowneruid))
+    if (finduid(tag(mainowneruid)))
+      arg(owner,<finduid(tag(mainowneruid))>)
+    endif
+  endif
+  findid(i_vendor_tag_box).contents(link.returnitemto(<arg(owner)>))
+  arg(ownersbank,<arg(owner).findlayer(29)>)
+  arg(ownersbank).givegold(<eval tag(gold)>)
+  logmsg("buyer goods to <arg(ownersbank)>")
+  findid(i_buyer_goods_box).contents(logcont(<arg(ownersbank)>))
+  remove
+endif
+
+[function returnitemto]
+arg(owner,<finduid(args)>)
+arg(ownersbank,<arg(owner).findlayer(29)>)
+if (type==t_figurine)&&(more2==0)
+  src.newnpc <more1>
+  src.act.p=<topobj.p>
+  src.act.color=<color>
+  src.act.name=<name>
+  src.act.newmemory(<arg(owner)>)
+  src.act.act.color=<src.act.act.color>|MEMORY_IPET
+  if (src.act.karma<0)
+    src.act.karma=0
+  endif
+else
+  logmsg("item to <arg(ownersbank)>")
+  logcont(<arg(ownersbank)>)
+endif
+
+[function prevod_item]
+//prevod_locked_item
+//if (prevod_rozlozit)
+  //return 1
+//endif
+prevod_mi
+//prevod_housemenu
+//prevod_house
+prevod_pergamen
+//prevod_shrine
+//prevod_hmseznamy
+prevod_zbrane
+prevod_ore
+fixhitpoints
+
+[function fixhitpoints]
+if (more1l>more1h)
+ more1l=more1h
+endif
+
+
+[function prevod_rozlozit]
+if !(wasmagicitem)
+  if !(isevent(tmi_info))
+    if (isweapon)||(isarmor)||(isshield)
+      if (zkusrozlozit(<typedef.resources>,))
+        var(probihaprevadeni,1)
+        remove
+        return 1
+      endif
+    endif
+  endif
+endif
+return 0
+
+[function zkusrozlozit]
+if (strlen(<argv(0)>))
+  singleparse(<argv(0)>)
+  if (<safe def_rozlozit[<secondnumb>]>)
+    topobj.findlayer(29).givelisted(<args>)
+    return 1
+  endif
+endif
+return 0
+
+[defnames jestlirozlozit]
+def_rozlozit[i_ingot_silver]=1
+def_rozlozit[i_ingot_gold]=1
+def_rozlozit[i_ingot_verite]=1
+def_rozlozit[i_ingot_valorite]=1
+def_rozlozit[i_ingot_obsidian]=1
+def_rozlozit[i_ingot_adamantinum]=1
+def_rozlozit[i_ingot_mithril]=1
+
+def_rozlozit[i_log_verite]=1
+def_rozlozit[i_log_valorite]=1
+def_rozlozit[i_log_obsidian]=1
+def_rozlozit[i_log_adamantinum]=1
+def_rozlozit[i_log_mithril]=1
+
+//[function prevod_hmseznamy]
+//if (baseid==i_pouch)
+// if (link)
+//  if (link.isitem)
+//   if (link.ishouse)
+//    if (more==1)//pratele
+//     try link.link.tag(friendscont,<uid>)
+//    elseif (more==1)
+//     try link.link.tag(coownerscont,<uid>)
+//    endif
+//    try link=<link.link>
+//   endif
+//  endif
+// endif
+//endif
+
+//[function prevod_shrine]
+//if (type==t_shrine)
+// src.newitem i_moongate_blue
+// lastnew.type=t_shrine
+// lastnew.p=<p>
+// remove
+//endif
+
+[function prevod_pergamen]
+if (baseid==i_pergamen)
+ //arg(u,0)
+ //while (<arg(u)><<tag(getcount)>)
+ // arg(tagname,<tag(enum,<arg(u)>)>)
+ // if !(strcmpi(<strmid(<arg(tagname)>,0,5)>,radek))
+ //  if (strcmpi(<strmid(<arg(tagname)>,0,6)>,radek_))
+ //   try tag.radek[<eval <strmid(<arg(tagname)>,5,0ff)>>]=<?tag.<arg(tagname)>?>
+ //   try tag.radek<?strmid(<arg(tagname)>,5,0ff)?>=
+ //   arg(u,<arg(u)>-1)
+ //  endif
+ // endif 
+ // arg(u,<arg(u)>+1)
+ //endwhile
+ if !(tag(origautoruid))
+  tag(origautor,<tag.autor>)
+  tag(origautoruid,<tag.autoruid>)
+ endif
+endif
+
+//if (<act.attr>&attr_identified)&&((<act.morex> > 0)||(<act.morey> > 0))&&(<act.morem>=0f)
+[function prevod_locked_item]
+//predtim: linknuta na brass sign, kde je tag.lock<uid> urcujici jeji level
+//potom: link nahrazen tag.hm_linkedto, tag na brass signu nahrazen tag.hm_lockit, pridan event //t_lockeditem
+if (link)
+  if (link.ishouse)
+    if (finduid(link.more1))
+      cont=<finduid(<link.more1>).findlayer(29)>
+      attr_movenever=1
+      link=""
+    endif
+  endif
+endif
+
+//[function prevod_housemenu]
+////pred: more1=pratele, more2=coowneri, tag.bankactivated a tag.ownermemuid
+////po: more1= more2=, bankactivated a ownermemuid preveden na dum
+//if (baseid==i_sign_brass)
+// if (link)
+//  if (link.isitem)
+//   if (link.ishouse)
+//    try more1=
+//    try more2=
+//    try link.tag(bankactivated,<tag.bankactivated>)
+//    try link.tag(ownermemuid,<tag.ownermemuid>)
+//   endif
+//  endif
+// endif
+//endif
+//
+//[function prevod_house]
+//if (type==t_multi)
+// if (<uid>!=<region>)//neni skutecny multi
+//  try type=t_customhouse
+// endif
+// try more2=
+//endif
+
+[function prevod_mi]
+if (wasmagicitem)
+  if (mif_preftype>-1)
+   tag(imi_value[<mif_preftype>],<mif_prefvalue>)
+  endif
+  tag(imi_value[<mif_suftype>+100],<mif_sufvalue>)
+  mif_finishitem
+  morep=0
+endif
+return 0
+
+[function wasmagicitem]
+if (<attr>&attr_identified)
+ if ((morex)||(morey))&&(morem==0f)
+  return 1
+ endif
+endif
+return 0
+
+[function mif_preftype]
+if (<mif_prefvalue>==0)
+var(return,-1)
+else
+var(return,<eval <morex>-((<morex>/100)*100)>)
+endif
+return <return>
+
+[function mif_prefvalue]
+return <eval <morex>/100>
+
+[function mif_suftype]
+return <eval <morey>-((<morey>/100)*100)>
+
+[function mif_sufvalue]
+return <eval <morey>/100>
+
+[function prevod_zbrane]
+if (isweapon)||(isarmor)
+ arg(oname,<name>)
+ arg(ocolor,<color>)
+ trigger(create)
+ more1h=<more1l>
+ color=<arg(ocolor)>
+ name=<arg(oname)>
+endif
+
+[function prevod_ore]
+if (type==t_ingot)||(type==t_ore)
+ trigger(create)
+ type=<typedef.type>
+endif
+
+
+//durabilita prilis velka
+//housemenu a prislusenstvi smazat
+//forges?
+
+[eof]

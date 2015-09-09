@@ -1,0 +1,468 @@
+
+///////////////////////////////////////////// cestovni kameny ////////////////////////////
+// system cestovani pomoci kamenu - ceny se vypocitavaji dyunamicky dle vzdalenosti od mista
+// cesta na nepratelske uzemi nejde, ale z neho ano a stoji 3*tolik co normalni.
+[defnames st_places]
+constprice	3500//
+escortprice	50
+pocet_mist      30
+st_pos[1]	Hobitin
+st_name[1]	Hobitin
+st_pos[2]	Edoras
+st_name[2]	Edoras
+st_pos[3]	5691,3872,-80
+st_name[3]	Minas Tirith
+st_pos[4]	2469,1925
+st_name[4]	Lorien
+st_pos[5]	3472,3256,12
+st_name[5]	Nurn
+st_pos[6]	1588,1940
+st_name[6]	Tharbad
+st_pos[7]	3559,2764
+st_name[7]	Barad-Dur
+st_pos[8]	1413,1093
+st_name[8]	Fornost
+st_pos[9]	Severni Spoust
+st_name[9]	Severni Spoust
+st_pos[10]	4144,4032
+st_name[10]	Harad
+st_pos[11]	533,666
+st_name[11]	Severni doly
+st_pos[12]	771,1551
+st_name[12]	Krajske doly
+st_pos[13]	Sede pristavy
+st_name[13]	Sede pristavy
+st_pos[14]	4512,3262
+st_name[14]	Mordorske doly
+st_pos[15]	3846,2562,-25
+st_name[15]	Barad-durske doly
+st_pos[16]	2480,4033,10
+st_name[16]	Umbar
+st_pos[17]	2779,3807
+st_name[17]	Tahabar
+st_pos[18]	2887,3724
+st_name[18]	Oaza Hagir
+st_pos[19]	3837,2081
+st_name[19]	Rhun
+st_pos[20]	2897,3203
+st_name[20]	Pelargir
+st_pos[21]	Linhir
+st_name[21]	Linhir
+st_pos[22]	2281,3150
+st_name[22]	Dol Amroth
+st_pos[23]	2449,2931
+st_name[23]	Calembel
+st_pos[24]	1571,1201
+st_name[24]	Hurka
+st_pos[25]	3132,1046
+st_name[25]	Esgaroth
+st_pos[26]	3190,1013
+st_name[26]	Osamela hora a Dol
+st_pos[27]	1225,612
+st_name[27]	Forondon
+st_pos[28]	3920,3012
+st_name[28]	Bagronk
+st_pos[29]	1309,1359
+st_name[29]	Radovsko
+st_pos[30]	5323,3750
+st_name[30]	Helmuv Zleb
+
+
+[events e_tstone_check]
+on=@step
+events -e_tstone_check
+
+on=@spellcast
+events -e_tstone_check
+
+[function ts_refresh_all]
+gotype(t_stone_travel)
+act.ts_refresh
+if (act.uid==<eval <safe.tsr_first>>)
+return 0
+endif
+if !(<safe.var.tsr_first>)
+var.tsr_first=<act.uid>
+endif
+ts_refresh_all
+
+[function ts_refresh]
+var.pocitadlo=1
+var.ts_contwas=0
+if (cont)
+var.ts_contwas=<cont.uid>
+else
+morep=<p>
+endif
+ while (<pocitadlo><=pocet_mist)
+  p=<safe.st_pos[<pocitadlo>]>
+  if (<region.tag(realm)>)
+   tag(placerealm[<pocitadlo>],<region.tag(realm)>)
+  else
+   tag(placerealm[<pocitadlo>],0)
+  endif
+  tag(placeuid[<pocitadlo>],<region.uid>)
+  tag(placedist[<pocitadlo>],<distance>)
+  var.pocitadlo=<var.pocitadlo>+1
+ endwhile
+if (ts_contwas)
+cont=<var.ts_contwas>
+else
+p=<morep> 
+endif
+var.ts_contwas=
+tag(maxpoints)=<pocitadlo>-1
+updatex
+return 0
+
+[typedef t_stone_travel]
+ON=@userClick
+src.sysmessage "Stanice dostavniku a povozu. Nase cesty jsou naprosto bezpecne. Zpoplatneni je podle vzdalenosti  a plati se jen hotove."
+src.sysmessage "Pokud vyuzijes nasich sluzeb, budes jiste spokojen, poutniku."
+return 1
+
+
+ON=@userDClick
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+if (src.tag(realm)<0)
+ src.redmessage(Nase sluzby nejsou pro takove jako jsi Ty!)
+ return 1
+else
+ src.events=+e_tstone_check
+ if (src.isgm)
+  ts_refresh
+ //elseif !(src.isgm)
+  //if (src.tag(realm))&&(<region.tag(realm)>) //nejsem podvodnik?
+ //   	if (<region.tag(realm)>==<eval ((src.tag(realm)*-1)+3)>)
+ // 		src.redmessage(Nemuzes vyuzit sluzeb dostavniku na nepratelskem uzemi!)
+ //		return 1
+ //	endif
+ // endif
+ endif
+ src.tag(dynamdialog,0)
+ st_opendialog
+ return 1
+endif
+
+[function st_opendialog]
+var.tm_whiles=0
+while (tm_whiles<16)
+ src.tag(st_pointnumb[<tm_whiles>],0)
+ var.tm_whiles=<var.tm_whiles>+1
+endwhile
+var.tm_whiles=0
+var.tm_count=<src.tag(dynamdialog)>+1
+var.tm_whiles=0
+while (tm_whiles<15)&&(<var.tm_count><=pocet_mist)
+var.tm_whiles=<tm_whiles>+1
+var.tm_whilebreak=1
+ while (<var.tm_count><=pocet_mist)&&(tm_whilebreak)
+  if (f_srcwantsenemy(<tag(placerealm[<tm_count>])>)==0)
+   src.tag(st_pointnumb[<tm_whiles>],<var.tm_count>)
+   var.tm_whilebreak=0
+  endif
+ var.tm_count=<var.tm_count>+1
+ endwhile
+endwhile
+
+DIALOG d_stone_travel
+
+[ITEMDEF i_stone_travel]
+ID=01174
+TYPE=t_stone_travel
+NAME=Cestovni kamen
+
+CATEGORY=Noe
+SUBSECTION=cestovni kameny
+DESCRIPTION=univerzalni
+
+ON=@Create
+attr=attr_move_never
+COLOR=00481
+
+[DIALOG d_stone_travel] // INFO
+30,50 // Position
+resizepic 0 0 2600 500 280 // Curved Grey background
+resizepic 16 65 5100 469 25 // Square Grey box
+//button 50 266 247 248 1 0 0 // Okay button 0
+text 60 35 0 0 // 
+
+
+page <eval ((<src.tag(dynamdialog)>)/(<src.tag(dynamdialog)>-1))-1>
+button 25 69 5209 5003 1 0 1 // predchozi strana
+text 60 69 0 1 //
+page <eval ((<src.tag(st_pointnumb[15])>)/(<src.tag(st_pointnumb[15])>-1))-1>
+button 459 69 5209 5003 1 0 2 // Dalsi strana
+text 360 69 1157 2 // 
+
+//<tag.placeuid[<src.tag.dynamdialog>+1]>
+page <qval(<src.tag(st_pointnumb[1])>,0,-1)>
+text 37 100 995 4 
+text 175 100 995 5
+button 20 103 1209 1210 1 0 4 
+page <qval(<src.tag(st_pointnumb[2])>,0,-1)>
+text 37 120 995 6
+text 175 120 995 7 
+button 20 123 1209 1210 1 0 5 
+page <qval(<src.tag(st_pointnumb[3])>,0,-1)>
+text 37 140 995 8
+text 175 140 995 9 
+button 20 143 1209 1210 1 0 6
+page <qval(<src.tag(st_pointnumb[4])>,0,-1)>
+text 37 160 995 10
+text 175 160 995 11
+button 20 163 1209 1210 1 0 7 
+page <qval(<src.tag(st_pointnumb[5])>,0,-1)>
+text 37 180 995 12
+text 175 180 995 13 
+button 20 183 1209 1210 1 0 8 
+page <qval(<src.tag(st_pointnumb[6])>,0,-1)>
+text 37 200 995 14
+text 175 200 995 15 
+button 20 203 1209 1210 1 0 9 
+page <qval(<src.tag(st_pointnumb[7])>,0,-1)>
+text 37 220 995 16
+text 175 220 995 17
+button 20 223 1209 1210 1 0 10
+//
+page <qval(<src.tag(st_pointnumb[8])>,0,-1)>
+text 272 100 995 18 
+text 410 100 995 19
+button 255 103 1209 1210 1 0 11 
+page <qval(<src.tag(st_pointnumb[9])>,0,-1)>
+text 272 120 995 20
+text 410 120 995 21 
+button 255 123 1209 1210 1 0 12 
+page <qval(<src.tag(st_pointnumb[10])>,0,-1)>
+text 272 140 995 22 
+text 410 140 995 23 
+button 255 143 1209 1210 1 0 13 
+page <qval(<src.tag(st_pointnumb[11])>,0,-1)>
+text 272 160 995 24 
+text 410 160 995 25 
+button 255 163 1209 1210 1 0 14 
+page <qval(<src.tag(st_pointnumb[12])>,0,-1)>
+text 272 180 995 26 
+text 410 180 995 27 
+button 255 183 1209 1210 1 0 15 
+page <qval(<src.tag(st_pointnumb[13])>,0,-1)>
+text 272 200 995 28 
+text 410 200 995 29 
+button 255 203 1209 1210 1 0 16 
+page <qval(<src.tag(st_pointnumb[14])>,0,-1)>
+text 272 220 995 30 
+text 410 220 995 31 
+button 255 223 1209 1210 1 0 17 
+
+[DIALOG d_stone_travel TEXT]
+Stanice dostavniku a povozu.
+Na zacatek seznamu // texty k tlacitkum
+Dalsi trasy
+GUILDS
+<?safe.st_name[<src.tag(st_pointnumb[1])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[1])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[2])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[2])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[3])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[3])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[4])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[4])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[5])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[5])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[6])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[6])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[7])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[7])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[8])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[8])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[9])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[9])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[10])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[10])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[11])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[11])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[12])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[12])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[13])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[13])>)?> gp
+<?safe.st_name[<src.tag(st_pointnumb[14])>]?>
+<?safe.f_moneydist(<src.tag(st_pointnumb[14])>)?> gp
+
+[DIALOG d_stone_travel BUTTON]
+on=0
+src.tag(dynamdialog)=
+src.tag(tm_count)=
+src.st_tagclear
+
+on=1
+src.tag(dynamdialog,0)
+st_opendialog
+
+on=2
+src.tag(dynamdialog,<eval <src.tag(dynamdialog)>+<src.tag(st_pointnumb[15])>-1>)
+st_opendialog
+
+on=4
+f_gotopoint(1)
+on=5 
+f_gotopoint(2)
+on=6 
+f_gotopoint(3)
+on=7 
+f_gotopoint(4)
+on=8 
+f_gotopoint(5)
+on=9
+f_gotopoint(6)
+on=10 
+f_gotopoint(7)
+on=11 
+f_gotopoint(8)
+on=12 
+f_gotopoint(9)
+on=13 
+f_gotopoint(10)
+on=14 
+f_gotopoint(11)
+on=15
+f_gotopoint(12)
+on=16 
+f_gotopoint(13)
+on=17 
+f_gotopoint(14)
+
+[function st_tagclear]
+tag(st_pointnumb[0],)
+tag(st_pointnumb[1],)
+tag(st_pointnumb[2],)
+tag(st_pointnumb[3],)
+tag(st_pointnumb[4],)
+tag(st_pointnumb[5],)
+tag(st_pointnumb[6],)
+tag(st_pointnumb[7],)
+tag(st_pointnumb[8],)
+tag(st_pointnumb[9],)
+tag(st_pointnumb[10],)
+tag(st_pointnumb[11],)
+tag(st_pointnumb[12],)
+tag(st_pointnumb[13],)
+tag(st_pointnumb[14],)
+tag(st_pointnumb[15],)
+
+[function muze_vstoupit]
+if (src.ismurderer)
+ return 1
+else
+ return 0
+endif
+
+[function f_gotopoint]
+if !(src.isevent(e_tstone_check))
+  return 0
+endif
+var.st_pointnumber=<src.tag(st_pointnumb[<args>])>
+var.st_price=<eval (<tag(placedist[<st_pointnumber>])>*1000)/constprice>
+if (f_srcwantsenemy(<tag(placeuid[<st_pointnumber>])>))
+src.classmessage(Nemuzes cestovat na nepratelske uzemi.)
+st_opendialog
+return 0
+elseif (f_srcwantsshome(<tag(placeuid[st_pointnumber])>))
+src.classmessage(Platis priplatek za eskortu z nepratelskeho uzemi.)
+var.st_price=<eval (st_price*escortprice)/10>
+endif
+src.tag(st_custpointdist,<st_pos[st_pointnumber]>)
+src.consume(1000 i_travelstone_delay)
+if (<src.pay(<st_price>)>)
+ if !(src.isgm )
+  src.st_tagclear
+  src.newitem i_travelstone_delay
+  //lastnew.tag(ts_region,<src.region>) //pro kontrolu
+  lastnew.tag(ts_position,<p>)
+  src.act.equip
+ else
+  src.go <src.tag(st_custpointdist)>
+  src.tag.remove(st_custpointdist)
+ endif
+endif
+return 0
+
+[function f_moneydist]
+if (strlen(<tag(placedist[<args>])>))
+ var.st_price=(<eval (<tag(placedist[<args>])>*1000)/constprice>)
+ if (f_srcwantsshome(<tag(laceuid[<args>])>))
+  var.st_price=<eval (st_price*escortprice)/10>
+ endif
+ return <var.st_price>
+endif
+return 0ffffff
+
+[function f_srcwantsenemy]//testuje cilove uzemi jestli je nebo neni nepratelske pro SRC
+if (src.isgm)
+return 0
+endif
+if (src.ismurderer)&&(<args>==1)
+  return 1
+elseif !(src.ismurderer)&&(<args>==2)
+ return 1
+endif
+return 0
+
+[function f_srcwantsshome]
+if (<region.tag(realm)>)
+if (src.ismurderer)//je murderer
+ if (<region.tag(realm)>==1)//chce k modrejm
+   return 1
+ endif
+else//not murderer
+ if (<region.tag(realm)>==2)//chce k cervenejm
+   return 1
+ endif
+endif
+endif
+return 0
+
+[ITEMDEF i_travelstone_delay]
+NAME=Travel Stone Delay
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+WEIGHT=0.0
+LAYER=layer_special
+
+ON=@Create
+ATTR=attr_invis|attr_decay
+MORE1=15
+MOREP=a_helpdesk
+
+ON=@Equip
+TIMER=1
+	
+ON=@Timer
+// Take the effect we would like.
+if ( <cont> )
+  if ( <more1> )
+    cont.message <EVAL <more1>> // put countdown above my head.
+    more1=<more1>-1
+    TIMER=1
+    return 1
+  else
+    if (strlen(<tag(ts_position)>))
+      if (<f_distanceFromPos_check(6,<tag(ts_position)>)>)
+        src.redMessage("Prilis jsi se <src.sex(vzdalil,vzdalila)> od dostavniku !")
+        src.tag.remove(st_custpointdist)
+        remove
+        return 1	//jsme prilis daleko od puvodniho mista...
+      endif
+    endif
+    src.go <src.tag(st_custpointdist)>
+    src.tag.remove(st_custpointdist)
+  endif
+endif
+// normal timer fall through is to delete the item
+remove
+return 1
+
+
+
+[eof]

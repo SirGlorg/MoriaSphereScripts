@@ -1,0 +1,1502 @@
+[DEFNAMEs Dragon_colors]
+colors_wyrm		0453
+colors_drag_green	0996
+colors_drag_red		098c
+colors_drag_blue	0997
+colors_drag_copper	0988
+colors_drag_silver	0984
+colors_drag_gold	0995
+colors_drag_ice		00985
+colors_drag_black	1
+colors_drag_swamp	00296
+colors_drag_all		{colors_wyrm 1 colors_drag_green 1 colors_drag_red 1 colors_drag_blue 1 colors_drag_copper 1 colors_drag_silver 1 colors_drag_gold 1 colors_drag_ice 1 colors_drag_black 1}
+
+/////////////////////////////////////////////
+//     F I N I S H E D   D R A G O N S     //
+//       N E W   G E N E R A T I O N       //
+/////////////////////////////////////////////
+
+/////////////////////////////////////
+//     D R A G O N   S W A M P     //
+//         (c)-Sir Glorg-          //
+/////////////////////////////////////
+
+[CHARDEF c_dragon_swamp]
+ID=c_dragon_base
+Name=Dragon
+SOUND=snd_monster_dragon1
+Icon=i_pet_dragon
+Anim=03f9c7f
+Can=mt_walk|mt_run|mt_swim
+attack=150
+ARMOR={180 190}
+
+RESOURCES=99 i_ribs_raw,28 i_reag_dragon_blood
+FOODTYPE=8000 i_gold
+DESIRES=t_corpse
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_dragon_brain
+TEVENTS=e_looter
+TEVENTS=e_inexhaustible
+TEVENTS=e_summoneater
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Dragon Swamp
+
+ON=@Create
+NAME=Drak
+COLOR=colors_drag_swamp
+NPC=brain_monster
+fame=-6000
+KARMA=-7000
+
+str={16000 20000}
+dex={275 325}
+int={800 1000}
+
+
+maxhits={28000 29000}
+maxstam={600 750}
+maxmana=0
+
+tag(effectn,4)	//kolik ma efektu celkem
+tag(effect_1,50 f_npc_roundattack)
+tag(effect_2,20 f_dragon_stamp(2,20))
+tag(effect_3,20 f_dragon_breath_poison(15))
+tag(effect_4,10 f_dragon_acid_damage(89))
+tag(brain_timer,4 8) // timer rozptyl 4-8s
+
+tag(stamp_dmg,120)
+tag(brainRegeHP,50)	//pocet regenerovanych HP za 1 brainTimer
+
+tag(monstertype,dragon,60)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(noanimate,1)
+
+tag.resist_poison=1000
+tag.resist_bleed=950
+tag.resist_para=1000
+tag.resist_pierce=700
+tag.resist_summon=800
+tag.resist_fire=<eval {500 750}>
+tag.resist_elect=<eval {500 750}>
+tag.resist_cold=<eval {500 750}>
+
+
+tag.experience=<eval {2500.0 3000.0}>
+
+WRESTLING=110.0
+PARRYING=120.0
+TACTICS={90.0 100.0}
+FENCING={90.0 100.0}
+SWORDSMANSHIP={90.0 100.0}
+MACEFIGHTING={140.0 150.0}
+RESIST=250.0
+DETECTINGHIDDEN={190.0 290.0}
+POISONING={300.0 450.0}
+SpiritSpeak=180.0
+ 
+
+ItemNewbie=i_light_source
+ItemNewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+ITEM=RANDOM_REAGENT,{50 70}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////
+//              D R A G O N S              //
+//           O L D   S C H O O L           //
+/////////////////////////////////////////////
+
+[CHARDEF 03d]
+DEFNAME=c_drake_base
+NAME=Dragon
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_DRAGON
+ANIM=03f9c7f
+can=mt_walk|mt_fire_immune
+dam=2,12
+armor=46
+moverate=3
+resources=10 i_ribs_raw,20 i_hide,8 i_reag_dragon_blood
+foodtype=25 t_meat_raw,t_gem
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+category=Monsters
+subsection=Dragons and Drakes
+description=drake (red)
+
+on=@create
+Name=#NAMES_DRAGON
+Title=Drak
+npc=brain_dragon
+
+str={401 430}
+dex={133 152}
+int={101 140}
+maxhits={401 430}
+maxstam={133 152}
+maxmana=0
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=950
+
+parrying={65.0 80.0}
+resist={65.1 80.0}
+tactics={65.4 88.5}
+wrestling={68.8 81.7}
+
+peacemaking=51.6
+
+tag.experience=<eval {220.0 250.0}>
+tag(monstertype,dragon,60)
+
+fame={2000 6000}
+karma={-5000 -6999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+ITEM=i_gold
+
+[CHARDEF 03b]
+DEFNAME=c_dragon_base
+NAME=Red Dragon
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_DRAGON
+ANIM=03f9c7f
+can=mt_walk|mt_fire_immune
+dam=5,15
+armor=60
+moverate=3
+//resdispup=c_dragon_red_lbr	//haze warningy - IDcko
+reslevel=3
+resdisphue=
+//resdispup=c_dragon_red_lbr  //haze warningy
+reslevel=3
+resources=19 i_ribs_raw, 8 i_reag_dragon_blood, 20 i_hide
+foodtype=80 t_meat_raw,t_gem
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+category=Monsters
+subsection=Dragons and Drakes
+description=dragon (red)
+
+on=@create
+Name=#NAMES_DRAGON
+Title=Drak
+npc=brain_dragon
+str={792 825}
+dex={88 110}
+int={437 475}
+maxhits={792 825}
+maxstam={88 110}
+maxmana={4370 4750}
+
+tag(poisoning_dmg,30) // affects spell_poison
+tag(poisoning_MvM_dmg,60) // affects spell_poison
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=900
+tag(monstertype,dragon,60)
+
+parrying={55.0 95.0}
+resist={99.2 100.0}
+tactics={97.6 100.0}
+wrestling={91.0 93.2}
+magery=40.9
+SpiritSpeak=100.0
+
+
+peacemaking=76.4
+
+xperience=<eval {220.0 250.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+fame={3000 9000}
+karma={-5000 -5999}
+
+itemnewbie=i_spellbook
+addspell=s_clumsy
+addspell=s_feeblemind
+addspell=s_magic_arrow
+addspell=s_weaken
+addspell=s_harm
+addspell=s_fireball
+addspell=s_poison
+addspell=s_curse
+addspell=s_fire_field
+addspell=s_lightning
+addspell=s_cure
+addspell=s_heal
+addspell=s_dispel_field
+addspell=s_dispel
+addspell=s_greater_heal
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+ITEM=i_gold
+
+[CHARDEF c_drake_green]
+DEFNAME=c_drake_green
+ID=c_drake_base
+NAME=Green Drake
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+moverate=5
+attack=80,100
+ARMOR={50 60}
+RESOURCES=50 i_ribs_raw, 8 i_reag_dragon_blood
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=25 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Drake Green
+
+
+ON=@Create
+NAME=#NAMES_DRAGON
+COLOR=0996
+
+str={1100 1300}
+dex={180 240}
+int={450 550}
+maxhits={1100 1300}
+maxstam={180 240}
+maxmana=0
+
+tag.experience=<eval {40.0 60.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=950
+
+PARRYING={55.0 95.0}
+Resist=90.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+SpiritSpeak=1650.0
+
+
+
+NPC=brain_dragon
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[CHARDEF c_drake_red]
+DEFNAME=c_drake_red
+id=c_drake_base
+ICON=i_pet_dragon
+NAME=Red Drake
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+moverate=5
+attack=85,95
+ARMOR={60 70}
+RESOURCES=50 i_ribs_raw,8 i_reag_dragon_blood
+FOODTYPE=25 t_meat_raw,t_gem
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Drake Red
+
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+
+str={1300 1700}
+dex={180 240}
+int={120 170}
+maxhits={1300 1700}
+maxstam={180 240}
+maxmana=0
+
+
+tag.experience=<eval {60.0 70.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=950
+
+SpiritSpeak=80.0
+PARRYING={55.0 95.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+resist=80.0
+
+fame={2000 6000}
+KARMA={-3000 -8000}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+[CHARDEF c_drake_blue]
+DEFNAME=c_drake_blue
+ID=c_drake_base
+NAME=Blue Drake
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+
+attack=90,100
+ARMOR={70 80}
+moverate=5
+RESOURCES=50 i_ribs_raw,8 i_reag_dragon_blood
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=25 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Drake Blue
+
+
+ON=@Create
+NAME=#NAMES_DRAGON
+COLOR=0997
+
+str={1800 2200}
+dex={150 200}
+int={175 250}
+maxhits={1800 2200}
+maxstam={150 200}
+maxmana=0
+
+tag.experience=<eval {80.0 90.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=950
+
+SpiritSpeak=90.0
+PARRYING={55.0 95.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+resist=100.0
+
+NPC=brain_dragon
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[CHARDEF c_drake_copper]
+DEFNAME=c_drake_copper
+ID=c_drake_base
+NAME=Copper Drake
+ICON=i_pet_dragon
+attack=80,90
+moverate=5
+ARMOR={80 90}
+RESOURCES=50 i_ribs_raw,8 i_reag_dragon_blood
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=25 t_meat_raw
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Drake Copper
+
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+ON=@Create
+NAME=#NAMES_DRAGON
+COLOR=0988
+
+str={1100 1300}
+dex={160 200}
+int={225 275}
+maxhits={1100 1300}
+maxstam={160 200}
+maxmana=0
+
+
+tag.experience=<eval {85.0 105.0}
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=950
+
+SpiritSpeak=75.0
+
+PARRYING={55.0 95.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+resist=100.0
+NPC=brain_dragon
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[CHARDEF c_drake_silver]
+DEFNAME=c_drake_silver
+ID=c_drake_base
+NAME=Silver Drake
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+moverate=5
+attack=100,110
+ARMOR={85 95}
+RESOURCES=50 i_ribs_raw, 8 i_reag_dragon_blood
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=25 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Drake Silver
+
+magic=200
+
+ON=@Create
+NAME=#NAMES_DRAGON
+COLOR=0984
+
+str={2200 2800}
+dex={160 200}
+int={250 350}
+maxhits={2200 2800}
+maxstam={160 200}
+maxmana=0
+
+tag.experience=<eval {95.0 115.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=930
+tag.resist_
+
+SpiritSpeak=100.0
+PARRYING={55.0 95.0}
+Resist=100.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+NPC=brain_dragon
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[CHARDEF c_drake_gold]
+DEFNAME=c_drake_gold
+ID=c_drake_base
+NAME=Gold Drake
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+moverate=5
+attack=82,92
+ARMOR={100 120}
+RESOURCES=50 i_ribs_raw,8 i_reag_dragon_blood
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=25 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Drake Gold
+
+
+ON=@Create
+NAME=#NAMES_DRAGON
+COLOR=0995
+
+str={1600 2000}
+dex={160 200}
+int={300 400}
+maxhits={1600 2000}
+maxstam={160 200}
+maxmana=0
+
+
+tag.experience=<eval {140.0 160.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=920
+
+
+SpiritSpeak=165.0
+PARRYING={55.0 95.0}
+Resist=110.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+NPC=brain_dragon
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[CHARDEF c_drake_ice]
+ID=c_drake_base
+NAME=Ice Drake
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+moverate=5
+attack=105,125
+ARMOR={95 105}
+RESOURCES=50 i_ribs_raw, 8 i_reag_dragon_blood
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=25 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Drake Ice
+
+
+ON=@Create
+NAME=#NAMES_DRAGON
+COLOR=00985
+
+str={1900 2300}
+dex={150 210}
+int={350 450}
+maxhits={1900 2300}
+maxstam={150 210}
+maxmana=0
+
+tag.experience=<eval {150.0 160.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+tag(monstertype,dragon,60)
+
+tag.resist_sumon=800
+tag.resist_poison=950
+
+SpiritSpeak=95.0
+PARRYING={55.0 95.0}
+resist=110.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+NPC=brain_dragon
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+
+[CHARDEF c_drake_black]
+DEFNAME=c_drake_black
+ID=c_drake_base
+NAME=Black Drake
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+
+moverate=5
+attack=90,100
+ARMOR={100 110}
+RESOURCES=50 i_ribs_raw, 8 i_reag_dragon_blood
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=25 t_meat_raw
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Drake Black
+
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+ON=@Create
+NAME=#NAMES_DRAGON
+COLOR=1
+
+str={2700 3300}
+dex={160 200}
+int={450 550}
+maxhits={2700 3300}
+maxstam={160 200}
+maxmana=0
+
+
+tag.experience=<eval {170.0 180.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=920
+
+SpiritSpeak=145.0
+PARRYING={55.0 95.0}
+resist=120.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+NPC=brain_dragon
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+
+[CHARDEF c_wyvern]
+//DEFNAME=c_wyvern
+NAME=Wyvern
+ID=c_DRAGON_base
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+ICON=i_pet_dragon
+moverate=5
+attack=120,130
+ARMOR={95 105}
+RESOURCES=50 i_ribs_raw
+FOODTYPE=25 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Wyvern
+
+
+ON=@Create
+NPC=brain_dragon
+
+str={5000 6000}
+dex={450 550}
+int={450 550}
+maxhits={5000 6000}
+maxstam={450 550}
+maxmana=0
+
+
+tag.experience=<eval {180.0 190.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=900
+
+SpiritSpeak=140.0
+PARRYING={55.0 95.0}
+resist=130.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+[CHARDEF c_dragon_green]
+DEFNAME=c_dragon_green
+ID=c_dragon_base
+ICON=i_pet_dragon
+NAME=Green Dragon
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+moverate=5
+attack=130,140
+ARMOR={100 110}
+RESOURCES=50 i_ribs_raw,8 i_reag_dragon_blood
+FOODTYPE=80 t_meat_raw,t_gem
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Green
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+fame={2000 6000}
+
+KARMA=-3000
+
+COLOR=colors_drag_green
+
+str={8500 9500}
+dex={275 325}
+int={450 550}
+maxhits={8500 9500}
+maxstam={275 325}
+maxmana=0
+
+
+STR=9000
+DEX=300
+INT=500
+tag.experience=<eval {300.0 320.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=900
+
+SpiritSpeak=175.0
+Resist=140.0
+WRESTLING={90.0 100.0}
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[CHARDEF c_dragon_red]
+NAME=Red Dragon
+id=c_dragon_base
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+ICON=i_pet_dragon
+moverate=5
+attack=135,145
+ARMOR={105 115}
+RESOURCES=99 i_ribs_raw, 8 i_reag_dragon_blood
+FOODTYPE=80 t_meat_raw,t_gem
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Red
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+
+COLOR=colors_drag_red
+
+str={9000 11000}
+dex={250 350}
+int={450 550}
+maxhits={9000 11000}
+maxstam={250 350}
+maxmana=0
+
+tag.experience=<eval {220.0 235.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=850
+
+SpiritSpeak=200.0
+PARRYING={55.0 95.0}
+Resist=150.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+[CHARDEF c_dragon_blue]
+
+NAME=Blue Dragon
+ID=c_DRAGON_base
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+moverate=5
+attack=140,150
+ARMOR={110 120}
+FOODTYPE=80 t_meat_raw
+
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Blue
+
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+COLOR=0997
+
+str={10000 11000}
+dex={275 325}
+int={450 550}
+maxhits={10000 11000}
+maxstam={275 325}
+maxmana=0
+
+tag.experience=<eval {240.0 250.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=850
+
+SpiritSpeak=190.0
+PARRYING={55.0 95.0}
+Resist=150.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+[CHARDEF c_dragon_copper]
+NAME=Copper Dragon
+ID=c_DRAGON_base
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+moverate=5
+attack=145,155
+ARMOR={115 125}
+FOODTYPE=80 t_meat_raw
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Copper
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+COLOR=0988
+
+str={10000 12000}
+dex={275 325}
+int={350 450}
+maxhits={10000 12000}
+maxstam={275 325}
+maxmana=0
+
+STR=11000
+DEX=300
+INT=400
+tag.experience=<eval {250.0 280.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=600
+
+SpiritSpeak=200.0
+PARRYING={55.0 95.0}
+Resist=160.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+[CHARDEF c_dragon_silver]
+NAME=Silver Dragon
+ID=c_DRAGON_base
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+moverate=5
+attack=140,150
+ARMOR={120 130}
+FOODTYPE=80 t_meat_raw
+RESOURCES=50 i_ribs_raw, 8 i_reag_dragon_blood
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Silver
+
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+COLOR=0984
+
+str={9500 10500}
+dex={280 320}
+int={450 550}
+maxhits={9500 10500}
+maxstam={280 320}
+maxmana=0
+
+
+STR=10000
+DEX=300
+INT=500
+tag.experience=<eval {300.0 340.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=600
+
+SpiritSpeak=190.0
+PARRYING={55.0 95.0}
+Resist=170.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+fame={2000 6000}
+
+KARMA={-3000 -8000}
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+[CHARDEF c_dragon_gold]
+NAME=the Gold Dragon
+ID=c_DRAGON_base
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+moverate=5
+attack=145,155
+ARMOR={125 135}
+FOODTYPE=80 t_meat_raw
+RESOURCES=50 i_ribs_raw, 8 i_reag_dragon_blood
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Gold
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+COLOR=0995
+
+str={11000 13000}
+dex={275 325}
+int={450 550}
+maxhits={11000 13000}
+maxstam={275 325}
+maxmana=0
+
+tag.experience=<eval {350.0 370.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=600
+
+SpiritSpeak=170.0
+PARRYING={55.0 95.0}
+Resist=170.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+
+fame={2000 6000}
+
+KARMA={-3000 -8000}
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+[CHARDEF c_dragon_ice]
+DEFNAME=c_dragon_ice
+ID=c_DRAGON_base
+NAME=the Ice Dragon
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+moverate=5
+attack=160,170
+ARMOR={130 140}
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=80 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Ice
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+COLOR=00985
+
+str={4500 5000}
+dex={275 325}
+int={450 550}
+maxhits={4500 5000}
+maxstam={275 325}
+maxmana=0
+
+tag.experience=<eval {390.0 410.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_sumon=800
+tag.resist_poison=800
+
+SpiritSpeak=190.0
+PARRYING={55.0 95.0}
+Resist=170.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+fame={2000 6000}
+
+KARMA={-3000 -8000}
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[CHARDEF c_dragon_black]
+ID=c_DRAGON_base
+NAME=Black Dragon
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+moverate=5
+attack=150,160
+ARMOR={135 145}
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=80 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Black
+
+
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+COLOR=1
+
+str={9500 10500}
+dex={275 325}
+int={450 550}
+maxhits={9500 10500}
+maxstam={275 325}
+maxmana=0
+
+tag.experience=<eval {430.0 480.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=700
+
+SpiritSpeak=185.0
+PARRYING={55.0 95.0}
+Resist=170.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+fame={2000 6000}
+
+KARMA={-3000 -8000}
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[CHARDEF 0c]
+DEFNAME=c_wyrm
+NAME=Wyrm
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+anim=03f9c7f
+resdispup=c_dragon_red_lbr
+reslevel=3
+resdisphue=0591
+moverate=5
+attack=170,180
+ARMOR={140 150}
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=80 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Wyrm
+
+ON=@Create
+COLOR=colors_wyrm
+
+str={14000 16000}
+dex={225 275}
+int={250 350}
+maxhits={14000 16000}
+maxstam={225 275}
+maxmana=0
+
+tag.experience=<eval {520.0 600.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=500
+
+SpiritSpeak=200.0
+PARRYING={55.0 95.0}
+Resist=230.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+NPC=brain_dragon
+
+fame={2000 6000}
+
+KARMA=-3000
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+
+[chardef 031e]
+
+defname=c_dragon_lord
+Name=dragon lord
+SOUND=snd_MONSTER_DRAGON1
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+icon=i_pet_dragon
+resdispdn=c_m_dragon_wyrm
+reslevel=4
+resdisphue=colors_wyrm
+anim=0ffc78c7f
+moverate=5
+attack=150,160
+ARMOR={180 200}
+FOODTYPE=80 t_meat_raw
+
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+TSPEECH=spk_dragon_lord
+
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Lord
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+COLOR=096c
+
+str={27000 33000}
+dex={150 200}
+int={800 1000}
+maxhits={27000 33000}
+maxstam={150 200}
+maxmana=
+
+tag.experience=<eval {350.0 370.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+tag(monstertype,dragon,60)
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=200
+
+SpiritSpeak=210.0
+PARRYING=120.0
+Resist=250.0
+TACTICS=200.0
+WRESTLING=150.0
+fame={2000 6000}
+KARMA={-3000 -8000}
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+
+[SPEECH spk_dragon_lord]
+ON=*kua*
+SAY("Chicht")
+ON=*lol*
+SAY("LOL? Kdo se smeje nejlepe, ten se smeje naposled.")
+ON=*ress*
+SAY("Ano ano, navrat ho zpet do zivota, mam rad, kdyz se jidlo hybe.")
+ON=*poklad*
+SAY("Ne! Muj poklad!")
+ON=*hi*
+SAY("Hu.")
+ON=*boost*
+SAY("Tak se vzajemne osolte.")
+ON=*zed*
+SAY("Preje si nekdo ohen?")
+ON=*zdi*
+SAY("Preje si nekdo ohen?")
+ON=*au*
+SAY("Copak? Pan si udelal bebi?")
+
+
+
+[chardef c_dragon_beridor]
+
+id=c_dragon_lord
+Name=dragon lord
+SOUND=snd_MONSTER_DRAGON1
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+icon=i_pet_dragon
+resdispdn=c_m_dragon_wyrm
+reslevel=4
+resdisphue=colors_wyrm
+anim=0ffc78c7f
+moverate=5
+attack=120
+ARMOR=120
+FOODTYPE=80 t_meat_raw
+
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+TEVENTS=e_necroslave
+TSPEECH=spk_dragon_lord
+
+CATEGORY=Dungy
+SUBSECTION=Beridor
+DESCRIPTION=drak
+
+ON=@Create
+NAME=#NAMES_DRAGON
+NPC=brain_dragon
+COLOR=028
+
+STR=7400
+DEX=180
+INT=0
+
+maxhits={6000 8000}
+maxstam=730
+maxmana=0
+
+
+tag.experience=<eval {500.0 600.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+tag(monstertype,dragon,60)
+tag.resstimer=10
+
+tag.resist_fire=1000
+tag.resist_sumon=800
+tag.resist_poison=700
+
+SpiritSpeak=80.0
+PARRYING=120.0
+Resist=250.0
+TACTICS=200.0
+WRESTLING=150.0
+fame={2000 6000}
+KARMA={-3000 -8000}
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DRAGON
+item=i_gold
+
+[EOF]

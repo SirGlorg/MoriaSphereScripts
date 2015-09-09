@@ -1,0 +1,835 @@
+[function rentalclear]//args - mesto
+if(!argvcount)
+ src.sysmessage(Kdyz nevis jak na to, tak to nepouzivej)
+else
+ array_clear("var.housing_<args>")
+ src.sysmesage(Najemni informace ve meste <args> vymazany)
+endif
+
+[function rentalinfo]//args - mesto
+if(!argvcount)
+ if(strlen(<src.region.tag(jmeno_mesta)>))
+  arg(city,<src.region.tag(jmeno_mesta)>)
+ else
+  arg(city,<src.region.name>)
+ endif
+else
+ arg(city,<args>)
+endif
+if(!strcmpi(<city>,"Barad-dur"))
+ arg(city,Barad_dur)
+endif
+if(array_size("var.housing_<city>")) //mame už nìco v tom poli
+ src.dialog(d_show_housing_info,0,"var.housing_<city>",<city>)
+else
+ src.newitemsafe(i_bag)
+ arg(bag,<lastnew>)
+ bag.p=<city>
+ if(!strcmpi(<city>,"Stredozeme"))
+  bag.p=100,100 
+ endif
+ if(!strcmpi(<city>,"Barad_dur"))
+  bag.p=3647,2719,-50
+ endif
+ if(!strcmpi(<city>,"Kralovstvi_lesnich_elfu"))
+  bag.p=2991,1239,20
+ endif
+ if(!strcmpi(<city>,"Oaza_hagir"))
+  bag.p="Oaza Hagir"
+ endif
+ if(!strcmpi(<city>,"Sede_pristavy"))
+  bag.p="Sede Pristavy"
+ endif
+ if(!strcmpi(<city>,"Minas_tirith"))
+  bag.p="Minas Tirith"  
+ endif
+ if(!strcmpi(<city>,"Cair_Andros"))
+  bag.p="Cair Andros"  
+ endif
+ if(!strcmpi(<city>,"Helmuv_zleb"))
+  bag.p="Helmuv zleb"  
+ endif
+ if(!strcmpi(<city>,"Severni_ctvrtka"))
+  bag.p="Severni ctvrtka"  
+ endif
+ if(!strcmpi(<city>,"Nurnske_hradiste"))
+  bag.p="Nurnske hradiste"  
+ endif
+ if(!strcmpi(<city>,"Tharbad"))
+  bag.p=1603,1925  
+ endif
+ //src.sysmessage(kdejsem: <city>, bag: <bag>, bagpos: <bag.p>)
+ bag.region.sectors.allitems(housing_info(<city>))
+ if(!strcmpi(<city>,"Minas_tirith"))
+  bag.p="Cair Andros"  //pridame jeste do obou mest
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Cair_Andros>))
+  bag.p="Pelenorska pole"  //pridame jeste do obou mest
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Pelenorska_pole>))
+ endif
+ if(!strcmpi(<city>,"Fornost"))
+  bag.p="Forondon"  //Forondon
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Forondon>))
+  bag.p=1603,1925  //Tharbad
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Tharbad>))
+  bag.p="Hurka"  //Hurka
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Hurka>))
+  bag.p="Hurecko"  //Hurecko
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Hurecko>))
+ endif
+ if(!strcmpi(<city>,"Dol Amroth"))
+  bag.p="Calembel"  //Calembel
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Calembel>))
+  bag.p="Pelargir"  //Pelargir
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Pelargir>))
+ endif
+ if(!strcmpi(<city>,"Kralovstvi lesnich elfu"))
+  bag.p="Lorien"  //Lorien
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Lorien>))
+ endif
+ if(!strcmpi(<city>,"Edoras"))
+  bag.p="Helmuv zleb"  //pridame jeste do obou mest
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Helmuv_zleb>))
+ endif
+ if(!strcmpi(<city>,"Dol"))
+  bag.p="Esgaroth"  //pridame jeste do obou mest
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Esgaroth>))
+ endif
+ if(!strcmpi(<city>,"Hobitin"))
+  bag.p="Radovsko"  //pridame jeste do obou mest
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Radovsko>))
+  bag.p="Severni ctvrtka"  //pridame jeste do obou mest
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Severni_ctvrtka>))
+  bag.p="Zabovresky"  //pridame jeste do obou mest
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Zabovresky>))
+  bag.p="Parezov"  //pridame jeste do obou mest
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Parezov>))
+ endif
+ if(!strcmpi(<city>,"Nurn"))
+  bag.p="Nurnske hradiste"  //
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Nurnske_hradiste>))
+ endif
+ if(!strcmpi(<city>,"Barad-dur"))
+  bag.p="Bagronk"  //Bagronk
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Bagronk>))
+ endif
+ if(!strcmpi(<city>,"Umbar"))
+  bag.p="Tahabar"  //Tahabar
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Tahabar>))
+  bag.p="Oaza Hagir"  //Oaza Hagir
+  bag.region.sectors.allitems(housing_info(<city>))
+  bag.region.sectors.allitems(housing_info(<Oaza_hagir>))
+ endif
+
+ bag.remove
+ if(!array_size("var.housing_<city>"))
+  array_clear("var.housing_<city>")
+ endif
+ src.dialog(d_show_housing_info,0,"var.housing_<city>",<city>)
+endif
+//array_clear("var.housing")
+
+//zjistime si vsechny obydlene domy
+[function housing_info]
+if(iscustomhouse)
+ //src.sysmessage(mame house: <name>) 
+ array_add("var.housing_<args>",<uid>) 
+endif
+
+//zobrazime info nad polem domku
+[dialog d_show_housing_info] //argv1 - jmeno zobrazovaneho pole, argv2-jmeno mesta
+//src.sysmessage(arg0:<argv(0)>, arg1:<argv(1)>, arg2:<argv(2)>)
+argo.SetLocation(20,20)
+if(src.isgm)
+ argo.tag(sirka,700)
+else
+ if(<src.tag(lordnazgul)>)//||(<src.tag(general)>)||(src.isgm)
+  argo.tag(sirka,640)
+ else
+  if(src.isnazgul)||(<src.tag(starosta)>)//||(<src.tag(general)>)//||(src.isgm)
+   if(<src.tag(general)>) //general starosta
+    argo.tag(sirka,580)
+   else
+    argo.tag(sirka,560)
+   endif
+  else
+   if(<src.tag(general)>) //jen general 
+    argo.tag(sirka,580)
+   else
+    return 1
+   endif 
+  endif
+ endif
+endif
+argo.tag(domu,<array_size(<argv(1)>)>)
+argo.tag(city,<argv(2)>)
+//argo.tag(vyska,<eval ((<argo.tag(domu)>+2)*d_def_radek_vyska)+(4*d_def_skvira)+(2*d_def_okraj)>)
+argo.tag(vyska,<eval ((20+2)*d_def_radek_vyska)+(4*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1) //nadpis
+argo.dialog_pozadi(<argo.tag(nexty)>,1) //oznaceni sloupcu
+//                    sloupce,          radku,         cisla domu,pozice,jmenomajitele,realmban,townban,spolumaj,pratele
+if(src.isgm)
+  argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(domu)>,140,120,140,70,70,60,60)
+else //lordnazgul - uvidi spolumajitele
+ if(<src.tag(lordnazgul)>)//||(<src.tag(general)>)//||(src.isgm)
+  argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(domu)>,140,120,140,70,70,60)
+ else //funkcionari uvidej jen majitele, nebude realmban
+  if(src.isnazgul)||(<src.tag(starosta)>)//||(<src.tag(general)>)//||(src.isgm)
+   if(<src.tag(general)>) //general starosta
+    argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(domu)>,140,120,140,70,70)
+   else
+    argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(domu)>,150,130,160,80) 
+   endif
+  else 
+   if(<src.tag(general)>)
+    argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(domu)>,140,120,140,70,70)
+   endif
+  endif
+ endif
+endif
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+//src.sysmessage(vyska:<argo.tag(vyska)>, radku: <argo.tag(domu)>, tagradku:<argo.tag(radku)>)
+argo.dialog_zpruhledni
+
+ arg(sloupec,0)
+argo.texta(<argo.dialog_textpos(0,0)>,0481,"Pocet domu v oblasti <argo.tag(city)> : <argo.tag(domu)>")
+//info o tlacitkach:
+if(src.isnazgul)||(<src.tag(starosta)>)||(<src.tag(general)>)||(src.isgm)
+ argo.button(270,<argo.tag(obj_y[0])>,4005,4005,0,0,0)//Xko
+ argo.texta((270+<d_def_button_sirka>+10),<argo.tag(obj_y[0])>,0481,"udelit")
+ argo.button(360,<argo.tag(obj_y[0])>,0fb1,0fb1,0,0,0)//fajfka
+ argo.texta((360+<d_def_button_sirka>+10),<argo.tag(obj_y[0])>,0481,"odebrat")
+ argo.button(460,<argo.tag(obj_y[0])>,0fb6,0fb6,0,0,0)//skrtly kolecko
+ argo.texta((460+<d_def_button_sirka>+10),<argo.tag(obj_y[0])>,0481,"nesahat")
+endif
+//
+argo.texta(<argo.dialog_textpos(1,<sloupec>,1)>,0481,"Dum")
+ arg(sloupec,#+1)
+argo.texta(<argo.dialog_textpos(1,<sloupec>)>,0481,"Pozice domu")
+ arg(sloupec,#+1) 
+argo.texta(<argo.dialog_textpos(1,<sloupec>)>,0481,"Vlastnik")
+ arg(sloupec,#+1)
+if(<src.tag(lordnazgul)>)||(<src.tag(general)>)||(src.isgm)
+  argo.texta(<argo.dialog_textpos(1,<sloupec>)>,0481,"RealmBan")
+  arg(sloupec,#+1)
+  argo.texta(<argo.dialog_textpos(1,<sloupec>)>,0481,"TownBan")
+  arg(sloupec,#+1)
+else 
+ if(src.isnazgul)||(<src.tag(starosta)>)//||(<src.tag(general)>)||(src.isgm)
+  argo.texta(<argo.dialog_textpos(1,<sloupec>)>,0481,"TownBan")
+  arg(sloupec,#+1) 
+ endif
+endif
+if(<src.tag(lordnazgul)>)||(src.isgm)
+ argo.texta(<argo.dialog_textpos(1,<sloupec>,1)>,0481,"Spoluvl.")
+ arg(sloupec,#+1)
+endif
+if(src.isgm)
+ argo.texta(<argo.dialog_textpos(1,<sloupec>,1)>,0481,"Pratele")
+endif
+
+argo.tag(firsti,<argv(0)>)
+arg(index,<argo.tag(firsti)>)
+arg(ypos,<argo.tag(obj_y[2])>)
+if (<arg(index)>)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval index+20>)
+while ((<array_get(<argv(1)>,<index>)> != -1) && (index < imax))
+ //src.sysmessage(get: <index>, v poli: <array_get(<argv(1)>,<index>)>)
+ arg(house,<finduid(array_get(<argv(1)>,<index>))>)
+ //src.sysmessage(Zobrazuji dum <house.name> cislo: <index>)
+ arg(owner,<finduid(<house.more1>)>)
+ arg(usrcolor,955)//default 
+ arg(sloupec,0)
+ argo.texta(argo.tag(sloupec_x[<sloupec>]),ypos,955,"Dum <house.tag(housenumber)>") 
+  arg(sloupec,#+1)
+ argo.texta(argo.tag(sloupec_x[<sloupec>]),ypos,955,"<house.p_x>,<house.p_y>,<house.p_z>,<house.mapplane>")
+  arg(sloupec,#+1)
+ if(<house.more1>!=0)
+  arg(usrcolor,<eval (<owner.getNameHue>)>) //mordor(026) / gondor(063)
+  if(owner.profession==class_thief)
+   if(<owner.tag(realm)>!=<src.tag(realm)>) //masknutej thief?
+    if(<src.tag(realm)>==1) //jsem gondor, vidim tedy gondora (zobrazi se mi i jine jmeno thiefa)
+     arg(usrcolor,063)
+    else
+     arg(usrcolor,026)
+    endif
+   endif
+  endif
+  //src.sysmessage(returned hue: <usrcolor>, should be: <owner.getNameHue>)
+ endif   
+ argo.texta(argo.tag(sloupec_x[<sloupec>]),ypos,<usrcolor>,<qval((<house.more1>!=0),<arg(owner).getrealname>,Neobydleny)>)   
+  arg(sloupec,#+1)
+ if(<src.tag(lordnazgul)>)||(<src.tag(general)>)||(src.isgm)
+  if(<house.more1>!=0)
+   if(owner.canberealmbanned)  					   //je z meho realmu?                     ano - aktivni/ne-nebanovat
+    argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,<qval((<owner.tag(realm)>==<src.tag(realm)>),"4005,4007,1","0fb6,0fb6,0")>,0,index+1000) // realmban  	
+    //argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,4005,4007,1,0,index+1000) // realmban  	
+   else 								   //je z meho realmu? 	                   ano - aktivni/ne-nebanovat								
+    argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,<qval((<owner.tag(realm)>==<src.tag(realm)>),"0fb1,0fb3,1","0fb6,0fb6,0")>,0,index+1000) // zrusit realmban  	
+    //argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,0fb1,0fb3,1,0,index+1000) // zrusit realmban  	
+   endif
+  endif
+  arg(sloupec,#+1)
+ endif  
+ if(src.isnazgul)||(<src.tag(starosta)>)||(<src.tag(general)>)||(src.isgm)
+  if(<house.more1>!=0)
+   if(strlen(<src.region.tag(jmeno_mesta)>)) //dela to nekde, kde lze banovat z mesta
+    if(owner.istownbannedfrom(<src.region.tag(jmeno_mesta)>))//              je z meho realmu (maska zlodeje atd...)?/ano         / ne
+     argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,<qval((<owner.tag(realm)>==<src.tag(realm)>),"0fb1,0fb3,1","0fb6,0fb6,0")>,0,index+2000)  // zrusit townban
+    else 															    //aktivni cudl, neaktivni cudl	
+     argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,<qval(owner.canbetownbannedfrom(<src.region.tag(jmeno_mesta)>),"4005,4007,1","0fb6,0fb6,0")>,0,index+2000)  //townban 
+    endif
+   endif
+  endif
+  arg(sloupec,#+1)
+ endif 
+ if(<src.tag(lordnazgul)>)||(src.isgm)
+  argo.button(argo.tag(sloupec_x[<sloupec>])+2*d_def_odsazeni,ypos,0fa8,0faa,1,0,index+3000)  //spoluvlastnici
+  arg(sloupec,#+1)
+ endif
+ if(src.isgm)
+  argo.button(argo.tag(sloupec_x[<sloupec>])+2*d_def_odsazeni,ypos,0fa8,0faa,1,0,index+4000)  //pratele
+ endif
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+if (<argo.tag(domu)> > index)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(vyska)>-(d_def_okraj+d_def_button_vyska),0fc,0fd,1,0,2) // next
+endif
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_show_housing_info button]
+on=0
+on=1//prev
+DIALOG(d_show_housing_info,<argo.tag(firsti)>-20,"var.housing_<argo.tag(city)>",<argo.tag(city)>)
+on=2//next
+DIALOG(d_show_housing_info,<argo.tag(firsti)>+20,"var.housing_<argo.tag(city)>",<argo.tag(city)>)
+
+on=@anybutton
+arg(clicked,0) //zamek
+if(argn >= 4000)&&(!clicked) //pratele domu
+ //src.sysmessage(pratele)
+ arg(clicked,1)
+ arg(cislo,<eval (<argn>-4000)>)
+ arg(dum,<finduid(<array_get("var.housing_<argo.tag(city)>",<cislo>)>)>) 
+ arg(majitel,<finduid(<arg(dum).more1>)>)
+ dum.tag(friendscont).dialog(d_bags_housing_info,0,<argo.tag(city)>)
+endif
+if(argn >= 3000)&&(!clicked) //spoluvlastnici
+ //src.sysmessage(spoluvl)
+ arg(clicked,1)
+ arg(cislo,<eval (<argn>-3000)>)
+ arg(dum,<finduid(<array_get("var.housing_<argo.tag(city)>",<cislo>)>)>)
+ arg(majitel,<finduid(<arg(dum).more1>)>)
+ dum.tag(coownerscont).dialog(d_bags_housing_info,0,<argo.tag(city)>)
+endif
+if(argn >= 2000)&&(!clicked) //townBan (majitele) 
+ arg(clicked,1)
+ arg(cislo,<eval (<argn>-2000)>)
+ arg(dum,<finduid(<array_get("var.housing_<argo.tag(city)>",<cislo>)>)>)
+ arg(majitel,<finduid(<arg(dum).more1>)>)
+ //src.sysmessage(townban, src:<src.name>, majreg:<majitel.tag(realm)>, jareg:<src.tag(realm)>) 
+ if(src.isnazgul)||(src.tag(starosta))||(src.isgm)
+  if(majitel.tag(realm)==src.tag(realm))||(src.isgm)
+   if(src.isintown)
+    if(!majitel.istownbannedfrom(<src.region.tag(jmeno_mesta)>)) //townbannujeme
+     if(majitel.canbetownbannedfrom(<src.region.tag(jmeno_mesta)>)) //overujeme
+      src.input("Udej duvod pro blacklist:",finduid(<arg(majitel)>).townban,"")
+      return 1
+     else
+      src.sysmessage(Dotycny nemuze byt pridan na blacklist)
+     endif
+    else //rusime townban
+     //majitel.say(rusej mi townban)
+     majitel.removetownban
+     return 1
+    endif
+   else
+    src.sysmessage(Nejdrive se vrat do mesta)
+    return 1
+   endif
+  else
+   src.sysmessage(Vyvrhnout z mesta muzes jen hrace tvoji strany)
+   src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+   return 1   
+  endif
+ endif
+endif
+if(argn >= 1000)&&(!clicked) //realmBan (majitele) 
+ arg(clicked,1)
+ arg(cislo,<eval (<argn>-1000)>)
+ arg(dum,<finduid(<array_get("var.housing_<argo.tag(city)>",<cislo>)>)>)
+ arg(majitel,<finduid(<arg(dum).more1>)>)
+ //src.sysmessage(realmban, dum:<arg(dum)>, maj: <arg(majitel)>)
+ if(<src.tag(general)>)||(<src.tag(lordnazgul)>)||(src.isgm)
+  if(majitel.tag(realm)==src.tag(realm))||(src.isgm)
+   if(majitel.canberealmbanned)&&(!((<majitel.tag(general)>)||(<majitel.tag(lordnazgul)>)||(majitel.isgm))) //realmbannujeme
+    src.input("Udej duvod pro blacklist:",finduid(<arg(majitel)>).tryrealmban,"")
+    return 1
+   else //rusime realmban
+    if(<majitel.tag(general)>)||(<majitel.tag(lordnazgul)>)||(majitel.isgm)
+     src.sysmessage(Je to dulezita osoba, nelze jej vyvrhnout z celeho realmu)
+     src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+     return 1
+    endif
+    majitel.tryremoverealmban
+    return 1
+   endif
+  else
+   src.sysmessage(Vyvrhnout z realmu muzes jen hrace tvoji strany)
+   src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+   return 1   
+  endif
+ endif
+endif
+
+[dialog d_bags_housing_info] //argv1 - mesto
+argo.SetLocation(300,300)
+argo.tag(city,<argv(1)>)
+argo.tag(sirka,300)
+//argo.tag(vyska,<eval ((<rescount>+2)*d_def_radek_vyska)+(4*d_def_skvira)+(2*d_def_okraj)>)
+argo.tag(vyska,<eval ((20+2)*d_def_radek_vyska)+(4*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1) //nadpis
+argo.dialog_pozadi(<argo.tag(nexty)>,1) //oznaceni sloupcu
+//						jmeno,townban,realmban
+argo.dialog_pozadi(<argo.tag(nexty)>,<rescount>,140,70,70)
+argo.dialog_zpruhledni
+
+ arg(sloupec,0)
+argo.texta(<argo.dialog_textpos(0,0)>,0481,"Pocet <name> : <rescount>")
+argo.texta(<argo.dialog_textpos(1,<sloupec>,1)>,0481,"Jmeno")
+ arg(sloupec,#+1)
+if(<src.tag(lordnazgul)>)||(<src.tag(general)>)||(src.isgm)
+  argo.texta(<argo.dialog_textpos(1,<sloupec>)>,0481,"RealmBan")
+  arg(sloupec,#+1)
+  argo.texta(<argo.dialog_textpos(1,<sloupec>)>,0481,"TownBan")
+  arg(sloupec,#+1)
+else 
+ if(src.isnazgul)||(<src.tag(starosta)>)//||(<src.tag(general)>)||(src.isgm)
+  argo.texta(<argo.dialog_textpos(1,<sloupec>)>,0481,"TownBan")
+  arg(sloupec,#+1) 
+ endif
+endif
+
+argo.tag(firsti,<argv(0)>)
+arg(index,<argo.tag(firsti)>)
+arg(ypos,<argo.tag(obj_y[2])>)
+if (<arg(index)>)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval index+20>)
+while (index<imax)&&(index < rescount)  
+ //		  crystal/goldkey/player	
+ arg(osoba,<findcont(index).link.topobj>)
+ arg(usrcolor,<eval (<osoba.getNameHue>)>) //mordor(026) / gondor(063)
+ if(osoba.profession==class_thief)
+  if(<osoba.tag(realm)>!=<src.tag(realm)>) //masknutej thief?
+   if(<src.tag(realm)>==1) //jsem gondor, vidim tedy gondora (zobrazi se mi i jine jmeno thiefa)
+    arg(usrcolor,063)
+   else
+    arg(usrcolor,026)
+   endif
+  endif
+ endif
+ //src.sysmessage(usr: <osoba>, col: <usrcolor>)
+ arg(sloupec,0)
+ argo.texta(<argo.tag(sloupec_x[<sloupec>])>,ypos,<arg(usrcolor)>,"<findcont(index).link.topobj.getrealname>")
+  arg(sloupec,#+1)
+ if(<src.tag(lordnazgul)>)||(<src.tag(general)>)||(src.isgm)
+  if(osoba.canberealmbanned)    
+   argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,<qval((<osoba.tag(realm)>==<src.tag(realm)>),"4005,4007,1","0fb6,0fb6,0")>,0,index+1000) //realmBan
+  else
+   argo.button(<argo.tag(sloupec_x[<sloupec>])>+2*d_def_odsazeni,ypos,<qval((<osoba.tag(realm)>==<src.tag(realm)>),"0fb1,0fb3,1","0fb6,0fb6,0")>,0,(index)+1000) //zrusit realmBan   
+  endif
+  arg(sloupec,#+1)
+ endif 
+ if(src.isnazgul)||(<src.tag(starosta)>)||(<src.tag(general)>)||(src.isgm)
+  if(strlen(<src.region.tag(jmeno_mesta)>)) //dela to nekde, kde lze banovat z mesta
+   if(osoba.istownbannedfrom(<src.region.tag(jmeno_mesta)>))//        je z meho realmu (masky zlodeje atd.)        / ano         /  ne
+    argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,<qval((<osoba.tag(realm)>==<src.tag(realm)>),"0fb1,0fb3,1","0fb6,0fb6,0")>,0,index+2000)  // zrusit townban
+   else 															    //aktivni cudl, neaktivni cudl	
+    argo.button(argo.tag(sloupec_x[<sloupec>])+3*d_def_odsazeni,ypos,<qval(osoba.canbetownbannedfrom(<src.region.tag(jmeno_mesta)>),"4005,4007,1","0fb6,0fb6,0")>,0,index+2000)  //townban 
+   endif
+  endif
+  arg(sloupec,#+1)
+ endif   
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+if (<rescount> > index)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(vyska)>-(d_def_okraj+d_def_button_vyska),0fc,0fd,1,0,2) // next
+endif
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_bags_housing_info button]
+on=0
+src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+on=1//prev
+DIALOG(d_bags_housing_info,<argo.tag(firsti)>-20,<argo.tag(city)>)
+on=2//next
+DIALOG(d_bags_housing_info,<argo.tag(firsti)>+20,<argo.tag(city)>)
+
+on=@anybutton
+arg(clicked,0) //zamek
+if(argn >= 2000)&&(!clicked) //townBan (cloveka) 
+ arg(clicked,1)
+ arg(cislo,<eval (<argn>-2000)>)
+ arg(dum,<finduid(<array_get("var.housing_<argo.tag(city)>",<cislo>)>)>)
+ arg(osoba,<findcont(<cislo>).link.topobj>) //krystal - klicek u hrace - hrac
+ //src.sysmessage(townban, src:<src.name>, osoba:<osoba.tag(realm)>, jareg:<src.tag(realm)>) 
+ if(src.isnazgul)||(src.tag(starosta))||(src.isgm)
+  if(osoba.tag(realm)==src.tag(realm))||(src.isgm)
+   if(src.isintown)
+    if(!osoba.istownbannedfrom(<src.region.tag(jmeno_mesta)>)) //townbannujeme
+     if(osoba.canbetownbannedfrom(<src.region.tag(jmeno_mesta)>)) //overujeme
+      src.input("Udej duvod pro blacklist:",finduid(<arg(osoba)>).townban,"")
+      return 1
+     else
+      src.sysmessage(Dotycny nemuze byt pridan na blacklist)
+     endif
+    else //rusime townban
+     //osoba.say(rusej mi townban)
+     osoba.removetownban
+     return 1
+    endif
+   else
+    src.sysmessage(Nejdrive se vrat do mesta)
+    return 1
+   endif
+  else
+   src.sysmessage(Vyvrhnout z mesta muzes jen hrace tvoji strany)
+   src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+   return 1   
+  endif
+ endif
+endif
+if(argn >= 1000)&&(!clicked) //realmBan (cloveka) 
+ arg(clicked,1)
+ arg(cislo,<eval (<argn>-1000)>)
+ arg(dum,<finduid(<array_get("var.housing_<argo.tag(city)>",<cislo>)>)>)
+ arg(osoba,<findcont(<cislo>).link.topobj>) //krystal - klicek u hrace - hrac
+ //src.sysmessage(realmban, dum:<arg(dum)>, osoba: <arg(osoba).name>)
+ if(<src.tag(general)>)||(<src.tag(lordnazgul)>)||(src.isgm)
+  if(osoba.tag(realm)==src.tag(realm))||(src.isgm)
+   if(osoba.canberealmbanned)&&(!((<osoba.tag(general)>)||(<osoba.tag(lordnazgul)>)||(osoba.isgm))) //realmbannujeme
+    src.input("Udej duvod pro blacklist:",finduid(<arg(osoba)>).tryrealmban,"")
+    return 1
+   else //rusime realmban
+    if(<osoba.tag(general)>)||(<osoba.tag(lordnazgul)>)||(osoba.isgm)
+     src.sysmessage(Je to dulezita osoba, nelze jej vyvrhnout z celeho realmu)
+     src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+     return 1
+    endif
+    osoba.tryremoverealmban
+    return 1
+   endif
+  else
+   src.sysmessage(Vyvrhnout z realmu muzes jen hrace tvoji strany)
+   src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+   return 1   
+  endif
+ endif
+endif
+
+[function canberealmbanned]
+//if(<tag(general)>)||(<tag(lordnazgul)>)||(isgm)
+ //say(nemuzu byt vyhozen, jsem dulezita osoba)
+// return 0
+//endif
+arg(truhla,<var(<qval(<eval(<tag(realm)>-1)>,mordor,)>realmbancont)>)
+var(rbd,0)
+truhla.contents(rlmbnd(<name>))
+if(<var(rbd)>)
+ var(rbd,"")
+ return 0
+else
+ var(rbd,"")
+ return 1
+endif
+
+
+[function canbetownbannedfrom]//args - which town
+arg(townstone,0)
+arg(townstone,<var(townstone_<args>)>)
+if(!strlen(<arg(townstone)>)) 
+ return 0
+endif
+if(<tag(general)>)||(<tag(lordnazgul)>)||(isgm)
+ //say(nemuzu byt vyhozen, jsem dulezita osoba)
+ return 0
+endif
+if(tag(realm)==townstone.region.tag(realm))
+ if(tag(realm)==1) //gondor - nesmi byt obcanem
+  if(strlen(<tag(mesto)>))
+   if(!strcmpi(<tag(mesto)>,<args>))
+    //say(Jiz jsem obcanem tohoto mesta)
+    var(nalezen_krystal,0)    
+    townstone.tag(citizenscont).contents(find_crystal(<name>))
+    //src.sysmessage(kr:<nalezen_krystal)>)
+    if(!<nalezen_krystal>) //nemame krystal s jeho jmenem - treba je to maska zlodeje, muze   
+     //say(nemam tu krystal na svoje jmeno, muzu)
+     var(nalezen_krystal,"")  
+     return 1
+    else //nasli jsme krystal s jeho jmenem, uz tam je   
+     //say(mam tu svuj krystal na svoje jmeno, nemuzu)
+     var(nalezen_krystal,"")  
+     return 0     
+    endif
+   else
+    if(istownbannedfrom(<args>)) 
+     //say(nejsem obcanem mesta, ale uz jsem vyhosten odsud, nemuzu)
+     var(nalezen_krystal,"")  
+     return 0
+    else	   
+     //say(nejsem obcanem mesta, ani odsud nejsem vyhosten muzu)
+     var(nalezen_krystal,"")  
+     return 1
+    endif    
+   endif
+  else
+   //nejsem odsud uz vyhosten?
+   if(istownbannedfrom(<args>)) 
+    //say(sice nejsem obcanem, ale uz jsem vyhosten odsud, nemuzu)
+    var(nalezen_krystal,"")  
+    return 0
+   else	   
+    //say(nejsem zadnym obcanem, ani odsud nejsem vyhosten muzu)
+    var(nalezen_krystal,"")  
+    return 1
+   endif
+  endif
+ endif
+ if(tag(realm)==2) //mordor - staci kdyz neni vyhostencem z tehoz mesta
+  if(istownbannedfrom(<args>)) 
+   //say(jsem vyhosten odsud, nemuzu)
+   var(nalezen_krystal,"")  
+   return 0
+  else	   
+   //say(nejsem vyhosten muzu)
+   var(nalezen_krystal,"")  
+   return 1
+  endif
+ endif
+else
+ //say(neni to vubec muj realm, nemuzu) 
+ return 0
+endif
+
+[function istownbannedfrom]//args - which town
+arg(townstone,0)
+arg(townstone,<var(townstone_<args>)>)
+if(!strlen(<arg(townstone)>))
+ //say(neni tu mesto, nejsem)
+ return 0
+endif
+if(<tag(blacklisted_<args>)>) //uz je bl. s jinym jmenem 
+ var(nalezen_krystal,0)    
+ townstone.tag(enemyscont).contents(find_crystal(<name>))
+ //src.sysmessage(kr:<nalezen_krystal)>)
+ if(!<nalezen_krystal>) //nemame krystal s jeho jmenem - treba je to maska zlodeje, muze   
+  //say(nemam tu krystal vyhostence, nejsem)
+  return 0
+ else //nasli jsme krystal s jeho jmenem, uz tam je   
+  //say(mam tu svuj krystal vyhostence, jsem)
+  return 1     
+ endif
+else
+ //say(nejsem zadnej vyhostenec!)
+ return 0
+endif
+
+[function isintown]
+arg(townstone,0)
+arg(townstone,<var(townstone_<region.tag(jmeno_mesta)>)>)
+if(arg(townstone)) 
+ return 1
+else
+ return 0
+endif
+
+[function townban]//args - mesto
+arg(townstone,0)
+arg(townstone,<var(townstone_<src.region.tag(jmeno_mesta)>)>)
+if(!canbetownbannedfrom(<src.region.tag(jmeno_mesta)>))
+ //say(snazi se o podvod)
+ return 0
+endif
+if(!strlen(<arg(townstone)>))
+ //say(neni tu mesto, nebanujeme)
+ return 0
+endif
+arg(enemyscont,<finduid(<townstone.tag(enemyscont)>)>)
+src.newitemsafe(i_town_crystal)
+lastnew.name=<name>
+lastnew.cont=<enemyscont> 
+lastnew.tag(duvod,<args>)
+lastnew.link=<uid> //linknout na playera
+src.accmsg("Pridal uid=<uid> (<name>) na blacklist mesta uid=<townstone> (<townstone.tag(jmeno_mesta)>)")
+src.classmessage(<name> uspesne pridan na cernou listinu)
+delayedredmessage(Byl jsi dan na cernou listinu mesta <townstone.tag(jmeno_mesta)>) 
+if(<tag(blacklisted_<townstone.tag(jmeno_mesta)>)>) //uz je bl. s jinym jmenem
+ tag(blacklisted_<townstone.tag(jmeno_mesta)>,#+1)
+else
+ tag(blacklisted_<townstone.tag(jmeno_mesta)>,1) //poprve
+ tag(bl_town_<townstone.tag(jmeno_mesta)>,<townstone>)  
+endif
+src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+
+[function removetownban]//args - mesto
+arg(townstone,0)
+arg(townstone,<var(townstone_<src.region.tag(jmeno_mesta)>)>)
+if(!istownbannedfrom(<src.region.tag(jmeno_mesta)>))
+ //say(snazi se o podvod)
+ return 0
+endif
+if(!strlen(<arg(townstone)>))
+ //say(neni tu mesto, neodbanovavame)
+ return 0
+endif
+var(nalezen_krystal,0)
+townstone.tag(enemyscont).contents(find_crystal(<name>))
+if(nalezen_krystal)
+ if(nalezen_krystal.link.isplayer)
+  src.sysmessage(Dotycny byl odstranen z cerne listiny mesta <townstone.tag(jmeno_mesta)>)
+  delayedmessage(<name> byl odstranen z cerne listiny ve meste <townstone.tag(jmeno_mesta)>)
+  tag(blacklisted_<townstone.tag(jmeno_mesta)>,#-1) //jedno jeho jmeno z blacklistu zmizelo
+  if(<tag(blacklisted_<townstone.tag(jmeno_mesta)>)>==0) //uz zadne na bl nema
+   tag.remove(bl_town_<townstone.tag(jmeno_mesta)>)
+   tag.remove(blacklisted_<townstone.tag(jmeno_mesta)>)
+  endif
+  nalezen_krystal.remove
+ endif
+endif
+var(nalezen_krystal,"")
+src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+
+[function tryrealmban] //uid: kdo, src: typicky klikatel na èudlíèek v menu
+src.newitemsafe(i_town_crystal)
+arg(krystal,<lastnew>)
+krystal.name=<name>
+krystal.cont=<var(<qval(<eval(<tag(realm)>-1)>,mordor,)>realmbancont)>
+krystal.tag(duvod,<args>)
+krystal.link=<uid> //linknout na playera
+src.accmsg("Pridal uid=<uid> (<name>) na globalni blacklist")
+src.classmessage(<name> uspesne pridan na globalni cernou listinu)
+delayedredmessage(Byl jsi dan na globalni cernou listinu) 
+arg(jmeno_truhly,<qval(<eval(<tag(realm)>-1)>,Mordor,Gondor)>)
+if(<tag(realmbanned_<arg(jmeno_truhly)>)>) //uz je bl. s jinym jmenem
+ tag(realmbanned_<arg(jmeno_truhly)>,<eval(<tag(realmbanned_<arg(jmeno_truhly)>)>+1)>)
+else
+ tag(realmbanned_<arg(jmeno_truhly)>,1) //poprve
+endif
+krystal.cont.dialog(d_general_executioner,0,<src.tag(realm)>)
+src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+
+[function tryremoverealmban]
+arg(truhla,<var(<qval(<eval(<tag(realm)>-1)>,mordor,)>realmbancont)>)
+var(nalezen_krystal,0)
+truhla.contents(find_crystal(<name>))
+//src.sysmessage(krystal: <krystal>,name:<arg(krystal).name>)
+if(nalezen_krystal)
+ if(nalezen_krystal.link.isplayer)
+  nalezen_krystal.link.delayedmessage(<nalezen_krystal.name> byl odstranen z globalni cerne listiny)
+  nalezen_krystal.link.tag(realmbanned_<nalezen_krystal.cont.name>,#-1) //jedno jeho jmeno z blacklistu zmizelo
+  if(<nalezen_krystal.link.tag(realmbanned_<nalezen_krystal.cont.name>)>==0) //uz zadne na bl nema
+   nalezen_krystal.link.tag.remove(realmbanned_<nalezen_krystal.cont.name>)
+  endif
+  nalezen_krystal.remove
+ endif
+endif
+var(nalezen_krystal,"")
+truhla.dialog(d_general_executioner,0,<src.tag(realm)>) 
+src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+
+[function find_crystal] //name koho hledame
+//src.sysmessage(kr:<uid>,name:<name>,arg:<args>)
+if(!strcmpi(<name>,<args>))
+ var(nalezen_krystal,<finduid(<uid>)>) 
+endif
+
+[function iscustomhouse]
+if (type==t_customhouse)||(isevent(t_customhouse)) //pro multi domy
+ return 1
+endif
+return 0
+
+[function getrealname]//uid - ci jmeno
+if(profession!=class_thief)
+ //src.sysmessage(name non tif: <name>)
+ return<name>
+else
+ if(<src.tag(realm)>!=<this.tag(realm)>) //premasknutej thief zrejme
+  if(strlen(<tag(maskattribs)>)) //name, karma, kills, realm
+   //src.sysmessage(name atrib: <getmaskname(<tag(maskattribs)>)>)
+   return<getmaskname(<tag(maskattribs)>)> //bud je jeho maska opacny realm nebo neni (pak by nemel v tom realmu co delat ale budiz, neco se vratit musi)
+  else //nejakej bug ci co, kazdopadne neco zobrazit musime
+   //src.sysmessage(name bezatrib: <name>)
+   return<name>
+  endif
+ else //pak bude neni premaskovan nebo obe masky jsou tentyz realm, nelze rozhodnout, co je jeho prava identita, takze vratime to co tam je
+  //src.sysmessage(name muj realm: <name>)
+  return<name>
+ endif
+endif
+
+[function getrealrealm]//uid - ci jmeno
+if(profession!=class_thief)
+ src.sysmessage(realm non tif: <tag(realm)>)
+ return <tag(realm)>
+else
+ if(<src.tag(realm)>!=<this.tag(realm)>) //premasknutej thief zrejme //by heck: co je this?
+  if(strlen(<tag(maskattribs)>)) //name, karma, kills, realm
+   src.sysmessage(realm atrib: <getrealm(<tag(maskattribs)>)>)
+   return <getrealm(<tag(maskattribs)>)> //bud je jeho maska opacny realm nebo neni (pak by nemel v tom realmu co delat ale budiz, neco se vratit musi)
+  else //nejakej bug ci co, kazdopadne neco zobrazit musime
+   src.sysmessage(realm bezatrib: <tag(realm)>)
+   return <tag(realm)>
+  endif
+ else //pak bude neni premaskovan nebo obe masky jsou tentyz realm, nelze rozhodnout, co je jeho prava identita, takze vratime to co tam je
+  src.sysmessage(realm muj realm: <tag(realm)>)
+  return <tag(realm)>
+ endif
+endif
+
+[function getmaskname]//atributy masky
+return<argv(0)>//name
+
+[function getrealm]//atributy masky
+return <argv(3)>//realm
+
+// zisti skutocne meno majitela
+[function getRealNameByRealm]argv(0)=realm
+if(profession!=class_thief)
+  return<name>
+else
+  if (<tag(realm)>==<argv(0)>)
+    return<name>
+  else
+    if(strlen(<tag(maskattribs)>))
+      return<getmaskname(<tag(maskattribs)>)>
+    else
+      return<name>
+    endif
+  endif
+endif

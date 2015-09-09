@@ -1,0 +1,565 @@
+//////////////////////////////////////////////
+//                                          //
+//             Otrava z Hrobek              //
+//                                          //
+// Namet Sir Glorg, naskriptoval Sir Glorg  //
+//                                          //
+//////////////////////////////////////////////
+
+[itemdef i_q026_hcn_memoryPoison]
+ID=i_rune_poison
+TYPE=t_eq_script
+name=Jed z HCN
+
+on=@equip
+timer=<eval <def_q026_poisonTimer>> //
+cont.flag_poisoned=1
+cont.qtag(q026_hcnPoison,1,36)
+
+on=@timer
+timer=<eval <def_q026_poisonTimer>> 
+cont.flag_poisoned=1
+if (cont.food>4)
+  cont.food=<cont.food>-1
+else
+  cont.damage_noresponse(25,dam_god) 
+endif
+if (rand(5) == 1) // abysme nespamovali porad, tak zahlasime postup jedu v prumeru jednou z 6-ti pripadu
+  dorand(2)
+    cont.sysMessage("Jed z Hrobek cernych Numenorejcu prostupuje tvym telem.")
+    cont.sysMessage("Najednou se citis byt hladovejsi... Jed asi postupuje.")
+  enddo
+endif
+return 1
+
+on=@unequip
+if (poisonManager.f_pm_isPoisoned)
+  cont.flag_poisoned=0
+endif
+
+
+//////////////////////////////////////////////
+//   T e m p l e   o f   k n o w l e d g e  //
+//////////////////////////////////////////////
+
+/////// s l i d i n g   d o o r ////////
+[itemdef i_q026_TOK_slidingDoor]
+id=i_door_sliding
+name=dvere
+type=t_q026_TOK_slidingDoor
+
+
+[dialog d_q026_TOK_slidingDoor]
+arg(textcolor,52)
+argo.SetLocation=285,50
+
+argo.tag(sirka,344)
+argo.tag(vyska,<eval <d_def_baseMenu_vyska>+(2*<d_def_radek_vyska>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,2,150,165)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Double slide door settings")
+argo.button(<argo.dialog_but_ru>,d_def_button_dialog1,d_def_button_dialog2,1,0,2)		//help
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Initialize/Deactivate:")
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,<d_def_writecolor>,"Is initialized:")
+
+argo.dialog_buttonpos(1,1)
+argo.button(lastxbuttpos,lastybuttpos,d_def_button_checkr1,d_def_button_checkr2,1,0,3) //initialize/deactivate the riddle
+argo.dialog_textpos(1,1)
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,<d_def_readcolor>,"<?return_true(<eval tag(initialized)>,"yes","no")?>")
+
+argo.button(<argo.dialog_but_ld>,d_def_button_ok1,d_def_button_ok2,1,0,1) //ok
+
+[dialog d_q026_TOK_slidingDoor button]
+on=1 // OK
+
+on=2 // help
+dialog(d_q026_TOK_slidingDoor)
+dialog(d_q026_TOK_slidingDoor_help)
+
+on=3 // initialize/deactivate
+if (<timer> >=0)
+  timer=0
+  dialog(d_q026_TOK_slidingDoor)
+  src.redMessage("Dvere nebyly v zakladni poloze ! Zkus to znovu")
+  return 1
+endif
+if (<eval tag(initialized)>)
+  tag(pairedDoor).tag(myBaseDoor).remove
+  tag(pairedDoor).remove
+  tag.remove(pairedDoor)
+  tag(myBaseDoor).remove
+  tag.remove(myBaseDoor)
+  tag.remove(initialized)
+else
+  src.newItem(i_q026_TOK_slidingDoorOpened)
+  arg(myClosedDoor,<lastnew>)
+  myClosedDoor.p=<p>
+  myClosedDoor.z=<z>-30
+  myClosedDoor.more1=1
+  myClosedDoor.attr=090
+  myClosedDoor.tag(myBaseDoor,<uid>)
+  tag(myBaseDoor,<arg(myClosedDoor)>)
+  myClosedDoor.link=<uid>
+  
+  src.newItem(i_q026_TOK_slidingDoor_2)
+  arg(secondDoor,<lastnew>)
+  secondDoor.p=<p>
+  secondDoor.move(1,0)
+  secondDoor.link=<uid>
+  tag(pairedDoor,<arg(secondDoor)>)
+  
+  src.newItem(i_q026_TOK_slidingDoorOpened_2)
+  arg(secondClosedDoor,<lastnew>)
+  secondClosedDoor.p=<secondDoor.p>
+  secondClosedDoor.z=<z>-30
+  secondClosedDoor.more1=1
+  secondClosedDoor.attr=090
+  secondClosedDoor.tag(myBaseDoor,<arg(secondDoor)>)
+  secondDoor.tag(myBaseDoor,<arg(secondClosedDoor)>)
+  secondClosedDoor.link=<uid>
+  
+  tag(initialized,1)
+endif
+dialog(d_q026_TOK_slidingDoor)
+
+
+[dialog d_q026_TOK_slidingDoor_help]
+argo.setText(1,"Dvere slouzi k prodlouzeni questu Jed z hrobek(q026). Otevrene mohou byt az po ziskani klice z Dol Gulduru.<br><br> Initialize/Deactivate: slouzi k vygenerovani druhe casti dveri. Dvere se vzdy odsouvaji naraz oboje.")
+argo.f_dialog_HelpCreator("HELP - Slide door settings")
+
+[typedef t_q026_TOK_slidingDoor]
+on=@timer // triggered only on closed door
+arg(baseDoor,<tag(myBaseDoor)>)
+baseDoor.z=<baseDoor.z>-30
+baseDoor.attr=090
+baseDoor.update
+z=<z>+30
+attr=010
+update
+return 1
+
+on=@UserDClick
+if !(src.isDead)
+  if (src.isGM)
+    src.curiosityAlert("t_q026_TOK_slidingDoor")
+    if (id == i_q026_TOK_slidingDoor)
+      dialog(d_q026_TOK_slidingDoor)
+    else
+      link.dialog(d_q026_TOK_slidingDoor)
+    endif
+    return 1
+  endif
+  if (<eval src.qtag(q026_hcnPoison)> ==9)
+    src.sysMessage("A hele, ono to stacilo posunout do strany...")
+    src.qtag(q026_hcnPoison,10,36)
+  endif
+  if (<eval src.qtag(q026_hcnPoison)> > 9)
+    if (more1 == 0) // this is closed Door item
+      arg(baseDoor,<tag(myBaseDoor)>)
+      baseDoor.z=<baseDoor.z>+30
+      baseDoor.attr=010
+      baseDoor.update
+      z=<z>-30
+      attr=090
+      update
+      timer=60
+    else
+      tag(myBaseDoor).timer=0
+    endif
+    sound(47)
+  else
+    src.sysMessage("Cloumas dvermi vpred i vzad, ale nedari se ti je otevrit.")
+  endif
+endif
+return 1
+
+on=@step
+if (src.isGM) || (src.npc)
+  return 1
+elseif (src.isDead)
+  src.move(s) // move to the south
+elseif (<eval src.qtag(q026_hcnPoison)> < 9) // don't have a key
+  src.move(s) // move to the south
+  src.damage_noresponse(30,<dam_god>)
+  src.sysMessage("Ve dverich te zastavila jakasi sila.")
+  src.newitem(02ed0)
+  arg(guardVortex,<lastnew>)
+  guardVortex.name=Magicky vir
+  guardVortex.attr=attr_decay|attr_move_never
+  guardVortex.timer=2
+  guardVortex.p=<p>
+  sound(014) //wind whistle
+else
+  src.sysMessage("Klic v tve kapse se lehce zachvel")
+endif
+
+[itemdef i_q026_TOK_slidingDoorOpened] // players can go through this door
+id=02A06
+name=dvere
+type=t_q026_TOK_slidingDoor
+
+
+[itemdef i_q026_TOK_slidingDoorOpened_2] // players can go through this door
+id=02A08
+name=dvere
+type=t_q026_TOK_slidingDoor
+
+
+[itemdef i_q026_TOK_slidingDoor_2]
+id=02A07
+name=dvere
+type=t_q026_TOK_slidingDoor
+
+/////// t a p e s t r y ////////
+
+[itemdef i_q026_TOK_tapestry]
+id=0EAA
+name=tapestry
+type=t_q026_TOK_tapestry
+  
+[typedef t_q026_TOK_tapestry]
+on=@UserDClick
+if (id==i_q026_TOK_tapestry) // base item
+  if (src.isGM)
+    src.curiosityAlert("t_q026_TOK_tapestry")
+    if !(<tag(initialized)>)
+      src.newitem(0EAB)
+      lastnew.p=<p>
+      lastnew.move(1,0)
+      lastnew.type=t_q026_TOK_tapestry
+      tag(initialized,1)
+    endif
+  endif
+endif
+if !(src.isDead)
+  if (<eval src.qtag(q026_hcnPoison)> == 6)
+    src.sysMessage("Zajimavee...")
+    src.qtag(q026_hcnPoison,7,36)
+    src.addExp(300)
+    return 1
+  elseif (<eval src.qtag(q026_hcnPoison)> > 6)
+    src.sysMessage("Tady uz nic dalsiho nevyctes")
+    return 1
+  endif
+endif
+
+/////// a l c h e m i c a l    b o o k ////////
+///////  - p i l e   o f   b o o k s   ////////
+
+[itemdef i_q026_TOK_bookPile]
+id=i_book_damaged
+
+on=@UserDClick
+if (src.isGM)
+  src.curiosityAlert("i_q026_TOK_bookPile")
+  src.sysMessage("Hromada knih pro quest q026 jed z hrobek.")
+else
+  if (distance < 2)
+    if (rand(6) == 1)
+      f_q026_TOK_bookPile_giveBook
+    else
+      f_q026_TOK_bookPile_fakeMSG
+    endif
+  else
+    src.sysMessage("Jsi prilis daleko")
+  endif
+endif
+return 1
+
+[function f_q026_TOK_bookPile_fakeMSG]
+dorand(15)
+  src.sysMessage("Matematika...")
+  src.sysMessage("Dejiny...")
+  src.sysMessage("Smes nesrozumitelnych cmaranic...")
+  src.sysMessage("Hmm.. tak tahle kniha je prilis poskozena..")
+  src.sysMessage("Nevidis nic zajimaveho.")
+  src.sysMessage("Vetsina knih je potrhanych.")
+  src.sysMessage("Tato kniha se neda vubec cis.")
+  src.sysMessage("Na tyto knihy dlouho nikdo nesahl..")
+  src.sysMessage("Nektere knihy jsou polite.")
+  src.sysMessage("A hele! Na teto knize je dokonce plisen.")
+  src.sysMessage("Fuj, tak tohle snad ani nemas za potrebi...")
+  src.sysMessage("Kdesi v tomhle haraburdi preci musi byt neco o jedech")
+  src.sysMessage("Anatomie ... hmmm...")
+  src.sysMessage("Kniha, kterou jsi prave <src.sex("vzal","vzala")> do ruky se rozpadla.")
+  src.sysMessage("Haraburdi...")
+enddo
+
+[function f_q026_TOK_bookPile_giveBook]
+if (<eval src.qtag(q026_hcnPoison)> == 9) || (<eval src.qtag(q026_hcnPoison)> == 10) // the player has a key to the TOK & hasn't yet found the book
+  src.qtag(q026_hcnPoison,11,36)
+  src.sysMessage("Tahle kniha vypada zajimave...")
+else
+  f_q026_TOK_bookPile_fakeMSG
+endif
+
+///////////////////////////////////////////////////
+//  D O L   G U L D U R   S E C R E T   R O O M  //
+///////////////////////////////////////////////////
+
+[itemdef i_q026_DG_secretRoom_alarm]
+id=i_rune_alchem_2
+name=Dlazdice upozornujici na quest q026
+
+on=@Create
+attr=090
+
+on=@Step
+if !(src.isGM) && (src.isPlayer)
+  if (<eval src.qtag(q026_hcnPoison)> == 7)
+    src.qtag(q026_hcnPoison,8,36)
+  endif
+endif
+
+[itemdef i_q026_DG_secretDoor]
+id=i_wall_dungeon
+
+on=@timer
+if (<eval tag(stepsCount)>) // somebody is standing in the room
+  timer=60 // set another timer to check for another room hiding
+elseif (<eval tag(lastChange)+40> > <serv.time>) // last change in the stepping has been triggered too soon. Another steps might not been recognized yet, so we'll postpone the checking timer
+  timer=5
+elseif (<more2> == 1) // the room is unhidden
+  f_q026_DG_secretRoom_hide
+endif
+if (<more1> == 1) // doors are opened
+  move(1,0)
+  dispID=i_wall_dungeon
+  update
+  sound(543)
+  more1=0
+endif
+return 1
+
+on=@UserDClick
+if (src.isGM)
+  src.curiosityAlert("i_q026_DG_secretDoor")
+  dialog(d_q026_DG_secretDoor)
+  return 1
+endif
+if !(src.isDead)
+  if (<eval src.qtag(q026_hcnPoison)> > 7)
+    if (<more1> == 1) // doors are opened
+      timer = 0
+    else
+      move(-1,0)
+      dispID=0242
+      sound(543)
+      timer=60
+      update
+      more1=1
+      src.sysMessage("Tlacis do steny a oteviras tajnou mistnost")
+      if (<more2> == 0) // the room is hidden
+        f_q026_DG_secretRoom_show
+      endif
+    endif
+    return 1
+  endif
+endif
+
+
+[dialog d_q026_DG_secretDoor]
+arg(textcolor,52)
+argo.SetLocation=285,50
+
+argo.tag(sirka,366)
+arg(v,<eval <d_def_baseMenu_vyska>+(3*<d_def_skvira>)+(2*<d_def_radek_vyska>)+(<eval <tag(floorsCount)>>*<d_def_radek_vyska>)+(<eval <tag(itemsCount)>>*<d_def_radek_vyska>)>)
+argo.tag(vyska,<eval arg(v)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<tag(floorsCount)>,100,30,138,30,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<tag(itemsCount)>,100,30,138,30,30)
+
+argo.dialog_zpruhledni
+
+if (<argvcount>)
+  argo.tag(baseDialog,<argv(0)>)
+endif
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Advanced Guard System")
+argo.button(<argo.dialog_but_ru>,d_def_button_dialog1,d_def_button_dialog2,1,0,2)		//help
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_readcolor>,"Floor:")
+argo.button(<argo.dialog_buttonpos(1,4)>,d_def_button_checkr1,d_def_button_checkr2,1,0,3) // add new floor
+
+arg(rowCount,0)
+argo.dialog_textpos(2,0)
+argo.dialog_buttonpos(2,0)
+while (<arg(rowCount)> < <eval tag(floorsCount)>)
+  argo.texta(lastxpos,lastypos+(<arg(rowCount)>*d_def_radek_vyska),<d_def_writecolor>,"Floor <eval arg(rowCount)+1>:")
+  argo.texta(lastxpos+135,lastypos+(<arg(rowCount)>*d_def_radek_vyska),<d_def_readcolor>,<tag(floor[<eval arg(rowCount)>])>)
+  argo.button(lastxbuttpos+98,lastybuttpos+(<arg(rowCount)>*d_def_radek_vyska),0fa5,0fa7,1,0,<eval <arg(rowCount)>+10>)	//nastav novou podlahu
+  argo.button(lastxbuttpos+272,lastybuttpos+(<arg(rowCount)>*d_def_radek_vyska),0fb4,0fb6,1,0,<eval <arg(rowCount)>+1000>)	//jdi na podlahu
+  argo.button(lastxbuttpos+305,lastybuttpos+(<arg(rowCount)>*d_def_radek_vyska),0fb1,0fb3,1,0,<eval <arg(rowCount)>+2000>)	//delete podlahy
+  arg(rowCount,#+1)
+endwhile
+  
+argo.texta(<argo.dialog_textpos(3,0)>,<d_def_readcolor>,"Other Items:")
+argo.button(<argo.dialog_buttonpos(3,4)>,d_def_button_checkr1,d_def_button_checkr2,1,0,4) // add new item
+
+arg(rowCount,0)
+argo.dialog_textpos(4,0)
+argo.dialog_buttonpos(4,0)
+while (<arg(rowCount)> < <eval tag(itemsCount)>)
+  argo.texta(lastxpos,lastypos+(<arg(rowCount)>*d_def_radek_vyska),<d_def_writecolor>,"Item <eval arg(rowCount)+1>:")
+  argo.texta(lastxpos+135,lastypos+(<arg(rowCount)>*d_def_radek_vyska),<d_def_readcolor>,<tag(item[<eval arg(rowCount)>])>)
+  argo.button(lastxbuttpos+98,lastybuttpos+(<arg(rowCount)>*d_def_radek_vyska),0fa5,0fa7,1,0,<eval <arg(rowCount)>+3000>)	//nastav novy item
+  argo.button(lastxbuttpos+272,lastybuttpos+(<arg(rowCount)>*d_def_radek_vyska),0fb4,0fb6,1,0,<eval <arg(rowCount)>+4000>)	//jdi na item
+  argo.button(lastxbuttpos+305,lastybuttpos+(<arg(rowCount)>*d_def_radek_vyska),0fb1,0fb3,1,0,<eval <arg(rowCount)>+5000>)	//delete itemu
+  arg(rowCount,#+1)
+endwhile
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_q026_DG_secretDoor button]
+on=0
+return 1
+
+on=1 // ok. - set all the items (visibility, events...)
+arg(i,0)
+while (<eval arg(i)> < <eval tag(floorsCount)>)
+  tag(floor[<eval arg(i)>]).events=+t_q026_DG_secretRoomFloor
+  tag(floor[<eval arg(i)>]).tag(secretDoor,<uid>)
+  arg(i,#+1)
+endwhile
+src.sysMessage("Nalinkovane predmety uspesne nastaveny")
+return 1
+
+
+
+on=2 // help
+dialog(d_q026_DG_secretDoor)
+dialog(d_q026_DG_secretDoor_help)
+
+on=3 // add new floor
+f_customLink_target("floor",0,0,d_q026_DG_secretDoor) // argv(0): link name; argv(1): replacing existing tag ? (0/1); argv(2) - if replacing tag, then the number of replacing tag
+
+on=4 // add new item
+f_customLink_target("item",0,0,d_q026_DG_secretDoor)
+
+
+on=@anybutton
+if (<argn> >= 5000) // remove item button
+  arg(i,<eval <argn>-5000>)
+  f_customLink_remove("item",<i>)
+  dialog(d_q026_DG_secretDoor)
+  src.sysMessage("item removed")
+elseif (<argn> >= 4000) // go to the item
+  arg(i,<eval <argn>-4000>)
+  if (safe.tag(item[<eval arg(i)>]))
+    src.go(<tag(item[<eval arg(i)>]).p>)
+  else
+    src.redMessage("Nelze se presunout na predmet, ktery neni nastaveny !")
+  endif
+  dialog(d_q026_DG_secretDoor)
+elseif (<argn> >= 3000) // replace existing item position
+  arg(i,<eval <argn>-3000>)
+  f_customLink_target("item",1,<eval <argn>-10>,"d_q026_DG_secretDoor")
+elseif (<argn> >= 2000) // remove floor button
+  arg(i,<eval <argn>-2000>)
+  f_customLink_remove("floor",<i>)
+  dialog(d_q026_DG_secretDoor)
+elseif (<argn> >= 1000) // go to the floor
+  arg(i,<eval <argn>-1000>)
+  if (safe.tag(floor[<eval arg(i)>]))
+    src.go(<tag(floor[<eval arg(i)>]).p>)
+  else
+    src.redMessage("Nelze se presunout na predmet, ktery neni nastaveny !")
+  endif
+  dialog(d_q026_DG_secretDoor)
+else (<argn> >= 10) // replace existing floor position
+  arg(i,<eval <argn>-10>)
+  f_customLink_target("floor",1,<eval <argn>-10>,"d_q026_DG_secretDoor")
+endif
+return 1
+
+[typedef t_q026_DG_secretRoomFloor]
+on=@Step
+if (src.isGM) // there is no reason to count GM as another person to step on this item
+  tag(secretDoor).tag(curious_<src.name>,<serv.time>)
+  return 1
+endif
+if (src.isPlayer)
+  if !(strlen(<tag(secretDoor).tag(player[<src>])>)) // this player is new to the room
+    tag(secretDoor).tag(stepsCount,<eval <eval tag(secretDoor).tag(stepsCount)>+1>)
+    src.tag(q026_DG_secretRoomDoor,<tag(secretDoor)>)
+    src.events=+e_q026_DG_secretRoomStep
+  endif
+  tag(secretDoor).tag(lastChange,<serv.time>)
+  tag(secretDoor).tag(player[<src>],<serv.time>)
+endif
+return 1
+
+[events e_q026_DG_secretRoomStep]
+on=@Step
+if (<eval tag(q026_DG_secretRoomDoor).tag(player[<uid>])+50> < <serv.time>) // if the last step on the secret room floor was 5 seconds ago
+  tag(q026_DG_secretRoomDoor).tag.remove(player[<uid>]) // remove link to this player from the pad he/she's been standing on
+  tag(q026_DG_secretRoomDoor).tag(stepsCount,<eval <eval tag(q026_DG_secretRoomDoor).tag(stepsCount)>-1>) // decreases the player counter that indicates, how many players are standing in the room
+  tag.remove(q026_DG_secretRoomDoor)
+  events=-e_q026_DG_secretRoomStep
+endif
+
+[function f_q026_DG_secretRoom_show]
+more2=1
+arg(i,0)
+while (<eval arg(i)> < <eval tag(floorsCount)>)
+  tag(floor[<eval arg(i)>]).attr=010
+  tag(floor[<eval arg(i)>]).update
+  arg(i,#+1)
+endwhile
+arg(i,0)
+while (<eval arg(i)> < <eval tag(itemsCount)>)
+  tag(item[<eval arg(i)>]).attr=010
+  tag(item[<eval arg(i)>]).update
+  arg(i,#+1)
+endwhile
+
+[function f_q026_DG_secretRoom_hide]
+more2=0 // the room is hidden
+arg(i,0)
+while (<eval arg(i)> < <eval tag(floorsCount)>)
+  arg(thisFloor,<tag(floor[<eval arg(i)>])>)
+  arg(saveP,<thisFloor.p>)
+  thisFloor.attr=090
+  arg(i,#+1)
+endwhile
+arg(i,0)
+while (<eval arg(i)> < <eval tag(itemsCount)>)
+  arg(thisItem,<tag(item[<eval arg(i)>])>)
+  arg(saveP,<thisFloor.p>)
+  thisItem.attr=090
+  arg(i,#+1)
+endwhile
+
+
+// a box with a key to the Temple of Knowledge //
+
+[itemdef i_q026_DG_secretRoom_box]
+id=i_box_brass
+
+on=@Create
+attr=010
+
+on=@UserDClick
+if (src.isGM)
+  tag(secretDoor).tag(curious_<src.name>,<serv.time>)
+  src.curiosityAlert("i_q026_DG_secretRoom_box")
+  src.sysMessage("Skrinka pro quest q026 jed z hrobek...")
+  return 1
+endif
+if (<eval src.qtag(q026_hcnPoison)> == 8) // the wall in a room is suspicious
+  src.qtag(q026_hcnPoison,9,36)
+  src.sysMessage("A hele, klicek..")
+  return 1
+elseif (<eval src.qtag(q026_hcnPoison)> > 8) // have already searched the box
+  src.sysMessage("V truhle uz nic neni")
+  return 1
+endif

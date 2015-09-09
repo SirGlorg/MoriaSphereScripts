@@ -1,0 +1,99 @@
+[itemdef i_ctf_flag]
+id=i_gruesomestandard
+layer=120
+
+on=@userdclick
+//src.say more:<more>, murderer:<src.ismurderer>
+timer 1
+if (src.isgm)
+ target zamer pocitadlo
+ morep=<src.p>
+elseif (cont)
+ src.dropflag
+elseif (more == src.tag(ctf_team))//jses vlastnik
+ if (p_x!=morex)||(p_y!=morey)
+  src.say VLAJKA VRACENA
+  p=<morep>
+ elseif (<src.findlayer(120)>)
+  src.say("BOD")
+  src.findlayer(120).p=<src.findlayer(120).morep>
+  link.tag.teamscore_<more>=<eval(<link.tag.teamscore_<more>> + 1)>
+ endif
+else//jses zlodej
+ bounce
+ equip
+ //src.equip <uid>
+ src.sysmessage("Mas souperovu vlajku, vrat se do sve zakladny.")
+ src.events e_nosicvlajky
+endif
+return 1 
+ 
+on=@timer
+timer 2
+if (cont)
+ cont.SAY Zlodej vlajky!
+//elseif (<p.x>!=<morex>)||(<p.y>!=<morey>)
+ //say vlajka je tady
+else 
+ timer=-1
+endif
+return 1
+
+on=@targon_item
+link=<src.targ.uid>
+link.type = t_ctf_counter
+link.tag(teamflag_<more>, <uid>) 
+src.sysmessage("pocitadlo zamereno")
+return 1
+
+[events e_nosicvlajky]
+on=@death
+dropflag
+
+on=@userdclick
+if (src==this)
+dropflag
+endif
+
+[function dropflag]
+findlayer(120).drop
+events -e_nosicvlajky
+
+[typedef t_ctf_counter]
+on=@userdclick
+tag(teamscore_1,0)
+tag(teamscore_2,0)
+
+on=@userclick
+message("<finduid(tag(teamflag_1)).name>: <eval tag(teamscore_1)>")
+message("<finduid(tag(teamflag_2)).name>: <eval tag(teamscore_2)>")
+
+[itemdef i_gate_ctf_vstup]
+NAME=Vstup do ctf areny
+ID=i_moongate_blue
+
+on=@step
+src.go(<morep>)
+src.tag(ctf_team, <more>)
+src.newitemsafe(i_robe)
+lastnew.equip
+lastnew.color=<color>
+lastnew.name=(CTF robe)
+src.tag(ctf_robe, <lastnew>)
+return 1
+
+[itemdef i_gate_ctf_vystup]
+NAME=Vystup z ctf areny
+ID=i_moongate_blue
+type=t_normal
+
+on=@step
+if (!src.findlayer(120))
+	src.go(<morep>)
+	src.tag.remove(ctf_team)
+	finduid(src.tag(ctf_robe)).remove
+	src.tag.remove(ctf_robe)
+endif
+return 1
+
+[eof]

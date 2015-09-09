@@ -1,0 +1,498 @@
+[function f_q035_herman]
+if(<distance> > 3)
+  src.sysmessage("Na takovou vzdalenost s tebou komunikovat nebude.")
+  return 1
+endif
+if (<src.flags>&statf_dead)
+ return 1
+else
+  if (<src.rescount(i_q035_herman_false_delay)> == 1)
+    DORAND 4
+      say Ted me neotravuj, nicemo!
+      say Padej!
+      say Ted bys neco chtel?!
+      say Klid se mi z oci!
+    ENDDO
+    return 1
+  endif
+  DIALOG(d_q035_herman)
+endif
+
+
+[dialog d_q035_herman]
+arg(lowlvl,0)
+argo.questDialog_create(03115,<name>)
+
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2,51,"Brouci?") // Mohu pomoci?
+
+if (<eval(src.qtag(q035_herman))> != 23)
+  argo.questDialog_baseButt(3) // Obchodovat
+  argo.questDialog_baseButt(4) // Hledam praci
+  if (<strlen(<src.qtag(q035_herman)>)>)// ma tento tag? existuje vobec?
+      argo.questDialog_baseButt(5) // Nesu ti
+  endif
+endif
+argo.questDialog_baseButt(6) // Prohlednout
+
+ argo.dialog_Page("Kdo jsi?")
+  if (<eval(src.qtag(q035_herman))> == 22)
+    argo.setText(<argo.newTextLine>,"Oooo, to ses ty. Mno slibil jsem ti, ze ti o sobe neco reknu, kdyz mi pomuzes, coz se stalo. Jsem Herman. A ted padej!")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval(src.qtag(q035_herman))> == 23)
+    argo.setText(<argo.newTextLine>,"<src.sex(Odmitl,Odmitla)> jsi muj ukol a chces o mne neco vedet?! Radeji odejdi! <def_questDialog_colorTextEmote>*Zakricel*")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval(src.qtag(q035_herman))> > 0)
+    argo.setText(<argo.newTextLine>,"Az udelas vse, co po tobe potrebuji, tak pak se muzem o necem bavit!")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(<argo.newTextLine>,"Ikdyby jsi <src.sex(byl,byla)> posledni clovek ve Stredozemi, tak bych ti o sobe nic nerekl. Co te to vubec zajima?!")
+    argo.questDialog_HTMLGUMP
+  endif
+
+if (<eval(src.qtag(q035_herman))> != 23)
+ argo.dialog_page("Obchodovat")
+   argo.setText(argo.newTextLine,"Nemam nic, s cim bych mohl obchodovat.")
+   argo.questDialog_HTMLGUMP
+endif
+
+
+if (<eval(src.qtag(q035_herman))> != 23)
+  if (<strlen(<src.qtag(q035_herman)>)>)  
+    argo.dialog_page("Nesu ti")
+      if (<eval src.qtag(q035_herman)> == 1)
+        if (<src.f_collector_isFull(i_q035_herman_collector_01)>)
+          argo.setText(argo.newTextLine,"Tak mi to podej!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_01")
+        else
+          argo.setText(argo.newTextLine,"Nic u tebe nevidim, tak padej a neotravuj.")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval(src.qtag(q035_herman))> == 3)
+        if (<src.f_collector_isFull(i_q035_herman_collector_02)>)
+          argo.setText(argo.newTextLine,"Ukaz! Podej mi to!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_03")
+        else
+          argo.setText(argo.newTextLine,"Co zkousis na me? Nic nemas!")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval(src.qtag(q035_herman))> == 5)
+        if (<src.f_collector_isFull(i_q035_herman_collector_03)>)
+          argo.setText(argo.newTextLine,"Ukaz! Podej mi to!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_05")
+        else
+          argo.setText(argo.newTextLine,"Co zkousis na me? Nic nemas!")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval src.qtag(q035_herman)> == 7)
+        if (<src.f_collector_isFull(i_q035_herman_collector_04)>)
+          argo.setText(argo.newTextLine,"Ukaz! Podej mi to!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_07")
+        else
+          argo.setText(argo.newTextLine,"Co zkousis na me? Nic nemas!")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval src.qtag(q035_herman)> == 9)
+        if (<src.f_collector_isFull(i_q035_herman_collector_05)>)
+          argo.setText(argo.newTextLine,"Ukaz! Podej mi to!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_09")
+        else
+          argo.setText(argo.newTextLine,"Co zkousis na me? Nic nemas!")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval src.qtag(q035_herman)> == 11)
+        if (<src.f_collector_isFull(i_q035_herman_collector_06)>)
+          argo.setText(argo.newTextLine,"Ukaz! Podej mi to!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_11")
+        else
+          argo.setText(argo.newTextLine,"Co zkousis na me? Nic nemas!")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval src.qtag(q035_herman)> == 13)
+        if (<src.f_collector_isFull(i_q035_herman_collector_07)>)
+          argo.setText(argo.newTextLine,"Ukaz! Podej mi to!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_13")
+        else
+          argo.setText(argo.newTextLine,"Co zkousis na me? Nic nemas!")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval src.qtag(q035_herman)> == 15)
+        if (<src.f_collector_isFull(i_q035_herman_collector_08)>)
+          argo.setText(argo.newTextLine,"Ukaz! Podej mi to!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_15")
+        else
+          argo.setText(argo.newTextLine,"Co zkousis na me? Nic nemas!")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval src.qtag(q035_herman)> == 17)
+        if (<src.f_collector_isFull(i_q035_herman_collector_09)>)
+          argo.setText(argo.newTextLine,"Ukaz! Podej mi to!")
+          argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Odevzdat bednu s hlavami brouku.")
+          argo.questDialog_addResponse(0,1,1,"q035_herman_finish_17")
+        else
+          argo.setText(argo.newTextLine,"Co zkousis na me? Nic nemas!")
+          argo.questDialog_HTMLGUMP
+        endif
+      elseif (<eval src.qtag(q035_herman)> == 18)
+        argo.setText(argo.newTextLine,"Zatim nic nepotrebuji.")
+        argo.questDialog_HTMLGUMP
+      elseif (<eval src.qtag(q035_herman)> == 19)
+        argo.setText(argo.newTextLine,"Vzdyt jsi tam vubec <src.sex(nebyl,nebyla)>! Tak me neotravuj a delej to, co mas! <def_questDialog_colorTextEmote>*Nastvane promluvil*")
+        argo.questDialog_HTMLGUMP
+      elseif (<eval src.qtag(q035_herman)> == 20)
+        argo.setText(argo.newTextLine,"Vrat se az to vejce ziskas!")
+        argo.questDialog_HTMLGUMP
+      elseif (<eval src.qtag(q035_herman)> == 21)
+        argo.setText(argo.newTextLine,"Mas to vejce?! Tak mi ho rychle podej!")
+        argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Odevzdat brouci vejce.")
+        argo.questDialog_addResponse(0,1,1,"q035_herman_finish_21")
+      elseif (<eval src.qtag(q035_herman)> == 0)
+        argo.setText(argo.newTextLine,"Nic jsem od tebe nechtel. Padej pryc! <def_questDialog_colorTextEmote>*Zamracil se*")
+        argo.questDialog_HTMLGUMP
+      else
+        argo.setText(argo.newTextLine,"Jeste ani poradne nevis co chci!")
+        argo.questDialog_HTMLGUMP
+      endif
+    endif
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Herman na prvni pohled vypada velmi vazne a protivne, dela, jako ze nikoho nema rad, a na kazdeho jen rve. V obliceji vypada velmi smutne a nastvane. Kulha na pravou nohu, ale snazi se to nedat znat.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Pozdrav")
+  if (<eval(src.qtag(q035_herman))> == 23)
+    argo.setText(<argo.newTextLine>,"Co tady chces nicemo !?")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q035_herman)> > 0)
+    argo.setText(<argo.newTextLine>,"Nazdar..")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(<argo.newTextLine>,"No nazdar! Co tady pohledavas?! Na to tvoje klaboseni nemam cas.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+
+if (<eval(src.qtag(q035_herman))> != 23)
+  argo.dialog_page("Hledam praci")
+    argo.setText(<argo.newTextLine>,"No to myslis vazne?! Nejsem zadna charita.")
+    argo.questDialog_HTMLGUMP
+endif
+
+
+argo.dialog_Page("Brouci?")
+  if (<eval src.qtag(q035_herman)> == 0)
+    if(<src.tag(level)> >= 6)
+      argo.setText(<argo.newTextLine>,"To je snad jedina vec, se kterou bys mi <src.sex(mohl,mohla)> pomoci. I kdyz si velke nadeje nedelam. <def_questDialog_colorTextEmote>*Zamracil se*")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Tak o co jde?")
+      argo.questDialog_addResponse(0,0,1,"q035_herman_1")
+    else
+      arg(lowlvl,1)
+      argo.setText(<argo.newTextLine>,"Na to si prilis <src.sex(slaby,slaba)>. Prijd az budes silnejsi.")
+      argo.questDialog_HTMLGUMP
+    endif
+  endif
+  
+  arg(i,2)
+  while(<i><=16)
+    if(<eval src.qtag(q035_herman)> == <i>)
+      if(<src.tag(level)> >= <eval(<i>+6)>)
+        argo.setText(<argo.newTextLine>,"Tak chces pokracovat?!")
+        argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Ano, chci dalsi ukol.")
+        argo.questDialog_addResponse(0,0,1,"q035_herman_<eval(<i>+1)>")  
+      else
+        arg(lowlvl,1) 
+        argo.setText(<argo.newTextLine>,"Na to si prilis <src.sex(slaby,slaba)>. Prijd az budes silnejsi.")
+        argo.questDialog_HTMLGUMP 
+      endif
+    endif
+    arg(i,#+2)
+  endwhile
+  
+  arg(nofine,1)
+  while(<nofine><=17)
+    if(<eval src.qtag(q035_herman)> == <nofine>)
+      argo.setText(<argo.newTextLine>,"Ukol jsem ti zadal! Potrebujes snad neco?")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Opravdu nevim kde brouky najit.")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_broukkde")
+    endif
+    arg(nofine,#+2) 
+  endwhile
+
+  if (<eval src.qtag(q035_herman)> == 18)
+     if(<src.tag(level)> >= 30)
+       argo.setText(<argo.newTextLine>,"Tak uz jsi tu zas?! Mno nevadi, mam pro tebe posledni praci.")
+       argo.questDialog_HTMLGUMP
+       argo.setText(argo.newTextLine,"O co jde?")
+       argo.questDialog_addResponse(0,0,1,"q035_herman_19)
+     else
+       arg(lowlvl,1)
+       argo.setText(<argo.newTextLine>,"Na to si prilis <src.sex(slaby,slaba)>. Ukol na ktery te potrebuji je velmi obtizny tak se prvni na nej dobre priprav.")
+       argo.questDialog_HTMLGUMP
+     endif
+   elseif (<eval src.qtag(q035_herman)> == 19)
+     argo.setText(<argo.newTextLine>,"Co tu otravujes?! Dones mi to vejce!  <def_questDialog_colorTextEmote>*Zamracil se*")
+     argo.questDialog_HTMLGUMP 
+  elseif (<eval src.qtag(q035_herman)> == 20)
+     argo.setText(<argo.newTextLine>,"Coze?! Ty jsi to <src.sex("nezvladl","nezvladla")>?!")
+     argo.questDialog_HTMLGUMP
+     argo.setText(argo.newTextLine,"Ne. Byli velmi silni. Muzu se tam jeste nejak dostat?")
+     argo.questDialog_addResponse(0,0,1,"q035_herman_znova")
+     argo.setText(argo.newTextLine,"Ne! A je to kvuli tobe, uz na tebe kaslu! Vickrat uz me tam nedostanes!")
+     argo.questDialog_addResponse(0,1,1,"q035_herman_end")
+  elseif (<eval src.qtag(q035_herman)> == 21)
+     argo.setText(<argo.newTextLine>,"Prvni mi dej to vejce!")
+     argo.questDialog_HTMLGUMP 
+  elseif (<eval src.qtag(q035_herman)> == 22)
+     argo.setText(<argo.newTextLine>,"Jsem ti vdecny za tvoji pomoc, ale uz od tebe nic nepotrebuji, tak padej!")
+     argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q035_herman)> == 23)
+     argo.setText(<argo.newTextLine>,"Ty po me jeste neco chces?! <def_questDialog_colorTextEmote>*Zasklebil se* ")
+     argo.questDialog_HTMLGUMP
+  endif
+  
+
+if(<lowlvl> != 1)
+  if (<eval src.qtag(q035_herman)> == 0)
+    argo.dialog_Page("q035_herman_1")  // BROUK
+      argo.setText(<argo.newTextLine>,"Opravdu jdes do toho? Je potreba vyhubit par brouku, ale pro tebe to bude hracka. <def_questDialog_colorTextEmote>*Silne se rozesmal s kapkou sarkasmu.* <def_questDialog_colorTextNormal> Prvni se vrhni na ty lehci, obycejne brouky. Dones mi 20 jejich hlav at mam jistotu! Urcite vis kde je najdes. Jestli ne tak mi to radeji ani nerikej! <def_questDialog_colorTextEmote>*Zasklebil se* <def_questDialog_colorTextNormal> Tak co tedy, porad mas na to odvahu <src.sex(hrdino,hrdinko)>?")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, donesu ti to!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_01_accept")
+      argo.setText(argo.newTextLine,"Jsi blazen? Na to si netroufam. Udelej si to sam!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+      argo.setText(argo.newTextLine,"Opravdu nevim kde brouky najit.")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_broukkde")
+  elseif (<eval src.qtag(q035_herman)> == 2)  // BROUK DELNIK
+    argo.dialog_Page("q035_herman_3")
+      argo.setText(<argo.newTextLine>,"Ted to bude trosku horsi. Chci, abys mi <src.sex(donesl,donesla)> 20 hlav od Brouku delniku. Jsou velmi podobni obycejnym broukum, ale jsou silnejsi! Uvidime, jak si povedes. <def_questDialog_colorTextEmote>*Zasmal se*")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, jdu na to!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_03_accept")
+      argo.setText(argo.newTextLine,"Nechci diky!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+  elseif (<eval src.qtag(q035_herman)> == 4)  // BROUK TRUBEC
+    argo.dialog_Page("q035_herman_5")
+      argo.setText(<argo.newTextLine>,"<src.sex(Vedl,Vedla)> sis obstojne, i kdyz vypadas utrmacene. <def_questDialog_colorTextEmote>*Usklebl se* <def_questDialog_colorTextNormal> No dobra dones mi 15 hlav od brouku trubcu, urcite je rozeznas od ostatnich, nebo se snad mylim?!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, jdu na to!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_05_accept")
+      argo.setText(argo.newTextLine,"Nechci diky!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+  elseif (<eval src.qtag(q035_herman)> == 6)  // BROUK STRAZCE
+    argo.dialog_Page("q035_herman_7")
+      argo.setText(<argo.newTextLine>,"To se divim, ze stale zijes, ale moc dlouho se neraduj. Svou cestu sis <src.sex(vybral,vybrala)>, tak mi dones 12 hlav brouku strazcu a nebo se mi klid z oci!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, jdu na to!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_07_accept")
+      argo.setText(argo.newTextLine,"Nechci diky!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+  elseif (<eval src.qtag(q035_herman)> == 8)  // BROUK MAG
+    argo.dialog_Page("q035_herman_9")
+      argo.setText(<argo.newTextLine>,"Vidim, ze se ti dari. Ted potrebuji 10 hlav Brouku magu. Uvidime, jak jsi <src.sex(odolny,odolna)> vuci magii! ")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, jdu na to!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_09_accept")
+      argo.setText(argo.newTextLine,"Magicti brouci? Ne!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+  elseif (<eval src.qtag(q035_herman)> == 10)  // BROUK BOJOVNIK
+    argo.dialog_Page("q035_herman_11")
+      argo.setText(<argo.newTextLine>,"Dones mi 8 hlav od Brouku bojovniku. Doted sis <src.sex(vedl,vedla)> dobre, tak to nepokaz! <def_questDialog_colorTextEmote>*Zakricel*")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, jdu na to!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_11_accept")
+      argo.setText(argo.newTextLine,"Nechci diky!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+  elseif (<eval src.qtag(q035_herman)> == 12) // BROUK SHADOW
+    argo.dialog_Page("q035_herman_13")
+      argo.setText(<argo.newTextLine>,"Haha, na toto jsem se obzvlast tesil! <def_questDialog_colorTextEmote>*Nadsene se usmal* <def_questDialog_colorTextNormal> Dones mi 5 hlav neviditelnych brouku. Zadna sranda s nima neni! Dej si pozor! <def_questDialog_colorTextEmote>*Vazne promluvil*")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Budu pokracovat jako doted.")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_13_accept")
+      argo.setText(argo.newTextLine,"Neviditelne brouky? Jsi sileny!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+  elseif (<eval src.qtag(q035_herman)> == 14) // BROUK ELITE
+    argo.dialog_Page("q035_herman_15")
+      argo.setText(<argo.newTextLine>,"Neviditelne brouky jsi <src.sex(zvladnul,zvladla)>. Avsak neni vsem dnum konec! Ted potrebuji 3 hlavy elitnich brouku. Jsou rychli a maji velkou silu, tak si dej na ne pozor!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Mno snad to zvladnu, jdu na to!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_15_accept")
+      argo.setText(argo.newTextLine,"Nemam zajem..")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+  elseif (<eval src.qtag(q035_herman)> == 16) // BROUK MATKA
+    argo.dialog_Page("q035_herman_17")
+      argo.setText(<argo.newTextLine>,"<src.sex(Poslouzil,Poslouzila)> jsi mi vyborne, ale jeste ti zbyva zabit matku brouku. Je ze vsech nejsilnejsi! Mnoho statecnych bojovniku uz pri setkani s ni padlo! Neni to dlouho, co jsem se ja sam se matkou setkal. Vyvazl jsem zivy jen tak. Moje noha dostala hodne zabrat a ted jsem rad, kdyz se na ni postavim. Proto si dej velky pozor, aby to nebyl tvuj posledni boj!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Myslim, ze to zvladnu. Jdu do toho!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_17_accept")
+      argo.setText(argo.newTextLine,"Ted opravdu na to nemam sily!")
+      argo.questDialog_addResponse(0,1,1,"q035_herman_false")
+  elseif (<eval src.qtag(q035_herman)> == 18)
+    argo.dialog_Page("q035_herman_19")
+     argo.setText(<argo.newTextLine>,"Potrebuji ziskat jedno brouci vejce! Ziskat ho muzes jen v jedinem doupeti. Dostanes se tam pomoci vstupni jeskyne, kterou najdes blizko zvladlych vresovist. Davej si vsak bacha. Zatim se zadny bojovnik, ktereho jsem tam poslal, od tama nevratil.")
+     argo.questDialog_HTMLGUMP
+     argo.setText(argo.newTextLine,"Jdu na to, snad to zvladnu!")
+     argo.questDialog_addResponse(0,1,1,"q035_herman_19_accept")
+  elseif (<eval src.qtag(q035_herman)> == 20) // ZNOVA
+    argo.dialog_Page("q035_herman_znova")
+      argo.setText(<argo.newTextLine>,"Ja uz te tam znova nepustim, ale mas sanci se tam dostat jeste s jinym bojovnikem jako pomocnik!")
+      argo.questDialog_HTMLGUMP
+  endif
+endif
+
+[dialog d_q035_herman button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("q035_herman_01_accept")) // BROUK
+  src.qtag("q035_herman",1,41)
+  src.newitem(i_q035_herman_collector_01)
+  src.act.bounce
+  say("Tak si pospes! Nebudu cekat roky!")
+  tag(pocet,<eval(tag(pocet)+1)>)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_03_accept")) // BROUK DELNIK
+  src.qtag("q035_herman",3,41)
+  src.newitem(i_q035_herman_collector_02)
+  src.act.bounce
+  say("Vrat se brzy!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_05_accept")) // BROUK TRUBEC
+  src.qtag("q035_herman",5,41)
+  src.newitem(i_q035_herman_collector_03)
+  src.act.bounce
+  say("Vrat se brzy!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_07_accept")) // BROUK STRAZCE
+  src.qtag("q035_herman",7,41)
+  src.newitem(i_q035_herman_collector_04)
+  src.act.bounce
+  say("Vrat se brzy!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_09_accept")) // BROUK MAG
+  src.qtag("q035_herman",9,41)
+  src.newitem(i_q035_herman_collector_05)
+  src.act.bounce
+  say("Vrat se brzy!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_11_accept")) // BROUK BOJOVNIK
+  src.qtag("q035_herman",11,41)
+  src.newitem(i_q035_herman_collector_06)
+  src.act.bounce
+  say("Vrat se brzy!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_13_accept")) // BROUK SHADOW
+  src.qtag("q035_herman",13,41)
+  src.newitem(i_q035_herman_collector_07)
+  src.act.bounce
+  say("Vrat se brzy!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_15_accept")) // BROUK ELITE
+  src.qtag("q035_herman",15,41)
+  src.newitem(i_q035_herman_collector_08)
+  src.act.bounce
+  say("Vrat se brzy!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_17_accept")) // BROUK MATKA
+  src.qtag("q035_herman",17,41)
+  src.newitem(i_q035_herman_collector_09)
+  src.act.bounce
+  say("Vrat se brzy!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_19_accept")) // DOUPE
+  src.qtag("q035_herman",19,41)
+  say("Hodne stesti! Budes ho potrebovat!")
+elseif (<argn> == argo.dialog_linkButton("q035_herman_false")) // TED NE
+  say("Tak padej a neotravuj!")
+  src.newitemsafe(i_q035_herman_false_delay)
+  src.equip(lastnew)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_end")) // KONEC
+  say("Dobre, nazdar!")
+  src.qtag("q035_herman",23,41)
+  f_quest_complete(41,1) // Ukoncil quest predcasne
+elseif (<argn> == argo.dialog_linkButton("q035_herman_broukkde")) //KDE
+  say("Tak to mi ani nerikej! Proc me otravujes! Vrat se az je najdes!")
+  src.newitemsafe(i_q035_herman_false_delay)
+  src.equip(lastnew)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_01")) // BROUK
+  say("Konecne! Jediny dobry brouk je mrtvy brouk! Tady mas malou odmenu.")
+  src.consume(i_q035_herman_collector_01)
+  src.qtag(q035_herman,2,41)
+  src.addexp(200)
+  src.givegold(2000)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_03")) // BROUK DELNIK
+  say("Hura!")
+  src.consume(i_q035_herman_collector_02)
+  src.qtag(q035_herman,4,41)
+  src.addexp(350)
+  src.givegold(2500)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_05"))  // BROUK TRUBEC
+  say("Dobre! Tady mas odmenu!")
+  src.consume(i_q035_herman_collector_03)
+  src.qtag(q035_herman,6,41)
+  src.addexp(400)
+  src.givegold(3000)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_07"))  // BROUK STRAZCE
+  say("Dobre! Tady mas odmenu!")
+  src.consume(i_q035_herman_collector_04)
+  src.qtag(q035_herman,8,41)
+  src.addexp(450)
+  src.givegold(3500)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_09"))  // BROUK MAG
+  say("Dobre! Tady mas odmenu!")
+  src.consume(i_q035_herman_collector_05)
+  src.qtag(q035_herman,10,41)
+  src.addexp(500)
+  src.givegold(4000)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_11"))  // BROUK BOJOVNIK
+  say("Dobre! Tady mas odmenu!")
+  src.consume(i_q035_herman_collector_06)
+  src.qtag(q035_herman,12,41)
+  src.addexp(550)
+  src.givegold(4500)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_13")) // BROUK SHADOW
+  say("To to trvalo!")
+  src.consume(i_q035_herman_collector_07)
+  src.qtag(q035_herman,14,41)
+  src.addexp(600)
+  src.givegold(5000)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_15")) // BROUK ELITE
+  say("No konecne!")
+  src.consume(i_q035_herman_collector_08)
+  src.qtag(q035_herman,16,41)
+  src.addexp(800)
+  src.givegold(8000)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_17")) // BROUK MATKA
+  say("Diky!")
+  src.consume(i_q035_herman_collector_09)
+  src.qtag(q035_herman,18,41)
+  src.addexp(800)
+  src.givegold(10000)
+elseif (<argn> == argo.dialog_linkButton("q035_herman_finish_21")) // ODEVZDAT vejce
+  if(<src.rescount(i_q035_herman_egg_bounce)> == 1)
+    src.consume(i_q035_herman_egg_bounce)
+    say("Ooo! Diky!")
+    src.qtag(q035_herman,22,41)
+    src.addexp(3000)
+    src.givegold(50000)
+    src.newitem(i_mi_bag)
+    src.act.bounce
+    f_quest_complete(41) // Ukoncil quest!
+  else
+    src.message("Chyba v questu! Pis page.")
+    src.jail
+  endif
+endif
+

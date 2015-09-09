@@ -1,0 +1,91 @@
+[function zakladskills] //ponechá makrovací skilly!
+
+//nejprve si zapamatujeme makrovaci skilly (ty rusit nechceme)
+tag(alchbyla,<alchemy>)
+tag(bsbylo,<blacksmithing>)
+tag(bcbylo,<bowcraft>)
+tag(cabylo,<carpentry>)
+tag(cartbylo,<cartography>)
+tag(cookbyl,<cooking>)
+tag(fishbyl,<fishing>)
+tag(inscbyla,<inscription>)
+tag(lockpickbyl,<lockpicking>)
+tag(tailorbyl,<tailoring>)
+tag(tamingbyl,<taming>)
+tag(tinkbyl,<tinkering>)
+tag(lumbbyl,<lumberjacking>)
+tag(miningbyl,<mining>)
+
+//nulovani skillu
+arg(u,0)
+while (arg(u)<50)
+arg(skillname,<findres(skill,<arg(u)>).name>)
+<arg(skillname)>=<safe.base_<tag.class>_<arg(skillname)>>
+arg(u,<arg(u)>+1)
+endwhile
+
+//navraceni makrovacich skillu
+alchemy=<tag(alchbyla)>
+blacksmithing=<tag(bsbylo)>
+bowcraft=<tag(bcbylo)>
+carpentry=<tag(cabylo)>
+cartography=<tag(cartbylo)>
+cooking=<tag(cookbyl)>
+fishing=<tag(fishbyl)>
+inscription=<tag(inscbyla)>
+lockpicking=<tag(lockpickbyl)>
+tailoring=<tag(tailorbyl)>
+taming=<tag(tamingbyl)>
+tinkering=<tag(tinkbyl)>
+lumberjacking=<tag(lumbbyl)>
+mining=<tag(miningbyl)>
+
+//odstraneni tagu
+tag.remove(alchbyla)
+tag.remove(bsbylo)
+tag.remove(bcbylo)
+tag.remove(cabylo)
+tag.remove(cartbylo)
+tag.remove(cookbyl)
+tag.remove(fishbyl)
+tag.remove(inscbyla)
+tag.remove(lockpickbyl)
+tag.remove(tailorbyl)
+tag.remove(tamingbyl)
+tag.remove(tinkbyl)
+tag.remove(lumbbyl)
+tag.remove(miningbyl)
+
+[function srazitlevely] //args - o kolik levelu dolu
+if(!<args>)
+   src.redmessage(Chyba! Syntax: srazitlevely=cislo , kde cislo=kolik levelu srazi)
+   src.sysmessage("A srazit muzes i zaporne cislo (=pridat), vcetne dov. bodu...")
+   return 0
+endif
+if(<tag(level)> > <args>) //aby nesrazil levely do zaporu - tezkej bug s pretecenim
+  tag(level,<eval <tag(level)>-<args>>)
+  tag(experience,0)
+  if(<args> > 0)
+   sysmessage("<sex(Prisel,Prisla)> jsi o <args> levelu.")
+  else
+   sysmessage("<sex(Obdrzel,Obdrzela)> jsi <args> levelu.")
+  endif
+else
+  tag(level,0)
+  tag(experience,0)
+  sysmessage("<sex(Prisel,Prisla)> jsi o sve levely.")
+endif
+//nasledujici while proto, že se mi jednou stalo ze se body rozdelily na vic hromadek... tak aby odstranil vsechny!
+while(findlayer(21).findid(i_dovedbod))
+   findlayer(21).findid(i_dovedbod).remove
+endwhile
+arg(kolik_bodu,<eval <tag(level)>*5>)
+if(<arg(kolik_bodu)>) //pokud to neni nula, jinak nedostane nic!
+  bouncepoint(<arg(kolik_bodu)>)
+endif
+zakladstats
+zakladabilities
+zakladskills
+
+
+[eof]

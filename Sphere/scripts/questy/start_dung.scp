@@ -1,0 +1,1645 @@
+//////////////////////////////////////////////////
+//////////////////start_dung.scp//////////////////
+//////////////////////////////////////////////////
+
+[function nbTags_remove]
+qtagremove(nb001)
+qtagremove(nb002)
+qtagremove(nb003)
+qtagremove(nb004)
+qtagremove(nb005)
+qtagremove(nb006)
+qtagremove(nb007)
+
+[function nbOffTtQTags_remove] //odstranit questy co nejsou z tutorialu
+f_questy_checkFunctions
+arg(questRune,<findid(i_quest_rune)>)
+if (strlen(<arg(questRune)>)) // strasne fikane smazeme celou qtagrunu a je po starostech
+  arg(questRune).remove
+endif
+tag.remove(q30_zmocnenecg)
+tag.remove(q30_zmocnenecm)
+tag.remove(q31_kuchar)
+tag.remove(q31_kuchar)
+tag.remove(gq013_experimentator)
+tag.remove(gq011_prekupnik)
+tag.remove(mq011_prekupnik)
+tag.remove(q015_paradnice)
+tag.remove(q100_hobitin_ambra)
+
+//////////////////////////////////////////////////
+//////////////nb001 - koze a maso/////////////////
+//////////////////////////////////////////////////
+[function f_nb001]
+if (src.qtag(nb001)<1)
+	src.qtag(nb001,0)
+endif
+Dialog(d_nb001)
+
+[DIALOG d_nb001]
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03123)
+
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,1,0)
+argo.text(200,332,1152,1)	//Kdo jsi?
+
+if ((src.qtag(nb001)==1)||(src.qtag(nb001)==3))
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,3)	//Nesu ti...
+else
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,2)	//Muzo pomoct ?
+endif
+
+argo.button(490,330,0988,0988,0,3,0)
+argo.text(540,331,1152,14)	//Prohlednout
+
+if (src.qtag(nb001)>0)
+	argo.button(160,360,0988,0988,0,6,0)
+	argo.text(190,360,1152,25)	// Potrebuji poradit
+endif
+
+argo.page(1)
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+if ((src.qtag(nb001)==1)||(src.qtag(nb001)==3))
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.text(60,395,152,22)	//Zabudol
+endif
+
+argo.page(2)
+if (src.qtag(nb001)==0)
+	argo.HTMLGUMP(170,230,440,100,5,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.text(60,395,152,7)
+elseif (src.qtag(nb001)==1)
+	argo.HTMLGUMP(170,230,440,100,8,0,36)
+	if (src.findid(i_hides_cut))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,9)
+	endif
+elseif (src.qtag(nb001)==2)
+	argo.HTMLGUMP(170,230,440,100,10,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,3)
+	argo.text(60,395,152,11)
+elseif (src.qtag(nb001)==3)
+	argo.HTMLGUMP(170,230,440,100,12,0,36)
+	if (src.findid(i_ribs_cooked))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,13)
+	endif
+else
+	argo.HTMLGUMP(170,230,440,100,15,0,36)
+endif
+
+argo.page(3)
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+argo.page(4)
+if (src.qtag(nb001)==1)
+	if (src.rescount(i_hides_cut)>=50)
+		argo.HTMLGUMP(170,230,440,100,17,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,2)
+		argo.text(60,395,152,18)
+	else
+		argo.HTMLGUMP(170,230,440,100,16,0,36)
+	endif
+elseif (src.qtag(nb001)==3)
+	if (src.rescount(i_ribs_cooked)>=20)
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,4)
+		argo.text(60,395,152,21)
+	else
+		argo.HTMLGUMP(170,230,440,100,19,0,36)
+	endif
+endif
+
+argo.page(5)
+if (src.qtag(nb001)==1)
+	argo.HTMLGUMP(170,230,440,100,23,0,36)
+elseif (src.qtag(nb001)==3)
+	argo.HTMLGUMP(170,230,440,100,24,0,36)
+endif
+
+argo.page(6)
+argo.HTMLGUMP(170,230,440,100,26,0,36)
+argo.button(25,395,0fa5,0fa7,0,7,0)
+argo.text(60,395,152,27)
+if (src.qtag(nb001)>2)
+	argo.button(25,415,0fa5,0fa7,0,8,0)
+	argo.text(60,415,152,29)
+endif
+
+argo.page(7)
+argo.HTMLGUMP(170,230,440,100,28,0,36)
+
+argo.page(8)
+argo.HTMLGUMP(170,230,440,100,30,0,36)
+
+[DIALOG d_nb001 text]
+Lovec Odlier//0
+Kdo jsi?	//1
+Muzu ti pomoci?	//2
+Nesu ti...	//3
+Bud <?src.sex(zdrav,pozdravena)?>. Jmenuji se Odlier. Lovim zde v okoli divokou zver pro vzacne kozesiny a chutne maso.	//4
+Pokud chces, muzes mi pomoci. Nezapomen, ze zabitou zver je treba stahnout z kuze nozem nebo jinou ostrou zbrani. Dale je mozne kuze zpracovat s pomoci nuzek a nastrihat ji tak na stejne dily. Pokud mi prineses 50 kusu zpracovane kuze, odmenim se ti. Dam ti take nuz a nuzky.//5
+<basefont color="#ffff88">*Vidis statneho muze stredniho veku, odeneho do kuze s kusi v ruce*<basefont color="#ffffff">//6
+Dobre, dodam ti ty kuze.//7
+<?src.sex(Donesl,Donesla)?> jsi mi ty kozesiny?//8
+Ano, zde jsou.	//9
+Ano, prines mi 20 kusu stavnatych steaku z divoke zvere. Zver uz vykuchat umis. Nozem muzes ze stromu ziskat trisky. Polozis li trisky na zem, je mozne je podpalit a rozdelat ohen, na kterem potom maso uvaris. Ale nepripal ho!//10
+Dekuji za radu. Pokusim se ho nepripalit.//11
+Tak co, <?src.sex(kuchtiku,kuchticko)?>? Hotovo?//12
+Ano, do zlatoucka opecene, zde ho mas!//13
+Prohlednout	//14
+Uz pro tebe nemam zadnou praci, ale zkus se porozhlidnout po okoli mozna nekdo bude potrebovat tvoji pomoc.	//15
+To neni dost, potrebuji vic! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//16
+Vyborne! Podej mi je. Kdyz budes <?src.sex(pripraven,pripravena)?> prijd, mozna pro tebe budu mit dalsi ukol.//	17
+*Podat kuze*	//18
+To nestaci! Potrebuji toho masa vic! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//19
+To maso ale voni! Podej mi ho. Dekuji ti.	//20
+*Podat maso*	//21
+Promin, <?src.sex(zapomel,zapomela)?> jsem, co jsem <?src.sex(mel,mela)?> prinist.	//22
+Chtel jsem po tobe 50 kusu zpracovane kuze. <basefont color="#ffff88">*Pozorne se na tebe diva*<basefont color="#ffffff">	//23
+Chcel jsem po tobe 20 kousku stavnatych steaku z divoke zvere.	//24
+Potrebuji poradit//25
+Jak ti muzu pomoct?	//26
+Jak ziskam kuzi?	//27
+No nejdriv zabijes nejakou zver. Zabitou zver je treba stahnout z kuze nozem nebo jinou ostrou zbrani. Dale je mozne kuze zpracovat za pomoci nuzek a nastrihat ji tak na stejne dily.	//28
+Jak udelam ohen a upecu maso?	//29
+Nozem muzes ze stromu ziskat trisky. Polozis-li trisky na zem, je mozne je podpalit a rozdelat ohen, na kterem potom maso uvaris.	//30
+
+[DIALOG d_nb001 button]
+ON=1
+src.qtag(nb001,1)
+src.giveitem(i_dagger_copper)
+if !(src.findid(i_scissors))	
+	src.giveitem(i_scissors)
+endif
+
+ON=2
+if ((src.qtag(nb001)==1)&&(src.rescount(i_hides_cut))>=50)
+	src.qtag(nb001,2)
+	src.consume(50,i_hides_cut)
+	src.addexp(50)
+	say("Dekuji moc.")
+	f_quest_complete(23)  // splnenie questu "Lovec Odlier - kuze"
+endif
+
+ON=3
+src.qtag(nb001,3)
+
+ON=4
+if ((src.qtag(nb001)==3)&&(src.rescount(i_ribs_cooked))>=20)
+	src.qtag(nb001, 4)
+	src.consume(20,i_ribs_cooked)
+	src.addexp(50)
+	say("Dekuji ti.")
+	 f_quest_complete(23,1)  // splnenie questu "Lovec Odlier - maso"
+endif
+		
+[speech spk_nb001]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance>>3)
+	Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_nb001
+endif
+
+//////////////////////////////////////////////////
+//////////////nb002 - latka, bandy////////////////
+//////////////////////////////////////////////////
+[function f_nb002]
+if (src.qtag(nb002)<1)
+	src.qtag(nb002,0)
+endif
+Dialog(d_nb002)
+
+[DIALOG d_nb002]
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03135)
+
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,1,0)
+argo.text(200,332,1152,1)
+
+if (src.qtag(nb002)==1)
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,3)	//Nesu ti...
+else
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(345,331,1152,2)	//Muzu pomoct ?
+endif
+
+argo.button(490,330,0988,0988,0,3,0)
+argo.text(540,331,1152,10)
+
+if (src.qtag(nb002)>0)
+	argo.button(160,360,0988,0988,0,6,0)
+	argo.text(190,360,1152,19)	// Potrebuji poradit
+endif
+
+argo.page(1)
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+if (src.qtag(nb002)==1)
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.text(60,395,152,15)	//Zabudol
+endif
+
+argo.page(2)
+if (src.qtag(nb002)==0)
+	argo.HTMLGUMP(170,230,440,100,5,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.text(60,395,152,7)
+elseif (src.qtag(nb002)==1)
+	argo.HTMLGUMP(170,230,440,100,8,0,36)
+	if (src.findid(i_bandage))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,9)
+	endif
+else
+	argo.HTMLGUMP(170,230,440,100,13,0,36)
+endif
+
+argo.page(3)
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+argo.page(4)
+if (src.rescount(i_bandage)>=200)
+	argo.HTMLGUMP(170,230,440,100,11,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,2)
+	argo.text(60,395,152,12)
+else
+	argo.HTMLGUMP(170,230,440,100,14,0,36)
+endif
+
+argo.page(5)
+argo.HTMLGUMP(170,230,440,100,16,0,36)
+
+argo.page(6)
+argo.HTMLGUMP(170,230,440,100,20,0,36)
+argo.button(25,395,0fa5,0fa7,0,7,0)
+argo.text(60,395,152,17)
+
+argo.page(7)
+argo.HTMLGUMP(170,230,440,100,18,0,36)
+
+[DIALOG d_nb002 text]
+Akolytka Mirana	//0
+Kdo jsi?	//1
+Mohu ti pomoci?	//2
+Nesu ti...	//3
+Dobry den. Jsem akolytka radu bohyne Este. Mym poslanim je pomahat detem na svet a osetrovat zranene.	//4
+Ano, jdes jak na zavolanou! Potrebuji sehnat nove obvazy, jiz mi dochazeji. Obvazy ziskas rozstrihanim latky nebo kusu obleceni na male kousky. Latku lze utkat na tkacovskem stavu z niti. Nite muzes udelat z bavlny nebo z vlny tak, ze je upredes na kolovratku. Vlnu ziskas strihanim ovci a bavlnu sklizenim bavlniku.//5
+<basefont color="#ffff88">*Vidis mladou divku v dlouhem habitu s kapuci. Ze stinu kape si te zvedave prohlizeji tmave hnede oci*<basefont color="#ffffff">//6
+Pokusim se je sehnat.//7
+Mas ty obvazy?//8
+Ano zde je mas.//9
+Prohlednout	//10
+Este budiz pochvalena! <?src.sex(Prinesl,prinesla)?> si je. Mohu se opet venovat sve praci. Zde mas svou odmenu.//11
+<?src.sex(Rad,Rada)?> sem <?src.sex(Poslouzil,Poslouzila)?>.//12
+Uz nic nepotrebuji, dekuji. I tobe se obvazy mohou hodit. Staci je prilozit na ranu, ale pamatuj, ze obvazy musi byt udrzovany v cistote!//13
+Promin, ale to je malo. Potrebuji vic.//14
+Promin, <?src.sex(zapomel,zapomela)?> jsem, co jsem <?src.sex(mel,mela)?> prinest.	//15
+Potrebuji od tebe 200 obvazu. <basefont color="#ffff88">*usmiva se*<basefont color="#ffffff">	//16
+Jak udelam obvazy?	//17
+Obvazy ziskas rozstrihanim latky nebo kusu obleceni na male kousky. Latku lze utkat na tkacovskem stavu z niti. Nite muzes udelat z bavlny nebo z vlny tak, ze je upredes na kolovratku. Vlnu ziskas strihanim ovci a bavlnu sklizenim bavlniku.	//18
+Potrebuji poradit	//19
+Ano? Jak ti mohu pomoci?	//20
+
+[DIALOG d_nb002 button]
+ON=1
+src.qtag(nb002,1)
+if !(src.findid(i_scissors))	
+	src.giveitem(i_scissors)
+endif
+
+ON=2
+if ((src.qtag(nb002)==1)&&(src.rescount(i_bandage))>=200)
+	src.qtag(nb002,2)
+	src.consume(200,i_bandage)
+	src.addexp(50)
+	f_quest_complete(24)  // splnenie questu "Akolytka Mirana"
+endif
+		
+[speech spk_nb002]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance>>3)
+	Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_nb002
+endif
+
+//////////////////////////////////////////////////
+//////////////nb003 - copper a iron ore///////////
+//////////////////////////////////////////////////
+[function f_nb003]
+if (src.qtag(nb003)<1)
+	src.qtag(nb003,0)
+endif
+Dialog(d_nb003)
+
+[DIALOG d_nb003]
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03045)
+
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,1,0)
+argo.text(200,332,1152,1)
+
+if ((src.qtag(nb003)==1)||(src.qtag(nb003)==3)||(src.qtag(nb003)==5))
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,3)	//Nesu ti...
+else
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,2)	//Muzo pomoct ?
+endif
+
+argo.button(490,330,0988,0988,0,3,0)
+argo.text(540,331,1152,14)
+
+if (src.qtag(nb003)>0)
+	argo.button(160,360,0988,0988,0,6,0)
+	argo.text(190,360,1152,24)	// Potrebuji poradit
+endif
+
+argo.page(1)
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+if ((src.qtag(nb003)==1)||(src.qtag(nb003)==3)||(src.qtag(nb003)==5))
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.text(60,395,152,21)	//Zabudol
+endif
+
+argo.page(2)
+if (src.qtag(nb003)==0)
+	argo.HTMLGUMP(170,230,440,100,5,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.text(60,395,152,7)
+elseif (src.qtag(nb003)==1)
+	argo.HTMLGUMP(170,230,440,100,8,0,36)
+	if (src.findid(i_ore_copper))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,9)
+	endif
+elseif (src.qtag(nb003)==2)
+	argo.HTMLGUMP(170,230,440,100,10,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,3)
+	argo.text(60,395,152,11)
+elseif (src.qtag(nb003)==3)
+	argo.HTMLGUMP(170,230,440,100,12,0,36)
+	if (src.findid(i_ore_iron))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,13)
+	endif
+elseif (src.qtag(nb003)==4)
+	argo.HTMLGUMP(170,230,440,100,28,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,5)
+	argo.text(60,395,152,11)
+elseif (src.qtag(nb003)==5)
+	argo.HTMLGUMP(170,230,440,100,12,0,36)
+	if (src.findid(i_ore_pisek))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,13)
+	endif
+
+else
+	argo.HTMLGUMP(170,230,440,100,15,0,36)
+endif
+
+argo.page(3)
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+argo.page(4)
+if (src.qtag(nb003)==1)
+	if (src.rescount(i_ore_copper)>=30)
+		argo.HTMLGUMP(170,230,440,100,17,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,2)
+		argo.text(60,395,152,18)
+	else
+		argo.HTMLGUMP(170,230,440,100,16,0,36)
+	endif
+elseif (src.qtag(nb003)==3)
+	if (src.rescount(i_ore_iron)>=15)
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,4)
+		argo.text(60,395,152,18)
+	else
+		argo.HTMLGUMP(170,230,440,100,19,0,36)
+	endif
+elseif (src.qtag(nb003)==5)
+	if (src.rescount(i_ore_pisek)>=10)
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,6)
+		argo.text(60,395,152,18)
+	else
+		argo.HTMLGUMP(170,230,440,100,29,0,36)
+	endif
+endif
+
+argo.page(5)
+if (src.qtag(nb003)==1)
+	argo.HTMLGUMP(170,230,440,100,22,0,36)
+elseif (src.qtag(nb003)==3)
+	argo.HTMLGUMP(170,230,440,100,23,0,36)
+elseif (src.qtag(nb003)==5)
+	argo.HTMLGUMP(170,230,440,100,30,0,36)
+endif
+
+argo.page(6)
+argo.HTMLGUMP(170,230,440,100,25,0,36)
+argo.button(25,395,0fa5,0fa7,0,7,0)
+argo.text(60,395,152,26)
+
+argo.page(7)
+argo.HTMLGUMP(170,230,440,100,27,0,36)
+
+[DIALOG d_nb003 text]
+Hornik Beorgrad	//0
+Kdo jsi?	//1
+Muzu ti pomoci?	//2
+Nesu ti...	//3
+Zdravim. Jmenuji se Beorgrad. Jsem hornik.	//4
+Vlastne prichazis zrovna vhod, pomoc by se mi hodila. Potreboval by sem tak 30 kusu medene rudy. Je to jednoduchy, staci kdyz seberes krumpac do ruky a zacnes kopat. Jestli nemas krumpac tak ti jeden dam.//5
+<basefont color="#ffff88">*Vidis statneho starsiho muze, v ruce drzi krumpac a tvar ma celou spinavou od uhli*<basefont color="#ffffff">//6
+Dobre, donesu vam tu rudu.//7
+Tak ako to vypada s moju rudou?//8
+Mam ji tady.	//9
+Ano muzes, prines mi 15 kusu zelezne rudy. Kopat uz umis tak do toho!//10
+Jdu na to.	//11
+Tak co? Hotovo?//12
+Ano, zde to mas!//13
+Prohlednout	//14
+Obavam se ze uz pro tebe nemam zadnou praci, ale zkus se porozhlidnout po okoli mozna nekdo bude potrebovat tvoji pomoc.	//15
+Hmm, te rudy mas malo! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//16
+Vyborne! Podej mi ji. Kdyz budes chtit prijd, mozna pro tebe budu mit dalsi ukol.//	17
+*Podat rudu*	//18
+To nestaci! Potrebuji vic zelezne rudy! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//19
+Nadhera! Podej mi to. Dekuji.	//20
+Promin, <?src.sex(zapomel,zapomela)?> sem co sem <?src.sex(mel,mela)?> prinist.	//21
+Chtel sem po tobe abys <?src.sex(nakopal,nakopala)?> 30 kusu medene rudy a <?src.sex(prinesl,prinesla)?> mi ji.	//22
+Chtel sem po tobe abys <?src.sex(nakopal,nakopala)?> 15 kusu zelene rudy a <?src.sex(prinesl,prinesla)?> mi ji.	//23
+Potrebuji poradit	//24
+Jak ti muzu poradit?	//25
+Jak mam kopat rudu?	//26
+Jednoduse, proste vezmes krumpac a kopnes s nim do nake skaly a mozna tam neco najdes.	//27
+Ano, potrebuju jeste 10 kusu kremiciteho pisku.	//28
+To nestaci, potrebuji vic pisku!	//29
+Chtel sem po tobe abys <?src.sex(nakopal,nakopala)?> 10 kusu kremiciteho pisku a <?src.sex(prinesl,prinesla)?> mi ji.	//30
+
+[DIALOG d_nb003 button]
+ON=1
+src.qtag(nb003,1)
+if !(src.findid(i_pickaxe))	
+	src.giveitem(i_pickaxe)
+endif
+
+ON=2
+if ((src.qtag(nb003)==1)&&(src.rescount(i_ore_copper))>=30)
+	src.qtag(nb003,2)
+	src.consume(30,i_ore_copper)
+	src.addexp(50)
+	say("Dekuji ti moc.")
+	f_quest_complete(25)  // splnenie questu "Hornik beorgrad - copper"
+endif
+
+ON=3
+src.qtag(nb003,3)
+
+ON=4
+if ((src.qtag(nb003)==3)&&(src.rescount(i_ore_iron))>=15)
+  if (src.mining > 39.9)
+	  src.qtag(nb003,4)
+	  src.consume(15,i_ore_iron)
+	  src.addexp(200)
+	  say("Dekuji ti.")
+	  f_quest_complete(25,1)  // splnenie questu "Hornik beorgrad - iron"
+	else
+    say("Je mi lito, ale s tvymi dovednostmi jsi to <?src.sex(nemohl,nemohla)?> nakopat. Potrebuji abys to <?src.sex(nakopal sam,nakopala sama)?>.");	
+	endif
+endif
+		
+ON=5
+src.qtag(nb003,5)
+
+ON=6
+if ((src.qtag(nb003)==5)&&(src.rescount(i_ore_pisek))>=10)
+  if (src.mining > 44.9)
+	  src.qtag(nb003,6)
+	  src.consume(10,i_ore_pisek)
+	  src.addexp(300)
+	  say("Dekuji ti.")
+    f_quest_complete(25,2)  // splnenie questu "Hornik beorgrad - kremik"
+  else
+    say("Je mi lito, ale s tvymi dovednostmi jsi to <?src.sex(nemohl,nemohla)?> nakopat. Potrebuji abys to <?src.sex(nakopal sam,nakopala sama)?>.");	
+  endif
+endif
+
+[speech spk_nb003]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance>>3)
+	Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_nb003
+endif
+
+//////////////////////////////////////////////////
+//////////////nb004 - spruce a chestnut logy//////
+//////////////////////////////////////////////////
+[function f_nb004]
+if (src.qtag(nb004)<1)
+	src.qtag(nb004,0)
+endif
+Dialog(d_nb004)
+
+[DIALOG d_nb004]
+argo.setlocation=5,5
+
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03022)
+
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,1,0)
+argo.text(200,332,1152,1)
+
+if ((src.qtag(nb004)==1)||(src.qtag(nb004)==3))
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,3)	//Nesu ti...
+else
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,2)	//Muzo pomoct ?
+endif
+
+argo.button(490,330,0988,0988,0,3,0)
+argo.text(540,331,1152,14)
+
+if (src.qtag(nb004)>0)
+	argo.button(160,360,0988,0988,0,6,0)
+	argo.text(190,360,1152,24)	// Potrebuji poradit
+endif
+
+argo.page(1)
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+if ((src.qtag(nb004)==1)||(src.qtag(nb004)==3))
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.text(60,395,152,21)	//Zabudol
+endif
+
+argo.page(2)
+if (src.qtag(nb004)==0)
+	argo.HTMLGUMP(170,230,440,100,5,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.text(60,395,152,7)
+elseif (src.qtag(nb004)==1)
+	argo.HTMLGUMP(170,230,440,100,8,0,36)
+	if (src.findid(i_log_copper))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,9)
+	endif
+elseif (src.qtag(nb004)==2)
+	argo.HTMLGUMP(170,230,440,100,10,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,3)
+	argo.text(60,395,152,11)
+elseif (src.qtag(nb004)==3)
+	argo.HTMLGUMP(170,230,440,100,12,0,36)
+	if (src.findid(i_log_iron))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,13)
+	endif
+else
+	argo.HTMLGUMP(170,230,440,100,15,0,36)
+endif
+
+argo.page(3)
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+argo.page(4)
+if (src.qtag(nb004)==1)
+	if (src.rescount(i_log_copper)>=30)
+		argo.HTMLGUMP(170,230,440,100,17,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,2)
+		argo.text(60,395,152,18)
+	else
+		argo.HTMLGUMP(170,230,440,100,16,0,36)
+	endif
+elseif (src.qtag(nb004)==3)
+	if (src.rescount(i_log_iron)>=15)
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,4)
+		argo.text(60,395,152,18)
+	else
+		argo.HTMLGUMP(170,230,440,100,19,0,36)
+	endif
+endif
+
+argo.page(5)
+if (src.qtag(nb004)==1)
+	argo.HTMLGUMP(170,230,440,100,22,0,36)
+elseif (src.qtag(nb004)==3)
+	argo.HTMLGUMP(170,230,440,100,23,0,36)
+endif
+
+argo.page(6)
+argo.HTMLGUMP(170,230,440,100,25,0,36)
+argo.button(25,395,0fa5,0fa7,0,7,0)
+argo.text(60,395,152,26)
+
+argo.page(7)
+argo.HTMLGUMP(170,230,440,100,27,0,36)
+
+[DIALOG d_nb004 text]
+Lesnik Grarad	//0
+Kdo jsi?	//1
+Muzu ti pomoci?	//2
+Nesu ti...	//3
+Zdravim. Jmenuji se Grarad. Jsem lesnik.	//4
+Vlastne prichazis zrovna vhod, pomoc by se mi hodila. Potreboval bych tak 30 kusu smrkoveho dreva. Je to jednoduche, staci kdyz vezmes sekeru do ruky a zacnes sekat do kmenu stromu. Jestli nemas sekeru, tak ti jednu dam.//5
+<basefont color="#ffff88">*Vidis starsiho muze, v ruce drzi sekeru.<basefont color="#ffffff">//6
+Dobre, donesu Vam to drivi.//7
+Tak jak to vypada s tim drivim?//8
+Tady je.	//9
+Ano muzes, prines mi 15 kusu kastanoveho dreva. Sekat uz umis, tak do toho!//10
+Jdu na to.	//11
+Tak co? Hotovo?//12
+Ano, zde to mas!//13
+Prohlednout	//14
+Obavam se, ze uz pro tebe nemam zadnou praci, ale zkus se porozhlednout po okoli mozna nekdo bude potrebovat tvoji pomoc.	//15
+Hmm, toho dreva mas malo! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//16
+Vyborne! Podej mi to. Kdyz budes chtit, prijd za mnou, mozna pro tebe budu mit dalsi ukol.//	17
+*Podat drevo*	//18
+To nestaci! Potrebuji vic kastanovyho dreva! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//19
+Nadhera! Podej mi to. Dekuji.	//20
+Promin, <?src.sex(zapomel,zapomela)?> jsem, co jsem <?src.sex(mel,mela)?> prinest.	//21
+Chtel jsem po tobe, abys <?src.sex(nasekal,nasekala)?> 30 kusu smrkoveho dreva a <?src.sex(prinesl,prinesla)?> mi ho.	//22
+Chtel jsem po tobe, abys <?src.sex(nasekal,nasekala)?> 15 kusu kastanoveho dreva a <?src.sex(prinesl,prinesla)?> mi ho.	//23
+Potrebuji poradit	//24
+Jak ti muzu poradit?	//25
+Jak mam sekat?	//26
+Jednoduse, proste vezmes sekyru a seknes s ni do nakeho stromu.	//27
+
+[DIALOG d_nb004 button]
+ON=1
+src.qtag(nb004,1)
+if !(src.findid(i_hatchet))	
+	src.giveitem(i_hatchet)
+endif
+
+ON=2
+if ((src.qtag(nb004)==1)&&(src.rescount(i_log_copper))>=30)
+	src.qtag(nb004,2)
+	src.consume(30,i_log_copper)
+	src.addexp(50)
+	say("Dekuji ti moc.")
+	f_quest_complete(26)  // splnenie questu "Lesnik Grarad - spruce"
+endif
+
+ON=3
+src.qtag(nb004,3)
+
+ON=4
+if ((src.qtag(nb004)==3)&&(src.rescount(i_log_iron))>=15)
+	if (src.lumberjacking > 39.9)
+	  src.qtag(nb004,4)
+	  src.consume(15,i_log_iron)
+	  src.addexp(200)
+	  say("Dekuji ti.")
+	  f_quest_complete(26,1)  // splnenie questu "Lesnik Grarad - chestnut"
+	else
+	  say("Je mi lito, ale s tvymi dovednostmi jsi to <?src.sex(nemohl,nemohla)?> nasekat. Potrebuji abys to <?src.sex(nasekal sam,nasekala sama)?>.");
+	endif
+endif
+		
+[speech spk_nb004]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance>>3)
+	Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_nb004
+endif
+
+//////////////////////////////////////////////////
+//////////////nb005 - rybytvi rybytvi/////////////
+//////////////////////////////////////////////////
+[function f_nb005]
+if (src.qtag(nb005)<1)
+	src.qtag(nb005,0)
+endif
+Dialog(d_nb005)
+
+[DIALOG d_nb005]
+argo.setlocation=5,5
+
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03099)
+
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,1,0)
+argo.text(200,332,1152,1)
+
+if ((src.qtag(nb005)==1)||(src.qtag(nb005)==3))
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,3)	//Nesu ti...
+else
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,2)	//Muzo pomoct ?
+endif
+
+argo.button(490,330,0988,0988,0,3,0)
+argo.text(540,331,1152,14)
+
+if (src.qtag(nb005)>0)
+	argo.button(160,360,0988,0988,0,6,0)
+	argo.text(190,360,1152,24)	// Potrebuji poradit
+endif
+
+argo.page(1)
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+if ((src.qtag(nb005)==1)||(src.qtag(nb005)==3))
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.text(60,395,152,21)	//Zabudol
+endif
+
+argo.page(2)
+if (src.qtag(nb005)==0)
+	argo.HTMLGUMP(170,230,440,100,5,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.text(60,395,152,7)
+elseif (src.qtag(nb005)==1)
+	argo.HTMLGUMP(170,230,440,100,8,0,36)
+	if (src.findid(i_fish_big_1)||src.findid(i_fish_big_2)||src.findid(i_fish_big_3)||src.findid(i_fish_big_4))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,9)
+	endif
+elseif (src.qtag(nb005)==2)
+	argo.HTMLGUMP(170,230,440,100,10,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,3)
+	argo.text(60,395,152,11)
+elseif (src.qtag(nb005)==3)
+	argo.HTMLGUMP(170,230,440,100,12,0,36)
+	if (src.findid(i_fish_cut_cooked))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,13)
+	endif
+else
+	argo.HTMLGUMP(170,230,440,100,15,0,36)
+endif
+
+argo.page(3)
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+argo.page(4)
+if (src.qtag(nb005)==1)
+	if ((src.rescount(i_fish_big_1)>=10)&&(src.rescount(i_fish_big_2)>=10)&&(src.rescount(i_fish_big_3)>=10)&&(src.rescount(i_fish_big_4)>=10))
+		argo.HTMLGUMP(170,230,440,100,17,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,2)
+		argo.text(60,395,152,18)
+	else
+		argo.HTMLGUMP(170,230,440,100,16,0,36)
+	endif
+elseif (src.qtag(nb005)==3)
+	if (src.rescount(i_fish_cut_cooked)>=100)
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,4)
+		argo.text(60,395,152,18)
+	else
+		argo.HTMLGUMP(170,230,440,100,19,0,36)
+	endif
+endif
+
+argo.page(5)
+if (src.qtag(nb005)==1)
+	argo.HTMLGUMP(170,230,440,100,22,0,36)
+elseif (src.qtag(nb005)==3)
+	argo.HTMLGUMP(170,230,440,100,23,0,36)
+endif
+
+argo.page(6)
+argo.HTMLGUMP(170,230,440,100,25,0,36)
+argo.button(25,395,0fa5,0fa7,0,7,0)
+argo.text(60,395,152,26)
+
+argo.page(7)
+argo.HTMLGUMP(170,230,440,100,27,0,36)
+
+[DIALOG d_nb005 text]
+Rybar Broket	//0
+Kdo jsi?	//1
+Muzu ti pomoci?	//2
+Nesu ti...	//3
+Zdravim. Jmenuji se Broket. Jsem rybar.	//4
+Tvoje pomoc by se mi opravdu hodila. Lazaret spotrebuje velke mnozstvi jidla a ja nestiham. Potreboval by sem tak 10 kusu od kazdyho druhu ryby, tedy celkem 40 kusu. Je to jednoduche, staci kdyz vezmes udici do ruky a nahodis splavek do vody. Pokud udici nemas, jednu ti venuji.//5
+<basefont color="#ffff88">*Vidis starsiho muze, v ruce drzi rybarsky prut.<basefont color="#ffffff">//6
+Dobre, donesu vam ty ryby.//7
+Tak ako to vypada s rybami?//8
+Mam je.	//9
+Ano muzes, prines mi 100 uvarenych rybich stejku. Lovit uz umis tak do toho! Na to jak varit se zeptej Odliera.//10
+Jdu na to.	//11
+Tak co? Hotovo?//12
+Ano, zde to mas!//13
+Prohlednout	//14
+Obavam se ze uz pro tebe nemam zadnou dalsi praci, ale zkus se porozhlidnout po okoli mozna nekdo bude potrebovat tvoji pomoc.	//15
+Hmm, neco ti chybi! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//16
+Skvele! Podej mi to. Kdyz budes chtit prijd, mozna pro tebe budu mit dalsi ukol.//	17
+*Podat ryby*	//18
+To nestaci! Potrebuji vic steaku! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//19
+Nadhera! Podej mi to. Dekuji.	//20
+Promin, <?src.sex(zapomel,zapomela)?> jsem, co jsem <?src.sex(mel,mela)?> prinest.	//21
+Chtel jsem po tobe, abys <?src.sex(nalovil,nalovila)?> 10 kusu z kazdeho druhu ryby a <?src.sex(prinesl,prinesla)?> mi je.	//22
+Chtel jsem po tobe, abys <?src.sex(prinesl,prinesla)?> 100 kusu rybacich steaku <?src.sex(prinesl,prinesla)?> mi je.	//23
+Potrebuji poradit	//24
+Jak ti muzu poradit?	//25
+Jak mam lovit ryby?	//26
+Jednoduse, proste vezmes rybarsky prut a nahodis splavek do vody.	//27
+
+[DIALOG d_nb005 button]
+ON=1
+src.qtag(nb005,1)
+if !(src.findid(i_fishing_pole))	
+	src.giveitem(i_fishing_pole)
+endif
+
+ON=2
+if ((src.qtag(nb005)==1)&&(src.rescount(i_fish_big_1)>=10)&&(src.rescount(i_fish_big_2)>=10)&&(src.rescount(i_fish_big_3)>=10)&&(src.rescount(i_fish_big_4)>=10))
+	src.qtag(nb005,2)
+	src.consume(10,i_fish_big_1)
+	src.consume(10,i_fish_big_2)
+	src.consume(10,i_fish_big_3)
+	src.consume(10,i_fish_big_4)
+	src.addexp(50)
+	say("Dekuji ti moc.")
+	f_quest_complete(27)  // splnenie questu "Rybar Broket - ryby"
+endif
+
+ON=3
+src.qtag(nb005,3)
+
+ON=4
+if ((src.qtag(nb005)==3)&&(src.rescount(i_fish_cut_cooked))>=100)
+	src.qtag(nb005,4)
+	src.consume(100,i_fish_cut_cooked)
+	src.addexp(100)
+	say("Dekuji ti.")
+	f_quest_complete(27,1)  // splnenie questu "rybar Broket - fish maso"
+endif
+		
+[speech spk_nb005]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance>>3)
+	Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_nb005
+endif
+
+//////////////////////////////////////////////////
+//////////////nb_006 - liche lord nb//////////////
+//////////////////////////////////////////////////
+[function f_nb006]
+if (src.qtag(nb006)<1)
+	src.qtag(nb006,0)
+endif
+Dialog(d_nb006)
+
+[DIALOG d_nb006]
+argo.setlocation=5,5
+
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03088)
+
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,1,0)
+argo.text(200,332,1152,1)
+
+if (src.qtag(nb006)==1)
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,3)	//Nesu ti...
+else
+	argo.button(325,330,0988,0988,0,2,0)
+	argo.text(350,331,1152,2)	//Muzo pomoct ?
+endif
+
+argo.button(490,330,0988,0988,0,3,0)
+argo.text(540,331,1152,14)
+
+argo.page(1)
+if (src.qtag(nb006)==0)
+	argo.HTMLGUMP(170,230,440,100,4,0,36)
+else
+	argo.HTMLGUMP(170,230,440,100,17,0,36)
+endif
+
+if ((src.qtag(nb006)==1)||(src.qtag(nb006)==3))
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.text(60,395,152,15)	//Zabudol
+endif
+
+argo.page(2)
+if (src.qtag(nb006)==0)
+	argo.HTMLGUMP(170,230,440,100,5,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.text(60,395,152,7)
+elseif (src.qtag(nb006)==1)
+	argo.HTMLGUMP(170,230,440,100,8,0,36)
+	if (src.findid(i_nb_collector_lichelord))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.text(60,395,152,9)
+	endif
+else
+	argo.HTMLGUMP(170,230,440,100,10,0,36)
+endif
+
+argo.page(3)
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+argo.page(4)
+if (src.qtag(nb006)==1)
+	if (<src.findid(i_nb_collector_lichelord).tag.contentscount>>=1)
+		argo.HTMLGUMP(170,230,440,100,12,0,36)
+		argo.button(25,395,0fa5,0fa7,1,0,2)
+		argo.text(60,395,152,13)
+	else
+		argo.HTMLGUMP(170,230,440,100,11,0,36)
+	endif
+endif
+
+argo.page(5)
+if (src.qtag(nb006)==1)
+	argo.HTMLGUMP(170,230,440,100,16,0,36)
+endif
+
+[DIALOG d_nb006 text]
+Necromancer	//0
+Kdo jsi?	//1
+Muzu ti pomoci?	//2
+Nesu ti...	//3
+Zdravim. Sve jmeno ti nereknu, ale mel bych pro tebe ukol!	//4
+Pomoc by se mi hodila. Nedaleko tu radi mocny Liche Lord. Zabij ho, spal ho a dones mi jeho popel jako dukaz o jeho finalni smrti! Jeho telo spalis tak, ze ho posypes magickou latkou obsazenou v tomto vacku.//5
+<basefont color="#ffff88">*Vidis velmi stareho muze v tmavym obleceny, z kteryho jde strach*<basefont color="#ffffff">//6
+Prinesu ti ten popel.//7
+Tak jak si na tom?//8
+Mam to.	//9
+Obavam se, ze uz pro tebe nemam zadnou dalsi praci, ale zkus se porozhlednout po okoli mozna nekdo bude potrebovat tvoji pomoc.	//10
+Hmm, a kde to mas? Ten vacek je prazdny! <basefont color="#ffff88">*mraci se*<basefont color="#ffffff">	//11
+Skvele! Podej mi to.//	12
+*Podat vacek* //13
+Prohlednout	//14
+Zapomel jsem, co mam prinest.//15
+Chtel jsem, aby jsi mi <?src.sex(prinesl,prinesla)?> popel z Liche Lorda.//16
+Zdravim. Sve jmeno ti nereknu.//17
+
+[DIALOG d_nb006 button]
+ON=1
+src.qtag(nb006,1)
+	src.giveitem(i_nb_collector_lichelord)
+
+ON=2
+if ((src.qtag(nb006)==1)&&(<src.findid(i_nb_collector_lichelord).tag.contentscount>>=1))
+	src.qtag(nb006,2)
+	src.consume(i_nb_collector_lichelord)
+	src.addexp(50)
+	say("Dekuji ti moc.")
+	f_quest_complete(28)  // splnenie questu "Necromancer"
+endif
+	
+[speech spk_nb006]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance>>3)
+	Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_nb006
+endif
+
+//////////////////////////////////////////////////
+//////////////nb_007 - Remeslnik Imro/////////////
+//////////////////////////////////////////////////
+[function f_nb007]
+if (src.profession==class_craft)
+	if (src.qtag(nb007)<1)
+		src.qtag(nb007,0)
+	endif
+endif
+Dialog(d_nb007)
+
+[DIALOG d_nb007]
+argo.setlocation=5,5
+
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)	//podklad
+argo.gumppic(40,215,03042)	//ksicht
+
+argo.settext(0,"Remeslnik Imro")	//settext(<id_textu>, <text>)
+argo.text(220,210,52,0)	//text(<x>,<y>,<farba_textu>,<id_textu>)
+
+
+	argo.button(160,330,0988,0988,0,1,0)	//button(<x>,<y>,<obrazok(gump)_nestlaceny_gombik>,<obrazok_stlaceny_gomik>,1-<vypne_gump> , 1 prejde na page(1) , <id_button>)
+	argo.settext(1,"Kdo jsi?")
+	argo.text(200,332,1152,1)
+
+if (src.profession==class_craft)	
+	if ((src.qtag(nb007)==1)||(src.qtag(nb007)==3)||(src.qtag(nb007)==5)||(src.qtag(nb007)==7)||(src.qtag(nb007)==9)||(src.qtag(nb007)==11))
+		argo.button(325,330,0988,0988,0,2,0)
+		argo.settext(2,"Nesu ti...")
+		argo.text(350,331,1152,2)
+	else
+		argo.button(325,330,0988,0988,0,2,0)
+		argo.settext(2,"Muzu pomoct?")
+		argo.text(350,331,1152,2)
+	endif
+	
+	argo.button(490,330,0988,0988,0,3,0)
+	argo.settext(3,"Potrebuji poradit")
+	argo.text(520,331,1152,3)
+	
+	if (src.qtag(nb007)>=2)
+		argo.button(160,360,0988,0988,0,16,0)
+		argo.settext(4,"Obchodovat")
+		argo.text(200,362,1152,4)
+	endif
+
+endif
+
+argo.page(1)
+if (src.profession==class_craft)
+	argo.settext(10,"Bud zdrav remeslniku jsem remeslnik Imro.")
+	argo.HTMLGUMP(170,230,440,100,10,0,36)
+	
+	if ((src.qtag(nb007)>=0)&&(src.qtag(nb007)<2))
+		argo.button(25,395,0fa5,0fa7,0,4,0)
+		argo.settext(31,"Jak vyrobit drat?")
+		argo.text(60,395,152,31)
+		argo.button(25,415,0fa5,0fa7,0,5,0)
+		argo.settext(32,"Jak ziskat material na drat?")
+		argo.text(60,415,152,32)
+	endif
+	
+	if ((src.qtag(nb007)>=2)&&(src.qtag(nb007)<4))
+		argo.button(25,395,0fa5,0fa7,0,6,0)
+		argo.settext(33,"Jak vyrobit tezkou kusi?")
+		argo.text(60,395,152,33)
+		argo.button(25,415,0fa5,0fa7,0,7,0)
+		argo.settext(34,"Jak ziskat material na kusi?")
+		argo.text(60,415,152,34)
+	endif
+	
+	if ((src.qtag(nb007)>=4)&&(src.qtag(nb007)<6))
+		argo.button(25,395,0fa5,0fa7,0,8,0)
+		argo.settext(35,"Jak vyrobit hul?")
+		argo.text(60,395,152,35)
+		argo.button(25,415,0fa5,0fa7,0,9,0)
+		argo.settext(36,"Jak ziskat material na hul?")
+		argo.text(60,415,152,36)
+	endif
+	
+	if ((src.qtag(nb007)>=6)&&(src.qtag(nb007)<8))
+		argo.button(25,395,0fa5,0fa7,0,10,0)
+		argo.settext(37,"Jak sit obleceni?")
+		argo.text(60,395,152,37)
+		argo.button(325,415,0fa5,0fa7,0,11,0)
+		argo.settext(38,"Jak ziskat material na kilt?")
+		argo.text(60,415,152,38)
+	endif
+	
+	if ((src.qtag(nb007)>=8)&&(src.qtag(nb007)<10))
+		argo.button(325,395,0fa5,0fa7,0,12,0)
+		argo.settext(39,"Jak se kove?")
+		argo.text(60,395,152,39)
+		argo.button(325,415,0fa5,0fa7,0,13,0)
+		argo.settext(301,"Jak ziskat material na medeny vikingsky mec?")
+		argo.text(60,415,152,301)
+	endif
+	
+	if ((src.qtag(nb007)>=10)&&(src.qtag(nb007)<12))
+		argo.button(325,395,0fa5,0fa7,0,14,0)
+		argo.settext(302,"Jak se kove helma?")
+		argo.text(60,395,152,302)
+		argo.button(325,415,0fa5,0fa7,0,15,0)
+		argo.settext(303,"Jak ziskat material na zeleznou helmu?")
+		argo.text(60,415,152,303)
+	endif
+	
+	/////
+	
+else
+	argo.settext(10,"Promin, ale nejsi remeslnik, marnis muj cas!")
+	argo.HTMLGUMP(170,230,440,100,10,0,36)
+endif
+
+argo.page(2)
+if (src.qtag(nb007)==0)
+	argo.settext(20,"Jdes jako na zavolanou, potrebuji od tebe pomoc! Prvnim ukolem je vyrobit 50x medeny drat (copper wire). Kdybu si potreboval s necim poradit prijd za mnou. Pomuzes mi?")
+	argo.HTMLGUMP(170,230,440,100,20,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.settext(21,"Pomuzu, jdu na to.")
+	argo.text(60,395,152,21)
+
+elseif (src.qtag(nb007)==1)
+	if (src.findid(i_wire_copper))	// ak ma nejake copper wire
+		if (src.rescount(i_wire_copper)>=50)	// ak ho ma 50
+			if (<src.findid(i_wire_copper).tag(craftedby)>==<src.uid>)	// ak ho vyrobil on(teda aspon ten posledny asi)
+				argo.settext(20,"Vyborne, odevzdej mi je.")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+				argo.button(25,395,0fa5,0fa7,1,0,2)
+				argo.settext(21,"*Podat draty*")
+				argo.text(60,395,152,21)
+			else
+				argo.settext(20,"Ano mas ich dost, ale ako vidim nevyrobil si ich ty sam!")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+			endif
+		else
+			argo.settext(20,"Hmm, tych medenych dratov mas malo.")
+			argo.HTMLGUMP(170,230,440,100,20,0,36)
+		endif
+	else
+		argo.settext(20,"Co mi neses?")
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+	endif
+
+elseif (src.qtag(nb007)==2)
+	argo.settext(20,"Vyborne zrovna sem na tebe myslel , potrebuji od tebe pomoc! Potrebuji od tebe pomoc! Druhym ukolem je vyrobit 1 tezkou kusi ze smrkoviho dreva. Pomuzes mi?")
+	argo.HTMLGUMP(170,230,440,100,20,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,3)
+	argo.settext(21,"Pomuzu, jdu na to.")
+	argo.text(60,395,152,21)
+	
+elseif (src.qtag(nb007)==3)
+	if (src.findid(i_crossbow_heavy_copper))
+		if (src.rescount(i_crossbow_heavy_copper)>=1)
+			if (<src.findid(i_crossbow_heavy_copper).tag(craftedby)>==<src.uid>)
+				argo.settext(20,"Vyborne, odevzdej mi ji.")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+				argo.button(25,395,0fa5,0fa7,1,0,4)
+				argo.settext(21,"*Podat kusi*")
+				argo.text(60,395,152,21)
+			else
+				argo.settext(20,"Ano mas kusi ale ako vidim nevyrobil si ju ty sam!")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+			endif
+		else
+			argo.settext(20,"Hmm, a kde mas tu kusi?")
+			argo.HTMLGUMP(170,230,440,100,20,0,36)
+		endif
+	else
+		argo.settext(20,"Co mi neses?")
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+	endif
+
+elseif (src.qtag(nb007)==4)
+	argo.settext(20,"Tady si! Potrebuji znova pomoct! Tretim ukolem je vyrobit dve nejlepsi smrkove hole. Pomuzes mi?")
+	argo.HTMLGUMP(170,230,440,100,20,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,5)
+	argo.settext(21,"Pomuzu, jdu na to.")
+	argo.text(60,395,152,21)	
+
+elseif (src.qtag(nb007)==5)
+	if (src.findid(i_staff_gnarled_copper))
+		if (src.rescount(i_staff_gnarled_copper)>=2)
+			if (<src.findid(i_staff_gnarled_copper).tag(craftedby)>==<src.uid>)
+				argo.settext(20,"Vyborne, odevzdej mi je.")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+				argo.button(25,395,0fa5,0fa7,1,0,6)
+				argo.settext(21,"*Podat hole*")
+				argo.text(60,395,152,21)
+			else
+				argo.settext(20,"Ano mas sice hole ale ako vidim nevyrobil si je ty sam!")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+			endif
+		else
+			argo.settext(20,"Hmm, a kde mas ty hole?")
+			argo.HTMLGUMP(170,230,440,100,20,0,36)
+		endif
+	else
+		argo.settext(20,"Co mi neses?")
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+	endif
+
+elseif (src.qtag(nb007)==6)
+	argo.settext(20,"Zatim jsi mi velmi <?src.sex(pomohl,pomohla)?>. Potrebuji znova pomoct! Dalsim ctvrtym ukolem je usit 10x kilt. Pomuzes mi?")
+	argo.HTMLGUMP(170,230,440,100,20,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,7)
+	argo.settext(21,"Pomuzu, jdu na to.")
+	argo.text(60,395,152,21)	
+
+elseif (src.qtag(nb007)==7)
+	if (src.findid(i_kilt))
+		if (src.rescount(i_kilt)>=10)
+			if (<src.findid(i_kilt).tag(craftedby)>==<src.uid>)
+				argo.settext(20,"Vyborne, odevzdej mi je.")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+				argo.button(25,395,0fa5,0fa7,1,0,8)
+				argo.settext(21,"*Podat kilty*")
+				argo.text(60,395,152,21)
+			else
+				argo.settext(20,"Ano mas sice kilty ale ako vidim nevyrobil si je ty sam!")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+			endif
+		else
+			argo.settext(20,"Hmm, a kde mas ty kilty?")
+			argo.HTMLGUMP(170,230,440,100,20,0,36)
+		endif
+	else
+		argo.settext(20,"Co mi neses?")
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+	endif
+
+elseif (src.qtag(nb007)==8)
+	argo.settext(20,"Zatim jsi mi velmi <?src.sex(pomohl,pomohla)?>. Potrebuji znova pomoct! Dalsim patym ukolem je ukovat 10x medeny vikingsky mec (copper viking sword). Pomuzes mi?")
+	argo.HTMLGUMP(170,230,440,100,20,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,9)
+	argo.settext(21,"Pomuzu, jdu na to.")
+	argo.text(60,395,152,21)		
+
+elseif (src.qtag(nb007)==9)
+	if (src.findid(i_sword_viking_copper))
+		if (src.rescount(i_sword_viking_copper)>=10)
+			if (<src.findid(i_sword_viking_copper).tag(craftedby)>==<src.uid>)
+				argo.settext(20,"Vyborne, odevzdej mi je.")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+				argo.button(25,395,0fa5,0fa7,1,0,10)
+				argo.settext(21,"*Podat mece*")
+				argo.text(60,395,152,21)
+			else
+				argo.settext(20,"Ano mas sice ty mece ale ako vidim nevyrobil si je ty sam!")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+			endif
+		else
+			argo.settext(20,"Hmm, a kde mas ty mece?")
+			argo.HTMLGUMP(170,230,440,100,20,0,36)
+		endif
+	else
+		argo.settext(20,"Co mi neses?")
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+	endif
+
+elseif (src.qtag(nb007)==10)
+	argo.settext(20,"Zatim jsi mi velmi <?src.sex(pomohl,pomohla)?>. Potrebuji pomoct! Poslednim ukolem je ukovat 5x zeleznou helmu s uzavrenym hledim (Iron closed helm). Pomuzes mi?")
+	argo.HTMLGUMP(170,230,440,100,20,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,11)
+	argo.settext(21,"Pomuzu, jdu na to.")
+	argo.text(60,395,152,21)		
+
+elseif (src.qtag(nb007)==11)
+	if (src.findid(i_iron_closed_helm))
+		if (src.rescount(i_iron_closed_helm)>=5)
+			if (<src.findid(i_iron_closed_helm).tag(craftedby)>==<src.uid>)
+				argo.settext(20,"Vyborne, odevzdej mi je.")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+				argo.button(25,395,0fa5,0fa7,1,0,12)
+				argo.settext(21,"*Podat helmy*")
+				argo.text(60,395,152,21)
+			else
+				argo.settext(20,"Ano mas sice ty helmy ale ako vidim nevyrobil si je ty sam!")
+				argo.HTMLGUMP(170,230,440,100,20,0,36)
+			endif
+		else
+			argo.settext(20,"Hmm, a kde mas ty helmy?")
+			argo.HTMLGUMP(170,230,440,100,20,0,36)
+		endif
+	else
+		argo.settext(20,"Co mi neses?")
+		argo.HTMLGUMP(170,230,440,100,20,0,36)
+	endif
+	
+else
+	argo.settext(20,"Velmi jsi mi <?src.sex(pomohl,pomola)?>, dekuji. Ale uz pro tebe nemam dalsi praci.")
+	argo.HTMLGUMP(170,230,440,100,20,0,36)
+endif
+
+argo.page(3)
+argo.settext(30,"S cim ti muzu poradit?")
+if (src.qtag(nb007)>=0)
+	argo.HTMLGUMP(170,230,440,100,30,0,36)
+	argo.button(25,395,0fa5,0fa7,0,4,0)
+	argo.settext(31,"Jak vyrobit drat?")
+	argo.text(60,395,152,31)
+	argo.button(25,415,0fa5,0fa7,0,5,0)
+	argo.settext(32,"Jak ziskat material na drat?")
+	argo.text(60,415,152,32)
+endif
+
+if (src.qtag(nb007)>=2)
+	argo.button(25,435,0fa5,0fa7,0,6,0)
+	argo.settext(33,"Jak vyrobit tezkou kusi?")
+	argo.text(60,435,152,33)
+	argo.button(25,455,0fa5,0fa7,0,7,0)
+	argo.settext(34,"Jak ziskat material na kusi?")
+	argo.text(60,455,152,34)
+endif
+
+if (src.qtag(nb007)>=4)
+	argo.button(25,475,0fa5,0fa7,0,8,0)
+	argo.settext(35,"Jak vyrobit hul?")
+	argo.text(60,475,152,35)
+	argo.button(25,495,0fa5,0fa7,0,9,0)
+	argo.settext(36,"Jak ziskat material na hul?")
+	argo.text(60,495,152,36)
+endif
+
+if (src.qtag(nb007)>=6)
+	argo.button(25,515,0fa5,0fa7,0,10,0)
+	argo.settext(37,"Jak sit obleceni?")
+	argo.text(60,515,152,37)
+	argo.button(325,395,0fa5,0fa7,0,11,0)
+	argo.settext(38,"Jak ziskat material na kilt?")
+	argo.text(360,395,152,38)
+endif
+
+if (src.qtag(nb007)>=8)
+	argo.button(325,415,0fa5,0fa7,0,12,0)
+	argo.settext(39,"Jak se kove?")
+	argo.text(360,415,152,39)
+	argo.button(325,435,0fa5,0fa7,0,13,0)
+	argo.settext(301,"Jak ziskat material na medeny vikingsky mec?")
+	argo.text(360,435,152,301)
+endif
+
+if (src.qtag(nb007)>=10)
+	argo.button(325,455,0fa5,0fa7,0,14,0)
+	argo.settext(302,"Jak se kove helma?")
+	argo.text(360,455,152,302)
+	argo.button(325,475,0fa5,0fa7,0,15,0)
+	argo.settext(303,"Jak ziskat material na zeleznou helmu?")
+	argo.text(360,475,152,303)
+endif
+
+argo.page(4)
+argo.settext(40,"Draty se vyrabeji pomoci znalosti Tinkering. Vyrabet lze nejen draty, ale treba i lahve, hudebni nastroje, sperky a kostene brneni. Vzdy je treba si prvne rozmyslet, co vlastne chces vyrabet a jake suroviny budou potreba (menu vyroby aktivkujes poklikanim na Tinker tools). Na jeden medeny drat potrebujes jednen medeny ingot.")
+argo.HTMLGUMP(170,230,440,100,40,0,36)
+
+argo.page(5)
+argo.settext(50,"Medenou rudu natezis v dole (Mining), ale ingoty musis z rudy pretavit. To se dela pomoci skillu Kovarstvi (Blacksmith) a krome kladiva v ruce potrebujes i vyhen (Menu otevres poklikanim na rudu nebo na ingoty). Pretavuj ingoty spise po mensim mnozstvi, pak jich pri neuspechu mene spalis!")
+argo.HTMLGUMP(170,230,440,100,50,0,36)
+
+argo.page(6)
+argo.settext(60,"Kuse se vyrabeji pomoci znalosti Bowcrafting. Vyrabet lze nejen kuse, ale i luky, sipy a sipky. Vzdy je treba si prvne rozmyslet, co vlastne chces vyrabet a jake suroviny budou potreba (menu vyroby aktivkujes poklikanim na ptaci pericko). Na jednu tezkou kusi potrebujes dve tetivy a 30 smrkovych polen.")
+argo.HTMLGUMP(170,230,440,100,60,0,36)
+
+argo.page(7)
+argo.settext(70,"Polena si natezis ale tetivy ti mohu dat pouze ja. Jednu tetivu ti vymenim za 30 varenych rybich steaku.")
+argo.HTMLGUMP(170,230,440,100,70,0,36)
+
+argo.page(8)
+argo.settext(80,"Hole se vyrabeji pomoci znalosti Truhlarstvi (Carpentry). Vyrabet lze nejen hole, ale zidle, stoly, skrine, truhly atd. Opravdovi velmistri umi vyrobit i treba celou lod! Vzdy je treba si prvne rozmyslet, co vlastne chces vyrabet a jake suroviny budou potreba (menu vyroby aktivkujes poklikanim na hoblik a nebo pilku).")
+argo.HTMLGUMP(170,230,440,100,80,0,36)
+
+argo.page(9)
+argo.settext(90,"Na jednu tezkou hul potrebujes aktivacni krystal a 30 smrkovych polen. Polena si natezis, ale krystal ti mohu dat pouze ja. Jeden aktivacni krystal ti vymenim za 50 kousku medenych ingotu.")
+argo.HTMLGUMP(170,230,440,100,90,0,36)
+
+argo.page(10)
+argo.settext(100,"Obleceni se sije znalosti Siti (Tailoring). Usit muzes nejen sukne, ale i kalhoty, trika, plaste, roby atd. Sit se da nejen z latky, ale i z kuze. Usit muzes treba tasku, penezenku, ale  i kozene brneni! Vzdy je treba si prvne rozmyslet, co vlastne chces vyrabet a jake suroviny budou potreba (menu siti aktivkujes poklikanim na sici sadu - sewing kit).")
+argo.HTMLGUMP(170,230,440,100,100,0,36)
+
+argo.page(11)
+argo.settext(110,"Na jeden kilt potrebujes 8x baliku latky a 3 spulky niti. Latku muzes utkat na tkalcovskem stavu z niti z bavlny a nebo vlny ovci. Nite na siti lze delat pouze z balvniku. Vlna ovci na ni neni vhodna!")
+argo.HTMLGUMP(170,230,440,100,110,0,36)
+
+argo.page(12)
+argo.settext(120,"Mec se ukove pomoci znalosti kovarstvi (Blacksmithing). Ukovat muzes mec, ale i mnoho dalsich zbrani, brneni, ale pomoci teto znalosti pretavujes i rudu na ingoty. Vzdy je treba si prvne rozmyslet, co vlastne chces vyrabet a jake suroviny budou potreba (menu aktivkujes poklikanim na ingoty).")
+argo.HTMLGUMP(170,230,440,100,120,0,36)
+
+argo.page(13)
+argo.settext(130,"Na jeden mec potrebujes 19x medeny ingot. Kovat lze pouze s kladivem u kovadliny. medeny mec je vsak pravdepodobne nad tve schopnosti (32%), proto musis trochu trenovat a zlepsit se v teto dovednosti. Nejlepe se trenuje napriklad pretavovanim rudy na ingoty (idealne po jednom kusu) a nebo kovanim jednoduchych zbrani (napriklad medena kudlicka).")
+argo.HTMLGUMP(170,230,440,100,130,0,36)
+
+argo.page(14)
+argo.settext(140,"Helma se ukove stejne jako mec pomoci znalosti kovarstvi (Blacksmithing). Vzdy je treba si prvne rozmyslet, co vlastne chces vyrabet a jake suroviny budou potreba (menu aktivkujes poklikanim na ingoty).")
+argo.HTMLGUMP(170,230,440,100,140,0,36)
+
+argo.page(15)
+argo.settext(150,"Na jednu helmu potrebujes 11x zelezny ingot. Kovat lze pouze s kladivem u kovadliny. Zelezna helma je vsak pravdepodobne nad tve schopnosti (40%), proto musis trochu trenovat a zlepsit se v teto dovednosti. Dalsim problemem bude i zelezna ruda, Tu muzes ziskat pouze v dole (znalost mining), ale take az od vyssi urovne (40%). Tezbu trenujes tak, ze kopes v dole. Cim vic kopes, tim budes lepsi.")
+argo.HTMLGUMP(170,230,440,100,150,0,36)
+
+argo.page(16)
+argo.settext(160,"Co bys rad?")
+argo.HTMLGUMP(170,230,440,100,160,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,16)
+argo.settext(161,"Vymenit 30 varenych rybych steaku za tetivu na smrkovou kusi.")
+argo.text(60,395,152,161)
+if (src.qtag(nb007)>=4)
+	argo.button(25,415,0fa5,0fa7,1,0,17)
+	argo.settext(162,"Vymenit 50 medenych ingotu za aktivacny krystal na smrkovou hul.")
+	argo.text(60,415,152,162)
+endif
+
+
+[DIALOG d_nb007 text]
+
+[DIALOG d_nb007 button]
+ON=1
+src.qtag(nb007,1)
+
+ON=2
+if ((src.rescount(i_wire_copper)>=50)&&(<src.findid(i_wire_copper).tag(craftedby)>==<src.uid>))
+	src.qtag(nb007,2)
+	src.consume(50,i_wire_copper)
+	src.addexp(50)
+	say("Dekuji ti, mam pro tebe dalsi ukol")
+	f_quest_complete(29)  // splnenie questu "Imro - copper wire"
+endif
+
+ON=3
+src.qtag(nb007,3)
+
+ON=4
+if ((src.rescount(i_crossbow_heavy_copper)>=1)&&(<src.findid(i_crossbow_heavy_copper).tag(craftedby)>==<src.uid>))
+	src.qtag(nb007,4)
+	src.consume(i_crossbow_heavy_copper)
+	src.addexp(80)
+	say("Dekuji ti, mam pro tebe dalsi ukol")
+	f_quest_complete(29,1)  // splnenie questu "Imro - crossbow heavy copper"
+endif
+
+ON=5
+src.qtag(nb007,5)
+
+ON=6
+if ((src.rescount(i_staff_gnarled_copper)>=2)&&(<src.findid(i_staff_gnarled_copper).tag(craftedby)>==<src.uid>))
+	src.qtag(nb007,6)
+	src.consume(2,i_staff_gnarled_copper)
+	src.addexp(100)
+	say("Dekuji ti, mam pro tebe dalsi ukol")
+	f_quest_complete(29,2)  // splnenie questu "Imro - staff gn copper"
+endif
+
+ON=7
+src.qtag(nb007,7)
+
+ON=8
+if ((src.rescount(i_kilt)>=10)&&(<src.findid(i_kilt).tag(craftedby)>==<src.uid>))
+	src.qtag(nb007,8)
+	src.consume(10,i_kilt)
+	src.addexp(100)
+	say("Dekuji ti, mam pro tebe dalsi ukol")
+	f_quest_complete(29,3)  // splnenie questu "Imro - kilts"
+endif
+
+ON=9
+src.qtag(nb007,9)
+
+ON=10
+if ((src.rescount(i_sword_viking_copper)>=10)&&(<src.findid(i_sword_viking_copper).tag(craftedby)>==<src.uid>))
+	src.qtag(nb007,10)
+	src.consume(10,i_sword_viking_copper)
+	src.addexp(250)
+	say("Dekuji ti, mam pro tebe dalsi ukol")
+	f_quest_complete(29,4)  // splnenie questu "Imro - sword viking copper"
+endif
+
+ON=11
+src.qtag(nb007,11)
+
+ON=12
+if ((src.rescount(i_iron_closed_helm)>=5)&&(<src.findid(i_iron_closed_helm).tag(craftedby)>==<src.uid>))
+	src.qtag(nb007,12)
+	src.consume(5,i_iron_closed_helm)
+	src.addexp(400)
+	say("Dekuji ti.")
+	f_quest_complete(29,5)  // splnenie questu "Imro - iron closed helm"
+endif
+
+ON=16
+if (src.rescount(i_fish_cut_cooked)>=30)
+	src.consume(30,i_fish_cut_cooked)	
+	src.giveitem(i_tetiva_spruce)
+else
+	say("A kde mam ty ryby?!")
+endif
+
+ON=17
+if (src.rescount(i_ingot_copper)>=50)
+	src.consume(50,i_ingot_copper)	
+	src.giveitem(i_krystal_spruce)
+else
+	say("A co ty medene ingoty!?")
+endif
+
+[speech spk_nb007]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance>>3)
+	Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_nb007
+endif
+
+//////////////////////////////////////////////////
+//////////////nb_gatekeeper - Port na 3+ lvl//////
+//////////////////////////////////////////////////
+[function f_nb_gatekeeper]
+dialog(d_nb_gatekeeper)
+
+[DIALOG d_nb_gatekeeper]
+argo.setlocation=5,5
+
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03049)
+
+argo.settext(0,"Gatekeeper")
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,2,0)
+argo.settext(1,"Jaka cesta?")
+argo.text(200,332,1152,1)
+
+argo.page(1)
+if (<src.tag(level)>>=3)
+	argo.settext(2,"Vidim, ze jsi <?src.sex(pripraven,pripravena)?> na dalsi cestu. Prejes si ji podstoupit?")
+	argo.HTMLGUMP(170,230,440,100,2,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.settext(3,"Ano.")
+	argo.text(60,395,152,3)
+	argo.button(25,415,0fa5,0fa7,1,0,0)
+	argo.settext(4,"Ne.")
+	argo.text(60,415,152,4)
+else
+	argo.settext(2,"Jeste nejsi <?src.sex(pripraven,pripravena)?> na cestu. Bez jeste trenovat a prijd az budes silnejsi")
+	argo.HTMLGUMP(170,230,440,100,2,0,36)
+endif
+
+argo.page(2)
+if (<src.tag(level)>>=3)
+	argo.settext(5,"Pozorne poslouchej! Jelikoz jsi jiz dostatecne silny, tva cesta muze pokracovat dal. Nyni prisel cas volby. Ve svete zuri valka. Valka mezi Gondorem a Mordorem. Ty se musis rozhodnout, ke ktere strane se pridas. Zvolis li pokracovat dal, budes postaven pred tezkou volbu, ale ta volba je nutna. Po volbe strany budes portnut do mista, ktere ozkousi tve schopnosti a muze te povysit na rank Expert. Diky tomuto povyseni budes moci sve schopnosti nadale zvysovat. Postupem casu budes postupovat dalsi zkousky - mistrovskou a velmistrovskou, aby jsi dosahl dokonalosti ve tvych dovednostech. Prejes si podstoupit tuto cestu?")
+	argo.HTMLGUMP(170,230,440,100,5,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,1)
+	argo.settext(6,"Ano.")
+	argo.text(60,395,152,6)
+	argo.button(25,415,0fa5,0fa7,1,0,0)
+	argo.settext(7,"Ne.")
+	argo.text(60,415,152,7)
+else
+	argo.settext(5,"Ve svete zuri valka. Valka mezi Gondorem a Mordorem. Ty se musis rozhodnout, ke ktere strane se pridas. Po volbe strany budes portnut do mista, ktere ozkousi tve schopnosti a muze te povysit na rank Expert. Diky tomuto povyseni budes moci sve schopnosti nadale zvysovat. Postupem casu budes postupovat dalsi zkousky - mistrovskou a velmistrovskou, aby jsi dosahl dokonalosti ve tvych dovednostech.")
+	argo.HTMLGUMP(170,230,440,100,5,0,36)
+endif
+
+
+[DIALOG d_nb_gatekeeper text]
+
+[DIALOG d_nb_gatekeeper button]
+ON=0
+
+ON=1
+if (<src.tag(level)>>=3)
+	src.go(4764,1362,10,10)
+  src.nbTags_remove
+endif
+		
+[speech spk_nb_gatekeeper]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance>>3)
+	Src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_nb_gatekeeper
+endif

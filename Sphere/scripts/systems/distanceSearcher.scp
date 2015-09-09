@@ -1,0 +1,190 @@
+
+/////////////////////////////////////////////////
+//     D I S T A N C E   S E A R C H E R       //
+/////////////////////////////////////////////////
+
+// USAGE:
+//  [function tst]
+//  arg(result,<finduid(<inDistance_getChars(20,<src>)>)>)
+//  result.tag.dump
+//  result.remove
+
+//  [function tst]
+//  arg(result,<finduid(<inDistance_getItems(20)>)>)
+//  arg(i,0)
+//  while (<arg(i)> < <result.tag(objectsCount)>)
+//    result.tag(object[<eval arg(i)>]).f_MANAGE_ME
+//    
+//    arg(i,#+1)
+//  endwhile
+//  result.remove
+
+
+/////////////////////////////////////////
+//  U S E A B L E   F U N C T I O N S  //
+/////////////////////////////////////////
+
+//returns an object of possible chars in the given distance
+//
+// argv(0) ~ distance
+// argv(1) ~ from whom to calculate a distance
+[function inDistance_getChars]
+f_getRelevantSectors(<argv(0)>) // sets global variables
+var(distanceSearcher_DISTANCE,<argv(0)>)
+var(distanceSearcher_SRC,<argv(1)>)
+return <argv(1).f_distanceSearcher_move(0,f_distanceSearcher_addChars)> // holds the uid of an object containing found chars
+
+//returns an object of possible items in the given distance
+//
+// argv(0) ~ distance
+// argv(1) ~ from whom to calculate a distance
+[function inDistance_getItems]
+f_getRelevantSectors(<argv(0)>) // sets global variables
+var(distanceSearcher_DISTANCE,<argv(0)>)
+var(distanceSearcher_SRC,<argv(1)>)
+return <argv(1).f_distanceSearcher_move(1,f_distanceSearcher_addItems)> // holds the uid of an object containing found items
+
+
+/////////////////////////////////////////
+//  S U P P O R T   F U N C T I O N S  //
+/////////////////////////////////////////
+
+[defnames map_sectors]
+def_mapplaneX[1]       6143
+def_mapplaneY[1]       4095
+def_mapplaneX[2]       2303
+def_mapplaneY[2]       1599
+
+
+// sets 4 global variables: sectorsXNegative, sectorsYNegative, sectorsXPositive, sectorsYPositive
+// these are used to determine, where sholud sector_searcher go
+//uid ~ char that is searching sectors in the given distance
+//argv(0) ~ distance
+[function f_getRelevantSectors]
+	// set values
+if (<eval <return_nth(4,<p>)>> == 2) // determines what map is used - restricts the world size
+  arg(mapplane,2)
+else
+  arg(mapplane,1)
+endif
+
+arg(playerX,<getXPos(<p>)>)
+arg(playerY,<getYPos(<p>)>)
+arg(minX,<eval (playerX - <argv(0)>)>)
+arg(minY,<eval (playerY - <argv(0)>)>)
+arg(maxX,<eval (playerX + <argv(0)>)>)
+arg(maxY,<eval (playerY + <argv(0)>)>)
+if (<minX> < 0)
+  arg(minX,0)
+elseif (<maxX> > <def_mapplaneX[<arg(mapplane)>]>) // unsafe call with distances greater than half the canvas size
+  arg(maxX,<def_mapplaneX[<arg(mapplane)>]>)
+endif
+if (<minY> < 0)
+  arg(minY,0)
+elseif (<maxY> > <def_mapplaneY[<arg(mapplane)>]>)
+  arg(maxY,<def_mapplaneY[<arg(mapplane)>]>)
+endif
+
+arg(XinSector,<eval (playerX%64)>) // the X position inside current sector (0 - 63)
+arg(YinSector,<eval (playerY%64)>) // the Y position inside current sector (0 - 63)
+
+	// calculate relevant sectors
+var(sectorsXNegative,<f_sectors_calculateNegative(<eval (<playerX>-<minX>)>,<XinSector>)>)
+var(sectorsXPositive,<f_sectors_calculatePositive(<eval (<maxX>-<playerX>)>,<XinSector>)>)
+var(sectorsYNegative,<f_sectors_calculateNegative(<eval (<playerY>-<minY>)>,<YinSector>)>)
+var(sectorsYPositive,<f_sectors_calculatePositive(<eval (<maxY>-<playerY>)>,<YinSector>)>)
+
+//argv(0) ~ distance
+//argv(1) ~ positionInSector
+[function f_sectors_calculateNegative]
+arg(result,<eval (<argv(1)> - <argv(0)>)>) // temporary value
+if (<arg(result)> < 0)
+  arg(result,<eval ( ( <absolute(<arg(result)>)> /64) + 1)>) // number of sectors to check in negative direction
+else
+  arg(result,0)
+endif
+return<result>
+
+//argv(0) ~ distance
+//argv(1) ~ positionInSector
+[function f_sectors_calculatePositive]
+arg(result,<eval (<argv(1)> + <argv(0)>)>) // temporary value
+if (<arg(result)> > 63)
+  arg(result,<eval (<arg(result)> / 64)>) // number of sectors to check in positive direction
+else
+  arg(result,0)
+endif
+return<result>
+
+
+// moves the i_distanceSearcher through the computed sectors, saves all relevant objects
+//  and returns itself as the holder of those found objects
+//
+// argv(0) ~ searchMode - 0 == search for chars, 1 == search for items
+// argv(1) ~ the function name that should be triggered
+[function f_distanceSearcher_move]
+newItemSafe(i_distanceSearcher)
+arg(searcher,<lastnew>)
+searcher.tag(searchFunction,<argv(1)>)
+searcher.p = <p>
+arg(sectorsX,<eval (<var(sectorsXNegative)> + <var(sectorsXPositive)> + 1)>) // number of sectors in the X row
+arg(sectorsY,<eval (<var(sectorsYNegative)> + <var(sectorsYPositive)> + 1)>) // number of sectors in the Y row
+
+  //start searching sectors in the left upper corner of the sectors grid
+searcher.move(-<eval (<var(sectorsXNegative)>*64)>,-<eval (<var(sectorsYNegative)>*64)>)
+arg(x_position,0)
+arg(y_position,0)
+var(distanceSearcher_STOP,0)
+var(distanceSearcher_UID,<arg(searcher)>)
+while (<arg(x_position)> < <arg(sectorsX)>) // go through all the valid sectors in an X row
+  while (<arg(y_position)> < <arg(sectorsY)>)
+    if (<argv(0)>) // is this an item search?
+      searcher.trigger(@SearchForItems) // needs to call the trigger on the searcher item in order to bypass players privileges to call sector searches
+    else
+      searcher.trigger(@SearchForChars)
+    endif
+    if (<distanceSearcher_STOP>)
+      return<searcher>
+    endif
+    searcher.move(0,64)
+    arg(y_position,#+1)
+  endwhile
+  searcher.move(64,<eval (sectorsY*(-64))>) // move back to the first Y sector and one position forward by the X coord.
+  arg(x_position,#+1)
+  arg(y_position,0)
+endwhile
+return<searcher>
+
+[itemdef i_distanceSearcher]
+NAME=Distance Searcher
+ID=02D38
+TYPE=t_script
+
+on=@Create
+attr=090
+timer=1
+
+on=@Timer
+remove
+
+on=@SearchForChars
+arg(safeSrc,<src>)
+src=#00
+sector.allChars.<tag(searchFunction)>
+src=<arg(safeSrc)>
+var(distanceSearcher_SRC).say("am in position <p>")
+
+on=@SearchForItems
+sector.allItems.<tag(searchFunction)>
+
+[function f_distanceSearcher_addChars]
+if (<distancefrom(<var(distanceSearcher_SRC)>)> <= <var(distanceSearcher_DISTANCE)>)
+  var(distanceSearcher_UID).f_customLink_add(<uid>,object)
+endif
+
+[function f_distanceSearcher_addItems]
+if (<distancefrom(<var(distanceSearcher_SRC)>)> <= <var(distanceSearcher_DISTANCE)>)
+  if (<uid> != <var(distanceSearcher_UID)>)
+    var(distanceSearcher_UID).f_customLink_add(<uid>,object)
+  endif
+endif

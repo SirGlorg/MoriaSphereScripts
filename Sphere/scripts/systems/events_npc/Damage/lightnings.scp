@@ -1,0 +1,109 @@
+// tags to edit behavior:
+// tag.npc_critic_chance=250 // 25% chance to trigger this event
+// tag.npc_critic_dmg=50,60 // dmg in between 50 and 60
+
+//////////////////////////////////////////////////
+///// E_LIGHTNINGS
+
+[events e_lightnings]
+on=@gethit
+if !(<eval tag(e_lightnings_chance)>)
+  tag(e_lightnings_chance,50) // 5.0% chance
+endif
+if !(<eval tag(e_lightnings_range)>)
+  tag(e_lightnings_range,5)
+endif
+if (chance(<tag(e_lightnings_chance)>,3))
+  lightnings
+endif
+
+on=@Created
+on=@DrinkingPotion
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+on=@afterswing
+
+
+[function lightnings]
+arg(j,<rand(2)>)
+arg(start_x,<eval(-tag(e_lightnings_range)+<rand(eval(2*tag(e_lightnings_range)+1))>)>)
+arg(start_y,<eval(-tag(e_lightnings_range)+<rand(eval(2*tag(e_lightnings_range)+1))>)>)
+sound=snd_spell_lightning
+if (<j>==0)
+  arg(i,-3)
+  while (arg(i) <= 3)
+    f_lightningDmg_place(<eval(<p_x>+<start_x>+i)>,<eval(<p_y>+<start_y>)>,<p_z>,<mapplane>)
+    arg(i,#+1)
+  endwhile
+  arg(i,-3)
+  while (arg(i) <= 3)
+    f_lightningDmg_place(<eval(<p_x>+<start_x>)>,<eval(<p_y>+<start_y>+i)>,<p_z>,<mapplane>)
+    arg(i,#+1)
+  endwhile
+elseif (<j>==1)
+  arg(i,-3)
+  while (arg(i) <= 3)
+    f_lightningDmg_place(<eval(<p_x>+<start_x>+i)>,<eval(<p_y>+<start_y>+i)>,<p_z>,<mapplane>)
+    arg(i,#+1)
+  endwhile
+  arg(i,-3)
+  while (arg(i) <= 3)
+    f_lightningDmg_place(<eval(<p_x>+<start_x>-i)>,<eval(<p_y>+<start_y>+i)>,<p_z>,<mapplane>)
+    arg(i,#+1)
+  endwhile
+endif
+
+[function f_lightningDmg_place] //x,y,z,mapplane, <optional> damage
+newitem(<i_lightning_damage>)
+lastnew.p=<eval argv(0)>,<eval argv(1)>,<eval argv(2)>,<eval argv(3)>
+lastnew.link=<UID>
+lastnew.update
+if (<eval argv(4)>)
+  lastnew.tag(damage,<argv(4)>)
+endif
+
+[itemdef i_lightning_damage]
+id=02ee0
+name=Zasah blesku
+
+on=@create
+timer=2
+color=098a
+attr=attr_move_never 
+
+on=@step
+if (src.isGM) || (src.isDead)
+  return 1
+endif
+if !((<link.uid>) == (<src.uid>)) && (src.isPlayer || src.isPet)	//dame dmg i summonum a jezditkum
+  if (src.isEvent(e_lightning_damage))
+    if (<src.tag(lightningDamageStep)> > <serv.time>) // if the player stepped on the firecolumn at this position in the last 2 seconds
+      return 1
+    endif
+  endif
+  if (strlen(<tag(damage)>))
+    src.damage_noresponse(<eval tag(damage)>,dam_lightning|dam_magic)
+  else
+    src.damage_noresponse(<eval {40 80}>,dam_lightning|dam_magic)
+  endif
+  src.events=+e_lightning_damage
+  src.tag(lightningDamageStep,<serv.time>+20) // 2 seconds silence
+  remove
+endif
+
+[events e_lightning_damage]
+on=@step
+tag.remove(lightningDamageStep)
+events=-e_lightning_damage
+
+on=@Created
+on=@DrinkingPotion
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+
+[eof]

@@ -1,0 +1,340 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Friday, April 28, 2000
+//
+
+//VERSION=0.54
+
+// General Skill menus for creation of items.
+// Hard coded ref names: (called directly form server)
+// sm_alchemy = dclick on alch tools  - presunuto do sphereitem_potions
+// sm_summon
+// sm_polymorph = polymorph menus
+// sm_cartography = dclick on blank map
+// sm_bowcraft =  knife on wood - presunuto do sphereitem_bows
+// sm_bolts = dclick on arrows or shafts - presunuto do sphereitem_bows
+// sm_blacksmith = dclick on tool
+// sm_carpentry = dclick on carp tool - presunuto do sphereitem_nabytek
+// sm_tailor_leather = dclick on sewing kit - presunuto do sphereitem_tailor
+// sm_tailor_cloth  - presunuto do sphereitem_tailor
+// sm_tinker = dclick on tinker tools. - presunuto do sphereitem_tinker
+// sm_inscription = dclick on blank scroll
+// sm_cook = ??? NOT USED YET - presunuto do sphereitem_tailor (bude pouzito rucne :)
+
+[SKILLMENU sm_summon]
+What do you want to summon ?
+
+ON=i_pet_horse_brown_lt <name>
+TESTIF (src.profession!=class_necro)
+TESTIF (src.MAGERY>400)
+TESTIF (src.hasStaff(oak))
+SUMMON=c_horse_brown_mage
+
+ON=i_pet_bear_polar <name>
+TESTIF (src.profession!=class_necro)
+TESTIF (src.MAGERY>600)
+TESTIF (src.hasStaff(oak))
+SUMMON=c_bear_polar_mage
+
+ON=i_PET_SCORP <name>
+TESTIF (src.profession!=class_necro)
+TESTIF (src.MAGERY>540)
+TESTIF (src.hasStaff(oak))
+SUMMON=c_scorpion_giant_mage
+
+ON=i_pet_Grizzly <name>
+TESTIF (src.profession!=class_necro)
+TESTIF (src.MAGERY>480)
+TESTIF (src.hasStaff(chestnut))
+SUMMON=c_bear_grizzly_mage
+
+
+ON=i_PET_BEAR Black Bear
+TESTIF (src.profession!=class_necro)
+TESTIF (src.MAGERY>420)
+TESTIF (src.hasStaff(spruce))
+SUMMON=c_bear_black_mage
+
+ON=i_PET_BEAR Brown Bear
+TESTIF (src.profession!=class_necro)
+TESTIF (src.MAGERY>360)
+TESTIF (src.hasStaff(spruce))
+SUMMON=c_bear_brown_mage
+
+ON=i_PET_RAT_2 <name>
+TESTIF (src.profession!=class_necro)
+TESTIF (src.MAGERY>300)
+TESTIF (src.hasStaff(spruce))
+SUMMON=c_rat_giant_mage
+
+ON=i_pet_horse_gray Bone Horse
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>400)
+TESTIF (src.hasStaff(oak))
+SUMMON=c_horse_undead_necro
+
+ON=i_pet_GARG Satan level 1
+TESTIF (src.profession == class_necro)
+TESTIF (src.Mana>100)
+TESTIF (src.restest(2 i_reag_daemon_bone))
+TESTIF (src.restest(2 i_reag_dragon_blood))
+TESTIF (src.MAGERY>960)
+TESTIF (src.hasStaff(mahagon))
+TESTIF (src.tag(ra_satan_vylepseni)<10)
+SUMMON=c_satan_necro
+
+ON=i_pet_GARG Satan level 2
+TESTIF (src.profession == class_necro)
+TESTIF (src.Mana>100)
+TESTIF (src.restest(2 i_reag_daemon_bone))
+TESTIF (src.restest(2 i_reag_dragon_blood))
+TESTIF (src.MAGERY>960)
+TESTIF (src.hasStaff(mahagon))
+TESTIF (src.tag(ra_satan_vylepseni)>9)
+TESTIF (src.tag(ra_satan_vylepseni)<20)
+SUMMON=c_satan_necro_2
+
+ON=i_pet_GARG Satan level 3
+TESTIF (src.profession == class_necro)
+TESTIF (src.Mana>100)
+TESTIF (src.restest(2 i_reag_daemon_bone))
+TESTIF (src.restest(2 i_reag_dragon_blood))
+TESTIF (src.MAGERY>960)
+TESTIF (src.hasStaff(mahagon))
+TESTIF (src.tag(ra_satan_vylepseni)>19)
+TESTIF (src.tag(ra_satan_vylepseni)<30)
+SUMMON=c_satan_necro_3
+
+ON=i_pet_GARG Satan level 4
+TESTIF (src.profession == class_necro)
+TESTIF (src.Mana>100)
+TESTIF (src.restest(2 i_reag_daemon_bone))
+TESTIF (src.restest(2 i_reag_dragon_blood))
+TESTIF (src.MAGERY>960)
+TESTIF (src.hasStaff(mahagon))
+TESTIF (src.tag(ra_satan_vylepseni)>29)
+SUMMON=c_satan_necro_4
+
+ON=i_pet_GARG Temny Vampir Level 1
+TESTIF (src.profession==class_necro)
+TESTIF (src.Mana>70)
+TESTIF (src.restest(1 i_reag_executioners_cap))
+TESTIF (src.restest(2 i_reag_dragon_blood))
+TESTIF (src.MAGERY>920)
+TESTIF (src.hasStaff(teak))
+TESTIF (src.tag(ra_velky_vampyr_vylepseni)<10)
+SUMMON=c_vampire_great_necro
+
+ON=i_pet_GARG Temny Vampir Level 2
+TESTIF (src.profession==class_necro)
+TESTIF (src.Mana>70)
+TESTIF (src.restest(1 i_reag_executioners_cap))
+TESTIF (src.restest(2 i_reag_dragon_blood))
+TESTIF (src.MAGERY>920)
+TESTIF (src.hasStaff(teak))
+TESTIF (src.tag(ra_velky_vampyr_vylepseni)>9)
+TESTIF (src.tag(ra_velky_vampyr_vylepseni)<20)
+SUMMON=c_vampire_great_necro_2
+
+ON=i_pet_GARG Temny Vampir Level 3
+TESTIF (src.profession==class_necro)
+TESTIF (src.Mana>70)
+TESTIF (src.restest(1 i_reag_executioners_cap))
+TESTIF (src.restest(2 i_reag_dragon_blood))
+TESTIF (src.MAGERY>920)
+TESTIF (src.hasStaff(teak))
+TESTIF (src.tag(ra_velky_vampyr_vylepseni)>19)
+TESTIF (src.tag(ra_velky_vampyr_vylepseni)<30)
+SUMMON=c_vampire_great_necro_3
+
+ON=i_pet_GARG Temny Vampir Level 4
+TESTIF (src.profession==class_necro)
+TESTIF (src.Mana>70)
+TESTIF (src.restest(1 i_reag_executioners_cap))
+TESTIF (src.restest(2 i_reag_dragon_blood))
+TESTIF (src.MAGERY>920)
+TESTIF (src.hasStaff(teak))
+TESTIF (src.tag(ra_velky_vampyr_vylepseni)>29)
+SUMMON=c_vampire_great_necro_4
+
+ON=i_pet_LICH Liche Lord
+TESTIF (src.profession==class_necro)
+TESTIF (src.restest(2 i_reag_blood_vial))
+TESTIF (src.hasStaff(teak))
+TESTIF (src.Mana>40)
+TESTIF (src.MAGERY>880)
+SUMMON=c_liche_lord_necro
+
+ON=i_pet_elem_water Death Elemental
+TESTIF (src.profession==class_necro)
+TESTIF (src.Mana>35)
+TESTIF  (src.restest(2 i_reag_bone))
+TESTIF (src.MAGERY>840)
+TESTIF (src.hasStaff(teak))
+SUMMON=c_elem_death_necro
+
+ON=i_pet_ZOMBIE Mummy
+TESTIF (src.profession==class_necro)
+TESTIF (src.Mana>30)
+TESTIF (src.MAGERY>780)
+TESTIF (src.hasStaff(spruce))
+SUMMON=c_mummy_necro
+
+ON=i_pet_GARG Vampire
+TESTIF (src.profession==class_necro)
+TESTIF (src.Mana>30)
+TESTIF (src.MAGERY>720)
+TESTIF (src.hasStaff(spruce))
+SUMMON=c_vampire_necro
+
+ON=i_pet_LICH Liche
+TESTIF (src.profession==class_necro)
+TESTIF (src.Mana>30)
+TESTIF (src.MAGERY>660)
+TESTIF (src.hasStaff(oak))
+SUMMON=c_liche_necro
+
+ON=i_pet_GHOUL Fext
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>600)
+TESTIF (src.hasStaff(chestnut))
+SUMMON=c_fext_necro
+
+ON=i_pet_SKELETON Skeleton Mage
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>540)
+TESTIF (src.hasStaff(oak))
+SUMMON=c_skeleton_mage_necro
+
+ON=i_pet_SKELETON Skeleton Archer Level 1
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>480)
+TESTIF (src.hasStaff(chestnut))
+TESTIF (src.tag(ra_lucistnik_vylepseni)<10)
+SUMMON=c_skeleton_archer_necro
+
+ON=i_pet_SKELETON Skeleton Archer Level 2
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>480)
+TESTIF (src.hasStaff(chestnut))
+TESTIF (src.tag(ra_lucistnik_vylepseni)>9)
+TESTIF (src.tag(ra_lucistnik_vylepseni)<20)
+SUMMON=c_skeleton_archer_necro_2
+
+ON=i_pet_SKELETON Skeleton Archer Level 3
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>480)
+TESTIF (src.hasStaff(chestnut))
+TESTIF (src.tag(ra_lucistnik_vylepseni)>19)
+TESTIF (src.tag(ra_lucistnik_vylepseni)<30)
+SUMMON=c_skeleton_archer_necro_3
+
+ON=i_pet_SKELETON Skeleton Archer Level 4
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>480)
+TESTIF (src.hasStaff(chestnut))
+TESTIF (src.tag(ra_lucistnik_vylepseni)>29)
+SUMMON=c_skeleton_archer_necro_4
+
+ON=i_pet_SKELETON Skeleton Sword
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>480)
+TESTIF (src.hasStaff(chestnut))
+SUMMON=c_skeleton_sword_necro
+
+ON=i_pet_SKELETON Skeleton Axe
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>360)
+TESTIF (src.hasStaff(chestnut))
+SUMMON=c_skeleton_axe_necro
+
+ON=i_PET_skeleton <name>
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>300)
+TESTIF (src.hasStaff(spruce))
+SUMMON=c_skeleton_necro
+
+ON=i_pet_zombie <name>
+TESTIF (src.profession==class_necro)
+TESTIF (src.MAGERY>300)
+TESTIF (src.hasStaff(spruce))
+SUMMON=c_zombie_necro
+
+
+[SKILLMENU sm_polymorph]
+What do you want to polymorph into?
+
+ON=i_pet_MAN Man
+TEST=MAGERY 40.0
+POLY C_MAN
+
+ON=i_pet_woman Woman
+TEST=MAGERY 40.0
+POLY C_WOMAN
+
+ON=i_PET_CHICKEN Chicken
+TEST=MAGERY 40.0
+POLY c_CHICKEN
+
+ON=i_pet_DOG Dog
+TEST=MAGERY 60.0
+POLY c_DOG
+
+ON=i_PET_SNAKE_GIANT Giant Serpant
+TEST=MAGERY 60.0
+POLY c_SERPENT_GIANT
+
+ON=i_PET_DAEMON Daemon
+TEST=MAGERY 85.0
+POLY c_DAEMON
+
+ON=i_pet_DRAGON Dragon
+TEST=MAGERY 98.0
+POLY { c_dragon_green 1 c_dragon_red 1 }
+
+[SKILLMENU sm_cartography]
+What sort of map do you want to draw ?
+
+ON=i_mapadd1 Detail Map
+TEST=CARTOGRAPHY 5.0
+DRAWMAP=200
+
+ON=i_mapadd2 Regional Map
+TEST=CARTOGRAPHY 30.0
+DRAWMAP=400
+
+ON=i_mapadd3 Sea Chart
+TEST=CARTOGRAPHY 45.0
+DRAWMAP=800
+
+ON=i_mapadd4 Full World
+TEST=CARTOGRAPHY 75.0
+DRAWMAP=2048
+
+
+
+// End of Blacksmithing section
+
+///////////////////////////////////////////
+// Beginning of Carpentry section
+
+// End of Carpentry section
+///////////////////////////////////////////
+
+//////////////////////////////////////////////
+// Begin Tinkering Menu
+
+[EOF]
+
+
+
+
+
+

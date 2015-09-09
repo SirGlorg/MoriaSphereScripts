@@ -1,0 +1,575 @@
+/////////////////////////////////////
+//     D R A G O N   S T A M P     //
+//         (c)-Sir Glorg-          //
+/////////////////////////////////////
+//tag(stamp_dmg) // udava silu stampdmg (klesa se vzdalenosti)
+[function f_dragon_stamp]
+newequip(i_dupatko_timer)
+if (<argv(0)>)
+  lastnew.more1=<argv(0)>
+endif
+if (<argvcount> > 1)	// je nastavena ppst na kritik
+ lastnew.tag(critical,<argv(1)>)
+endif
+Flag_Immobile(1)
+if (body==c_dragon_lord)
+	anim 12
+else
+	dorand 2
+		anim 15
+		anim 16
+	enddo
+endif
+return 1
+
+[itemdef i_dupatko_timer]
+NAME=dupaci timer
+ID=i_memory
+TYPE=t_eq_script
+
+on=@Create
+timer=1
+
+on=@Timer
+cont.Flag_Immobile(0)
+cont.newitem(i_dupatko)
+arg(dupatko,<lastnew>)
+dupatko.p=<topobj.p>
+dupatko.link=<cont>
+dupatko.timer=0
+if (more1>0)
+  var(dragon_stamp_para,<more1>)
+endif
+if (<eval tag(critical)>)
+  var(dragon_stamp_critic,<eval tag(critical)>)
+endif
+
+[itemdef i_dupatko]
+NAME=dupaci soudek
+ID=i_KEG_WOOD
+TYPE=t_script
+
+on=@Timer
+sector.allchars(f_dragon_stamp_dmg(<uid>,<eval link.tag(stamp_dmg)>),<eval <tag(critical)>>)
+var(dragon_stamp_para,"")
+var(dragon_stamp_critic,"")
+
+[function f_dragon_stamp_dmg]
+if (npc) || (isgm)
+  return 0
+endif
+
+dorand 3
+  sound=543
+  sound=542
+  sound=755
+enddo
+
+arg(stamp_dmg,<argv(1)>-(<distancefrom(argv(0))>-1)*6)	// vzorec dupnuti
+if (<eval (safe var(dragon_stamp_critic))> > <eval {0 100}>)
+  sysMessage("Spadl na tebe kus stropu!")
+  newitemsafe(tm_rocks)
+  lastnew.p=<p>
+  lastnew.attr_movenever=1
+  lastnew.timer=120
+  arg(stamp_dmg,<arg(stamp_dmg)>+<eval {40 70}>)
+endif
+if (<stamp_dmg> > 0)
+  SysMessage("Zeme se pod tebou otrasla !")
+  damage_noresponse(<stamp_dmg>,dam_physical)
+  if (<eval dragon_stamp_para>)
+    events -e_spelleffect
+    paralyze(<eval dragon_stamp_para*10>)
+    lastnew.cont=<uid>
+    events +e_spelleffect
+  endif
+endif
+
+
+/////////////////////////////////////
+//    D R A G O N   B R E A T H    //
+//         (c)-Sir Glorg-          //
+/////////////////////////////////////
+
+/////////////////////
+//     F I R E     //
+/////////////////////
+
+[function f_dragon_breath_fire]
+if (<act.ischar>)
+  var(dragon_breath_target,<act>)
+  newequip(i_firebreath_delay)
+  Flag_Immobile(1)
+  if (body==c_dragon_lord)
+    anim 5
+  else
+    anim 12
+  endif
+  return 1
+else
+  return 0
+endif
+
+[itemdef i_firebreath_delay]
+NAME=Dragon Breath Fire
+ID=i_memory
+TYPE=t_eq_script
+
+on=@Create
+timer=3
+
+on=@Timer
+if (more1==0)
+  topobj.newitemsafe(i_firebreath_target_changer)
+  lastnew.p=<var(dragon_breath_target).p>
+  if (<topobj.distancefrom(<lastnew>)> > 15) // pokud je act moc daleko
+    lastnew.remove
+  else
+    lastnew.more1=<topobj.tag(firebreath_dmg)>
+    lastnew.timer=0
+  endif
+  more1=1
+  timer=1
+else
+  topobj.Flag_Immobile(0)
+  remove
+endif
+return 1
+
+[itemdef i_firebreath_target_changer]
+NAME=Fire Breath
+ID=i_KEG_WOOD
+TYPE=t_script
+
+on=@Timer
+sector.allchars(f_dragon_breathdmg_fire(<uid>,<more1>))
+remove
+return 1
+
+[function f_dragon_breathdmg_fire]
+if (npc) || (isgm)
+  return 0
+endif
+
+if (<distancefrom(argv(0))> < 5)
+  damage_noresponse(<argv(1)>,dam_dragon)
+  effect(3,<s_explosion.EFFECTID>,6,15,1)
+  sound=<s_explosion.sound>
+endif
+
+/////////////////////
+//   P O I S O N   //
+/////////////////////
+//tag(poisonbreath_dmg) // udava silu poisonu
+[function f_dragon_breath_poison]
+if (<act.ischar>)
+  topobj.newitemsafe(i_poisonbreath_target_changer)
+  arg(targchanger,<lastnew>)
+  if !(f_canseelos(<act>))
+    targchanger.remove
+    return 0
+  endif
+  targchanger.p=<topobj.act.p>
+  if (<topobj.distancefrom(<targchanger>)> > 10) // pokud je act moc daleko
+    targchanger.remove
+  else
+    targchanger.more1=<argv(0)>
+    targchanger.timer=0
+  endif
+  return 1
+else
+  return 0
+endif
+
+[itemdef i_poisonbreath_target_changer]
+NAME=Poison Breath
+ID=i_KEG_WOOD
+TYPE=t_script
+
+on=@Timer
+sector.allchars(f_dragon_breathdmg_poison(<uid>,<more1>))
+remove
+return 1
+
+[function f_dragon_breathdmg_poison]
+if (npc) || (isgm)
+  return 0
+endif
+
+if (<distancefrom(argv(0))> < 5)
+  f_poison_doPoison(<eval <argv(1)>>,2,poison_c)
+  sound(586)
+endif
+
+/////////////////////
+//     A C I D     //
+/////////////////////
+
+[function f_dragon_acid_damage]
+newitem(i_acid)
+arg(AciDropItem,<lastnew>)
+AciDropItem.p=<p>
+AciDropItem.tag.acid_dmg=<argv(0)>
+AciDropItem.tag.acid_ppst=1000
+
+//////////////////////////////////////////////////////////////////////////////////////
+///////////////////// D R A G O N   B R A I N   by   M a n d o s /////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//tag(effectn,X)//kolik ma efektu celkem
+//tag(effect_1,15 f_blabla)
+//tag(effect_2,25 f_acid)
+//tag(effect_3,60 f_healself)
+//tag(brain_timer,X)//urcuje v sekundach, po jaky dobe se maji vybirat eventy z brainu - promenny 2 cisla X a Y oddeleny mezerou
+
+[events e_dragon_brain]
+on=@NPCSeeNewPlayer
+f_eqDragon_brain
+return 1
+
+on=@aftergetswing
+f_eqDragon_brain
+
+on=@beforegeteffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+
+[function f_eqDragon_brain]
+if !(rescount(i_mem_dragon_brain))
+  newequip(i_mem_dragon_brain)
+endif
+
+[itemdef i_mem_dragon_brain]
+name=dragon brain
+id=i_memory
+type=t_eq_script
+
+on=@equip
+timer={<cont.tag(brain_timer)>}//tag brain_timer urcuje jak casto se pouzti timer. Zadava se ve formatu tag(brain_timer,X Y) (rozptyl mezi X a Y oddeleny mezerou).
+
+on=@timer
+if (<eval cont.tag(brainRegeHP)>)
+  if (<cont.hits> < <cont.maxhits>)
+    cont.hits=<cont.hits>+<cont.tag(brainRegeHp)>
+    if (<cont.hits> > <cont.maxhits>)
+      cont.hits=<cont.maxhits>
+    endif
+  endif
+endif
+if !(dragonhandle)//funkce urcujici efekt - pokud nelze nikomu udelit dmg, vybere se za 1s novy event
+  timer=1
+else
+  timer={<cont.tag(brain_timer)>}
+endif
+return 1
+
+[function dragonhandle]
+arg(effect_number,1)
+arg(vyber,<eval {0 100}>)
+arg(ppst,0)
+while (<arg(effect_number)> <= <cont.tag(effectn)>)
+  singleparse(<topobj.tag(effect_<arg(effect_number)>)>)
+  arg(ppst,#+<var(firstnumb)>)
+  if (<vyber> <= <ppst>)
+    if cont.<var(secondnumb)>
+      return 1
+    else
+      return 0
+    endif
+  endif
+  arg(effect_number,#+1)
+endwhile
+
+//////////////////////////////////////
+//dragon events, items, etc... by heck
+
+//row,column of fire
+[itemdef i_dragon_breath_fire]
+name=Draci Ohen
+id=i_fx_explode
+
+on=@create
+timerd=5
+attr=010
+
+on=@timer
+if (<tag.range> > 0)
+  move(<tag.directionX>,<tag.directionY>)
+  finduid(<tag.src>).newitem=i_dragon_breath_after_fire
+  lastnew.p=<p>
+  lastnew.tag.damage=<tag.damageAfterFire>
+  lastnew.tag.src=<tag.src>
+  tag(range,#-1)
+  timerd=2
+  return 1
+else
+  remove
+endif
+
+on=@step
+if (src!=<tag.src>)
+  src.damage_noresponse(<tag.damage>,dam_fire|dam_magic)
+  remove
+endif
+
+[itemdef i_dragon_breath_after_fire]
+name=Ohen
+id=i_fire
+
+on=@create
+timerd={15 25}
+attr=010
+
+on=@step
+if (src!=<tag.src>)
+  src.damage_noresponse(<tag.damage>,dam_fire|dam_magic)
+  remove
+endif
+
+[function f_dragon_fire] //argv(1) - <optional> damage given by 1 fire
+arg(num1,<dir>)
+arg(num2,<dir>-1)
+if (<arg(num2)> < 0)
+  arg(num2,7)
+endif
+arg(num3,<dir>+1)
+if (<arg(num3)> > 7)
+  arg(num3,0)
+endif
+//src.say("<?num1?> <?num2?> <?num3?>")
+dorand 3
+  arg(direction,<arg(num1)>)
+  arg(direction,<arg(num2)>)
+  arg(direction,<arg(num3)>)
+enddo
+//src.say(<direction>)
+
+arg(startX,<return_nth(1,<src.p>)>)
+arg(startY,<return_nth(2,<src.p>)>)
+arg(dirX,<return_nth(1,<directionVectors[<src.dir>]>)>)
+arg(dirY,<return_nth(2,<directionVectors[<src.dir>]>)>)
+arg(size,5)
+arg(range,10)
+if (<eval argv(1)>)
+  arg(damage,<argv(1)>)
+else
+  arg(damage,50)
+endif
+f_dragon_fire_create(<arg(startX)>,<arg(startY)>,<arg(damage)>,<arg(range)>,<arg(direction)>)
+
+arg(i,1)
+while (i < <size>)
+  if ((<dirX>==0)||(<dirY>==0))
+    arg(sX,<startX>+<i>*<dirY>)
+    arg(sY,<startY>+<i>*<dirX>)
+    f_dragon_fire_create(<arg(sX)>,<arg(sY)>,<arg(damage)>,<arg(range)>,<arg(direction)>)
+    arg(sX,<startX>-<i>*<dirY>)
+    arg(sY,<startY>-<i>*<dirX>)
+    f_dragon_fire_create(<arg(sX)>,<arg(sY)>,<arg(damage)>,<arg(range)>,<arg(direction)>)
+  else
+    arg(sX,<startX>-<i>*<dirY>)
+    arg(sY,<startY>+<i>*<dirX>)
+    f_dragon_fire_create(<arg(sX)>,<arg(sY)>,<arg(damage)>,<arg(range)>,<arg(direction)>)
+    arg(sX,<startX>+<i>*<dirY>)
+    arg(sY,<startY>-<i>*<dirX>)
+    f_dragon_fire_create(<arg(sX)>,<arg(sY)>,<arg(damage)>,<arg(range)>,<arg(direction)>)
+  endif
+  arg(i,#+1)
+endwhile
+
+[function f_dragon_fire_create]//argv(0)=startX, argv(1)=startY, argv(2)=damage, 3 = range, 4 = direction
+arg(srcZ,<return_nth(3,<src.p>)>)
+arg(srcP,<return_nth(4,<src.p>)>)
+arg(startPos,"<?argv(0)?>,<?argv(1)?>,<?arg(srcZ)?>,<?arg(srcP)?>")
+src.newitem=i_dragon_breath_fire
+lastnew.p=<startPos>
+lastnew.tag.src=<src>//kto to vytvoril
+lastnew.tag.damage=<argv(2)>//damage
+lastnew.tag.range=<argv(3)>//dosah
+//lastnew.tag.directionX=<return_nth(1,<directionVectors[<src.dir>]>)>//smerX
+//lastnew.tag.directionY=<return_nth(2,<directionVectors[<src.dir>]>)>//smerY
+lastnew.tag.directionX=<return_nth(1,<directionVectors[<argv(4)>]>)>//smerX
+lastnew.tag.directionY=<return_nth(2,<directionVectors[<argv(4)>]>)>//smerY
+lastnew.tag.damageAfterFire=<argv(2)>/2
+
+/////
+//area (circle) of fire
+[itemdef i_dragon_area_fire]
+name=Draci Ohen
+id=i_fx_explode_ball
+
+on=@create
+timerd=10
+attr=010
+
+on=@timer
+finduid(<tag.src>).newitem=i_dragon_breath_after_fire
+lastnew.p=<p>
+lastnew.tag.damage=<tag.damageAfterFire>
+lastnew.tag.src=<tag.src>
+remove
+
+on=@step
+if (src!=<tag.src>)
+  src.damage_noresponse(<tag.damage>,dam_fire|dam_magic)
+  remove
+endif
+
+[itemdef i_dragon_area_fire_maker]
+NAME=i_dragon_area_fire_maker
+id=i_memory
+TYPE=T_eq_SCRIPT 
+
+on=@create
+attr=010
+timerd=5
+
+on=@equip
+timer=1
+
+on=@timer
+if (<tag.currentRange><<tag.range>)
+  //topobj.say(<tag.currentRange>)
+  finduid(<tag.src>).f_dragon_fire_area_create(<tag.currentRange>,<tag.damage>)
+  tag(currentRange,#+1)
+  timerd=5
+endif
+return 1
+
+[function f_dragon_fire_area]
+//arg(startX,<return_nth(1,<src.p>)>)
+//arg(startY,<return_nth(2,<src.p>)>)
+//arg(range,10)
+//arg(damage,50)
+
+src.newequip=i_dragon_area_fire_maker
+lastnew.tag.src=<src>
+lastnew.tag.currentRange=1
+lastnew.tag.range=5
+lastnew.tag.damage=50
+
+[function f_dragon_fire_area_create_one]//x,y,src,damage
+src.newitem=i_dragon_area_fire
+lastnew.p=<f_get_changed_position(<argv(0)>,<argv(1)>)>
+lastnew.tag.src=<argv(2)>
+lastnew.tag.damage=<argv(3)>
+
+[function f_dragon_fire_area_create]//argv(0)=currentRange, argv(1)=damage
+arg(size,<argv(0)>)
+if (<size>==1)
+  arg(size,2)
+endif
+//VYCHODna cast
+//f_dragon_fire_area_create_one(<argv(0)>,0,<src>,<argv(1)>)
+src.newitem=i_dragon_area_fire
+lastnew.p=<f_get_changed_position(<argv(0)>,0)>
+lastnew.tag.src=<src>//kto to vytvoril
+lastnew.tag.damage=<argv(1)>//damage
+arg(i,1)
+while (<arg(i)> < <size>)
+  src.newitem=i_dragon_area_fire
+  lastnew.p=<f_get_changed_position(<argv(0)>,<i>)>
+  lastnew.tag.src=<src>//kto to vytvoril
+  lastnew.tag.damage=<argv(1)>//damage
+  src.newitem=i_dragon_area_fire
+  lastnew.p=<f_get_changed_position(<argv(0)>,-<i>)>
+  lastnew.tag.src=<src>//kto to vytvoril
+  lastnew.tag.damage=<argv(1)>//damage
+  arg(i,#+1)
+endwhile
+//ZAPADna cast
+src.newitem=i_dragon_area_fire
+lastnew.p=<f_get_changed_position(-<argv(0)>,0)>
+lastnew.tag.src=<src>//kto to vytvoril
+lastnew.tag.damage=<argv(1)>//damage
+arg(i,1)
+while (<arg(i)> < <size>)
+  src.newitem=i_dragon_area_fire
+  lastnew.p=<f_get_changed_position(-<argv(0)>,<i>)>
+  lastnew.tag.src=<src>//kto to vytvoril
+  lastnew.tag.damage=<argv(1)>//damage
+  src.newitem=i_dragon_area_fire
+  lastnew.p=<f_get_changed_position(-<argv(0)>,-<i>)>
+  lastnew.tag.src=<src>//kto to vytvoril
+  lastnew.tag.damage=<argv(1)>//damage
+  arg(i,#+1)
+endwhile
+//SEVERna cast
+src.newitem=i_dragon_area_fire
+lastnew.p=<f_get_changed_position(0,<argv(0)>)>
+lastnew.tag.src=<src>//kto to vytvoril
+lastnew.tag.damage=<argv(1)>//damage
+arg(i,1)
+while (<arg(i)> < <size>)
+  src.newitem=i_dragon_area_fire
+  lastnew.p=<f_get_changed_position(<i>,<argv(0)>)>
+  lastnew.tag.src=<src>//kto to vytvoril
+  lastnew.tag.damage=<argv(1)>//damage
+  src.newitem=i_dragon_area_fire
+  lastnew.p=<f_get_changed_position(-<i>,<argv(0)>)>
+  lastnew.tag.src=<src>//kto to vytvoril
+  lastnew.tag.damage=<argv(1)>//damage
+  arg(i,#+1)
+endwhile
+//JUZna cast
+src.newitem=i_dragon_area_fire
+lastnew.p=<f_get_changed_position(0,-<argv(0)>)>
+lastnew.tag.src=<src>//kto to vytvoril
+lastnew.tag.damage=<argv(1)>//damage
+arg(i,1)
+while (<arg(i)> < <size>)
+  src.newitem=i_dragon_area_fire
+  lastnew.p=<f_get_changed_position(<i>,-<argv(0)>)>
+  lastnew.tag.src=<src>//kto to vytvoril
+  lastnew.tag.damage=<argv(1)>//damage
+  src.newitem=i_dragon_area_fire
+  lastnew.p=<f_get_changed_position(-<i>,-<argv(0)>)>
+  lastnew.tag.src=<src>//kto to vytvoril
+  lastnew.tag.damage=<argv(1)>//damage
+  arg(i,#+1)
+endwhile
+
+[function f_dragon_fire_star]
+arg(range,5)
+src.newitem=i_dragon_area_fire
+lastnew.p=<f_get_changed_position(0,0)>
+lastnew.tag.src=<src>
+lastnew.tag.damage=50
+arg(i,1)
+while(<arg(i)> < <range>)
+  arg(j,0)
+  while(<arg(j)> < 8)
+    arg(xx,<return_nth(1,<directionVectors[<arg(j)>]>)>*<arg(i)>)
+    arg(yy,<return_nth(2,<directionVectors[<arg(j)>]>)>*<arg(i)>)
+    src.newitem=i_dragon_area_fire
+    lastnew.p=<f_get_changed_position(<arg(xx)>,<arg(yy)>)>
+    lastnew.tag.src=<src>
+    lastnew.tag.damage=50
+    arg(j,#+1)
+  endwhile
+  arg(i,#+1)
+endwhile
+
+[function f_get_changed_position]//argv(0)=x, argv(1)=y
+arg(srcX,<return_nth(1,<src.p>)>)
+arg(srcY,<return_nth(2,<src.p>)>)
+arg(srcZ,<return_nth(3,<src.p>)>)
+arg(srcP,<return_nth(4,<src.p>)>)
+arg(srcX,#+<argv(0)>)
+arg(srcY,#+<argv(1)>)
+arg(newP,"<?arg(srcX)?>,<?arg(srcY)?>,<?arg(srcZ)?>,<?arg(srcP)?>")
+//say(<srcX> <srcY> <srcZ> <srcP>)
+return <arg(newP)> 
+ 
+[defnames directionVectors]
+directionVectors[0] 0,-1
+directionVectors[1] 1,-1
+directionVectors[2] 1,0
+directionVectors[3] 1,1
+directionVectors[4] 0,1
+directionVectors[5] -1,1
+directionVectors[6] -1,0
+directionVectors[7] -1,-1
+
+[eof]

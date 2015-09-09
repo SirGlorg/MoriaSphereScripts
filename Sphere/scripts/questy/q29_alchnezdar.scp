@@ -1,0 +1,1400 @@
+[ITEMDEF i_qv1_testovaci_pomucka]
+id = i_chest_metal
+type = t_container
+name = POMUCKA
+
+on=@create
+attr=attr_newbie
+color=0433
+
+ON=@userDClick
+if (src.isgm)
+  src.newITEM i_qv1_pr_ajdy
+  src.act.bounce
+  src.newITEM i_qv1_lr_ajdy
+  src.act.bounce
+  src.newITEM i_qv1_ln_ajdy
+  src.act.bounce
+  src.newITEM i_qv1_pn_ajdy
+  src.act.bounce
+  src.newITEM i_qv1_torso_ajdy
+  src.act.bounce
+  src.newITEM i_qv1_hlava_ajdy
+  src.act.bounce
+  src.newITEM i_potion_healgreat
+  src.act.bounce
+  lastnew.amount=500
+  src.newITEM i_bandage
+  src.act.bounce
+  lastnew.amount=5000
+endif
+return 1
+
+
+[function f_q029_alchnezdar_DClick]
+
+if (<src.qtag(q029_alchnezdar)> >= 14)
+  SAY("lol Zdravicko priteli jakse vede?")
+elseif (<src.qtag(q029_alchnezdar)> >= 13)
+  DIALOG(d_q029_alchnezdar10)
+elseif (<src.qtag(q029_alchnezdar)> >= 12)
+  DIALOG(d_q029_alchnezdar9)
+elseif (<src.qtag(q029_alchnezdar)> >= 11)
+  DIALOG(d_q029_alchnezdar8)
+elseif (<src.qtag(q029_alchnezdar)> >= 10)
+  DIALOG(d_q029_alchnezdar7)
+elseif (<src.qtag(q029_alchnezdar)> >= 9)
+  DIALOG(d_q029_alchnezdar6)
+elseif (<src.qtag(q029_alchnezdar)> >= 8)
+  DIALOG(d_q029_alchnezdar5)
+elseif (<src.qtag(q029_alchnezdar)> >= 6)
+  DIALOG(d_q029_alchnezdar4)
+elseif (<src.qtag(q029_alchnezdar)> >= 4)
+  DIALOG(d_q029_alchnezdar3)
+elseif (<src.qtag(q029_alchnezdar)> >= 2)
+  DIALOG(d_q029_alchnezdar2)
+elseif (<src.qtag(q029_alchnezdar)> >= 0)
+  DIALOG(d_q029_alchnezdar1)
+endif
+
+
+[ITEMDEF i_q029_alchnezdar_collector]
+ID=i_crate_small
+NAME=Truhla na slizaky
+TYPE=t_collector
+WEIGHT=10
+
+ON=@CREATE
+COLOR=042
+tag.contentsinfo="V bedne je"
+tag.contentstype="slizaku"
+tag.contentsamount="0"
+tag.maxcontents=10
+tag.target_remove=1
+tag.target_desc="Kde je telo mrtveho slizaka? "
+tag.target_id="Body of Slizoun"
+tag.absolute_success=200
+tag.value_to_check=125
+tag.fail_msg="Sliz se za odporneho mlaskani rozpadl..."
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q029_alchnezdar_collector2]
+ID=i_bag
+NAME=Pytlicek na pulnocni prach
+TYPE=t_collector
+WEIGHT=10
+
+ON=@CREATE
+COLOR=0433
+tag.contentsinfo="V pytliku je"
+tag.contentstype="davek prachu"
+tag.contentsamount="0"
+tag.maxcontents=6
+tag.target_remove=0
+tag.target_desc="Ktereho elema chces oprasit?"
+tag.target_id="Midnight Elemental"
+tag.absolute_success=200
+tag.value_to_check=125
+tag.fail_msg="Moc to nejde, ti vsechen prach spadl nazem..."
+
+ON=@CollectorCheck
+
+[SPEECH spk_q029_alchnezdar]
+ON *Ahoj*
+ON *Zdravim*
+ON *Dobry den*
+ f_q029_alchnezdar_DClick
+return 1
+
+[dialog d_q029_alchnezdar1]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1    // 
+button 325 330 0988 0988 0 2 0  // EXPERIMENTY
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 0 7 0 //  ale?
+text 60 395 152 13
+
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 2 //  nesu ti to co chces
+text 60 395 152 20
+button 25 415 0fa5 0fa7 0 1 0  //  ale nic...
+text 60 415 152 21  
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,14,0,36)
+button 25 395 0fa5 0fa7 0 8 0 //  vim! Ja
+text 60 395 152 15
+button 25 415 0fa5 0fa7 0 1 0  //  No to tedy nevim
+text 60 415 152 16
+
+page 8
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  Beru
+text 60 395 152 18
+button 25 415 0fa5 0fa7 0 1 0  //  Hm tak to ne
+text 60 415 152 19
+
+
+
+
+//
+
+[dialog d_q029_alchnezdar1 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Kdo jsi?
+Experimenty
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Zdravicko, ja jsem Popletalius, moc me tesi, sakrys uz dlouho se tady u me nikdo nezastavil... to si musime na chvilku popovidat ! 
+Mou zivotni zalibou je experimentovani. Experimentuju s cimkoli, trebas onehdy jsem zkousel zaridit aby medvedovi narostly kridla... mno nejak se to nepovedlo a trochu se splasil a rozmlatil mi celou laborator... no co. Ted naposledy jsem zkousel trochu prizpusobit slizaky ale...
+Nene ja nic nekupuju ani neprodavam, vsechny sve penize davam do svych experimentu a zatim se mi jeste nepovedlo nic co by chtel nekdo koupit. Ale to se urcite zmeni...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Ale... ?
+Aaaale... povedlo se mi je zvetsit na ctyrnasobnou velikost ale pak se obrovsky slizak rozpadl na nekolik mensich a ja musel utect ... nevis o nekom kdo by mi pomohl vyhnat je?
+Vim! Ja !
+No to tedy nevim, prominte...
+No to je vyyyborne ! Potrebuji abys zase do meho domu, je kousek odsud, jiste ho najde a prinesl mi v tehle bedynce mrtve ostatky 10 slizounu ! Udelas to pro me?
+Dobre, udelam to. Dejte mi tu bednu a ja vyrazim.
+Hm, tak to ne omlouvam se..
+Uz to mam, nesu ti ty slizouny .
+Vlastne nic.
+
+[dialog d_q029_alchnezdar1 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1  
+if (0<src.qtag(q029_alchnezdar)>==1)
+ src.sysMessage("Tento ukol plnis nebo jsi jej uz splnil")
+elseif (0<src.qtag(q029_alchnezdar)>==0)
+ src.sysMessage("Prijmas ukol od Alchymisty Poplataliuse")
+ src.newitem(i_q029_alchnezdar_collector)
+ src.act.bounce
+ src.qtag(q029_alchnezdar,1)
+ return 0
+endif
+
+// splneni ukolu
+on=2  
+if <src.restest i_q029_alchnezdar_collector> && (<src.findid(i_q029_alchnezdar_collector).tag.contentscount>==10) 
+ SAY("Dekuji ti mnohokrat! Tady mas neco za odmenu...")
+ //src.addexp(500)
+ src.newitem(i_potion_curegreat)
+ src.act.bounce
+ src.newitem(i_potion_healgreat)
+ src.act.bounce
+ src.newitem(i_potion_invisibility)
+ src.act.bounce
+ src.consume(i_q029_alchnezdar_collector)
+ src.qtag(q029_alchnezdar,2)
+ return 1
+else
+ say("Nemas to co jsem po tobe chtel! ")
+ Return 1
+endif
+
+
+
+// ---------------------------- Ukol Popletalius 2 ---------------------
+// ---------------------------- Ukol Popletalius 2 ---------------------
+// ---------------------------- Ukol Popletalius 2 ---------------------
+
+
+[dialog d_q029_alchnezdar2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1    // 
+button 325 330 0988 0988 0 2 0  // jak to jde
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 0 7 0 //  pomohu
+text 60 395 152 13
+
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 2 //  mam vacek s prchem
+text 60 395 152 20
+button 25 415 0fa5 0fa7 0 1 0  //  ale nic...
+text 60 415 152 21  
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,14,0,36)
+button 25 395 0fa5 0fa7 0 8 0 //  nebojim se
+text 60 395 152 15
+button 25 415 0fa5 0fa7 0 1 0  //  bojim se
+text 60 415 152 16
+
+page 8
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  Beru
+text 60 395 152 18
+button 25 415 0fa5 0fa7 0 1 0  //  Hm tak to ne
+text 60 415 152 19
+
+//
+
+[dialog d_q029_alchnezdar2 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Kdo jsi?
+Jak jdou pokusy?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Zdravicko priteli, chtel bych ti podekovat za pomoc se s tema osklivejma prerostlejma slizakama, sam bych to urcite nezvladl. Copak te privadi znovu do techto mist?
+Mno vlastne jsem rad ze ses zastavil, minuly tyden jsem si poridil pulnocni kameny, a behem experimentu jsem na ne omylem nakapal misto vyvaru ze skretich bradavic nezredeny stoneskin a nestesti bylo nasvete. Z pulnocnich kamenu vyskakali elemove a zautocili na mne. Hned jsem vypil napoj neviditelnosti a tim jsem si zachranil zivot. Misto mne pobrali co se dalo utekli. Pekelne jsem se bal, nikdy jsem podobne elementaly nevidel. Nevim co mam delat, bojim se aby nekomu neublizili, nevim kde jsou...
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Pomohu ti...
+To bys skutecne udelal? Tohle uz neni ukol jen tak posbirat mtvolky prerostlych slizaku, muzou ti ublizit nebo te zabit a to ja si nemuzu vzit nasvedomi. 
+Nene, nebojim se, rad ti pomohu ...
+No to mas pravdu, nerad bych umrel
+Dobra, s tvoji pomoci zkusim zprovodit zesveta tento smrtici experiment. Nejsem si vsak uplne jisty zda je zabijes, ten stoneskin byl opravdu silny. Az je najdes zkus mi tady do vacku otrit tak 6 davek prachu z zivych elemu, uvidim pak jak nejlepe zrusit ucinky toho stoneskinu.
+Ok, dej mi vacek, pujdu hledat ty tve pulnocni elementaly...
+Hm, z zivych elmu? To se nezlob to ne...
+Nasel jsem je a mam i plny vacek prachu.
+Vlastne nic.
+
+[dialog d_q029_alchnezdar2 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1  
+if (0<src.qtag(q029_alchnezdar)==3)
+ src.sysMessage Tento ukol uz plnis
+elseif (0<src.qtag(q029_alchnezdar)==2)
+ src.sysMessage Prijmas ukol od Alchymisty Poplataliuse
+ src.NEWITEM=i_q029_alchnezdar_collector2
+ src.act.bounce
+ src.qtag(q029_alchnezdar,3)
+ return 0
+endif
+
+// splneni ukolu
+on=2  
+if <src.restest i_q029_alchnezdar_collector2> && (<src.findid(i_q029_alchnezdar_collector2).tag.contentscount>==6) 
+ SAY "Vyborne, prozkoumame co jim ublizi"
+ //src.addexp(1000)
+ src.newitem=i_potion_invisibility
+ src.act.bounce
+ src.CONSUME i_q029_alchnezdar_collector2
+ src.qtag(q029_alchnezdar,4)
+ return 1
+else
+ SAY "Nemas to co jsem po tobe chtel! "
+ Return 1
+endif
+
+
+
+
+// ---------------------------- Ukol Popletalius 3 ---------------------
+// ---------------------------- Ukol Popletalius 3 ---------------------
+// ---------------------------- Ukol Popletalius 3 ---------------------
+
+
+[dialog d_q029_alchnezdar3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1    // 
+button 325 330 0988 0988 0 2 0  // zjistil jsi jak na ne
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+//button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+//text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)  
+
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 0 7 0 //  pomohu
+text 60 395 152 13
+
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 2 //  mam vacek s prachem
+text 60 395 152 20
+button 25 415 0fa5 0fa7 0 1 0  //  ale nic...
+text 60 415 152 21  
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+page 7
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  Beru
+text 60 395 152 18
+button 25 415 0fa5 0fa7 0 1 0  //  Hm tak to ne
+text 60 415 152 19
+
+//
+
+[dialog d_q029_alchnezdar3 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Kdo jsi?
+Ahoj, zjistil jsi neco?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Bud zdrav priteli, rad te opet vidim
+Predstav si, z prachu so jsi mi donesl jsem zjistil, ze zabit je nebude az tak uplne jednoduche, nejdou zranit ani mecem ani kouzlem, musime je prelstit. 
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+4
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+To je mi lito, ale musime to udelat
+7
+8
+9
+Kdybys zaskocil ke kovari a nechal u nej udelat tadytuhle past se stribrnymi hroty, ja mezitim uvarim dobrutku, ktera elementaly urcite nalaka, past sklapne! A A A ... ukonci zivot dalsimu z mych pokusu. Takze tady je planek pasti, ten mi pak zase prines, mam jen jediny, ja jdu uvarit navnadu
+OK, Beru
+Radeji nic
+
+
+[dialog d_q029_alchnezdar3 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1  
+if (0<src.qtag(q029_alchnezdar)>==5)
+ src.sysMessage Tento ukol uz plnis
+elseif (0<src.qtag(q029_alchnezdar)>==4)
+ src.sysMessage Prijmas ukol od Alchymisty Poplataliuse
+ src.NEWITEM=i_q029_alchnezdar_planek
+ src.act.bounce
+ src.qtag(q029_alchnezdar,5)
+ return 0
+endif
+
+// splneni ukolu
+on=2  
+if (0<src.qtag(q029_alchnezdar)>==6) && <src.restest i_q029_alchnezdar_past>
+ SAY "Kovar je velmi sikovny presne podle navodu"
+ //src.addexp(1000)
+ 
+ return 1
+else
+ SAY "Nemas to co jsem po tobe chtel! "
+ Return 1
+endif
+
+
+
+
+// ---------------------------- Ukol Popletalius 4 ---------------------
+// ---------------------------- Ukol Popletalius 4 ---------------------
+// ---------------------------- Ukol Popletalius 4 ---------------------
+
+
+[dialog d_q029_alchnezdar4]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1    // 
+button 325 330 0988 0988 0 2 0  // 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 0 7 0 //  pomohu
+text 60 395 152 13
+
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 2 //  mam vacek s prachem
+text 60 395 152 20
+button 25 415 0fa5 0fa7 0 1 0  //  ale nic...
+text 60 415 152 21  
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+page 7
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  Beru
+text 60 395 152 18
+button 25 415 0fa5 0fa7 0 1 0  //  Hm tak to ne
+text 60 415 152 19
+
+//
+
+[dialog d_q029_alchnezdar4 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Kdo jsi?
+Zjistil jsi jak je muzeme zabit?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Upekl jsem navnadu, ktera elemy dozajista nalaka do te pasti, Hlavne to prosimte neochutnavej, uz jenom z nazvu tech prisad by se ti udelalo spatne.
+Byl bych ti zavazan, kdybys mi prinesl alespon 5 pulnocnich kamenu z mrtvolek, pokusim se je znovu namnozit, tentokrat vsak budu pozorny. Tu past ani navnadu tam pak nenechej, mohl by se nekdo zranit
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Dobre, vyrazim na cestu
+Tady je dobrutka, bud prosim opatrny, nerad bych, aby se ti neco stalo. Kdyby slo dotuheho vezmi si tady nekolik napoju neviditelnosti.
+Neboj se o mne
+Dost se jich bojim
+Jsou zlikvidovani
+Vlastne nic.
+
+[dialog d_q029_alchnezdar4 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1  
+if (0<src.qtag(q029_alchnezdar)>==7)
+ src.sysMessage Tento ukol uz plnis
+elseif (0<src.qtag(q029_alchnezdar)>==6)
+ src.sysMessage Prijmas ukol od Alchymisty Poplataliuse
+ src.NEWITEM=i_q029_alchnezdar_navnada
+src.newitem=i_potion_invisibility
+src.newitem=i_potion_invisibility
+src.newitem=i_potion_invisibility
+ src.act.bounce
+ src.qtag(q029_alchnezdar,7)
+ return 0
+endif
+
+// splneni ukolu
+on=2  
+if <src.rescount i_qv1_midnight_stone 5> && <src.restest i_q029_alchnezdar_past> && <src.rescount i_q029_alchnezdar_navnada>
+ SAY "Uff to jsem si oddychl, ze je povsem. Mockrat dekuji za tvoji pomoc"
+ SAY "Zkusim ted neco mene nebezpecneho treba mumifikaci"
+ //src.addexp(1500)
+ 
+ src.act.bounce
+ 
+ src.CONSUME 5 i_qv1_midnight_stone
+ src.CONSUME i_q029_alchnezdar_past
+ src.CONSUME i_q029_alchnezdar_navnada
+ src.qtag(q029_alchnezdar,8)
+ return 1
+else
+ SAY "Nemas to co jsem po tobe chtel! "
+ Return 1
+endif
+
+// ---------------------------- Ukoly QV1 - otestovano --------------------
+
+// ---------------------------- Ukol Popletalius 5 QV1---------------------
+// ---------------------------- Ukol Popletalius 5 QV1---------------------
+// ---------------------------- Ukol Popletalius 5 QV1---------------------
+
+
+[dialog d_q029_alchnezdar5]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Jak se mas ?     
+text 200 331 1152 1    // 
+button 325 330 0988 0988 0 2 0  // Pomuzes mi?
+text 350 331 1152 2    //
+button 490 330 0988 0988 0 6 0  // Prohlednout ...      
+text 520 331 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  souhlasim
+text 60 395 152 13
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+//
+
+[dialog d_q029_alchnezdar5 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Jak se dnes mas?
+Pomuzes mi?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Mam se primo bajecne, pustil jsem se mnohem mene nebezpecneho podnikani, snazim se proniknout do taju mumifikace a balzomavani.
+Rad ti pomohu, budeme na to potrebova 10 lahvicek s greater healy a par stovek bandazi.
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Dobre, souhlasim, pust se dotoho...
+
+
+[dialog d_q029_alchnezdar5 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1  
+if  (  (src.qtag(q029_alchnezdar)==8) && (<src.restest 1 i_qv1_pr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pr_ajdy
+  src.consume 250 i_bandage
+  src.consume 10 i_potion_healgreat
+  src.NEWITEM=i_qv1_pr_ajda
+  src.act.bounce
+  //src.qtag(q029_alchnezdar,9)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==8) && (<src.restest 1 i_qv1_lr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_lr_ajdy
+  src.consume 250 i_bandage
+  src.consume 10 i_potion_healgreat
+  src.NEWITEM=i_qv1_lr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,9)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==8) && (<src.restest 1 i_qv1_ln_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_ln_ajdy
+  src.consume 250 i_bandage
+  src.consume 10 i_potion_healgreat
+  src.NEWITEM=i_qv1_ln_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,9)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==8) && (<src.restest 1 i_qv1_pn_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pn_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.NEWITEM=i_qv1_pn_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,9)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==8) && (<src.restest 1 i_qv1_torso_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_torso_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.NEWITEM=i_qv1_torso_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,9)
+  SAY= "Tady prosim, je jako nove ..." 
+ return 0
+ elseif (( src.qtag(q029_alchnezdar)==8) && (<src.restest 1 i_qv1_hlava_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_hlava_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.NEWITEM=i_qv1_hlava_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,9)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+
+
+// ---------------------------- Ukol Popletalius 6 QV1---------------------
+// ---------------------------- Ukol Popletalius 6 QV1---------------------
+// ---------------------------- Ukol Popletalius 6 QV1---------------------
+
+
+[dialog d_q029_alchnezdar6]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Jak se mas ?     
+text 200 331 1152 1    // 
+button 325 330 0988 0988 0 2 0  // Pomuzes mi?
+text 350 331 1152 2    //
+button 490 330 0988 0988 0 6 0  // Prohlednout ...      
+text 520 331 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  souhlasim
+text 60 395 152 13
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+//
+
+[dialog d_q029_alchnezdar6 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Jak se dnes mas?
+Pomuzes mi?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Mam se primo bajecne, pustil jsem se mnohem mene nebezpecneho podnikani, snazim se proniknout do taju mumifikace a balzomavani.
+Rad ti pomohu, budeme na to potrebova 10 lahvicek s greater healy a par stovek bandazi.
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Dobre, souhlasim, pust se dotoho...
+
+
+[dialog d_q029_alchnezdar6 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1 
+ 
+if ( src.qtag(q029_alchnezdar)==9) && (<src.restest 1 i_qv1_pr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 10000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 10000 i_gold
+  src.NEWITEM=i_qv1_pr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,10)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==9) && (<src.restest 1 i_qv1_lr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 10000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_lr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 10000 i_gold
+  src.NEWITEM=i_qv1_lr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,10)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==9) && (<src.restest 1 i_qv1_ln_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 10000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_ln_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 10000 i_gold
+  src.NEWITEM=i_qv1_ln_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,10)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==9) && (<src.restest 1 i_qv1_pn_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 10000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pn_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 10000 i_gold
+  src.NEWITEM=i_qv1_pn_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,10)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==9) && (<src.restest 1 i_qv1_torso_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 10000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_torso_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 10000 i_gold
+  src.NEWITEM=i_qv1_torso_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,10)
+  SAY= "Tady prosim, je jako nove ..." 
+ return 0
+ elseif (( src.qtag(q029_alchnezdar)==9) && (<src.restest 1 i_qv1_hlava_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 10000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_hlava_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 10000 i_gold
+  src.NEWITEM=i_qv1_hlava_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,10)
+  SAY= "Tady prosim, je jako nova ..." 
+else
+  SAY= "Nemam s cim bych ti pomohl, nemas vse potrebne"
+endif
+
+
+// ---------------------------- Ukol Popletalius 7 QV1---------------------
+// ---------------------------- Ukol Popletalius 7 QV1---------------------
+// ---------------------------- Ukol Popletalius 7 QV1---------------------
+
+
+[dialog d_q029_alchnezdar7]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Jak se mas ?     
+text 200 331 1152 1    // 
+button 325 330 0988 0988 0 2 0  // Pomuzes mi?
+text 350 331 1152 2    //
+button 490 330 0988 0988 0 6 0  // Prohlednout ...      
+text 520 331 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  souhlasim
+text 60 395 152 13
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+//
+
+[dialog d_q029_alchnezdar7 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Jak se dnes mas?
+Pomuzes mi?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Mam se primo bajecne, pustil jsem se mnohem mene nebezpecneho podnikani, snazim se proniknout do taju mumifikace a balzomavani.
+Rad ti pomohu, budeme na to potrebova 10 lahvicek s greater healy a par stovek bandazi.
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Dobre, souhlasim, pust se dotoho...
+
+
+[dialog d_q029_alchnezdar7 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1 
+ 
+if (( src.qtag(q029_alchnezdar)==10) && (<src.restest 1 i_qv1_pr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 20000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 20000 i_gold
+  src.NEWITEM=i_qv1_pr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,11)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==10) && (<src.restest 1 i_qv1_lr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 20000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_lr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 20000 i_gold
+  src.NEWITEM=i_qv1_lr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,11)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==10) && (<src.restest 1 i_qv1_ln_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 20000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_ln_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 20000 i_gold
+  src.NEWITEM=i_qv1_ln_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,11)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==10) && (<src.restest 1 i_qv1_pn_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 20000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pn_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 20000 i_gold
+  src.NEWITEM=i_qv1_pn_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,11)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==10) && (<src.restest 1 i_qv1_torso_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 20000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_torso_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 20000 i_gold
+  src.NEWITEM=i_qv1_torso_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,11)
+  SAY= "Tady prosim, je jako nove ..." 
+ return 0
+ elseif (( src.qtag(q029_alchnezdar)==10) && (<src.restest 1 i_qv1_hlava_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 20000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_hlava_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 20000 i_gold
+  src.NEWITEM=i_qv1_hlava_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,11)
+  SAY= "Tady prosim, je jako nova ..." 
+else
+  SAY= "Nemam s cim bych ti pomohl, nemas vse potrebne"
+endif
+
+// ---------------------------- Ukol Popletalius 8 QV1---------------------
+// ---------------------------- Ukol Popletalius 8 QV1---------------------
+// ---------------------------- Ukol Popletalius 8 QV1---------------------
+
+
+[dialog d_q029_alchnezdar8]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Jak se mas ?     
+text 200 331 1152 1    // 
+button 325 330 0988 0988 0 2 0  // Pomuzes mi?
+text 350 331 1152 2    //
+button 490 330 0988 0988 0 6 0  // Prohlednout ...      
+text 520 331 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  souhlasim
+text 60 395 152 13
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+//
+
+[dialog d_q029_alchnezdar8 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Jak se dnes mas?
+Pomuzes mi?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Mam se primo bajecne, pustil jsem se mnohem mene nebezpecneho podnikani, snazim se proniknout do taju mumifikace a balzomavani.
+Rad ti pomohu, budeme na to potrebova 10 lahvicek s greater healy a par stovek bandazi.
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Dobre, souhlasim, pust se dotoho...
+
+
+[dialog d_q029_alchnezdar8 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1 
+ 
+if (( src.qtag(q029_alchnezdar)==11) && (<src.restest 1 i_qv1_pr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 30000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 30000 i_gold
+  src.NEWITEM=i_qv1_pr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,12)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==11) && (<src.restest 1 i_qv1_lr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 30000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_lr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 30000 i_gold
+  src.NEWITEM=i_qv1_lr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,12)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==11) && (<src.restest 1 i_qv1_ln_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 30000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_ln_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 30000 i_gold
+  src.NEWITEM=i_qv1_ln_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,12)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==11) && (<src.restest 1 i_qv1_pn_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 30000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pn_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 30000 i_gold
+  src.NEWITEM=i_qv1_pn_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,12)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==11) && (<src.restest 1 i_qv1_torso_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 30000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_torso_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 30000 i_gold
+  src.NEWITEM=i_qv1_torso_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,12)
+  SAY= "Tady prosim, je jako nove ..." 
+ return 0
+ elseif (( src.qtag(q029_alchnezdar)==11) && (<src.restest 1 i_qv1_hlava_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 30000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_hlava_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 30000 i_gold
+  src.NEWITEM=i_qv1_hlava_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,12)
+  SAY= "Tady prosim, je jako nova ..." 
+else
+  SAY= "Nemam s cim bych ti pomohl, nemas vse potrebne"
+endif
+
+// ---------------------------- Ukol Popletalius 9 QV1---------------------
+// ---------------------------- Ukol Popletalius 9 QV1---------------------
+// ---------------------------- Ukol Popletalius 9 QV1---------------------
+
+
+[dialog d_q029_alchnezdar9]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Jak se mas ?     
+text 200 331 1152 1    // 
+button 325 330 0988 0988 0 2 0  // Pomuzes mi?
+text 350 331 1152 2    //
+button 490 330 0988 0988 0 6 0  // Prohlednout ...      
+text 520 331 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  souhlasim
+text 60 395 152 13
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+//
+
+[dialog d_q029_alchnezdar9 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Jak se dnes mas?
+Pomuzes mi?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Mam se primo bajecne, pustil jsem se mnohem mene nebezpecneho podnikani, snazim se proniknout do taju mumifikace a balzomavani.
+Rad ti pomohu, budeme na to potrebova 10 lahvicek s greater healy a par stovek bandazi.
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Dobre, souhlasim, pust se dotoho...
+
+
+[dialog d_q029_alchnezdar9 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1 
+ 
+if (( src.qtag(q029_alchnezdar)==12) && (<src.restest 1 i_qv1_pr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 40000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 40000 i_gold
+  src.NEWITEM=i_qv1_pr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,13)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==12) && (<src.restest 1 i_qv1_lr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 40000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_lr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 40000 i_gold
+  src.NEWITEM=i_qv1_lr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,13)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==12) && (<src.restest 1 i_qv1_ln_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 40000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_ln_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 40000 i_gold
+  src.NEWITEM=i_qv1_ln_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,13)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==12) && (<src.restest 1 i_qv1_pn_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 40000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pn_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 40000 i_gold
+  src.NEWITEM=i_qv1_pn_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,13)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==12) && (<src.restest 1 i_qv1_torso_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 40000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_torso_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 40000 i_gold
+  src.NEWITEM=i_qv1_torso_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,13)
+  SAY= "Tady prosim, je jako nove ..." 
+ return 0
+ elseif (( src.qtag(q029_alchnezdar)==12) && (<src.restest 1 i_qv1_hlava_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 40000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_hlava_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 40000 i_gold
+  src.NEWITEM=i_qv1_hlava_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,13)
+  SAY= "Tady prosim, je jako nova ..." 
+else
+  SAY= "Nemam s cim bych ti pomohl, nemas vse potrebne"
+endif
+
+
+// ---------------------------- Ukol Popletalius 10 QV1---------------------
+// ---------------------------- Ukol Popletalius 10 QV1---------------------
+// ---------------------------- Ukol Popletalius 10 QV1---------------------
+
+
+[dialog d_q029_alchnezdar10]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03102 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Jak se mas ?     
+text 200 331 1152 1    // 
+button 325 330 0988 0988 0 2 0  // Pomuzes mi?
+text 350 331 1152 2    //
+button 490 330 0988 0988 0 6 0  // Prohlednout ...      
+text 520 331 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  souhlasim
+text 60 395 152 13
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+//
+
+[dialog d_q029_alchnezdar10 text]
+Alchymista Popletalius   //    Jmeno a titul pozdraveneho
+Jak se dnes mas?
+Pomuzes mi?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Mam se primo bajecne, pustil jsem se mnohem mene nebezpecneho podnikani, snazim se proniknout do taju mumifikace a balzomavani.
+Rad ti pomohu, budeme na to potrebova 10 lahvicek s greater healy a par stovek bandazi.
+Myslel jsem si ze namozenim tech kamenu bych mohl neco vydelat, ale zvrtlo se to, tak snad priste...
+Inu, rad bych te zamestnal, prace v laboratori je dost a ja bych potreboval pomocnika na schaneni prisad ale nemam cim zaplatit, snad nekdy pozdeji.
+Ano? Copak mi neses?
+Alchymista Popletalius je mensi postavy, s malinkyma tekavyma ocima. Jeho zasneny vyraz a nesikovnost davaji jasne najevo ze je to snilek honici se za nemoznymi cili...
+Dobre, souhlasim, pust se dotoho...
+
+
+[dialog d_q029_alchnezdar10 button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1 
+ 
+if (( src.qtag(q029_alchnezdar)==13) && (<src.restest 1 i_qv1_pr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 50000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 50000 i_gold
+  src.NEWITEM=i_qv1_pr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,14)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==13) && (<src.restest 1 i_qv1_lr_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 50000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_lr_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 50000 i_gold
+  src.NEWITEM=i_qv1_lr_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,14)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==13) && (<src.restest 1 i_qv1_ln_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 50000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_ln_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 50000 i_gold
+  src.NEWITEM=i_qv1_ln_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,14)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==13) && (<src.restest 1 i_qv1_pn_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 50000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_pn_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 50000 i_gold
+  src.NEWITEM=i_qv1_pn_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,14)
+  SAY= "Tady prosim, je jako nova ..." 
+ return 0
+elseif (( src.qtag(q029_alchnezdar)==13) && (<src.restest 1 i_qv1_torso_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 50000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_torso_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 50000 i_gold
+  src.NEWITEM=i_qv1_torso_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,14)
+  SAY= "Tady prosim, je jako nove ..." 
+ return 0
+ elseif (( src.qtag(q029_alchnezdar)==13) && (<src.restest 1 i_qv1_hlava_ajdy>) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_potion_healgreat> >=10) && (<src.rescount i_gold> >= 50000))
+  EMOTE=jak opatrne bali hnilobne maso do bandazi
+  src.consume i_qv1_hlava_ajdy
+  src.consume 10 i_potion_healgreat
+  src.consume 250 i_bandage
+  src.consume 50000 i_gold
+  src.NEWITEM=i_qv1_hlava_ajda
+  src.act.bounce
+  src.qtag(q029_alchnezdar,14)
+  SAY= "Tady prosim, je jako nova ..." 
+else
+  SAY= "Nemam s cim bych ti pomohl, nemas vse potrebne"
+endif
+
+
+[EOF]

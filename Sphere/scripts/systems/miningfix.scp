@@ -1,0 +1,721 @@
+[function f_tezba_pauza]
+if (f_mine_checkDelayer)
+  return 1
+endif
+if (resource_targon_ground)
+  skill(-1)
+  return 1
+endif
+return 0
+
+[function f_mine_checkDelayer] //return 0 if OK, 1 if can't use skill
+if (findid(i_delayer))
+  sysMessage("Jeste nemuzes pouzit skill.")
+  findid(i_delayer).timerd=<eval(40-<f_return_delay_bonus>)>
+  skill(-1)
+  return 1
+endif
+prodleva_pred_novym_pokusem(<eval(20-<f_return_delay_bonus>)>)
+return 0
+
+[function f_return_delay_bonus]
+if (((<action>==012)||(action==skill_fishing)) && (<fishing>>100.0)) //fishing
+  return <f_count_delay_bonus(<fishing>)>
+elseif (((<action>==02D)||(action==skill_mining)||(findID(i_pickaxingDelay))) && (<mining>>100.0))  //mining
+  return <f_count_delay_bonus(<mining>)>
+elseif (((<action>==02C)||(action==skill_lumberjack)) && (<lumberjacking>>100.0)) //lj
+  return <f_count_delay_bonus(<lumberjacking>)>
+endif
+return 0
+
+[function f_count_delay_bonus]
+arg(skillbonus,<eval ((argv(0)-100.0)/10)>)
+arg(delaybonus,<eval ((arg(skillbonus)*3)/10)>)//1% nad 100 = o 0.03s mensi delay medzi pouzitim skillu
+return <delaybonus>
+
+
+[FUNCTION resource_targon_ground]
+//return 0
+
+var(mydirection,<dir>)
+
+if (findlayer(1))
+ if(<findlayer(1).attr>&attr_newbie)
+  findlayer(1).remove
+  sysMessage("newbie krumpac je bug ! byl smazan.")
+  return 1
+ endif
+endif
+
+
+if ( <findlayer.layer_horse> )
+  sysMessage("Ze sedla to pujde tezko.")
+  dismount
+endif
+
+if (nolightfizz(1)) //i s napisem - nutno proverit jestli jim to nepise dvakrat (jestli se nepousti i skillstart)
+  return 1
+endif
+hungryhurts
+
+if (findid(i_resprobe)) // we are still to be relocated
+  return 1
+endif
+reveal
+
+arg(mineact,<act>)
+NEWITEM(i_resprobe) // Load the probe item
+lastnew.P = <SRC.TARGP> // place it at the mining point
+lastnew.link=<uid>
+lastnew.removefromview
+
+if (src.distanceFrom(<lastnew>) > 3)&&(isgm==0) // check for distance to mining point
+  sysMessage("You are too far away.")
+  lastnew.REMOVE
+  return 1
+elseif !(lastnew.srcCANSEELOS) // check for line of sight to mining point
+  sysMessage("Tam nedosahnes.")
+  lastnew.REMOVE
+  return 1
+endif
+arg(probeuid,<lastnew>)
+
+newnpc c_mining_dummy
+act.EQUIP(<arg(probeuid)>)
+act.P=<TARGP> 
+act.flags=statf_insubstantial
+act.removefromview
+act=arg(mineact)
+return 0
+
+[function mfix_haveact]
+act.events t_allresources
+//say tezim <act.amount> <act.more1>
+actarg2=1 //zrychleni tezby
+if ((ACT.TYPE == t_water)&&(Act.color==0))
+  finduid(#0402D472F).tag(fishing_area_started,#+1) // write into statistics
+elseif ((ACT.TYPE==t_tree)&&(Act.color==0))
+  finduid(#0402D472F).tag(lumber_area_started,#+1) // write into statistics
+elseif ((ACT.TYPE==t_rock)&&(Act.color==0))
+  finduid(#0402D472F).tag(mining_area_started,#+1) // write into statistics
+endif
+if (profession==class_craft)
+  arg(succ,0)
+  if (act.type==t_tree)
+    arg(succ,<specability_craft(<eval(tag(ra_vigourLumber))>)>)
+  elseif (act.type==t_rock)
+    arg(succ,<specability_craft(<eval(tag(ra_vigourMining))>)>)
+  endif
+  if (<arg(succ)>)
+    if (Act.color==0)
+      if (<?safe next<act.more1>?>)
+        arg(storemat,<act.more1>)
+        act.more1=<?next<act.more1>?>
+        if (fixresource)//nema na lepsi material skill
+          act.more1=<arg(storemat)>
+        else
+          classmessage("<sex(Nasel,Nasla)> jsi lepsi material!")
+        endif
+      endif
+    endif
+  endif
+  if (region.tag(elvenuid))//ELVEN
+    if (distancefrom(<finduid(<region.tag.elvenuid>)>) <15)
+      if (act.more1==l_mithril)
+        act.more1=l_copper
+        act.amount=0
+      endif
+      if (act.more1==l_adamantinum)
+        if ({1000 1350} < <lumberjacking> )
+          act.more1=l_mithril
+          act.amount=1
+          logmsg("postava <uid> (meno: <name>, acc: <account.name>) objavila <act.amount> elven logov zo spawnu <act>") 
+          var(elven_<region.tag.realm>,#+1)
+        endif
+      endif
+    endif
+  endif
+endif
+if (act.more1 == l_mithril)
+	finduid(#0402D472F).tag(lumber_elven,#+1) 
+elseif (act.more1 == l_adamantinum)
+	finduid(#0402D472F).tag(lumber_eben,#+1)
+elseif (act.more1 == l_obsidian)
+	finduid(#0402D472F).tag(lumber_maha,#+1)
+elseif (act.more1 == o_adamantinum)
+	finduid(#0402D472F).tag(mining_ada,#+1)
+elseif (act.more1 == o_obsidian)
+	finduid(#0402D472F).tag(mining_obs,#+1)
+endif
+fixresource
+
+
+[function fixresource]
+if (ACT.TYPE==t_rock)&&(mining<eval(finduid(<act.more1>).SKILL))
+  ACT.MORE1 = o_copper // REPLACE the current mining resource
+  return 1
+elseif (ACT.TYPE==t_tree )&&(lumberjacking<eval(finduid(<act.more1>).SKILL))
+  ACT.MORE1 = l_copper // REPLACE the current lumberjack resource
+  return 1
+elseif ( <ACT.TYPE> == t_water ) && (fishing <eval(finduid(<act.more1>).SKILL))
+  ACT.MORE1 = w_fish1 // REPLACE the current fishing resource
+  return 1
+endif
+
+if ({1 100}==43)&&(act.type == t_rock) //pri sanci na miningu
+  if (strcmpi("<region.name>","tutorial"))
+    dozaval
+  elseif ({1 100} < 10) //v tutorialu zavaly ANO, ale jenom 1/10 -> kdyztak snizim
+    dozaval
+  endif
+  return 1
+endif
+
+if (tag(trestanec))
+  if (weight > (40*str)) || (weight > 2500)  //pretizeni povolani nebo prilis logu v baglu
+    skill(-1)
+    sysMessage("Vic toho nepoberes")
+    consume i_log_lager
+    return 1
+  endif
+  if ({1 100}==99)
+    newnpc c_h_peasant
+    act.name=#NAMES_HUMANMALE
+    act.p=<p>
+    arg(prudic_obecny,<act>)
+    newitem(i_prudic_spk)
+    act.cont=<arg(prudic_obecny)>
+  endif
+endif
+
+
+if (rand(500)==1)&&(mapplane!=1)
+  if (<strcmpi("<region.name>","tutorial")>)
+    randompotvora
+  else
+    tutrandompotvora
+  endif
+  return 1
+endif
+return 0
+
+[ITEMDEF i_resprobe]
+ID = i_memory
+TYPE = t_eq_script
+LAYER = layer_special
+name=resource probe
+
+ON=@Create
+TIMER=2
+MORE2=0
+attr=010//attr_move_never
+
+ON=@Timer
+cont.remove
+return 1
+
+[chardef c_mining_dummy]
+id=c_man
+
+on=@create
+dex=0
+karma=-1
+
+on=@userclick
+return 1
+
+ON=@itemStep
+if (findid(i_resprobe).link.ACTION==-1) //hrac nic nedela, nejakej omyl nebo uz je pozde
+  remove
+  return 0
+endif
+if (act.baseid == i_worldgem_bit)
+  if (ACT.TYPE == t_rock )
+  elseif (ACT.TYPE == t_tree )
+  elseif (ACT.TYPE == t_water )
+  else
+    return 0
+  endif //mame spravny typy
+  
+  findid(i_resprobe).link.act=<act>
+  findid(i_resprobe).link.mfix_haveact
+  act.color=1//hotovo
+  remove
+endif
+
+[ITEMDEF i_randompotvora]//snad
+ID=04f3
+name=mazatko potvory
+type=t_eq_script
+
+on=@create
+color=021
+ATTR=090
+
+on=@timer
+if (tag(mrchaspawn).type==t_spawn_char)
+  tag(mrchaspawn).remove
+endif
+remove
+return 0
+
+
+[function dozaval]
+newitemsafe(tm_rocks)
+lastnew.p=<src.act.p>
+lastnew.attr_movenever=1
+lastnew.move(<dir_inttochar(<var(mydirection)>)>)
+var.remove(mydirection)
+lastnew.timer=60*60*24 
+lastnew.name=dulni zaval 
+lastnew.events=t_zavalTriggers
+lastnew.type=t_efectedByPickAxe
+lastnew.tag(PickaxingTimer,2)
+
+[typedef t_zavalTriggers]
+on=@triggerPickaxing
+arg(player,<tag(PickaxingSrc)>)
+if (player.f_mine_checkDelayer) // Player can't use skill yet
+  return 1
+endif
+
+on=@Pickaxed
+arg(player,<tag(PickaxingSrc)>)
+if ({1000 1300} < <player.mining>)&&(player.distancefrom(<uid>)<3)
+  player.sysMessage("<player.sex(Odstranil,Odstranila)> jsi zaval!")
+  remove
+else
+  player.Message("Nepovedlo se ti odstranit zaval.") 
+endif
+
+on=@AfterPickaxing
+
+
+[function randompotvora]
+//say <act.more1>
+if (act.type == t_rock)
+  tag(randommrcha,<rand(128)>)
+  if (tag(randommrcha) > 64)
+    f_spawninit(1,c_rat_craft,50,80,6)
+  elseif (tag(randommrcha) > 32)
+    f_spawninit(1,c_troll_craft,50,80,6)
+  elseif (tag(randommrcha) > 16)
+    f_spawninit(1,c_elem_earth,50,80,6)
+  elseif (tag(randommrcha) > 8)
+    f_spawninit(1,c_elem_rock_craft,50,80,6)
+  elseif (tag(randommrcha) > 2)
+    f_spawninit(1,c_spirit_copper_craft,50,80,6)
+  else
+    RANDOMGOLEM
+  endif
+  var(spawnuid).removefromview
+  newitemsafe(i_randompotvora)
+  lastnew.p=<p>
+  lastnew.removefromview
+  lastnew.tag(mrchaspawn,<var(spawnuid)>)
+  lastnew.timer=3600
+endif 
+
+if (act.type == t_tree)
+  tag(randommrcha,<rand(128)>)
+  if (tag(randommrcha) > 64)
+    f_spawninit(1,c_wolf_craft,50,80,6)
+  elseif (tag(randommrcha) > 32)
+    f_spawninit(1,c_bear_grizzly_craft,50,80,6)
+  elseif (tag(randommrcha) > 16)
+    f_spawninit(1,c_elem_earth,50,80,6)
+  elseif (tag(randommrcha) > 8)
+    f_spawninit(1,c_elem_forrest_craft,50,80,6)
+  elseif (tag(randommrcha) > 2)
+    f_spawninit(1,c_spirit_forrest_craft,50,80,6)
+  else
+    RANDOMREAPER
+  endif
+  var(spawnuid).removefromview
+  newitemsafe(i_randompotvora)
+  lastnew.p=<p>
+  lastnew.removefromview
+  lastnew.tag(mrchaspawn,<var(spawnuid)>)
+  lastnew.timer=900
+endif
+if (act.type == t_water)
+  tag(randommrcha,<rand(128)>)
+  if (tag(randommrcha) > 64)
+    f_spawninit(1,c_frog_ropucha,50,80,6)
+  elseif (tag(randommrcha) > 32)
+    f_spawninit(1,c_sea_serpent,50,80,6)
+  elseif (tag(randommrcha) > 16)
+    f_spawninit(1,c_kraken_craft,50,80,6)
+  elseif (tag(randommrcha) > 8)
+    f_spawninit(1,c_elem_water,50,80,6)
+  elseif (tag(randommrcha) > 4)
+    f_spawninit(1,c_spirit_water_craft,50,80,6)
+  elseif (tag(randommrcha) > 2)
+    f_spawninit(1,c_kraken_craft,50,80,6)
+  endif
+  var(spawnuid).removefromview
+  newitemsafe(i_randompotvora)
+  lastnew.p=<p>
+  lastnew.removefromview
+  lastnew.tag(mrchaspawn,<var(spawnuid)>)
+  lastnew.timer=900
+endif
+
+[function tutrandompotvora]
+//say <act.more1>
+if (act.type == t_rock)
+  tag(randommrcha,<rand(128)>)
+  if (tag(randommrcha) > 64)
+    f_spawninit(1,c_rat_giant,50,80,6)
+  elseif (tag(randommrcha) > 32)
+    f_spawninit(1,c_ghoul_nb,50,80,6)
+  elseif (tag(randommrcha) > 16)
+    f_spawninit(1,c_skeleton_archer_nb,50,80,6)
+  elseif (tag(randommrcha) > 8)
+    f_spawninit(1,c_troll_mace_nb,50,80,6)
+  else
+    f_spawninit(1,c_imp_dark_nb,50,80,6)
+  endif
+  var(spawnuid).removefromview
+  newitemsafe(i_randompotvora)
+  lastnew.p=<p>
+  lastnew.removefromview
+  lastnew.tag(mrchaspawn,<var(spawnuid)>)
+  lastnew.timer=3600
+endif 
+
+if (act.type == t_tree)
+  tag(randommrcha,<rand(128)>)
+  if (tag(randommrcha) > 64)
+    f_spawninit(1,c_imp_nb,50,80,6)
+  elseif (tag(randommrcha) > 32)
+    f_spawninit(1,c_mongbat_nb,50,80,6)
+  elseif (tag(randommrcha) > 16)
+    f_spawninit(1,c_imp_dark_nb,50,80,6)
+  elseif (tag(randommrcha) > 8)
+    f_spawninit(1,c_bear_brown_nb,50,80,6)
+  else
+    f_spawninit(1,c_hellcat_pred_nb,50,80,6)
+  endif
+  var(spawnuid).removefromview
+  newitemsafe(i_randompotvora)
+  lastnew.p=<p>
+  lastnew.removefromview
+  lastnew.tag(mrchaspawn,<var(spawnuid)>)
+  lastnew.timer=900
+endif
+
+if (act.type == t_water)
+  tag(randommrcha,<rand(128)>)
+  if (tag(randommrcha) > 64)
+    f_spawninit(1,c_toad_giant,50,80,6)
+  else
+    f_spawninit(1,c_serpent_giant_nb,50,80,6)
+  endif
+  var(spawnuid).removefromview
+  newitemsafe(i_randompotvora)
+  lastnew.p=<p>
+  lastnew.removefromview
+  lastnew.tag(mrchaspawn,<var(spawnuid)>)
+  lastnew.timer=900
+endif
+
+[FUNCTION RANDOMGOLEM]
+if (act.more1==o_copper)
+  f_spawninit(1,c_golem_copper,50,80,6)
+elseif (act.more1==o_iron)
+  f_spawninit(1,c_golem_iron,50,80,6)
+elseif (act.more1==o_silver)
+  f_spawninit(1,c_golem_silver,50,80,6)
+elseif (act.more1==o_gold)
+  f_spawninit(1,c_golem_golden,50,80,6)
+elseif (act.more1==o_verite)
+  f_spawninit(1,c_golem_verite,50,80,6)
+elseif (act.more1==o_valorite)
+  f_spawninit(1,c_golem_valorite,50,80,6)
+elseif (act.more1==o_obsidian)
+  f_spawninit(1,c_golem_obsidian,50,80,6)
+elseif (act.more1==o_adamantinum)
+  f_spawninit(1,c_golem_adamantinum,50,80,6)
+elseif (act.more1==o_shadow)
+  f_spawninit(1,c_golem_shadow,50,80,6)
+elseif (act.more1==o_mithril)
+  f_spawninit(1,c_golem_mithril,50,80,6)
+endif
+
+[function randomreaper]  
+if (act.more1==l_copper)
+ f_spawninit(1,c_reaper_spruce,50,80,6)
+elseif (act.more1==l_iron)
+  f_spawninit(1,c_reaper_chesnut,50,80,6)
+elseif (act.more1==l_verite)
+  f_spawninit(1,c_reaper_oak,50,80,6)
+elseif (act.more1==l_valorite)
+  f_spawninit(1,c_reaper_teak,50,80,6)
+elseif (act.more1==l_obsidian)
+  f_spawninit(1,c_reaper_mahagon,50,80,6)
+elseif (act.more1==l_adamantinum)
+  f_spawninit(1,c_reaper_eben,50,80,6)
+elseif (act.more1==l_mithril)
+  f_spawninit(1,c_reaper_elven,50,80,6)
+endif  
+
+[function randfishjunk]
+dorand 14
+ return i_bottle_liquor
+ return  random_shoes
+ return i_bottle_ale
+ return  random_shoes
+ return i_bottle_wine
+ return  random_shoes
+ return i_pot
+ return  random_shoes
+ return i_pot_dirty_6
+ return  random_shoes
+ return i_kettle
+ return  random_shoes
+ return i_pan
+ return  random_shoes
+enddo
+
+/////////////////////////
+
+[function mapflaskhandle]
+//zruseni verbatimovejch map na pokyn marka
+//if ({1 100} < tag(map)) && ({1 100} < tag(map_qv1))
+// remove
+// src.giveitem(i_qv1_u_treasure_map)
+// // finduid(09fa43).delayedmessage(<servertime> Mapka QV1 <lastnew> vylovil <src.name>-<src.account.name>) 
+// src.sysMessage("V lahvi je mapa!")
+//else
+if ({1 100} < tag(map))
+  remove
+  src.giveitem(i_u_treasure_map)
+  finduid(#0402D472F).tag(padnute_mapy_fishing,#+1)
+  //finduid(09fa43).tag(pocetvylovenychobyc,<finduid(09fa43).tag(pocetvylovenychobyc)>+1)
+  // finduid(09fa43).delayedmessage(<servertime> Mapka obyc <lastnew> vylovil <src.name>-<src.account.name>. Vylv mapek na morii: <finduid(09fa43).tag(pocetvylovenychobyc)>) 
+  src.sysMessage("Mapa v lahvi!")
+else
+  tag(map,0)
+//  tag(map_qv1,0)
+  src.sysMessage("Ten kram je k nicemu!")
+  return 1
+endif
+//endif
+
+[typedef t_junkfish]
+on=@userdclick
+if (dispid==i_bottle_liquor)||(dispid==i_bottle_ale)||(dispid==i_bottle_wine)
+ mapflaskhandle
+ return 1
+else
+ src.sysMessage("Ten kram je k nicemu!")
+ return 1
+endif
+
+on=@userclick
+trigger(userdclick)
+
+/////////////////////////
+[itemdef i_junkfish1]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+color=colors_all
+type=t_junkfish
+
+tag(map,5)
+//tag(map_qv1,5)
+
+/////////////////////////
+[itemdef i_junkfish2]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,10)
+//tag(map_qv1,15)
+
+/////////////////////////
+[itemdef i_junkfish3]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,15)
+//tag(map_qv1,10)
+
+/////////////////////////
+[itemdef i_junkfish4]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,20)
+//tag(map_qv1,5)
+
+/////////////////////////
+[itemdef i_junkfish5]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,25)
+//tag(map_qv1,15)
+
+/////////////////////////
+[itemdef i_junkfish6]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,30)
+//tag(map_qv1,5)
+
+/////////////////////////
+[itemdef i_junkfish7]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,35)
+//tag(map_qv1,15)
+
+/////////////////////////
+[itemdef i_junkfish8]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,40)
+//tag(map_qv1,10)
+
+/////////////////////////
+[itemdef i_junkfish9]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,60)
+//tag(map_qv1,20)
+
+/////////////////////////
+[itemdef i_junkfish10]
+id=i_barrel
+name=Kram vyloveny z vody
+type=t_junkfish
+
+on=@create
+id=<randfishjunk>
+type=t_junkfish
+color=colors_all
+
+tag(map,80)
+//tag(map_qv1,15)
+
+/////////////////////////
+/////////////////////////
+/////////////////////////
+
+
+[ITEMDEF i_elvenprobe]
+ID = i_grave_stone_5
+TYPE = t_eq_script
+LAYER = layer_special
+name=elven probe
+
+ON=@Create
+TIMER=600
+attr=090//attr_move_never a invis
+
+ON=@Timer
+P=<region.tag.elven>
+p=<eval {(p_x-50) (p_x+50)}>, <eval {(p_y-50) (p_y+50)}>, <p_z>, <mapplane>
+region.tag(elvenuid,<uid>)
+timer=600
+return 1
+
+[ITEMDEF i_prudic_spk]
+ID=i_worldgem_bit
+TYPE = t_eq_script
+LAYER = layer_special
+name = prudic
+
+on=@create
+timer=5
+attr=090
+tag.stav=1
+
+on=@timer
+if (tag(stav)==5)
+  cont.remove
+else
+  tag(stav,#+1)
+  dorand 18
+    cont.say("Jsi AFK mukle ?!")                                   // 1
+    cont.say("Koukej sekat latinu!")                               // 2
+    cont.say("Jsi tu ? Co je za den ?!")                           // 3
+    cont.say("Nejhorsi je AFK kontrola !")                         // 4 
+    cont.say("Je tu Stin ?")                                       // 5
+    cont.say("Je spatne videt.")                                   // 6
+    cont.say("Kontrola ! Jak se ti seka ?!")                       // 7
+    cont.say("Pamatuj, ze AFK se nesmi byt ani zde!")              // 8
+    cont.say("do lagru s tebou")                                   // 9 zachovat male na zacatku
+    cont.say("Za co jsi tu ? Za AFK ?")                            // 10
+    cont.say("Co drzis v ruce?")                                   // 11
+    cont.say("Pauza Pause Konec")                                  // 12    
+    cont.say("Nechtel bych tu stravit pul zivota, jako ty!")       // 13
+    cont.say("Umiras hlady...")                                    // 14 
+    cont.say("Za co jsi tu? Ja za ucelem buzerace veznu, chacha")  // 15
+    cont.say("Odpovez! Ja jsem stinna stranka Lagru")              // 16
+    cont.say("Znas je? Svarog Vdova Yavanna Attila Shadow ?")      // 17
+    cont.say("Co to je - World save ?")                            // 18 World save has been initiated.
+  enddo 
+endif 
+timer=5
+return 1
+
+[EOF]

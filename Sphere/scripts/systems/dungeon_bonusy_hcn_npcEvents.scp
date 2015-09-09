@@ -1,0 +1,599 @@
+/////////////////////////////////////////////////////////
+// H R O B K Y   C E R N Y C H   N U M E N O R E J C U //
+//                 (c) GM Yavanna                      //
+/////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////
+// T E L E P O R T   T O   T A R G E T   W I T H   A G R O //
+/////////////////////////////////////////////////////////////
+
+[EVENTS e_hcn_teleToTarget]
+ON=@SkillStroke
+if (act)
+  if (<eval tag(playersInMemory)> == 0) // no players has been checked
+    newItemSafe(i_hcn_SectorSearcher)
+    arg(searcher,<lastnew>)
+    searcher.link=<uid>
+    searcher.p=<p>
+  endif
+  f_hcn_setPorting
+else
+  if !(memoryfindtype(MEMORY_fight))
+    if (findID(i_hcn_AttackPort_npc))
+      findid(i_hcn_AttackPort_npc).remove
+      f_hcn_npc_tagMemoryClear
+      removememories
+    endif
+  endif
+endif
+
+//on=@hittry
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegetswing
+
+on=@aftergetswing
+f_hcn_TTT_afterHit
+
+on=@beforegeteffect
+//f_hcn_TTT_afterHit
+
+[function f_hcn_TTT_afterHit]
+if (f_hcn_npc_tagMemoryHasPlayer(<src>))
+  //f_hcn_npc_addPlayerToTagMemory(<src>)
+else
+  sector.allchars(f_hcn_npc_addPlayerToTagMemory(<uid>)) // stores players into the memory
+endif
+
+[function f_hcn_setPorting]
+if (playerExists(<act>))
+  if !(<flags>&(statf_invul|statf_invisible|statf_hidden))
+    if !(findid(i_hcn_AttackPort_npc))
+      newitemsafe(i_hcn_AttackPort_npc)
+      equip(<lastnew>)
+    endif
+    return 0
+  endif
+endif
+else
+  
+endif
+
+[itemdef i_hcn_SectorSearcher]
+NAME=TagKeg
+ID=i_KEG_WOOD
+TYPE=t_script
+
+on=@Create
+timer=0
+
+on=@Timer
+sector.allchars(f_hcn_npc_addPlayerToTagMemory(<link>))
+remove
+
+[itemdef i_hcn_AttackPort_npc]
+NAME=npc portuje (hcn)
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+
+on=@unequip
+return 0
+
+on=@equip
+timer=0
+return 0
+
+on=@timer
+tag(counter,<eval tag(counter)+1>)
+if (<tag(counter)> >= 30)
+  cont.f_hcn_npc_tagMemoryClear
+  tag.remove(counter)
+endif
+if (<more1>)
+  arg(attackedPlayer,<cont.memoryfindtype(MEMORY_fight).link>)
+  if !(<cont.f_canseelos(<arg(attackedPlayer)>)>) // noone to fight
+    more1=0
+  elseif (<more1>==4) // 4 secs within LOS
+    more1=0
+  else
+    if (arg(attackedPlayer).isGM)
+      f_hcn_npc_tagMemoryRemovePlayer(<arg(attackedPlayer)>)
+    endif
+    more1=<more1>+1
+  endif
+else
+  more1=1
+  cont.f_hcn_TTT_Agro
+  cont.f_hcn_TTT_AttackAgro
+  if (<eval cont.tag(playersInMemory)> == 0)
+    remove
+  endif
+endif
+f_npc_portTimer
+return 1
+
+[function f_hcn_npc_addPlayerToTagMemory]
+if !(npc)
+  if !(flag_invul)
+    if (<distancefrom(<argv(0)>)> < 30)
+      argv(0).tag(memoryPlayer_<eval <argv(0).tag(playersInMemory)>>,<uid>)
+      argv(0).tag(playersInMemory,<argv(0).tag(playersInMemory)>+1)
+    endif
+  endif
+endif
+
+[function f_hcn_npc_tagMemoryHasPlayer]
+arg(i,0)
+while (<arg(i)> < <eval tag(playersInMemory)>)
+  if !(<strcmpi(<argv(0)>,<tag(memoryPlayer_<eval arg(i)>)>)>)
+    return 1
+  endif
+  arg(i,#+1)
+endwhile
+return 0
+
+[function f_hcn_npc_tagMemoryRemovePlayer]
+arg(playerNumber,<eval argv(0)>)
+while (<arg(playerNumber)> < <eval <tag(playersInMemory)>-1>)
+  tag(memoryPlayer_<eval playerNumber>,<tag(memoryPlayer_<eval playerNumber+1>)>)
+  arg(playerNumber,#+1)
+endwhile
+tag(playersInMemory,<eval <tag(pocetLinku)>-1>)
+tag.remove(memoryPlayer_<eval playerNumber>)
+
+[function f_hcn_npc_tagMemoryClear]
+arg(i,0)
+while (<arg(i)> < <eval tag(playersInMemory)>)
+  tag.remove(memoryPlayer_<eval arg(i)>)
+  tag.remove(hcn_TTT_Agro_<eval arg(i)>)
+  arg(i,#+1)
+endwhile
+tag(playersInMemory,0)
+
+[function f_hcn_TTT_Agro]
+arg(i,0)
+while (<arg(i)> < <eval tag(playersInMemory)>)
+  arg(thisPlayer,<tag(memoryPlayer_<eval arg(i)>)>)
+  if (f_canseelos(<thisPlayer>))
+    arg(distPenalty,<distancefrom(<arg(thisPlayer)>)>*10)
+    if (arg(thisPlayer).profession==class_mag)
+      tag(hcn_TTT_Agro_<eval arg(i)>,1000-<arg(distPenalty)>)
+    elseif (arg(thisPlayer).profession==class_necro)
+      tag(hcn_TTT_Agro_<eval arg(i)>,1000-<arg(distPenalty)>)
+    elseif (arg(thisPlayer).profession==class_priest)
+      tag(hcn_TTT_Agro_<eval arg(i)>,950-<arg(distPenalty)>)
+    elseif (arg(thisPlayer).profession==class_shaman)
+      tag(hcn_TTT_Agro_<eval arg(i)>,950-<arg(distPenalty)>)
+    elseif (arg(thisPlayer).profession==class_mystik)
+      tag(hcn_TTT_Agro_<eval arg(i)>,930-<arg(distPenalty)>)
+    elseif (arg(thisPlayer).profession==class_thief)
+      tag(hcn_TTT_Agro_<eval arg(i)>,900-<arg(distPenalty)>)
+    elseif (arg(thisPlayer).profession==class_war)
+      tag(hcn_TTT_Agro_<eval arg(i)>,900-<arg(distPenalty)>)
+    elseif (arg(thisPlayer).profession==class_craft)
+      tag(hcn_TTT_Agro_<eval arg(i)>,900-<arg(distPenalty)>)
+    endif
+  else	// na daneho hrace v pameti neni videt -> Agro 0
+    tag(hcn_TTT_Agro_<eval arg(i)>,0)
+  endif
+  arg(i,#+1)
+endwhile
+
+[function f_hcn_TTT_AttackAgro]	// Podle velikosti aggra vybereme, na koho budem dal utocit
+arg(topAgro,0)
+arg(i,0)
+while (<arg(i)> < <eval tag(playersInMemory)>)
+  if (<arg(topAgro)> < <tag(hcn_TTT_Agro_<eval arg(i)>)>)
+    arg(topAgro,<tag(hcn_TTT_Agro_<eval arg(i)>)>)
+    arg(currentTarg,<arg(i)>)
+  endif
+  arg(i,#+1)
+endwhile
+if (<arg(topAgro)> > 0)
+  if (<memoryfindtype(MEMORY_fight).link> != <tag(memoryPlayer_<eval arg(currentTarg)>)>) // have different target
+    memoryfindtype(MEMORY_fight).remove
+    removememories
+    action=""
+    attack(<tag(memoryPlayer_<eval arg(currentTarg)>)>)
+    act=<tag(memoryPlayer_<eval arg(currentTarg)>)>
+    arg(dist,<distancefrom(<act>)>)
+    if (<arg(dist)> > 3)
+      arg(dist,3)    
+    endif
+    runxtimes(<arg(dist)>,runtovictim(<act>))
+  endif
+endif
+
+///////////////////////////////
+// N P C   P O I S O N I N G //
+///////////////////////////////
+
+[events e_hcn_NPCPoison]	// sila jedu se nastavuje hodnotou tagu 'jed_sila'
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (<var(ubrano)>)
+  if (act.poisonManager.f_pm_isImmune)
+    return 1
+  endif
+  act.f_poison_doPoison(<tag(jed_sila)>,2,poison_c)
+endif
+
+on=@beforedoeffect
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+////////////////////////////////////////////////
+//    H C N   M A D N E S S   A B I L I T Y   //
+//             (c) Yavanna                    //
+// determines the attacked player profession  //
+// and uses his ability against his own group //
+////////////////////////////////////////////////
+
+[events e_hcn_madnessAbility]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+arg(chance,100) // chance in promiles
+if (strlen(<tag(hcn_madnessAbilityChance)>))
+  arg(chance,<tag(hcn_madnessAbilityChance)>)
+endif
+if (act.isPlayer)
+  arg(attackStrength,1000)  // strength of an attack in promiles
+  if (strlen(<tag(hcn_madnessAbilityStrength)>))
+    arg(attackStrength,<tag(hcn_madnessAbilityStrength)>)
+  endif
+  arg(levelPenalty,<eval <eval act.tag(level)>*4>) // each level adds 4 promiles to the caused damage
+  arg(attackStrength,#+<arg(levelPenalty)>)
+  if (chance(<arg(chance)>,3)) // the chance to cause the effect succeeded
+    if (act.profession == class_war) //warrior block
+      act.f_hcn_madness_war(<arg(attackStrength)>)
+    elseif (act.profession == class_thief) // thief block
+      act.f_hcn_madness_thief(<arg(attackStrength)>)
+    elseif (act.profession == class_mag)
+      act.f_hcn_madness_mag(<arg(attackStrength)>)
+    elseif (act.profession == class_ranger)
+      act.f_hcn_madness_ranger(<arg(attackStrength)>)
+    elseif (act.profession == class_necro) // necro block
+      act.f_hcn_madness_necro(<arg(attackStrength)>)
+    elseif (act.profession == class_priest)
+      act.f_hcn_madness_priest(<arg(attackStrength)>)
+    elseif (act.profession == class_shaman)
+      act.f_hcn_madness_shaman(<arg(attackStrength)>)
+    elseif (act.profession == class_mystik)
+      act.f_hcn_madness_mystic(<arg(attackStrength)>)
+    elseif (act.profession == class_craft)
+      act.f_hcn_madness_craft(<arg(attackStrength)>)
+    endif
+  endif
+endif
+
+on=@beforedoeffect
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+
+[function f_hcn_madness_war] // argv0: attack strength in promiles
+if (findlayer(1) || findlayer(2)) //has sth in hands
+  reduceStamina(<eval {10 20}>) // safely decreases stamina
+  sound(sex(1098,824))
+  sound(512)
+  sound(566,5)
+  sysMessage("V nahlem pomateni bijes bezhlave kolem sebe!")
+  flip
+  flip
+  flip
+  flip
+  f_roundattackFriends_nTimes(8,0,<eval argv(0)>,2) // arg1: commit strike on up to 8 targets around me, arg2: I am warrior (~0), arg3: attack strength in promiles, arg4: attack range (max distance of target player)
+endif
+
+[function f_hcn_madness_thief] // argv0: attack strength in promiles
+if (findlayer(1) || findlayer(2))
+  reduceStamina(<eval {10 20}>) // safely decreases stamina
+  sound(512)
+  sysMessage("V nahlem pomateni bijes bezhlave kolem sebe!")
+  f_roundattackFriends_nTimes(1,1,<eval argv(0)>,2) // arg1: commit strike on ONE target around me, arg2: I am thief (~1), arg3: attack strength in promiles, arg4: attack range (max distance of target player)
+endif
+
+[function f_hcn_madness_mag] // argv0: attack strength in promiles
+reduceStamina(<eval {10 20}>) // safely decreases stamina
+sysMessage("V nahlem pomateni kolem sebe bezhlave sesilas kouzla!")
+f_roundattackFriends_nTimes(5,2,<eval argv(0)>,8) // arg1: commit strike on up to 5 targets around me, arg2: I am mage (~2), arg3: attack strength in promiles, arg4: attack range (max distance of target player)
+
+[function f_hcn_madness_ranger] // argv0: attack strength in promiles
+if (hasBow)
+  reduceStamina(<eval {10 20}>) // safely decreases stamina
+  sysMessage("V nahlem pomateni bezhlave strilis kolem sebe!")
+  f_roundattackFriends_nTimes(1,3,<eval argv(0)>,8) // arg1: commit strike on up to 1 target around me, arg2: I am ranger (~3), arg3: attack strength in promiles, arg4: attack range (max distance of target player)
+else
+  f_roundattackFriends_nTimes(1,0,<eval argv(0)>,2) // have no ranged weapon, so try to cause dmg at least by hands or sword weapon
+endif
+
+[function f_hcn_madness_necro] // argv0: attack strength in promiles
+reduceStamina(<eval {10 20}>) // safely decreases stamina
+sysMessage("V nahlem pomateni kolem sebe bezhlave sesilas kletby!")
+f_roundattackFriends_nTimes(5,4,<eval argv(0)>,4) // arg1: commit strike on up to 5 targets around me, arg2: I am necromancer (~4), arg3: attack strength in promiles, arg4: attack range (max distance of target player)
+
+[function f_hcn_madness_priest] // argv0: attack strength in promiles
+reduceStamina(<eval {10 20}>) // safely decreases stamina
+sysMessage("V nahlem pomateni kolem sebe bezhlave sesilas kletby!")
+f_roundattackFriends_nTimes(5,5,<eval argv(0)>,4) // arg1: commit strike on up to 5 targets around me, arg2: I am priest (~5), arg3: attack strength in promiles, arg4: attack range (max distance of target player)
+
+[function f_hcn_madness_shaman] // argv0: attack strength in promiles
+reduceStamina(<eval {10 20}>) // safely decreases stamina
+sysMessage("V nahlem pomateni kolem sebe bezhlave sesilas kletby!")
+f_roundattackFriends_nTimes(1,6,<eval argv(0)>,8) // arg1: commit strike on up to 5 targets around me, arg2: I am shaman (~6), arg3: attack strength in promiles, arg4: attack range (max distance of target player)
+
+[function f_hcn_madness_mystic] // argv0: attack strength in promiles
+reduceStamina(<eval {10 20}>) // safely decreases stamina
+sysMessage("V nahlem pomateni kolem sebe bezhlave sesilas kletby!")
+f_roundattackFriends_nTimes(5,7,<eval argv(0)>,4) // arg1: commit strike on up to 5 targets around me, arg2: I am mystic (~7), arg3: attack strength in promiles, arg4: attack range (max distance of target player)
+
+[function f_hcn_madness_craft] // argv0: attack strength in promiles
+reduceStamina(<eval {10 20}>) // safely decreases stamina
+sound(512)
+sysMessage("V nahlem pomateni bijes bezhlave kolem sebe!")
+f_roundattackFriends_nTimes(1,8,<eval argv(0)>,2) // arg1: commit strike on ONE target around me, arg2: I am craft (~8), arg3: attack strength in promiles
+
+[function f_roundattackFriends_nTimes]
+//argv(0): max amount of friends to hit
+//argv(1): 0 ~ plain melee dmg, 1 ~ thief, 2 ~ mage, 3 ~ ranger, 4 ~ necro, 5 ~ cleric, 6 ~ shaman, 7 ~ mystik, 8 ~ craft
+//argv(2): strength of an attack in promile (1000 == full dmg; 0 == no dmg; 1500 == 50% boost to the dmg)
+//argv(3): attack range, ie. the biggest distance between attacker and its victim
+newitemsafe(i_roundattackFriendsNTimes_srcChanger)
+lastnew.p=<src.p>
+lastnew.z=-100
+lastnew.link=<uid>
+lastnew.tag(nTimes,<argv(0)>)
+lastnew.tag(dmgType,<eval argv(1)>)
+lastnew.tag(dmgStrength,<eval argv(2)>)
+lastnew.tag(attackRange,<eval argv(3)>)
+lastnew.timerd=1
+
+[itemdef i_roundattackFriendsNTimes_srcChanger]
+id=i_memory
+layer=77
+type=t_src_changer
+name=roundattack friends once srcChanger
+
+on=@timer
+var(roundattackFriendNTimes_src,<link>)
+var(roundattackFriendNTimes_doneHit,0)
+var(roundattackFriendNTimes_type,<eval tag(dmgType)>)
+var(roundattackFriendNTimes_n,<eval tag(nTimes)>)
+var(roundattackFriendNTimes_strength,<eval tag(dmgStrength)>)
+var(roundattackFriendNTimes_range,<eval tag(attackRange)>)
+sector.allchars(f_roundattackFriendNTimes_Damage)
+remove 
+return 1
+
+[Function f_roundattackFriendNTimes_Damage]
+//var(roundattackFriendNTimes_type): 0 ~ war or plain melee dmg, 1 ~ thief, 2 ~ mage, 3 ~ ranger, 4 ~ necro, 5 ~ cleric, 6 ~ shaman, 7 ~ mystik, 8 ~ craft
+//var(roundattackFriendNTimes_strength): the strength of an attack in %
+if (<uid> == <var(roundattackFriendNTimes_src)>) //won't hit himself
+  return 1
+endif
+arg(distance,<distancefrom(<var(roundattackFriendNTimes_src)>)>)
+if (<arg(distance)> <= <var(roundattackFriendNTimes_range)>)
+  if (<arg(distance)> > 1)
+    if !(f_canseelos(<var(roundattackFriendNTimes_src)>)) //the player is not in the line of sight
+      return 1
+    endif
+  endif
+  if (isPlayer || isPet) // this char to be damaged is either player or summon
+    if !(isGM) // nonGM, but hit those who are invisible too !
+      if (<var(roundattackFriendNTimes_doneHit)> < <var(roundattackFriendNTimes_n)>) // haven't hit the limit number of enemies yet
+        src=var(roundattackFriendNTimes_src) //sets the player that is hitting as a src variable
+        src.act=<uid> //src is hitting act -> setting attackers act
+        if (<var(roundattackFriendNTimes_type)> == 0) // war (plain dmg ~ roundattack)
+          f_roundattackFriendNTimes_applyNonmystikDmg //counts the damage of the src and applies it to this char
+        elseif (<var(roundattackFriendNTimes_type)> == 1) // thief
+          f_roundattackFriendNTimes_applyNonmystikDmg
+          src.f_thief_doBleed(<uid>) //src causes bleed to act - bleeding strength is derivated from the damage caused just now
+        elseif (<var(roundattackFriendNTimes_type)> == 2) // mage ("flame strike" - differently counted)
+          arg(fireDamage,<eval (((<eval src.tag(sm)>/6)*var(roundattackFriendNTimes_strength))/1000)>) // calculates the fire damage derivated from the mage's SM and is reduced (or enhanced) by the given strength of the monster's attack.
+          effect(3,i_fire_column,6,16,0)
+          damage_noresponse(<arg(fireDamage)>,dam_fire|dam_magic)
+          sound(snd_spell_flamestrike)
+        elseif (<var(roundattackFriendNTimes_type)> == 3) // ranger
+          f_roundattackFriendNTimes_applyNonmystikDmg
+          knockbackHim
+        elseif (<var(roundattackFriendNTimes_type)> == 4) // necro
+          arg(poisonDamage,<eval (((<eval src.tag(sm)>/10)*var(roundattackFriendNTimes_strength))/1000)>) // calculates the poison damage derivated from the necro's SM and is reduced (or enhanced) by the given strength of the monster's attack.
+          if (<arg(poisonDamage)> > 0) // a reduced mind strength is greater than 0
+            f_poison_doPoison(<eval arg(poisonDamage)>,5)  // arg1: strength, arg2: speed, (arg3: type ~ plain dmg if ommited); gives the poison damage of a given strength
+          endif
+        elseif (<var(roundattackFriendNTimes_type)> == 5) // cleric
+          arg(curseStrength,<eval (((<eval src.Healing>/30)*var(roundattackFriendNTimes_strength))/1000)>) // number of stats reduced will be equal to the third of a healing skill of the cleric
+          arg(curseRune,<findID(i_a_curse)>)
+          if (<arg(curseRune)>)
+            if (<eval arg(curseRune).more1> >= <arg(curseStrength)>) // number of stats to be removed by this curse hit is equal or lower than actual curse effect done to player
+              arg(curseStrength,<eval (arg(curseRune).more1 + 1)>) // increases the actual curse effect by 1
+            endif
+          endif
+          classMessage("<sex("Byl jsi proklet","Byla jsi prokleta")>.")
+          f_eqrune(i_a_curse,60,<arg(curseStrength)>,3) // arg1: rune ID to equip, arg2: duration (timer), arg3: rune's more1 ~ number of stats removed by curse, arg4: no effect in this case
+        elseif (<var(roundattackFriendNTimes_type)> == 6) // shaman
+          if (findID(i_woodooeffect)) // this player already has a voodoo effect -> try another one in the range
+            return
+          endif
+          sysMessage("Jsi pod prokletim voodoo.")
+          woodooeffect(<eval {1 7}>,<src>) // apply random voodoo effect done by <src>
+        elseif (<var(roundattackFriendNTimes_type)> == 7) // mystik
+          if (strlen(<tag(hypno_mystik)>)) // the player is in the hypnotized monster, therefore it should cause only plain damage
+            f_roundattackFriendNTimes_applyNonmystikDmg
+          else
+            dospellcustom_donesrc(103,<eval ((calcspelleffect(103)*var(roundattackFriendNTimes_strength))/1000)>,<src>) //count mystik's damage altered by the strength of the npc's attack
+            paralyze({200 300}) //add paralyze to the damage
+          endif
+        elseif (<var(roundattackFriendNTimes_type)> == 8) // craft - just plain dmg for the time
+          f_roundattackFriendNTimes_applyNonmystikDmg
+        endif
+        var(roundattackFriendNTimes_doneHit,#+1) // one char has been hit and that's it
+      endif
+    endif
+  endif
+endif
+
+[function f_roundattackFriendNTimes_applyNonmystikDmg]
+arg(mainDmg,<eval src.combat_main_nonmystik_countDmg>) // counts the damage caused by player to his enemy
+arg(mainDmg,<eval ((arg(mainDmg)*var(roundattackFriendNTimes_strength))/1000)>) // reduce the damage according to the given attack strength
+src.combat_main_nonmystik_doDmg(<arg(mainDmg)>) // applies the nonmystik damage to the src's act
+
+
+/////////////////////////////////////
+// N P C   K N O C K B A C K I N G //
+//        (c) GM Yavanna           //
+// -knocks back the npc every time //
+//  it is hit                      //
+/////////////////////////////////////
+
+[function setknockingnpc]
+src.newequip(i_setKnockingNpc_target)
+
+[events e_hcn_npc_knockbacking]
+on=@AfterGetSwing
+var(ubrano,0)
+hits=maxhits
+if (<strlen(<tag(hcn_npc_knocking_corner_ru)>)>==0) //the constraints haven't been set at this npc yet
+  arg(spwn,<memoryfindtype(memory_ispawned).link>)
+  tag(hcn_npc_knocking_corner_ru,<spwn.tag(hcn_npc_knocking_corner_ru)>)
+  tag(hcn_npc_knocking_corner_ld,<spwn.tag(hcn_npc_knocking_corner_ld)>)
+endif
+arg(x,<eval(getXPos(<p>) + <return_nth(1,<dir_inttocoords(<act.dir>)>)>)>) //this is the x position, in which the npc should be thrown
+arg(y,<eval(getYPos(<p>) + <return_nth(2,<dir_inttocoords(<act.dir>)>)>)>) //this is the y position, in which the npc should be thrown
+arg(maxX,<getXPos(<tag(hcn_npc_knocking_corner_ld)>)>)
+arg(maxY,<getYpos(<tag(hcn_npc_knocking_corner_ld)>)>)
+arg(minX,<getXPos(<tag(hcn_npc_knocking_corner_ru)>)>)
+arg(minY,<getYPos(<tag(hcn_npc_knocking_corner_ru)>)>)
+if (<arg(x)> <= <arg(maxX)>) && (<arg(x)> >= <arg(minX)>) //x coordinate fits the constraints
+  if (<arg(y)> <= <arg(maxY)>) && (<arg(y)> >= <arg(minY)>) //y coordinate fits the constraints
+    dir=<act.dir>
+    move(<dir_inttochar(<dir>)>)
+    updatex
+  endif
+endif
+
+on=@Created
+on=@DrinkingPotion
+on=@AfterSwing
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+var(ubrano,0)
+
+[itemdef i_setKnockingNpc_target]
+name="Knocking_npc target"
+type=t_eq_script
+
+on=@Create
+attr_decay=1
+timer=60
+
+on=@Equip
+target("Zamer spawn, ktery chces nastavit")
+
+on=@Timer
+remove
+
+on=@TargOn_Char
+return 1
+
+on=@TargOn_Item
+if (src.targ.type==t_spawn_char)
+  src.targ.dialog(d_setKnockingNpc)
+  return 1
+else
+  target("Toto neni spawn!")
+  return 1
+endif
+
+[dialog d_setKnockingNpc]
+arg(textcolor,52)
+argo.SetLocation=285,50
+
+argo.tag(sirka,410)
+argo.tag(vyska,193)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,3,200,181)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,2,200,181)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Knocking npc spawn settings")
+argo.button(<argo.dialog_but_ru>,d_def_button_dialog1,d_def_button_dialog2,1,0,2)		//help
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Can be activated:")
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,<d_def_writecolor>,"Is activated:")
+argo.texta(lastxpos,lastypos+2*d_def_radek_vyska,<d_def_writecolor>,"Activation/deactivation:")
+argo.texta(<argo.dialog_textpos(2,0)>,<d_def_readcolor>," Effect restraints:")
+argo.texta(<argo.dialog_textpos(3,0)>,<d_def_writecolor>,"Right upper corner:")
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,<d_def_writecolor>,"Left bottom corner:")
+  
+argo.texta(<argo.dialog_textpos(1,1)>,<d_def_readcolor>,"<?return_true(<f_knockingNpc_canBeActivated>,"yes","no")?>")
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,<d_def_readcolor>,"<?return_true(<f_spawnHasEvent("e_hcn_npc_knockbacking")>,"yes","no")?>")
+argo.dialog_buttonpos(1,1)
+if ((<f_canAddOnSpawnEvent>) || (<f_spawnHasEvent("e_hcn_npc_knockbacking")>))
+  argo.button(lastxbuttpos,lastybuttpos+2*d_def_radek_vyska,d_def_button_checkr1,d_def_button_checkr2,1,0,3)	//activate/deactivate
+else
+  argo.gumppic(lastxbuttpos,lastybuttpos+2*d_def_radek_vyska,d_def_button_checkr2)
+endif
+argo.texta(lastxpos,lastypos+2*d_def_radek_vyska,<d_def_readcolor>,<tag(door)>)
+
+argo.dialog_textpos(3,1)
+argo.button(<argo.dialog_buttonpos(3,1)>,d_def_button_select1,d_def_button_select2,1,0,4) //set right upper corner coordinates
+argo.texta(lastxpos+d_def_button_sirka+d_def_odsazeni,lastypos,d_def_readcolor,"<?tag(hcn_npc_knocking_corner_ru)?>")
+argo.button(lastxbuttpos,lastybuttpos+d_def_radek_vyska,d_def_button_select1,d_def_button_select2,1,0,5) //set left down corner coordinates
+argo.texta(lastxpos+d_def_button_sirka+d_def_odsazeni,lastypos+d_def_radek_vyska,d_def_readcolor,"<?tag(hcn_npc_knocking_corner_ld)?>")
+
+argo.button(<argo.dialog_but_ld>,d_def_button_ok1,d_def_button_ok2,1,0,1) //ok
+
+[dialog d_setKnockingNpc button]
+on=1 // ok
+
+on=2 // help
+dialog(d_setKnockingNpc)
+dialog(d_setKnockingNpc_help)
+
+on=3 //activate/deactivate
+arg(activePosition,<f_spawnHasEvent("e_hcn_npc_knockbacking")>)
+if (<activePosition> > 0)
+  tag.remove(spawnevent<eval arg(activePosition)>)
+else
+  arg(inactivePosition,<f_canAddOnSpawnEvent>)
+  if (<arg(inactivePosition)> > 0)
+    tag(spawnevent<eval arg(inactivePosition)>,"e_hcn_npc_knockbacking")
+  else
+    src.redMessage("Spawn nemuze byt rozsiren o dalsi event !")
+  endif
+endif
+dialog(d_setKnockingNpc)
+
+on=4//right-upper corner
+tag(hcn_npc_knocking_corner_ru,<src.p>)
+dialog(d_setKnockingNpc)
+
+on=5//left-down corner
+tag(hcn_npc_knocking_corner_ld,<src.p>)
+dialog(d_setKnockingNpc)
+
+
+[dialog d_setKnockingNpc_help]
+argo.setText(1," KnockingNPC event muze byt aktivovan, pokud jsou splneny nasledujici podminky:<br> 1. je volny alespon jeden tag spawnevent na spawnu (celkem 3 mozne pozice - spawnevent1, spawnevent2, spawnevent3)<br> 2. je nastavena prava horni hranice ucinnosti knockbacku<br> 3. je nastavena leva dolni hranice ucinnosti knockbacku")
+argo.f_dialog_HelpCreator("HELP - Knocking npc spawn settings")
+
+[function f_knockingNpc_canBeActivated]
+if (f_canAddOnSpawnEvent)
+  if (<strlen(<tag(hcn_npc_knocking_corner_ru)>)>) && (<strlen(<tag(hcn_npc_knocking_corner_ld)>)>)
+    return 1
+  endif
+endif
+return 0
+
+[eof]

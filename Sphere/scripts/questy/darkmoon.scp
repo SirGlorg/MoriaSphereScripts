@@ -1,0 +1,492 @@
+/////////////////////////////
+///////// Dialog ///////////
+////////////////////////////
+
+[function f_darkmoon]
+if(<distance> > 3)
+  src.sysmessage("Na takovou vzdalenost s tebou komunikovat nebude.")
+  return 1
+endif
+if (<src.flags>&statf_dead)
+ return 1
+endif
+DIALOG(d_darkmoon_01)
+
+
+[dialog d_darkmoon_01]
+argo.questDialog_create(03116,<name>)
+
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Prominte <sex(pane,pani)> ale vubec nestiham. Radeji odejdete.")
+  argo.questDialog_HTMLGUMP
+  
+// 01 Zdravim, jsem <rasa> a chtel bych ti pomoci s brouky.
+// 02 Ted me opravdu nerus, nepotrebuji tady dalsi lehkovazne trdla ktere touzi jen po slave.
+// 03 Posila me Herman.
+// 04 Uz jsem ti rek at neotr.. Herman povidas? *Hmm, podival se na tebe a potichu si rekl* Herman by jen tak nejakeho trola neposlal. No dobre, urcite bys mohl pomoci.
+// 05/1 - Craft -> Vyroba
+// 05/2 - Mag -> pouziti MAGIE
+// 05/3 - Necromancer -> pouziti nemrtvych
+// 05/4 - Thief -> pouziti spehovani
+// 05/5 - Warior -> pouziti sily
+// 05/6 - Mystik -> sila mysli
+// 05/7 - Shaman -> pouziti voodoo
+// 05/8 - Ranger -> pouziti petu
+// 05/9 - Priest -> pouziti healingu
+  
+
+/////////////////////////////////////////////
+///////// LENNOR - pritel HERMANA ///////////
+////////////////////////////////////////////
+
+[chardef c_darkmoon_doktor]
+id=c_man
+name=Lennor
+
+TEVENTS=e_character
+TSPEECH=spk_q039_first_quest
+
+on=@UserDclick
+f_q039_first_quest
+
+on=@create
+NPC=brain_human
+COLOR=color_clovek
+STR=1000
+DEX=1000
+INT=1000
+Title=doktor, alchemista
+
+tag(noanimate,1)
+
+ITEMNEWBIE=i_robe
+color=00989
+ITEMNEWBIE=i_hair_short
+color=00976
+ITEMNEWBIE=i_q039_lennor_speech
+
+[function f_q039_first_quest]
+if(<distance> > 3)
+  src.sysmessage("Na takovou vzdalenost s tebou komunikovat nebude.")
+  return 1
+endif
+if (<src.flags>&statf_dead)
+  return 1
+else
+  DIALOG(d_q039_first_quest)
+endif
+
+[speech spk_q039_first_quest]
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+f_q039_first_quest
+
+[dialog d_q039_first_quest]
+argo.questDialog_create(03102,<name>)
+
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Nazdar...")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Kdo jsi?")
+  argo.setText(<argo.newTextLine>,"Ted nemam vubec cas si s tebou povidat.")
+  argo.questDialog_HTMLGUMP
+  if(<eval(src.qtag(q039_darkmoon))> == 1)
+    argo.setText(argo.newTextLine,"Posila me Herman.")
+    argo.questDialog_addResponse(0,0,1,"q039_herman_me_send")
+  endif
+
+if(<eval(src.qtag(q039_darkmoon))> == 1) 
+  argo.dialog_Page("q039_herman_me_send")
+    argo.setText(<argo.newTextLine>,"Uz jsem ti rekl at neotr.. Herman povidas? Hmm, <def_questDialog_colorTextEmote>*podival se na tebe a rekl*<def_questDialog_colorTextNormal> Herman by jen tak nejakeho trola neposlal. No dobre, urcite bys mohl pomoci.")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_Page("Prohlednout")
+  argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>Nepostoji na miste. Porad si pro sebe neco mumla.")
+  argo.questDialog_HTMLGUMP
+
+[ITEMDEF i_q039_lennor_speech]
+ID=i_memory
+NAME=q039_darkmoon auto speech
+TYPE=T_EQ_SCRIPT
+
+ON=@EQUIP
+TIMER=5
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+
+ON=@TIMER
+DORAND 14
+  cont.say Potrebuji..!
+  cont.say Kde, kde to mam!
+  cont.say To vypada dobre!
+  cont.say Jeste o trochu vic!
+  cont.say Nevypada to zle.
+  cont.say Aaaa!
+  cont.say Uz skoro!
+  cont.say To se mi moc nepovedlo.
+  cont.say Ne!
+  cont.say Jeste trochu toho.
+  cont.say Jsem blizko.
+  cont.say Porad mi neco chybi.
+  cont.say Nemam trochu klidu.
+  cont.say Nedari se!
+ENDDO
+timer={3 10}
+return 1
+
+
+///////////////////////////////////////
+/////////////HERMAN -> ATTACK CITY//////////
+//////////////////////////////////////
+
+[chardef c_darkmoon_poskok]
+id=c_man
+name=Kester
+
+TEVENTS=e_character
+TEVENTS=e_miniq_kun
+
+on=@UserDclick
+f_darkmoon_poskok_bug_attack
+
+on=@create
+tag(time,<serv.time>)
+NPC=brain_human
+COLOR=06D3
+STR=1000
+DEX=1000
+INT=1000
+Title=Posel
+
+tag(noanimate,1)
+
+ITEMNEWBIE=i_robe
+color=044e
+ITEMNEWBIE=i_shoes_plain
+ITEMNEWBIE=i_beard_short
+color=00758
+ITEMNEWBIE=i_bonnet
+color=020
+
+ITEM=i_npc_mount
+tag.mount=i_mt_horse_brown_dk
+tag.mountcolor=0729
+
+[chardef c_darkmoon_poskok_m]
+id=c_man
+name=Gilthol
+
+TEVENTS=e_character
+TEVENTS=e_miniq_kun
+
+on=@UserDclick
+f_darkmoon_poskok_bug_attack
+
+on=@create
+tag(time,<serv.time>)
+NPC=brain_human
+COLOR=06D3
+STR=1000
+DEX=1000
+INT=1000
+Title=Posel
+
+tag(noanimate,1)
+
+ITEMNEWBIE=i_robe
+color=044e
+ITEMNEWBIE=i_shoes_plain
+ITEMNEWBIE=i_beard_short
+color=00758
+ITEMNEWBIE=i_bonnet
+color=020
+
+ITEM=i_npc_mount
+tag.mount=i_mt_horse_brown_dk
+tag.mountcolor=0729
+
+[function f_darkmoon_poskok_bug_attack]
+if(<distance> > 3)
+  src.sysmessage("Na takovou vzdalenost s tebou komunikovat nebude.")
+  return 1
+endif
+if (<src.flags>&statf_dead)
+ return 1
+endif
+DIALOG(d_darkmoon_poskok_bug_attack)
+
+[dialog d_darkmoon_poskok_bug_attack]
+argo.questDialog_create(03102,<name>)
+
+argo.dialog_newPage("Pozdrav")
+
+
+argo.questDialog_baseButt(1,30,"Co tu delas?") // Kdo jsi?
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Zdravim..")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Co tu delas?")
+  argo.setText(<argo.newTextLine>,"Posila me Lennor s dulezitou zpravou! Musim ji nekomu rychle predat!")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"Lenno kdo ?")
+  argo.questDialog_addResponse(0,0,1,"q_darkmoon_kdoje")
+  argo.setText(argo.newTextLine,"O co jde?")
+  argo.questDialog_addResponse(0,0,1,"q_darkmoon_ocojde")
+  
+argo.dialog_Page("q_darkmoon_kdoje")
+  argo.setText(<argo.newTextLine>,"Lennor, Je to silny valecnik ktery bojuje uz nejakou dobu po boku Hermana. Jestli nekdo nekdy porazi brouky, tak to bude on!")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_Page("q_darkmoon_ocojde")
+  if(<eval(29-<getDay>)> > 0)
+    argo.setText(<argo.newTextLine>,"Mnoo.. Posledni dobou se brouci chovaji trochu jinak. Jako kdyby jim nekdo velel. Mame za to ze mezi brouky se vyskytuje jeste jeden straslivy brouk. Je to Matka vsech Matek. Nazyvame ji Darkmoon. A podle vseho se brouci chystaji pateho dne pri setmetni zautoci na nase mesta! Musis tu zpravu rozsirit a musime zacit mobilizovat tak abychom ochranili nase mesta! Bez a nezdrzuj se! Uz zbyvaji pouze <eval(29-<getDay>)> dny. <def_questDialog_colorTextEmote>Otocil se a pokracoval ve sve praci.")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(<argo.newTextLine>,"Posledni dobou se brouci chovaji trochu jinak. Jako kdyby jim nekdo velel. Mame za to ze mezi brouky se vyskytuje jeste jeden straslivy brouk. Je to Matka vsech Matek. Nazyvame ji Darkmoon. A podle vseho se brouci chystaji pateho dne pri setmetni zautoci na nase mesta! Musis tu zpravu rozsirit a musime zacit mobilizovat tak abychom ochranili nase mesta! Bez a nezdrzuj se! Uz dneska to ma prokupnout!")
+    argo.questDialog_HTMLGUMP  
+  endif
+
+argo.dialog_Page("Prohlednout")
+  argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>Hubeny clovicek, vypada ze je velmi zaneprazdnen a v obliceji ma jen strach.")
+  argo.questDialog_HTMLGUMP
+
+[dialog d_darkmoon_poskok_bug_attack BUTTON]
+on=0
+if(<serv.time> > <tag(time)>)
+  Say Bez a rychle rozsir tuto informaci!
+  tag(time,<serv.time>+600)
+endif
+scyllaglob.tag(readingkester,<scyllaglob.tag(readingkester)>+1)
+
+/////////////////////////////////////////////
+///////// SPAWN BUGS JESKYNE     ///////////
+////////////////////////////////////////////
+
+[function spawn_darkmoon_bug] 
+if(!<var(spawner)>)
+  redmessage("Prvni nastav spawnera. var(spawner,uid)")
+  return 1
+  src.damage_noResponse(40,dam_poison)
+endif
+
+arg(xpos,<return_nth(1,<p>)>)
+arg(ypos,<return_nth(2,<p>)>)
+arg(zpos,<return_nth(3,<p>)>)
+
+newitem(i_darkmoon_nastavovac_spawnu)
+lastnew.p = <p>
+arg(nastavovac,<lastnew>)
+
+newitem(01ea7)
+nastavovac.link = <lastnew>
+lastnew.tag(level,<args(0)>)
+lastnew.tag(type,"bug")
+
+arg(i,1)
+lastnew.tag(spawn_count,<?darkmoon_<lastnew.tag(type)>_count?>)
+while(<i> <= <lastnew.tag(spawn_count)>)
+  lastnew.tag(spawn_<i>_id,<?darkmoon_<lastnew.tag(type)>_<i>_id?>)
+  lastnew.tag(spawn_<i>_amount,<?darkmoon_<lastnew.tag(type)>_<i>_amount?>)
+  lastnew.tag(spawn_<i>_amount,<lastnew.tag(spawn_<i>_amount)>*<lastnew.tag(level)>)
+  arg(i,#+1)
+endwhile
+
+lastnew.p = <p>
+lastnew.type = 34
+lastnew.amount = 1000
+lastnew.more = c_bug //deufaltne obycejny brouk
+lastnew.morex = 50
+lastnew.morey = 50
+lastnew.morez = 20
+lastnew.attr = 0b0
+lastnew.timer = 1000
+
+//////////// BLACK FLOOR 
+newitem(053b)
+lastnew.p = <p>
+lastnew.color = 1
+lastnew.attr = 010
+newitem(0545)
+lastnew.p = <xpos>+1,<ypos>,<zpos>
+lastnew.color = 1
+lastnew.attr = 010
+newitem(0551)
+lastnew.p = <xpos>+1,<ypos>+1,<zpos>
+lastnew.color = 1
+lastnew.attr = 010
+newitem(053b)
+lastnew.p = <xpos>,<ypos>+1,<zpos>
+lastnew.color = 1
+lastnew.attr = 010
+newitem(0548)
+lastnew.p = <xpos>+1,<ypos>-1,<zpos>
+lastnew.color = 1
+lastnew.attr = 010
+newitem(053b)
+lastnew.p = <xpos>,<ypos>-1,<zpos>
+lastnew.color = 1
+lastnew.attr = 010
+newitem(053b)
+lastnew.p = <xpos>-1,<ypos>,<zpos>
+lastnew.color = 1
+lastnew.attr = 010
+newitem(053b)
+lastnew.p = <xpos>-1,<ypos>-1,<zpos>
+lastnew.color = 1
+lastnew.attr = 010
+
+//////////// boulder
+newitem(08e6)
+lastnew.p = <xpos>+2,<ypos>-1,<zpos>
+lastnew.attr = 010
+newitem(08e6)
+lastnew.p = <xpos>+2,<ypos>-1,<zpos>
+lastnew.attr = 010
+newitem(01350)
+lastnew.p = <xpos>+1,<ypos>-1,<zpos>
+lastnew.attr = 010
+newitem(01363)
+lastnew.p = <xpos>,<ypos>-1,<zpos>
+lastnew.attr = 010
+newitem(0135B)
+lastnew.p = <xpos>,<ypos>-1,<zpos>+10
+lastnew.attr = 010
+newitem(0134F)
+lastnew.p = <xpos>-1,<ypos>-1,<zpos>
+lastnew.attr = 010
+newitem(01355)
+lastnew.p = <xpos>-1,<ypos>,<zpos>
+lastnew.attr = 010
+newitem(01363)
+lastnew.p = <xpos>-1,<ypos>,<zpos>+9
+lastnew.attr = 010
+newitem(0134F)
+lastnew.p = <xpos>-1,<ypos>+1,<zpos>
+lastnew.attr = 010
+newitem(01351)
+lastnew.p = <xpos>,<ypos>+1,<zpos>
+lastnew.attr = 010
+newitem(01363)
+lastnew.p = <xpos>,<ypos>+1,<zpos>
+lastnew.attr = 010
+newitem(01351)
+lastnew.p = <xpos>,<ypos>+2,<zpos>
+lastnew.attr = 010
+newitem(0134F)
+lastnew.p = <xpos>-1,<ypos>+2,<zpos>
+lastnew.attr = 010
+
+[itemdef i_darkmoon_nastavovac_spawnu]
+id=i_worldgem_bit
+type=0
+name=Nastavovac spawnu
+
+ON=@Create
+timer=1
+
+ON=@Timer
+if(<link>)
+  if(<link.timer> > 500)
+    arg(randomBug,<link.getRandomBug>)
+    if(<randomBug>)
+      link.more = <randomBug> 
+      link.decrementTagBug(<link.tag(random)>)
+      link.timer = {3 4}
+    else
+      link.timer = 6000
+      remove
+    endif
+  endif
+else
+  remove
+endif
+timer=2
+return 1
+
+[function getRandomBug]
+tag(random,<random2(1,<tag(spawn_count)>)>)
+if(<tag(spawn_<tag(random)>_id)>)
+  return <tag(spawn_<tag(random)>_id)>
+else
+  return 0
+endif
+
+on=@create
+color=0296
+tag(timestep,0)
+timer=20
+
+on=@step
+if (src.isGM)
+  return 1
+endif
+if (<src.isplayer>)
+  if(<serv.time> > <tag(timestep)>)
+    src.damage_noResponse(5,dam_poison)
+    src.dm_poison(2)
+    tag(timestep,<serv.time>+4*10)
+
+[function decrementTagBug] //cislo brouka
+if(<tag(spawn_count)> > 0)
+  if(<tag(spawn_<argv(0)>_amount)> > 1)
+    tag(spawn_<argv(0)>_amount,<tag(spawn_<argv(0)>_amount)>-1)
+  else
+    arg(y,1)
+    while(<y> <= <eval(<tag(spawn_count)>-<argv(0)>)>)
+      tag(spawn_<eval(<argv(0)>+<y>-1)>_id,<tag(spawn_<eval(<argv(0)>+<y>)>_id)>)
+      tag(spawn_<eval(<argv(0)>+<y>-1)>_amount,<tag(spawn_<eval(<argv(0)>+<y>)>_amount)>)
+      arg(y,#+1)
+    endwhile
+    
+    tag.remove(spawn_<tag(spawn_count)>_id)
+    tag.remove(spawn_<tag(spawn_count)>_amount)
+    tag(spawn_count,<tag(spawn_count)>-1)
+  endif
+endif
+
+[defnames darkmoon_spawn_level]
+darkmoon_bug_count 6
+
+darkmoon_bug_1_id      c_bug
+darkmoon_bug_1_amount  4
+
+darkmoon_bug_2_id      c_bug_worker
+darkmoon_bug_2_amount  4
+
+darkmoon_bug_3_id      c_bug_drone
+darkmoon_bug_3_amount  3
+
+darkmoon_bug_4_id      c_bug_guard
+darkmoon_bug_4_amount  3
+
+darkmoon_bug_5_id      c_bug_shadow
+darkmoon_bug_5_amount  2
+
+darkmoon_bug_6_id      c_bug_elite
+darkmoon_bug_6_amount  1
+
+
+[eof]

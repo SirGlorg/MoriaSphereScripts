@@ -1,0 +1,79 @@
+// tags to edit behavior:
+// NONE
+
+[events e_npc_massleap]
+on=@aftergetswing
+if findid(i_targetmassleap)
+  return 0
+endif
+
+if (src.isplayer) && rand(14)==1
+  newitem(i_src_changer_massleap)
+  lastnew.p=<p>
+  lastnew.tag(creator,<uid>)
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_src_changer_massleap]
+id=i_memory
+type=t_eq_script
+name=srcchanger massleap
+
+on=@create
+timer=0
+
+on=@timer
+var(leapingmonster,<tag(creator)>)
+var(massLeap_timer,0)
+sector.allchars(massleapthem)
+remove
+
+[function massleapthem]
+if (isplayer) && !(isgm)
+  var(leapingmonster).newequip(i_targetmassleap)
+  lastnew.tag(attacknime,<UID>)
+endif
+
+[itemdef i_targetmassleap]
+id=i_memory
+type=t_eq_script
+name=massleap
+
+on=@create
+color=098b
+
+on=@equip
+timer=(<var(massLeap_timer)>+3)
+var(massLeap_timer,<var(massLeap_timer)>+{3 4})
+
+on=@timer
+if !(topobj.f_canseelos(<tag(attacknime)>)) || (topobj.flag_invisible==1) || (topobj.flag_hidden==1)
+  remove
+else
+  topobj.newitem(i_fx_glow2)
+  lastnew.name=energie
+  lastnew.color=098c
+  lastnew.p=<topobj.p>
+  lastnew.timer=2
+  tag(attacknime).newitem(i_fx_glow2)
+  lastnew.name=energie
+  lastnew.color=098c
+  lastnew.p=<tag(attacknime).p>
+  lastnew.timer=2
+  topobj.p=<tag(attacknime).p>
+  topobj.update
+  topobj.emote("teleporting")
+  topobj.findid(i_targetmassleap).timer=2
+  topobj.attack(<tag(attacknime)>)
+  tag(attacknime).damage(<eval {20 70}>,<cont.tag(weapFlag)>,<cont>)
+  remove
+endif
+return 0
+
+[eof]

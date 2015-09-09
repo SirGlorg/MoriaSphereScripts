@@ -1,0 +1,199 @@
+[ITEMDEF i_vendorsign]
+ID=i_sign_brass
+name=vendor menu
+type=t_vendormenu
+TDATA2=064
+FLIP=1
+RESOURCES=2 I_BOARD, 1 i_ingot_iron
+CATEGORY=GM Items
+SUBSECTION=Cedule
+DESCRIPTION=Sign Brass Vendor
+DUPELIST=0bd2
+
+ON=@Create
+ATTR=attr_move_never
+
+[ITEMDEF i_vendor_chest]
+ID=i_box_brass
+name=Najem
+TYPE=T_CONTAINER_locked
+
+DESCRIPTION=Truhlicka na najem pro vendora 
+SUBSECTION=Truhla na najem
+CATEGORY=GM Items
+
+ON=@Create
+ATTR=attr_move_never
+COLOR=0986
+
+on=@spelleffect
+return 1
+
+on=@userclick
+if(<src.tag(hypno_mystik)>)||(STRCMPI(<src.tag(clienttype)>,"old"))
+ return 1
+endif
+if !(safe link.isvendorplac)//neni linknuta
+ var(vendorplacfound,0)
+ sector.allitems(findvendorplac(<uid>))
+ if (var(vendorplacfound))
+  link=var(vendorplacfound)
+  link.tag(najemcont,<uid>)
+  src.classmessage(V tomto regionu nalezen prostor pro vendora '<link.name>'. Truhlicka prirazena.)
+  return 1
+ endif
+endif
+link.f_checkvendornajem
+src.smsg(Mesicni najem prostoru pro vendora cislo <eval link.tag.housenumber> cini <link.tag(najem)> gp.)
+src.smsg(Najem je zaplacen na <link.paiduntildays]> dni dopredu.)
+
+on=@dropon_obj
+say(<src.name> do mne hodil <argo.name>)
+ if(argo.type==<NID(t_gold)>)
+   f_checkvendornajem
+ endif
+
+[ITEMDEF i_odpocet_vendora]
+id=i_necklace_gold //aby se to dalo vzit na sebe :)
+type=t_eq_script
+name=Created Hidden
+
+on=@equip
+timer=604800 //7*24*3600 - tyden
+
+on=@timer
+remove
+cont.remove
+
+
+[ITEMDEF i_memory_vendorsign]//k identifikaci
+id=i_pouch
+layer=102
+name=Vendor sign
+TDATA2=03D
+
+[ITEMDEF i_target_vendor]
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+if (<more1>==10) //predani vlastnictvi
+ target 
+ src.classmessage(Koho chces udelat <name>em?)
+elseif (<more1>==2) //zamykani
+ target 
+ src.classmessage(Co chces zamknout/odemknout?)
+elseif (<more1>==17) //pozice pro vendora
+ targetg
+ src.classmessage(Zamer pozici!)
+endif
+timer 60
+
+on=@targon_char
+src.targ.f_eq_vmsignlayer
+link.vm_findrank(<src.targ>)//rank targetnuteho
+ //src.smsg <src.targ.name> ma rank <var(vm_rank)>
+if(var(vm_rank) >= 1) //target je majitel nebo GM (rank 1 a 2)
+ src.sysmessage(Cil uz majitelem je)
+elseif (<more1>==10) //predani ownerstvi
+  link.f_vend_ownershipto(<src.targ>)
+  src.classmessage(Vlastnictvi predano.)
+  src.targ.classmessage(Stal jsi se vlastnikem stanku <link.name>.)
+  src.accmsg("predal uid=<src.targ> (<src.targ.name>) vlastnictvi stanku uid=<link> (<link.name>)")
+else 
+  src.sysmessage(Chyba! Muzes pouze predat vlastnictvi) //tohle se ale asi nikdy nestane :)
+endif
+remove
+return 1
+
+on=@targon_item
+if (more1==2)
+ var(itemlevel,<eval <src.targ.tag.vm_lockit>>) //je li predmet zamceny
+ var(itemuid,0)
+ if (<itemlevel>>2)//cislo je UID 
+  var(itemuid,<itemlevel>)
+  link.vm_findrank(<itemlevel>)//rank vlastnika itemu
+  var(itemlevel,<vm_rank>+1)
+ endif
+ if (<itemlevel>><more2>)&&(<itemuid>!=<src>)//more2 - vm_rank klikatele
+  src.redmessage(Nemas na to pravo.)
+ elseif (<eval src.targ.tag.vm_lockedto>==<link>)&&(src.targ.type!=t_vendormenu) //zamceno na barak a neni to vendormenu
+  src.targ.attr=<src.targ.tag(vm_storeattr)>
+  src.targ.events -t_vend_lockeditem
+  src.classmessage(Vec odemcena)
+  link.array_findremove(tag.lockedlist,<src.targ>)
+  src.targ.tag(vm_lockedto,"")
+  src.targ.tag(vm_lockit,"")
+  src.targ.tag(vm_storeattr,"")
+  src.targ.f_vend_unblockitem
+  if (<src.targ.type>==<NID(t_door_locked)>)
+   src.targ.type=t_door
+   src.targ.link(0)
+  endif
+ elseif (<safe.src.targ.tag.vm_lockedto>)//je zamcen jinam
+  src.classmessage(Toto nemuzes zamknout.)
+ elseif (src.targ.issameregion(<link>))&&(src.targ.cont==0) //je ve stanku && lezi na zemi
+  //vm_namerank(<itemlevel>)
+  dialog d_vend_statask
+  return 1
+ else
+  src.classmessage(Vec musi byt v domu nebo v jeho blizkosti.)
+ endif
+else
+ src.classmessage(Nezameruj veci.) //zameril li na zem z jineho cudliku nez ze zamykani 
+endif
+remove
+return 1
+
+on=@targon_ground
+if (more1==17) //button nastav pozici pro vendora
+ //morep=<link.p> //kde je worldgem v okamziku zapnuti tohohle itemu (kvùli pohlidani si aby nesel mimo stanek)
+ //p=<src.targp> //kde stoji klikatel (to musi byt oblast stanku)
+ //src.sysmessage(<morep> - cedule)
+ src.newitemsafe=i_bag
+ lastnew.attr=attr_invis
+ lastnew.p=<src.targp>
+ if(<lastnew.region>==<link.region>) //zamìøil do stánku? porovnání linku pytlíèku a cedule
+   src.sysmessage(Vendorovo misto nastaveno)
+   link.tag(vendpos,<src.targp>)
+   link.tag(vendpos_nastavena,1)
+ else 
+   src.sysmessage(Vendora muzes umistit jen do stanku)
+ endif
+ lastnew.remove
+//p=<morep> //(k cemu to?)
+endif
+remove
+return 1
+
+[typedef t_vendorplac]
+
+[typedef t_vend_lockeditem]
+on=@userdclick
+return <f_vend_lockeditem>
+
+on=@pickup_ground
+src.sysmessage Vec je zamcena k domu.
+return 1
+
+[typedef t_vendormenu]
+on=@userdclick
+if((distancefrom(<src>) > 3) && !(<region> == <src.region>))
+ src.sysMessage("Jsi prilis daleko.")
+ return 1
+endif
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+f_vendormenu
+return 1
+
+[ITEMDEF i_vendoruv_crystal]
+id=i_crystal_red
+type=t_eq_script
+
+[eof]

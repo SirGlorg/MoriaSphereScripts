@@ -1,0 +1,34 @@
+// tags to edit behavior:
+// tag.npc_sniper_chance=250 // 25% chance to trigger this event
+// tag.npc_sniper_dmg=50,60 // dmg in between 50 and 60
+[events e_npc_sniper]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (act.isplayer)
+  if (isfighting_ranged)
+    if (wasHarmed)
+      if (<strlen(<tag(npc_sniper_chance)>)>)
+        arg(chance,<chance(<tag(npc_sniper_chance)>,3)>)
+      else
+        arg(chance,<chance(200,3)>)
+      endif
+      if (<arg(chance)>)
+        act.sysMessage("<act.sex("Byl jsi kriticky zasazen.","Byla jsi kriticky zasazena.")>")
+        if (strlen(<tag(npc_sniper_dmg)>))
+          var(ubrano,<eval (<var(ubrano)> + <randombetween(<tag(npc_sniper_dmg)>)>)>)
+        else
+          var(ubrano,<eval (<var(ubrano)> + 50)>)
+        endif
+      endif
+    endif
+  endif
+endif
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+
+[eof]

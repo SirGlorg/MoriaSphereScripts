@@ -1,0 +1,242 @@
+//////////////////////////////////////////
+////////////// Hatlend //////////////////
+//////////////////////////////////////////
+
+//  0 - neplni
+//  1 - plni
+//  2 - hotovo
+//  3 - odmitl
+//  4 - odmitl uplne
+
+[function q042_hm_hatlend]
+if (<distance> > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else 
+  if(<src.qtag(q042_hatlend_rulik)> == 4)
+    attack(<src>)
+    return 1     
+  endif
+  if (<src.rescount(i_q042_hatlend_delay)> == 1)
+    DORAND 3
+      say Ted se s tebou nebudu bavit.
+      say *Nevrazive si te prohlizi*
+      say Odejdi!
+    ENDDO
+    return 1
+  endif
+  dialog(d_q042_hm_hatlend)
+endif
+
+[dialog d_q042_hm_hatlend]
+argo.questDialog_create(03086,<name>)
+
+argo.dialog_newPage("Pozdrav")
+
+
+argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4,40,"Rady") // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+
+argo.dialog_page("Pozdrav")
+  if (<src.qtag(q042_hatlend_rulik)> == 0)  
+    argo.setText(<argo.newTextLine>,"Co chces?")
+    argo.questDialog_HTMLGUMP
+  
+  elseif (<src.qtag(q042_hatlend_rulik)> == 1)
+    argo.setText(<argo.newTextLine>,"Uz jsi zpatky?")
+    argo.questDialog_HTMLGUMP
+  elseif (<src.qtag(q042_hatlend_rulik)> == 3)
+    argo.setText(argo.newTextLine,"Ze by sis to <src.targ.sex(rozmyslel,rozmyslela)>?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Omlouvam se.")
+      argo.questDialog_addResponse(0,0,1,"q42_omluva")
+      argo.setText(argo.newTextLine,"Ne. Pro tebe nehnu ani prstem!")  
+      argo.questDialog_addResponse(0,1,1,"q42_odmitnout")
+  else
+    argo.setText(<argo.newTextLine>,"Nazdar.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Nesu ti")
+  if (<src.qtag(q042_hatlend_rulik)> == 2)
+    argo.setText(<argo.newTextLine>,"Diky, ale uz od tebe nic nepotrebuju.")
+    argo.questDialog_HTMLGUMP
+  elseif (<src.qtag(q042_hatlend_rulik)> == 1)
+    argo.setText(<argo.newTextLine>,"Tak co? Mas koule?")
+    argo.questDialog_HTMLGUMP    
+    argo.setText(argo.newTextLine,"Tady je mas.")
+    argo.questDialog_addResponse(0,1,1,"q042_ruliky_odevzdat")
+    argo.setText(argo.newTextLine,"Jeste je nemam, ale snazim se.")
+    argo.questDialog_addResponse(0,1,1,"q42_nemam")
+    argo.setText(argo.newTextLine,"Kaslu ti na to, sezen si nekoho jineho!!!")
+    argo.questDialog_addResponse(0,1,1,"q42_kaslu") 
+  else
+    argo.setText(<argo.newTextLine>,"Copak mi neses?")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Kdo jsi?")
+  argo.setText(<argo.newTextLine>,"Me jmeno je Hatlend a jsem vojak.")
+  argo.questDialog_HTMLGUMP
+ 
+argo.dialog_page("Obchodovat")
+  argo.setText(<argo.newTextLine>,"Ja neobchoduju, zivim se bojem.")
+  argo.questDialog_HTMLGUMP  
+ 
+argo.dialog_page("Prohlednout")
+  argo.setText(<argo.newTextLine>,"Vidis robustniho muze v zaslem, ale pevnem a lehkem brneni. Na tvari ma zamysleny vyraz.")
+  argo.questDialog_HTMLGUMP 
+ 
+argo.dialog_page("Mohu pomoci?")
+  if (<src.tag(level)> >= 25)
+    if (<src.qtag(q042_hatlend_rulik)> == 0)
+      argo.setText(<argo.newTextLine>,"Pokud na to mas...")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"O co se jedna?")
+      argo.questDialog_addResponse(0,0,1,"q42_rulik")
+      argo.setText(argo.newTextLine,"Ty me budes urazet? Najdi si nekoho jineho!")  
+      argo.questDialog_addResponse(0,1,1,"q42_kaslu")
+    elseif (<src.qtag(q042_hatlend_rulik)> == 1)
+      argo.setText(<argo.newTextLine>,"Jo, dones mi 150 kulicek ruliku, jak si <src.targ.sex(slibil,slibila)>!")
+      argo.questDialog_HTMLGUMP
+    elseif (<src.qtag(q042_hatlend_rulik)> == 2)
+      argo.setText(<argo.newTextLine>,"Ne.")
+      argo.questDialog_HTMLGUMP
+    else
+      argo.setText(<argo.newTextLine>,"*Peclive si te prohlizi* Mozna muzes. Dones mi 150 kulicek ruliku.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Donesu.")
+      argo.questDialog_addResponse(0,1,1,"q42_prijmout")
+      argo.setText(argo.newTextLine,"Mozna? Pomuzu komu chci a jak chci, ale tobe teda ne!")  
+      argo.questDialog_addResponse(0,1,1,"q42_odmitnout")
+    endif 
+   else
+    argo.setText(<argo.newTextLine>,"Ty? Ne.")
+    argo.questDialog_HTMLGUMP
+   endif 
+  
+argo.dialog_page("Rady")
+  if ((<src.qtag(q042_hatlend_rulik)> == 0)||(<src.qtag(q042_hatlend_rulik)> == 3))
+    argo.setText(<argo.newTextLine>,"Neco ty pro me, neco ja pro tebe.")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(<argo.newTextLine>,"O cempak bys <src.targ.sex(rad,rada)> <src.targ.sex(slysel,slysela)>?.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"O warniacich.")
+    argo.questDialog_addResponse(0,0,1,"q42_warniaci")
+    argo.setText(argo.newTextLine,"O obrovskych smeckach vlku.")
+    argo.questDialog_addResponse(0,0,1,"q42_vlci")
+    argo.setText(argo.newTextLine,"O terrach.")
+    argo.questDialog_addResponse(0,0,1,"q42_terry")
+    argo.setText(argo.newTextLine,"O prisluhovacich.")
+    argo.questDialog_addResponse(0,0,1,"q42_prisluhovac")
+    argo.setText(argo.newTextLine,"O cajunech.")
+    argo.questDialog_addResponse(0,0,1,"q42_cajun")
+    argo.setText(argo.newTextLine,"O Bezejmennem.")
+    argo.questDialog_addResponse(0,0,1,"q42_bezejmenny")
+    argo.setText(argo.newTextLine,"O necem jinem.")
+    argo.questDialog_addResponse(0,0,1,"q42_koren")
+  endif
+
+if (<src.qtag(q042_hatlend_rulik)> == 0)
+  argo.dialog_page("q42_rulik")
+    argo.setText(<argo.newTextLine>,"Dones mi 150 kulicek ruliku. Obavam se ale, ze se jich warniaci dobrovolne nevzdaji.")
+    argo.questDialog_HTMLGUMP
+  
+    argo.setText(argo.newTextLine,"Donesu.")
+    argo.questDialog_addResponse(0,1,1,"q42_prijmout")
+    argo.setText(argo.newTextLine,"To myslis vazne?! Nenecham se prece temi stvurami sezrat!!!")  
+    argo.questDialog_addResponse(0,1,1,"q42_kaslu")
+endif
+
+if ((<src.qtag(q042_hatlend_rulik)> == 1) || (<src.qtag(q042_hatlend_rulik)> == 2))
+  argo.dialog_page("q42_warniaci")
+    argo.setText(<argo.newTextLine>,"Jo warniaci, to jsou potvory. To jsou strasne potvory! Muzete je mlatit stale dokola a neubyva jich. Zabijete jednoho a nez si to s nim vyridite, uz je tam dalsi. Kdyz se citi ohrozeni, polozi nekde vejce. A s tim je daleko lepsi porizeni nez s hotovym warniakem.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("q42_terry")
+    argo.setText(<argo.newTextLine>,"Terry nejsou zase tak slozity orisek. A jako orisek je rozlousknete palici. Hehe.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("q42_vlci")
+    argo.setText(<argo.newTextLine>,"Cestou jsme prisli na par zajimavych triku. Prvni se mi zdalo, ze vlci smecky jsou nepremozitelne. Vam to tak bude jiste take pripadat. Ale je velmi jednoduchy zpusob jak s nimi zatocit. Staci je pripravit o vudciho vlka!")
+    argo.questDialog_HTMLGUMP
+ 
+  argo.dialog_page("q42_prisluhovac")
+    argo.setText(<argo.newTextLine>,"Prisluhovaci? Jsou mezi nimi i strelci a magove. A na kazdeho bych pouzil jinou taktiku. Tak napriklad maga bych zabil rychleji, nez stihne cokoliv udelat. Pro svou bezpecnost. Anebo se k nemu vubec nepriblizoval a odstrelil ho pekne z dalky. Nebo kouzla proti kouzlum! Seskvarte ho na skvarek a nebude delat problemy. Nebo bych ho sestrelil bleskem. Kdybych to umel. Stejne jako strelce, ale toho jsem vzal po krku sekerou a hned byl klid. Sice jsem trosinku krvacel, ale troska krve, se to obvaze a je klid. Muzete si na ne vyzkouset jejich vlastni taktiku! Pod tezkym brnenim, jako maji ti sermiri se rany spatne obvazuji, jojo. A promackle tezke brneni, to je taky neco. Proto ho nenosim.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("q42_cajun")
+    argo.setText(<argo.newTextLine>,"Neco o cajunech.")
+    argo.questDialog_HTMLGUMP
+  
+  argo.dialog_page("q42_bezejmenny")
+    argo.setText(<argo.newTextLine>,"Neco o Bezejmennem.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("q42_koren")
+    argo.setText(<argo.newTextLine>,"Neco o korenovi.")
+    argo.questDialog_HTMLGUMP 
+endif  
+
+if (<src.qtag(q042_hatlend_rulik)> == 3)
+  argo.dialog_page("q42_omluva")
+    argo.setText(<argo.newTextLine>,"To nebylo zase tak nutne.")
+    argo.questDialog_HTMLGUMP
+endif
+ 
+[dialog d_q042_hm_hatlend button]
+ON=@AnyButton
+if (<argn> == argo.dialog_linkButton("q042_ruliky_odevzdat"))
+  if (<src.restest 150 i_hm_prisada_4>)
+    say("Skvele...")
+    src.addexp(2000)
+    src.newitem(i_mi_bag)
+    src.qtag(q042_hatlend_rulik,2,52)
+    src.consume(i_hm_prisada_4,150)
+    f_quest_complete(52)  // splnenie questu "Hatlend"
+  elseif (<src.restest i_hm_prisada_4>)
+    say("Nemas jich dost!")
+  else
+    say("Warniaci taky povidali...")
+  endif
+endif  
+  
+if (<argn> == argo.dialog_linkButton("q42_nemam"))  
+  say("Tak tu nestuj a neklabos!")
+endif
+
+if (<argn> == argo.dialog_linkButton("q42_kaslu"))
+  say("Dobra...tak uz se spolu nemame o cem bavit...")
+  src.qtag(q042_hatlend_rulik,3,52)         //odmitl
+  src.newitemsafe(i_q042_hatlend_delay)
+  src.equip(lastnew)
+endif  
+
+if (<argn> == argo.dialog_linkButton("q42_odmitnout"))
+  src.qtag(q042_hatlend_rulik,4,52)         // odmitl uplne
+endif
+
+if (<argn> == argo.dialog_linkButton("q42_prijmout"))
+  src.qtag(q042_hatlend_rulik,1,52)
+  say("Dobre. Vrat se az budes potrebovat poradit.")
+endif
+
+[ITEMDEF i_q042_hatlend_delay]
+ID=i_memory
+NAME=q042_hatlend_delay
+TYPE=T_EQ_SCRIPT
+
+ON=@EQUIP
+TIMER=86400 //1den
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+
+ON=@TIMER
+remove
+return 1

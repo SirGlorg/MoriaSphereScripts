@@ -1,0 +1,78 @@
+[itemdef i_townstone]
+ID=i_grave_stone_5
+name=Town Stone
+type=t_townmenu
+//FLIP=1
+CATEGORY=GM Items
+SUBSECTION=Kameny
+DESCRIPTION=Town Stone
+//DUPELIST=0ede
+
+ON=@Create
+COLOR=0995 //gold
+ATTR=attr_move_never
+
+[itemdef i_tax_chest]
+ID=i_chest_metal_brass
+name=Dane
+TYPE=T_CONTAINER_locked
+
+DESCRIPTION=Truhla na dane
+SUBSECTION=Truhla na dane
+CATEGORY=GM Items
+
+ON=@Create
+COLOR=0986 //gold
+ATTR=attr_move_never
+
+on=@spelleffect
+return 1
+
+
+on=@userdclick
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+checktax
+src.smsg(Dane ve meste <link.tag(jmeno_mesta)> cini <link.tag(dane)>gp.)
+if !(<src.tag(zaplatil_dan)>)
+ potvrdit(link.zaplatit_dan,"Prejes si zaplatit dan mestu?") 
+endif
+return 1
+
+[function checktax]
+while(<findtype(t_gold)>)
+ arg(pridatprachu,<eval (<findtype(t_gold).amount>)>)
+ link.tag(pokladna,<eval (<link.tag(pokladna)>+<arg(pridatprachu)>)>)
+ findtype(t_gold).remove
+endwhile
+
+[itemdef i_generalstone]
+ID=i_grave_stone_5
+name=Generals stone
+type=t_generalmenu
+CATEGORY=GM Items
+SUBSECTION=Kameny
+DESCRIPTION=Generals Stone
+
+ON=@Create
+color=0990 //silver
+ATTR=attr_move_never
+
+[itemdef i_captainstone]
+ID=i_grave_stone_5
+name=Captains stone
+type=t_captainmenu
+CATEGORY=GM Items
+SUBSECTION=Kameny
+DESCRIPTION=Captains Stone
+
+ON=@Create
+color=099a //med
+ATTR=attr_move_never
+
+[ITEMDEF i_town_crystal]
+id=i_crystal_red
+type=t_eq_script
+
+[eof]

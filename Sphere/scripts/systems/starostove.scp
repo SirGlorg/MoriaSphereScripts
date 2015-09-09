@@ -1,0 +1,2533 @@
+
+[defnames times] //decisekundy
+minuta		600
+hodina		36000
+den		864000
+tyden		6048000
+mesic		25920000
+
+//tag(allowhire[0],C_m_GUARD_blue)
+//tag(allowhire[1],C_m_GUARD_archer_blue)
+//tag(allowhire[2],C_f_GUARD_mage_blue)
+[function resetdan]
+tag(cas_dani,<eval (<serv.time>+<mesic>)>) //nove dane za mesic
+
+[function urobobcany] //argv(0)- kde (mesto), 1- do jakyho mesta (pro pripad multimest)
+arg(oldpos,<p>)
+p=<argv(1)>
+tag(ktery_mesto,<var(townstone_<region.tag(jmeno_mesta)>)>)
+p=<argv(0)> 
+if(<tag(ktery_mesto)>)
+ region.sectors.allitems(jelito_house_udelej_majitele_obcanem)
+ tag.remove(ktery_mesto)
+endif
+p=<arg(oldpos)>
+
+[function jelito_house_udelej_majitele_obcanem]
+if(<type>==t_customhouse)
+ if(<more1>)
+  src.newitemsafe(i_target_town)
+  lastnew.link=<src.tag(ktery_mesto)> //townstone
+  lastnew.more1=18
+  lastnew.equip
+  src.act=<more1>
+  src.last
+ endif
+endif
+
+[typedef t_townmenu]
+on=@userdclick
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+if(<region.tag(realm)>==1)
+ if(src.isgm)
+  src.sysmessage(Realm Gondorsky)
+ endif
+ var(townstone_<region.tag(jmeno_mesta)>,<uid>)
+ zkontroluj_dan
+ f_townmenu
+ return 1
+else 
+ src.redmessage(Realm nevhodny pro Gondorske mesto, kontaktuj GM, kamen by zde nemel byt!) 
+ return 1
+endif
+
+[function townguards] //args - jmeno mesta
+if(!<argvcount>)
+ src.sysmessage(Pouziti: ".x townguards(jmeno_mesta), viceslovne nazvy provaz podtrzitkem")
+ src.sysmessage(Napriklad: Minas_Tirith, Minas_Morgul atd.)
+ return 1
+endif
+if(safe(<Guardcount_<args>>))
+ //existuje, OK, kdyz neexistuje tak sice mala error hlaska v logu (nenajde defname samozrejme), ale neda se nic delat
+else
+ src.sysmessage(Mesto "<args>" bud nemuze mit straze, nebo jsi spatne zadal nazev)
+ return 1
+endif
+if(<tag(allowhire[0])>)
+ src.redmessage(Mesto <tag(jmeno_mesta)> uz bylo nastaveno, prenastavuji straze) 
+ arg(u,0)
+ while(u < 8) //vic nez 3 druhy guardu nikde zatim nebylo
+  tag.remove(allowhire[<u>])
+  arg(u,#+1)
+ endwhile
+ //return 1
+endif
+arg(idx,1)
+arg(guardcount,<guardcount_<args>>)
+while(<idx> <= <guardcount>)
+ tag(allowhire[<eval (<arg(idx)>-1)>],<Guard_<args>_<idx>>)
+ arg(idx,#+1)
+endwhile
+tag(jmeno_mesta,<args>)
+src.sysmessage(Mestske straze nastaveny, mesto pripraveno)
+
+[function kingguards] //args - jmeno mesta
+if(!<argvcount>)
+ src.sysmessage(Pouziti: ".x kingguards(jmeno_mesta), viceslovne nazvy provaz podtrzitkem")
+ src.sysmessage(Napriklad: Minas_Tirith, Minas_Morgul atd.)
+ return 1
+endif
+if(safe(<kingGuardcount_<args>>))
+ //existuje, OK, kdyz neexistuje tak sice mala error hlaska v logu (nenajde defname samozrejme), ale neda se nic delat
+else
+ src.sysmessage(Mesto "<args>" bud nemuze mit kralovske straze, nebo jsi spatne zadal nazev)
+ return 1
+endif
+if(<tag(allowhire[0])>)
+ src.redmessage(Mesto <tag(jmeno_mesta)> uz bylo nastaveno, prenastavuji straze) 
+ arg(u,0)
+ while(u < 8) //vic nez 1 druh guardu nikde zatim nebyl
+  tag.remove(allowhire[<u>])
+  arg(u,#+1)
+ endwhile
+ //return 1
+endif
+arg(index,1)
+arg(guardcount,<kingGuardcount_<args>>)
+while(<index> <= <guardcount>)
+ tag(allowhire[<eval (<arg(index)>-1)>],<Guard_king_<args>_<index>>)
+ arg(index,#+1)
+endwhile
+tag(jmeno_mesta,<args>)
+src.sysmessage(<qval(<eval (<region.tag(realm)>-1)>,Marghulovy,Kralovske)> straze nastaveny, mesto pripraveno)
+
+[function f_townmenu]
+if(<src.region>!=<region>)
+  src.sysmessage(Musis byt v prostoru mesta!)
+  return 0
+endif
+if(!strlen(<tag(jmeno_mesta)>)) 
+ if(<src.isgm>)
+  src.sysmessage(Nastav dostupne mestske straze!)
+  src.sysmessage(Pouziti: ".x townguards(jmeno_mesta), viceslovne nazvy provaz podtrzitkem")
+  src.sysmessage(Napriklad: Minas_Tirith, Minas_Morgul atd.)
+  return 1
+ else
+  src.sysmessage(Mesto neni zatim pripraveno, kontaktuj GM)
+  return 1
+ endif
+endif
+
+//nasledujici blok se provede jen pri prvnim kliknuti na townstone
+if !(<tag(taxcont)>)
+ var(townstone_<tag(jmeno_mesta)>,<uid>)
+  
+ src.newitemsafe(i_pouch)//Obcane
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(18)
+ lastnew.more1=2
+ lastnew.link=<uid>
+ lastnew.name=Obcanu
+ tag(citizenscont,<lastnew>)
+  
+ src.newitemsafe(i_pouch)//Kandidati na vyhosteni
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(19)
+ lastnew.more1=9
+ lastnew.link=<uid>
+ lastnew.name=Kandidatu na vyhosteni
+ tag(candidatesoutcont,<lastnew>)
+
+ src.newitemsafe(i_pouch)//Kandidati do mesta
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(20)
+ lastnew.more1=10
+ lastnew.link=<uid>
+ lastnew.name=Kandidatu na obcanstvi
+ tag(candidatesincont,<lastnew>)
+  
+ src.newitemsafe(i_pouch)//Kandidati na starostu
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(21)
+ lastnew.more1=11
+ lastnew.link=<uid>
+ lastnew.name=Kandidatu na starostu
+ tag(candidatesmajorcont,<lastnew>)
+ 
+ src.newitemsafe(i_pouch)//Nepratele
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(22)
+ lastnew.more1=0
+ lastnew.link=<uid>
+ lastnew.name=Nepratel
+ tag(enemyscont,<lastnew>)
+
+ src.newitemsafe(i_pouch)//Navrzeni Nepratele
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(24)
+ lastnew.more1=24
+ lastnew.link=<uid>
+ lastnew.name=Navrzenych na blacklist
+ tag(suggestedenemyscont,<lastnew>)
+ 
+ src.newitemsafe(i_pouch) //guards
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(23)
+ lastnew.more1=0
+ lastnew.link=<uid>
+ lastnew.name=Strazi
+ tag(guardcont,<lastnew>)
+
+ src.newitemsafe(i_pouch) //Novinky
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(25)
+ lastnew.more1=25
+ lastnew.link=<uid>
+ lastnew.name=Novinky
+ tag(newscont,<lastnew>) 
+ 
+ src.newitemsafe(i_tax_chest) //truhlicka na dane
+ lastnew.attr=attr_move_never
+ lastnew.p=<eval (<p_x>+1)> <p_y> <p_z>
+ lastnew.update
+ lastnew.link=<uid>
+ lastnew.name=Dane
+ tag(taxcont,<lastnew>) 
+ tag(dane,10000)//10k default
+ tag(cas_dani,<eval (<serv.time>+<mesic>)>) //odpocet 1 mesice (30 dnu)
+ tag(pokladna,0)
+endif
+
+if(tag(newscont))
+else
+ src.newitemsafe(i_pouch) //Novinky
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(25)
+ lastnew.more1=25
+ lastnew.link=<uid>
+ lastnew.name=Novinky
+ tag(newscont,<lastnew>)
+endif
+
+//kontrola pritomnosti truhlicky 
+if !(<finduid(<tag(taxcont)>).isitem>) //neexistuje-li truhlicka
+ src.newitemsafe(i_tax_chest)
+ lastnew.attr=attr_move_never
+ lastnew.p=<eval (<p_x>+1)> <p_y> <p_z>
+ lastnew.update
+ lastnew.link=<uid>
+ lastnew.name=Truhlicka na dane
+ tag(taxcont,<lastnew>) 
+ src.sysmessage(Truhlicka navracena!)
+ src.sysmessage(Dan cini <tag(dane)>gp !)
+endif
+
+//guardi
+tag(guardcont).contents(hasbeenpaid)
+
+//dane
+kontrola_dani(<mesic>)
+
+//hlasovani
+kontrola_casu(<tag(candidatesoutcont)>,<tyden>)
+kontrola_casu(<tag(candidatesincont)>,<tyden>)
+kontrola_voleb(<tyden>)
+
+if !(strcmpi(<src.tag(mesto)>,<tag(jmeno_mesta)>))
+ if !(<src.tag(zaplatil_dan)>) 
+  if(<src.tag(starosta)>)
+   //nic - starosta neplati
+  else
+   src.sysmessage(Na vcasne zaplaceni dani ti zbyva <f_zbyva_casu(0,<tag(cas_dani)>)>)
+  endif
+ endif
+endif
+
+DIALOG d_town_menu
+return 1
+////////////////////////
+//funkce pro hrace G i M
+////////////////////////
+[function navrhban]
+//if(strlen(<src.region.tag(jmeno_mesta)>))&&(<eval src.tag(realm)>==<eval src.region.tag(realm)>)
+if(<src.tag(realm)>==1) //gondoøi
+ if(strlen(<src.tag(mesto)>))
+  if(strlen(<var(townstone_<src.tag(mesto)>)>)) //existuje townstone? snad jo ! 
+   src.newitemsafe(i_navrhban_target)
+   lastnew.link=<var(townstone_<src.tag(mesto)>)>
+   lastnew.equip
+   return 1
+  else
+   src.sysmessage(Chyba kterou jsi nezavinil. Opravit lze kliknutím na mìstský kámen, pak zkus navrhnout znovu)
+   return 1 
+  endif
+ else
+  src.sysmessage(Navrhovat mohou pouze obèané mìst)
+  return 1
+ endif 
+else //mordori to maj blby   
+ if(strlen(<src.region.tag(jmeno_mesta)>))&&(<eval src.tag(realm)>==<eval src.region.tag(realm)>)
+  if(strlen(<var(townstone_<src.region.tag(jmeno_mesta)>)>)) //existuje townstone? snad jo ! 
+   src.newitemsafe(i_navrhban_target)
+   lastnew.link=<var(townstone_<src.region.tag(jmeno_mesta)>)>
+   lastnew.equip
+   return 1
+  else
+   src.sysmessage(Chyba kterou jsi nezavinil. Opravit lze kliknutím na mìstský kámen, pak zkus navrhnout znovu)
+   return 1 
+  endif
+ else
+  src.sysmessage(Musis se nachazet v nejakem Mordorskem meste)
+ endif
+endif
+
+
+[itemdef i_navrhban_target]
+id=i_memory
+type=t_eq_script
+name=Navrhovac na blacklist
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target
+src.classmessage(Koho chces navrhnout na blacklist?)
+timer=30
+
+on=@targon_char
+if(strlen(<src.tag(oldpos)>))
+ src.p=<src.tag(oldpos)>
+ src.tag.remove(oldpos)
+endif
+//if(strlen(<src.region.tag(jmeno_mesta)>))&&(<eval src.tag(realm)>==<eval src.region.tag(realm)>)
+ if(<src.tag(realm)> > 0)
+  if(<src.tag(realm)>==1)
+   //if(!<src.tag(obcan)>)||(strcmpi(<src.tag(mesto)>,<link.tag(jmeno_mesta)>))
+   // src.sysmessage(Nemas zde pravomoc navrhovat na blacklist)
+   // remove
+   // return 1
+   //endif
+   link.tm_findrank(<src.targ>)//rank targetnuteho
+   if(<var(tm_rank)>==0)
+    src.sysmessage(<src.targ.name> jiz na blacklistu je) 
+    remove
+    return 1
+   endif
+   if(<src.targ.tag(realm)>!=<src.tag(realm)>)
+    src.sysmessage(Tohoto neni potreba navrhovat na blacklist)
+    remove
+    return 1
+   endif
+   //if(<src.targ.tag(general)>)
+    //src.sysmessage(Generala Gondoru nemuzes pridat na blacklist)
+    //remove
+    //return 1
+   //endif
+   if !(strcmpi(<src.targ.tag(mesto)>,<link.tag(jmeno_mesta)>))   
+    src.sysmessage(Obcany daneho mesta nelze navrhovat na blacklist)
+    remove
+    return 1
+   endif
+  endif
+  if(<src.tag(realm)>==2)
+   if(strlen(<src.region.tag(jmeno_mesta)>))&&(<eval src.tag(realm)>==<eval src.region.tag(realm)>)
+    link.nm_findrank(<src.targ>)//rank targetnuteho
+    if(<var(nm_rank)>==0)
+     src.sysmessage(<src.targ.name> jiz na blacklistu je) 
+     remove
+     return 1
+    endif
+    if(<src.targ.tag(lordnazgul)>)
+     src.sysmessage(Prvniho Nazgula nemuzes navrhnout na blacklist)
+     remove
+     return 1
+    endif   
+    if(<src.targ.tag(realm)>!=<src.tag(realm)>)
+     src.sysmessage(Tohoto neni potreba navrhovat na blacklist)
+     remove
+     return 1
+    endif
+   else
+    src.sysmessage(Musis byt v Mordorskem meste)
+    remove 
+    return 1
+   endif  
+  endif
+  if(src.targ.isgm)
+   src.sysmessage(Nenavrhuj GMka) 
+   remove
+   return 1
+  endif
+//else
+// src.sysmessage(Abys nekoho navrhl na blacklist, musis byt ve meste sveho realmu)
+// remove
+// return 1
+ endif 
+input("Udej duvod tveho navrhu:",navrhni,"")
+return 1
+
+on=@targon_item
+if ((src.targ.baseid==i_flesh_head)||(src.targ.baseid==i_flesh_head_2))	// je to hlava? muzska / zenska
+	if (<src.targ.link.isplayer>)	// a je to hlava hraca?
+		src.targ=<src.targ.link>	//zameraj majitela hlavy
+		trigger(targon_char)	//zavolaj trigger targon_char
+		return 1
+	else
+		src.sysmessage("Toto neni hlava hrace")
+	endif
+	return 1
+else
+	src.sysmessage("Navrhuj lidi, nebo jejich hlavy")
+	remove
+	return 1
+endif
+
+on=@targon_ground
+trigger(targon_item)
+return 1
+
+[function navrhni] //Args- duvod
+src.newitemsafe(i_town_crystal)
+if(<src.tag(rememberuid)>) //ma ulozeno  - mozna navrhuje z pameti
+ if(!strcmpi(<src.tag(rememberuid)>,<src.targ>)) //- navrhuje toho co ma v pameti
+  lastnew.name=<src.tag(remembername)>
+ else //nenavrhuje toho co ma v pameti
+  lastnew.name=<src.targ.name>
+ endif
+else //nema vubec nikoho v pameti
+ lastnew.name=<src.targ.name>
+endif
+lastnew.tag(navrhovac,<src.name>)
+lastnew.tag(duvod,<args>)
+lastnew.cont=<link.tag(suggestedenemyscont)> 
+lastnew.link=<src.targ> //linknout na navrzeneho playera
+src.classmessage(Navrhl jsi hrace <src.targ.name> na blacklist mesta <link.tag(jmeno_mesta)>)
+src.targ.delayedredmessage(Byl jsi navrzen na blacklist mesta <link.tag(jmeno_mesta)>. Ocekavej rozhodnuti <qval(<eval (<src.tag(realm)>-1)>,Nazgula,Starosty)>)
+remove
+return 1
+
+[function remember]
+newitemsafe(i_remember)
+lastnew.equip
+lastnew.target Koho si chces pamatovat?
+
+[itemdef i_remember]
+id=i_memory
+name=remember
+type=t_eq_script
+
+on=@create
+timer=60
+
+on=@targon_item
+target Zameruj lidi 
+return 1
+
+on=@targon_char
+//src.tag(remember[2],"<safe src.tag(remember[1])>")
+//src.tag(remember[1],"<safe src.tag(remember[0])>")
+//src.tag(remember[0],"<src.targ>")//,<src.targ.name>")
+
+if(src.targ.isplayer)
+ src.tag(rememberuid,<src.targ>)
+ src.tag(remembername,<src.targ.name>) //muze se potom premaskovat a hned je pruser na svete
+ src.smsg <src.targ.name> <src.targ.sex(zapamatovan,zapamatovana)>.
+ remove
+ return 1
+else
+ target Zameruj hrace
+ return 1
+endif
+
+on=@timer
+//src=cont
+//logmsg(timer)
+//target huhle
+remove
+return 1
+
+[function remembered]
+if(<tag(rememberuid)>)
+ tag(oldpos,<p>)
+ p=<tag(rememberuid).p>
+ act=<tag(rememberuid)>
+ safe(last)
+else
+ sysmessage(Nemas nikoho ulozeneho v pameti)
+endif
+if(strlen(<tag(oldpos)>)) //proti zneuziti pri pouziti fce remembered a nezamereni nikoho
+ p=<tag(oldpos)>
+ tag.remove(oldpos)
+ update
+endif
+
+[function rememberclear]
+tag.remove(rememberuid)
+tag.remove(remembername)
+tag.remove(oldpos)
+//////////////////////
+//konec hráèských funkcí
+//////////////////////
+//////////////////////////
+//funkce starosta only
+//////////////////////////
+[function towncontrol]
+if(<tag(starosta)>)||(isgm)||(isgeneralintown) 
+ if(<tag(general)>)||(isgm)   //general nebo gm ve meste (nemusi mit tag mesto)
+  if(strlen(<region.tag(jmeno_mesta)>))
+   if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+    if(isgm)
+     finduid(<var(townstone_<region.tag(jmeno_mesta)>)>).dialog d_town_major //- rozmistit straze po meste
+    endif
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>)>).dialog d_town_captain //ovladani strazi 
+    return 1
+   else
+    sysmessage(Nenalezl jsem mestsky kamen)
+   endif
+  endif
+ endif
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen)
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strcmpi(<var(townstone_<region.tag(jmeno_mesta)>)>,<tag(townstone)>)) //pro starosty
+   finduid(<tag(townstone)>).dialog d_town_major //- rozmistit straze po meste  
+   finduid(<tag(townstone)>).dialog d_town_captain //ovladani strazi 
+  else
+   sysmessage(Musis byt ve svem meste!)
+   return 1
+  endif
+ endif
+else //pouze pro starosty
+ if(<tag(general)>)
+  sysmessage(Musis byt ve meste)
+ endif
+ return 1
+endif
+
+[function townguardskill]
+if(<tag(starosta)>)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strcmpi(<tag(townstone)>,<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<flags>&statf_dead)
+    sysmessage(Ve svem stavu nejsi niceho schopen)
+    return 1
+   endif
+   if(<finduid(<finduid(<tag(townstone)>).tag(guardcont)>).rescount>)
+    newitemsafe(i_guard_targ) 
+    lastnew.equip
+    lastnew.tag(mesto,<tag(townstone)>)
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve svem meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+if(isgm)||(<tag(general)>)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<flags>&statf_dead)
+    sysmessage(Ve svem stavu nejsi niceho schopen)
+    return 1
+   endif
+   if(<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).rescount>)
+    newitemsafe(i_guard_targ) 
+    lastnew.equip
+    lastnew.tag(mesto,<var(townstone_<region.tag(jmeno_mesta)>)>)
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Nenasel jsem mestsky kamen)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function townguardsstop]
+if(<tag(starosta)>)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strcmpi(<tag(townstone)>,<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<flags>&statf_dead)
+    sysmessage(Ve svem stavu nejsi niceho schopen)
+    return 1
+   endif
+   if(<finduid(<finduid(<tag(townstone)>).tag(guardcont)>).rescount>)
+    finduid(<finduid(<tag(townstone)>).tag(guardcont)>).contents(stop_guard(1)) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve svem meste)
+  endif
+ endif
+endif
+if(isgm)||(<tag(general)>)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<flags>&statf_dead)
+    sysmessage(Ve svem stavu nejsi niceho schopen)
+    return 1
+   endif
+   if(<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).rescount>)
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).contents(stop_guard(1)) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Nenasel jsem mestsky kamen)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function townguardscontinue]
+if(<tag(starosta)>)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strcmpi(<tag(townstone)>,<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<flags>&statf_dead)
+    sysmessage(Ve svem stavu nejsi niceho schopen)
+    return 1
+   endif
+   if(<finduid(<finduid(<tag(townstone)>).tag(guardcont)>).rescount>)
+    finduid(<finduid(<tag(townstone)>).tag(guardcont)>).contents(stop_guard(0)) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve svem meste)
+  endif
+ endif
+endif
+if(isgm)||(<tag(general)>)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<flags>&statf_dead)
+    sysmessage(Ve svem stavu nejsi niceho schopen)
+    return 1
+   endif
+   if(<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).rescount>)
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).contents(stop_guard(0)) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Nenasel jsem mestsky kamen)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function townguardsflee]
+if(<tag(starosta)>)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strcmpi(<tag(townstone)>,<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<flags>&statf_dead)
+    sysmessage(Ve svem stavu nejsi niceho schopen)
+    return 1
+   endif
+   if(<finduid(<finduid(<tag(townstone)>).tag(guardcont)>).rescount>)
+    finduid(<finduid(<tag(townstone)>).tag(guardcont)>).contents(home_run) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve svem meste)
+  endif
+ endif
+endif
+if(isgm)||(<tag(general)>)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<flags>&statf_dead)
+    sysmessage(Ve svem stavu nejsi niceho schopen)
+    return 1
+   endif
+   if(<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).rescount>)
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).contents(home_run) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Nenasel jsem mestsky kamen)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function townguardscome]
+if(<tag(starosta)>) //kontroluje pouze starostu, generala ne !
+ reveal
+ if(strcmpi(<region>,<finduid(<tag(townstone)>).region>)) //0 pokud stejne, pak nic nehlasi
+  sysmessage(Straze prijdou jen v ramci tveho mesta)
+  return 1
+ endif
+endif
+if(<tag(general)>)||(isgm)
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   sysmessage(Straze prijdou jen v ramci mesta s kamenem)
+   return 1 
+  endif
+ else
+  sysmessage(Straze prijdou jen v ramci mesta)
+  return 1 
+ endif
+endif
+if(<tag(starosta)>)||(isgm)||(<tag(general)>)
+ arg(guardcont,<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>)
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen)
+  return 1
+ endif
+ if(<arg(guardcont).rescount>)
+  arg(pocet_strazi,<arg(guardcont).rescount>)  
+  arg(i,0)
+  while(i < pocet_strazi)
+   //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+   if(guardcont.findcont(i).link>) //umisteny spawngem
+    arg(guard,<guardcont.findcont(i).link.tag(lastspawned)>)     
+    if(<finduid(guard).npc>) //spawnuta straz
+     if(<src.distancefrom(<finduid(guard)>)> <= 15)      
+      finduid(guard).events=-e_guard_stopped 
+      finduid(guard).paralyze_remove
+      finduid(guard).go(<src.p>) 
+     endif
+    endif
+   endif 
+   arg(i,#+1)
+  endwhile
+ else
+  sysmessage(Mesto nevlastni zadne straze)
+ endif
+endif
+
+[function blacklist]
+if !(<tag(starosta)>)
+ return 1
+endif
+newitemsafe(i_target_town)
+lastnew.link=<tag(townstone)>
+lastnew.more1=12
+lastnew.equip
+////////////////////////////////
+//konec starostovych funkci
+////////////////////////////////
+[function isgeneralintown]
+if(<tag(general)>)
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(<region.tag(realm)>==1)
+   if(strcmpi(<region>,<var(townstone_<region.tag(jmeno_mesta)>).region>)) //0 pokud stejne   
+    return 0
+   else //byly stejne 
+    return 1
+   endif
+  else
+   return 0
+  endif
+ else
+  return 0
+ endif
+else
+ return 0
+endif
+/////////////////////////
+//mestoovladajici dialogy
+/////////////////////////
+[dialog d_town_recruiter]
+argo.SetLocation(var(lastsirka)+20,var(lastvyska)+40)
+argo.tag(sirka,455)
+argo.tag(vyska,<eval (12*d_def_radek_vyska)+(5*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29,140)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29,170,80,80)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,"Najimani - konto: <tag(pokladna)> gp")
+argo.texta(<argo.dialog_textpos(1,0)>,0481,"Navysit o: ")
+argo.texta(100,"0")
+argo.textentrya(lastxpos+80,lastypos,150,20,0481,1,100)
+
+argo.button(<argo.dialog_textpos(1,2,1)>,0fb7,0fb9,1,0,5)//ok
+
+//argo.textentry(x,y,sirka,vyska,0481,1,101)
+
+argo.tag(firsthirei,<eval argv(0)>)
+arg(ypos,<argo.tag(obj_y[2])>)
+arg(index,<argo.tag(firsthirei)>)
+if (index)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(maxi,<eval index+5>)
+while (tag(allowhire[index]))&&(index<maxi)
+  //kermel.sysmessage(guard <index>: <tag(allowhire[index])>, maxi: <maxi>)
+  argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,index+1000)
+  argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,ypos,955,"<?<tag(allowhire[index])>.name?>")
+  argo.texta(argo.tag(sloupec_x[4])+d_def_odsazeni-15,ypos,955,"<?<tag(allowhire[index])>.tag(guardhire)?>")
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+endwhile
+if (tag(allowhire[index]))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[3])>-25,0fc,0fd,1,0,2) // next
+endif
+
+argo.tag(firstseei,<eval argv(1)>)
+arg(ypos,<argo.tag(obj_y[3])>)
+arg(index,<argo.tag(firstseei)>)
+if (index)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[3])>+1,0fa,0fb,1,0,3) // prev
+endif
+arg(maxi,<eval index+5>)
+while (tag(guardcont).findcont(index))&&(index<maxi)
+  arg(thisitem,<tag(guardcont).findcont(index)>) //krystal  
+  arg(thatitem,<tag(guardcont).findcont(index).link>) //spawngem guarda  
+  arg(guarddefname,<findres(chardef,arg(thatitem).more1)>)
+  argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,index+2000)
+  argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,ypos,955,"<arg(thisitem).name>")
+  if (<arg(thisitem).link>)    
+    if (<finduid(<arg(thisitem)>).link.tag(lastspawned)>) //lastspawned - ten guard
+      if (<finduid(<finduid(<arg(thisitem)>).link.tag(lastspawned)>).npc>)
+        argo.texta(argo.tag(sloupec_x[2])+d_def_odsazeni,ypos,955,"<arg(thisitem).link.tag(lastspawned).name>")
+      endif        
+    endif
+  endif
+  argo.texta(argo.tag(sloupec_x[3])+d_def_odsazeni,ypos,955,"<findres(chardef,arg(thatitem).more1).tag(guardhire)>")
+  argo.texta(argo.tag(sloupec_x[4])+d_def_odsazeni,ypos,955,<vysluzba(<arg(thisitem).more2>)>)
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+endwhile
+if (tag(guardcont).findcont(index))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,4) // next
+endif
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_town_recruiter button]
+on=0
+
+on=1//prev
+DIALOG(d_town_recruiter,<argo.tag(firsthirei)>-5,<argo.tag(firstseei)>)
+on=2//next
+DIALOG(d_town_recruiter,<argo.tag(firsthirei)>+5,<argo.tag(firstseei)>)
+on=3//prev
+DIALOG(d_town_recruiter,<argo.tag(firsthirei)>,<argo.tag(firstseei)>-5)
+on=4//next
+DIALOG(d_town_recruiter,<argo.tag(firsthirei)>,<argo.tag(firstseei)>+5)
+on=5//pridej penize
+arg(pridat,<fixnumber(<argtxt(1)>)>)
+if (arg(pridat)>0)
+  if (src.pay(<arg(pridat)>))
+    tag(pokladna,#+<arg(pridat)>)
+  endif
+endif
+DIALOG(d_town_recruiter,<argo.tag(firsthirei)>,<argo.tag(firstseei)>)
+
+on=@anybutton
+if (argn<2000)
+  arg(guarddefname,<tag(allowhire[argn-1000])>)
+  arg(price,<eval <arg(guarddefname)>.tag(guardhire)>)
+  if (<tag(pokladna)> >= <arg(price)>)
+    tag(pokladna,#-<arg(price)>)
+    src.newitemsafe(i_relating_crystal)
+    lastnew.name=<?<arg(guarddefname)>.name?>
+    lastnew.cont=<tag(guardcont)>
+    lastnew.tag(guarddefname,<arg(guarddefname)>)
+    lastnew.tag(lastcheck,<serv.time>) //kontrola casu !!!
+    lastnew.more2=<eval (<lastnew.more2>+(7*<den>))>
+  else
+    src.sysmessage("V pokladne neni dost penez")
+  endif
+else
+  arg(thisitem,<tag(guardcont).findcont(argn-2000)>)  
+  arg(price,<eval (<findres(chardef,arg(thisitem).tag(guarddefname)).tag(guardhire)>)>)
+  if (tag(pokladna) >= arg(price))    
+   tag(pokladna,#-<arg(price)>)
+   arg(thisitem).more2=<eval (<finduid(<arg(thisitem)>).more2>+(7*<den>))>
+  else
+   src.sysmessage("V pokladne neni dost penez")
+  endif
+endif
+DIALOG(d_town_recruiter,<argo.tag(firsthirei)>,<argo.tag(firstseei)>)
+
+[dialog d_town_captain]//PRIKAZY STRAZIM
+20,20
+argo.tag(sirka,250)
+argo.tag(vyska,<eval (6*d_def_radek_vyska)+(2*d_def_skvira)+(2*d_def_okraj)>)
+var(lastvyska,<argo.tag(vyska)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,Rozkaz strazim:)
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(ypos,<argo.tsc_section(<ypos>,1,Guards Kill)>)
+arg(ypos,<argo.tsc_section(<ypos>,2,Guards Stop)>)
+arg(ypos,<argo.tsc_section(<ypos>,3,Guards Continue)>)
+arg(ypos,<argo.tsc_section(<ypos>,4,Guards Flee)>)
+arg(ypos,<argo.tsc_section(<ypos>,5,Guards Come)>)
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+//argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+//argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+//argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_town_captain button]
+on=0
+on=1 //kill - jen nekolik !
+if(<finduid(<tag(guardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ src.newitemsafe(i_guard_targ) 
+ lastnew.equip
+ lastnew.tag(mesto,<uid>)
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_town_captain
+
+on=2 //stop
+if(<finduid(<tag(guardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(guardcont)>).contents(stop_guard(1)) //1 stop
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_town_captain
+
+on=3 //go on
+if(<finduid(<tag(guardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(guardcont)>).contents(stop_guard(0)) //0 release
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_town_captain
+
+on=4 //flee
+if(<finduid(<tag(guardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(guardcont)>).contents(home_run)
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_town_captain
+
+on=5 //come - jen nekolik !
+if(<src.tag(starosta)>)||((src.isnazgul)&&(!<src.tag(lordnazgul)>)) //kontroluje pouze starostu a obyc nazgula, generala ne !
+ if(<src.tag(starosta)>)
+  if(strcmpi(<src.region>,<finduid(<src.tag(townstone)>).region>)) //0 pokud stejne, pak nic nehlasi
+   src.sysmessage(Straze prijdou jen v ramci tveho mesta)
+   return 1
+  endif
+ endif
+ if(src.isnazgul)
+  if(strcmpi(<src.region>,<src.findlayer(8).link.region>)) //0 pokud stejne, pak nic nehlasi
+   src.sysmessage(Straze prijdou jen v ramci tveho mesta)
+   return 1
+  endif
+ endif
+endif
+src.reveal
+if(<src.flags>&statf_dead)
+ src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+ return 1
+endif
+if(<src.tag(general)>)||(<src.isgm>)||(<src.tag(lordnazgul)>)
+ if(strlen(<src.region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(strcmpi(<src.region>,<var(townstone_<region.tag(jmeno_mesta)>).region>)) //0 pokud stejne, pak nic nehlasi
+    src.sysmessage(Straze prijdou jen v ramci mesta)
+    return 1
+   endif
+  endif
+ endif
+endif
+if(<finduid(<tag(guardcont)>).rescount>)
+ arg(pocet_strazi,<finduid(<tag(guardcont)>).rescount>) 
+ arg(i,0)
+ while(i < pocet_strazi)
+  //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+  if(<finduid(<tag(guardcont)>).findcont(i).link>) //umisteny spawngem
+    arg(guard,<finduid(<tag(guardcont)>).findcont(i).link.tag(lastspawned)>)
+    if(<finduid(guard).npc>) //spawnuta straz
+     if(<src.distancefrom(<finduid(guard)>)> <= 15)
+      finduid(guard).events=-e_guard_stopped 
+      finduid(guard).paralyze_remove
+      finduid(guard).go(<src.p>) 
+     endif
+    endif
+  endif 
+  arg(i,#+1)
+ endwhile
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_town_captain
+
+[dialog d_town_major]//rozmisteni strazi
+argo.SetLocation(20,var(lastvyska)+100)
+argo.tag(sirka,530)
+var(lastsirka,<argo.tag(sirka)>)
+argo.tag(vyska,<eval (15*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,13,39,39,80,165,95)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,"Seznam + rozmisteni strazi:")
+
+argo.texta(<argo.dialog_textpos(1,0)>,0481,"Zmen")
+argo.texta(<argo.dialog_textpos(1,1)>,0481,"Zrus")
+argo.texta(<argo.dialog_textpos(1,2)>,0481,"Jmeno")
+argo.texta(<argo.dialog_textpos(1,3,1)>,0481,"Typ")
+argo.texta(<argo.dialog_textpos(1,4)>,0481,"Pozice")
+argo.texta(<argo.dialog_textpos(1,5)>,0481,"Vysluzba")
+
+argo.tag(firsti,<eval argv(0)>)
+arg(index,<argo.tag(firsti)>)
+arg(ypos,<argo.tag(obj_y[2])>)
+if (<arg(index)>)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(maxi,<eval index+13>)
+while (tag(guardcont).findcont(index))&&(<arg(index)> < <arg(maxi)>)
+ arg(thisitem,<tag(guardcont).findcont(index)>)
+ //arg(uplynulo,<eval (<serv.time>-<finduid(<arg(thisitem)>).tag(lastcheck)>)>)
+ //src.sysmessage(bylo:<arg(thisitem).more2>)
+ //arg(thisitem).more2=<eval (<arg(thisitem).more2>-<arg(uplynulo)>)>
+ //src.sysmessage(last: <finduid(<arg(thisitem)>).tag(lastcheck)>, uplyn: <arg(uplynulo)>, zbylo: <arg(thisitem).more2>)
+ //if (<arg(thisitem).more2> > 0) //jeste mame zaplaceno 
+ if(<arg(thisitem).hasbeenpaid>) //provede kontrolu guardu
+  arg(guarddefname,<findres(chardef,arg(thisitem).more).defname>)
+  argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,index+1000)
+  argo.button(<argo.tag(sloupec_x[1])>,ypos,4005,4007,1,0,index+2000)
+  argo.texta(argo.tag(sloupec_x[3])+d_def_odsazeni,ypos,955,"<arg(thisitem).name>")
+  argo.texta(argo.tag(sloupec_x[5])+d_def_odsazeni,ypos,955,<vysluzba(<arg(thisitem).more2>)>)
+  if (arg(thisitem).tag(guardspawn))
+   if (strlen(<finduid(<finduid(<arg(thisitem)>).tag(guardspawn)>).tag(lastspawned)>))
+    argo.texta(argo.tag(sloupec_x[2])+d_def_odsazeni,ypos,955,"<finduid(<finduid(<finduid(<arg(thisitem)>).tag(guardspawn)>).tag(lastspawned)>).name>")
+    argo.texta(argo.tag(sloupec_x[4])+d_def_odsazeni,ypos,955,"<finduid(<finduid(<finduid(<arg(thisitem)>).tag(guardspawn)>).tag(lastspawned)>).p>")
+   endif
+  endif
+  //arg(thisitem).tag(lastcheck,<serv.time>)
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+ endif
+ //zbytek neni dulezity, probehne pripadne jiz v "hasbeenpaid"
+ //else //nezaplaceno, odstranit strazce, spawngem a krystal
+ // src.redmessage(Nedostatecne odmenovana straz)
+ // if (arg(thisitem).tag(guardspawn))
+ //  if (<finduid(<arg(thisitem).tag(guardspawn)>)>)
+ //   arg(thisitem).timer=<finduid(<arg(crystal).tag(guardspawn)>).timer>      
+ //   arg(thisitem).tag(guardspawn).remove    
+ //  endif
+ // endif
+ // arg(thisitem).remove
+ //endif 
+endwhile
+if (tag(guardcont).findcont(index))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+endif
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+//argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+//argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+//argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[function hasbeenpaid] //kontrola zda byl guard dostatecne zaplacen, uid - krystal
+arg(uplynulo,<eval (<serv.time>-<tag(lastcheck)>)>)
+tag(lastcheck,<serv.time>)
+more2=<eval (<more2>-<uplynulo>)> //zkrati se pronajem o uplynuly cas
+if(<more2> > 0)
+ return 1
+else //nezaplaceno - odstranime guarda i jeho krystal
+ src.redmessage(Nedostatecne odmenovana straz)
+ if (tag(guardspawn))
+  if (<finduid(<tag(guardspawn)>)>)
+   tag(guardspawn).remove    
+  endif
+ endif
+ remove 
+ return 0
+endif
+
+
+[dialog d_town_major button]
+on=0
+on=1//prev
+DIALOG(d_town_major,<argo.tag(firsti)>-13)
+on=2//next
+DIALOG(d_town_major,<argo.tag(firsti)>+13)
+
+on=@anybutton
+if (argn<2000)
+  //src.smsg zmen:<tag(guardcont).findcont(<eval argn-1000>).name>
+  src.newitemsafe(i_guard_setp)
+  lastnew.equip
+  lastnew.link=<uid>
+  lastnew.tag(crystal,<finduid(<tag(guardcont)>).findcont(<eval argn-1000>)>)
+else
+  //src.smsg zrus:<tag(guardcont).findcont(<eval argn-2000>).name>
+  arg(crystal,<tag(guardcont).findcont(<eval argn-2000>)>)
+  if (arg(crystal).tag(guardspawn))
+   if (<finduid(<arg(crystal).tag(guardspawn)>)>)
+    arg(crystal).timer=<finduid(<arg(crystal).tag(guardspawn)>).timer>
+    if (arg(crystal).tag(guardspawn).more2)
+     arg(crystal).timer=1
+    endif
+    arg(crystal).tag(guardspawn).remove
+    arg(crystal).tag(guardspawn,"")
+    dialog d_town_major
+   endif
+  else //neumistena straz
+   potvrdit(propustit(<arg(crystal)>),"Chces skutecne propustit predplaceneho strazce?")
+  endif
+endif
+/////////////////////////////////
+//konec mestoovladajicich dialogu
+/////////////////////////////////
+//////////////////////////
+//zacatek volebnich funkci
+//////////////////////////
+[function kontrola_dani]
+arg(cas_konce,<eval tag(cas_dani)>)
+arg(cas_ted,<serv.time>)
+//src.sysmessage(kon: <cas_konce>, ted: <cas_ted>)
+if(<arg(cas_ted)> > <arg(cas_konce)>)
+ tag(cas_dani,#+<eval (<argv(0)>)>) //nove dane za mesic
+ finduid(<tag(citizenscont)>).contents(prover_dane_obcanu)
+endif
+
+[function prover_dane_obcanu]
+if(<link.tag(starosta)>) //ten neplati 
+ return 
+endif
+if(<tag(zaplatil_dan)>) //OK
+ tag.remove(zaplatil_dan) //na dalsi obdobi
+ tag.remove(kolik_dal)
+ link.tag.remove(zaplatil_dan)  
+ if(<tag(platba_pausal)>) //autoplatba
+  if(<link.pay(<eval (<cont.link.tag(dane)>)>)>) //muze zaplatit?
+   cont.link.tag(pokladna,#+<cont.link.tag(dane)>) 
+   link.tag(zaplatil_dan,1)
+   tag(zaplatil_dan,1)
+   tag(kolik_dal,<cont.link.tag(dane)>)
+   link.delayedmessage(Dane automaticky zaplaceny - <cont.link.tag(dane)>gp)
+  else //nema na to - varovani !
+   link.delayedredmessage(Nedostatek penez na zaplaceni dani, vyres si sve platby!)   
+  endif
+ endif
+else  
+  link.delayedredmessage(Nezaplatil jsi dane, pro mesto <link.tag(mesto)> jiz nejsi zadoucim obcanem)
+  if(<link.tag(candidatemajor_<link.tag(mesto)>)>)
+   link.tag.remove(candidatemajor_<link.tag(mesto)>)
+   finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,1)) //zrusit hlasovani u vsech obcanu, 1- kandidatury 
+   finduid(<cont.link.tag(candidatesmajorcont)>).contents(smaz_krystal(<link>))
+  endif
+  if(<link.tag(candidateout)>)
+   link.tag.remove(candidateout)
+   finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,0)) //zrusit hlasovani u vsech obcanu, 0- vyhostovani
+   finduid(<cont.link.tag(candidatesoutcont)>).contents(smaz_krystal(<link>))
+  endif
+  link.tag.remove(obcan)
+  if(<link.tag(starosta)>)
+   link.tag.remove(starosta)
+   link.tag.remove(townstone)
+   cont.link.tag.remove(funkce_major) //muze kandidovat hned dalsi
+  endif
+  link.tag.remove(mesto)
+  finduid(<cont.link.tag(citizenscont)>).contents(smaz_krystal(<link>))
+endif
+
+[function kontrola_casu]
+if(<finduid(<argv(0)>).rescount>==0)
+ return 1
+endif
+finduid(<argv(0)>).contents(kontrola_casu_in(<argv(1)>))
+
+[function kontrola_casu_in]
+arg(cas_zacatku,<eval (<tag(time)>)>)
+arg(cas_konce,<eval (<arg(cas_zacatku)>+<argv(0)>)>)
+arg(cas_ted,<serv.time>)
+if(<arg(cas_ted)> > <arg(cas_konce)>)
+ secti_hlasy(<cont.more1>) // 9 - pytel vyhosteni, 10 - pytel prijeti
+endif 
+
+[function secti_hlasy]
+arg(obcanu,<finduid(<cont.link.tag(citizenscont)>).rescount>)
+//kermel.sysmessage(scitam hlasy <link.name>, obcanu: <arg(obcanu)>, pulka:<eval (<arg(obcanu)>/2)>)
+if(<more1> < <eval (<arg(obcanu)>/2)>) //more1 - pocet hlasu 
+ if(<argv(0)> == 9) //vyhosteni
+  link.delayedredmessage(Obcane odhlasovali tve vyhosteni z mesta <link.tag(mesto)>)
+  link.tag.remove(mesto)
+  link.tag.remove(obcan)
+  link.tag.remove(zaplatil_dan)
+  link.tag.remove(candidateout)
+  if(<link.tag(candidatemajor_<cont.link.tag(jmeno_mesta)>)>)
+   finduid(<cont.link.tag(candidatesmajorcont)>).contents(zrus_kandidaturu_major(<link>)) //koho   
+  endif  
+  finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,0)) //zrusit hlasovani u vsech obcanu, 0 - vyhostovani
+  finduid(<cont.link.tag(citizenscont)>).contents(smaz_krystal(<link>)) //odstranit krystal obcana
+  finduid(<cont.link.tag(citizenscont)>).contents(zprava_volby(<link>,1))
+  remove //odstranit krystal candidateout
+ endif
+ if(<argv(0)> == 10) //prijeti
+  link.delayedmessage(Obcane mesta <cont.link.tag(jmeno_mesta)> odhlasovali tve prijeti)
+  link.tag.remove(candidate_<cont.link.tag(jmeno_mesta)>)
+  link.tag.remove(candidatein)
+  link.tag(obcan,1)
+  link.tag(mesto,<cont.link.tag(jmeno_mesta)>)
+  tag.remove(time) //na krystalu
+  more1=0 //zrusit hlasy
+  finduid(<cont.link.tag(citizenscont)>).contents(zprava_volby(<link>,2))
+  cont=finduid(<cont.link.tag(citizenscont)>) //presunout krystal
+  update  //ted uz je v pytli s obcany
+  finduid(<cont>).contents(zrus_tag(<link>,1)) //zrusit hlasovani u vsech obcanu, 1- kandidatury
+ endif
+else //nadpolovicni vetsina hlasu
+ if(<argv(0)>==9) //Nevyhosteni
+  //link.delayedmessage(Hlasovani o tvem vyhosteni z mesta <link.tag(mesto)> skoncilo. Zustavas nadale obcanem)
+  link.tag.remove(candidateout)
+  finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,0)) 
+  finduid(<cont.link.tag(citizenscont)>).contents(zprava_volby(<link>,1))
+  finduid(<cont.link.tag(citizenscont)>).contents(pristi_vyhozeni(<link>))
+  
+  remove //odstranit krystal candidateout
+ endif
+ if(<argv(0)>==10) //Neprijeti
+  link.delayedredmessage(Obcane neodhlasovali tve prijeti do mesta <cont.link.tag(jmeno_mesta)> dostatecnym poctem hlasu)
+  link.tag.remove(candidate_<cont.link.tag(jmeno_mesta)>)
+  link.tag.remove(candidatein)
+  finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,1))   
+  finduid(<cont.link.tag(citizenscont)>).contents(zprava_volby(<link>,2))
+  remove //odstranit krystal candidatein
+ endif  
+endif 
+
+[function muj_kamen]
+if(<args>==<link>)
+  var(myTimeNextAdept,<tag(nextTimeAdept)>)
+endif
+
+[function pristi_vyhozeni]
+if(<args>==<link>)
+  tag(nextTime,<serv.time>+6048000)    
+endif
+
+[function pristi_adept]
+if(<args>==<link>)
+  tag(nextTimeAdept,<serv.time>+6048000)    
+endif
+
+[function kontrola_voleb]
+if(<finduid(<tag(candidatesmajorcont)>).rescount>==0)
+ return 1
+endif
+arg(cas_zacatku,<eval (<tag(zacatek_voleb)>)>)
+arg(cas_konce,<eval (<arg(cas_zacatku)>+<argv(0)>)>)
+arg(cas_ted,<serv.time>)
+if(<arg(cas_ted)> > <arg(cas_konce)>)
+ ukonci_volby //ten pytlik s kandidaty
+endif 
+
+[function ukonci_volby] 
+if(<finduid(<tag(candidatesmajorcont)>).rescount>==1) //jednoznacny vitez
+ if(<more1>) //byl starosta
+  finduid(<more1>).tag.remove(starosta)
+  finduid(<more1>).tag.remove(townstone)
+  finduid(<more1>).delayedredmessage(Prisel jsi ve volbach o starostensky urad ve meste <tag(jmeno_mesta)>)
+ endif
+ more1=<finduid(<tag(candidatesmajorcont)>).findcont(0).link> //novy starosta
+ tag(funkce_major,<serv.time>) //zhajeno funkcni obdobi
+ finduid(<tag(citizenscont)>).contents(zprava_volby(<finduid(<tag(candidatesmajorcont)>).findcont(0).link>,0)) //oznameni o volbe vsem obcanum
+ finduid(<tag(candidatesmajorcont)>).findcont(0).link.tag(starosta,1)
+ finduid(<tag(candidatesmajorcont)>).findcont(0).link.tag(townstone,<uid>)
+ finduid(<tag(candidatesmajorcont)>).findcont(0).link.delayedmessage(Byl jsi zvolen starostou mesta <tag(jmeno_mesta)>)
+ finduid(<tag(candidatesmajorcont)>).contents(konec_voleb) 
+else //vice moznosti
+ var(rescountchanged,1)
+ finduid(<tag(candidatesmajorcont)>).kdo_vyhral 
+ var(rescountchanged,"")
+ var(icko,"")
+ var(jecko,"")
+ var(rescountbyl,"")
+ var(pomocny,"")
+ if(<finduid(<tag(candidatesmajorcont)>).rescount>==1) //jednoznacny vitez
+  if(<more1>) //byl starosta
+   finduid(<more1>).tag.remove(starosta)
+   finduid(<more1>).tag.remove(townstone)
+   finduid(<more1>).delayedredmessage(Prisel jsi ve volbach o starostensky urad ve meste <tag(jmeno_mesta)>)
+  endif
+  more1=<finduid(<tag(candidatesmajorcont)>).findcont(0).link> //novy starosta
+  tag(funkce_major,<serv.time>) //zhajeno funkcni obdobi
+  finduid(<tag(citizenscont)>).contents(zprava_volby(<finduid(<tag(candidatesmajorcont)>).findcont(0).link>,0)) //oznameni o volbe vsem obcanum
+  finduid(<tag(candidatesmajorcont)>).findcont(0).link.tag(starosta,1)
+  finduid(<tag(candidatesmajorcont)>).findcont(0).link.tag(townstone,<uid>)
+  finduid(<tag(candidatesmajorcont)>).findcont(0).link.delayedmessage(Byl jsi zvolen starostou mesta <tag(jmeno_mesta)>)
+  finduid(<tag(candidatesmajorcont)>).contents(konec_voleb) 
+ else //vice vitezu
+  //kermel.sysmessage(Vice vitezu)
+  var(je_tam_starosta,0)
+  je_tam_starosta
+  if(<var(je_tam_starosta)>)
+   //kermel.sysmessage(Mezi nimi starosta)
+  else //nebyl starosta, rozhodne los
+   //kermel.sysmessage(Rozhodne mezi nimi los)
+   arg(kterej,<eval {0 <eval (<finduid(<tag(candidatesmajorcont)>).rescount>-1)>}>)
+   if(<more1>) //byl starosta
+    finduid(<more1>).tag.remove(starosta)
+    finduid(<more1>).tag.remove(townstone)
+    finduid(<more1>).delayedredmessage(Prisel jsi ve volbach o starostensky urad ve meste <tag(jmeno_mesta)>)
+   endif
+   more1=<finduid(<tag(candidatesmajorcont)>).findcont(<arg(kterej)>).link> //novy starosta
+   tag(funkce_major,<serv.time>) //zhajeno funkcni obdobi
+   finduid(<tag(citizenscont)>).contents(zprava_volby(<finduid(<tag(candidatesmajorcont)>).findcont(<arg(kterej)>).link>,0))
+   finduid(<tag(candidatesmajorcont)>).findcont(<arg(kterej)>).link.tag(starosta,1)
+   finduid(<tag(candidatesmajorcont)>).findcont(<arg(kterej)>).link.tag(townstone,<uid>)
+   finduid(<tag(candidatesmajorcont)>).findcont(<arg(kterej)>).link.delayedmessage(Byl jsi zvolen starostou mesta <tag(jmeno_mesta)>)
+   finduid(<tag(candidatesmajorcont)>).findcont(<arg(kterej)>).link.tag.remove(candidatemajor_<tag(jmeno_mesta)>)   
+   finduid(<tag(candidatesmajorcont)>).contents(konec_voleb) 
+  endif
+  var(je_tam_starosta,"")
+ endif 
+endif
+
+[function kdo_vyhral]
+//kermel.sysmessage(KDO VYHRAL)
+var(icko,0)
+var(rescountbyl,<rescount>)
+var(pomocny, <eval (<rescount>-1)>)
+while(<var(icko)> < <var(pomocny)>)
+ //kermel.sysmessage(porovnani:<findcont(<var(icko)>).name> s <findcont(<eval (<var(icko)>+1)>).name>, hlasy: <findcont(<var(icko)>).more1> a <findcont(<eval (<var(icko)>+1)>).more1>)
+ var(jecko,<eval (<var(icko)>+1)>)
+ if(<findcont(<var(icko)>).more1> == <findcont(<var(jecko)>).more1>)  
+  //kermel.sysmessage(icko:<var(icko)>,jecko:<var(jecko)>,pomoc:<var(pomocny)>,rescountbyl:<var(rescountbyl)>)
+  var(icko,#+1) //nemazeme nic
+ endif 
+ if(<findcont(<var(jecko)>)>)
+  if(<findcont(<var(icko)>).more1> < <findcont(<var(jecko)>).more1>)  
+   //kermel.sysmessage(icko:<var(icko)>,jecko:<var(jecko)>,pomoc:<var(pomocny)>,rescountbyl:<var(rescountbyl)>)
+   //kermel.sysmessage(mazu: <findcont(<var(icko)>).name>)
+   findcont(<var(icko)>).link.tag.remove(candidatemajor_<link.tag(jmeno_mesta)>)
+   finduid(<link.tag(citizenscont)>).contents(zrus_tag(<findcont(<var(icko)>).link>,1)) //zrusit hlasovani u vsech obcanu, 1- kandidatury 
+   findcont(<var(icko)>).remove  
+   var(pomocny,#-1)
+  endif
+ endif
+ if(<findcont(<var(jecko)>)>)
+  if(<findcont(<var(icko)>).more1> > <findcont(<var(jecko)>).more1>)   
+   //kermel.sysmessage(icko:<var(icko)>,jecko:<var(jecko)>,pomoc:<var(pomocny)>,rescountbyl:<var(rescountbyl)>)
+   //kermel.sysmessage(mazu: <findcont(<var(jecko)>).name>)
+   findcont(<var(jecko)>).link.tag.remove(candidatemajor_<link.tag(jmeno_mesta)>)
+   finduid(<link.tag(citizenscont)>).contents(zrus_tag(<findcont(<var(jecko)>).link>,1)) //zrusit hlasovani u vsech obcanu, 1- kandidatury 
+   findcont(<var(jecko)>).remove   
+   var(pomocny,#-1)
+  endif
+ endif
+endwhile
+if(<var(rescountbyl)>==<rescount>) 
+ var(rescountchanged,0)
+endif
+if(<var(rescountchanged)>)&&(<rescount> > 1) //zbude-li sam, je dalsi volani zbytecne
+ finduid(<link.tag(candidatesmajorcont)>).kdo_vyhral
+endif
+
+[function je_tam_starosta] 
+finduid(<tag(candidatesmajorcont)>).contents(najdi_starostu)
+if(<var(je_tam_starosta)>)
+ finduid(<tag(candidatesmajorcont)>).contents(konec_voleb) 
+endif
+
+[function najdi_starostu]
+if(<link>==<cont.link.more1>) //je to starosta
+ link.delayedmessage(Byl jsi znovuzvolen starostou mesta <cont.link.tag(jmeno_mesta)>)
+ cont.link.tag(funkce_major,<serv.time>) //zhajeno nove funkcni obdobi
+ link.tag.remove(candidatemajor_<tag(jmeno_mesta)>)
+ finduid(<cont.link.tag(citizenscont)>).contents(zprava_volby(<link>,0))
+ var(je_tam_starosta,1)
+endif
+
+[function konec_voleb]
+link.tag.remove(candidatemajor_<cont.link.tag(jmeno_mesta)>)
+finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,1)) //zrusit hlasovani u vsech obcanu, 1- kandidatury 
+finduid(<cont.link.tag(citizenscont)>).contents(link.tag.remove(hlasoval_ve_volbach)) 
+remove
+
+[function zprava_volby] //argv(0) - kdo, argv(1)- 0 - starosta, 1 - vyhosteni, 2 - prijeti
+if(<argv(1)>==0)
+ link.classmessage(Mestsky Hlasatel:)
+ link.delayedmessage(Volby ukonceny, starostou byl <qval(<finduid(<argv(0)>).tag(starosta)>,znovu,)>zvolen <finduid(<argv(0)>).name>)
+endif
+if(<argv(1)>==1)
+ link.classmessage(Mestsky Hlasatel:)
+ link.delayedmessage(Hlasovani ukonceno, obcan <finduid(<argv(0)>).name> <qval(<finduid(<argv(0)>).tag(obcan)>,ne,)>byl vyhosten z mesta <cont.link.tag(jmeno_mesta)>) 
+endif
+if(<argv(1)>==2)
+ link.classmessage(Mestsky Hlasatel:)
+ link.delayedmessage(Hlasovani ukonceno, <finduid(<argv(0)>).name> <qval(<finduid(<argv(0)>).tag(obcan)>,,ne)>byl prijat mezi obcany mesta <cont.link.tag(jmeno_mesta)>) 
+endif
+////////////////////////
+//konec volebnich funkci
+////////////////////////
+[function tm_findrank] //0 nepritel, 1 verejnost, 2 obcan, 3 starosta, 4 gm
+var(tm_rank,1) //default je verejnost
+if (<more1>==<args>) //more1 na kameni - uid starosty
+ var(tm_rank,3)
+else
+ safe finduid(<tag(citizenscont)>).contents(tm_findrankloop(<args>)) 
+ if(<var(tm_rank)>==1) //neni to obcan (to by byla 2)
+  safe finduid(<tag(enemyscont)>).contents(tm_findrankloop(<args>)) 
+ endif
+endif
+if (finduid(<args>).isgm)
+ var(tm_rank,4) 
+endif
+return <var(tm_rank)>
+
+[function tm_findrankloop]
+if (<link>==<args>) //krystaly jsou linknuty na playera
+ var(tm_rank,<cont.more1>) //2 - obcan, 0 - nepritel
+ if(<var(tm_rank)>==0) //nasel ho v contu s neprateli
+  if(strcmpi(<name>,<finduid(<argv(0)>).name>)) //neni to totez jmeno ! (maska, mystik morf atd)
+   var(tm_rank,1) //stale je to verejnost
+  endif
+ endif
+endif
+
+[function tm_namerank]
+doswitch <args>
+ var(namestr,Nepritel)
+ var(namestr,Verejnost)
+ var(namestr,Obcan)
+ var(namestr,Starosta)
+ var(namestr,GM)
+enddo
+return"<var(namestr)>"
+
+[function tm_section]//y,index,rank,text
+if (<var(tm_rank)> >= <argv(2)>)
+ texta(<tag(sloupec_x[1])>+<d_def_odsazeni>,argv(0),955,<argv(3)>)//ban
+ button(<tag(sloupec_x[0])>,argv(0),4005,4007,1,0,argv(1))
+ return <eval argv(0)+d_def_radek_vyska>
+endif
+return <argv(0)>
+
+[DIALOG d_town_menu]
+30,0
+tm_findrank(<src>)
+tm_namerank(<var(tm_rank)>)
+//src.smsg tm_rank:<tm_rank> 
+argo.settext(100,"Mesto <tag(jmeno_mesta)>")
+
+doswitch var(tm_rank)
+ argo.tag(radku,0) //0 nepritel
+ argo.tag(radku,<qval(<src.tag(candidate_<tag(jmeno_mesta)>)>,2,2)>) //1 verejnost
+ argo.tag(radku,11)//2 obcan
+ argo.tag(radku,20)//3 starosta 
+ argo.tag(radku,23)//4 gm 
+enddo
+if(<src.tag(general)>)&&(<eval argo.tag(radku)> < 10) //dostane jeste to ovladani + rentalinfo
+  argo.tag(radku,<eval (argo.tag(radku)+2)>)
+endif
+argo.tag(sirka,280) 
+argo.tag(vyska,<eval 100+((3+<argo.tag(radku)>)*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//starosta
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//starosta
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname
+arg(vedleX,<argo.tag(sloupec_x[1])>+<d_def_odsazeni>)
+argo.dialog_pozadi(114+d_def_skvira,2)//dane
+argo.dialog_pozadi(114+d_def_skvira+d_def_radek_vyska,1)//pokladna 
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>+1,28)//tlacitka
+argo.dialog_zpruhledni
+argo.gumppic(<argo.dialog_textpos(0,0,1)>,100)
+argo.htmlgump(lastxpos+20,lastypos+20,100,60,100,0,0)//
+argo.texta(vedleX,argo.tag(obj_y[0]),0481,Starosta:)
+argo.texta(vedleX,argo.tag(obj_y[1]),955,<finduid(more1).getrealnamebyrealm(<region.tag.realm>)>)
+argo.texta(vedleX,argo.tag(obj_y[2]),0481,Tvuj status:)
+argo.texta(vedleX,argo.tag(obj_y[3]),955,<qval(<src.tag(general)>,"<var(namestr)> a general",<var(namestr)>)>)  
+argo.texta(<argo.dialog_textpos(4,0)>,0481,Dane: <tag(dane)> gp)
+argo.texta(<argo.dialog_textpos(5,0)>,0481,Stav pokladny: <tag(pokladna)> gp)
+//argo.texta(lastxpos,lastypos+d_def_radek_vyska,0481,Stav pokladny: <tag(pokladna)> gp)
+
+//arg(ypos,<argo.tag(obj_y[6])>)
+arg(ypos,lastypos+d_def_radek_vyska)
+arg(ypos,<argo.tm_section(<ypos>,1,1,Seznam obcanu)>) 
+arg(ypos,<argo.tm_section(<ypos>,2,1,Blacklist)>) 
+arg(ypos,<argo.tm_section(<ypos>,24,1,Nastavit home)>) 
+arg(ypos,<argo.tm_section(<ypos>,21,3,Hraci navrzeni na Blacklist)>) 
+if(<src.tag(general)>) //genreal ano
+ arg(ypos,<argo.tm_section(<ypos>,22,1,Najemni informace)>) 
+else //starosta a GM vzdy
+ arg(ypos,<argo.tm_section(<ypos>,22,3,Najemni informace)>) 
+endif
+if(<src.tag(candidate_<tag(jmeno_mesta)>)>)
+ arg(ypos,<argo.tm_section(<ypos>,3,1,Zrusit svou kandidaturu)>) 
+endif
+arg(ypos,<argo.tm_section(<ypos>,3,2,Volby starosty)>) 
+arg(ypos,<argo.tm_section(<ypos>,4,2,Zaplatit dane)>) 
+arg(ypos,<argo.tm_section(<ypos>,5,2,<qval(<src.tag(candidatemajor_<tag(jmeno_mesta)>)>,Zrusit svou kandidaturu,Kandidovat na starostu)>)>)
+arg(ypos,<argo.tm_section(<ypos>,6,2,Stav platby dani)>)
+arg(ypos,<argo.tm_section(<ypos>,7,2,Hlasovat proti vyhosteni obcana)>) 
+arg(ypos,<argo.tm_section(<ypos>,8,2,Navrhnout obcana mesta)>) 
+arg(ypos,<argo.tm_section(<ypos>,9,2,Hlasovat proti prijeti obcana)>) 
+//arg(ypos,<argo.tm_section(<ypos>,10,2,Hlasovat pro starostu)>) 
+arg(ypos,<argo.tm_section(<ypos>,23,2,Novinky)>) 
+arg(ypos,<argo.tm_section(<ypos>,11,3,Navrhnout obcana na vyhosteni)>) 
+arg(ypos,<argo.tm_section(<ypos>,12,3,Pridat hrace na blacklist)>) 
+arg(ypos,<argo.tm_section(<ypos>,14,3,Nastavit dane)>) 
+arg(ypos,<argo.tm_section(<ypos>,15,3,<qval(<src.isgm>,Zbavit starostu uradu,Slozit funkci)>)>) 
+arg(ypos,<argo.tm_section(<ypos>,16,4,Zbavit obcanstvi)>)
+arg(ypos,<argo.tm_section(<ypos>,17,4,Udelat starostou)>)
+arg(ypos,<argo.tm_section(<ypos>,18,4,Udelat obcanem)>) 
+arg(ypos,<argo.tm_section(<ypos>,25,2,Vzdat se obcanstvi)>)
+if ((<src.tag(starosta)>)&&(!strcmpi(<src.tag(mesto)>,<tag(jmeno_mesta)>)))||(<src.tag(general)>)||(<src.isgm>)
+ arg(ypos,<argo.tm_section(<ypos>,13,1,Pokyny strazim)>)  
+ if(!<src.tag(general)>)||((!strcmpi(<src.tag(mesto)>,<tag(jmeno_mesta)>))&&(<src.tag(starosta)>))||(src.isgm) //vsichni krome generala, je li to nahodou general a zaroven starosta toho mesta, pak to tam mit bude ! 
+  arg(ypos,<argo.tm_section(<ypos>,19,1,Rozmistit straze)>) 
+  arg(ypos,<argo.tm_section(<ypos>,20,1,Najimat straze)>)  
+ endif
+endif
+
+[function f_star_checkrightsmes]
+if (f_star_checkrights(<args>))
+ return 1
+else
+ src.redmessage(Nemas na to pravo.)
+ return 0
+endif
+
+[function f_star_checkrights]
+tm_findrank(<src>)
+if (<var(tm_rank)> >= <args>)
+ return 1
+else
+ return 0
+endif
+
+[DIALOG d_tmseznam]
+100,100  
+if(<argv(1)>==2)||(<argv(1)>==21) //navrh na bl - je potreba sirsi menu
+ if(<argv(1)>==21) //navrzeni
+  argo.tag(sirka,650)
+ else
+  argo.tag(sirka,550)
+ endif
+else
+ argo.tag(sirka,260)
+endif
+if(<argv(1)>==23) //novinky
+ argo.tag(vyska,<eval (5*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+else
+ argo.tag(vyska,300)
+endif
+argo.tag(cislo,<argv(1)>) //kterym tlacitkem seznam volam - lisi se funkcnost
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29)
+argo.dialog_zpruhledni
+
+if(<argv(1)>==6) //stav platby dani
+ argo.settext(10,Dane zaplatili: )
+else
+ argo.settext(10,<name> : <rescount>)
+endif
+if(<argv(1)>==23) //novinky
+ argo.settext(10,Novinky)
+else
+ argo.settext(10,<name> : <rescount>)
+endif
+argo.text(<argo.dialog_textpos(0,0)>,0481,10)
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)
+argo.tag(firsti,<eval argv(0)>)
+if (argo.tag(firsti))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval argo.tag(firsti)+argo.tag(radku)>)
+if (imax>rescount)
+ arg(imax,<rescount>)
+endif
+if (rescount>imax)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+endif
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,<argo.tag(firsti)>)
+while (index<imax)
+  //seznam obcanu s cudliky (volby starosty, vyhosteni, prijeti, navrhy na vyhosteni a zbaveni obcanstvi, navrzeni na bl.
+  //a take novinky
+ if(<argv(1)>==3)||(<argv(1)>==7)||(<argv(1)>==9)||(<argv(1)>==11)||(<argv(1)>==16)||(<argv(1)>==21)||(<argv(1)>==23)
+  argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,(index)+100)
+ else
+  if(<argv(1)>==2) //blacklist
+   if(<src.tag(starosta)>)||(<src.isgm>)
+    argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,(index)+100)
+   endif
+  endif
+ endif 
+ argo.textA(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,2301,"<findcont(index).name>") 
+  //pro kandidaty na staorstu, vyhosteni a na prijeti - pocet hlasu
+ if(<argv(1)>==3)||(<argv(1)>==7)||(<argv(1)>==9) 
+  argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),ypos,2301,"<findcont(index).more1l>")
+ endif
+ if(<argv(1)>==6) //stav platby dani  
+  if(<findcont(index).tag(zaplatil_dan)>)                                      
+   argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+115),ypos,<qval(<findcont(index).tag(zaplatil_dan)>,2301,1642)>,<qval(<findcont(index).tag(zaplatil_dan)>,"Ano - <findcont(index).tag(kolik_dal)>gp","Ne")>) //ano - grey, ne - red
+  else //jine odsazeni - jen zkopirovano, uz jsem se s upravama nesral :) 
+   if(<findcont(index).link.tag(starosta)>)
+    argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+30),ypos,2301,"Neplati") //ano - grey, ne - red      
+   else
+    argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+30),ypos,<qval(<findcont(index).tag(zaplatil_dan)>,2301,1642)>,<qval(<findcont(index).tag(zaplatil_dan)>,"Ano - <findcont(index).tag(kolik_dal)>gp","Ne")>) //ano - grey, ne - red  
+   endif
+  endif
+  if(findcont(index).link==src) //automaticke nastaveni platby
+   argo.button(<argo.tag(sloupec_x[0])>,ypos,<qval(<findcont(index).tag(platba_pausal)>,00d3,00d2)>,<qval(<findcont(index).tag(platba_pausal)>,00d2,00d3)>,1,0,(index)+10000)
+  endif
+ endif
+ if(<argv(1)>==2)||(<argv(1)>==21) //navrh na blacklist a blacklist
+  if(<argv(1)>==21) //navrzeni
+   argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+520),ypos,2301,"Navrhl: <findcont(index).tag(navrhovac)>")
+   argo.button((<argo.tag(sirka)>-<d_def_okraj>)-33,ypos,0fb1,0fb3,1,0,(index)+1000) //zamitnuto
+  endif
+  argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+360),ypos,2301,"Duvod: <findcont(index).tag(duvod)>")
+ endif
+ if(<argv(1)>==23)&&((<src.tag(starosta)>)||(src.isgm))
+  argo.button((<argo.tag(sirka)>-<d_def_okraj>)-33,ypos,0fb1,0fb3,1,0,(index)+1000) //rusit novinku   
+ endif
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+if(<argv(1)>==23)&&((<src.tag(starosta)>)||(src.isgm))
+ argo.button(argo.tag(sloupec_x[0]),argo.tag(vyska)-(d_def_okraj+d_def_radek_vyska),4005,4007,1,0,3)//nova novinka
+ argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,argo.tag(vyska)-(d_def_okraj+d_def_radek_vyska),955,"Nova novinka")
+endif
+
+[DIALOG d_tmseznam BUTTON]
+on=0
+link.dialog d_town_menu
+on=1
+dialog(d_tmseznam,(<argo.tag(firsti)>-<argo.tag(radku)>),<argo.tag(cislo)>)
+on=2
+dialog(d_tmseznam,(<argo.tag(firsti)>+<argo.tag(radku)>),<argo.tag(cislo)>)
+on=3 //nova novinka
+if(<rescount>==3) 
+ src.redmessage(Nejdrive odstran nekterou ze starych novinek) 
+ dialog(d_tmseznam,0,23) 
+else
+ input("Zapis novinku (bez carek ve vete):",novinkain,"")
+ return 1
+endif
+
+on=@anybutton
+//kermel.smsg(cislo: <argn>)
+if(<argn> < 10000)
+ if(<argn> > 999) //zamitani navrhu na bl
+  arg(radek,<argn>-1000)
+ else
+  arg(radek,<argn>-100)
+ endif
+endif
+//src.smsg( tlacitko <argn>, cislo: <argo.tag(cislo)>)
+if(<argo.tag(cislo)>==2) //zbavovani mista na blacklistu
+ if (link.f_star_checkrightsmes(3))
+  src.accmsg(Odstranil z blacklistu hrace <findcont(radek).link.name> ve meste <link.tag(jmeno_mesta)>)
+  findcont(radek).link.delayedmessage(<findcont(radek).name> byl odstranen z cerne listiny ve meste <link.tag(jmeno_mesta)>)
+  //if(!strcmpi(<findcont(radek).link.name>,<findcont(radek).name>)) //nenula pokud je to stejne jmeno
+   findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>,#-1) //jedno jeho jmeno z blacklistu zmizelo
+   if(<findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>)>==0) //uz zadne na bl nema
+    findcont(radek).link.tag.remove(bl_town_<link.tag(jmeno_mesta)>)
+    findcont(radek).link.tag.remove(blacklisted_<link.tag(jmeno_mesta)>)
+   endif
+  //endif //pokud to bylo jine jmeno (maska atp) zustavaji tagy
+  findcont(radek).remove
+  dialog(d_tmseznam,0,2)
+ endif
+endif
+if(<argo.tag(cislo)>==3) //hlasovani ve volbach starosty
+ if (link.f_star_checkrightsmes(2))
+  if(<src.tag(hlasoval_ve_volbach)>)
+   src.sysmessage(V techto volbach uz jsi jednou hlasoval)
+  else
+   var(hlasoval,0)
+   finduid(<link.tag(citizenscont)>).contents(hlasoval_pro(<findcont(radek).link>,1))
+   //src.sysmessage(hlasoval: <var(hlasoval)>)
+   if(<var(hlasoval)>==2)
+    src.sysmessage(Sam pro sebe hlasovat nemuzes)
+    var(hlasoval,"")
+   else
+    src.classmessage(Hlas zaznamenan)
+    if(<src.isgm>)
+     src.accmsg("Hlasoval pro zvoleni uid=<findcont(radek).link> (<findcont(radek).link.name>) starostou mesta uid=<link> (<link.tag(jmeno_mesta)>)")
+    else
+     src.tag(hlasoval_ve_volbach,1) //jen hracum
+    endif
+    findcont(radek).more1=<eval (<findcont(radek).more1>+1)>    
+    finduid(<link.tag(citizenscont)>).contents(hlas_pro(<findcont(radek).link>,1)) //hlasoval !
+    var(hlasoval,"")
+   endif  
+  endif
+ endif
+endif
+if(<argo.tag(cislo)>==6) //dane
+ //kermel.smsg(dane)
+ if(<argn> >= 10000)
+  //kermel.smsg(je to ten cudl, <argn>)
+  arg(radek,<argn>-10000)
+  if(<findcont(radek).tag(platba_pausal)>) //autoplaceni dani
+   findcont(radek).tag.remove(platba_pausal)
+   findcont(radek).link.sysmessage(Automaticka platba dani zrusena)
+  else //nastaveni autoplaceni dani  
+   findcont(radek).tag(platba_pausal,1)
+   findcont(radek).link.sysmessage(Automaticka platba dani nastavena)
+   if(!<findcont(radek).tag(zaplatil_dan)>)&&(!<findcont(radek).link.tag(starosta)>)
+    if (<findcont(radek).link.pay(<eval (<link.tag(dane)>)>)>) 
+     link.tag(pokladna,#+<link.tag(dane)>)
+     findcont(radek).link.sysmessage(Dane zaplaceny) 
+     findcont(radek).link.tag(zaplatil_dan,1)
+     findcont(radek).tag(zaplatil_dan,1)
+     findcont(radek).tag(kolik_dal,<link.tag(dane)>)    
+    else 
+     findcont(radek).link.sysmessage(Nemas dost penez na zpalaceni dani) 
+    endif
+   endif 
+  endif
+  dialog(d_tmseznam,0,6)
+ endif
+endif
+if(<argo.tag(cislo)>==7) //hlasovani o vyhosteni
+ if (link.f_star_checkrightsmes(2))
+  var(hlasoval,0)
+  finduid(<link.tag(citizenscont)>).contents(hlasoval_pro(<findcont(radek).link>,0))
+  //src.sysmessage(hlasoval: <var(hlasoval)>)
+  if(<var(hlasoval)>==1)
+   src.sysmessage(Pro nevyhosteni <findcont(radek).name> uz jsi hlasoval)   
+   var(hlasoval,"")
+  else
+   if(<var(hlasoval)>==2)
+    src.sysmessage(Pro sebe hlasovat nemuzes)
+    var(hlasoval,"")
+   else
+    src.classmessage(Hlas zaznamenan)
+    if(<src.isgm>)
+     src.accmsg("Hlasoval proti vyhosteni uid=<findcont(radek).link> (<findcont(radek).link.name>) z mesta uid=<link> (<link.tag(jmeno_mesta)>)")
+    endif
+    findcont(radek).more1=<eval (<findcont(radek).more1>+1)>        
+    finduid(<link.tag(citizenscont)>).contents(hlas_pro(<findcont(radek).link>,0)) //hlasoval !
+    var(hlasoval,"")
+    arg(obcanu,<finduid(<link.tag(citizenscont)>).rescount>)
+    arg(potreba_je,<eval (<arg(obcanu)>/2)>)
+    if(<findcont(radek).more1> > <arg(potreba_je)>) //ukoncime hned, polovina hlasovala proti vyhosteni
+     findcont(radek).secti_hlasy(<more1>) //pro pripad presazeni potrebneho poctu hlasu
+    endif
+   endif
+  endif
+ endif
+endif
+if(<argo.tag(cislo)>==9) //hlasovani o (ne)prijeti
+ if (link.f_star_checkrightsmes(2))
+  var(hlasoval,0)
+  finduid(<link.tag(citizenscont)>).contents(hlasoval_pro(<findcont(radek).link>,1))
+  //src.sysmessage(hlasoval: <var(hlasoval)>)
+  if(<var(hlasoval)>==1)
+   src.sysmessage(Proti prijeti <findcont(radek).name> uz jsi hlasoval)   
+   var(hlasoval,"")
+  else
+   if(<var(hlasoval)>==2)
+    src.sysmessage(Sam pro sebe hlasovat nemuzes)
+    var(hlasoval,"")
+   else
+    src.classmessage(Hlas zaznamenan)
+    if(<src.isgm>)
+     src.accmsg("Hlasoval proti prijeti uid=<findcont(radek).link> (<findcont(radek).link.name>) do mesta uid=<link> (<link.tag(jmeno_mesta)>)")
+    endif
+    findcont(radek).more1=<eval (<findcont(radek).more1>+1)>    
+    finduid(<link.tag(citizenscont)>).contents(hlas_pro(<findcont(radek).link>,1)) //hlasoval !
+    var(hlasoval,"")
+    arg(obcanu,<finduid(<link.tag(citizenscont)>).rescount>)
+    arg(potreba_je,<eval (<arg(obcanu)>/2)>)
+    if(<findcont(radek).more1> > <arg(potreba_je)>) //ukoncime hned - pocet zapornych hlasu presahl pul
+     findcont(radek).secti_hlasy(<more1>) // 9 - pytel vyhosteni, 10 - pytel prijeti
+    endif    
+   endif
+  endif
+ endif
+endif
+if(<argo.tag(cislo)>==11) //Navrzeni na vyhosteni
+ if (link.f_star_checkrightsmes(3))
+  say()
+  if(<findcont(radek).tag(nextTime)> > <serv.time>)
+    src.sysmessage(<findcont(radek).link.name> je v ochrane lhute jednoho tydne.)
+    return 1
+  endif
+  if(<findcont(radek).link.tag(candidateout)>)
+   src.sysmessage(<findcont(radek).link.name> jiz byl navrzen na vyhosteni)
+  else
+   if(<findcont(radek).link.tag(starosta)>)
+    src.sysmessage(Starostu nelze navrhnout na vyhosteni)
+   else
+    src.accmsg(Navrhl hrace <findcont(radek).link.name> na vyhosteni z mesta <link.tag(jmeno_mesta)>)
+    src.sysmessage(<findcont(radek).link.name> byl navrzen na vyhosteni)
+    findcont(radek).link.delayedredmessage(Byl jsi navrzen na vyhosteni z mesta <link.tag(jmeno_mesta)>, brzy se dozvis verdikt)
+    src.newitemsafe(i_town_crystal)
+    lastnew.name=<findcont(radek).name>
+    lastnew.cont=<link.tag(candidatesoutcont)> 
+    lastnew.more1=0 //prvni hlas
+    lastnew.link=<findcont(radek).link> //linknout na playera 
+    lastnew.update   
+    lastnew.link.tag(candidateout,1)
+    //finduid(<link.tag(citizenscont)>).contents(hlas_pro(<findcont(radek).link>),0) //hlasoval !
+    finduid(<link.tag(citizenscont)>).contents(novy_kandidat(0)) //0 - out
+    //kermel.sysmessage(kdo: <lastnew.tag(kdo)>, kdodec: <eval (<lastnew.tag(kdo)>)> , kolik: <link.tag(candidatesoutcont).rescount>)
+    lastnew.tag(time,<serv.time>) //cas zahajeni    
+    dialog(d_tmseznam,0,11)
+   endif
+  endif
+ endif
+endif
+if(<argo.tag(cislo)>==16) //zbavovani obcanstvi 
+ if (link.f_star_checkrightsmes(4))
+  if(<findcont(radek).link.tag(candidatemajor_<link.tag(jmeno_mesta)>)>)
+   finduid(<link.tag(candidatesmajorcont)>).contents(zrus_kandidaturu_major(<findcont(radek).link>)) //koho   
+  endif  
+  if(<findcont(radek).link.tag(candidateout)>)
+   findcont(radek).link.tag.remove(candidateout)
+   contents(zrus_tag(<findcont(radek).link>,0)) //zrusit hlasovani u vsech obcanu, 0 - vyhostovani
+   finduid(<link.tag(candidatesoutcont)>).contents(smaz_krystal(<findcont(radek).link>)) //odstranit krystal 
+  endif
+  src.accmsg("Zbavil uid=<findcont(radek).link> (<findcont(radek).link.name>) obcanskych prav ve meste uid=<link> (<link.tag(jmeno_mesta)>)")
+  findcont(radek).link.delayedredmessage(Byl jsi zbaven obcanskych prav ve meste <link.tag(jmeno_mesta)>)
+  findcont(radek).link.tag.remove(obcan)
+  if(<findcont(radek).link.tag(starosta)>)
+   link.vyhod_starostu //tento link - townstone
+  endif
+  findcont(radek).link.tag.remove(mesto)
+  findcont(radek).link.tag.remove(zaplatil_dan)
+  findcont(radek).remove
+  dialog(d_tmseznam,0,16)  
+ endif
+endif
+if(<argo.tag(cislo)>==21) //prijimani navrhu na blacklist
+ if(link.f_star_checkrightsmes(3))
+  if(argn > 999) //zamitani
+   src.accmsg(Zamitl blacklistnuti hrace <findcont(radek).link.name> ve meste <link.tag(jmeno_mesta)>)
+   src.classmessage(Zamitl jsi navrzeni hrace <findcont(radek).name> na cernou listinu)
+   findcont(radek).remove
+  else
+   link.tm_findrank(<findcont(radek).link>)//rank targetnuteho
+   if(<var(tm_rank)>==0)
+     src.sysmessage(<findcont(radek).name> jiz na blacklistu je) 
+     findcont(radek).remove
+   else
+    findcont(radek).tag.remove(navrhovac)
+    src.accmsg(Prijal navrh na blacklistnuti hrace <findcont(radek).link.name> ve meste <link.tag(jmeno_mesta)>)
+    src.classmessage(<findcont(radek).name> uspesne pridan na cernou listinu)
+    findcont(radek).link.delayedredmessage(Byl jsi dan na cernou listinu mesta <link.tag(jmeno_mesta)>) 
+    if(<findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>)>) //uz je bl. s jinym jmenem
+     findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>,#+1)
+    else
+     findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>,1) //poprve
+     findcont(radek).link.tag(bl_town_<link.tag(jmeno_mesta)>,<link>)  
+    endif
+    findcont(radek).cont=<link.tag(enemyscont)>
+   endif
+  endif
+  dialog(d_tmseznam,0,21)
+ endif
+endif
+if(<argo.tag(cislo)>==23) //Novinky
+ if(argn > 999) //mazani
+  src.classmessage(Smazal jsi novinku cislo <radek+1>)
+  findcont(radek).remove 
+ else //cist novinku
+  findcont(radek).dialog(d_news_read,0,0,<radek>+1)  
+ endif
+ dialog(d_tmseznam,0,23)  
+endif
+
+[function hlas_pro] //argv(0) - pro koho; argv(1) - 0 proti, 1 pro
+arg(protidec,<eval (<argv(0)>)>)
+//kermel.sysmessage(pro: <argv(0)>, src: <src>, link: <link>)
+if(<argv(1)>) //pro
+ if(<link>==<src>)  
+  tag(hlas_pro_<arg(protidec)>,1)
+ endif
+else //proti
+ if(<link>==<src>)
+  tag(hlas_proti_<arg(protidec)>,1)
+ endif
+endif
+
+[function hlasoval_pro] //argv(0) - pro koho; argv(1) - 0 proti, 1 pro
+arg(prodec,<eval (<argv(0)>)>)
+//src.sysmessage(prodec: <arg(prodec)>)
+if(<argv(1)>) //pro
+ if(<link>==<src>)
+  if !(strcmpi(<src>,<argv(0)>))   
+   var(hlasoval,2)
+   return 1
+  endif
+  if(<tag(hlas_pro[<arg(prodec)>])>)
+   var(hlasoval,1)
+   return 1
+  else
+   var(hlasoval,0)
+   return 1
+  endif
+ endif
+else //proti
+ //src.sysmessage(proti: <argv(0)>, kdo <src>, link: <link>)
+ if !(strcmpi(<link>,<src>))
+  //src.sysmessage(<link>==prej <src>)
+  if !(strcmpi(<src>,<argv(0)>))   
+   var(hlasoval,2)
+   return 1
+  endif  
+  if(<tag(hlas_proti[<arg(prodec)>])>)
+   var(hlasoval,1)
+   return 1
+  else
+   var(hlasoval,0)
+   return 1
+  endif
+ endif
+endif
+ 
+[DIALOG d_town_menu BUTTON]
+on=1//seznam obcanu
+if (f_star_checkrightsmes(1))
+ tag(citizenscont).dialog(d_tmseznam,0,1)
+endif
+
+on=2//blacklist
+if (f_star_checkrightsmes(1))
+ tag(enemyscont).dialog(d_tmseznam,0,2)
+endif
+
+on=3//zrusit kandidaturu / stav voleb
+if(<src.tag(candidate_<tag(jmeno_mesta)>)>)
+ potvrdit(finduid(<tag(candidatesincont)>).contents(zrus_kandidaturu(<src>)),"Opravdu chces zrusit svou kandidaturu na obcanstvi?")
+ return 1
+endif 
+if (f_star_checkrightsmes(2)) //volby starosty 
+ tag(candidatesmajorcont).dialog(d_tmseznam,0,3)
+endif
+
+on=4//zaplatit dane
+if (f_star_checkrightsmes(2))
+ potvrdit(zaplatit_dan,"Prejes si zaplatit dan svemu mestu?") 
+endif
+
+on=5//kandidovat ve volbach
+if (f_star_checkrightsmes(2))
+ if(<src.tag(candidatemajor_<tag(jmeno_mesta)>)>)
+  potvrdit(finduid(<tag(candidatesmajorcont)>).contents(zrus_kandidaturu_major(<src>)),"Opravdu chces zrusit svou kandidaturu na starostu?")
+ else
+  potvrdit(kandidovat,"Opravdu chces kandidovat na starostu")
+ endif
+endif
+
+on=6//stav platby dani
+if (f_star_checkrightsmes(2))
+ tag(citizenscont).dialog(d_tmseznam,0,6)
+endif
+
+on=7//hlasovat proti obcanovi
+if (f_star_checkrightsmes(2))
+ tag(candidatesoutcont).dialog(d_tmseznam,0,7)
+endif
+
+on=8//navrhnout obcana mesta
+if (f_star_checkrightsmes(2))
+ arg(myNextTimeAdept,<finduid(<tag(citizenscont)>).contents(muj_kamen(<src>))>)  
+ if(<eval(<myNextTimeAdept>)> < <serv.time>)
+   src.newitemsafe(i_target_town)
+   lastnew.link=<uid>
+   lastnew.more1=8
+   lastnew.equip
+ else
+   src.sysmessage("Navrhnout na obcana muzes jen jednou tydne.")
+ endif
+endif
+
+on=9//hlasovat proti prijeti obcana
+if (f_star_checkrightsmes(2))
+ tag(candidatesincont).dialog(d_tmseznam,0,9)
+endif
+
+on=11//navrhnout obcana na vyhosteni
+if (f_star_checkrightsmes(3))
+tag(citizenscont).dialog(d_tmseznam,0,11)
+endif                                                    
+
+on=12//pridat hrace na blacklist
+if (f_star_checkrightsmes(3))
+ src.newitemsafe(i_target_town)
+ lastnew.link=<uid>
+ lastnew.more1=12
+ lastnew.equip
+endif
+
+on=13//pokyny strazim
+if (f_star_checkrightsmes(1))
+ dialog d_town_captain
+endif
+
+on=14//nastavit dane
+if (f_star_checkrightsmes(3))
+ input("Jake maji byt dane?",taxset,<tag(dane)>)  
+endif
+
+on=15//zbavit starostu uradu / slozit funkci
+if (f_star_checkrightsmes(3))
+ if(<src.isgm>)
+  potvrdit(vyhod_starostu,"Opravdu chces odstranit starostu?")  
+ else
+  potvrdit(rezignovat,"Opravdu chces rezignovat?")
+ endif
+endif
+
+on=16//zbavit obcanstvi
+if (f_star_checkrightsmes(4))
+ tag(citizenscont).dialog(d_tmseznam,0,16)
+endif
+
+on=17//Udelat starostou
+if (f_star_checkrightsmes(4))
+ src.newitemsafe(i_target_town)
+ lastnew.link=<uid> //townstone
+ lastnew.more1=17
+ lastnew.equip
+endif
+
+on=18//Udelat obcanem
+if (f_star_checkrightsmes(4))
+ src.newitemsafe(i_target_town)
+ lastnew.link=<uid> //townstone
+ lastnew.more1=18
+ lastnew.equip
+endif
+
+on=19//Rozmistit straze
+if (f_star_checkrightsmes(1))
+ dialog d_town_major
+endif
+
+on=20//Najimat straze
+if (f_star_checkrightsmes(1))
+ dialog d_town_recruiter
+endif
+
+on=21//Navrzeni na blacklist
+if (f_star_checkrightsmes(3))
+ tag(suggestedenemyscont).dialog(d_tmseznam,0,21)
+endif
+
+on=22//Najemni informace
+if (f_star_checkrightsmes(1))
+ src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+endif
+
+on=23//Novinky
+if (f_nazg_checkrightsmes(1))
+ tag(newscont).dialog(d_tmseznam,0,23)
+endif
+
+on=24//zmenit home
+if (f_star_checkrightsmes(1))
+ potvrdit(zmenit_home,"Prejes si zmenit domovske mesto ? (100000gp, pro obcany zdarma)") 
+endif
+
+on=25//vzdat se obcanstvi
+if (f_star_checkrightsmes(2))
+  potvrdit(finduid(<tag(citizenscont)>).contents(zrus_obcanstvi(<src>)),"Opravdu se chces vzdat obcanstvi v tomto meste?")
+endif
+
+[function zrus_obcanstvi]
+if (<link> == <argv(0)>)
+  if (<link.tag(candidatemajor_<link.tag(mesto)>)>)
+    link.tag.remove(candidatemajor_<link.tag(mesto)>)
+    finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,1)) //zrusit hlasovani u vsech obcanu, 1- kandidatury 
+    finduid(<cont.link.tag(candidatesmajorcont)>).contents(smaz_krystal(<link>))
+  endif
+  if (<link.tag(candidateout)>)
+    link.tag.remove(candidateout)
+    finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,0)) //zrusit hlasovani u vsech obcanu, 0- vyhostovani
+    finduid(<cont.link.tag(candidatesoutcont)>).contents(smaz_krystal(<link>))
+  endif
+  link.tag.remove(obcan)
+  if (<link.tag(starosta)>)
+    link.tag.remove(starosta)
+    link.tag.remove(townstone)
+    cont.link.tag.remove(funkce_major) //muze kandidovat hned dalsi
+  endif
+  link.tag.remove(mesto)
+  finduid(<cont.link.tag(citizenscont)>).contents(smaz_krystal(<link>))
+endif
+
+[function zkontroluj_dan]
+arg(mindane,<finduid(<tag(citizenscont)>).rescount>*1500) // minimalni dan
+if(arg(mindane) > tag(dane))
+  taxset(<arg(mindane)>)
+  src.redmessage("Dan je mensi nez povolena minimalni dan. Navysuji dan na <arg(mindane)>.")
+endif                       
+
+[function taxset]
+arg(obcanu,<finduid(<tag(citizenscont)>).rescount>) // pocet obcanu
+if(<fixnumber(<args>)> < <arg(obcanu)>*1500) // minimalni dan 1500 * pocet clenu
+  src.sysmessage("Minimalni dan musi byt <eval(<arg(obcanu)>*1500)> gp.")
+  return 1
+endif
+if(<fixnumber(<args>)> > 500000) // maximalni dan 500K
+  src.sysmessage("Nastavit dan muzes maximalne na 500K")
+  return 1
+endif
+if(tag(daneNextUpdate) < <serv.time>)
+  tag(daneNextUpdate,<serv.time>+6048000) // jeden tyden
+  tag(dane,<fixnumber(<args>)>)                                                                         
+  finduid(<tag(citizenscont)>).contents(link.delayedredmessage(Nove dane: <tag(dane)>))
+else
+  src.redmessage("Upravu dan muzes provest jen jednou tydne.")
+endif 
+
+
+[function zaplatit_dan]
+if(<src.tag(starosta)>)
+ src.sysmessage(Jako starosta se tesis privilegiu neplatit dane)
+ return 1
+endif
+if(<src.tag(zaplatil_dan)>)
+ src.sysmessage(Tve dane uz byly zaplaceny)
+ return 1
+endif
+if (<src.pay(<eval (<tag(dane)>)>)>) 
+  finduid(<tag(citizenscont)>).contents(zaplatil_dan) 
+  tag(pokladna,#+<tag(dane)>) 
+  src.classmessage(Dan zaplacena)
+  tag(citizenscont).dialog(d_tmseznam,0,6)  
+endif
+
+
+[function zmenit_home]
+if (src.tag(realm)!=1)
+ src.sysmessage("Takove jako ty zde nechceme !")
+elseif (f_star_checkrights(2))
+ src.sysmessage(Jako obcan se tesis privilegiu neplatit za zmenu)
+ src.home=<region.p>
+else
+ if (<src.pay(100000)>) 
+  tag(pokladna,<eval <tag(pokladna)>+100000>)
+  src.home=<region.p>
+  src.classmessage("Domovske mesto zmeneno")
+ endif
+endif
+
+
+[function zaplatil_dan] //argv(0) - kdo
+if(<link>==<src>)
+ src.tag(zaplatil_dan,1)
+ tag(kolik_dal,<cont.link.tag(dane)>) //kolik byly dane kdyz to platil - proti vychcankum, bude to videt
+ tag(zaplatil_dan,1)
+endif
+
+[function zrus_tag] //argv(0) - koho, argv(1) - 0 -out, 1 - in a volby starosty
+arg(protidec,<eval (<argv(0)>)>)
+if(<argv(1)>)
+ tag.remove(hlas_pro[<arg(protidec)>])
+else
+ tag.remove(hlas_proti[<arg(protidec)>]) 
+endif
+
+[function smaz_krystal] //argv(0) - koho
+if (<link>==<argv(0)>) 
+ remove 
+endif
+
+[function zrus_kandidaturu] //argv(0) - kdo rusi
+if(<link>==<argv(0)>)
+ link.tag.remove(candidate_<topobj.link.tag(jmeno_mesta)>)
+ link.tag.remove(candidatein)
+ finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,1)) //zrusit hlasovani u vsech obcanu, 1- kandidatury
+ link.redmessage(Kandidatura zrusena)
+ remove
+endif
+
+[function zrus_kandidaturu_major] //argv(0) - kdo rusi
+if(<link>==<argv(0)>) 
+ link.tag.remove(candidatemajor_<link.tag(mesto)>)
+ finduid(<cont.link.tag(citizenscont)>).contents(zrus_tag(<link>,1)) //zrusit hlasovani u vsech obcanu, 1- kandidatury
+ link.redmessage(Kandidatura zrusena)
+ remove
+endif
+
+[function kandidovat] //uid - townstone, src - player
+//src.sysmessage(uid: <uid>, <name>)
+if(<src.isgm>)
+ src.sysmessage(GM na starostu nekandiduji)
+ return 1
+endif
+//if(<src.tag(candidateout)>)
+// src.sysmessage(Jsi adeptem na vyhozeni z mesta, nemuzes kandidovat na starostu)
+// return 1
+//endif
+//if(<src.tag(starosta)>)
+// src.sysmessage(Starostou uz jsi)
+// return 1
+//endif
+if(<src.tag(candidatemajor_<tag(jmeno_mesta)>)>)
+ src.sysmessage(Kandidatem na starostu uz jsi)
+ return 1
+endif
+if(<finduid(<tag(candidatesmajorcont)>).rescount>==0) //prvni kandidat
+ if(<tag(funkce_major)>) //uz nekdo je starostou
+  arg(do_kdy,<eval (<tag(funkce_major)>+<mesic>)>)
+  if(<serv.time> < <arg(do_kdy)>) //jeste nemuze kandidovat
+   src.redmessage(Jeste neskoncilo funkcni obdobi soucasneho starosty)
+   return 1
+  endif
+ endif
+ tag(zacatek_voleb,<serv.time>)
+ finduid(<tag(citizenscont)>).contents(link.delayedmessage(Nove volby starosty zahajeny!)) 
+endif 
+src.newitemsafe(i_town_crystal)
+lastnew.cont=<tag(candidatesmajorcont)>
+lastnew.name=<src.name>
+lastnew.more1=0 //pocet hlasu   
+lastnew.link=<src> //linknout na playera
+finduid(<tag(citizenscont)>).contents(novy_kandidat(2)) //2 - starosta
+src.classmessage(Tva kandidatura na starostu mesta <tag(jmeno_mesta)> prijata.) 
+src.tag(candidatemajor_<tag(jmeno_mesta)>,1)  
+
+[function vyhod_starostu]
+if(<more1>)
+ finduid(<more1>).tag.remove(starosta)
+ finduid(<more1>).tag.remove(townstone)
+ finduid(<more1>).delayedredmessage(Byl jsi zbaven starostenskeho uradu ve meste <tag(jmeno_mesta)>)
+ src.accmsg("Zbavil uid=<more1> (<finduid(<more1>).name>) starostenskeho uradu ve meste uid=<uid> (<tag(jmeno_mesta)>)")
+ more1=0
+ tag.remove(funkce_major) //muze kandidovat hned dalsi
+else
+ src.sysmessage(Mesto nema zadneho starostu)
+endif
+
+[function rezignovat]
+src.tag.remove(starosta)
+src.tag.remove(townstone)
+src.redmessage(Slozil jsi starostensky urad ve meste <tag(jmeno_mesta)>)
+more1=0
+tag.remove(funkce_major) //muze kandidovat hned dalsi
+
+[function novy_kandidat] //argv(0) -1 - in, 0 - out, 2 - starosta
+if(<argv(0)>==0)
+ link.classmessage(Mestsky Hlasatel:)
+ link.delayedmessage(Novy adept na vyhosteni, moznost hlasovat.) 
+endif
+if(<argv(0)>==1)
+ link.classmessage(Mestsky Hlasatel:)
+ link.delayedmessage(Novy kandidat na obcana mesta, moznost hlasovat.)
+endif
+if(<argv(0)>==2)
+ link.classmessage(Mestsky Hlasatel:)
+ link.delayedmessage(Novy kandidat na starostu mesta, muzete hlasovat.)
+endif
+
+
+[itemdef i_target_town]
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+if(<more1>==8)
+ target
+ src.classmessage(Koho chces navrhnout jako obcana mesta?)
+endif
+if(<more1>==12)
+ target
+ src.classmessage(Koho chces pridat na blacklist?)
+endif
+if(<more1>==17)
+ target
+ src.classmessage(Koho chces udelat starostou?)
+endif
+if(<more1>==18)
+ target
+ src.classmessage(Koho chces udelat obcanem?)
+endif
+timer 60
+
+on=@targon_char
+link.tm_findrank(<src.targ>)//rank targetnuteho
+if(strlen(<src.tag(oldpos)>)) //pripadne navrhy pres remembera
+ src.p=<src.tag(oldpos)>
+ src.tag.remove(oldpos)
+endif
+if(<more1>==8) //navrhnuti obcana
+ if(<src.targ.tag(candidatein)>)
+  src.sysmessage(<src.targ.name> jiz je kandidatem na obcana) 
+  remove
+  return 1
+ endif
+ if(<src.targ.tag(realm)>!=1)
+  src.sysmessage(Obcanem se muze stat jen pravoplatny obcan Gondoru!)
+  remove
+  return 1
+ endif
+ if(<src.targ.tag(obcan)>)
+  src.sysmessage(<src.targ.name> jiz je obcanem mesta <src.targ.tag(mesto)>) 
+  remove
+  return 1
+ endif
+ if(<var(tm_rank)>==0)
+  src.sysmessage(<src.targ.name> je na cerne listine, nemuze byt navrzen na obcana)
+  remove
+  return 1
+ endif
+ if(<var(tm_rank)>==4)
+  src.sysmessage(Nenavrhuj Game Mastery !)
+  remove
+  return 1
+ endif
+ if(<var(tm_rank)>==1)  //bezna verejnost (tedy ne GM :) )   
+  src.newitemsafe(i_potvrzovac)
+  lastnew.link=<link> //mesto
+  lastnew.tag(navrhl,<src>)
+  lastnew.cont=<src.targ>
+  //src.targ.equip(<lastnew>)
+  remove
+  return 1
+ endif
+endif
+if(<more1>==12) //blacklistovani
+ if(<src.targ.tag(realm)>!=1)
+  src.sysmessage(Neni to Gondoran, neni treba jej blacklistovat)
+  remove
+  return 1
+ endif
+ if(<var(tm_rank)>==0)
+  src.sysmessage(<src.targ.name> jiz na blacklistu je) 
+  remove
+  return 1
+ else
+  if(<src.targ.tag(general)>)
+   src.sysmessage(Generala Gondoru nemuzes pridat na blacklist)
+   remove
+   return 1
+  endif
+  if !(strcmpi(<src.targ.tag(mesto)>,<link.tag(jmeno_mesta)>))   
+    src.sysmessage(Obcany mesta nelze pridavat na blacklist)
+    remove
+    return 1
+  else
+   input("Udej duvod blacklistnuti:",blacklist_him,"")
+   return 1
+  endif
+ endif
+endif  
+if(<more1>==17) //GM pridava starostu
+ if(<link.more1>)
+  src.sysmessage(Mesto <link.tag(jmeno_mesta)> jiz starostu ma) 
+  remove
+  return 1
+ endif
+ if(<src.targ.tag(realm)>!=1)
+  src.sysmessage(Starostou se muze stat jen pravoplatny obcan Gondoru!)
+  remove
+  return 1
+ endif
+ if(<var(tm_rank)>==0)
+  src.sysmessage(<src.targ.name> je na cerne listine!)
+  remove
+  return 1
+ endif
+ if(<src.targ.tag(starosta)>) //uz nejakym starostou je
+  src.sysmessage(<src.targ.name> jiz je starostou mesta <src.targ.tag(mesto)>)
+  remove
+  return 1
+ endif
+ if(<src.targ.tag(obcan)>) //je obcanem mesta
+  if(strcmpi(<src.targ.tag(mesto)>,<link.tag(jmeno_mesta)>)) //0 pokud stejne
+   src.sysmessage(<src.targ.name> je obcanem mesta <src.targ.tag(mesto)>)
+   remove
+   return 1 //obcanem jineho mesta nez naseho, je li naseho tak se nic nedeje
+  endif
+ else //neni vubec zadnej obcan 
+  src.newitemsafe(i_town_crystal)
+  lastnew.name=<src.targ.name>
+  lastnew.cont=<link.tag(citizenscont)> 
+  lastnew.link=<src.targ> //linknout na playera 
+  src.targ.tag(mesto,<link.tag(jmeno_mesta)>)
+  src.targ.tag(obcan,1)
+ endif 
+ //a tohle nize se provede vzdycky
+ link.more1=<src.targ>
+ link.tag(funkce_major,<serv.time>) //zhajeno funkcni obdobi
+ src.accmsg("Udelal uid=<src.targ> (<src.targ.name>) starostou mesta uid=<link> (<link.tag(jmeno_mesta)>)")
+ src.classmessage(<src.targ.name> uspesne pridan jako starosta)
+ src.targ.classmessage(Stal jsi se starostou mesta <link.tag(jmeno_mesta)>.)  
+ src.targ.tag(starosta,1) 
+ src.targ.tag(townstone,<link>)
+endif
+if(<more1>==18) //GM pridava obcana
+ if(<src.targ.tag(realm)>!=1)
+  src.sysmessage(Obcanem se muze stat jen pravoplatny obcan Gondoru!)
+  remove
+  return 1
+ endif
+ if(<var(tm_rank)>==0)
+  src.sysmessage(<src.targ.name> je na cerne listine!)
+  remove
+  return 1
+ endif
+ if(<src.targ.tag(candidatein)>) //je uz kandidatem
+  if(<src.targ.tag(candidate_<link.tag(jmeno_mesta)>)>) //kandidatem tohoto mesta
+   finduid(<link.tag(candidatesincont)>).contents(zrus_kandidaturu(<src.targ>)) //args: mesto;ci kandidadatura
+  else //kandidatem jineho mesta
+   src.sysmessage(<src.targ.name> jiz je kandidatem na obcanstvi do jineho mesta) 
+   remove
+   return 1
+  endif
+ endif
+ if(<src.targ.tag(obcan)>) //uz nejakym obcanem je
+  src.sysmessage(<src.targ.name> jiz je obcanem mesta <src.targ.tag(mesto)>)
+ else
+  src.newitemsafe(i_town_crystal)
+  lastnew.name=<src.targ.name>
+  lastnew.cont=<link.tag(citizenscont)> 
+  lastnew.link=<src.targ> //linknout na playera
+  src.accmsg("Pridal uid=<src.targ> (<src.targ.name>) jako obcana do mesta uid=<link> (<link.tag(jmeno_mesta)>)")
+  src.classmessage(<src.targ.name> uspesne pridan jako obcan)
+  src.targ.classmessage(Stal jsi se obcanem mesta <link.tag(jmeno_mesta)>.)
+  src.targ.tag(obcan,1)
+  src.targ.tag(mesto,<link.tag(jmeno_mesta)>)
+ endif
+endif
+remove
+return 1
+
+on=@targon_item
+if (<more1>==12)	// je to navrh na bl? nechceme navrhovat obcanov cez hlavy, ci ano?
+	if ((src.targ.baseid==i_flesh_head)||(src.targ.baseid==i_flesh_head_2))	// je to hlava? muzska / zenska
+		if (<src.targ.link.isplayer>)	// a je to hlava hraca?
+			src.targ=<src.targ.link>	//zameraj majitela hlavy
+			trigger(targon_char)	//zavolaj trigger targon_char
+			return 1
+		else
+			src.sysmessage("To neni hlava hrace")
+		endif
+		return 1
+	else
+		src.sysmessage("Zameruj lidi, nebo jejich hlavy")
+		remove
+		return 1
+	endif
+endif
+
+on=@targon_ground
+src.classmessage(Zameruj lidi.)
+remove
+return 1
+
+[itemdef i_potvrzovac]
+id=i_memory
+type=t_eq_script
+name=potvrzeni kandidatury na obcanstvi
+
+on=@equip
+src.potvrdit(kandiduj_na_obcana(<link>,<tag(navrhl)>),"Prejes si kandidovat na obcana za poplatek <link.tag(dane)>gp?")    
+remove
+
+[function kandiduj_na_obcana]//argv0 - townstone, argv1 - kdo navrhuje
+if(<src.pay(<finduid(<argv(0)>).tag(dane)>)>)
+ src.newitemsafe(i_town_crystal)
+ lastnew.name=<src.name>
+ lastnew.cont=<finduid(<argv(0)>).tag(candidatesincont)> 
+ lastnew.tag(time,<serv.time>)
+ lastnew.more1=0 //pocet hlasu   
+ lastnew.link=<src> //linknout na playera
+ finduid(<argv(0)>).tag(pokladna,<eval (<finduid(<argv(0)>).tag(pokladna)>+<finduid(<argv(0)>).tag(dane)>)>) //poplatek do kasy
+ finduid(<argv(1)>).accmsg("Navrhl uid=<src> (<src.name>) jako obcana mesta uid=<argv(0)> (<finduid(<argv(0)>).tag(jmeno_mesta)>)")
+ finduid(<finduid(<argv(0)>).tag(citizenscont)>).contents(novy_kandidat(1)) //1 - in
+ finduid(<finduid(<argv(0)>).tag(citizenscont)>).contents(pristi_adept(<argv(1)>))
+ src.classmessage(Tvoje kandidatura na obcanstvi mesta <finduid(<argv(0)>).tag(jmeno_mesta)> prijata, po sedmi dnech se dozvis rozhodnuti obcanu) 
+ src.tag(candidate_<finduid(<argv(0)>).tag(jmeno_mesta)>,1)  
+ src.tag(candidatein,1)
+endif
+[eof]

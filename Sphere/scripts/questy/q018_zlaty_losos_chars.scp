@@ -1,0 +1,135 @@
+//////////////////////////////////////////////////
+/////Rybar Podivin 	- 3916, 3609, 1
+[CHARDEF c_q018_rybar]  
+NAME=Rybar podivin 
+ID=c_man 
+DESIRES=i_gold,t_wand,t_reagent,t_bone 
+AVERSIONS=t_trap,t_eerie_stuff 
+dam=60 
+ARMOR=80 
+CAN=MT_WALK|mt_run 
+TSPEECH=spk_q018_rybar
+ 
+TEVENTS=e_character 
+ 
+CATEGORY=Moria Questy
+SUBSECTION=Predakova zlata snura
+DESCRIPTION=Rybar podivin
+ 
+ON=@Create 
+STR=600 
+DEX=200 
+INT=100 
+NPC=brain_vendor
+tag.experience=0
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+tag(noanimate,1)
+
+COLOR=colors_skin 
+ITEMNEWBIE=i_surcoat 
+COLOR=029c 
+ITEMNEWBIE=i_sandals 
+COLOR=01b6 
+ITEMNEWBIE=i_pants_long 
+COLOR=08f  
+ON=@NPCRestock 
+
+ON=@npcseenewplayer 
+dorand 3 
+	SAY= "Aby do toho hrom praskl... zase neberou!!!" 
+	SAY= "Tresky plesky, samy haraburdi jen ne ryby!" 
+	SAY= "Tak zerte vy parchanti, vite jak dlouho jsem se s tema muskama delal?" 
+enddo
+
+ON = @UserDClick
+if (src.targ.distance > 3)
+	src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_q018_rybar
+endif
+
+//////////////////////////////////////////////////
+/////Mirrana 	- 3014, 2467
+[chardef c_q018_Mirrana]
+id=c_woman
+name=Mirrana
+TSPEECH=spk_q018_Mirrana
+TEVENTs=e_character
+
+CATEGORY=Moria Questy
+SUBSECTION=Predakova zlata snura
+DESCRIPTION=Mirrana
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+STR=1000
+DEX=1000
+INT=1000
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+ITEMnewbie=i_robe
+COLOR=001
+ITEMnewbie=i_sandals
+
+ON = @UserDClick
+if (src.targ.distance > 3)
+	src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_q018_mirrana
+endif
+
+//////////////////////////////////////////////////
+/////Elnassir mastickar - 2462, 3324
+[CHARDEF c_q018_elnassir]  
+NAME=Elnassir mastickar 
+ID=c_man 
+DESIRES=i_gold,t_wand,t_reagent,t_bone 
+AVERSIONS=t_trap,t_eerie_stuff 
+dam=60 
+ARMOR=80 
+CAN=mt_walk|mt_run
+TSPEECH=spk_q018_elnassir
+TEVENTS=e_character 
+ 
+CATEGORY=Moria Questy
+SUBSECTION=Predakova zlata snura
+DESCRIPTION=Elnassir mastickar
+ 
+ON=@Create 
+STR=600 
+DEX=200 
+INT=100 
+NPC=brain_vendor
+tag.experience=0
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+tag(noanimate,1)
+
+COLOR=colors_skin 
+ITEMNEWBIE=i_surcoat 
+COLOR=029c 
+ITEMNEWBIE=i_sandals 
+COLOR=01b6 
+ITEMNEWBIE=i_pants_long 
+COLOR=08f  
+ON=@NPCRestock 
+
+ON=@npcseenewplayer 
+DORAND 3 
+	SAY= "masticky vseho druhu, lektvary krasy i obludnosti, jidlo podporujici rust a spoustu jinych nadmiru uzitecnych lektvaru a potravin!"
+	SAY= "Zavidis-li zenskejm krasu, velka prsa, delku vlasu, kup lektvar u Elnassira, budes jako zadna jina! "
+	SAY= "Hej ty, <src.name>, nechces nakou masticku, na hlavu ci rucicku? Mam tu zbozi vseho druhu, tak nakupuj veci furu!"
+enddo
+
+ON = @UserDClick
+if (src.targ.distance > 3)
+	src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_q018_elnassir
+endif

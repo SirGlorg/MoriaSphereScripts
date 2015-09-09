@@ -1,0 +1,40 @@
+// tags to edit behavior:
+// tag.npc_stun_chance=250 // 25% chance to trigger this event
+// tag.npc_stun_time=20 // 2 seconds of stun
+// tag.npc_stun_delay=30 // 3 seconds of delay in between 2 possible stuns
+
+[events e_npc_stun]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (<eval act.tag(resist_para)> <= 900) && (wasHarmed)
+  if (<eval tag(npc_stun_nextHitTime)> > <serv.time>)
+    return 0 //the min delay in between stun hits has not passed yet
+  endif
+  if (<eval tag(npc_stun_chance)>)
+    arg(chance,<chance(<tag(npc_stun_chance)>,3)>)
+  else
+    arg(chance,<chance(200,3)>)
+  endif
+  if (<arg(chance)>)
+    if (<strlen(<tag(npc_stun_delay)>)>)
+      tag(npc_stun_nextHitTime,<serv.time>+<eval tag(npc_stun_delay)>)
+    else
+      tag(npc_stun_nextHitTime,<serv.time>+20) // default delay 2s
+    endif
+    if (<eval tag(npc_stun_time)> > 0)
+      act.paralyze(<eval tag(npc_stun_time)>)
+    else
+      act.paralyze(10)
+    endif
+    act.sysMessage("<act.sex("Byl jsi omracen.","Byla jsi omracena.")>")
+  endif
+endif
+return 0
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[eof]

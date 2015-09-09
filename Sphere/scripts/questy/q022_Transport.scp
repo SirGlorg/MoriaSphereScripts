@@ -1,0 +1,479 @@
+//////////////////////////////////////////////////
+/////Dialog velitel strazi (pro oba realmy)
+
+[speech spk_q022_velitel]
+on=*zdravim*
+on=*hi*
+on=*dobry*
+on=*den*
+on=*ahoj*
+
+if (src.targ.distance > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou velitel jednat nebude")
+else
+  f_q022_Velitel
+endif
+
+[function f_q022_Velitel]
+if ((src.qtag(q022)==13)&&(src.rescount(i_q022_bedna)))  
+  src.consume(i_q022_bedna)  // bola tu chyba ze sa nemazala truhla, tu ju velitel zoberie
+endif
+Dialog(d_q022_Velitel)
+
+[dialog d_q022_Velitel]
+5,5
+page 0
+resizepic(20,200,2620,640,350)
+gumppic(30,210,03182)
+gumppic(40,215,03029)
+
+text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,2,0)  //  Kdo jsi?
+argo.text(210,332,1152,1)
+argo.button(325,330,0988,0988,0,3,0) // Obchodovat ?
+argo.text(370,332,1152,2)
+argo.button(490,330,0988,0988,0,4,0) // Prohlednout  
+argo.text(540,332,1152,3)
+argo.button(160,360,0988,0988,0,5,0) // Hotovo
+argo.text(210,362,1152,4)
+
+page 1
+argo.HTMLGUMP(170,230,440,100,8,0,36)
+if (src.qtag(q022)<1)
+  argo.button(25,395,0fa5,0fa7,0,6,0)
+  argo.text(60,395,152,9)
+elseif ((src.qtag(q022)==12)&&(src.rescount(i_q022_bedna)))
+  argo.button(25,395,0fa5,0fa7,0,7,0)
+  argo.text(60,395,152,15)
+endif
+
+page 2
+argo.HTMLGUMP(170,230,440,100,5,0,36)
+
+page 3
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+page 4
+argo.HTMLGUMP(170,230,440,100,7,0,36)
+
+page 5
+if ((src.qtag(q022)>=1)&&(src.qtag(q022)<=12))
+  argo.HTMLGUMP(170,230,440,100,11,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,14,0,36)
+endif
+
+page 6
+if (<src.tag.level><=6)
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,12,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,1)
+  argo.text(60,395,152,13)
+endif
+
+page 7
+argo.HTMLGUMP(170,230,440,100,16,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,2)
+argo.text(60,395,152,17)
+  
+
+[dialog d_q022_Velitel text]
+Velitel strazi  //0
+Kdo jsi?  //1
+Obchodovat?  //2
+Prohlednout...  //3
+Hotovo  //4
+Jsem velitel strazi.  //5
+Nic neprodavam ani nekupuji.  //6
+<basefont color="#ffff88">*Vidis velmi schopneho a silneho bojovnika*<basefont color="#ffffff">  //7
+Copak potrebujes?  //8
+Hledam praci.  //9
+<basefont color="#ffff88">*Prohlizi si te*<basefont color="#ffffff">. Ne, pro takoveho holobradka zadnou praci nemam. Zkus to pozdeji. //10
+Tak jak to vypada? Uz jsi zpatky se zasilkou?  //11
+<basefont color="#ffff88">*Velitel si te nejprve notnou chvili prohlizi, ale nakonec prikyvuje*<basefont color="#ffffff">. Dobra, vypadas vcelku duveryhodne a uplny zelenac taky nejsi, takze bys tu praci mel zvladnout. Neni to ostatne nic zvast obtizneho. Letos stejne jako kazdy rok nakupujeme nove zbrane pro nase brance. Vyrabi nam je Navin, stary Remeslnik co zije nedaleko Ereboru. Neni to zadna extra kvalita, ale novackum to staci. Stejne vetsinu znici tak proc plytvat kvalitnim materialem, ze?<basefont color="#ffff88"> *Velitel se znovu odmlcel, aby nabral dech. Takhle dlouha rec ho ocividne vycerpava*<basefont color="#ffffff">. Vsechno uz je zaplaceno a domluveno, na tobe je jen, abys zasilku vyzvedl a privezl sem. Tak se do toho dej at necekame dlouho.  //12
+Prinesu to.  //13
+Coze? Nic jsem po tobe nechtel..  //14
+Nesu zbrane od remeslnika  //15
+Konecne, ted muzu zbrane rozdat muzum a muzou zacit trenovat!  Podej mi zbrane a vezmi si svou odmenu.//16
+* odevzdat zbrane *  //17
+
+[dialog d_q022_Velitel button]
+on=1
+if (src.targ.distance>5)
+  src.sysmessage("Na takovou vzdalenost to nepujde")
+else
+  src.qtag(q022,1,21)
+endif
+
+on=2
+if (src.targ.distance>5)
+  src.sysmessage("Na takovou vzdalenost to nepujde")
+else
+  if ((src.qtag(q022)==12)&&(src.rescount(i_q022_bedna)))  
+    src.qtag(q022,13,21)
+    src.consume(i_q022_bedna)
+    src.givegold(20000)
+    src.addexp(1750)
+    f_quest_complete(21)  // splnenie questu "Transport"
+  endif
+endif
+
+
+//////////////////////////////////////////////////
+///// kovar Gorug gq002_borek.scp, mg002_borek.scp
+
+//////////////////////////////////////////////////
+/////Dialog truhlar
+
+[speech spk_q022_Truhlar]
+on=*zdravim*
+on=*hi*
+on=*dobry*
+on=*den*
+on=*ahoj*
+
+if (src.targ.distance > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou truhlar jednat nebude")
+else
+  f_q022_Truhlar
+endif
+
+[function f_q022_Truhlar]
+Dialog(d_q022_Truhlar)
+
+[dialog d_q022_Truhlar]
+5,5
+page 0
+resizepic(20, 200, 2620, 640, 350)
+gumppic(30, 210, 03182)
+gumppic(40, 215, 03025)
+
+text(220, 210, 52, 0)
+
+argo.button(160,330,0988,0988,0,2,0)  //  Kdo jsi?
+argo.text(210,332,1152,1)
+argo.button(325,330,0988,0988,0,3,0) // Obchodovat ?
+argo.text(370,332,1152,2)
+argo.button(490,330,0988,0988,0,4,0) // Prohlednout  
+argo.text(540,332,1152,3)
+
+page 1
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+if (src.qtag(q022)==4)
+  argo.button(25,395,0fa5,0fa7,0,5,0)
+  argo.text(60,395,152,8)
+elseif (src.qtag(q022)==5)
+  argo.button(25,395,0fa5,0fa7,0,5,0)
+  argo.text(60,395,152,11)
+endif
+
+page 2
+argo.HTMLGUMP(170,230,440,100,5,0,36)
+
+page 3
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+page 4
+argo.HTMLGUMP(170,230,440,100,7,0,36)
+
+page 5
+if (src.qtag(q022)==4)
+  argo.HTMLGUMP(170,230,440,100,9,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,1)
+  argo.text(60,395,152,10)
+elseif (src.qtag(q022)==5)
+  if (<src.rescount(i_log_iron)> >= 100)
+    argo.HTMLGUMP(170,230,440,100,12,0,36)
+    argo.button(25,395,0fa5,0fa7,1,0,2)
+    argo.text(60,395,152,13)
+  else
+    argo.HTMLGUMP(170,230,440,100,14,0,36)
+  endif
+endif
+
+[dialog d_q022_Truhlar text]
+Truhlar Miro  //0
+Kdo jsi?  //1
+Obchodovat?  //2
+Prohlednout...  //3
+Zdravicko, priteli. Copak te privadi?  *usmiva se*  //  4
+Jmenuji se Miro a jsem truhlar.  //5
+Nic neprodavam ani nekupuji.  //6
+<SMALL><EM>*vidis truhlire v otrhanem obleceni*</EM></SMALL>  //7
+Posila me Navin pro ratiste.  //8
+Ratiste pro Nevina, povidas? Nu proc ne, ale budu potrebovat vic dreva.  Tak 100 kastanovyho dreva.  //9
+Donesu to.  //10
+Mam to drevo.  //11
+Vyborne. Tady mas ratiste...  //12
+* vzit *  //13
+A kde ho mas!?  //14
+
+[dialog d_q022_Truhlar button]
+on=1
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.qtag(q022,5,21)
+  endif
+on=2
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    if (<src.rescount(i_log_iron)> >= 100)
+      src.consume(100,i_log_iron)
+      src.qtag(q022,6,21)
+      src.giveitem(i_q022_ratiste)
+    endif
+  endif
+  
+//////////////////////////////////////////////////
+/////Dialog hornik
+
+[speech spk_q022_hornik]
+on=*zdravim*
+on=*hi*
+on=*dobry*
+on=*den*
+on=*ahoj*
+
+if (src.targ.distance > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou hornik jednat nebude")
+else
+  f_q022_Hornik
+endif
+
+[function f_q022_Hornik]
+Dialog(d_q022_Hornik)
+
+[dialog d_q022_Hornik]
+5,5
+page 0
+resizepic(20, 200, 2620, 640, 350)
+gumppic(30, 210, 03182)
+gumppic(40, 215, 03123)
+
+text(220, 210, 52, 0)
+
+argo.button(160,330,0988,0988,0,2,0)  //  Kdo jsi?
+argo.text(210,332,1152,1)
+argo.button(325,330,0988,0988,0,3,0) // Obchodovat ?
+argo.text(370,332,1152,2)
+argo.button(490,330,0988,0988,0,4,0) // Prohlednout  
+argo.text(540,332,1152,3)
+
+page 1
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+if (src.qtag(q022)==7)
+  argo.button(25,395,0fa5,0fa7,0,5,0)
+  argo.text(60,395,152,8)
+elseif (src.qtag(q022)==10)
+  argo.button(25,395,0fa5,0fa7,0,5,0)
+  argo.text(60,395,152,11)
+endif
+
+page 2
+argo.HTMLGUMP(170,230,440,100,5,0,36)
+
+page 3
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+page 4
+argo.HTMLGUMP(170,230,440,100,7,0,36)
+
+page 5
+if (src.qtag(q022)==7)
+  argo.HTMLGUMP(170,230,440,100,9,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,1)
+  argo.text(60,395,152,10)
+elseif (src.qtag(q022)==10)
+  if (src.rescount(i_q022_medovina) >= 1)
+    argo.HTMLGUMP(170,230,440,100,13,0,36)
+    argo.button(25,395,0fa5,0fa7,1,0,2)
+    argo.text(60,395,152,14)
+  else
+    argo.HTMLGUMP(170,230,440,100,12,0,36)
+  endif
+endif
+
+[dialog d_q022_Hornik text]
+Hornik Valduk  //0
+Kdo jsi?  //1
+Obchodovat?  //2
+Prohlednout...  //3
+Co po me chces !?  //  4
+Co te do toho!  //5
+Nic neprodavam, ani nekupuji!! Dej mi pokoj!  //6
+<basefont color="#ffff88">*Vidis rozzurenyho hornika*<basefont color="#ffffff">  //7
+Posila me remeslnik Navin. Potrebuje uhli.  //8
+Tak uhli se ti zachtelo. Pche. To nebudes mit tak snadny, holobradku. Ja totiz zadarmo nepracuju. <basefont color="#ffff88">*Hornik se vyznamne odmlcel, zachrchlal a hutne si odplivnul*<basefont color="#ffffff">. Pri praci v dole jednomu radne vyschne v krku. Prines mi soudek Jindrovy Hurecky medoviny a ja ti nakopu to tvoje cerny zlato. <basefont color="#ffff88">*Uchechtnul se hornik*<basefont color="#ffffff">  //9
+...jdu pro to.  //10
+Taak tu je ta medovina!  //11
+A kde ju sakra mas! Delas si ze me srandu!?  //12
+Mno to je dost! Tady mas to uhli!  //13
+*odevzdat medovinu a vzit uhli*  //14
+
+[dialog d_q022_Hornik button]
+on=1
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.qtag(q022,8,21)
+  endif
+on=2
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    if (src.rescount(i_q022_medovina) >= 1)
+      src.consume(i_q022_medovina)
+      src.qtag(q022,11,21)
+      src.giveitem(i_q022_uhli)
+    endif
+  endif
+
+
+//////////////////////////////////////////////////
+/////Dialog kuchar
+
+[speech spk_q022_kuchar]
+on=*zdravim*
+on=*hi*
+on=*dobry*
+on=*den*
+on=*ahoj*
+
+if (src.targ.distance > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou hornik jednat nebude")
+else
+  f_q022_Kuchar
+endif
+
+[function f_q022_Kuchar]
+Dialog(d_q022_Kuchar)
+
+[dialog d_q022_Kuchar]
+5,5
+page 0
+resizepic(20, 200, 2620, 640, 350)
+gumppic(30, 210, 03182)
+gumppic(40, 215, 03036)
+
+text(220, 210, 52, 0)
+
+argo.button(160,330,0988,0988,0,2,0)  //  Kdo jsi?
+argo.text(210,332,1152,1)
+argo.button(325,330,0988,0988,0,3,0) // Obchodovat ?
+argo.text(370,332,1152,2)
+argo.button(490,330,0988,0988,0,4,0) // Prohlednout  
+argo.text(540,332,1152,3)
+
+page 1
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+if (src.qtag(q022)==8)
+  argo.button(25,395,0fa5,0fa7,0,5,0)
+  argo.text(60,395,152,8)
+elseif (src.qtag(q022)==9)
+  if (src.rescount(i_q022_med)>=3)&&(src.rescount(i_q022_koreni)>=1)&&(src.rescount(i_keg_potion)>=1)
+    argo.button(25,395,0fa5,0fa7,0,5,0)
+    argo.text(60,395,152,11)
+  elseif ((src.rescount(i_q022_med)<3)&&(src.rescount(i_q22_med)>=1)&&(src.rescount(i_q022_koreni)>=1)&&(src.rescount(i_keg_potion)>=1))  //stary med
+    argo.button(25,395,0fa5,0fa7,0,5,0)
+    argo.text(60,395,152,11)
+  else
+    argo.button(25,395,0fa5,0fa7,1,0,1)
+    argo.text(60,395,152,16)  
+  endif
+endif
+
+page 2
+argo.HTMLGUMP(170,230,440,100,5,0,36)
+
+page 3
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+page 4
+argo.HTMLGUMP(170,230,440,100,7,0,36)
+
+page 5
+if (src.qtag(q022)==8)
+  argo.HTMLGUMP(170,230,440,100,9,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,1)
+  argo.text(60,395,152,10)
+elseif (src.qtag(q022)==9)
+  if (src.rescount(i_q022_med)>=3)&&(src.rescount(i_q022_koreni)>=1)&&(src.rescount(i_keg_potion)>=1)
+    argo.HTMLGUMP(170,230,440,100,13,0,36)
+    argo.button(25,395,0fa5,0fa7,1,0,2)
+    argo.text(60,395,152,14)
+  elseif ((src.rescount(i_q022_med)<3)&&(src.rescount(i_q22_med)>=1)&&(src.rescount(i_q022_koreni)>=1)&&(src.rescount(i_keg_potion)>=1))  //stary med
+    argo.HTMLGUMP(170,230,440,100,15,0,36)
+  endif
+
+  else
+    argo.HTMLGUMP(170,230,440,100,12,0,36)
+  endif
+endif
+
+[dialog d_q022_Kuchar text]
+Kuchar Jindra Jecminek  //0
+Kdo jsi?  //1
+Obchodovat?  //2
+Prohlednout...  //3
+Zdravim te. Copak chces? *ziva*  //  4
+Jmenuji se Jindra, jsem kuchar.  //5
+Bohuzel, momentalne nemam nic na prodej.  //6
+<basefont color="#ffff88">*Vidis velmi spokojenou a usmevavou osobu*<basefont color="#ffffff">  //7
+Shanim medovinu.  //8
+Jojo, medovinu ti uvarim rad, ale zadarmo to nebude. Zaplatis 1000 zlatych a sezenes mi vsechny potrebne ingredience, co ty na to? <basefont color="#ffff88">*Mne si ruce*<basefont color="#ffffff"> Prines mi tri sklenice medu lesnich vcel, nejake vceli uly najdes v lese u Radovska. Je to kousek odtud. Dale potrebuji koreni, mam jej objednane u carodejky Roxany zijici na jihu Temneho hvozdu. Kdyz ji reknes, ze te posilam ja, tak ti to da. A nakonec budu potrebovat prazdny soudek na napoje. Az to budes vsechno mit, tak prijd.  //9
+Ach toho je... Tak ja jdu pro to.  //10
+Mam tu pro tebe vsechny ingredience...  //11
+Kde je mas?  //12
+Uz jsi tady? Tys sebou teda hodil. <basefont color="#ffff88">*Sklebi se*<basefont color="#ffffff"> . Tak to sem poloz a dame se do toho. <basefont color="#ffff88">*Sledujes Jindru, jak vse vari ve velkem kotli, peclive micha a ochutnava se soustredenym vyrazem ve tvari*<basefont color="#ffffff"> . Tak hotovo, tady to mas.  //13
+* Zaplatit a vzit medovinu *  //14
+Hmm, <basefont color="#ffff88">*kouka na med* <basefont color="#fffff">.Co je to za stary med? Na vyrobu kvalitni medoviny potrebuji cerstvy med z lesu pri Radovsku!  //15
+Jeste to nemam.
+
+
+[dialog d_q022_Kuchar button]
+on=1
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.qtag(q022,9,21)
+  endif
+on=2
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    if (<src.rescount(i_gold)> >= 1000)
+      if (<src.rescount(i_q022_med)> >= 3)&&(<src.rescount(i_q022_koreni)> >= 1)&&(<src.rescount(i_keg_potion)> >= 1)
+         src.consume(3,i_q022_med)
+        src.consume(i_q022_koreni)
+        src.consume(i_keg_potion)
+        src.consume(1000,i_gold)
+        src.giveitem(i_q022_medovina)
+        src.qtag(q022,10,21)
+      endif
+    else
+      say("A platit bude kdo?")
+    endif
+  endif
+
+
+//////////////////////////////////////////////////
+/////Remeslnik - q021
+
+//////////////////////////////////////////////////
+/////Dialog Roxana  -  gump v q020_carodejka
+[speech spk_q022_roxana]
+on = *koreni*
+if (src.targ.distance>3)
+  src.sysMessage("Na takovou vzdalenost s tebou carodejnice jednat nebude")
+else
+  f_q020_roxana
+endif
+
+
+
+
+[eof]

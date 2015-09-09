@@ -1,0 +1,768 @@
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+///////////////    Gondor   a ti dobri      ////////////////////////////////////////////////
+//   npc                              odmena ?  / z kolika procent hotovo ? / co ma delat ?
+//
+//  Mestky pruvodce                       exp 000              99 %            
+//  Mestane minas Tirith                  exp 000               0 %  okrasa.. tlachaji     
+//  zastupce spravce minas Tirith         exp 000               0 %  okrasa.. tlachaji       
+//  Banker                                exp 000               0 %  
+//
+/////
+//  DANTE strazce poradku v knihovne      exp 000             99  %  Okrasa  rady
+//  Knihovnik Minas Tirith
+//  Knihovnik Krajsky
+//  
+/////
+//  Manweho knezi                         exp 000               0 %  okrasa.. tlachaji
+//  Manveho knez  velmistr chramu         exp 000               0 %  ukol manveho novic 1
+//  Manweho knez  stary Darek             exp 000               0 %  odnes pro davneho pritele nejake knihy..
+//  Vardiny knezi 
+//  Vardin velmistr v minas Tirith        exp 000               0 %
+//  Oromuv Knez v Edorasu                 exp 000               0 %
+
+
+//  Dornan poustevnicky knez..            exp 000               0 % prijme knihy..  a poprosi o navraceni jeho knihy do knihovny v minas tirith,  je nemocny nemuze cestovat.  jeden syn tez Klerik (Morian) se sel vyucit knezem do minas Tirith. Druhy syn (Dorian) sel pred dvema dny na lov a jeste se nevratil..
+//  Dorian  syn Doranuv                   exp 000
+//  Mabel krejcova z Plagrilu             exp 000               0 % dodavky obleku pro nanveho chram..   pozada te o info proc ji jeji dodavatel Dornan poustevnicky knez nedodal posledni varku kozesin..
+////
+//                                        exp 000
+//  Pomocnik knihovnika                   exp 000               0 %
+/////                                     exp 000
+//  Kapitan Gondorskych lodi              exp 000               0 % preprava lodi.. do pelagrilu,Dol Amroth,Umbaru,Sedych pristavu
+//  namornik (standart)
+//  Namornik (opilej)
+//                                        exp 000             
+////                                      exp 000             
+//  Aristotle prekupnik kovu              exp 000               0 % Poslat dopis s pozadavkem o zviseni objednavky kovu..     do Kralovskych dolu..
+//  Hornik                                exp 000               0 % okrasa
+//  Waine Hrudak                          exp 000               0 % Predak v Gondorskych kralovskych dolech..
+//  vstuipni ochranka v Kralovskych dole  exp 000               0 %
+//  ochranka v kralovskym dole            exp 000               0 %
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+[CHARDEF c_banker_g]
+NAME=Banker
+ID=C_MAN
+
+TSPEECH=spk_banker_ok
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=BANKER (nebugovej) 
+
+
+ON=@Create
+	NAME=#NAMES_HUMANMALE
+	TITLE=Banker
+	
+	color=color_clovek
+	STR=150
+	DEX=150
+	INT=100
+	
+	SWORDSMANSHIP={15.0 38.0}
+	ITEMID={50.0 70.0}
+	TACTICS={15.0 38.0}
+	
+	tag(noanimate,1)
+	tag(realm,1)
+	
+	NPC=BRAIN_HUMAN
+	NEED=i_gold
+	
+	ITEMNEWBIE=random_male_hair
+	lastnew.COLOR=colors_hair
+	ITEMNEWBIE=random_facial_hair
+	lastnew.COLOR=match_hair
+	ITEMnewbie=RANDOM_LIGHT
+	ITEMnewbie=i_shirt_fancy
+	lastnew.COLOR=colors_green
+	ITEMnewbie=i_pants_long
+	lastnew.COLOR=colors_yellow
+	ITEMnewbie=random_shoes
+	lastnew.COLOR=colors_neutral
+
+on=@userdclick
+if (SRC.TARG.DISTANCE > 5)
+	SRC.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude.")
+	return 1
+endif
+f_banker_ok
+
+
+[CHARDEF c_banker_m]
+NAME=Banker
+ID=C_MAN
+
+TSPEECH=spk_banker_ok
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+
+CATEGORY=Vendori
+SUBSECTION=Cerveni VENDORI
+DESCRIPTION=BANKER (nebugovej) 
+
+
+ON=@Create
+	NAME=#NAMES_HUMANMALE
+	TITLE=Banker
+	
+	color=color_clovek
+	STR=150
+	DEX=150
+	INT=100
+
+	karma=-1000
+	
+	SWORDSMANSHIP={15.0 38.0}
+	ITEMID={50.0 70.0}
+	TACTICS={15.0 38.0}
+	
+	tag(noanimate,1)
+	tag(realm,2)
+	
+	NPC=BRAIN_HUMAN
+	NEED=i_gold
+	
+	ITEMNEWBIE=random_male_hair
+	lastnew.COLOR=colors_hair
+	ITEMNEWBIE=random_facial_hair
+	lastnew.COLOR=match_hair
+	ITEMnewbie=RANDOM_LIGHT
+	ITEMnewbie=i_shirt_fancy
+	lastnew.COLOR=colors_green
+	ITEMnewbie=i_pants_long
+	lastnew.COLOR=colors_yellow
+	ITEMnewbie=random_shoes
+	lastnew.COLOR=colors_neutral
+
+on=@userdclick
+if (SRC.TARG.DISTANCE > 5)
+	SRC.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude.")
+	return 1
+endif
+f_banker_ok
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+[chardef 03e2]
+defname=c_h_dupre
+anim=0ffffffff
+name=Dupre
+resdispdn=c_man
+reslevel=4
+
+
+[CHARDEF c_porter_mt]
+NAME=Mestsky pruvodce 
+ID=c_h_dupre
+attack=90
+ARMOR=60
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Portovani po Minas Tirith
+
+ON=@CREATE 
+	brain=6
+	STR={400 500} 
+	INT={80 90} 
+	DEX={200 300} 
+	KARMA=1000
+	MAGERY={90.0 100.0} 
+	WRESTLING={70.0 80.0} 
+	TACTICS{40.0 60.0} 
+	tag.experience=0
+	DETECTINGHIDDEN={90.0 100.0}
+	provocation=100
+	peacemaking=100
+	FENCING={150.0 200.0}
+	PARRYING={90.0 100.0}
+	SWORDSMANSHIP={150.0 200.0}
+	MACEFIGHTING={150.0 200.0}
+	Resist={120.0 150.0}
+
+ON=@NPCRESTOCK 
+     item=random_coin_purse
+     itemnewbie=i_spellbook
+     addspell=s_flamestrike
+      color=0036
+
+
+ON=@userDCLICK
+	f_porter_mt
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[CHARDEF c_hrobar_mt]
+NAME=Hrobnik 
+ID=c_man
+attack=90
+ARMOR=60
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+TSPEECH=spk_human_gondor_minas_tirith
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Gondor 001 ruchy M.T.
+DESCRIPTION=Hrobnik v minas Tirith
+
+ON=@CREATE 
+	brain=6
+	STR={400 500} 
+	INT={80 90} 
+	DEX={200 300} 
+	KARMA=1000
+	MAGERY={90.0 100.0} 
+	WRESTLING={70.0 80.0} 
+	TACTICS{40.0 60.0} 
+	tag.experience=<eval {40.0 60.0}>
+	DETECTINGHIDDEN={90.0 100.0}
+	provocation=100
+	peacemaking=100
+	FENCING={150.0 200.0}
+	PARRYING={90.0 100.0}
+	SWORDSMANSHIP={150.0 200.0}
+	MACEFIGHTING={150.0 200.0}
+	Resist={120.0 150.0}
+	Title=spinavy a pachnouci typek
+
+	ITEMNEWBIE=i_hair_short
+	lastnew.COLOR=colors_hair
+	ITEMnewbie=i_robe
+	lastnew.COLOR=096c
+	ITEMnewbie=i_hat_wide_brim
+	lastnew.COLOR=096c
+	ITEMnewbie=i_pants_long
+	lastnew.COLOR=096c
+	ITEMnewbie=i_shirt_fancy
+	lastnew.COLOR=096c
+	ITEMnewbie=i_boots_calf
+	lastnew.COLOR=096c
+	ITEMnewbie=i_leather_gloves
+	lastnew.COLOR=096c
+
+
+ON=@NPCRESTOCK 
+     item=random_coin_purse
+     itemnewbie=i_spellbook
+     addspell=s_flamestrike
+
+
+
+ON=@userDCLICK
+	if (SRC.TARG.DISTANCE > 3)
+	  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+	  return 1
+	endif
+	
+	if (src.tag.realm==2)
+	 act.say= "jedes  potvoro !!!!"
+	 return 1
+	endif
+	
+	if (src.profession==class_necro)
+	   say="ehh hledas li hrbitov je pred mestem.."
+	   DIALOG(d_hrobnik_mt)
+	   return 1
+	 else
+	   DIALOG(d_hrobnik_mt)
+	 endif
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_pani_roouse_mt]
+NAME=Pani Roouse 
+ID=c_woman
+attack=90
+ARMOR=60
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Gondor-001 ruchy M.T.
+DESCRIPTION=Hostinska
+
+ON=@CREATE 
+	brain=6
+	STR={400 500} 
+	INT={80 90} 
+	DEX={200 300} 
+	KARMA=1000
+	MAGERY={90.0 100.0} 
+	WRESTLING={70.0 80.0} 
+	TACTICS{40.0 60.0} 
+	tag.experience=<eval {40.0 60.0}>
+	DETECTINGHIDDEN={90.0 100.0}
+	provocation=100
+	peacemaking=100
+	FENCING={150.0 200.0}
+	PARRYING={90.0 100.0}
+	SWORDSMANSHIP={150.0 200.0}
+	MACEFIGHTING={150.0 200.0}
+	Resist={120.0 150.0}
+	Title=Majitelka penzionu u Roouse
+	
+	ITEMNEWBIE=i_hair_short
+	COLOR=colors_hair
+	ITEMNEWBIE=i_beard_long_med
+	COLOR=match_hair
+	
+	
+	ITEMnewbie=i_hat_wide_brim
+	COLOR=096c
+	ITEMnewbie=i_pants_long
+	COLOR=096c
+	ITEMnewbie=i_shirt_fancy
+	COLOR=096c
+	ITEMnewbie=i_boots_calf
+	COLOR=096c
+	ITEMnewbie=i_leather_gloves
+	COLOR=096c
+
+
+
+ON=@NPCRESTOCK 
+	item=random_coin_purse
+	itemnewbie=i_spellbook
+	addspell=s_flamestrike
+
+
+
+ON=@userDCLICK
+	f_pani_roouse_mt
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 03df]
+//  tento char je jen definice animace vzhledu pro priesty
+NAME=Knez
+Defname=c_knez
+attack=90
+ARMOR=60
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+TSPEECH=spk_human_gondor_minas_tirith
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Manweho knez
+
+ON=@CREATE 
+	brain=6
+	STR={400 500} 
+	INT={80 90} 
+	DEX={200 300} 
+	KARMA=1000
+	MAGERY={90.0 100.0} 
+	WRESTLING={70.0 80.0} 
+	TACTICS{40.0 60.0} 
+	tag.experience=<eval {40.0 60.0}>
+	DETECTINGHIDDEN={90.0 100.0}
+	provocation=100
+	peacemaking=100
+	FENCING={150.0 200.0}
+	PARRYING={90.0 100.0}
+	SWORDSMANSHIP={150.0 200.0}
+	MACEFIGHTING={150.0 200.0}
+	Resist={120.0 150.0}
+
+ON=@NPCRESTOCK 
+     item=random_coin_purse
+     itemnewbie=i_spellbook
+     addspell=s_flamestrike
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+[CHARDEF knez_manweho]
+//   umístìní: V manweho chramu v minas Tirith
+id=c_knez
+attack=90
+ARMOR=60
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+TSPEECH=spk_human_gondor_minas_tirith
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Manweho knez
+
+ON=@CREATE
+	NAME=#NAMES_HUMANMALE
+	title="Manweho knez"
+	brain=6
+	STR={400 500} 
+	INT={80 90} 
+	DEX={200 300} 
+	KARMA=1000
+	MAGERY={90.0 100.0} 
+	WRESTLING={70.0 80.0} 
+	TACTICS{40.0 60.0} 
+	tag.experience=<eval {40.0 60.0}>
+	DETECTINGHIDDEN={90.0 100.0}
+	provocation=100
+	peacemaking=100
+	FENCING={150.0 200.0}
+	PARRYING={90.0 100.0}
+	SWORDSMANSHIP={150.0 200.0}
+	MACEFIGHTING={150.0 200.0}
+	Resist={120.0 150.0}
+
+ON=@NPCRESTOCK 
+	item=random_coin_purse
+	itemnewbie=i_spellbook
+	addspell=s_flamestrike
+	ITEMnewbie=i_hair_long
+	COLOR=colors_brown
+	ITEMnewbie=random_pants
+	COLOR=colors_all
+	ITEMnewbie=random_shoes
+	ITEMnewbie=i_leather_gorget
+	COLOR=colors_red
+
+ON=@userDCLICK
+	f_manwehoknez
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_veleknez_manweho]
+//   umístìní: V manweho chramu v minas Tirith
+NAME=Knez
+ID=c_knez
+attack=90
+ARMOR=60
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+TSPEECH=spk_human_gondor_minas_tirith
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Manweho veleknez
+
+ON=@CREATE 
+	brain=6
+	STR={400 500} 
+	INT={80 90} 
+	DEX={200 300} 
+	KARMA=1000
+	MAGERY={90.0 100.0} 
+	WRESTLING={70.0 80.0} 
+	TACTICS{40.0 60.0} 
+	tag.experience=<eval {40.0 60.0}>
+	DETECTINGHIDDEN={90.0 100.0}
+	provocation=100
+	peacemaking=100
+	FENCING={150.0 200.0}
+	PARRYING={90.0 100.0}
+	SWORDSMANSHIP={150.0 200.0}
+	MACEFIGHTING={150.0 200.0}
+	Resist={120.0 150.0}
+
+ON=@NPCRESTOCK 
+	item=random_coin_purse
+	itemnewbie=i_spellbook
+	addspell=s_flamestrike
+
+
+ON=@userDCLICK
+	DIALOG(d_manwehoveleknez)
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_strazce_knihovny]
+//   umístìní: Minas Tirith Knihovna   5811 3850 020
+NAME=Dante
+ID=C_MAN
+attack=90
+ARMOR=60
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+tag.guard=1
+tag.guardopposite=c_m_guard_red_pesak
+tag.guardhire=500000
+
+TSPEECH=spk_guard
+TSPEECH=spk_strazce_knihovny
+TEVENTS=e_guard 
+TEVENTS=e_character
+TEVENTS=e_monster
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Strazce knihovny
+
+ON=@Create
+	brain=6//teleportuje se domu
+	tag.mountcolor=0482
+	//ALIGNMENT=GOOD
+	COLOR=colors_skin
+	karma=1000
+	STR=1000
+	DEX=1000
+	INT=2000
+	tag.experience=<eval {40.0 60.0}>
+	DETECTINGHIDDEN={90.0 100.0}
+	provocation=100
+	peacemaking=100
+	FENCING={150.0 200.0}
+	PARRYING={90.0 100.0}
+	SWORDSMANSHIP={150.0 200.0}
+	WRESTLING={150.0 200.0}
+	MACEFIGHTING={150.0 200.0}
+	Resist={120.0 150.0}
+	TACTICS={150.0 200.0}
+	ITEMnewbie=i_monster_create
+	//ITEMNEWBIE=i_lantern
+	ITEMNEWBIE=random_male_hair
+	COLOR=0481
+	ITEMNEWBIE=i_platemail_chest
+	COLOR=0482
+	ITEMNEWBIE=i_platemail_gloves
+	COLOR=0482
+	ITEMNEWBIE=i_platemail_gorget
+	COLOR=0482
+	ITEMNEWBIE=i_platemail_leggings
+	COLOR=0482
+	ITEMNEWBIE=i_platemail_arms
+	COLOR=0482
+	//ITEMNEWBIE=i_sash
+	//COLOR=0482
+	ITEMNEWBIE=i_cape
+	COLOR=0481
+	ITEMNEWBIE=i_halberd
+	COLOR=0
+
+ON=@NPCRestock
+	ITEM=i_gold,{0 100}
+
+ON=@NPCRefuseItem
+	SAY Jsem verny krali !!!
+	return 1
+
+ON=@userDCLICK
+	if (SRC.TARG.DISTANCE > 3)
+	SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+	return 1
+	endif
+	//if (src.tag.realm==-1)||
+	if (src.tag.realm==2)
+	act.say= "jedes  potvoro !!!!"
+	return 1
+	else
+	   DIALOG(d_strazce_knihovny)
+	   return 1
+	endif
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[chardef 03de]
+defname=c_dite
+NAME=Lord British
+name="dite"
+can=mt_walk|mt_run|mt_female|mt_usehands
+icon=i_pet_woman
+foodtype=15 t_food,t_fruit
+shelter=r_house
+desires=i_gold,e_notoriety
+resources=4 i_ribs_raw
+aversions=t_trap,t_eerie_stuff
+tspeech=spk_human_prime
+
+
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Lord British
+
+on=@create
+	npc=brain_human
+	str={2 5}
+	dex={20 30}
+	int={2 5}
+	
+	fencing={8.0 19.0}
+	parrying={8.0 19.0}
+	swordsmanship={8.0 19.0}
+	wrestling={8.0 19.0}
+	macefighting={8.0 19.0}
+	magicresistance={8.0 19.0}
+	tactics={8.0 19.0}
+
+
+ON=@userDCLICK
+	if (SRC.TARG.DISTANCE > 3)
+	SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+	return 1
+	endif
+	//if (src.tag.realm==-1)||
+	if (src.tag.realm==2)
+	act.say= "jedes  potvoro !!!!"
+	return 1
+	else
+	DIALOG(strazce_knihovny)
+	endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 0418]
+DEFNAME=c_g_hlasatel
+NAME=#NAMES_HUMANMALE
+ID=C_MAN
+
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Hlasatel gondorsky {male}
+
+ON=@Create
+	color=color_clovek
+	STR=150
+	DEX=150
+	INT=100
+	
+	SWORDSMANSHIP={15.0 38.0}
+	ITEMID={50.0 70.0}
+	TACTICS={15.0 38.0}
+	
+	NPC=BRAIN_BANKER
+	NEED=i_gold
+	
+	ITEMNEWBIE=random_male_hair
+	COLOR=colors_hair
+	ITEMNEWBIE=random_facial_hair
+	COLOR=match_hair
+
+ON=@NPCRestock
+	ITEMnewbie=RANDOM_LIGHT
+	ITEMnewbie=i_shirt_fancy
+	COLOR=colors_green
+	ITEMnewbie=i_pants_long
+	COLOR=colors_yellow
+	ITEMnewbie=random_shoes
+	COLOR=colors_neutral
+	
+	
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+[CHARDEF c_minas_namestek_valky_g]
+NAME=namestek valky 
+ID=c_h_dupre
+attack=90
+ARMOR=60
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+TSPEECH=spk_human_gondor_minas_tirith
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Namestek valky Gondor
+
+ON=@CREATE 
+brain=6
+STR={400 500} 
+INT={80 90} 
+DEX={200 300} 
+KARMA=1000
+MAGERY={90.0 100.0} 
+WRESTLING={70.0 80.0} 
+TACTICS{40.0 60.0} 
+tag.experience=0
+DETECTINGHIDDEN={90.0 100.0}
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+MACEFIGHTING={150.0 200.0}
+Resist={120.0 150.0}
+
+tag(noanimate,1)
+
+ON=@NPCRESTOCK 
+     item=random_coin_purse
+     itemnewbie=i_spellbook
+     addspell=s_flamestrike
+      color=0036
+
+
+ON=@userDCLICK
+if (SRC.TARG.DISTANCE > 3)
+SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+return 1
+endif
+
+if (src.tag.realm==1)
+say="chces zautocit...."
+DIALOG(d_minas_namestek_valky_g)
+return 1
+else
+say="Tahni...."
+endif
+
+
+
+
+
+
+
+
+
+
+
+
+[EOF]
+
+

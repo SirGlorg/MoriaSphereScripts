@@ -1,0 +1,2032 @@
+/////////////////////////////////////////
+///////// Spolecenstvi drakobijcu ///////
+/////////////////////////////////////////
+//
+///////// tagy
+//
+// q040_dragons -   0 - nezna meno
+// q040_dragons - 100 - pozna heslo
+// q040_dragons - 101 - povedal heslo, moze pokracovat v queste ako predtym s hodnotou 0
+// q040_dragons -   1 - slubil priniest hlavu pana strachu a bakchora
+// q040_dragons -   2 - priniesol hlavu pana strachu a bakchora
+// q040_dragons -   3 - prijal ukol o jedovy vacek draka z bazin
+// q040_dragons -   4 - priniesol jedovy vacek - ma otvorenu cestu dalej
+// q040_dragons -   5 - slubil zabitie hnedeho draka
+// q040_dragons -   6 - zabil hnedeho draka
+// q040_dragons -   7 - slubil zabitie zeleneho draka
+// q040_dragons -   8 - zabil zeleneho draka
+// q040_dragons -   9 - slubil zabitie ohniveho draka
+// q040_dragons -  10 - zabil ohniveho draka
+// q040_dragons -  11 - slubil zabitie ladoveho draka
+// q040_dragons -  12 - zabil ladoveho draka
+// q040_dragons -  13 - slubil zabitie cierneho draka
+// q040_dragons -  14 - zabil cierneho draka
+// q040_dragons -  15 - slubil zabitie bieleho draka
+// q040_dragons -  16 - zabil bieleho draka
+// q040_dragons -  17 - slubil zabitie zlateho draka
+// q040_dragons -  18 - zabil zlateho draka 
+// q040_dragons -  19 - slubil zabitie XXX draka
+// q040_dragons -  20 - zabil XXX draka
+//
+// q040_dragons -  50 - odmietol povedat meno - iny quest
+
+//////////////// doorman
+
+
+[speech spk_q040_dragons_doorman]
+
+on = *zdravim*
+on = *hi*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q040_dragons_doorman
+endif
+
+[FUNCTION f_q040_consume_skull_head]
+//src.consume(1,i_boss_skull_ps)
+src.consume(1,i_q039_shadow_weapon_head_gloata)
+
+[FUNCTION f_q040_has_skull_head]
+if <src.RESTEST(i_q039_shadow_weapon_head_gloata)>// && <src.RESTEST(i_boss_skull_ps)>)
+	return 1
+else
+	return 0
+endif
+
+[function f_q040_dragons_has_ingots]
+if ((<src.rescount i_ingot_adamantinum> >= <eval 2+<eval <src.tag(dragons_doorman_refuse)>>>)&&(<src.RESTEST(i_pig_roast)>))
+	return 1
+else
+	return 0
+endif
+
+[function f_q040_dragons_consume_ingots]
+src.consume(<eval 2+<eval <src.tag(dragons_doorman_refuse)>>>,i_ingot_adamantinum)
+src.consume(1,i_pig_roast)
+
+[function f_q040_dragons_doorman]
+if (<src.flags>&statf_dead)
+  return 1
+endif
+if (<src.tag(level)> < 40)
+	say("Nemam se s tebou o cem bavit, prijd az budes silnejsi!")
+else
+	if ((<eval src.qtag(q040_dragons)> >= 4)&&(<eval src.qtag(q040_dragons)> < 50))
+		say("Bud zdrav. Cesta do pevnosti drakobijcu je ti jiz otevrena. Ber vsak na vedomi, ze sarvatky nejsou v pevnosti ani v dracich doupatech povoleny!")
+	elseif ((<eval src.qtag(q040_dragons)> >= 50)&&(<eval src.qtag(q040_dragons)> < 100))
+	  dialog(d_q040_dragons_doorman)
+	elseif (<eval src.qtag(q040_dragons)> == 100)
+		dialog(d_q040_dragons_name)
+	elseif ((<eval src.qtag(q040_dragons)> == 101)||(<eval src.qtag(q040_dragons)> >= 1)&&(<eval src.qtag(q040_dragons)> < 50))
+    dialog(d_q040_dragons_doorman)
+  else
+  	say("Neverim ti, neznam te... neotravuj!")
+  endif
+endif
+
+[dialog d_q040_dragons_doorman]
+argo.questDialog_create(03086,"Drakobijec")
+
+argo.dialog_newPage("Pozdrav")
+arg(q040_dragons,<eval src.qtag(q040_dragons)>)
+
+if ((<arg(q040_dragons)> == 101)||(<arg(q040_dragons)> >= 1)&&(<arg(q040_dragons)> < 50))
+if ((<arg(q040_dragons)> == 101)||(<arg(q040_dragons)> == 1))
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,21,"Co je to za brneni?")
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+endif 
+
+argo.dialog_page("Pozdrav")
+  if ((<arg(q040_dragons)> >= 50)&&(<arg(q040_dragons)> < 100))
+    argo.setText(<argo.newTextLine>,"Nemam si s tebou co rict...")
+    argo.questDialog_HTMLGUMP
+      if (<arg(q040_dragons)> == 50)
+        argo.setText(argo.newTextLine,"Zkus ho presvedcit....")
+        argo.questDialog_addResponse(0,0,1,"q040_make_peace_1")
+      elseif ((<arg(q040_dragons)> == 51)&&(<src.f_q040_dragons_has_ingots>))
+        argo.setText(argo.newTextLine,"Mam pro tebe veci!")
+        argo.questDialog_addResponse(0,1,1,"q040_give_ingots")
+      endif
+  else
+    argo.setText(<argo.newTextLine>,"Vitej...")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+if (<arg(q040_dragons)> == 50)
+  argo.dialog_page("q040_make_peace_1")
+    argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>*Drakobijec se s tebou nechce bavit*")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Nemas na to nervy a vzdavas to...")
+      argo.questDialog_addResponse(0,1,1,"q040_refuse_peace")
+      argo.setText(argo.newTextLine,"Jeste ho zkus presvedcit.")
+      argo.questDialog_addResponse(0,0,1,"q040_make_peace_2")
+      
+  argo.dialog_page("q040_make_peace_2")
+    argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>*Drakobijec je neoblomny*")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jeste jednou ho zkus presvedcit...")
+      argo.questDialog_addResponse(0,0,1,"q040_make_peace_3")
+      argo.setText(argo.newTextLine,"Nemas na to nervy a vzdavas to...")
+      argo.questDialog_addResponse(0,1,0,"q040_refuse_peace")
+      
+  argo.dialog_page("q040_make_peace_3")
+    argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>*Drakobijec se tvari zamyslene*")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Nemas na to nervy a vzdavas to...")
+      argo.questDialog_addResponse(0,1,0,"q040_refuse_peace")
+      argo.setText(argo.newTextLine,"Naposledy ho zkus presvedcit...")
+      argo.questDialog_addResponse(0,0,1,"q040_make_peace_4")
+     
+      
+  argo.dialog_page("q040_make_peace_4")
+    argo.setText(<argo.newTextLine>,"No dobra, kdyz tolik nalehas, tak bych uvital pekne propecene prasatko a <eval 2+<eval <src.tag(dragons_doorman_refuse)>>> ingoty adamantia na opravu zbrane!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobra! Prinesu ti to.")
+      argo.questDialog_addResponse(0,1,1,"q040_accept_peace_offer")
+endif
+  
+if ((<eval src.qtag(q040_dragons)> == 101)||(<eval src.qtag(q040_dragons)> >= 1)&&(<eval src.qtag(q040_dragons)> < 50))  
+if ((<arg(q040_dragons)> == 101)||(<arg(q040_dragons)> == 1))
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+  	if (<arg(q040_dragons)> == 101)
+      argo.setText(argo.newTextLine,"Znalost jmena je mocna zbran. Sve jmeno nikdy nesveruji lidem, ktere neznam!")
+      argo.questDialog_HTMLGUMP
+    else
+      argo.setText(argo.newTextLine,"Dokazal jsi mi, ze jsi schopen zdolat nejednu prekazku. Me jmeno je Ikreon.")
+      argo.questDialog_HTMLGUMP
+    endif
+endif
+
+argo.dialog_page("Co je to za brneni?")
+  if ((<arg(q040_dragons)> == 101)||(<arg(q040_dragons)> == 1))
+    argo.setText(<argo.newTextLine>,"Brneni naseho radu. Vic ti prozatim nejsem ochoten sdelit.")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(<argo.newTextLine>,"Patrim k staremu radu Drakobijcu. Toto brneni je vyrobeno z dracich supin a chrani mne pred dracim dechem.")
+    argo.questDialog_HTMLGUMP  
+      if (<arg(q040_dragons)> == 2)
+        argo.setText(argo.newTextLine,"Mohu nekde ziskat podobne brneni?")
+        argo.questDialog_addResponse(0,0,1,"q040_want_armor")	
+      endif
+  endif
+  
+if (<arg(q040_dragons)> == 2)
+  argo.dialog_page("q040_want_armor")
+    argo.setText(argo.newTextLine,"Vyrobi jej nas kovar nebo dratenik. Naleznes je v nasi pevnosti. Je vsak k nemu treba dracich supin a ty ti drak dobrovolne neda.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jak se k nim dostanu?")
+      argo.questDialog_addResponse(0,0,1,"q040_how_to_get_to_armorer")	
+  
+  argo.dialog_page("q040_how_to_get_to_armorer")
+    argo.setText(argo.newTextLine,"Musis mi prokazat, ze jsi drakobijec, abych te pustil dovnitr.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, chci byt drakobijcem! Co mam udelat?")
+      argo.questDialog_addResponse(0,1,1,"q040_want_to_be")
+      argo.setText(argo.newTextLine,"Ne, Nejsem na to jeste pripraven.")
+      argo.questDialog_addResponse(0,1,1,"q040_dont_want_to_be")
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Promin, ja nemam nic na prodej.")
+  argo.questDialog_HTMLGUMP
+  
+
+argo.dialog_page("Hledam praci")
+  if (<arg(q040_dragons)> == 101)
+    argo.setText(argo.newTextLine,"Vypadam snad, ze rozdavam praci? Ale mohl by jsi se predstavit a dokazat mi, ze jsi hoden se se mnou vubec bavit.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, me jmeno je <src.name>. S ukolem predem souhlasim!")
+      argo.questDialog_addResponse(0,0,1,"q040_told_name")
+      argo.setText(argo.newTextLine,"Ne, do meho jmena ti nic neni. Sam jsi se nepredstavil.")
+      argo.questDialog_addResponse(0,1,1,"q040_dont_tell_name")
+  elseif ((<arg(q040_dragons)> > 0)&&(<arg(q040_dragons)> < 4))
+    argo.setText(argo.newTextLine,"Ukol uz jsem ti dal... ted je cas cinu, ne otazek!")
+    argo.questDialog_HTMLGUMP
+  else 
+    argo.setText(argo.newTextLine,"Moje ulohy jsi uz splnil...")
+    argo.questDialog_HTMLGUMP
+  endif
+
+
+if (<arg(q040_dragons)> == 101)
+  argo.dialog_page("q040_told_name")
+    argo.setText(argo.newTextLine,"Tesi mne! Cim si te tak ozkousim? Co treba, kdyby jsi mi prinesl hlavu zradce Gloaty?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ne, do toho nejdu...")
+      argo.questDialog_addResponse(0,1,1,"q040_refuse")
+      argo.setText(argo.newTextLine,"Dobra, jdu nato!")
+      argo.questDialog_addResponse(0,1,1,"q040_accept_ps_boss")
+endif
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	  argo.setText(argo.newTextLine,"Vlastne nic...")
+    argo.questDialog_addResponse(0,1,1,"q040_goodbye") 
+    if ((<arg(q040_dragons)> == 1)&&(<src.f_q040_has_skull_head>))
+      argo.setText(argo.newTextLine,"Mam pro tebe tu hlavu!")
+      argo.questDialog_addResponse(0,1,1,"q040_give_skull_head")
+    endif
+    if ((<arg(q040_dragons)> == 3) && (<src.f_collector_isFull(i_q040_poison_bag_collector)>))
+      argo.setText(argo.newTextLine,"Nesu ti ten jedovy vacek!!")
+      argo.questDialog_addResponse(0,0,1,"q040_has_poison_bag")
+    endif  	
+    	
+if ((<arg(q040_dragons)> == 3)&&(<src.f_collector_isFull(i_q040_poison_bag_collector)>))
+  argo.dialog_page("q040_has_poison_bag")
+    argo.setText(argo.newTextLine,"Prekvapil jsi mne, prokazal jsi svoje schopnosti a muzes vstoupit do pevnosti.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Vyborne, dekuji ti.")
+      argo.questDialog_addResponse(0,1,1,"q040_give_poison_bag")
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Na prvni pohled te zaujalo jeho brneni. Jeho temne sedy povrch jako by vubec neodrazel svetlo z pochopni. Dalsi zajimavou skutecnosti byla jeho tetovana predlokti s podobiznami draku plivajicich ohen.*")
+  argo.questDialog_HTMLGUMP
+endif
+  
+[dialog d_q040_dragons_doorman button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q040_dont_tell_name"))
+  say("Dobre, je to tva volba.")
+  src.qtag(q040_dragons,50,46)
+	finduid(#0402D472F).tag(dragons_50,#+1)
+elseif (<argn> == argo.dialog_linkButton("q040_accept_ps_boss"))
+  say("At se ti dari...")
+  src.qtag(q040_dragons,1,46)
+elseif (<argn> == argo.dialog_linkButton("q040_give_skull_head"))
+  if (<src.f_q040_has_skull_head>)
+    say("Oh, vyborne!")
+    src.f_q040_consume_skull_head
+    src.qtag(q040_dragons,2,46)
+	  src.addexp(4000)
+	  finduid(#0402D472F).tag(dragons_3,#+1)
+  else
+  	say("Vzdyt nemas, co jsem chtel! Mam te brat za lhare?")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_want_to_be"))
+  say("Mas kuraz, zde mas vacek a prines mi jedovy vacek draka z bazin.!")
+  src.qtag(q040_dragons,3,46)
+  src.newitem(i_q040_poison_bag_collector)
+  src.act.bounce
+elseif (<argn> == argo.dialog_linkButton("q040_dont_want_to_be"))
+  say("Dobre, je to tva volba.")
+elseif (<argn> == argo.dialog_linkButton("q040_give_poison_bag"))
+  if (<src.f_collector_isFull(i_q040_poison_bag_collector)>)
+    say("Muzes projit!")
+    src.qtag(q040_dragons,4,46)
+	  src.addexp(3000)
+    src.consume(i_q040_poison_bag_collector)
+	  finduid(#0402D472F).tag(dragons_4,#+1)
+  else
+  	say("Vzdyt nemas, co jsem chtel! Mam te brat za lhare?")
+  endif 
+elseif (<argn> == argo.dialog_linkButton("q040_refuse_peace"))
+  say("Tak me ani neotravuj!")
+  if !(src.tag(dragons_doorman_refuse))
+    src.tag(dragons_doorman_refuse,2)
+  else
+  	src.tag(dragons_doorman_refuse,#+2)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_give_ingots"))
+  if (<src.f_q040_dragons_has_ingots>)
+    say("Dobre, prijimam to!")
+    src.qtag(q040_dragons,101,46)
+    src.f_q040_dragons_consume_ingots
+    if (src.tag(dragons_doorman_refuse))
+      src.tag.remove(dragons_doorman_refuse)
+    endif
+	  finduid(#0402D472F).tag(dragons_ingots,#+1)
+  else
+  	say("Vzdyt nemas, co jsem chtel! Mam te brat za lhare?")
+  endif 
+elseif (<argn> == argo.dialog_linkButton("q040_accept_peace_offer"))
+  say("A honem, at si to nerozmyslim!")
+  src.qtag(q040_dragons,51,46)
+elseif (<argn> == argo.dialog_linkButton("q040_refuse"))
+  say("Tak me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Tak me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("q040_goodbye"))
+  say("Mej se...")
+endif
+
+///// heslo dialog
+
+[dialog d_q040_dragons_name]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,395)
+argo.tag(vyska,92)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,60)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Prvni ukol zni - Jak se jmenuje nas posledni zvoleny vudce?")
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Jmeno:")
+
+argo.settext(1001,"")
+
+argo.textentry(<argo.dialog_textpos(1,1)>,188,<d_def_radek_vyska>,textcolor,1,1001)
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_q040_dragons_name button]
+on=0 // cancel
+src.sysMessage("<src.sex Stornoval Stornovala> jsi volbu.")
+
+on=1 // ok
+if (<STRCMPI(<src.tag(q040_dragons_name)>,<argtxt(1)>)>==0)
+  src.sysMessage("Prvni zkousku jsi splnil!")
+  src.qtag(q040_dragons,101,46)
+  finduid(#0402D472F).tag(dragons_2,#+1)
+else
+ src.redMessage("Jmeno neni spravne !")
+endif
+
+///////////////////// vartian
+
+[speech spk_q040_dragons_vartian]
+
+on = *zdravim*
+on = *hi*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q040_dragons_vartian
+endif
+
+[function f_q040_dragons_vartian]
+if (<src.flags>&statf_dead)
+  return 1
+endif
+if ((<eval src.qtag(q040_dragons)> >= 4)&&(<eval src.qtag(q040_dragons)> < 50))
+	dialog(d_q040_dragons_vartian)
+else
+   say("Ty tady nemas co delat!")
+ endif
+ 
+[function is_hunting_dragon]
+arg(q040_dragons,<eval qtag(q040_dragons)>)
+if ((<arg(q040_dragons)> == 5)||(<arg(q040_dragons)> == 7)||(<arg(q040_dragons)> == 9)||(<arg(q040_dragons)> == 11)||(<arg(q040_dragons)> == 13)||(<arg(q040_dragons)> == 15)||(<arg(q040_dragons)> == 17))
+  return 1
+else
+	return 0
+endif
+
+[function want_to_kill_dragon]
+arg(q040_dragons,<eval qtag(q040_dragons)>)
+if ((<arg(q040_dragons)> == 4)||(<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 8)||(<arg(q040_dragons)> == 10)||(<arg(q040_dragons)> == 12)||(<arg(q040_dragons)> == 14)||(<arg(q040_dragons)> == 16))
+  return 1
+else
+	return 0
+endif
+
+[function gettextofdragontokill]
+arg(q040_dragons,<args>)
+if (<arg(q040_dragons)> == 4)
+  return Absolvoval jsi nas vstupni test, ale to z tebe drakobijce jeste nedela. Bahenni drak je v podstate draci odpad - takove nedochudce. Opravdovi draci ziji ve slujich vysoko v horach, zpravidla s jedinym vstupem, ale ten vyzaduje umeni letat. Druhou moznosti jsou magicke portaly, na ktere se jiz leta specializujeme. Jsi pripraven na vypravu za prvnim drakem?
+elseif (<arg(q040_dragons)> == 6)
+	return Dokazal jsi porazit hnedeho draka, nyni se jiz muzes pocitat mezi drakobijce. Presto hnedy drak neni stale drak v plne sile. Je to v podstate mlade. Jsi pripraven na vypravu za dalsim drakem?
+elseif (<arg(q040_dragons)> == 8)
+	return Dokazal jsi porazit hnedeho i zeleneho draka, nyni se jiz muzes pocitat mezi drakobijce. Jsi pripraven na vypravu za dalsim drakem?
+elseif (<arg(q040_dragons)> == 10)
+  return Dokazal jsi porazit jiz tri druhy draku, jsi plnohodnotnym clenem radu! Jsi pripraven na vypravu za dalsim drakem?
+elseif (<arg(q040_dragons)> == 12)
+  return Dokazal jsi porazit jiz ctyri druhy draku, jsi plnohodnotnym clenem radu! Jsi pripraven na vypravu za dalsim drakem?
+elseif (<arg(q040_dragons)> == 14)
+	return Dokazal jsi porazit jiz pet druhu draku, jsi plnohodnotnym clenem radu! Jsi pripraven na vypravu za dalsim drakem?
+elseif (<arg(q040_dragons)> == 16)
+	return Dokazal jsi porazit vsechny zakladni druhy draku, to se povedlo jen nekterym drakobijcum! Jsi pripraven na vypravu za poslednim drakem?
+elseif (<arg(q040_dragons)> == 18)
+	return Nemam te jiz co naucit. Presto te chci pozadat, abys i nadale zabijel ty falesne jestery!
+endif
+
+[function getNameOfHuntedDragon]
+arg(q040_dragons,<args>)
+if ((<arg(q040_dragons)> == 5)||(<arg(q040_dragons)> == 6))
+  return Hnedeho
+elseif ((<arg(q040_dragons)> == 7)||(<arg(q040_dragons)> == 8))
+	return Zeleneho
+elseif ((<arg(q040_dragons)> == 9)||(<arg(q040_dragons)> == 10))
+	return Ohniveho
+elseif ((<arg(q040_dragons)> == 11)||(<arg(q040_dragons)> == 12))
+	return Ledoveho
+elseif ((<arg(q040_dragons)> == 13)||(<arg(q040_dragons)> == 14))
+	return Cerneho
+elseif ((<arg(q040_dragons)> == 15)||(<arg(q040_dragons)> == 16))
+	return Bileho
+elseif ((<arg(q040_dragons)> == 17)||(<arg(q040_dragons)> == 18))
+	return Zlateho
+endif
+
+[function getnameofdragontokill]
+arg(q040_dragons,<args>)
+if (<arg(q040_dragons)> == 5)
+  return Hnedy
+elseif (<arg(q040_dragons)> == 7)
+	return Zeleny
+elseif (<arg(q040_dragons)> == 9)
+	return Ohnivy
+elseif (<arg(q040_dragons)> == 11)
+	return Ledovy
+elseif (<arg(q040_dragons)> == 13)
+	return Cerny
+elseif (<arg(q040_dragons)> == 15)
+	return Bily
+elseif (<arg(q040_dragons)> == 17)
+	return Zlaty
+endif
+[dialog d_q040_dragons_vartian]
+argo.questDialog_create(03078,"Vartian")
+
+argo.dialog_newPage("Pozdrav")
+arg(q040_dragons,<eval src.qtag(q040_dragons)>)
+
+if (<arg(q040_dragons)> == 4)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+elseif ((<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 8)||(<arg(q040_dragons)> == 10)||(<arg(q040_dragons)> == 12)||(<arg(q040_dragons)> == 14)||(<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 18))
+  argo.questDialog_baseButt(1,21,"Draka jsem porazil")
+endif
+argo.questDialog_baseButt(4,21,"Mohu pomoci?")
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Bud pozdraven!")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q040_dragons)> == 4)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Bud zdrav! Ty jsi ten novy adept? Me jmeno je Vartian.")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis starsiho, ale velmi statneho muze, obleceneho do magickeho brneni, jehoz temne sedy povrch jako by vubec neodrazel svetlo. Pri pohledu do jeho oci je zrejme, ze videl mnoho utrpeni, ale zaroven i mnoho moudra a vedomosti.*")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Mohu nekde ziskat podobne brneni?")
+    argo.questDialog_addResponse(0,0,1,"q040_get_armor") 
+  
+argo.dialog_page("q040_get_armor")
+  if ((<arg(q040_dragons)> > 5)&&(<arg(q040_dragons)> < 18))
+    argo.setText(argo.newTextLine,"Skoc si za kovarem nebo dratenikem. urcite ti nejaky kus brneni vylepsi!")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q040_dragons)> > 17)
+    argo.setText(argo.newTextLine,"O brneni ti nebudu nic vypravet, moc dobre ho znas. Ale zkus skocit za kovarem a pozadat ho o zhotoveni drakobijecke zbrane!!!")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"Vyrobi jej nas kovar nebo dratenik. Popovidej si s nimi...")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vlastne nic...")
+    argo.questDialog_addResponse(0,1,1,"q034_goodbye") 
+if ((<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 8)||(<arg(q040_dragons)> == 10)||(<arg(q040_dragons)> == 12)||(<arg(q040_dragons)> == 14)||(<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 18)) 
+  argo.dialog_page("Draka jsem porazil")
+    argo.setText(argo.newTextLine,"Vyborne! Koukam, ze jsi zabil<getnameofhunteddragon(<arg(q040_dragons)>)> draka.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano!")
+      argo.questDialog_addResponse(0,0,0,"Mohu pomoci?")
+endif 
+
+argo.dialog_page("Mohu pomoci?")
+  if (<src.want_to_kill_dragon>)
+  	argo.setText(argo.newTextLine,"<gettextofdragontokill(<arg(q040_dragons)>)>")
+    argo.questDialog_HTMLGUMP
+     	argo.setText(argo.newTextLine,"Ano, jsem pripraven!")
+      argo.questDialog_addResponse(0,1,1,"q04_want_to_kill_dragon")
+      argo.setText(argo.newTextLine,"Ne, Nejsem na to jeste pripraven.")
+      argo.questDialog_addResponse(0,1,1,"q040_refuse")
+  elseif (<src.is_hunting_dragon>)
+    argo.setText(argo.newTextLine,"Aktualne jsem ti zadal utok na<getnameofhunteddragon(<arg(q040_dragons)>)> draka - bez ho zabit. Pokud se na nej jeste necitis, muzes zprovodit ze sveta i nejakeho slabsiho draka!")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"Nemam te jiz co naucit. Presto te chci pozadat, abys i nadale zabijel ty falesne jestery!")
+    argo.questDialog_HTMLGUMP
+  endif
+   
+[dialog d_q040_dragons_vartian button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q04_want_to_kill_dragon"))
+	src.addexp(<eval (1000+<src.qtag(q040_dragons)>*500)>)
+  src.qtag(q040_dragons,<eval <src.qtag(q040_dragons)>+1>,46)
+  say("Dobre, tvoji druhou zkouskou bude<getnameofdragontokill(<eval src.qtag(q040_dragons)>)> drak.")
+elseif (<argn> == argo.dialog_linkButton("q040_refuse"))
+  say("Dobre, je to tva volba. Pokud budes chtit prijdi pozdeji.")
+elseif (<argn> == argo.dialog_linkButton("q040_goodbye"))
+  say("Mej se...")
+endif
+
+//////////////////////////// kovar
+
+[speech spk_q040_dragons_kovar]
+
+on = *zdravim*
+on = *hi*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q040_dragons_kovar
+endif
+
+[function f_q040_dragons_kovar]
+if (<src.flags>&statf_dead)
+  return 1
+endif
+if ((<eval src.qtag(q040_dragons)> >= 4)&&(<eval src.qtag(q040_dragons)> < 50))
+	dialog(d_q040_dragons_kovar)
+else
+   say("Ty tady nemas co delat!")
+ endif
+ 
+ 
+[function q040_canmakeforhim]
+arg(q040_dragons,<args>)
+if ((<arg(q040_dragons)> == 4)||(<arg(q040_dragons)> == 5))
+  return Zatim te jeste nepovazuji za drakobijce! 
+elseif ((<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 7))
+	return Mohu ti vyrobit:<br>  Chranic krku - na ten je treba 1x hneda supina.
+elseif ((<arg(q040_dragons)> == 8)||(<arg(q040_dragons)> == 9))
+	return Mohu ti vyrobit:<br>  Chranic krku - na ten je treba 1x hneda supina. <br>  Helmu - na tu je treba 1x hneda a 1x zelena supina.
+elseif ((<arg(q040_dragons)> == 10)||(<arg(q040_dragons)> == 11))
+  return Mohu ti vyrobit:<br>  Chranic krku - na ten je treba 1x hneda supina. <br>  Helmu - na tu je treba 1x hneda a 1x zelena supina. <br>  Rukavice - na ty je treba 1x zelena a 1x ruda supina.
+elseif ((<arg(q040_dragons)> == 12)||(<arg(q040_dragons)> == 13))
+  return Mohu ti vyrobit:<br>  Chranic krku - na ten je treba 1x hneda supina. <br>  Helmu - na tu je treba 1x hneda a 1x zelena supina. <br>  Rukavice - na ty je treba 1x zelena a 1x ruda supina. <br>  Ramena - na ty je treba 1x modra a 1x ruda supina.
+elseif ((<arg(q040_dragons)> == 14)||(<arg(q040_dragons)> == 15))
+	return Mohu ti vyrobit:<br>  Chranic krku - na ten je treba 1x hneda supina. <br>  Helmu - na tu je treba 1x hneda a 1x zelena supina. <br>  Rukavice - na ty je treba 1x zelena a 1x ruda supina. <br>  Ramena - na ty je treba 1x modra a 1x ruda supina. <br>  Nohy - na ty je treba 2x cerna a 1x modra supina.
+elseif ((<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 17))
+	return Mohu ti vyrobit:<br>  Chranic krku - na ten je treba 1x hneda supina. <br>  Helmu - na tu je treba 1x hneda a 1x zelena supina. <br>  Rukavice - na ty je treba 1x zelena a 1x ruda supina. <br>  Ramena - na ty je treba 1x modra a 1x ruda supina. <br>  Nohy - na ty je treba 2x cerna a 1x modra supina. <br>  Hrud - na tu je treba 2x bila a 1x cerna supina.
+elseif ((<arg(q040_dragons)> == 18)||(<arg(q040_dragons)> == 19)||(<arg(q040_dragons)> == 20))
+	return Mohu ti vyrobit:<br>  Chranic krku - na ten je treba 1x hneda supina. <br>  Helmu - na tu je treba 1x hneda a 1x zelena supina. <br>  Rukavice - na ty je treba 1x zelena a 1x ruda supina. <br>  Ramena - na ty je treba 1x modra a 1x ruda supina. <br>  Nohy - na ty je treba 2x cerna a 1x modra supina. <br>  Hrud - na tu je treba 2x bila a 1x cerna supina. <br>  Zbran - na vylepseni zbrane je treba krome kazdeho druhu supiny i supina zlata!
+else
+	return nic.
+endif
+
+[function q040_lookathim]
+arg(typ,<args>)
+if (<arg(typ)> == 1)
+	return *Vidis statneho muze, jehoz pokozka se leskne potem a ruce jsou cerne mourem a sazemi.*
+else
+	return *Vidis hubeneho muze, ktery neco na kline kuti.*
+endif
+
+[function q040_getwhoishe]
+arg(typ,<args>)
+if (<arg(typ)> == 1)
+	return Bud zdrav! Jsem mistni kovar. <br>Pro drakobijce vylepsuji jejich falerovou (ringmail), krouzkovou (chainmail) nebo platovou zbroj. <br>Tato zbroj je posleze mnohem odolnejsi vuci dracimu dechu... <br>Pro nejlepsi drakobijce mohu zhotovit i drakobijnou zbran!
+else
+	return I ty bud pozdraven. Jsem mistni dratenik. <br>Pro udatne drakobijce vylepsuji jejich kostenou (bone) nebo pokovanou (studded) zbroj. <br>Tato zbroj je pak vyrazne odolnejsi vuci dracimu dechu... <br>Pro nejlepsi drakobijce mohu vylepsit i jejich hole. <br>
+endif
+
+[function q040_getopposite]
+if (<tag(typ)> == 1)
+	return Dratenikem
+else
+	return Kovarem
+endif
+
+[dialog d_q040_dragons_kovar]
+argo.questDialog_create(<tag(obrazok)>,"<tag(name)>")
+
+argo.dialog_newPage("Pozdrav")
+arg(q040_dragons,<eval src.qtag(q040_dragons)>)
+arg(q040_dragons_kovar,<eval src.qtag(q040_dragons_kovar)>)
+
+if (<arg(q040_dragons)> == 4)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,21,"Vylepsit veci?")
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Bud pozdraven!")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q040_dragons)> == 4)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"<q040_getwhoishe(<tag(typ)>)>")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Vylepsit veci?")
+	if (<arg(q040_dragons_kovar)> == 0)
+    argo.setText(argo.newTextLine,"Rad bych ti pomohl, ale neco za neco! Spolecne s <q040_getopposite> mame nevyrizine ucty s panem Pevnosti strachu. Prines mi jeho hlavu a muzeme se bavit o drakobijecke zbroji")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobre, prinesu ti ji.")
+      argo.questDialog_addResponse(0,1,1,"q040_bring_the_head")
+  elseif (<arg(q040_dragons_kovar)> == 1)
+    argo.setText(argo.newTextLine,"Mas pro mne hlavu toho bastarda?!")
+    argo.questDialog_HTMLGUMP
+      if (<src.RESTEST(i_boss_skull_ps)>)
+        argo.setText(argo.newTextLine,"Ano! Tady je!")
+        argo.questDialog_addResponse(0,1,1,"q040_has_the_head")
+      endif
+      argo.setText(argo.newTextLine,"Ne, jeste ji nemam...")
+      argo.questDialog_addResponse(0,1,1,"refuse")
+  elseif (<arg(q040_dragons_kovar)> == 2)
+    argo.setText(argo.newTextLine,"Samozrejme. <br>Pro zhotoveni patricneho dilu si od tebe vezmu brneni nebo zbran, kterou chces vylepsit. Dale 50.000.- zlatych a patricne supiny. Zbran stoji 200.000.- zlatych a patricne supiny. <br>Chces tedy neco vylepsit?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano. Co potrebuji za suroviny?")
+      argo.questDialog_addResponse(0,0,1,"q040_what_he_need") 
+      argo.setText(argo.newTextLine,"Radsi ne, diky.")
+      argo.questDialog_addResponse(0,1,1,"q040_refuse")
+  endif
+  
+if (<arg(q040_dragons_kovar)> == 2)
+  argo.dialog_page("q040_what_he_need")
+  	if ((<arg(q040_dragons)> == 4)||(<arg(q040_dragons)> == 5))
+      argo.setText(argo.newTextLine,"Zatim te nepovazuju za drakobijce, promin.")
+      argo.questDialog_HTMLGUMP
+  	else
+      argo.setText(argo.newTextLine,"<q040_canmakeforhim(<arg(q040_dragons)>)><br> Chces tedy neco vyrobit?")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Ne, az priste.")
+        argo.questDialog_addResponse(0,1,0,"q040_refuse")
+        argo.setText(argo.newTextLine,"Ano, rad bych. ")
+        argo.questDialog_addResponse(0,1,1,"q040_want_to_make") 
+    endif
+endif
+
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Zeptej se u Vartiana, on pro tebe neco urcite najde.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"goodbye") 
+  if ((<arg(q040_dragons_kovar)> == 1)&&(<src.RESTEST(i_boss_skull_ps)>))
+    argo.setText(argo.newTextLine,"Mam pro tebe tu hlavu!")
+    argo.questDialog_addResponse(0,1,0,"q040_has_the_head")
+  endif
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote><q040_lookathim(<tag(typ)>)>")
+  argo.questDialog_HTMLGUMP
+    
+[dialog d_q040_dragons_kovar button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q040_want_to_make"))
+	if (<tag(typ)> == 1)
+		say("Vyber, co chces predelat")
+		src.f_dragon_armor_create_kovar
+	elseif (<tag(typ)> == 2)
+		say("Vyber, co chces predelat")
+		src.f_dragon_armor_create_dratenik
+	else
+		say("Neco sa pokazilo, kontaktuj gm")
+	endif
+elseif (<argn> == argo.dialog_linkButton("q040_bring_the_head"))
+  say("Skvele.")
+  src.qtag(q040_dragons_kovar,1,50)
+elseif (<argn> == argo.dialog_linkButton("q040_has_the_head"))
+  if (<src.RESTEST(i_boss_skull_ps)>)
+  	say("Konecne jsem se dockal! Mam tu par ostrych hrebiku, tak si budeme hrat!")
+  	src.qtag(q040_dragons_kovar,2,50)
+  	src.consume(1,i_boss_skull_ps)
+    finduid(#0402D472F).tag(dragons_kovar,#+1)
+  else
+  	say(Nelzi mi! Nemas ji!!!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_refuse"))
+  say("Dobre, je to tva volba. Pokud budes chtit prijdi pozdeji.")
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Mej se...")
+elseif (<argn> == argo.dialog_linkButton("goodbye"))
+  say("Mej se...")
+endif
+
+//////////////////////////////////////// predstaveny
+
+
+[speech spk_q040_dragons_predstaveny]
+
+on = *zdravim*
+on = *hi*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q040_dragons_predstaveny
+endif
+
+[function f_q040_dragons_predstaveny]
+if (<src.flags>&statf_dead)
+  return 1
+endif
+if ((<eval src.qtag(q040_dragons)> >= 4)&&(<eval src.qtag(q040_dragons)> < 50))
+	if (<q040_npcIsTired(<src>)>)
+		say("Promin, dnes uz jsem moc vycerpany, zkus to zitra")
+	else
+	  dialog(d_q040_dragons_predstaveny)
+	endif
+else
+   say("Ty tady nemas co delat!")
+ endif
+ 
+[function q040_npcIsTired]
+//arg(ovladac,<memoryfindtype(Memory_ISpawned).link.tag(ovladac)>)
+//if (<eval arg(ovladac).tag(locked_[<argv(0)>]> == <getday>)
+//	return 1
+//endif
+//if (<eval arg(ovladac).tag(locked)> == <getday>)
+//	return 1
+//endif
+return 0
+
+[function q040_getdragonposition]
+if (<args> == 1)
+	return 5639,113,0,11
+elseif (<args> == 2)
+	return 5684,58,0,11
+elseif (<args> == 3)
+	return 5079,3811,5,11
+elseif (<args> == 4)
+	return 3837,200,0,11
+elseif (<args> == 5)
+	return 4888,1987,0,11
+elseif (<args> == 6)
+	return 4889,1976,0,12
+elseif (<args> == 7)
+	return 2,2,2,2
+elseif (<args> == 8)
+	return 2,2,2,2
+endif
+
+[function q040_getdragonuid]
+	return<memoryfindtype(Memory_ISpawned).link.tag(ovladac).tag(dragon_spawn_<args>)>
+
+[function q040_dragon_spawn_check]
+if (<argv(0).more2> > 0)
+	return 1
+else
+	return 0
+endif
+
+//if (<finduid(argv(0).tag(lastspawned))>)
+//	if (strcmpi("<finduid(argv(0).tag(lastspawned)).name>","Drak"))
+//		return 0
+//	else
+//	  return 1
+//	endif
+//else
+//	return 0
+//endif
+
+[function q040_open_portal] // argv 0 = pozicia, argv 1 = uid hraca
+arg(ovladac,<memoryfindtype(Memory_ISpawned).link.tag(ovladac)>)
+if ((<q040_dragon_spawn_check(<q040_getdragonuid(<argv(0)>)>)>)&&(<finduid(<arg(ovladac)>).tag(has_tried)> < 3))
+	arg(ovladac).tag(has_tried,0)
+	arg(ovladac).tag(locked,<getday>)
+	//arg(ovladac).tag(locked_[<src>],<getday>)
+	arg(ovladac).tag(locked_dragon_<argv(0)>_day,<getday>)
+	arg(ovladac).tag(locked_dragon_<argv(0)>_hour,<gethour>)
+	say("Vstup tedy - ale pozor, portalem dokaze projit pouze pet lidi a po chvili se sam uzavre.")
+	logmsg("Postava <src.uid> (meno: <src.name>, acc: <src.account.name>) otvorila portal k drakovi cislo:  <argv(0)>.")
+	newitemsafe(i_q040_dragons_gate)
+  lastnew.morep=<q040_getdragonposition(<argv(0)>)>)
+  lastnew.p=<P>
+  lastnew.move=2,2
+  lastnew.timer=120
+  lastnew.tag(creator,<argv(1)>)
+  lastnew.tag(dragon_spawn,<q040_getdragonuid(<argv(0)>)>)
+  lastnew.tag(ovladac,<arg(ovladac)>)
+  finduid(<q040_getdragonuid(<argv(0)>)>).tag(killer,<argv(1)>)
+else
+	arg(ovladac).tag(has_tried,#+1)
+	if (<arg(ovladac).tag(has_tried)> >= 3)
+		arg(ovladac).tag(has_tried,0)
+//		arg(ovladac).tag(locked_[<argv(1)>],<getday>)
+	endif
+	say("Bohuzel, drak je mrtvy.")
+endif
+
+
+[ITEMDEF i_q040_dragons_gate]
+ID=i_moongate_blue
+Name=Portal
+TYPE=T_normal
+
+ON=@CREATE
+tag(passed,0)
+tag(dragon_spawn).tag(killer,<tag(creator)>)
+attr=010
+
+on=@step
+if !(src.isplayer)
+	return 0
+endif
+if (src.isgm)
+	src.go <morep>
+elseif (src.isdead)
+	src.sysmessage("Tato cesta neni pro tebe.")
+//elseif (<src> == <tag(creator)>)
+//	src.go <morep>
+elseif (<tag(passed)> < 5)
+	if (<src> == <tag(creator)>)
+		logmsg("Postava <src.uid> (meno: <src.name>, acc: <src.account.name>) vstupila k drakovi, ktoreho otvorila.")
+	endif
+	if (<eval tag(ovladac).tag(locked_[<src>])> == <getday>)
+		//if (<src> == <tag(creator)>)
+		//	tag(passed,#+1)
+		//	src.go <morep>
+		//	tag(ovladac).tag(locked_[<src>],<getday>)
+		//else
+		  src.sysmessage("Jsi vycerpany a tohle dnes uz nezvladnes.")
+		  return 0
+		//endif
+	endif
+  tag(ovladac).tag(locked_[<src>],<getday>)
+	tag(passed,#+1)
+	src.go <morep>
+else 
+	src.sysmessage("Brana je zablokovana.")
+endif
+
+
+on=@timer
+remove
+return 0
+
+
+[ITEMDEF i_q040_dragons_port_controller]
+ID=0EDC
+Name=Ovladac portalov
+TYPE=T_normal
+
+on=@userdclick
+if (src.isgm)
+	dialog d_q040_dragons_port_controller
+endif
+return 0
+
+ON=@CREATE
+tag(has_tried,0)
+attr=090
+color=0986
+
+on=@timer
+return 1
+
+[dialog d_q040_dragons_port_controller]
+arg(textcolor,52)
+argo.SetLocation=205,150
+
+argo.tag(sirka,372)
+argo.tag(vyska,247)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,2)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,187)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,187)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,187)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,187)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,187)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,187)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,187)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,187)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Nastaveni spawnu")
+  
+argo.texta(<argo.dialog_textpos(1,0)>,textcolor,"Hnedy drak: ")
+argo.texta(<argo.dialog_textpos(1,1)>,textcolor,"<tag(dragon_spawn_1)>")
+argo.button(lastxpos+185,lastypos,0fa5,0fa7,1,0,1)
+argo.texta(<argo.dialog_textpos(2,0)>,textcolor,"Zeleny drak: ")
+argo.texta(<argo.dialog_textpos(2,1)>,textcolor,"<tag(dragon_spawn_2)>")
+argo.button(lastxpos+185,lastypos,0fa5,0fa7,1,0,2)
+argo.texta(<argo.dialog_textpos(3,0)>,textcolor,"Ohnivy drak: ")
+argo.texta(<argo.dialog_textpos(3,1)>,textcolor,"<tag(dragon_spawn_3)>")
+argo.button(lastxpos+185,lastypos,0fa5,0fa7,1,0,3)
+argo.texta(<argo.dialog_textpos(4,0)>,textcolor,"Ladovy drak: ")
+argo.texta(<argo.dialog_textpos(4,1)>,textcolor,"<tag(dragon_spawn_4)>")
+argo.button(lastxpos+185,lastypos,0fa5,0fa7,1,0,4)
+argo.texta(<argo.dialog_textpos(5,0)>,textcolor,"Cierny drak: ")
+argo.texta(<argo.dialog_textpos(5,1)>,textcolor,"<tag(dragon_spawn_5)>")
+argo.button(lastxpos+185,lastypos,0fa5,0fa7,1,0,5)
+argo.texta(<argo.dialog_textpos(6,0)>,textcolor,"Biely drak: ")
+argo.texta(<argo.dialog_textpos(6,1)>,textcolor,"<tag(dragon_spawn_6)>")
+argo.button(lastxpos+185,lastypos,0fa5,0fa7,1,0,6)
+argo.texta(<argo.dialog_textpos(7,0)>,textcolor,"Zlady drak: ")
+argo.texta(<argo.dialog_textpos(7,1)>,textcolor,"<tag(dragon_spawn_7)>")
+argo.button(lastxpos+185,lastypos,0fa5,0fa7,1,0,7)
+argo.texta(<argo.dialog_textpos(8,0)>,textcolor,"Bonus drak: ")
+argo.texta(<argo.dialog_textpos(8,1)>,textcolor,"<tag(dragon_spawn_8)>")
+argo.button(lastxpos+185,lastypos,0fa5,0fa7,1,0,8)
+
+
+[dialog d_q040_dragons_port_controller button]
+on=0
+
+on=@anybutton
+if (argn>=1)
+  src.newequip(i_target_dragon_port_controller)
+  lastnew.tag(controller,<uid>)
+  lastnew.tag(spawnId,<argn>)
+  src.sysmessage("Zameraj spawn draka: ")
+endif
+
+[itemdef i_target_dragon_port_controller]
+id=i_memory
+type=t_eq_script
+name=i_target_dragon_port_controller
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target()
+timer=10
+
+on=@targon_char
+remove
+return 0
+
+on=@targon_item
+if (src.targ.type == t_spawn_char)||(src.targ.type == 022)
+	tag(controller).tag(dragon_spawn_<tag(spawnId)>,<src.targ.uid>)
+	src.sysmessage("nastavil si spawn")
+else
+	src.redmessage("zameriavaj iba spawny")
+endif
+return(1)
+
+on=@targon_ground
+return(1)
+
+[function q040_dragons_get_portal]
+arg(q040_dragons,<args>)
+if ((<arg(q040_dragons)> == 5)||(<arg(q040_dragons)> == 6))
+	return Do doupete hnedeho draka.
+elseif ((<arg(q040_dragons)> == 7)||(<arg(q040_dragons)> == 8))
+ 	return Do doupete hnedeho draka.<br>  Do doupete zeleneho draka.
+elseif ((<arg(q040_dragons)> == 9)||(<arg(q040_dragons)> == 10))
+	return Do doupete hnedeho draka.<br>  Do doupete zeleneho draka.<br>  Do doupete ohniveho draka.
+elseif ((<arg(q040_dragons)> == 11)||(<arg(q040_dragons)> == 12))
+	return Do doupete hnedeho draka.<br>  Do doupete zeleneho draka.<br>  Do doupete ohniveho draka.<br>  Do doupete ledoveho draka.
+elseif ((<arg(q040_dragons)> == 13)||(<arg(q040_dragons)> == 14))
+	return Do doupete hnedeho draka.<br>  Do doupete zeleneho draka.<br>  Do doupete ohniveho draka.<br>  Do doupete ledoveho draka.<br>  Do doupete cerneho draka.
+elseif ((<arg(q040_dragons)> == 15)||(<arg(q040_dragons)> == 16))
+	return Do doupete hnedeho draka.<br>  Do doupete zeleneho draka.<br>  Do doupete ohniveho draka.<br>  Do doupete ledoveho draka.<br>  Do doupete cerneho draka.<br>  Do doupete bileho draka.
+elseif ((<arg(q040_dragons)> == 17)||(<arg(q040_dragons)> == 18))
+	return Do doupete hnedeho draka.<br>  Do doupete zeleneho draka.<br>  Do doupete ohniveho draka.<br>  Do doupete ledoveho draka.<br>  Do doupete cerneho draka.<br>  Do doupete bileho draka.<br>  Do doupete zlateho draka.
+elseif ((<arg(q040_dragons)> == 19)||(<arg(q040_dragons)> == 20))
+	return Do doupete hnedeho draka.<br>  Do doupete zeleneho draka.<br>  Do doupete ohniveho draka.<br>  Do doupete ledoveho draka.<br>  Do doupete cerneho draka.<br>  Do doupete bileho draka.<br>  Do doupete zlateho draka.<br>  Do Doupete draka Margutha Zapomenuteho
+else
+	return nic.
+endif
+
+[function q040_lookatgater]
+arg(q040_dragons,<args>)
+if ((<arg(q040_dragons)> == 4)||(<arg(q040_dragons)> == 5))
+  return *Vidis belovlaseho muze, ktery i pres svuj velmi vysoky vek vypada velmi zdrave. Jeho oci jako by te provrtavaly skrz na skrz. Zrejme se te snazi odhadnout.*
+elseif ((<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 7)||(<arg(q040_dragons)> == 8)||(<arg(q040_dragons)> == 9))
+	return *Vidis vudce zdejsiho radu Drakobijcu.<br> Jeho oci jako by te provrtavaly skrz na skrz.*
+elseif ((<arg(q040_dragons)> == 10)||(<arg(q040_dragons)> == 11)||(<arg(q040_dragons)> == 12)||(<arg(q040_dragons)> == 13))
+  return *Vidis vudce zdejsiho radu Drakobijcu.<br> Jeho oci jako by te provrtavaly skrz na skrz, ale zacinas mit dojem, ze je k tobe jiz mene odmereny.*
+elseif ((<arg(q040_dragons)> == 14)||(<arg(q040_dragons)> == 15)||(<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 17))
+	return *Vidis vudce zdejsiho radu Drakobijcu.<br> Konecne mas pocit, ze pro nej nejsi zklamanim a nejistotou.*
+elseif ((<arg(q040_dragons)> == 18)||(<arg(q040_dragons)> == 19))
+	return *Vidis belovlaseho muze, ktery vypada ohromen. Jeho oci vyzaruji uznani. Bohuzel ale i smutek. Je to zrejme, ze nejsi prvni kdo zabil vsehcny druhy draku!*
+elseif (<arg(q040_dragons)> == 20)
+	return *ZABIL VSETKYCH DRAKOV - DOPLNIT TEXT*
+else
+	return nic.
+endif
+
+[dialog d_q040_dragons_predstaveny]
+argo.questDialog_create(03059,"Predstaveny")
+
+argo.dialog_newPage("Pozdrav")
+arg(q040_dragons,<eval src.qtag(q040_dragons)>)
+
+if ((<arg(q040_dragons)> == 4)||(<arg(q040_dragons)> == 5))
+	argo.questDialog_baseButt(1) // Kdo jsi?
+elseif ((<arg(q040_dragons)> > 7)&&(<arg(q040_dragons)> < 20))
+	argo.questDialog_baseButt(1,21,"Posledni drak?")
+endif
+
+if ((<arg(q040_dragons)> == 4)||(<arg(q040_dragons)> == 5)||(<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 7))
+  argo.questDialog_baseButt(2,21,"Vice o radu")
+elseif ((<arg(q040_dragons)> > 7)&&(<arg(q040_dragons)> < 13))
+  argo.questDialog_baseButt(2,21,"Prastari draci?")
+elseif ((<arg(q040_dragons)> > 13)&&(<arg(q040_dragons)> < 20))
+  argo.questDialog_baseButt(2,21,"Zabiti Margutha?")
+endif
+
+if ((<arg(q040_dragons)> == 5)||(<arg(q040_dragons)> == 6))
+  argo.questDialog_baseButt(3,21,"Hnedy drak?")
+elseif ((<arg(q040_dragons)> == 7)||(<arg(q040_dragons)> == 8))
+  argo.questDialog_baseButt(3,21,"Zeleny drak?")
+elseif ((<arg(q040_dragons)> == 9)||(<arg(q040_dragons)> == 10))
+  argo.questDialog_baseButt(3,21,"Ohnivy drak?")
+elseif ((<arg(q040_dragons)> == 11)||(<arg(q040_dragons)> == 12))
+  argo.questDialog_baseButt(3,21,"Ledovy drak?")
+elseif ((<arg(q040_dragons)> == 13)||(<arg(q040_dragons)> == 14))
+  argo.questDialog_baseButt(3,21,"Cerny drak?")
+elseif ((<arg(q040_dragons)> == 15)||(<arg(q040_dragons)> == 16))
+  argo.questDialog_baseButt(3,21,"Bily drak?")
+elseif ((<arg(q040_dragons)> == 17)||(<arg(q040_dragons)> == 18))
+  argo.questDialog_baseButt(3,21,"Zlaty drak?")
+elseif (<arg(q040_dragons)> == 19)
+  argo.questDialog_baseButt(3,21,"Marguth Zapomenuty?")
+endif
+
+if ((<arg(q040_dragons)> > 4)&&(<arg(q040_dragons)> < 50))
+  argo.questDialog_baseButt(4,21,"Portal?")
+endif
+
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote><q040_lookatgater(<arg(q040_dragons)>)>")
+  argo.questDialog_HTMLGUMP
+  
+if ((<arg(q040_dragons)> == 4)||(<arg(q040_dragons)> == 5))
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jsem vudcem zdejsiho radu Drakobijcu. Ty budes ten novy adept?")
+    argo.questDialog_HTMLGUMP
+endif
+
+if ((<arg(q040_dragons)> > 7)&&(<arg(q040_dragons)> < 20))
+  argo.dialog_page("Posledni drak?")
+  	if ((<arg(q040_dragons)> == 8)||(<arg(q040_dragons)> == 9))
+      argo.setText(argo.newTextLine,"Zabij jeste ohniveho draka a reknu ti vic. Je to pro nas pomerne palcive tema.")
+      argo.questDialog_HTMLGUMP
+    elseif ((<arg(q040_dragons)> == 10)||(<arg(q040_dragons)> == 11))
+      argo.setText(argo.newTextLine," Kdyz jsi jiz splnil tri zkousky, tak ti mohu rici vice. <br> Jeden prastary drak zije, jmenuje se Marguth Zapomenuty. <br>Prvni zminky o nem jsou z doby, kdy sam zapricinil vypaleni slavneho mesta Gondolin.")
+      argo.questDialog_HTMLGUMP
+    elseif ((<arg(q040_dragons)> == 12)||(<arg(q040_dragons)> == 13)||(<arg(q040_dragons)> == 14)||(<arg(q040_dragons)> == 15))
+      argo.setText(argo.newTextLine," Jeden prastary drak zije, jmenuje se Marguth Zapomenuty. <br>Prvni zminky o nem jsou z doby, kdy sam zapricinil vypaleni slavneho mesta Gondolin.")
+      argo.questDialog_HTMLGUMP
+      	if ((<arg(q040_dragons)> == 12)||(<arg(q040_dragons)> == 13))
+    	    argo.setText(argo.newTextLine,"Proc je to citlive tema?")
+          argo.questDialog_addResponse(0,0,1,"q040_why_sensitive") 
+    	    argo.setText(argo.newTextLine,"Zkouseli jste ho zabit?")
+          argo.questDialog_addResponse(0,0,1,"q040_tried_to_kill") 
+        endif
+    elseif ((<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 17)||(<arg(q040_dragons)> == 18)||(<arg(q040_dragons)> == 19))
+      argo.setText(argo.newTextLine,"Jeden prastary drak zije, jmenuje se Marguth Zapomenuty. Drakobijci mnohokrat neuspeli - nyni i v minulosti. Jeho draci dech je tak silny, ze bez kompletniho drakobijeckeho brneni neprezijes ani prvnich deset vterin! Ten drak je nocni mura a jeho existence je plivanec do tvare drakobijcu!")
+      argo.questDialog_HTMLGUMP
+    endif
+endif
+
+if ((<arg(q040_dragons)> == 12)||(<arg(q040_dragons)> == 13))
+	argo.dialog_page("q040_why_sensitive")
+    argo.setText(<argo.newTextLine>,"Mnohokrat jsme neuspeli. Nejen my, ale i nasi predchudci. Jeho existence je plivanec do tvare drakobijcu!")
+    argo.questDialog_HTMLGUMP
+    
+	argo.dialog_page("q040_tried_to_kill")
+    argo.setText(<argo.newTextLine>,"Mnohokrat, my i nasi predchudci. Zrovna pred pul rokem v jeho doupeti zahynulo sest mych bratru ve zbrani!")
+    argo.questDialog_HTMLGUMP
+endif
+
+if ((<arg(q040_dragons)> == 4)||(<arg(q040_dragons)> == 5)||(<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 7))
+  argo.dialog_page("Vice o radu")
+    argo.setText(<argo.newTextLine>,"Spolecenstvi drakobijcu existuje snad jiz od nepameti. V knihovne se o nasi historii muzes docist vice. Ve zkratce je nasim hlavnim poslanim nedopustit, aby nejaky drak ziskal moc, kterou meli prastari draci.")
+    argo.questDialog_HTMLGUMP
+    if ((<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 7))
+    	argo.setText(argo.newTextLine,"Prastari draci?")
+      argo.questDialog_addResponse(0,0,1,"q040_old_dragons") 
+    	argo.setText(argo.newTextLine,"Knihovna?")
+      argo.questDialog_addResponse(0,0,1,"q040_bookcase") 
+    endif
+endif
+
+if ((<arg(q040_dragons)> == 6)||(<arg(q040_dragons)> == 7))
+	argo.dialog_page("q040_old_dragons")
+    argo.setText(<argo.newTextLine>,"Ano draci tak mocni, ze dostali jmeno. Tito draci byli prokletim pro celou Stredozem! Vic ti ale do slozeni prvni zkousky neprozradim!")
+    argo.questDialog_HTMLGUMP
+    
+	argo.dialog_page("q040_bookcase")
+    argo.setText(<argo.newTextLine>,"Rozhledni se a procti si par pergamenu!")
+    argo.questDialog_HTMLGUMP
+endif
+
+if ((<arg(q040_dragons)> > 7)&&(<arg(q040_dragons)> < 13))
+	argo.dialog_page("Prastari draci?")
+    argo.setText(<argo.newTextLine>,"Spolecenstvi drakobijcu existuje snad jiz od nepameti. V knihovne se o nasi historii muzes docist vice. Ve zkratce je nasim hlavnim poslanim nedopustit, aby nejaky drak ziskal moc, kterou meli prastari draci.")
+    argo.questDialog_HTMLGUMP    
+    if (<arg(q040_dragons)> == 8)
+    	argo.setText(argo.newTextLine,"Proc nastesti?")
+      argo.questDialog_addResponse(0,0,1,"q040_why_lucky") 
+    	argo.setText(argo.newTextLine,"A stari jiz nejsou?")
+      argo.questDialog_addResponse(0,0,1,"q040_are_they") 
+    endif
+endif
+
+if (<arg(q040_dragons)> == 8)
+	argo.dialog_page("q040_why_lucky")
+    argo.setText(<argo.newTextLine>,"Drak se jmenem je synonymem k pohrome. Kazdy takovy drak za sebou mel stovky mozna i tisice mrtvych.")
+    argo.questDialog_HTMLGUMP
+    
+	argo.dialog_page("q040_are_they")
+    argo.setText(<argo.newTextLine>,"V podstate ne. Vyjma jednoho, ale o tom ti zatim nic nereknu.")
+    argo.questDialog_HTMLGUMP
+endif
+  
+if ((<arg(q040_dragons)> > 13)&&(<arg(q040_dragons)> < 20))
+  argo.dialog_page("Zabiti Margutha Zapomenuteho?")
+   	if ((<arg(q040_dragons)> == 14)||(<arg(q040_dragons)> == 15))
+      argo.setText(<argo.newTextLine>,"Zrovna pred pul rokem v jeho doupeti zahynulo sest mych bratru ve zbrani! <def_questDialog_colorTextEmote> *odvratil pohled*")
+      argo.questDialog_HTMLGUMP    
+      	argo.setText(argo.newTextLine,"Jak je to mozne?")
+        argo.questDialog_addResponse(0,0,1,"q040_how_is_it_possible") 
+      	argo.setText(argo.newTextLine,"Stoji za tolik utrpeni?")
+        argo.questDialog_addResponse(0,0,1,"q040_does_it_worth") 
+    elseif ((<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 17)||(<arg(q040_dragons)> == 18)||(<arg(q040_dragons)> == 19))
+      argo.setText(<argo.newTextLine>,"Ano jeho zabiti je duvodem tve zkouzky. Ovsem ty sam na to zdaleka nestacis. Musis si najit dalsich minimalne pet spolubojovniku!")
+      argo.questDialog_HTMLGUMP    
+      	if ((<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 17))
+      	  argo.setText(argo.newTextLine,"Proc minimalne?")
+          argo.questDialog_addResponse(0,0,1,"q040_why_five") 
+        endif
+        if ((<arg(q040_dragons)> == 18)||(<arg(q040_dragons)> == 19))
+      	  argo.setText(argo.newTextLine,"Chci ho zabit!")
+          argo.questDialog_addResponse(0,0,1,"q040_want_to_kill_him") 
+        endif
+      	argo.setText(argo.newTextLine,"A ten poklad?")
+        argo.questDialog_addResponse(0,0,1,"q040_about_treasure") 
+    endif
+endif
+
+if ((<arg(q040_dragons)> == 14)||(<arg(q040_dragons)> == 15))
+	argo.dialog_page("q040_how_is_it_possible")
+    argo.setText(<argo.newTextLine>,"Jiz jsem zazil desitky skupin, ktere vyrazily a nevratily se. Bud zahynuly vsichni a nebo vetsi cast.")
+    argo.questDialog_HTMLGUMP
+    
+	argo.dialog_page("q040_does_it_worth")
+    argo.setText(<argo.newTextLine>,"Uz jenom jeho existence ukazuje nasi neschopnost. Musi, proste musi zemrit! Navic i o jeho pokladu koluji legendy!")
+    argo.questDialog_HTMLGUMP
+endif
+  
+if ((<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 17))
+	argo.dialog_page("q040_why_five")
+    argo.setText(<argo.newTextLine>,"Nedokazi otevrit a udrzet portal pro vice nez sest lidi. Jeho draci dech je tak silny, ze bez kompletniho drakobijeckeho brneni neprezijes ani prvnich deset vterin! Ten drak je nocni mura!")
+    argo.questDialog_HTMLGUMP
+endif
+  
+if ((<arg(q040_dragons)> == 18)||(<arg(q040_dragons)> == 19))
+	argo.dialog_page("q040_want_to_kill_him")
+    argo.setText(<argo.newTextLine>,"Neukvapuj se. Prvne sloz kompletni brneni pro sebe i celou partu a pak muzes vyrazit!")
+    argo.questDialog_HTMLGUMP
+endif
+  
+if ((<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 17)||(<arg(q040_dragons)> == 18)||(<arg(q040_dragons)> == 19))
+	argo.dialog_page("q040_about_treasure")
+	  if ((<arg(q040_dragons)> == 16)||(<arg(q040_dragons)> == 17))
+      argo.setText(<argo.newTextLine>,"Pokladu se ti zachtelo? Legendarni zbrane? Ver mi, ze bych kazdy zivot, ktery tento drak odebral bez vahani vymenil za zniceni teto zbrane! At je jakkoliv uzasna, tak za tolik zivotu nestoji!")
+      argo.questDialog_HTMLGUMP
+    elseif ((<arg(q040_dragons)> == 18)||(<arg(q040_dragons)> == 19))
+      argo.setText(<argo.newTextLine>,"Opet te zajima ta legendarni zbran? Je opravdu uzasna. Jde o prastarou a mocnou zbran, ktera motivovala mnohe ke vstupu k Drakobijcum. <br>Ale uvedom si, ze zabijeni draku neni o chamtivosti. Je to i o dusevni rovnovaze a klidu! Bez nich se neni mozne dostatecne soustredit a draka porazit!")
+      argo.questDialog_HTMLGUMP
+    endif
+endif
+  
+if ((<arg(q040_dragons)> == 5)||(<arg(q040_dragons)> == 6))
+	argo.dialog_page("Hnedy drak?")
+    argo.setText(<argo.newTextLine>,"Blahopreji ti k zabiti baheniho draka. I kdyz to je spise had nez drak! Tesi mne, ze mas dost rozumu a prvne si chces o drakovi neco zjistit! Hnedy drak je nejslabsi z pravych draku. Je to v podstate draci mlade, jehoz supiny nejsou jeste zcela pevne, jsou pruzne. Vyplati se na nej pouzivat zejmena prurazne zbrane a prurazne strelivo. Ani jeho dech neni nijak silny.")
+    argo.questDialog_HTMLGUMP
+elseif ((<arg(q040_dragons)> == 7)||(<arg(q040_dragons)> == 8))
+	argo.dialog_page("Zeleny drak?")
+    argo.setText(<argo.newTextLine>,"Zabil jsi hnedeho draka? Blahopreji ti. Zeleny drak je jiz mnohem tezsi, plive kyselinu, ktera je schopna ti otravit krev jedem, na ktery bezne jedy nestaci. Mohu ti jenom doporucit, aby sis koupit protijed u naseho alchymisty. Co se tyce zbrani, tak na zeleneho draka nejlepe funguji sekery a nejaka magie, tu ti nepovim. Muzes pouzit take strelne zbrane.")
+    argo.questDialog_HTMLGUMP
+elseif ((<arg(q040_dragons)> == 9)||(<arg(q040_dragons)> == 10))
+	argo.dialog_page("Ohnivy drak?")
+    argo.setText(<argo.newTextLine>,"Zabil jsi hnedeho a zeleneho draka? Blahopreji ti. Ohnivy drak je doslova zkouska ohnem, Jeho dech je ohen, ktery je schopen okamzite tavit nizsi kovy. Sam je vuci ohni zcela imunni. Citlivy je naopak na led a na ostre zbrane! Naopak sipy v podstate shori drive nez k nemu doleti. Jeste jednu radu ti dam - je v podstate nezbytne sebou mit aspon zakladni ochranu v podobe drakobijeckeho brneni nebo patricny lektvar.")
+    argo.questDialog_HTMLGUMP
+elseif ((<arg(q040_dragons)> == 11)||(<arg(q040_dragons)> == 12))
+	argo.dialog_page("Ledovy drak?")
+    argo.setText(<argo.newTextLine>,"Blahopreji ti - podarilo se ti jiz skolit tri druhy draku! Nyni te ceka Ledovy drak. Na prvni pohled se zda lehci nez ohnivy drak, ale bohuzel na nej nemame zadny elixir. To ti muze boj ponekud znesnadnit. Pokud te zasahne jeho dech, tak te bude kazdych par sekund mrazit a zpomalovat. Sam ledovy drak je proti ledu imuni a je naopak velmi citlivy na ohen. Jeho kuze a supiny jsou velmi pevne, proto na nej nejlepe funguji tupe zbrane.")
+    argo.questDialog_HTMLGUMP
+elseif ((<arg(q040_dragons)> == 13)||(<arg(q040_dragons)> == 14))
+	argo.dialog_page("Cerny drak?")
+    argo.setText(<argo.newTextLine>,"Blahopreji ti - podarilo se ti jiz skolit ctyri druhy draku! Nyni te ceka cerny drak. Nyni je treba velmi vhodne zvazit slozeni skupiny. Cerny drak je nocni mura vsech magu a nekromantu a vubec vsech zabijejich magii, je zcela imunni vuci vsem kouzlum. Naopak fyzicke zraneni mu znatelne ublizuje. V pergamenech snad najdes, ktere zbrane jsou vhodnejsi!")
+    argo.questDialog_HTMLGUMP
+elseif ((<arg(q040_dragons)> == 15)||(<arg(q040_dragons)> == 16))
+	argo.dialog_page("Bily drak?")
+    argo.setText(<argo.newTextLine>,"Blahopreji ti - podarilo se ti jiz skolit pet druhu draku! Nyni te ceka Bily drak. Opet je treba velmi vhodne zvazit slozeni skupiny. Tak jak je cerna protikladem bile barvy, tak je i bily drak protikladem cerneho draka. Uplna imunita na fyzicky utok a vysoka zranitelnost magii. V pergamenech snad najdes, ktera kouzla jsou nejvhodnejsi!")
+    argo.questDialog_HTMLGUMP
+elseif ((<arg(q040_dragons)> == 17)||(<arg(q040_dragons)> == 18))
+	argo.dialog_page("Zlaty drak?")
+    argo.setText(<argo.newTextLine>,"Blahopreji ti - podarilo se ti zabit vsechny bezne druhy draku! Nyni te ceka zlaty drak. Jedna se o draka, ktery je nad ramec draku, ktere jsi doposud poznal. Je nad nimi a zaroven jen i jimi! Proc? ma vsehcny utoky draku predchozich. Jeho zranitelnost se meni podle toho, jaky dech zrovna pouziva! Jeho zlata supina je unikatem a nezbytnou ingredienci na Drakobijnou zbran!")
+    argo.questDialog_HTMLGUMP
+elseif (<arg(q040_dragons)> == 19)
+	argo.dialog_page("Marguth Zapomenuty?")
+    argo.setText(<argo.newTextLine>,"Blahopreji ti slozil jsi kompletni zkousku. Nyni je nezbytne slozit kompletni drakobijecke brneni pro tebe i tvou skupinu, pak se muzes vydat na cestu!")
+    argo.questDialog_HTMLGUMP
+endif
+
+if ((<arg(q040_dragons)> > 4)&&(<arg(q040_dragons)> < 50))
+	argo.dialog_page("Portal?")
+    argo.setText(<argo.newTextLine>,"Aktualne ti mohu nabidnout vyvolani portalu do nasledujicich doupat. Zda tam bude drak nebo ne, je otazka: <br> <q040_dragons_get_portal(<arg(q040_dragons)>)> <br> Tak do ktereho doupata chces otevrit portal?")
+    argo.questDialog_HTMLGUMP
+    if ((<arg(q040_dragons)> > 4))
+      argo.setText(argo.newTextLine,"Do doupete hnedeho draka!")
+      argo.questDialog_addResponse(0,1,1,"q040_make_portal_1")
+    endif 
+    if ((<arg(q040_dragons)> > 6))
+      argo.setText(argo.newTextLine,"Do doupete zeleneho draka!")
+      argo.questDialog_addResponse(0,1,1,"q040_make_portal_2")
+    endif 
+    if ((<arg(q040_dragons)> > 8))
+      argo.setText(argo.newTextLine,"Do doupete ohniveho draka!")
+      argo.questDialog_addResponse(0,1,1,"q040_make_portal_3")
+    endif 
+    if ((<arg(q040_dragons)> > 10))
+      argo.setText(argo.newTextLine,"Do doupete ledoveho draka!")
+      argo.questDialog_addResponse(0,1,1,"q040_make_portal_4")
+    endif 
+    if ((<arg(q040_dragons)> > 12))
+      argo.setText(argo.newTextLine,"Do doupete cerneho draka!")
+      argo.questDialog_addResponse(0,1,1,"q040_make_portal_5")
+    endif 
+    if ((<arg(q040_dragons)> > 14))
+      argo.setText(argo.newTextLine,"Do doupete bileho draka!")
+      argo.questDialog_addResponse(0,1,1,"q040_make_portal_6")
+    endif 
+    if ((<arg(q040_dragons)> > 16))
+      argo.setText(argo.newTextLine,"Do doupete zlateho draka!")
+      argo.questDialog_addResponse(0,1,1,"q040_make_portal_7")
+    endif 
+    if ((<arg(q040_dragons)> > 18))
+      argo.setText(argo.newTextLine,"Do doupete draka Marguth Zapomenuty!")
+      argo.questDialog_addResponse(0,1,1,"q040_make_portal_8")
+    endif 
+    argo.setText(argo.newTextLine,"Ne, Nejsem na to jeste pripraven.")
+    argo.questDialog_addResponse(0,1,1,"q040_refuse_portal")
+endif
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"goodbye",1) 
+
+argo.dialog_page("Prohlednout")
+	if (<arg(q040_dragons)> < 12)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Toto brneni a zbran proste nedokazes neobdivovat. Mas silne nutkani ziskat stejne. Byla by to nadhera!*")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Toto brneni a zbran proste nedokazes neobdivovat. Mas silne nutkani ziskat dalsi dily tohoto brneni. Byla by to nadhera mit ho kompletni!*")
+    argo.questDialog_HTMLGUMP
+  endif
+
+[dialog d_q040_dragons_predstaveny button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+arg(ovladac,<memoryfindtype(Memory_ISpawned).link.tag(ovladac)>)
+if (<argn> == argo.dialog_linkButton("q040_make_portal_1"))
+	if ((<eval arg(ovladac).tag(locked_dragon_1_day)> == <getday>)&&(<eval <eval arg(ovladac).tag(locked_dragon_1_hour)>+3> > <gethour>))
+		say("Promin, ale to radeji uz dnes ne.")
+	else
+    q040_open_portal(1,<src>)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_make_portal_2"))
+  if ((<eval arg(ovladac).tag(locked_dragon_2_day)> == <getday>)&&(<eval <eval arg(ovladac).tag(locked_dragon_2_hour)>+3> > <gethour>))
+		say("Promin, ale to radeji uz dnes ne.")
+	else
+    q040_open_portal(2,<src>)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_make_portal_3"))
+  //q040_open_portal(3,<src>)	
+  if ((<eval arg(ovladac).tag(locked_dragon_3_day)> == <getday>)&&(<eval <eval arg(ovladac).tag(locked_dragon_3_hour)>+3> > <gethour>))
+		say("Promin, ale to radeji uz dnes ne.")
+	else
+    q040_open_portal(3,<src>)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_make_portal_4"))
+  //q040_open_portal(4,<src>)
+  if ((<eval arg(ovladac).tag(locked_dragon_4_day)> == <getday>)&&(<eval <eval arg(ovladac).tag(locked_dragon_4_hour)>+3> > <gethour>))
+		say("Promin, ale to radeji uz dnes ne.")
+	else
+    q040_open_portal(4,<src>)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_make_portal_5"))
+  //q040_open_portal(5,<src>)
+  if ((<eval arg(ovladac).tag(locked_dragon_5_day)> == <getday>)&&(<eval <eval arg(ovladac).tag(locked_dragon_5_hour)>+3> > <gethour>))
+		say("Promin, ale to radeji uz dnes ne.")
+	else
+    q040_open_portal(5,<src>)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_make_portal_6"))
+  //q040_open_portal(6,<src>)
+  if ((<eval arg(ovladac).tag(locked_dragon_6_day)> == <getday>)&&(<eval <eval arg(ovladac).tag(locked_dragon_6_hour)>+3> > <gethour>))
+		say("Promin, ale to radeji uz dnes ne.")
+	else
+    q040_open_portal(6,<src>)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_make_portal_7"))
+  //q040_open_portal(7,<src>)	
+  if ((<eval arg(ovladac).tag(locked_dragon_7_day)> == <getday>)&&(<eval <eval arg(ovladac).tag(locked_dragon_7_hour)>+3> > <gethour>))
+		say("Promin, ale to radeji uz dnes ne.")
+	else
+    q040_open_portal(7,<src>)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_make_portal_8"))
+  //q040_open_portal(8,<src>)
+  if ((<eval arg(ovladac).tag(locked_dragon_8_day)> == <getday>)&&(<eval <eval arg(ovladac).tag(locked_dragon_8_hour)>+3> > <gethour>))
+		say("Promin, ale to radeji uz dnes ne.")
+	else
+    q040_open_portal(8,<src>)
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_refuse_portal"))
+  say("Dobre, je to tva volba. Pokud budes chtit prijdi pozdeji.")
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+[events e_q040_dragon_death] // q040_dragons_qtag_wanted
+on=@death
+//if !(strcmpi("<memoryfindtype(Memory_ISpawned).link.tag(killer).region.name>","<memoryfindtype(Memory_ISpawned).link.region.name>"))
+	if (<memoryfindtype(Memory_ISpawned).link.tag(killer).qtag(q040_dragons)> == <eval <tag(q040_dragons_qtag_wanted)>-1>)
+	  memoryfindtype(Memory_ISpawned).link.tag(killer).qtag(q040_dragons,<tag(q040_dragons_qtag_wanted)>)
+	  memoryfindtype(Memory_ISpawned).link.tag(killer).classmessage("Zabil si draka, Vartian bude stastny.")
+	endif
+//else
+//	memoryfindtype(Memory_ISpawned).link.tag(killer).redmessage("Nebol si pri smrti draka.")
+//endif
+finduid(#0402D472F).tag(dragons_<tag(q040_dragons_qtag_wanted)>,#+1)
+
+//////////////////////////// alchymista
+
+/// qtag - q040_dragons_alchymista
+// 0 = nema nic spolocne
+// 1 = rozhodol sa priniest elixiry
+// 2 = priniesol elixiry, moze obchodovat
+// 100 = odmietol pomoc
+
+
+
+[speech spk_q040_dragons_alchymista]
+
+on = *zdravim*
+on = *hi*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q040_dragons_alchymista
+endif
+
+[function f_q040_dragons_alchymista]
+if (<src.flags>&statf_dead)
+  return 1
+endif
+if (<src.tag(level)> < 40)
+	say("Nemam sa s tebou o com bavit, prid az ked budes silnejsi")
+else
+	if ((<eval src.qtag(q040_dragons)> >= 4)&&(<eval src.qtag(q040_dragons)> < 50))
+		if (<eval src.qtag(q040_dragons_alchymista)> == 100)
+  	  say("Odmitl jsi mi pomoci, ted ti neprodam nic!")
+		else
+		  dialog(d_q040_dragons_alchymista)
+		endif
+  else
+  	say("Tady nemas co delat!")
+  endif
+endif
+
+[function q040_dragons_has_potions]
+if ((<src.rescount i_potion_RefreshElixir> >= 30) && (<src.rescount i_potion_StrengthElixir> >= 10) && (<src.rescount i_potion_CleverElixir> >= 10) && (<src.rescount i_potion_Stoneskinelixir> >= 10) && (<src.rescount i_potion_EnergyElixir> >= 10) && (<src.rescount i_potion_Shieldelixir> >= 10) && (<src.rescount i_potion_AgilityElixir> >= 10) && (<src.rescount i_potion_HealElixir> >= 30))
+	return 1
+else
+	return 0
+endif
+
+[FUNCTION q040_dragons_consume_potions]
+src.consume(30,i_potion_HealElixir)
+src.consume(30,i_potion_RefreshElixir)
+src.consume(10,i_potion_StrengthElixir)
+src.consume(10,i_potion_CleverElixir)
+src.consume(10,i_potion_Stoneskinelixir)
+src.consume(10,i_potion_EnergyElixir)
+src.consume(10,i_potion_Shieldelixir)
+src.consume(10,i_potion_AgilityElixir)
+
+[dialog d_q040_dragons_alchymista]
+argo.questDialog_create(03159,"Alchymista")
+
+argo.dialog_newPage("Pozdrav")
+arg(q040_dragons,<eval src.qtag(q040_dragons_alchymista)>)
+
+if (<arg(q040_dragons)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,21,"Vice o radu?")
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Vitej...")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q040_dragons)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jsem mistni alchymista. Staram se, aby drakobijci meli dostatek specialnich lektvaru.")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Vice o radu?")
+  argo.setText(<argo.newTextLine>,"Spolecenstvi drakobijcu existuje snad jiz od nepameti. V knihovne se o nasi historii muzes docist vice. Ve zkratce je nasim hlavnim poslanim nedopustit, aby nejaky drak ziskal moc, kterou meli prastari draci.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Obchodovat")
+	if ((<arg(q040_dragons)> == 0)||(<arg(q040_dragons)> == 1))
+    argo.setText(<argo.newTextLine>,"Zatim sis moji pomoc nezaslouzil.")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(<argo.newTextLine>,"Budiz, ale pozor, me lektvary jsou velmi krehke, tak je nepokladej na zem a ani s nimi prilis netres!<br>Mohu ti nabidnout toto:")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Protijed na draci jed - 2.000")
+      argo.questDialog_addResponse(0,1,1,"q040_buy_antidote")
+      argo.setText(argo.newTextLine,"Lek na popaleniny - 2.000")
+      argo.questDialog_addResponse(0,1,1,"q040_buy_heal")
+      argo.setText(argo.newTextLine,"Ochrana mysli - 2.000")
+      argo.questDialog_addResponse(0,1,1,"q040_buy_protection")
+      argo.setText(argo.newTextLine,"Lektvar ochrany proti drakum - 10.000")
+      argo.questDialog_addResponse(0,1,1,"q040_buy_resist")
+  endif
+  
+argo.dialog_page("Hledam praci")
+  if (<arg(q040_dragons)> == 0)
+    argo.setText(<argo.newTextLine>,"Neco bych prece jenom potreboval.<br>Drakobijci maji velkou spotrebu lektvaru a elixiru. Moje dominanta je ovsem v specialnich lektvarech na draci dechy. Abych se mohl venovat sve praci, potreboval bych si udelat zasobu Elixiru. Prines mi 30x Elixir leceni a osvezeni, dale 10x kazdy dalsi elixir (STR, INT, DEX, VIT, Stone, Spell).<br>Pomuzes mi tedy?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano rozhodne.")
+      argo.questDialog_addResponse(0,1,1,"q040_help_now")
+      argo.setText(argo.newTextLine,"Mozna pozdeji.")
+      argo.questDialog_addResponse(0,1,1,"q040_help_later")
+      argo.setText(argo.newTextLine,"Nebudu s tebou obchodovat.")
+      argo.questDialog_addResponse(0,1,1,"q040_wont_help")
+  elseif (<arg(q040_dragons)> == 1)
+    argo.setText(<argo.newTextLine>,"Domluvili jsme se, ze mi prineses 30x Elixir leceni a osvezeni, dale 10x kazdy dalsi elixir. Celkem tedy 120x Elixir.<br>Mas to pro mne?")
+    argo.questDialog_HTMLGUMP
+    	if (<src.q040_dragons_has_potions>)
+        argo.setText(argo.newTextLine,"Ano, zde to mas.")
+        argo.questDialog_addResponse(0,1,1,"q040_give_potions")
+      endif
+      argo.setText(argo.newTextLine,"Jeste ne, omlouvam se.")
+      argo.questDialog_addResponse(0,1,1,"q040_refuse")
+      argo.setText(argo.newTextLine,"Nepomohu ti!")
+      argo.questDialog_addResponse(0,1,1,"q040_wont_help")
+  else 
+    argo.setText(<argo.newTextLine>,"Dekuji, zatim pro tebe nic dalsiho nemam.")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vlastne nic...")
+    argo.questDialog_addResponse(0,1,1,"q040_goodbye") 
+  	
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Maly hobit nema zadne brneni, jeho zastera je na mnoha mistech prozrana kyselinou a propalena ohnem. Konecky prstu maji nazelenalou barvu.*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q040_dragons_alchymista button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+arg(myspawn,<memoryfindtype(Memory_ISpawned).link>)
+if (<argn> == argo.dialog_linkButton("q040_help_now"))
+  say("Vyborne, at se ti dari!")
+  f_quest_complete(47)  // splnenie questu draci alchymista
+  src.qtag(q040_dragons_alchymista,1,47)
+elseif (<argn> == argo.dialog_linkButton("q040_help_later"))
+  say("Dobre, tak pak prijd.")
+elseif (<argn> == argo.dialog_linkButton("q040_wont_help"))
+  say("Tak jsi trhni!")
+  src.qtag(q040_dragons_alchymista,100,47)
+elseif (<argn> == argo.dialog_linkButton("q040_buy_antidote")) // buy cure
+  if (<src.rescount i_gold> >= 2000)
+    say("Prosim, at slouzi.")
+    arg(myspawn).tag(sold_antidote,#+1)
+    src.consume(2000,i_gold)  
+    src.newitem(i_potion_dragon_poison)
+    src.act.bounce
+  else 
+  	say("Nemas dost penez.")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_buy_protection")) // buy white dragon protect
+  if (<src.rescount i_gold> >= 2000)
+    say("Prosim.")
+    arg(myspawn).tag(sold_protection,#+1)
+    src.consume(2000,i_gold)  
+    src.newitem(i_potion_dragon_white)
+    src.act.bounce
+  else 
+  	say("Nemas dost penez.")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_buy_heal")) // buy fire dragon protect
+  if (<src.rescount i_gold> >= 2000)
+    say("Prosim pane.")
+    arg(myspawn).tag(sold_heal,#+1)
+    src.consume(2000,i_gold)  
+    src.newitem(i_potion_dragon_fire)
+    src.act.bounce
+  else 
+  	say("Nemas dost penez.")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_buy_resist")) // buy resist potion
+  if (<src.rescount i_gold> >= 10000)
+    say("Prosim.")
+    arg(myspawn).tag(sold_resist,#+1)
+    src.consume(10000,i_gold)  
+    src.newitem(i_potion_dragon_resist)
+    src.act.bounce
+  else 
+  	say("Nemas dost penez.")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_give_potions"))
+  if (<src.q040_dragons_has_potions>)
+    say("Dekuji mockrat!")
+    src.q040_dragons_consume_potions
+    src.qtag(q040_dragons_alchymista,2,47)    
+    finduid(#0402D472F).tag(dragons_alch,#+1)
+  else
+  	say("Vzdyt to neni pravda! Nemas to, o co jsem te zadal!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_refuse"))
+  say("Tak jsi pospes!")
+elseif (<argn> == argo.dialog_linkButton("q040_goodbye"))
+  say("Mej se...")
+endif
+
+///////////////////////////////////
+/// bijci - RP postavy
+//
+
+// bijec 1 - Ortlion
+
+
+[speech spk_q040_dragons_ortlion]
+
+on = *zdravim*
+on = *hi*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q040_dragons_ortlion
+endif
+
+[function f_q040_dragons_ortlion]
+if (<src.flags>&statf_dead)
+  return 1
+endif
+if (<src.tag(level)> < 40)
+	say("Nemam sa s tebou o com bavit, prid az ked budes silnejsi")
+else
+	if ((<eval src.qtag(q040_dragons)> >= 4)&&(<eval src.qtag(q040_dragons)> < 50))
+		if (f_q040_hunter_wont_speak(<src>))
+  	  say("NAfoukance. Nelez mi na oci!")
+		else
+		  dialog(d_q040_dragons_ortlion)
+		endif
+  else
+  	say("Tady nemas co delat!")
+  endif
+endif
+
+[function f_q040_hunter_wont_speak]
+if (findID(i_mem_name_info).tag(q040_wont_speak[<args>]))
+	return 1
+else 
+	return 0
+endif
+
+[function f_q040_hunter_told_name]
+if (findID(i_mem_name_info).tag(q040_told_name[<args>]))
+	return 1
+else
+	return 0
+endif
+
+[itemdef i_mem_name_info]
+name=NPC name info
+id=i_memory
+type=t_eq_script
+
+on=@create
+equip
+
+on=@timer
+return 1
+
+[dialog d_q040_dragons_ortlion]
+argo.questDialog_create(03159,"Ortlion")
+
+argo.dialog_newPage("Pozdrav")
+arg(q040_dragons,<eval src.qtag(q040_dragons)>)
+
+if !(f_q040_hunter_told_name(<src>))
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(3,21,"Brneni?")
+argo.questDialog_baseButt(4,21,"Mohu pomoci?")
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>*Vidis silneho muze, ktereho viditelne neco trapi.*")
+  argo.questDialog_HTMLGUMP
+  
+  
+if !(f_q040_hunter_told_name(<src>))
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"A kdo jsi ty?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Me jmeno je <src.name>.")
+      argo.questDialog_addResponse(0,1,1,"q040_my_name_is")
+      argo.setText(argo.newTextLine,"Ne, do meho jmena ti nic neni. Sam jsi se nepredstavil.")
+      argo.questDialog_addResponse(0,1,1,"q040_wont_tell_name")
+endif
+
+argo.dialog_page("Brneni?")
+  argo.setText(<argo.newTextLine>,"Vyrobi jej nas kovar nebo dratenik. Popovidej si s nimi...")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(<argo.newTextLine>,"Bohuzel mi nepomuzes. Kratce pred minulou vypravou na Zapomenuteho jsem byl ranen a nemohl jsem se ji zucastnit. Vsichni mi pratele zahynuli a ja tu lezel bezmocne na luzku.")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"To ale nebyla tva chyba!")
+    argo.questDialog_addResponse(0,1,1,"q040_not_your_fault")
+    argo.setText(argo.newTextLine,"Jsi slaboch! Mel jsi se svymi prateli zemrit")
+    argo.questDialog_addResponse(0,1,1,"q040_your_fault")
+        
+argo.dialog_page("Nesu ti")  
+  argo.setText(argo.newTextLine,"Copak mi neses?")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vlastne nemam nic, promin.")
+    argo.questDialog_addResponse(0,1,1,"goodbye") 
+    
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Stejne jako u ostatnch drakobijcu te zaujalo jeho magicke brneni. Dale jsi zaznamenal podivny smutek ve tvari.*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q040_dragons_ortlion button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q040_my_name_is"))
+	findID(i_mem_name_info).tag(q040_told_name[<src>],1)
+  say("Tesi mne. Jmenuji se Ortlion.")
+elseif (<argn> == argo.dialog_linkButton("q040_wont_tell_name"))
+	findID(i_mem_name_info).tag(q040_wont_speak[<src>],1)
+  say("NAfoukance. Uz mi nelez na oci.")
+elseif (<argn> == argo.dialog_linkButton("q040_not_your_fault"))
+  say("Tva slova jsou mi pramalou utechou, ale dekuji ti za ne.")
+elseif (<argn> == argo.dialog_linkButton("q040_your_fault"))
+  say("Slaboch?! Tebe si podam kdy budu chtit!")
+  src.kill
+  findID(i_mem_name_info).tag(q040_wont_speak[<src>],1)
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+///////////////////////
+// drakobijce #2
+
+// qtag(q040_dragons_rakchin) = 0 - neplni quest
+// qtag(q040_dragons_rakchin) = 1 - plni quest
+// qtag(q040_dragons_rakchin) = 2 - splnil quest
+// qtag(q040_dragons_rakchin) = 5 - odmietol quest
+
+[speech spk_q040_dragons_Rakchin]
+
+on = *zdravim*
+on = *hi*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q040_dragons_Rakchin
+endif
+
+[function f_q040_dragons_Rakchin]
+if (<src.flags>&statf_dead)
+  return 1
+endif
+if (<src.tag(level)> < 40)
+	say("Nemam sa s tebou o com bavit, prid az ked budes silnejsi")
+else
+	if ((<eval src.qtag(q040_dragons)> >= 4)&&(<eval src.qtag(q040_dragons)> < 50))
+		dialog(d_q040_dragons_Rakchin)
+  else
+  	say("Tady nemas co delat!")
+  endif
+endif
+
+
+[dialog d_q040_dragons_Rakchin]
+argo.questDialog_create(03159,"Rakchin")
+
+argo.dialog_newPage("Pozdrav")
+arg(q040_dragons,<eval src.qtag(q040_dragons)>)
+arg(q040_dragons_rakchin,<eval src.qtag(q040_dragons_rakchin)>)
+
+if (<arg(q040_dragons_rakchin)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+if ((<arg(q040_dragons)> >= 16)&&(<arg(q040_dragons_rakchin)> < 3))
+  argo.questDialog_baseButt(2,21,"Zlaty drak?")
+endif
+argo.questDialog_baseButt(3,21,"Brneni?")
+argo.questDialog_baseButt(4,21,"Mohu pomoci?")
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>*Vidis silneho muze bez prave ruky.*")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q040_dragons_rakchin)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    if ((<arg(q040_dragons)> >= 4)&&(<arg(q040_dragons)> <= 9))
+      argo.setText(<argo.newTextLine>,"Co je ti do toho? Ty nejsi zadny drakobijec!")
+      argo.questDialog_HTMLGUMP
+    elseif ((<arg(q040_dragons)> >= 10)&&(<arg(q040_dragons)> <= 15))
+      argo.setText(<argo.newTextLine>,"Zabil jsi ohniveho draka? Nebudes takovy slaboch, jak jsem si myslel!")
+      argo.questDialog_HTMLGUMP
+    elseif ((<arg(q040_dragons)> >= 16)&&(<arg(q040_dragons)> <= 17))
+      argo.setText(<argo.newTextLine>,"Zabil jsi bileho draka? Ted te ceka zlaty drak!<br>Me jmeno je Rakchin.")
+      argo.questDialog_HTMLGUMP
+    else
+      argo.setText(<argo.newTextLine>,"Me jmeno je Rakchin.")
+      argo.questDialog_HTMLGUMP
+    endif
+endif
+
+argo.dialog_page("Brneni?")
+  argo.setText(<argo.newTextLine>,"Vyrobi jej nas kovar nebo dratenik. Popovidej si s nimi...")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  if ((<arg(q040_dragons)> >= 4)&&(<arg(q040_dragons)> <= 9))
+    argo.setText(<argo.newTextLine>,"Jak by mohlo pomoci nedochudce jako ty, mrzakovi jako ja?")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(q040_dragons)> >= 10)&&(<arg(q040_dragons)> <= 15)&&(<arg(q040_dragons_rakchin)> < 5))
+    argo.setText(<argo.newTextLine>,"Kdyby jsi zabil zlateho draka a prinesl mi jeho supinu, byl bych ti velmi vdecny!")
+    argo.questDialog_HTMLGUMP
+      if (<arg(q040_dragons_rakchin)> == 0)
+        argo.setText(argo.newTextLine,"Pokusim se...")
+        argo.questDialog_addResponse(0,1,1,"q040_i_will_try")
+        argo.setText(argo.newTextLine,"Promin, ale zlatou supinu potrebuji pro sebe!")
+        argo.questDialog_addResponse(0,1,1,"q040_i_want_it_for_myself")
+      endif
+  else
+    argo.setText(<argo.newTextLine>,"Nakopej za mne par draku! A nebylo by spatne, kdyby jsi se za mnou obcas stavil na pokec.")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	  argo.setText(argo.newTextLine,"Vlastne nic...")
+    argo.questDialog_addResponse(0,1,1,"refuse") 
+    if ((<arg(q040_dragons)> >= 18)&&(<arg(q040_dragons_rakchin)> == 1)&&(<src.RESTEST(i_dragon_scale_gold)>))
+	    argo.setText(argo.newTextLine,"Mam pro tebe zlatou supinu.")
+      argo.questDialog_addResponse(0,1,1,"q40_i_have_scale") 
+    endif
+    
+if ((<arg(q040_dragons)> >= 16)&&(<arg(q040_dragons_rakchin)> < 3))
+  argo.dialog_page("Zlaty drak?")
+    if ((<arg(q040_dragons)> >= 16)&&(<arg(q040_dragons)> <= 17))
+      argo.setText(argo.newTextLine,"Ano toho ja znam velmi dobre. Moje ruka je toho dukazem.")
+      argo.questDialog_HTMLGUMP
+	      argo.setText(argo.newTextLine,"To mne mrzi, muzes mi dat nejakou radu?")
+        argo.questDialog_addResponse(0,0,1,"q40_want_advice") 
+	      argo.setText(argo.newTextLine,"Neboj, ja si s nim poradim!")
+        argo.questDialog_addResponse(0,1,1,"q40_cant_handle_it") 
+  	else
+      argo.setText(argo.newTextLine,"Ty jsi jej porazil?<br>Hluboce pred tebou smekam! Zajdi za kovarem, aby ti zhotovil drakobijeckou zbran.<br>Vzdy jsem o ni snil...")
+      argo.questDialog_HTMLGUMP
+    endif
+endif
+
+if ((<arg(q040_dragons)> >= 16)&&(<arg(q040_dragons)> <= 17))
+  argo.dialog_page("q40_want_advice")
+    argo.setText(argo.newTextLine,"Zlaty drak je uplna bestie. Je to v podstate morfujici drak, prebira schopnosti jinych draku!<br>Davej proto pozor a ve chvili, kdy zacne blede zarit od nej prchni, abys mel cas na zmenu taktiky!")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Stejne jako u ostatnch drakobijcu te zaujalo jeho magicke brneni. Opatrne jsi se podival na pahyl ruky a je videt, ze byla ukousnuta nejakym velkym tvorem.*")
+  argo.questDialog_HTMLGUMP
+  
+  
+[dialog d_q040_dragons_Rakchin button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q40_cant_handle_it"))
+  say("Abys nenarazil jako ja. Take jsem si myslel, ze se mi nemuze nic stat!")
+elseif (<argn> == argo.dialog_linkButton("q40_i_have_scale"))
+	if (<src.RESTEST(i_dragon_scale_gold)>)
+  	src.consume(1,i_dragon_scale_gold)
+  	say("Dekuji. Muj sen se splnil! Zde mas svoji odmenu!")
+    src.addexp(10000)
+    src.newitem(i_mi_bag_superhigh)
+    src.act.bounce
+    src.qtag(q040_dragons_rakchin,2,48)
+    finduid(#0402D472F).tag(dragons_scale,#+1)
+  else
+  	say("Vzdyt to neni pravda! Nemas to, o co jsem te zadal!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_i_want_it_for_myself"))
+  say("Neda se nic delat, byl to muj sen mit Drakobijeckou zbran.")
+  src.qtag(q040_dragons_rakchin,5,48)
+elseif (<argn> == argo.dialog_linkButton("q040_i_will_try"))
+  say("Dekuji, byl to muj sen mit Drakobijeckou zbran.")
+  src.qtag(q040_dragons_rakchin,1,48)
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Mej se...")
+endif
+
+//////////////////////
+/// drakobijec #3
+//
+// q040_dragons_blazen = 0 - nic nema spolocne
+// q040_dragons_blazen = 1 - slubil prinies krev
+// q040_dragons_blazen = 2 - priniesol krev
+// q040_dragons_blazen = 5 - odmietol priniest, nebavi sa
+
+
+[speech spk_q040_dragons_blazen]
+
+on = *zdravim*
+on = *hi*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q040_dragons_blazen
+endif
+
+[function f_q040_dragons_blazen]
+if (<src.flags>&statf_dead)
+  return 1
+endif
+if (<src.tag(level)> < 40)
+	say("Nemam sa s tebou o com bavit, prid az ked budes silnejsi")
+else
+	if ((<eval src.qtag(q040_dragons)> >= 4)&&(<eval src.qtag(q040_dragons)> < 50))
+		if (<eval src.qtag(q040_dragons_blazen)> == 5)
+			say("Jsem ztracen... jsem ztracen!")
+		else
+		  dialog(d_q040_dragons_blazen)
+		endif
+  else
+  	say("Tady nemas co delat!")
+  endif
+endif
+
+[dialog d_q040_dragons_blazen]
+argo.questDialog_create(03159,"Drakobijec")
+
+argo.dialog_newPage("Pozdrav")
+arg(q040_dragons,<eval src.qtag(q040_dragons)>)
+arg(q040_dragons_rakchin,<eval src.qtag(q040_dragons_blazen)>)
+
+if (<arg(q040_dragons_blazen)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(3,21,"Povez mi vice")
+argo.questDialog_baseButt(4,21,"Mohu pomoci?")
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>*Vidis shrbeneho muze s podivnymi tiky.*")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q040_dragons_blazen)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(<argo.newTextLine>,"Ja? Ty? Vsichni jsme bezejmenni proti Zapomenutemu!")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Narozdil od ostatnich drakobijcu je tento oblecen pouze v sedem habitu.*")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+	if (<arg(q040_dragons)> < 19)
+    argo.setText(argo.newTextLine,"Nikdo mi nepomuze! Chtivost mne zmohla a odplate bohu byla neuprosna! Prilis jsem touzil po artefaktu Zapomenuteho!")
+    argo.questDialog_HTMLGUMP
+	    argo.setText(argo.newTextLine,"Zapomenuty?")
+      argo.questDialog_addResponse(0,0,1,"q40_forgotten") 
+	    argo.setText(argo.newTextLine,"Artefakt?")
+      argo.questDialog_addResponse(0,0,1,"q40_artefact") 
+  elseif (<arg(q040_dragons_blazen)> < 2)
+    argo.setText(argo.newTextLine,"Ty jsi zabil vsehcny draky? Mozna by jsi mohl zabit i Zapomenuteho!")
+    argo.questDialog_HTMLGUMP
+    	if (<arg(q040_dragons_blazen)> == 0)
+	      argo.setText(argo.newTextLine,"Ano pokusim se o to.")
+        argo.questDialog_addResponse(0,1,1,"q40_accept") 
+	      argo.setText(argo.newTextLine,"Neodvazuji se...")
+        argo.questDialog_addResponse(0,1,1,"q40_refuse")
+      endif
+  else
+    argo.setText(argo.newTextLine,"Uz mi nemas jak pomoct...")
+    argo.questDialog_HTMLGUMP  	
+  endif
+
+if (<arg(q040_dragons)> < 19)
+  argo.dialog_page("q40_forgotten")
+    argo.setText(argo.newTextLine,"Ano zapomenuty! Ty mi snad nerozumis?")
+    argo.questDialog_HTMLGUMP
+    
+  argo.dialog_page("q40_artefact")
+    argo.setText(argo.newTextLine,"Ano nejmocnejsi zbran!")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Povez mi vice")
+    argo.setText(argo.newTextLine,"Zuby! Jeho zuby... predci jen jeho dech!<br>Zar! Jeho zar... peklo na zemi!<br>Proc ja!? Proc jsem tolik chtel artefakt?!<br>Jsem proklet, ztracen...<def_questDialog_colorTextEmote>*propada v plac*")
+    argo.questDialog_HTMLGUMP
+    
+argo.dialog_page("Nesu ti")  
+  argo.setText(argo.newTextLine,"Copak mi neses?")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vlastne nemam nic, promin.")
+    argo.questDialog_addResponse(0,1,1,"goodbye") 
+    if ((<arg(q040_dragons_blazen)> == 1)&&(<src.f_collector_isFull(i_q040_dragon_blazen)>))
+      argo.setText(argo.newTextLine,"Mam pro tebe tu krev!")
+      argo.questDialog_addResponse(0,1,1,"q040_give_blood")
+    endif
+    
+    
+[dialog d_q040_dragons_blazen button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q40_accept"))
+  src.qtag(q040_dragons_blazen,1,49)
+  say("Prines mi vzorek krve Zapomenuteho, pry ma lecivou moc!")
+elseif (<argn> == argo.dialog_linkButton("q040_give_blood"))
+	if (<src.f_collector_isFull(i_q040_dragon_blazen)>)
+  	src.consume(1,i_q040_dragon_blazen)
+  	say("Dekuji ti - snad mi navrati ztracene dusevni zdravi.")
+    src.addexp(2000)
+    src.newitem(i_q039_shadow_weapon_gem)
+    src.act.bounce
+    src.qtag(q040_dragons_blazen,2,49)
+  else
+  	say("Vzdyt to neni pravda! Nemas to, o co jsem te zadal!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q040_refuse"))
+  say("Jsem ztracen... jsem ztracen! ")
+  src.qtag(q040_dragons_blazen,5,49)
+elseif (<argn> == argo.dialog_linkButton("goodbye"))
+  say("Mej se...")
+endif

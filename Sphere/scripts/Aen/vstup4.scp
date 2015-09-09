@@ -1,0 +1,55 @@
+[ITEMDEF i_Cardolanske_pohrebiste_kos_s_ovocem]
+NAME=kos s ovocem
+ID=i_basket_fruit
+VALUE=1
+TYPE=T_FRUIT
+WEIGHT=1.0
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=kos s ovocem
+
+ON=@dropon_ground
+  if (<p_x>==<tag(podstavec).p_x>)
+    if (<p_y>==<tag(podstavec).p_y>) 
+      if (<p_z>==<tag(podstavec).p_z>+5)
+        if(<tag(podstavec).MORE2>==1)
+          SRC.SYSMESSAGE("Kos s ovocem zmizel.")
+          SOUND 491
+          SRC.NEWITEM=i_gold
+          SRC.ACT.AMOUNT=1000 
+          SRC.ACT.P=<P>
+          tag(podstavec).MORE2=0
+          tag(podstavec).TIMER=60
+          REMOVE        
+        endif
+      endif
+    endif 
+  endif
+
+[ITEMDEF i_Cardolanske_pohrebiste_obetni_kamen]
+Name=obelisk
+ID=i_stairs_stone_5
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=obetni kamen
+
+ON=@CREATE
+  ATTR=010
+  MORE=2
+
+ON=@TIMER
+  MORE2=1
+  RETURN 1
+
+ON=@userdclick
+  IF (more2>==2)
+    src.sysmessage("Zamer farmarku.")
+    TARGET
+  ENDIF
+  RETURN 1 
+
+ON=@TARGON_CHAR
+    SRC.Sysmessage("Doufam, ze jsi zameril farmarku :)")
+    SRC.TARG.tag(podstavec,<UID>)
+    MORE2=1
+  RETURN 1

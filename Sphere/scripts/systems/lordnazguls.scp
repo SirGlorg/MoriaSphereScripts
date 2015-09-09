@@ -1,0 +1,842 @@
+[itemdef i_lordnazguls_gate_out]
+ID=i_moongate_blue
+TYPE=t_normal
+name=Zpet do bezpeci
+
+ON=@Create
+attr=attr_newbie|attr_move_never
+morep=4149 4023
+
+on=@step
+src.go(<morex> <morey> <morez> <morem>)
+src.consume(1000,i_nazggate_timer)
+
+[itemdef i_lordnazguls_gate]
+ID=i_moongate_blue
+TYPE=t_normal
+name=Brana pro nejodvaznejsi z nejodvaznejsich
+
+ON=@Create
+attr=attr_newbie|attr_move_never
+more1=3
+morep=4149 4023
+if (strlen(<var(lordnazgul)>)) //mame nazgula
+ color=0689 //nazguli cervena, activovana (mame prvniho nazgula)
+else
+ color=0692 //nazguli temna, deactivovana
+endif
+var(lordnazgulgate,<uid>)
+finduid(<var(leading_shrine_power)>).tag(lordnazgulgate,<uid>)
+
+on=@userclick
+var(lordnazgulgate,<uid>)
+if (<more1> == 3)
+  if (strlen(<var(lordnazgul)>)) //mame nazgula
+    color=0689 //nazguli cervena, activovana (mame prvniho nazgula)
+  else
+    color=0692 //nazguli temna, deactivovana
+  endif
+endif
+
+on=@step
+if (src.isgm)
+ src.go(<morex> <morey> <morez> <morem>)
+ return 1
+endif
+if (<more1> == 3)
+  if (strlen(<var(lordnazgul)>)) //mame nazgula
+    color=0689 //nazguli cervena, activovana (mame prvniho nazgula)
+  else
+    color=0692 //nazguli temna, deactivovana
+  endif
+endif
+if (<color>==0692) //muzeme zkusit jit dovnitr
+ if (<more1>==3) //neaktivovana, nikdo neprosel
+  if (src.isnazgul)
+   src.newitemsafe(i_nazggate_timer)
+   lastnew.cont=<src> 
+   lastnew.layer=30 
+   lastnew.link=<uid>
+   lastnew.update
+   more1=<eval <more1>-1>
+   timer=1800
+   src.go(<morex> <morey> <morez> <morem>)	
+  else  
+   if (<src.tag(realm)>==1)    
+    src.redmessage(Co ty bys tam chtel delat? Co?)
+    return 1
+   else  
+    src.classmessage(Pouze mi nejblizsi sluzebnici s odznakem sve oddanosti mohou aktivovat tento portal)   
+    return 1
+   endif
+  endif
+ else //nazgul uz prosel  
+  if (<more1> > 0)    
+   if (<src.tag(realm)>==2)
+    src.go(<morex> <morey> <morez> <morem>)
+    src.newitemsafe(i_nazggate_timer)
+    lastnew.cont=<src>
+    lastnew.layer=30 
+    lastnew.link=<uid>
+    lastnew.update
+    more1=<eval <more1>-1>
+   else    
+    src.redmessage(Co ty bys tam chtel delat? Co?)
+    return 1
+   endif
+  else
+   if (<src.tag(realm)>==1)    
+    src.redmessage(Co ty bys tam chtel delat? Co?)
+    return 1
+   else
+    src.classmessage(Tri jsou dostacujici)
+    return 1
+   endif
+  endif
+ endif
+else //nazguli barva- nazgul pritomen, nikam se nepude! 
+ if (<src.tag(realm)>==1)
+  src.redmessage(Co ty bys tam chtel delat? Co?)
+  return 1
+ else 
+  src.classmessage(Dokud vladne Prvni Nazgul, nikdo se nedostane na tato mista!)
+  return 1
+ endif
+endif
+
+on=@timer
+more1=3
+if (strlen(<var(lordnazgul)>)) //mame nazgula
+ color=0689 //nazguli cervena, activovana (mame prvniho nazgula)
+else
+ color=0692 //nazguli temna, deactivovana
+endif
+timer=-1
+return 1
+
+[itemdef i_nazggate_timer]
+id=i_memory
+name=Timer brany lordnazgula
+type=t_eq_script
+
+on=@create
+more1=1800
+timer=600
+
+on=@equip
+src.classmessage(Nyni se ukaze, jsi-li hoden stat se Prvnim, cas Tve zkousky je pul hodiny)
+
+on=@unequip
+if(<link.more1>==0)
+ link.color=0689
+endif
+if(<link.more1> < 3)
+ link.more1=<link.more1>+1
+endif
+
+on=@timer
+more1=<more1>-600
+if(<more1>)
+ cont.classmessage(Do konce zkousky zbyva <eval <more1>/60> minut)
+ timer=600
+ return 1
+else
+  if !(strcmpi("<cont.region.name>","Fela Nazgul")) 
+    cont.classmessage(Nejsi hoden stat se Prvnim)
+    cont.go(barad-dur)
+  endif
+ remove
+endif
+
+[function nextsnd]
+sfx=<var(num)>
+sysmessage(num <var(num)>)
+var(num,#+1)
+
+[function fear] //-5/-3 na staty
+if((isnazgul)&&(hasuniform))||(isgm)
+ if(findid(i_fear_delay))
+  src.sysmessage(Jsi jeste vycerpan z predchoziho pouziti sve schopnosti)
+ else 
+  //src.sysmessage(Pouzivame)
+  sfx=598 //nejakej Terathan ci co, nezni to uplne debilne :)
+  newitemsafe(i_fear4every1)
+  var(whos_screaming,<uid>)
+  lastnew.p=<p>
+  lastnew.z=-100
+  lastnew.link=<uid>
+  lastnew.timerd=1  
+  newitemsafe(i_fear_delay)
+  lastnew.timer=<nastaveni_fear_delay_counter>
+  lastnew.equip
+ endif
+else
+ sysmessage(Tve vzezreni u nikoho hruzu nevzbuzuje)
+endif
+
+[function makeme_numb]
+if(isplayer)
+ if(!isonline)||(findid(i_fearcounter))||(tag(realm)==2)
+  return 0
+ endif
+ if(distancefrom(var(whos_screaming)) < nastaveni_<qval(<var(whos_screaming).prsten.tag(leading)>,lord,)>nazguls_fear_distance)
+  //src.sysmessage(dist: <distancefrom(<var(whos_screaming)>)>, nast: <nastaveni_<qval(<var(whos_screaming).prsten.tag(leading)>,lord,)>nazguls_fear_distance>)
+  newitemsafe(i_fearcounter)
+  lastnew.more1=<qval(<var(whos_screaming).prsten.tag(leading)>,5,3)> //o kolik srazit staty
+  lastnew.timer=<nastaveni_fear_effect_counter>
+  lastnew.cont=<uid>
+  lastnew.update
+ endif  
+endif
+
+[itemdef i_fear4every1]
+id=i_memory
+layer=77
+type=t_eq_script
+name=Honor pro vse v okoli
+
+on=@timer
+sector.allchars(makeme_numb)
+var(whos_screaming,"")
+remove
+return 1
+
+[itemdef i_fear_delay]
+id=i_memory
+type=t_eq_script
+name=Nazguls Fear counter
+
+on=@create
+attr=attr_invis|attr_move_never
+
+on=@timer
+remove
+
+[itemdef i_fearcounter]
+id=i_memory
+type=t_eq_script
+name=Nazguls Fear counter
+
+on=@create
+attr=attr_invis|attr_move_never
+
+on=@equip
+src.classmessage(Jsi ochromen strachem)
+src.str=<src.str>-<more1>
+src.int=<src.int>-<more1>
+src.dex=<src.dex>-<more1>
+src.vit=<src.vit>-<more1>
+
+on=@unequip
+src.classmessage(Paralyzujici strach pominul)
+src.str=<src.str>+<more1>
+src.int=<src.int>+<more1>
+src.dex=<src.dex>+<more1>
+src.vit=<src.vit>+<more1>
+
+on=@timer
+remove
+
+[function prvni_nazgul] //src. - to GM, uid - ten hrac
+src.newitemsafe(i_targ_nazg_make)
+lastnew.timer=45
+lastnew.equip
+
+[itemdef i_targ_nazg_make]
+id=i_memory
+name=Zamerovac noveho prvniho nazgula
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target
+src.sysmessage(Zamer budouciho prvniho Nazgula)
+
+on=@targon_char
+if(<src.targ.tag(realm)>!=2)
+ src.sysmessage(Zameruj pouze hrace Mordorskeho realmu!) 
+ remove
+ return 1
+endif
+if(src.targ.isgm)
+ src.sysmessage(GM nepotrebuji byt nazgulove)
+ remove
+ return 1
+endif
+if(!src.targ.isnazgul)
+ src.sysmessage(Zvol pouze Nazgula!)
+ remove
+ return 1
+endif
+if(<var(leading_ring)>)&&(<finduid(<var(leading_ring)>).isitem>)
+ src.sesad_lordnazgula
+ if(<src.targ.tag(captain)>)
+  src.targ.name=<src.targ.tag(real_name)>
+  src.targ.tag.remove(captain)
+  src.targ.tag.remove(real_name)
+  finduid(<src.targ.tag(keep)>).link=""
+  src.targ.tag.remove(keep)
+ endif
+ src.targ.prsten.back
+ src.targ.classmessage(Marghul rozhodl - budes Prvnim z Nazgulu)
+ finduid(<var(leading_ring)>).cont=<src.targ>
+ finduid(<var(leading_ring)>).layer=8
+ finduid(<var(leading_ring)>).update
+ src.sysmessage(Novy prvni Nazgul uspesne jmenovan) 
+else
+ src.sysmessage(Chybi nam vladnouci prsten!)
+endif
+
+on=@targon_item
+src.sysmessage(Zameruj lidi)
+remove
+return 1
+
+on=@targon_ground
+trigger(targon_item)
+return 1
+
+[function sesad_lordnazgula]
+if (<var(leading_ring)>)&&(<finduid(<var(leading_ring)>).isitem>)
+ finduid(<var(leading_ring)>).topobj.redmessage(Marghul rozhodl o tvem sesazeni z funkce prvniho Nazgula)
+ finduid(<var(leading_ring)>).back
+endif
+src.nukeall(lordnazgout)
+if (var(lordnazgulgate))
+ finduid(<var(lordnazgulgate)>).more2=1 //aktivuj
+ finduid(<var(lordnazgulgate)>).color=0689
+endif
+
+
+[function lordnazgout]
+if(<baseid>==i_lordnazgulsstone)
+ link="" //bude li linknut a nebude li existovat prsten, hrozi nebezpeci zmizeni kamenu!
+endif
+
+
+////////////////////////
+//funkce lordnazgul only
+////////////////////////
+[function mordorguardscontrol]
+if(isgm)||(<islordnazgulintown>)  
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>)) //pro gm  
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   finduid(<var(generalstone_<region.tag(jmeno_mesta)>)>).dialog d_general_major //- rozmistit straze po meste
+   finduid(<var(generalstone_<region.tag(jmeno_mesta)>)>).dialog d_lordnazgul_captain //ovladani strazi 
+   return 1 
+  else
+   sysmessage(Neni zde zadny kamen pro ovladani Marghulovych strazi)
+   return 1
+  endif
+ else
+  sysmessage(Neni zde prostor pro ovladani Marghulovych strazi)
+  return 1
+ endif
+else 
+ if(<tag(lordnazgul)>)
+  sysmessage(Musis byt ve meste!)  
+ endif
+ return 1
+endif
+
+[function marghulsguardskill]
+if(isnazgul)||(isgm)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>)) 
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).rescount>)
+    src.newitemsafe(i_marghulguard_targ) 
+    lastnew.tag(mesto,<var(generalstone_<region.tag(jmeno_mesta)>)>) //mesto - proste ten stone
+    lastnew.equip 
+   else
+    sysmessage(Nemas k dispozici zadne Marghulovy straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste kde je kamen)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function marghulsguardsstop]
+if(isnazgul)||(isgm)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>)) 
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).rescount>)
+    finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).contents(stop_guard(1)) //1 stop
+   else
+    sysmessage(Nemas k dispozici zadne Marghulovy straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste kde je kamen)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function marghulsguardscontinue]
+if(isnazgul)||(isgm)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>)) 
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).rescount>)
+    finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).contents(stop_guard(0)) 
+   else
+    sysmessage(Nemas k dispozici zadne Marghulovy straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste kde je kamen)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function marghulsguardsflee]
+if(isnazgul)||(isgm)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>)) 
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).rescount>)
+    finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).contents(home_run) 
+   else
+    sysmessage(Nemas k dispozici zadne Marghulovy straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste kde je kamen)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function marghulsguardscome]
+if(isnazgul)||(isgm)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   sysmessage(Marghulovy straze prijdou jen v ramci mesta s kamenem)
+   return 1 
+  endif
+ else
+  sysmessage(Marghulovy straze prijdou jen v ramci mesta)
+  return 1 
+ endif
+ arg(kingguardcont,<finduid(<var(generalstone_<region.tag(jmeno_mesta)>)>).tag(kingguardcont)>)
+ if(<arg(kingguardcont).rescount>)
+  arg(pocet_strazi,<arg(kingguardcont).rescount>)   
+  arg(i,0)
+  while(i < pocet_strazi)
+   //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+   if(<arg(kingguardcont).findcont(i).link>) //umisteny spawngem
+    arg(guard,<arg(kingguardcont).findcont(i).link.tag(lastspawned)>)
+    if(<finduid(guard).npc>) //spawnuta straz
+     if(<src.distancefrom(<finduid(guard)>)> <= 15) //jen urc. vzdalenost
+      finduid(guard).events=-e_guard_stopped 
+      finduid(guard).paralyze_remove
+      finduid(guard).go(<src.p>) 
+     endif
+    endif
+   endif 
+   arg(i,#+1)
+  endwhile
+ else
+  sysmessage(Nemas k dispozici zadne Marghulovy straze)
+ endif 
+endif
+
+[function mordorrealm_blacklist]
+if(<tag(lordnazgul)>)||(isgm)
+ newitemsafe(i_target_ban)
+ lastnew.link=<finduid(<var(mordorrealmbancont)>)>
+ lastnew.timer=60
+ lastnew.name=Mordor
+ lastnew.equip 
+else
+ return 1
+endif
+//////////////////////////////
+//konec funkci lordnazgul only
+//////////////////////////////
+[typedef t_lordnazgulmenu]
+on=@userdclick
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+//if(!strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+ //nastavime kaminek
+ var(generalstone_<region.tag(jmeno_mesta)>,<uid>) //radsi vzdy, nejak to hloupne
+//endif
+if(strlen(<link>)) //leading prsten
+ if(link.topobj.ischar)
+  src.classmessage(Nositelem prstenu je <link.topobj.name>)
+  if(<src.isgm>)
+   potvrdit(sesad_lordnazgula,"Opravdu si prejes sesadit z funkce prvniho Nazgula?")
+  endif
+ else
+  src.classmessage(Funkce prvniho nazgula neni obsazena)
+  if(<src.isgm>)
+   potvrdit(prvni_nazgul,"Prejes si uvest do funkce noveho prvniho Nazgula?")
+  endif
+ endif
+else
+ if(<var(leading_ring)>)
+  if(finduid(<var(leading_ring)>))
+   link=<var(leading_ring)> 
+   if(link.topobj.ischar)
+    src.classmessage(Nositelem prstenu je <link.topobj.name>)
+    if(<src.isgm>)
+     potvrdit(sesad_lordnazgula,"Opravdu si prejes sesadit z funkce prvniho Nazgula?")
+    endif
+   else
+    src.classmessage(Funkce prvniho nazgula neni obsazena)
+    if(<src.isgm>)
+     potvrdit(prvni_nazgul,"Prejes si uvest do funkce noveho prvniho Nazgula?")
+    endif
+   endif
+  else
+   var(leading_ring,"")
+  endif
+ else
+  src.sysmessage(Nemame vladnouci prsten)
+ endif
+endif
+if(<region.tag(realm)>==2)
+ if(src.isgm)  
+  src.sysmessage(Realm Mordorsky)
+ endif
+ if(<src.tag(lordnazgul)>)||(<src.isgm>)
+  f_lordnazgulmenu 
+  return 1
+ else
+  finduid(<var(mordorrealmbancont)>).dialog(d_general_executioner,0,2)
+  return 1
+ endif
+else 
+ src.redmessage(Realm nevhodny pro Mordorske mesto, kontaktuj GM, kamen by zde nemel byt!)
+ return 1
+endif
+
+
+[function f_lordnazgulmenu]
+if(<src.region>!=<region>)
+  src.sysmessage(Musis byt v prostoru mesta!)
+  return 0
+endif
+if(!<tag(allowhire[0])>) 
+ if(<src.isgm>)
+  src.sysmessage(Nastav dostupne Marghulovy straze!)
+  src.sysmessage(Pouziti: ".x kingguards(jmeno_mesta), viceslovne nazvy provaz podtrzitkem")
+  src.sysmessage(Napriklad: Minas_Morgul atd.)
+  return 1
+ else
+  src.sysmessage(Mesto neni zatim pripraveno na Marghulovy straze) 
+  return 1
+ endif
+endif
+
+//nasledujici blok se provede jen pri prvnim kliknuti na generalsstone
+if !(<tag(kingguardcont)>) 
+ var(generalstone_<region.tag(jmeno_mesta)>,<uid>)
+
+ src.newitemsafe(i_pouch) //kingsguards
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(23)
+ lastnew.more1=0
+ lastnew.link=<uid>
+ lastnew.name=Marghulovych strazi
+ tag(kingguardcont,<lastnew>) 
+ 
+ if(!(strlen(<var(mordorrealmbancont)>)))
+  src.newitemsafe(i_chest_metal_brass) //blacklisted 
+  lastnew.attr_movenever=1
+  lastnew.color=colors_red
+  lastnew.name=Mordor
+  lastnew.p=5938 109 //start povolani, prizemi
+  lastnew.update
+  var(mordorrealmbancont,<lastnew>)
+ endif
+ tag(guardu,0)
+endif
+if(strlen(<var(mordorrealmbancont)>)) //vraceni pripadne zmizele truhly
+ if(!<finduid(<var(mordorrealmbancont)>)>)
+  src.newitemsafe(i_chest_metal_brass) //blacklisted 
+  lastnew.attr_movenever=1
+  lastnew.color=colors_red
+  lastnew.name=Vyvrzencu z Mordorskeho realmu
+  lastnew.p=5938 109 //start povolani, prizemi
+  lastnew.update
+  var(mordorrealmbancont,<lastnew>)
+ endif
+endif
+
+dialog d_lordnazgul_captain
+dialog d_general_recruiter
+dialog d_general_major
+finduid(<var(mordorrealmbancont)>).dialog(d_general_executioner,0,2)
+return 1
+
+[dialog d_lordnazgul_captain]//PRIKAZY STRAZIM
+20,20
+argo.tag(sirka,270)
+argo.tag(vyska,<eval (6*d_def_radek_vyska)+(2*d_def_skvira)+(2*d_def_okraj)>)
+var(lastvyska,<argo.tag(vyska)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,Rozkaz Marghulovym strazim:)
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(ypos,<argo.tsc_section(<ypos>,1,Guards Kill)>)
+arg(ypos,<argo.tsc_section(<ypos>,2,Guards Stop)>)
+arg(ypos,<argo.tsc_section(<ypos>,3,Guards Continue)>)
+arg(ypos,<argo.tsc_section(<ypos>,4,Guards Flee)>)
+arg(ypos,<argo.tsc_section(<ypos>,5,Guards Come)>)
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+//argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+//argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+//argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_lordnazgul_captain button]
+on=0
+on=1 //kill - jen nekolik !
+src.redmessage("Tento povel byl zrusen, straze si samy vyberou cil")
+return 1
+
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ src.newitemsafe(i_marghulguard_targ) 
+ lastnew.tag(mesto,<uid>) //mesto i pevnost - proste ten stone
+ lastnew.equip 
+else
+ src.sysmessage(Nemas k dispozici zadne Marghulovy straze)
+endif
+dialog d_lordnazgul_captain
+
+on=2 //stop
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(kingguardcont)>).contents(stop_guard(1)) //1 stop
+else
+ src.sysmessage(Nemas k dispozici zadne Marghulovy straze)
+endif
+dialog d_lordnazgul_captain
+
+on=3 //go on
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(kingguardcont)>).contents(stop_guard(0)) //0 release
+else
+ src.sysmessage(Nemas k dispozici zadne Marghulovy straze)
+endif
+dialog d_lordnazgul_captain
+
+on=4 //flee
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(kingguardcont)>).contents(home_run)
+else
+ src.sysmessage(Nemas k dispozici zadne Marghulovy straze)
+endif
+dialog d_lordnazgul_captain
+
+on=5 //come - jen nekolik !
+if(baseid==i_lordnazgulsstone) //lordnazguls stone
+ if(strcmpi(<src.region>,<var(generalstone_<region.tag(jmeno_mesta)>).region>)) //region kde stoji hrac je stejny jako tag na pripadnem nalezenem townstonu /0 pokud stejne, pak nic nehlasi
+  src.sysmessage(Marghulovy straze prijdou jen v ramci mesta)
+  return 1
+ endif
+endif
+if(baseid==i_mordorcaptainstone) //captains stone
+ if(<src.tag(lordnazgul)>)||(<src.isgm>)
+  if(strcmpi(<src.region>,<var(keep_<tag(jmeno_mesta)>).region>)) //totez s pripadnym captainstonem
+   src.sysmessage(Marghulovy straze muzes povolat jen v ramci pevnosti)
+   return 1
+  endif
+ endif
+ if(<src.tag(captain)>)
+  if(strcmpi(<src.region>,<finduid(<src.tag(keep)>).region>))
+   src.sysmessage(Marghulovy straze muzes povolat jen v ramci sve pevnosti)
+   return 1
+  endif
+ endif
+endif
+src.reveal
+if(<src.flags>&statf_dead)
+ src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+ return 1
+endif
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ arg(pocet_strazi,<finduid(<tag(kingguardcont)>).rescount>) 
+ arg(i,0)
+ while(i < pocet_strazi)
+  //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+  if(<finduid(<tag(kingguardcont)>).findcont(i).link>) //umisteny spawngem
+    arg(guard,<finduid(<tag(kingguardcont)>).findcont(i).link.tag(lastspawned)>)
+    if(<finduid(guard).npc>) //spawnuta straz
+     if(<src.distancefrom(<finduid(guard)>)> <= 15)	
+      finduid(guard).events=-e_guard_stopped 
+      finduid(guard).paralyze_remove
+      finduid(guard).go(<src.p>) 
+     endif
+    endif
+  endif 
+  arg(i,#+1)
+ endwhile
+else
+ src.sysmessage(Nemas k dispozici zadne Marghulovy straze)
+endif
+dialog d_lordnazgul_captain
+
+[itemdef i_marghulguard_targ]
+id=i_memory
+type=t_eq_script
+name=Zamerovac cile Marghulovych strazi
+
+on=@equip
+target Na koho maji zautocit Marghulovy straze?
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targon_item
+return 1
+
+on=@targon_ground
+return 1
+
+on=@targon_char
+if(<src>==<src.targ>)
+ src.sysmessage(Proc povolavat straze sam na sebe, ze?)
+ remove
+ return 1
+endif
+if(!src.targ.isplayer && !src.targ.issumon)
+ src.sysmessage(Straze lze poslat jen na hrace a jejich summony)
+endif
+if(strcmpi(<src.region>,<finduid(<tag(mesto)>).region>))
+ src.sysmessage(Straze te neslysi, jsi moc daleko od hranic jejich uzemi)
+ remove
+ return 1
+else
+ arg(jmeno_mesta,<finduid(<tag(mesto)>).region>)
+endif
+if(strcmpi(<arg(jmeno_mesta)>,<src.targ.region>)) //0 pokud stejne, pak nic nehlasi
+ src.sysmessage(Marghulovy straze nemohou zautocit mimo jejich uzemi)
+ remove
+ return 1
+endif
+arg(pocet_strazi,<finduid(<finduid(<tag(mesto)>).tag(kingguardcont)>).rescount>)
+arg(guardcont,<finduid(<tag(mesto)>).tag(kingguardcont)>)
+arg(i,0)
+while(i < pocet_strazi)
+ //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+ if(<finduid(<arg(guardcont)>).findcont(i).link>) //umisteny spawngem
+  arg(guard,<finduid(<arg(guardcont)>).findcont(i).link.tag(lastspawned)>)
+  if(<finduid(guard).npc>) //spawnuta straz
+   if(<src.distancefrom(<finduid(guard)>)> <= 15)
+    finduid(guard).events=-e_guard_stopped 
+    finduid(guard).paralyze_remove
+    finduid(guard).go(<src.p>)
+    if(<src.targ.tag(lordnazgul)>)
+     dorand 3
+      finduid(guard).say(Muj pane <src.targ.name>! Nas pan nam prikazal na tebe zautocit, netrestej ho prisne)
+      finduid(guard).say(Zblaznil jste se kapitane?)
+      finduid(guard).say(To je prece sam prvni Nazgul <src.targ.name>. Co vas k nam privadi o mocny?)
+     enddo
+    else
+     if(<src.targ.isgm>) 
+      dorand 2
+       finduid(guard).say(O veliky, smiluj se a odpust tomuhle nevedomci jenz nam prikazal na tebe zautocit)
+       finduid(guard).say(Odpust o mocny nasemu kapitanu neb on nevi co ucinil)
+      enddo
+     else
+      finduid(guard).attack(<src.targ>)     
+     endif
+    endif
+   endif
+  endif
+ endif
+ arg(i,#+1)
+endwhile
+remove
+return 1
+

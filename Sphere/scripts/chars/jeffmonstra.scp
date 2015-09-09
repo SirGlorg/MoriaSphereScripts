@@ -1,0 +1,1309 @@
+
+///////////////////////////////////////////////////
+/////////   NEPOUZIVAT, NEVYLADENO ////////////////
+///////////////////////////////////////////////////
+
+
+
+
+
+
+
+[CHARDEF c_zeus]
+// Autor: Jeffrey
+
+ID=c_gladiator_lord
+NAME=Zeus
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+
+CAN=MT_WALK|mt_run
+attack=110
+ARMOR=100
+
+moverate=4
+
+
+RESOURCES=100 i_ribs_raw
+
+
+ 
+BLOODCOLOR=0431
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_potiondrinker
+TEVENTS=e_npc_stun
+TEVENTS=e_humanoid
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_getwpn
+
+
+CATEGORY=Dungy
+DESCRIPTION=Zeus
+
+ON=@Create
+color=0431
+NPC=brain_monster
+FAME=1100
+KARMA={-7500 -10000}
+STR=9000
+DEX=380
+INT=1800
+
+
+maxhits={23500 26000}
+maxstam={2230 2310}
+maxmana=10000
+
+tag.experience=<eval {1500.0 1800.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+//other resists
+tag(resist_poison,1000) //indivindi podle monstra
+tag(resist_para,1000) //indivindi podle monstra
+tag(resist_summon,550) //indivindi podle monstra
+tag(resist_bleed,750) 
+//weap resists
+tag(resist_sharp,400)
+tag(resist_slash,400)
+tag(resist_pierce,-600)
+tag(resist_blunt,800)
+//magic resists
+tag(resist_fire,700)
+tag(resist_elect,900)
+tag(resist_cold,800)
+//typ monstra
+tag(monstertype,humanoid)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical|dam_cold
+
+
+WRESTLING=150.0
+RESIST=300.0
+TACTICS=100.0
+PARRYING=100.0
+SpiritSpeak=100.0
+MAGERY=100.0
+EI=80.0
+
+itemnewbie=i_spellbook
+addspell=s_mass_dispel
+addspell=s_mass_curse
+addspell=s_magic_reflection
+addspell=s_lightning
+addspell=s_chain_lightning
+addspell=s_mana_drain
+addspell=s_dispel
+addspell=s_paralyze
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=random_reagent,{15 50}
+ITEM=random_reagent,{50 125}
+ITEM=random_reagent,{115 125}
+
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_jeskynni_vlk]
+// Autor: Jeffrey
+
+DEFNAME=c_em_jeskynni_vlk
+NAME=Jeskynni Vlk
+ID=c_wolf
+SOUND=snd_ANIMALS_WOLF1
+ICON=i_pet_wolf_gray
+
+attack=50
+ARMOR=50
+moverate=5
+RESOURCES=3 i_ribs_raw, 3 i_fur_light
+
+CAN=MT_WALK|MT_RUN
+FOODTYPE=
+
+
+
+DESCRIPTION=Jeskynni Vlk
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+bTEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_NPC_Bleed
+
+ON=@Create
+COLOR=0433
+
+STR=700
+DEX=500
+INT=70
+
+maxhits={3500 5000}
+maxstam={600 750}
+maxmana=0
+
+
+tag.experience=<eval {100.0 150.0}>
+tag.npc_speed=<eval {400 500}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+//other resists
+tag(resist_poison,650)
+tag(resist_para,900)
+tag(resist_summon,850)
+tag(resist_bleed,200)
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,00)
+tag(resist_blunt,300)
+//magic resists
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,700)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+tag.npc_bleed=300 //30.0%
+
+parrying={45.0 55.0}
+resist={60.0 80.0}
+tactics={80.0 90.0}
+wrestling=100.0
+SpiritSpeak=50.0
+
+NPC=brain_animal
+
+FAME=4000
+KARMA={-3000 -3999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_vlci_vudce]
+// Autor: Jeffrey
+
+DEFNAME=c_em_vlci_vudce
+NAME=Vlci Vudce
+ID=c_wolf
+SOUND=snd_ANIMALS_WOLF1
+ICON=i_pet_wolf_gray
+
+attack=70
+ARMOR=80
+moverate=5
+RESOURCES=20 i_ribs_raw, 10 i_fur_dark
+
+CAN=MT_WALK|MT_RUN
+FOODTYPE=
+
+
+
+DESCRIPTION=Vlci Vudce
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+TEVENTS=e_npc_summoning
+TEVENTS=e_summoneater_vamp
+
+
+
+ON=@Create
+COLOR=0995
+
+STR=900
+DEX=600
+INT=170
+
+maxhits={10000 12000}
+maxstam={1000 1750}
+maxmana={1000 1750}
+
+
+tag.experience=<eval {400.0 460.0}>
+tag.npc_speed=<eval {400 500}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanNotBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+//other resists
+tag(resist_poison,300)
+tag(resist_para,1000)
+tag(resist_summon,850)
+tag(resist_bleed,600)
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,700)
+tag(resist_pierce,400)
+tag(resist_blunt,800)
+//magic resists
+tag(resist_fire,700)
+tag(resist_elect,800)
+tag(resist_cold,900)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+tag(npc_summoning_chance,12) // 1.2% chance
+tag(npc_summoning_time,180)
+tag(npc_summoning_count,4)
+tag(npc_summoning_char[0],c_drapac_blood)
+tag(npc_summoning_char[1],c_drapac_blood)
+tag(npc_summoning_char[2],c_drapac_blood)
+tag(npc_summoning_char[3],c_drapac_blood)
+
+parrying={90.0 100.0}
+resist={80.0 99.0}
+tactics=100.0
+wrestling=120.0
+SpiritSpeak=70.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+item=i_leva_ruka_trpaslika
+ITEM=RANDOM_REAGENT,{50 80}
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_vlci_saman]
+// Autor: Jeffrey
+
+DEFNAME=c_em_vlci_saman
+NAME=Vlci Saman
+ID=c_wolf
+SOUND=snd_ANIMALS_WOLF1
+ICON=i_pet_wolf_gray
+
+attack=50
+ARMOR=70
+moverate=4
+RESOURCES=20 i_ribs_raw, 10 i_fur_dark
+
+CAN=MT_WALK
+FOODTYPE=
+
+
+
+DESCRIPTION=Vlci Saman
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater_vamp
+TEVENTS=e_managain
+
+ON=@Create
+COLOR=0992
+
+STR=600
+DEX=600
+INT=500
+
+maxhits={4500 5000}
+maxstam={1000 1750}
+maxmana={2000 3750}
+
+
+tag.experience=<eval {150.0 260.0}>
+tag.npc_speed=<eval {400 500}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+//other resists
+tag(resist_poison,600)
+tag(resist_para,1000)
+tag(resist_summon,850)
+tag(resist_bleed,300)
+//weap resists
+tag(resist_sharp,400)
+tag(resist_slash,500)
+tag(resist_pierce,400)
+tag(resist_blunt,800)
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,800)
+tag(resist_cold,900)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+parrying={90.0 100.0}
+resist={80.0 99.0}
+tactics={90.0 100.0}
+wrestling=120.0
+SpiritSpeak=70.0
+magery=100.0
+ei=85.0
+
+ITEMNEWBIE=i_spellbook
+addspell s_curse
+addspell s_magic_reflection
+addspell s_dispel
+addspell s_fireball
+addspell s_archprotection
+addspell s_cure
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{50 80}
+ITEM=RANDOM_REAGENT,{50 80}
+ITEM=RANDOM_REAGENT_NECRO,{40 60}
+///////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_jeskynni_grizly]
+// Autor: Jeffrey
+
+DEFNAME=c_em_jeskynni_grizly
+NAME=Jeskynni Grizly
+ID=c_Bear_Brown
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_bear_black
+
+attack=65
+ARMOR=80
+moverate=5
+RESOURCES=3 i_ribs_raw, 3 i_fur_light
+
+CAN=MT_WALK|MT_RUN
+FOODTYPE=
+
+
+
+DESCRIPTION=Jeskynni Grizly
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_reactivearmor
+
+ON=@Create
+COLOR=0433
+
+STR=700
+DEX=500
+INT=70
+
+maxhits={6000 7800}
+maxstam={600 750}
+maxmana=0
+
+tag.experience=<eval {170.0 240.0}>
+tag.npc_speed=<eval {400 500}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+//other resists
+tag(resist_poison,500)
+tag(resist_para,800)
+tag(resist_summon,350)
+tag(resist_bleed,600)
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,400)
+tag(resist_pierce,700)
+tag(resist_blunt,-200)
+//magic resists
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,400)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+parrying={65.0 75.0}
+resist={70.0 90.0}
+tactics={80.0 90.0}
+wrestling=100.0
+SpiritSpeak=50.0
+
+NPC=brain_animal
+
+FAME=4000
+KARMA={-3000 -3999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_krvelacny_grizly]
+// Autor: Jeffrey
+
+DEFNAME=c_em_krvelacny_grizly
+NAME=Krvelacny Grizly
+ID=c_Bear_grizzly
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_bear_black
+
+attack=90
+ARMOR=90
+moverate=5
+RESOURCES=50 i_ribs_raw, 10 i_fur_dark
+
+BLOODCOLOR=colors_lava
+
+CAN=MT_WALK|MT_RUN
+FOODTYPE=
+
+
+
+DESCRIPTION=Krvelacny Grizly
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_berserk_potvora
+TEVENTS=e_npc_massleap
+TEVENTS=e_parakrik
+TEVENTS=e_summoneater_vamp
+
+
+
+ON=@Create
+Color=098C
+
+STR=900
+DEX=600
+INT=170
+
+maxhits={15500 16000}
+maxstam={4000 5750}
+maxmana={1000 1750}
+
+
+tag.experience=<eval {600.0 760.0}>
+tag.npc_speed=<eval {400 500}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanNotBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+//other resists
+tag(resist_poison,200)
+tag(resist_para,1000)
+tag(resist_summon,850)
+tag(resist_bleed,800)
+//weap resists
+tag(resist_sharp,00)
+tag(resist_slash,700)
+tag(resist_pierce,600)
+tag(resist_blunt,400)
+//magic resists
+tag(resist_fire,700)
+tag(resist_elect,800)
+tag(resist_cold,200)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+
+parrying=100.0
+resist=100.0
+tactics=100.0
+wrestling=120.0
+SpiritSpeak=70.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+item=i_torzo_trpaslika
+ITEM=RANDOM_REAGENT,{50 80}
+
+///////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_hadice]
+// Autor: Jeffrey
+
+DEFNAME=c_em_hadice
+NAME=Hadice
+ID=c_snake
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+
+
+attack=50
+ARMOR=40
+moverate=6
+RESOURCES=5 i_ribs_raw,8 i_reag_serpent_scale
+
+BLOODCOLOR=colors_lava
+
+CAN=MT_WALK|MT_RUN
+FOODTYPE=
+
+
+
+DESCRIPTION=Hadice
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_stun
+
+ON=@Create
+Color=00
+
+STR=500
+DEX=300
+INT=170
+
+maxhits={900 1000}
+maxstam={2000 3750}
+maxmana=00
+
+
+tag.experience=<eval {30.0 30.0}>
+tag.npc_speed=<eval {300 300}>
+tag(npc_port_distance,5)
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,500)
+tag(resist_summon,150)
+tag(resist_bleed,00)
+//weap resists
+tag(resist_sharp,00)
+tag(resist_slash,400)
+tag(resist_pierce,600)
+tag(resist_blunt,800)
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,200)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+
+parrying=100.0
+resist=100.0
+tactics=80.0
+wrestling=90.0
+SpiritSpeak=70.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{10 20}
+ITEM=RANDOM_REAGENT_NECRO,{10 20}
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_hadi_kral]
+// Autor: Jeffrey
+
+DEFNAME=c_em_hadi_kral
+NAME=Hadi Kral
+ID=c_serpent_giant
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+
+
+attack=80
+ARMOR=90
+moverate=4
+RESOURCES=20 i_ribs_raw,30 i_reag_serpent_scale
+
+BLOODCOLOR=colors_lava
+
+CAN=MT_WALK|MT_RUN
+FOODTYPE=
+
+
+
+DESCRIPTION=Hadi Kral
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+TEVENTS=e_npc_summoning
+TEVENTS=e_summoneater_vamp
+
+
+
+ON=@Create
+Color=0994
+
+STR=900
+DEX=600
+INT=170
+
+maxhits={19500 20000}
+maxstam={4000 5750}
+maxmana={4000 6750}
+
+
+tag.experience=<eval {600.0 860.0}>
+tag.npc_speed=<eval {300 350}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanNotBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,650)
+tag(resist_bleed,400)
+//weap resists
+tag(resist_sharp,400)
+tag(resist_slash,400)
+tag(resist_pierce,400)
+tag(resist_blunt,800)
+//magic resists
+tag(resist_fire,700)
+tag(resist_elect,200)
+tag(resist_cold,700)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+tag(npc_summoning_chance,13) //1.3% chance
+tag(npc_summoning_time,120)
+tag(npc_summoning_count,4)
+tag(npc_summoning_char[0],c_em_hadice)
+tag(npc_summoning_char[1],c_em_hadice)
+tag(npc_summoning_char[2],c_em_hadice)
+tag(npc_summoning_char[3],c_em_hadice)
+
+
+parrying=100.0
+resist=100.0
+tactics=100.0
+wrestling=120.0
+SpiritSpeak=70.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+item=i_leva_noha_trpaslika
+ITEM=RANDOM_REAGENT,{50 80}
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_hadi_bojovnik]
+// Autor: Jeffrey
+
+DEFNAME=c_em_hadi_bojovnik
+NAME=Hadi Bojovnik
+ID=c_serpent_giant
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+
+
+attack=70
+ARMOR=80
+moverate=5
+RESOURCES=5 i_ribs_raw,18 i_reag_serpent_scale
+
+BLOODCOLOR=colors_lava
+
+CAN=MT_WALK|MT_RUN
+FOODTYPE=
+
+
+
+DESCRIPTION=Hadi Bojovnik
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+
+ON=@Create
+Color=00
+
+STR=700
+DEX=400
+INT=170
+
+maxhits={8000 10000}
+maxstam={2000 3750}
+maxmana=00
+
+
+tag.experience=<eval {180.0 250.0}>
+tag.npc_speed=<eval {300 300}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+//other resists
+tag(resist_poison,700)
+tag(resist_para,1000)
+tag(resist_summon,750)
+tag(resist_bleed,700)
+//weap resists
+tag(resist_sharp,700)
+tag(resist_slash,600)
+tag(resist_pierce,600)
+tag(resist_blunt,800)
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,200)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+
+parrying=100.0
+resist=100.0
+tactics=80.0
+wrestling=90.0
+SpiritSpeak=70.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{40 60}
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_hadi_druid]
+// Autor: Jeffrey
+
+DEFNAME=c_em_hadi_druid
+NAME=Hadi Druid
+ID=c_serpent_giant
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+
+
+attack=50
+ARMOR=80
+moverate=4
+RESOURCES=5 i_ribs_raw,18 i_reag_serpent_scale
+
+BLOODCOLOR=colors_lava
+
+CAN=MT_WALK
+FOODTYPE=
+
+
+
+DESCRIPTION=Hadi Druid
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater
+TEVENTS=e_managain
+
+
+ON=@Create
+Color=00
+
+STR=500
+DEX=300
+INT=270
+
+maxhits={8000 10000}
+maxstam={2000 3750}
+maxmana={3000 4750}
+
+
+tag.experience=<eval {150.0 180.0}>
+tag.npc_speed=300
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+//other resists
+tag(resist_poison,600)
+tag(resist_para,1000)
+tag(resist_summon,850)
+tag(resist_bleed,300)
+//weap resists
+tag(resist_sharp,400)
+tag(resist_slash,200)
+tag(resist_pierce,00)
+tag(resist_blunt,400)
+//magic resists 
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,750)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+
+parrying=100.0
+resist=100.0
+tactics=80.0
+wrestling=90.0
+SpiritSpeak=70.0
+magery=100.0
+EI=100.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMNEWBIE=i_spellbook
+addspell s_curse
+addspell s_magic_reflection
+addspell s_dispel
+addspell s_fireball
+addspell s_archprotection
+addspell s_greater_heal
+addspell s_cure
+addspell s_mind_blast
+
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{40 60}
+ITEM=RANDOM_REAGENT,{40 60}
+ITEM=RANDOM_REAGENT_NECRO,{40 60}
+
+///////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_jeskynni_ropucha]
+// Autor: Jeffrey
+
+DEFNAME=c_em_jeskynni_ropucha
+NAME=Jeskynni Ropucha
+ID=c_toad_giant
+SOUND=snd_MONSTER_GIANTTOAD1
+ICON=i_pet_toad_giant
+
+
+
+attack=65
+ARMOR=70
+moverate=4
+RESOURCES=20 i_ribs_raw
+
+BLOODCOLOR=colors_lava
+
+CAN=MT_WALK|MT_SWIM
+FOODTYPE=
+
+
+
+DESCRIPTION=Jeskynni Ropucha
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+
+ON=@Create
+Color=0433
+
+STR=1500
+DEX=600
+INT=0
+
+maxhits={5000 20000}
+maxstam={4000 5750}
+maxmana=
+
+
+tag.experience=<eval {250.0 300.0}>
+tag.npc_speed=<eval {300 350}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,900)
+tag(resist_summon,500)
+tag(resist_bleed,500)
+//weap resists
+tag(resist_sharp,300)
+tag(resist_slash,300)
+tag(resist_pierce,300)
+tag(resist_blunt,600)
+//magic resists
+tag(resist_fire,400)
+tag(resist_elect,500)
+tag(resist_cold,800)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+parrying=100.0
+resist=100.0
+tactics=100.0
+wrestling=120.0
+SpiritSpeak=70.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+item=i_potion_EnergyElixir
+item=RANDOM_REAGENT,{50 80}
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_pan_ropuch]
+// Autor: Jeffrey
+
+DEFNAME=c_em_pan_ropuch
+NAME=Pan Ropuch
+ID=c_toad_giant
+SOUND=snd_MONSTER_GIANTTOAD1
+ICON=i_pet_toad_giant
+
+
+attack=90
+ARMOR=80
+moverate=4
+RESOURCES=50 i_ribs_raw
+
+BLOODCOLOR=colors_lava
+
+CAN=MT_WALK|MT_SWIM
+FOODTYPE=
+
+
+
+DESCRIPTION=Pan Ropuch
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_roundattack
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_detect
+TEVENTS=e_summoneater_vamp
+
+
+
+ON=@Create
+Color=00
+
+STR=700
+DEX=400
+INT=170
+
+maxhits={10000 15000}
+maxstam={2000 3750}
+maxmana=00
+
+
+tag.experience=<eval {700.0 900.0}>
+tag.npc_speed=<eval {300 300}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanNotBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+//other resists
+tag(resist_poison,800)
+tag(resist_para,1000)
+tag(resist_summon,750)
+tag(resist_bleed,600)
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,600)
+tag(resist_pierce,400)
+tag(resist_blunt,800)
+//magic resists
+tag(resist_fire,700)
+tag(resist_elect,200)
+tag(resist_cold,400)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+tag(npc_summoning_chance,13) //1.3% chance
+tag(npc_summoning_time,120)
+tag(npc_summoning_count,4)
+tag(npc_summoning_char[0],c_em_zabak)
+tag(npc_summoning_char[1],c_em_zabak)
+tag(npc_summoning_char[2],c_em_zabak)
+tag(npc_summoning_char[3],c_em_jeskynni_ropucha)
+
+
+parrying=100.0
+resist=100.0
+tactics=80.0
+wrestling=90.0
+SpiritSpeak=70.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{40 60}
+ITEM=RANDOM_REAGENT,{40 60}
+ITEM=i_prava_ruka_trpaslika
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_em_zabak]
+// Autor: Jeffrey
+
+DEFNAME=c_em_zabak
+NAME=Zabak
+ID=c_bullfrog
+SOUND=snd_MONSTER_BULLFROG1
+ICON=i_pet_bullfrog
+
+
+attack=50
+ARMOR=40
+moverate=6
+RESOURCES=25 i_ribs_raw
+
+BLOODCOLOR=colors_lava
+
+CAN=MT_WALK|MT_RUN
+FOODTYPE=
+
+
+
+DESCRIPTION=Zabak
+SUBSECTION=Dungeons
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+
+ON=@Create
+Color=00
+
+STR=500
+DEX=300
+INT=370
+
+maxhits={2000 2100}
+maxstam={2000 3750}
+maxmana=00
+
+
+tag.experience=<eval {40.0 50.0}>
+tag.npc_speed=<eval {300 300}>
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,500)
+tag(resist_summon,150)
+tag(resist_bleed,300)
+//weap resists
+tag(resist_sharp,200)
+tag(resist_slash,200)
+tag(resist_pierce,200)
+tag(resist_blunt,400)
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,200)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+
+parrying=100.0
+resist=100.0
+tactics=80.0
+wrestling=90.0
+SpiritSpeak=70.0
+
+NPC=brain_animal
+
+FAME=7000
+KARMA={-4000 -5999}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{10 20}
+ITEM=RANDOM_REAGENT_NECRO,{10 20}
+///////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+[ITEMDEF i_hlava_trpaslika]
+ID=i_flesh_head
+NAME=Hlava Trpaslika
+
+CATEGORY=Jeffrey
+SUBSECTION=Ered Mithrin
+DESCRIPTION=Hlava Trpaslika
+
+ON=@Create
+color=00
+
+on=@userdclick
+message("Vypada to jako hlava nejakeho trpaslika, chudak ma v ocich smrt.") 
+
+///////////////////////////////////////////////////////////
+[ITEMDEF i_leva_ruka_trpaslika]
+ID=i_flesh_left_arm
+NAME=Leva Ruka Trpaslika
+
+CATEGORY=Jeffrey
+SUBSECTION=Ered Mithrin
+DESCRIPTION=Leva Ruka Trpaslika
+
+ON=@Create
+color=00
+
+on=@userdclick
+message("Vypada to jako ukousnuta ruka nejakeho trpaslika, je plna mozolu asi od tvrde prace") 
+
+///////////////////////////////////////////////////////////
+[ITEMDEF i_prava_ruka_trpaslika]
+ID=i_flesh_right_arm
+NAME=Prava Ruka Trpaslika
+
+CATEGORY=Jeffrey
+SUBSECTION=Ered Mithrin
+DESCRIPTION=Prava Ruka Trpaslika
+
+ON=@Create
+color=00
+
+on=@userdclick
+message("Vypada to jako ukousnuta ruka nejakeho trpaslika, je plna mozolu asi od tvrde prace") 
+
+///////////////////////////////////////////////////////////
+[ITEMDEF i_torzo_trpaslika]
+ID=i_flesh_torso
+NAME=Torzo Trpaslika
+
+CATEGORY=Jeffrey
+SUBSECTION=Ered Mithrin
+DESCRIPTION=Torzo Bojovnika
+
+ON=@Create
+color=00
+
+on=@userdclick
+message("Vypada to jako torzo nejakeho trpaslika, je cele roztrhane od zvirecich zubu") 
+
+///////////////////////////////////////////////////////////
+[ITEMDEF i_leva_noha_trpaslika]
+ID=i_flesh_left_leg
+NAME=Leva Noha Trpaslika
+
+CATEGORY=Jeffrey
+SUBSECTION=Ered Mithrin
+DESCRIPTION=Leva Noha Bojovnika
+
+ON=@Create
+color=00
+
+on=@userdclick
+message("Vypada to jako noha, je kratka a pomerne silna, pravdepodobne patrila nejakemu trpaslikovi.") 
+
+///////////////////////////////////////////////////////////
+[ITEMDEF i_prava_noha_trpaslika]
+ID=i_flesh_right_leg
+NAME=Prava Noha Trpaslika
+
+CATEGORY=Jeffrey
+SUBSECTION=Ered Mithrin
+DESCRIPTION=Prava Noha Trpaslika
+
+ON=@Create
+color=00
+
+on=@userdclick
+message("Vypada to jako noha, je kratka a pomerne silna, pravdepodobne patrila nejakemu trpaslikovi.")
+
+
+
+
+
+
+
+
+
+
+

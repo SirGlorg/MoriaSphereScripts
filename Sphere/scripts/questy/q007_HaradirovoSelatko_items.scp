@@ -1,0 +1,175 @@
+////////////////////////////////////////////
+////////// Haradirovo selatko - Quest itemy
+////////////////////////////////////////////
+
+[ITEMDEF i_lukdryady]
+ID i_bow
+NAME=Luk dryady (quest item)
+DAM=4
+
+ON=@Create
+color=065f
+hitpoints=5000
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Luk Dryady
+
+
+[ITEMDEF i_selatko]
+ID=09bc
+NAME=Selatko
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Selatko
+
+
+////////// Kameny
+
+[ITEMDEF i_mesicni_kamen]
+ID=01364
+NAME=Mesicni kamen
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Mesicni kamen
+
+ON=@Create
+color=02c1
+
+[ITEMDEF i_meteorit]
+ID=01364
+NAME=Meteorit
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Meteorit
+
+ON=@Create
+color=0062
+
+
+[ITEMDEF i_kamen_krve]  // Sebrán ze souboru uniques.scp
+ID=01364
+NAME=krvavy kamen
+TYPE=T_AROCK
+
+CATEGORY=Noe
+SUBSECTION=Quest
+DESCRIPTION=Krvavy kamen
+
+ON=@Create
+color=colors_blood
+attr=attr_newbie
+
+ON=@userdCLICK
+
+IF (<SRC.RESTEST 1 i_krvavy_mec>) // Navazuje na questy itemy soubor uniques.scp
+ SRC.CONSUME=1 i_krvavy_mec
+ SRC.CONSUME=1 i_kamen_krve
+ src.newitem=i_sword_blood
+ src.act.bounce
+ELSE
+ SRC.MESSAGE=Ragnarog musis s kamenem krvavym spojiti.
+ENDIF
+
+
+////////// Uniques Itemy
+
+[ITEMDEF i_adamantinum_kladivko]
+ID=i_hammer_smith
+NAME=Adamantinove kladivko
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Adamantinove kladivko
+
+ON=@Create
+Hitpoints=60
+color=065f
+
+ON=@equip
+if (<hitpoints> == 0)
+  Hitpoints=60
+endif
+if (<src.blacksmithing>>999)
+ src.tag(altered_bs,1)
+ src.blacksmithing=(<src.blacksmithing>+100)
+ src.sysmessage citis mistrovstvi spjate s tomto kladivkem ... pokud jsi GM kovar muzes kovati Mithril.
+endif
+
+ON=@unequip
+if(src.tag(altered_bs))
+ if(<src.tag(altered_bs)>==1)
+  src.tag.remove(altered_bs)
+  src.blacksmithing=(<src.blacksmithing>-100)
+ endif
+endif
+
+on=@targon_item
+return(<blacksmithing_targon_item>)
+
+
+[ITEMDEF i_book_inscription]
+NAME=Kniha Inscription 8 kruhu
+ID=i_book_sm_pub
+
+TYPE=t_book_inscription
+
+CATEGORY=Noe
+SUBSECTION=Knihy receptu
+DESCRIPTION=Kniha Inscription 8 kruhu
+
+ON=@Create 
+COLOR=0040
+
+ON=@userDCLICK
+src.SYSMESSAGE=Tato kniha ti popisuje nejvyssi magicke formule diky nimz jsi schopen pri dostatecne znalosti Inscripce vloziti kouzla 8 kruhu do svitku.
+
+
+[ITEMDEF i_magicke_pero]
+ID=0fbf
+NAME=Magicke pero
+
+CATEGORY=Unique Items
+SUBSECTION=Tinker
+DESCRIPTION=Neaktivni Runa
+ON=@Create
+ATTR=attr_newbie
+COLOR=0986
+
+ON=@userCLICK
+SRC.SYSMESSAGE Toto pero zda se magii ocarovano tak ze inkoust na predmet jim naneseny, svou stopu navzdy zachova byt i neviditelna po case bude.
+
+ON=@userdCLICK
+elseif (<SRC.RESTEST 1 i_rune_tinker> )&&(<SRC.RESTEST 1 i_magicke_pero> )&&(<src.Inscription> > 84.9)
+src.consume=i_rune_tinker
+src.newitem=i_rune_marker
+src.act.bounce
+ELSE
+SRC.SYSMESSAGE Toto pero zda se magii ocarovano tak ze inkoust na predmet jim naneseny, svou stopu navzdy zachova byt i neviditelna po case bude.
+endif
+
+
+///////////////////////
+///////////////////////
+
+[TEMPLATE TM_poklad_piratu]
+CATEGORY=POKLADY
+SUBSECTION=poklady
+DESCRIPTION=Poklad piratu - nepouzivat!
+CONTAINER=i_chest_treasure2
+MORE2=100
+color=0995
+item=i_mi_bag,{0 1}
+item={i_mi_bag 1 0 3}
+ITEM=i_gold,{ 10000 50000 }
+ITEM=i_scroll_blank,{50 400}
+ITEM=Random_Potion
+ITEM=Random_Potion
+ITEM=i_meteorit
+ITEM=i_kamen_krve,{0 1}
+ITEM=i_mesicni_kamen
+
+[eof]

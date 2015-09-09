@@ -1,0 +1,867 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                       Kvest Neutralni-008 Black Mustang                          //
+//                                (c)-Sir Glorg-                                    //
+//                                namet: -Jandor-                                   //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+// poznamky:
+//  pozice domu  - 571 3547 10
+//  pozice monster:
+//   c_q008_elem_snow	- 106 2099 
+//   c_q008_eye_ice	- 106 2099 
+//   c_q008_eye_snow 	- 1005 101 5 
+//   c_q008_elem_ice 	- 955 112 10 
+//   
+//  tagy:
+//   mustspawnid	== ID	- nutne zadat tenhle tag s ID spawnu mustanga na spawn dedy rangera.
+//   q008_black == 1	- zadani ukolu
+//   q008_black == 2	- donesl jsem vsechny potrebny suroviny
+//   q008_black == 3	- otevrel jsem vratka k mustangovi a zkousim ho ochocit...
+//   q008_black == 4	- ochocil jsem mustanga a jsem venku z ohrady (naslapnuta pojistovaci zaklapka)
+//  dalsi soubory:
+//   q008_black_chars.scp
+//   q008_black_items.scp
+
+[SPEECH spk_q008_black_oldman]
+ON = *hi*
+ON = *dobry*
+ON = *ahoj*
+ON = *zdrav*
+ON = *mustang*
+ON = *black*
+ON = *cerny*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q008_black_oldman_DClick
+endif
+
+[FUNCTION f_q008_black_oldman_DClick]
+
+if (<src.tag.q008_black_rejected> == 1)
+ say Nejsi zde vitan!
+ return 1
+endif
+
+if (src.profession == class_ranger)
+  if (<src.tag.q008_black> >= 3)
+    if (<eval uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ischar> == 0) || (<uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ispet> == 1) // id posledniho spawnuteho mustanga neni ve svete, nebo je tamnuty
+      DIALOG(d_q008_black_oldman_9)
+    else
+      DIALOG(d_q008_black_oldman_10)
+    endif
+  else
+    if (<src.tag.q008_black> == 2)
+      if (<eval uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ischar> == 0) || (<uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ispet> == 1) // id posledniho spawnuteho mustanga neni ve svete, nebo je tamnuty
+        DIALOG(d_q008_black_oldman_8)
+      else
+        Say Jdi za tim mustangem! Jen jdi ...
+      endif
+    else
+      if (<src.tag.q008_black_a> == 1)
+        if (<eval uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ischar> == 0) || (<uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ispet> == 1) // id posledniho spawnuteho mustanga neni ve svete, nebo je tamnuty
+          DIALOG(d_q008_black_oldman_5)
+        else
+          DIALOG(d_q008_black_oldman_6)
+        endif
+      else
+        if (<src.tag.q008_black> == 1) && (<src.tag.q008_black_monster_1> == 1) && (<src.tag.q008_black_monster_2> == 1) && (<src.tag.q008_black_monster_3> == 1) && (<src.tag.q008_black_monster_4> == 1) && (<src.findlayer(21).findid(i_q008_benda_regy).tag(nasbirano)> == 1)
+          if (<eval uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ischar> == 0) || (<uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ispet> == 1) // id posledniho spawnuteho mustanga neni ve svete, nebo je tamnuty
+            DIALOG(d_q008_black_oldman_4)
+          else
+            DIALOG(d_q008_black_oldman_7) //prinesl jsem regy a je tu i mustang
+          endif
+        elseif (<src.tag.q008_black> == 1)
+          DIALOG(d_q008_black_oldman_3) //mam quest a nemam regy
+        else
+          if (<src.Taming> >= 950) && (<src.AnimalLore> >= 950)
+            if (<eval uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ischar> == 0) || (<uid.memoryfindtype(MEMORY_ISPAWNED).link.tag(mustspawnid).tag(lastspawned).ispet> == 1) // id posledniho spawnuteho mustanga neni ve svete, nebo je tamnuty
+              DIALOG(d_q008_black_oldman_1) // prvni navsteva + neni tam must
+            else // mustang tu je
+              DIALOG(d_q008_black_oldman_2) // prvni navsteva + je tam must
+            endif
+          else
+            DIALOG(d_q008_black_oldman_no_tamer)
+          endif
+        endif
+      endif
+    endif
+  endif
+else
+  DIALOG(d_q008_black_oldman_no_tamer)
+endif
+
+
+
+///////////// Gump 1 Ancam
+
+[dialog d_q008_black_oldman_1]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?     
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q008_black_oldman_1 text]
+Ancam                                                                                 //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Hmm.. Co pohledava nekdo jako ty na tomto ostrove?                                    //4
+Jmenuji se Ancam. Jsem jen stary chovatel a milovnik koni.                            //5
+Hmm.. Ted mi nijak nepomuzes. Prozatim zde mam vse, co pro svuj chov potrebuji.             //6
+Velmi stary a urostly muz. Jazykem neprilis obratny, zato velmi zdatny akrobat a krotitel zvirat. Jiste rozumi lesum a zveri mnohem vice, nez dobremu jidlu a piti.   //7
+
+
+
+[dialog d_q008_black_oldman_1 button]
+
+
+///////////// Gump 2 Ancam - mustang tu je
+
+[dialog d_q008_black_oldman_2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?     
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Mustang
+text 213 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // kdo jsi?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 5 // mustang
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  // chci ho koupit
+text 60 398 152 10
+button 25 415 0fa5 0fa7 0 7 0  // co udelat, abych ho ziskal?
+text 60 418 152 11
+button 25 435 0fa5 0fa7 0 8 0  // prodej mi ho !
+text 60 438 152 12
+
+page 6 // chci ho koupit
+HTMLGUMP(170,230,440,100,13,0,36)
+button 25 395 0fa5 0fa7 0 7 0  // co udelat, abych ho ziskal?
+text 60 398 152 16
+
+page 7 // co udelat, abych ho ziskal?
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 0 9 0  // co udelat, abych ho ziskal?
+text 60 398 152 17
+
+
+page 8 // prodej mi ho !
+HTMLGUMP(170,230,440,100,14,0,36)
+button 25 395 0fa5 0fa7 1 0 2  // Toho kone chci!
+text 60 398 152 20
+button 25 415 0fa5 0fa7 0 7 0  // co udelat, abych ho ziskal?
+text 60 418 152 16
+
+page 9 // Pokusim se tam vypravit !
+HTMLGUMP(170,230,440,100,18,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // prevzit bednu
+text 60 398 142 19
+button 25 415 0fa5 0fa7 0 10 0  // jake regy po mne chces?
+text 60 418 152 21
+
+page 10 // Pokusim se tam vypravit !
+HTMLGUMP(170,230,440,100,22,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // prevzit bednu
+text 60 398 142 19
+
+
+[dialog d_q008_black_oldman_2 text]
+Ancam                                                                                 //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Mustang                                                                               //4
+Hmm.. Co pohledava nekdo jako ty na tomto ostrove?                                    //5
+Jmenuji se Ancam. Jsem jen stary chovatel a milovnik koni.                            //6
+Hmm.. Ted mi nijak nepomuzes. Prozatim zde mam vse, co pro svuj chov potrebuji.       //7
+Stary a urostly muz. Jazykem neprilis obratny, zato velmi zrucny akrobat a krotitel zvirat. Uz na prvni pohled je z nej mnohem vice citit laska k lesum a zveri, nez k dobremu jidlu a piti.   //8
+Ah .. zajimas se o to zvire ? Smim-li se chlubit, pak je to jiste nejlepsi kus, jaky jsem kdy odchoval.     //9
+Chtel bych to zvire koupit.                                                           //10
+To jiste je. Co muze clovek jako ja udelat, aby od tebe to zvire ziskal?              //11
+Prodej mi toho kone!                                                                  //12
+To zvire neni na prodej! Je to to nejlepsi, co jsem kdy ve svem vybehu choval, a neprodam ho jen tak! Zadne penize mi nemohou nahradit jeho jedinecnost.  //13
+Nebud tak lacny cizince ! Tva hamiznost se mi prici. Mas-li na mne jakoukoliv prosbu, radim ti dobre - netroufej si ke mne znovu hovorit se stejnou drzosti!  //14
+Hmm... Odchovat tohoto hrebce mne stalo mnoho namahy a trpelivosti. Leta jsem zkousel ruzne druhy bylin, abych jimi dodal vse potrebne k rozvinuti jeho sily. Ted jsem si jist, jake prisady jsou potreba a s nimi budu schopen odchovat dalsi takovy kus. Ve velke zime se temto bylinam dari. Na ostrovech pokrytych snehem zije spousta zvlastnich tvoru. Jdi tam, sbirej vse, co maji u sebe, a to mi pote dones. Kdyz doneses vseho dostatek k odchovu dalsiho statneho hrebce, pak ti dovolim vstoupit do ohrady, kde budes moci predvest sve umeni a pokusit se ochocit toto hrde zvire.             //15
+Co tedy mohu udelat, abych od tebe to zvire ziskal?                                   //16
+Dobra, pokusim se tam vypravit.                                                       //17
+Vyborne! Tady mas bednu. Vloz do ni vsechno, co u tech bestii najdes. Jen tak budes mit jistotu, ze doneses vse co potrebuji.                        //18
+*Prevzit bednu*                                                                       //19
+Kazdy ma svou cenu. Toho kone chci!                                                   //20
+Nemohl by jsi mi priblizit, jake prisady po mne chces?                                   //21
+Nic na svete mne nedonuti prozradit me tajemstvi. Suroviny, ktere potrebuji jsou vsak vzacne a sehnat se daji jen na ostrovech pokrytych snehem.. Jsou k nerozeznani od tech, ktere jiste znas, nejspise mezi nimi neshledas rozdil. Lisi se predevsim obsahem nekterych latek. Bohuzel ty ucinne latky mohou vyvolavat u nekterych tvoru kteri je u sebe nosi plachost. Budis ti tedy dobrou radou, aby jsi po ostrove patral pokud mozno sam a ta stvoreni nevyplasil. //22
+
+
+
+[dialog d_q008_black_oldman_2 button]
+on=1
+ src.giveitem(i_q008_benda_regy)
+ src.tag.q008_black = 1
+ 
+on=2
+ say Uz se tady nikdy neukazuj!
+ src.tag.q008_black_rejected = 1
+ src.tag.remove(q008_black)
+
+
+
+
+
+
+
+///////////// Gump 3 Ancam - nejsou regy
+
+[dialog d_q008_black_oldman_3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se dari ?     
+text 205 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Nesu ti
+text 219 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 5 // Nesu ti
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  // ukazat bednu
+text 60 398 142 10
+
+page 6 // ukazat bednu
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 0 7 0  // co udelat, abych ho ziskal?
+text 60 398 152 12
+
+page 7 // kde sehnat ty regy
+HTMLGUMP(170,230,440,100,13,0,36)
+
+
+[dialog d_q008_black_oldman_3 text]
+Ancam                                                                                 //0
+Jak se dari?                                                                          //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Nesu ti                                                                               //4
+Take te zdravim.                                                                      //5
+Vyborne. Kone jsou zdravi, nemohu si stezovat.                                        //6
+Ano prines mi ty prisady a uvidime, jak budu schopen pomoci ja tobe.                     //7
+Stary a urostly muz. Jazykem neprilis obratny, zato velmi zrucny akrobat a krotitel zvirat. Uz na prvni pohled je z nej mnohem vice citit laska k lesum a zveri, nez k dobremu jidlu a piti.   //8
+Hmm? Aaah v te bedne jiste... Ukaz mi, co jsi nasbiral.                               //9
+*Ukazat bednu*                                                                        //10
+Aha.. ahh.. ne ... ne kdepak tady toho neni dost. S timhle nevystacim. Takhle silny kun roste dlouho a potrebuji toho vice. //11
+Nemohl by jsi mi priblizit, jake prisady po mne chces?                                   //12
+Nic na svete mne nedonuti prozradit me tajemstvi. Suroviny, ktere potrebuji jsou vsak vzacne a sehnat se daji jen na ostrovech pokrytych snehem.. Jsou k nerozeznani od tech, ktere jiste znas, nejspise mezi nimi neshledas rozdil. Lisi se predevsim obsahem nekterych latek. Bohuzel ty ucinne latky mohou vyvolavat u nekterych tvoru kteri je u sebe nosi plachost. Budis ti tedy dobrou radou, aby jsi po ostrove patral pokud mozno sam a ta stvoreni nevyplasil. //13
+
+
+[dialog d_q008_black_oldman_3 button]
+
+
+
+
+
+
+
+///////////// Gump 4 Ancam - jsou regy + neni mustang
+
+[dialog d_q008_black_oldman_4]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se dari ?     
+text 205 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Nesu ti
+text 219 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 5 // Nesu ti
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  // ukazat bednu
+text 60 398 142 10
+
+page 6 // ukazat bednu
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // souhlasit
+text 60 398 142 12
+
+
+[dialog d_q008_black_oldman_4 text]
+Ancam                                                                                 //0
+Jak se dari?                                                                          //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Nesu ti                                                                               //4
+Take te zdravim.                                                                      //5
+Vyborne. Kone jsou zdravi, nemohu si stezovat.                                        //6
+Ano prines mi ty prisady a uvidime, jak budu schopen pomoci ja tobe.                     //7
+Stary a urostly muz. Jazykem neprilis obratny, zato velmi zrucny akrobat a krotitel zvirat. Uz na prvni pohled je z nej mnohem vice citit laska k lesum a zveri, nez k dobremu jidlu a piti.   //8
+Hmm? Aaah v te bedne jiste... Ukaz mi, co jsi nasbiral.                               //9
+*Ukazat bednu*                                                                        //10
+Aha.. ahh.. ne ... ne kdepak, ale ano ! Je to tady uz to vdim a je toho dost! Vyborne, vypada to, ze jsi se sveho tezkeho ukolu chopil pevne a nepustilo te to. Dej mi tedy cas a ja vychovam dalsiho skveleho hrebce. Prijd za mnou, az s tim budu hotov a ja te pustim do ohrady, kde se pokusis o jeho zkroceni.  //11
+*souhlasit*                                                                           //12
+
+
+
+[dialog d_q008_black_oldman_4 button]
+on=1
+ src.tag.q008_black_a = 1
+ src.findlayer(21).findid(i_q008_benda_regy).remove
+ src.tag.remove(q008_black)
+ src.tag.remove(q008_black_monster_1)
+ src.tag.remove(q008_black_monster_2)
+ src.tag.remove(q008_black_monster_3)
+ src.tag.remove(q008_black_monster_4)
+ 
+
+
+
+
+
+
+///////////// Gump 5 Ancam - regy predany + mustang tu stale neni
+
+[dialog d_q008_black_oldman_5]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se dari ?     
+text 205 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Jak se dari?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+
+[dialog d_q008_black_oldman_5 text]
+Ancam                                                                                 //0
+Jak se dari?                                                                          //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Take te zdravim.                                                                      //4
+Zadna slava... To zvire zere jako dive. Budu rad, kdyz z toho, co jsi mi prinesl, vychovam jeden kus...   //5
+Ah... Jsi dobry clovek, ale ted je rada na mne, abych ti oplatil tvou sluzbu jak jsem slibil.             //6
+Stary a urostly muz. Jazykem neprilis obratny, zato velmi zrucny akrobat a krotitel zvirat. Uz na prvni pohled je z nej mnohem vice citit laska k lesum a zveri, nez k dobremu jidlu a piti.   //7
+
+
+
+[dialog d_q008_black_oldman_5 button]
+
+
+
+
+
+
+
+///////////// Gump 5 Ancam - regy predany + mustang uz tu je
+
+[dialog d_q008_black_oldman_6]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se dari ?     
+text 205 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Mustang
+text 213 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+page 2 // Jak se dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 5 // mustang
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // pokracovat
+text 60 398 142 10
+
+[dialog d_q008_black_oldman_6 text]
+Ancam                                                                                 //0
+Jak se dari?                                                                          //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Mustang                                                                               //4
+Take te zdravim.                                                                      //5
+Zadna slava... To zvire zere jako dive. Nezbylo mi vubec nic na odchov dalsiho hrebce.//6
+Ah... Jsi dobry clovek, ale ted je rada na mne, abych ti oplatil tvou sluzbu, jak jsem slibil.             //7
+Stary a urostly muz. Jazykem neprilis obratny, zato velmi zrucny akrobat a krotitel zvirat. Uz na prvni pohled je z nej mnohem vice citit laska k lesum a zveri, nez k dobremu jidlu a piti.   //8
+Tak tedy, jak jsem ti jiz slibil, mas ted moznost vstoupit do ohrady a podmanit si vuli toho zvirete. Pamatuj si vsak, ze mas jen jednu sanci. Pokud v souboji s nim prohrajes, nedovolim ti se k nemu znovu priblizit. Vyhrajes-li, je tvuj. Ted jdi ! //9
+*pokracovat*                                                                          //10
+
+[dialog d_q008_black_oldman_6 button]
+on=1
+src.tag.remove(q008_black_a)
+src.tag.q008_black = 2
+src.addexp(400)
+say hodne stesti
+
+
+
+
+
+
+
+///////////// Gump 7 Ancam - jsou regy i mustang
+
+[dialog d_q008_black_oldman_7]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se dari ?     
+text 205 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Nesu ti
+text 219 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 5 // Nesu ti
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  // ukazat bednu
+text 60 398 142 10
+
+page 6 // ukazat bednu
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 0 7 0  // pokracovat
+text 60 398 142 12
+
+page 7 // ukazat bednu
+HTMLGUMP(170,230,440,100,13,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // souhlasit
+text 60 398 142 14
+
+
+[dialog d_q008_black_oldman_7 text]
+Ancam                                                                                 //0
+Jak se dari?                                                                          //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Nesu ti                                                                               //4
+Take te zdravim.                                                                      //5
+Vyborne. Kone jsou zdravi, nemohu si stezovat.                                        //6
+Ano prines mi ty prisady a uvidime, jak budu schopen pomoci ja tobe.                     //7
+Stary a urostly muz. Jazykem neprilis obratny, zato velmi zrucny akrobat a krotitel zvirat. Uz na prvni pohled je z nej mnohem vice citit laska k lesum a zveri, nez k dobremu jidlu a piti.   //8
+Hmm? Aaah v te bedne jiste... Ukaz mi, co jsi nasbiral.                               //9
+*Ukazat bednu*                                                                        //10
+Aha.. ahh.. ne ... ne kdepak, ale ano ! Je to tady uz to vdim a je toho dost! Vyborne, vypada to, ze jsi se sveho tezkeho ukolu chopil pevne a nepustilo te to...  //11
+*pokracovat*                                                                          //12
+Tak tedy, jak jsem ti jiz slibil, mas ted moznost vstoupit do ohrady a podmanit si vuli toho zvirete. Pamatuj si vsak, ze mas jen jednu sanci. Pokud v souboji s nim prohrajes, nedovolim ti se k nemu znovu priblizit. Vyhrajes-li, je tvuj. Ted jdi ! //13
+*souhlasit*                                                                           //14
+
+
+
+[dialog d_q008_black_oldman_7 button]
+on=1
+ src.tag.q008_black = 2
+ src.findlayer(21).findid(i_q008_benda_regy).remove
+ src.tag.remove(q008_black_monster_1)
+ src.tag.remove(q008_black_monster_2)
+ src.tag.remove(q008_black_monster_3)
+ src.tag.remove(q008_black_monster_4)
+ topobj.memoryfindtype(MEMORY_ISPAWNED).link.tag(vydalMustangu,#+1)
+
+
+
+
+
+
+
+
+
+
+
+///////////// Gump 8 Ancam - mel jsi uz jit ochocit mustu, ale on zatim zmizel...
+
+[dialog d_q008_black_oldman_8]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se dari ?     
+text 205 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Mustang
+text 213 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 5 // Mustang
+HTMLGUMP(170,230,440,100,9,0,36)
+
+
+[dialog d_q008_black_oldman_8 text]
+Ancam                                                                                 //0
+Jak se dari?                                                                          //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Mustang                                                                               //4
+Take te zdravim.                                                                      //5
+Zadna slava... To zvire zere jako dive. Nezbylo mi vubec nic na odchov dalsiho hrebce.//6
+Ah... Jsi dobry clovek, ale ted je rada na mne, abych ti oplatil tvou sluzbu, jak jsem slibil.             //7
+Stary a urostly muz. Jazykem neprilis obratny, zato velmi zrucny akrobat a krotitel zvirat. Uz na prvni pohled je z nej mnohem vice citit laska k lesum a zveri, nez k dobremu jidlu a piti.   //8
+Ano jiste. Nevedel jsem, kdy se sem k nemu vratis, tak jsem ho pustil na pastvinu. Nehledej ho! Nikdy bys neuspel. Vrat se pozdeji. Az se ke mne vrati, muzes se pokusit o jeho ochoceni.      //9
+
+
+
+[dialog d_q008_black_oldman_8 button]
+
+
+
+
+
+
+
+
+
+///////////// Gump 9 Ancam - KONEC QUESTU + novy mustang jeste neni
+
+[dialog d_q008_black_oldman_9]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se dari ?
+text 205 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Jak se dari ?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q008_black_oldman_9 text]
+Ancam                                                                                 //0
+Jak se dari?                                                                          //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Take te zdravim.                                                                      //4
+Skvele! Kone jsou zdravi, nemohu si stezovat.                                         //5
+Hmm.. Ted mi nijak nepomuzes. Proatim zde mam vse, co pro svuj chov potrebuji.        //6
+Velmi stary a urostly muz. Jazykem neprilis obratny, zato velmi zdatny akrobat a krotitel zvirat. Jiste rozumi lesum a zveri mnohem vice, nez dobremu jidlu a piti.   //7
+
+
+
+[dialog d_q008_black_oldman_9 button]
+
+
+
+
+
+
+
+
+
+///////////// Gump 10 Ancam - KONEC QUESTU + Novy mustang tu je - dalsi kolo
+
+[dialog d_q008_black_oldman_10]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se dari ?
+text 205 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Mustang
+text 213 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se dari ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 5 // mustang
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 1 0 2  // Chci dalsiho Mustanga.
+text 60 398 152 10
+button 25 415 0fa5 0fa7 0 6 0  // Rad bych mel tu cest osedlat dalsiho cerneho mustanga.
+text 60 418 152 11
+
+page 6 // Rad bych mel tu cest osedlat dalsiho cerneho mustanga.
+HTMLGUMP(170,230,440,100,12,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // prevzit bednu
+text 60 398 142 13
+button 25 415 0fa5 0fa7 0 7 0  // jake regy po mne chces?
+text 60 418 152 14
+
+page 7 // co udelat, abych ho ziskal?
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // prevzit bednu
+text 60 398 142 13
+
+
+[dialog d_q008_black_oldman_10 text]
+Ancam                                                                                 //0
+Jak se dari?                                                                          //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Mustang                                                                               //4
+Take te zdravim.                                                                      //5
+Vyborne. Kone jsou zdravi, nemohu si stezovat.                                        //6
+Hmm.. Ted mi nijak nepomuzes. Prozatim zde mam vse, co pro svuj chov potrebuji.       //7
+Stary a urostly muz. Jazykem neprilis obratny, zato velmi zrucny akrobat a krotitel zvirat. Uz na prvni pohled je z nej mnohem vice citit laska k lesum a zveri, nez k dobremu jidlu a piti.   //8
+Ah .. Nemas jeste dost hmm? *usmal se*                                                //9
+Ano. Chci dalsiho Mustanga.                                                           //10
+Tva zvirata jsou opravdu nadherna! Rad bych mel tu cest osedlat dalsiho cerneho mustanga.  //11
+Libis se mi. Stejne jsem potreboval dalsi byliny. Tedy dobra dohodneme se. Dam ti dalsi bednu. Vydej se znovu za dobrodruzstvim a prines mi dalsi prisady.     //12
+*Souhlasit a prijmout bednu*                                                          //13
+Nemohl by jsi mi priblizit, jake prisady po mne chces?                                   //14
+Nic na svete mne nedonuti prozradit me tajemstvi. Suroviny, ktere potrebuji jsou vsak vzacne a sehnat se daji jen na ostrovech pokrytych snehem.. Jsou k nerozeznani od tech, ktere jiste znas, nejspise mezi nimi neshledas rozdil. Lisi se predevsim obsahem nekterych latek. Bohuzel ty ucinne latky mohou vyvolavat u nekterych tvoru kteri je u sebe nosi plachost. Budis ti tedy dobrou radou, aby jsi po ostrove patral pokud mozno sam a ta stvoreni nevyplasil. //15
+
+
+
+[dialog d_q008_black_oldman_10 button]
+on=1
+ src.giveitem(i_q008_benda_regy)
+ src.tag.q008_black = 1
+ 
+on=2
+ say Tva hamiznost se mi prici! Uz se zde nikdy neukazuj. Lituji, ze jsem ti drive dovolil priblizit se k memu zivreti.
+ src.tag.q008_black_rejected = 1
+ src.tag.remove(q008_black)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+///////////// Gump no_tamer Ancam
+
+[dialog d_q008_black_oldman_no_tamer]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?     
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q008_black_oldman_no_tamer text]
+Ancam                                                                                 //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Hmm.. Co pohledava nekdo jako ty na tomto ostrove?                                    //4
+Jmenuji se Ancam. Jsem jen stary chovatel a milovnik koni.                            //5
+Hmm.. Ty mi nijak nepomuzes. Nevypadas, ze by jsi o zviratech vedel dost.             //6
+Velmi stary a urostly muz. Jazykem neprilis obratny, zato velmi zdatny akrobat a krotitel zvirat. Jiste rozumi lesum a zveri mnohem vice, nez dobremu jidlu a piti.   //7
+
+
+
+[dialog d_q008_black_oldman_no_tamer button]
+
+[eof]

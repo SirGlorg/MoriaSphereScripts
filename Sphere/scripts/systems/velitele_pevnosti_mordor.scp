@@ -1,0 +1,351 @@
+[typedef t_mordorcaptainmenu]
+on=@userdclick
+//src.sysmessage(pevnostred: <var(keep_<getNearestKeepName>)>)
+var(keep_<tag(jmeno_mesta)>,<uid>) //toto je nutno nacpat do skriptu mapy !!!!!
+//src.sysmessage(pevnost pak: <var(keep_<getNearestKeepName>)>)
+
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+if(strlen(<link>))
+ src.classmessage(Pevnost ridi <link.name>)
+ if(<src.isgm>)//||(<src.tag(lordnazgul)>) jen GMKO!!!
+  potvrdit(kapitanmake(0),"Opravdu si prejes sesadit z funkce kapitana pevnosti?")
+ endif
+else 
+ src.classmessage(Kapitan pevnosti <tag(jmeno_mesta)> neni urcen)
+ if(<src.isgm>) //||(<src.tag(lordnazgul)>) jen GMKO!!!
+  potvrdit(kapitanmake(1),"Prejes si dosadit noveho kapitana pevnosti <tag(jmeno_mesta)>?")
+ endif
+endif
+if(<region.tag(realm)>==1)||(<region.tag(realm)>==2)
+ if(src.isgm)  
+  src.sysmessage(Realm <qval(<region.tag(realm)>-1,Mordorsky,Gondorsky)>)
+ endif
+ if(<src.tag(captain)>)||(<src.isgm>)||(<src.tag(lordnazgul)>)
+  if(!strcmpi(<src.tag(keep)>,<uid>))||(<src.isgm>)||(<src.tag(lordnazgul)>)
+   if(<src.tag(realm)> == 2)
+    f_mordorcaptainmenu 
+    return 1
+   endif
+  endif
+ else
+  return 1
+ endif
+else 
+ src.redmessage(Realm nevhodny pro pevnost, kontaktuj GM, kamen by zde nemel byt!)
+ return 1
+endif
+return 1
+
+/////////////////////
+//funkce captain only
+/////////////////////
+[function mordorkeepcontrol]
+if(<tag(realm)>!=2)&&(!isgm)
+ return 1
+endif
+arg(knam,<getNearestKeepName(<region.tag(realm)>)>)
+if(!isgm && !ismyconquered(<knam>)) //pevnost mi nepatri
+ return 1
+endif
+if(<tag(captain)>)||(isgm)||(<tag(lordnazgul)>)
+ if(<ismordorchiefinkeep>)
+  finduid(<var(keep_<knam>)>).dialog d_general_major
+  finduid(<var(keep_<knam>)>).dialog d_lordnazgul_captain
+  finduid(<var(keep_<knam>).tag(enemyscont)>).dialog(d_captain_executioner,0)
+  return 1
+ endif
+endif
+
+[function ismordorchiefinkeep]
+if(<tag(realm)>!=2)&&(!isgm)
+ return 0
+endif
+arg(knam,<getNearestKeepName(<region.tag(realm)>)>)
+if(<tag(lordnazgul)>)||(<isgm>)
+ if(strlen(<knam>))
+  if(strcmpi(<region>,<var(keep_<knam>).region>)) //0 pokud stejne   
+   return 0
+  else //byly stejne ty stringy   
+   return 1
+  endif
+ else
+  src.sysmessage(Musis byt v pevnosti)
+  return 0
+ endif
+endif
+if(<tag(captain)>)
+ if(strlen(<knam>))
+  if(strcmpi(<src.tag(keep)>,<var(keep_<knam>)>)) //0 pokud stejne   
+   return 0
+  else //byly stejne ty stringy   
+   return 1
+  endif
+ else
+  sysmessage(Musis byt ve sve pevnosti)
+  return 0
+ endif
+endif
+return 0
+
+[function mordorkeepguardskill]
+if(<tag(realm)>!=2)&&(!isgm)
+ return 1
+endif
+arg(knam,<getNearestKeepName(<region.tag(realm)>)>)
+if(!isgm && !ismyconquered(<knam>)) //pevnost mi nepatri
+ return 1
+endif
+if(<tag(captain)>)
+ if(strlen(<knam>))
+  if(!strcmpi(<tag(keep)>,<var(keep_<knam>)>))
+   if(<finduid(<finduid(<tag(keep)>).tag(kingguardcont)>).rescount>)
+    newitemsafe(<i_marghulguard_targ>) 
+    lastnew.equip
+    lastnew.tag(mesto,<tag(keep)>)
+   else
+    sysmessage(Nemas k dispozici zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve sve pevnosti)
+  endif
+ else
+  sysmessage(Musis byt v pevnosti)
+ endif
+endif
+if(<isnazgul>)||(<isgm>)
+ if(strlen(<knam>)) 
+  if(strlen(<var(keep_<knam>)>) && (<region>==<var(keep_<knam>).region>)) //jsem vubec v pevnosti?
+   if(<finduid(<var(keep_<knam>).tag(kingguardcont)>).rescount>)
+    newitemsafe(<i_marghulguard_targ>) 
+    lastnew.tag(mesto,<var(keep_<knam>)>) //mesto i pevnost - proste ten stone
+    lastnew.equip 
+   else
+    sysmessage(Nemas k dispozici zadne straze)
+   endif
+  else
+   sysmessage(Musis byt v pevnosti)
+  endif
+ else
+  sysmessage(Musis byt v pevnosti)
+ endif
+endif
+
+[function mordorkeepguardsstop]
+if(<tag(realm)>!=2)&&(!isgm)
+ return 1
+endif
+arg(knam,<getNearestKeepName(<region.tag(realm)>)>)
+if(!isgm && !ismyconquered(<knam>)) //pevnost mi nepatri
+ return 1
+endif
+if(<tag(captain)>)
+ if(strlen(<knam>))
+  if(!strcmpi(<tag(keep)>,<var(keep_<knam>)>))
+   if(<finduid(<finduid(<tag(keep)>).tag(kingguardcont)>).rescount>)
+    finduid(<finduid(<tag(keep)>).tag(kingguardcont)>).contents(stop_guard(1)) //1 stop
+   else
+    sysmessage(Nemas k dispozici zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve sve pevnosti)
+  endif
+ else
+  sysmessage(Musis byt v pevnosti)
+ endif
+endif
+if(isgm)||(isnazgul)
+  if(strlen(<var(keep_<knam>)>) && (<region>==<var(keep_<knam>).region>)) //jsem vubec v pevnosti?
+   if(<finduid(<var(keep_<knam>).tag(kingguardcont)>).rescount>)
+    finduid(<var(keep_<knam>).tag(kingguardcont)>).contents(stop_guard(1)) //1 stop
+   else
+    sysmessage(Nemas k dispozici zadne straze)
+   endif
+  else
+   sysmessage(Musis byt v pevnosti)
+  endif
+endif
+
+[function mordorkeepguardscontinue]
+if(<tag(realm)>!=2)&&(!isgm)
+ return 1
+endif
+arg(knam,<getNearestKeepName(<region.tag(realm)>)>)
+if(!isgm && !ismyconquered(<knam>)) //pevnost mi nepatri
+ return 1
+endif
+if(<tag(captain)>)
+ if(strlen(<knam>))
+  if(!strcmpi(<tag(keep)>,<var(keep_<knam>)>))
+   if(<finduid(<finduid(<tag(keep)>).tag(kingguardcont)>).rescount>)
+    finduid(<finduid(<tag(keep)>).tag(kingguardcont)>).contents(stop_guard(0)) //1 stop
+   else
+    sysmessage(Nemas k dispozici zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve sve pevnosti)
+  endif
+ else
+  sysmessage(Musis byt v pevnosti)
+ endif
+endif
+if(isgm)||(isnazgul)
+  if(strlen(<var(keep_<knam>)>) && (<region>==<var(keep_<knam>).region>)) //jsem vubec v pevnosti?
+   if(<finduid(<var(keep_<knam>).tag(kingguardcont)>).rescount>)
+    finduid(<var(keep_<knam>).tag(kingguardcont)>).contents(stop_guard(0)) //1 stop
+   else
+    sysmessage(Nemas k dispozici zadne straze)
+   endif
+  else
+   sysmessage(Musis byt v pevnosti)
+  endif
+endif
+
+[function mordorkeepguardsflee]
+if(<tag(realm)>!=2)&&(!isgm)
+ return 1
+endif
+arg(knam,<getNearestKeepName(<region.tag(realm)>)>)
+if(!isgm && !ismyconquered(<knam>)) //pevnost mi nepatri
+ return 1
+endif
+if(<tag(captain)>)
+ if(strlen(<knam>) && (<region>==<var(keep_<knam>).region>)) //jsem vubec v pevnosti?
+  if(!strcmpi(<tag(keep)>,<var(keep_<knam>)>))
+   if(<finduid(<finduid(<tag(keep)>).tag(kingguardcont)>).rescount>)
+    finduid(<finduid(<tag(keep)>).tag(kingguardcont)>).contents(home_run) //1 stop
+   else
+    sysmessage(Nemas k dispozici zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve sve pevnosti)
+  endif
+ else
+  sysmessage(Musis byt v pevnosti)
+ endif
+endif
+if(isgm)||(isnazgul)
+  if(strlen(<var(keep_<knam>)>) && (<region>==<var(keep_<knam>).region>)) //jsem vubec v pevnosti?
+   if(<finduid(<var(keep_<knam>).tag(kingguardcont)>).rescount>)
+    finduid(<var(keep_<knam>).tag(kingguardcont)>).contents(home_run) //1 stop
+   else
+    sysmessage(Nemas k dispozici zadne straze)
+   endif
+  else
+   sysmessage(Musis byt v pevnosti)
+  endif 
+endif
+
+[function mordorkeepguardscome]
+if(<tag(realm)>!=2)&&(!isgm)
+ return 1
+endif
+if(<tag(captain)>) 
+ if(strcmpi(<region>,<finduid(<tag(keep)>).region>)) //0 pokud stejne, pak nic nehlasi
+  sysmessage(Straze prijdou jen v ramci tve pevnosti)
+  return 1
+ endif
+endif
+arg(knam,<getNearestKeepName(<region.tag(realm)>)>)
+if(!isgm && !ismyconquered(<knam>)) //pevnost mi nepatri
+ return 1
+endif
+if(isnazgul)||(isgm)
+ if(strlen(<knam>) && (<region>==<var(keep_<knam>).region>)) //jsem vubec v pevnosti?
+  if(!strlen(<var(keep_<knam>)>))
+   sysmessage(Straze prijdou jen v ramci pevnosti)
+   return 1 
+  endif
+ else
+  sysmessage(Zadna pevnost zde)
+  return 1
+ endif
+endif
+if(<tag(captain)>)||(isgm)||(isnazgul)
+ arg(kingguardcont,<finduid(<var(keep_<knam>)>).tag(kingguardcont)>)
+ if(<finduid(<arg(kingguardcont)>).rescount>)
+  arg(pocet_strazi,<finduid(<arg(kingguardcont)>).rescount>)  
+  arg(i,0)
+  while(i < pocet_strazi)
+   //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+   if(<finduid(<arg(kingguardcont)>).findcont(i).link>) //umisteny spawngem
+     arg(guard,<finduid(<arg(kingguardcont)>).findcont(i).link.tag(lastspawned)>)
+     if(<finduid(guard).npc>) //spawnuta straz
+      if(<src.distancefrom(<finduid(guard)>)> <= 15)
+       finduid(guard).events=-e_guard_stopped 
+       finduid(guard).paralyze_remove
+       finduid(guard).go(<src.p>) 
+      endif
+     endif
+   endif 
+   arg(i,#+1)
+  endwhile
+ else
+  sysmessage(Nemas k dispozici zadne straze)
+ endif
+endif
+
+[function mordorkeep_blacklist]
+if(<tag(realm)>!=2)
+ return 1
+endif
+if !(<tag(captain)>)
+ return 1
+endif
+newitemsafe(i_keep_ban)
+lastnew.link=<finduid(<tag(keep)>)>
+lastnew.timer=60
+lastnew.equip
+///////////////////////////
+//konec funkci captain only
+///////////////////////////
+
+[function f_mordorcaptainmenu]
+if(src.region!=region)
+  src.sysmessage(Musis byt v prostoru pevnosti!)
+  return 0
+endif
+if(!<tag(allowhire[0])>)
+ if(<src.isgm>)
+  src.sysmessage(Nastav dostupne Marghulovy straze!)
+  src.sysmessage(Pouziti: ".x kingguards(jmeno_pevnosti), viceslovne nazvy provaz podtrzitkem")
+  src.sysmessage(Napriklad: Minas_Morgul atd.)
+  return 1
+ else
+  src.sysmessage(Pevnost zatim neni pripravena k ubytovani strazi)
+  return 1
+ endif
+endif
+
+//nasledujici blok se provede jen pri prvnim kliknuti na captainsstone
+if !(<tag(kingguardcont)>)
+ 
+
+ src.newitemsafe(i_pouch) //kingsguards
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(23)
+ lastnew.more1=0
+ lastnew.link=<uid>
+ lastnew.name=Kralovskych strazi
+ tag(kingguardcont,<lastnew>) 
+ 
+ src.newitemsafe(i_pouch)//Nepratele
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(22)
+ lastnew.more1=31
+ lastnew.link=<uid>
+ lastnew.name=Nepratel
+ tag(enemyscont,<lastnew>)
+ tag(guardu,0)
+endif
+
+dialog d_lordnazgul_captain
+dialog d_general_recruiter
+dialog d_general_major
+finduid(<tag(enemyscont)>).dialog(d_captain_executioner,0)
+return 1

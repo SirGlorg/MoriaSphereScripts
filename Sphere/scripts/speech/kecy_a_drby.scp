@@ -1,0 +1,338 @@
+[function f_npcIsUpset]
+if (findID(i_mem_upsetTimer))
+  return 1
+else
+  return 0
+endif
+
+[function f_npcUpset_randReaction]
+dorand 9
+  say("Nech me byt..")
+  say("Promin, nechci ted s tebou mluvit.")
+  say("Prosim nech me byt!")
+  say("Nemluv na me!")
+  say("Jdi odeme pryc!")
+  say("Odejdi...")
+  emote("s tebou odmita mluvit")
+  emote("te ignoruje")
+  emote("je velmi zneklidnena a nekomunikuje")
+enddo
+
+// argv(0) ~ time in seconds, for how long the npc will 'produce' upset emotes
+[function f_npcUpset]
+arg(upsetTimer,<findID(i_mem_upsetTimer)>)
+if !(strlen(<arg(upsetTimer)>))
+  newEquip(i_mem_upsetTimer)
+  arg(upsetTimer,<lastnew>)
+endif
+arg(prolongedTimer,<eval <serv.time>+(<argv(0)>*10)>)
+if (<eval upsetTimer.tag(upsetTill)> < <arg(prolongedTimer)>) // save new upset timer only if the old one was shorter
+  upsetTimer.tag(upsetTill,<eval arg(prolongedTimer)>)
+endif
+upsetTimer.timer=1
+
+[itemdef i_mem_upsetTimer]
+name=NPC upsetTimer
+id=i_memory
+type=t_eq_script
+
+on=@timer
+if (<serv.time> < <tag(upsetTill)>)
+  dorand 8
+    cont.emote("place.")
+    cont.emote("vzlyka.")
+    cont.emote("narika.")
+    cont.emote("rozzurene pohazuje rukama.")
+    cont.emote("rozcilene preslapuje.")
+    cont.emote("zuri.")
+    cont.say("*fnuk*")
+    cont.say("ahhh...")
+  enddo
+  timer = {3 8}
+else
+  remove
+endif
+return 1
+
+[SPEECH spk_kecy_a_drby]
+
+
+ON=*Vypravec*
+ON=*Vypravece*
+ON=*Vypraveci*
+ON=*Vypravecovy*
+ON=*Vypravejdovy*
+ON=*Vypraveci*
+ON=*vypravec*
+    DORAND 7
+     say "Vypravece nepomlouvat !!"
+     say "Jo Vypravejdu mam take rad"     
+     say "Vypravec je dobrej kamarad"     
+     say "Proslycha se ze Ardu nestvoril Ilvutar ale Vypravec"     
+     say "Vypraveci vdecime i za samotnou pudu pod nohama :o) "     
+     say "Vypravec prej zmenil vzhled Lagru"     
+     say "Vypravec je blazen ze tohle vsechno dela. Mapa , nova Grafika , Skripty a dokonce i Me. "     
+    enddo
+
+ON=*tar*
+ON=*tarovy*
+ON=*Tatrance*
+    DORAND 7
+     say "Tara nepomlouvat !!"
+     say "Jo Tara mam take rad"     
+     say "Tartaros je dobrej kamarad"     
+     say "Proslycha se ze Ardu nerozchodil Ilvutar ale Tartaros"     
+     say "Tarovy vdecime zato ze tu jeste stale jsme  :o) "     
+     say "Tartaros prej dela na nove verzi UO servru"     
+     say "Tartaros je blazen ze tohle vsechno dela. Skriptuje jako malo kdo "     
+    enddo
+
+ON=*mandos*
+ON=*jindra*
+    DORAND 7
+     say "Mandose prosim nepomlouvat !!"
+     say "Jo Mandose mam take rad"     
+     say "Mandos je muj dobrej kamarad"     
+     say "Proslycha se ze Ardu jiz neridi Ilvutar ale prej vala Mandos"     
+     say "Mandosovy vdecime zato ze tu jeste stale jsme to on to za nas vsechny plati  :o) "     
+     say "Mandos prej dela kde co."     
+     say "Mandos je blazen ze tohle dela. Nervuje se kvuli vam,  zarizuje a vybehava kde co a nakonec jeste  za to vse plati.. "     
+    enddo
+
+ON=*timovi*
+ON=*tim*
+    DORAND 7
+     say "Tima prosim nepomlouvat !!"
+     say "Jo Tima sem mival take rad"     
+     say "Tim bejvaval muj dobrej kamarad"     
+     say "Proslycha se ze Ardu kdysi netvoril Ilvutar ale prej prave jmenovany Tim"     
+     say "Timovi vdecime za zacatek vseho :o) "     
+     say "Tim uz na Morii neni a nebude.."     
+     say "Tim musel byt blazen ze tohle vsechno delal. Mozna ze pochopil a odesel  "     
+    enddo
+
+ON=*noe*
+    DORAND 7
+     say "Noeo prosim nepomlouvat !!"
+     say "Jo Noeo mam take rad"     
+     say "Noe je muj dobrej kamarad"     
+     say "Proslycha se ze Ardu pomahal utvaret Noe"     
+     say "Noemu vdecime zato ze tu jsme to on byl u pocatku vseho  :o) "     
+     say "Noe prej dela kde co."     
+     say "Noe je blazen ze tohle dela. kazdopadne patri mu za to dik..  "     
+    enddo
+
+ON=*miko*
+ON=*mikovi*
+    DORAND 7
+     say "Mika prosim nepomlouvat !!"
+     say "Jo Mika mam take rad"     
+     say "Miko je muj dobrej kamarad"     
+     say "Proslycha se ze Miko je nadejne GM"     
+     say "Mikovy vdecime za nejmenovane :o) "     
+     say "Miko prej dela kde co."     
+     say "ze to vubec Miko muze delat    fakt se divim "     
+    enddo
+
+ON=*lister*
+ON=*listera*
+ON=*listerovi*
+ON=*listere*
+    DORAND 6
+     say "Listera prosim nepomlouvat !!"
+     say "Jo Listera mam take rad"     
+     say "Lister je muj dobrej kamarad"     
+     say "Listerovi vdecime za to ze mame Web.  at uz aktualizovanej nebo ne..    :o) "     
+     say "Lister prej dela Web morie"     
+     say "Lister je dobrej v tom co dela. Skoda jen ze pro nas toho dela tak malo.  "     
+    enddo
+
+ON=*evil*
+ON=*evila*
+ON=*evilovi*
+ON=*evile*
+    DORAND 6
+     say "Evila prosim nepomlouvat !!"
+     say "Jo Evila mam take rad"     
+     say "Evil je muj dobrej kamarad"     
+     say "Evilovy vdecime za to ze chyta zlocince a lompy.     :o) "     
+     say "Evil prej dela sherifa"     
+     say "Evil je dobrej v tom co dela."     
+    enddo
+
+ON=*tyrael*
+ON=*tyraelovy*
+ON=*tyraela*
+ON=*Tyraely*
+    DORAND 6
+     say "Tyraela prosim nepomlouvat !!"
+     say "Jo Tyraela mam take rad"     
+     say "Tyrael je muj dobrej kamarad"     
+     say "Tyraelovy vdecime za nastaveni monster. at uz v dobrem nebo ne..    :o) "     
+     say "Tyrael prej dela monstra morie"     
+     say "K praci Tyraela se nehodlam vyjadrovat, jeste me smazne a co pak.  "
+    enddo
+
+ON=*kenoby*
+ON=*kenobyho*
+ON=*kenobymu*
+    DORAND 6
+     say "Kenobyho prosim nepomlouvat !!"
+     say "Jo Kenobyho mam take rad"     
+     say "Kenoby je muj dobrej kamarad"     
+     say "Kenobymu vdecime za Web. at uz aktualizovanej nebo ne..    :o) "     
+     say "Kenoby prej dela Web morie,  Hlavne prej tedy Grafiku"     
+     say "Kenoby je dobrej v tom co dela. Skoda jen ze pro nas toho dela tak malo.  "     
+    enddo
+
+ON=*scarabeus*
+    DORAND 6
+     say "toho brouka prosim nepomlouvat !!"
+     say "Jo Scarabea mam take rad"     
+     say "Scarabeus je muj dobrej kamarad"     
+     say "jo Scarabeus teprve jeste musi ukazat co je a neni zac.    :o) "     
+     say "Scarabeus prej dela na skriptech"     
+     say "K praci Tyraela se nehodlam vyjadrovat, jeste me smazne a co pak.  "     
+    enddo
+
+ON=*scut*
+ON=*scuta*
+    DORAND 3
+     say "Scouta klidne pomlouvejte. Je to flamer."
+     say "Scout je exodus morijske vyvesky"     
+     say "Nikdo nestravil na Morijske Vyvesce tolik casu jako prave scout "     
+    enddo
+
+ON=*jandor*
+ON=*jandora*
+ON=*jandorovi*
+ON=*jandore*
+    DORAND 3
+     say "Jandora klidne pomlouvejte. Je to Antipokrokar."
+     say "Jandor je zatvrzelej odpurce vsech novot."     
+     say "Jandor je predevsim proslavenej jako lidumil.Na takove jako on radeji neutocte "     
+    enddo
+
+
+ON=*fox*
+   DORAND 3
+     say "Foxe prosim  nepomlouvejte. Je to pohodovej Hobit."
+     say "Fox je vlivnej a bohatej Hobit, jenz vsak vi kde je srdce. "     
+     say "Fox podporil Rohanskeho Krale Eomera v dobe nejhorsi  aniz by musel. Je to jeden ztech zniz by si meli mladi brat priklad. "     
+   enddo
+
+ON=*marek*
+ON=*marek*c*   
+  DORAND 2
+     say "Marca prosim  nepomlouvejte."
+     say "Marekovy C vdecime za mnoha nastaveni tohoto sveta. "
+  enddo
+
+ON=*kolik*
+  DORAND 2
+     say "Kolika prosim  nepomlouvejte."
+     say "Kolikovy vdecime za mnoha nastaveni tohoto sveta. "     
+  enddo
+
+ON=*klaj*
+ON=*knihovnik*
+   DORAND 2
+     say "Maga Klaje prosim  nepomlouvejte."
+     say "Knihovnik Klaj se nejspis nachazi v Knihovne v Minas Tirith"     
+   enddo
+
+
+ON=*juri*
+     say "Juriho klidne pomlouvejte.  Je to blaznivej Mordoran"
+
+ON=*reyla*
+ON=*reylo*
+ON=*reyle*
+   DORAND 3
+     say "reylu si Klidne poomlouvejte."
+     say "Reyla zarucuje pomoc a bezpeci Mordorskym mladochum "
+     say "Reyla je zatvrzelej Mordorskej vlastenec "     
+   enddo
+
+ON=*knihovna*
+ON=*knihovny*
+ON=*vedeni*
+ON=*studovat*
+ON=*studovani*
+ON=*studie*
+   DORAND 2
+     say "Nejveci Knihovna se asi nachazi v Minas Tirith"
+     say "V Knihovnach se nachazi tisice knih"     
+   enddo
+
+ON=*rada*
+ON=*poradit*
+   DORAND 3
+     say "Nejvec rad se dovis v Knihovne z Knih"
+     say "Poradit muze i mistr Malenius"
+     say "Knihy jsou plne rad.."     
+   enddo
+
+ON=*Malenius*
+ON=*Mistr*Malenius*
+   DORAND 3
+     say "Joooo Tak kde ten se prave naleza to vazne nevim. "
+     say "mistr Malenius beha vsude mozne.."
+     say "Je to vazeny muz ktery zna spoustu veci.."     
+   enddo
+
+ON=*zombie*
+ON=*kostlivec*
+ON=*kostlivci*
+ON=*kostlivece*
+   DORAND 2
+     say "Mrtvi ozivaji ? To je zle.. to je zle.."
+     say "Ilvutar nemel nikdy dovolit povstat mrtvim"     
+   enddo
+
+ON=*vamp*
+ON=*vampi*
+ON=*vampove*
+ON=*vampiri*
+ON=*upiri*
+   DORAND 4
+     say "Nemrtvi co saji krev. brrr  neprijemna predstava"
+     say "bachorky upiri neexistuji" 
+     say "bachorky vampiri neexistuji"
+     say "Vampiri a upiri..   baje a legendy"    
+   enddo
+
+ON=*ilvutar*
+ON=*ilvutara*
+   DORAND 3
+     say "Ilvutar je stvoritel vseho"
+     say "jo  nejvissi..."
+     say "vnej moc neverim"
+   enddo
+
+
+ON=*maiar*
+    DORAND 2
+     say "jo  nejvissi..."
+     say "maiarr a valar..   baje a legendy" 
+    enddo
+
+ON=*valar*
+    DORAND 2
+     say "jo  nejvissi..."
+     say "maiarr a valar..   baje a legendy" 
+    enddo
+
+ON=*nevite*?*
+ON=*nevis*?*
+     say "nevim.."
+   
+ON=*pohadky*
+ON=*historky*
+     say "Pohadky a historky dobre vypravej bardove"
+
+
+ON=*jak*se*vede*
+     say "Pohadky a historky dobre vypravej bardove"
+
+[EOF]

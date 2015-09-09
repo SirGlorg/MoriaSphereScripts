@@ -1,0 +1,152 @@
+[ITEMDEF i_sword_ringil]
+NAME=Ringil [artefakt]
+ID=i_sword_long
+DAM=60
+
+CATEGORY=Tim
+SUBSECTION=Quest ringil
+DESCRIPTION=Ringil
+
+ON=@Create
+Color=0480
+HITPOINTS={500 1500}
+
+ON=@EQUIP
+	SRC.STR=(<SRC.STR> + 30)
+        SRC.DEX=(<SRC.DEX> + 20)
+	SRC.SYSMESSAGE Prostoupila te sila bajneho mece Ringilu !
+ON=@UNEQUIP
+	SRC.STR=(<SRC.STR> - 30)
+        SRC.DEX=(<SRC.DEX> - 20)
+	SRC.SYSMESSAGE Sila mece te opustila!
+
+on=@targon_item
+f_markIfCorpse
+
+[CHARDEF c_balrog_guardian]
+NAME=Balrog Guardian
+ID=c_DAEMON_SWORD
+DAM=20,50
+ARMOR=100
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Moria Questy
+SUBSECTION=Quest ringil
+DESCRIPTION=Balrog strazce
+
+ON=@Create
+COLOR=0981
+STR=11000
+DEX=250
+INT=1000
+NPC=brain_beserk
+FAME=160
+KARMA=-9500
+DETECTINGHIDDEN={90.0 100.0}
+PARRYING={90.0 100.0}
+MAGERY=200.0
+EI={90.0 100.0}
+Resist={350.0 400.0}
+TACTICS={90.0 100.0}
+WRESTLING={95.0 100.0}
+
+ITEMNEWBIE=i_spellbook
+more1=0fffffff
+
+itemnewbie=i_sword_broad_iron
+
+ON=@npcseenewplayer
+src.act.say Ted zemres!!
+
+on=@death
+SRC.ACT.say Balrog strazce byl zabit! Cesta dal je volna, ale spechej!
+sfx snd_SPELL_lightning
+SRC.NEWITEM=i_moongate_red
+SRC.ACT.name=Brana Balroga strazce.
+SRC.ACT.morep=6071,121
+SRC.ACT.COLOR=0981
+SRC.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.TIMER=900
+SRC.ACT.P=<SRC.P> 
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold(3000 5000)
+item=i_sword_broad_obsidian
+
+
+[CHARDEF c_h_elmir]
+NAME=Lord Elmir
+ID=c_man
+
+TSPEECH=joptravel0
+
+ON=@CREATE 
+COLOR=color_elf
+STR={400 500} 
+INT={80 90} 
+DEX={200 300} 
+MAGERY={90.0 100.0} 
+WRESTLING={70.0 80.0} 
+
+NPC=BRAIN_HUMAN
+
+ON=@NPCRESTOCK 
+ITEMNEWBIE=I_ROBE
+COLOR=0482
+itemnewbie=i_spellbook
+addspell=s_flamestrike
+color=0481
+name=Kniha Elfu
+
+ON=@NPCHearUnknown
+SAY=Spatna otazka/odpoved , je mi lito.
+
+[SPEECH JOPTRAVEL0] 
+ON=*KOKOT*
+ON=*HNUPE*
+ON=*PICO*
+ON=*DEBILE* 
+ON=*KRETENE* 
+ON=*HOVNE* 
+ON=*KURVO* 
+ON=*CURAKU*
+SAY Vis co me muzes chudaku...
+
+ON=*hi*
+ON=*ahoj*
+ON=*cau*
+ON=*cus*
+ON=*cao*
+ON=*hoj*
+ON=*huj*
+ON=*nazdar*
+SAY=Bud pozdraven hrdino, ja jsem Elmir z Elrondova domu, mohu ti pomoci najit bajny mec Ringil.
+SAY=ale nejdrive musis odpovedet na mou otazku!
+
+ON=*quest*
+ON=*otazka*
+ON=*prace*
+ON=*pribeh*
+ON=*dobrodruzstvi*
+ON=*adventure*
+ON=*hadanka*
+ON=*rebus*
+ON=*hadej*
+SAY Rekni mi hrdino, kdo jest pravym majitelem Ringilu
+SAY Musim se zeptat, abych ti uveril ze jsi opravdu pritel.
+
+ON=*fingolfin*
+SAY Gratuluji, vidim ze jsi opravdu ten ktery muze zjiskat zpet fingolfinuv mec.
+SAY a proto ti reknu kde se nachazi jeho hrobka.
+SAY Nyni odejdi a zjiskej bajny Ringil, necht te provazeji vsichni Valar.
+src.newitem=i_book_open
+src.act.name=Souradnice hrobky 583,1108
+src.act.bounce
+
+CATEGORY=Moria Questy
+SUBSECTION=Quest ringil
+DESCRIPTION=Elmir hadankar
+
+[eof]

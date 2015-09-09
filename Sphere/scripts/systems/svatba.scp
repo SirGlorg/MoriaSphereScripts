@@ -1,0 +1,89 @@
+[itemdef i_snubak]
+Name=Snubni prstynek
+id=i_ring_gold
+
+on=@Create
+color=0481 //bila
+attr=0004|attr_move_always //newbie
+more1=1 //Bude equipnut poprve
+
+on=@equip
+snubak_poprve
+src.EFFECT(3,<s_agility.effectid>,6,15,1)
+sfx(498)
+timer=7
+
+on=@timer
+var(ptakos_fuc,1)
+while(<var(ptakos_fuc)> < 6) //pojede az do 5
+ cont.newitemsafe(i_fx_sparkle_2)
+ lastnew.p=<finduid(tag(ptak_c_papousek_<var(ptakos_fuc)>)).p>
+ lastnew.timer=9
+ lastnew.update
+ finduid(tag(ptak_c_papousek_<var(ptakos_fuc)>)).remove
+ tag.remove(ptak_c_papousek_<var(ptakos_fuc)>)
+ var(ptakos_fuc,#+1)
+endwhile
+var(ptakos_fuc,#-1) //ze sestky snizit na 5 !
+while(<var(ptakos_fuc)> > 0) //klesne az do 1
+ cont.newitemsafe(i_fx_sparkle_2)
+ lastnew.p=<finduid(tag(ptak_c_holubice_<var(ptakos_fuc)>)).p>
+ lastnew.timer=9
+ lastnew.update
+ finduid(tag(ptak_c_holubice_<var(ptakos_fuc)>)).remove
+ tag.remove(ptak_c_holubice_<var(ptakos_fuc)>)
+ var(ptakos_fuc,#-1)
+endwhile
+var(ptakos_fuc,"")
+return 1
+
+[function snubak_poprve]
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+vytvor_efekt_pro_svatbu
+ptacka(c_papousek,1)
+ptacka(c_papousek,2)
+ptacka(c_papousek,3)
+ptacka(c_papousek,4)
+ptacka(c_papousek,5)
+ptacka(c_holubice,1)
+ptacka(c_holubice,2)
+ptacka(c_holubice,3)
+ptacka(c_holubice,4)
+ptacka(c_holubice,5)
+
+[function ptacka] //argv(0) - id argv(1) - kolikatyho
+src.newnpc=<argv(0)>
+lastnewchar.p=<eval src.p_x+{-10 10}> <eval src.p_y+{-10 10}> <src.p_z>
+//lastnewchar.p_y=<eval src.p_y+{1 15}>
+//lastnewchar.p_z=<src.p_z>
+lastnewchar.invul=1
+lastnewchar.update
+tag(ptak_<argv(0)>_<argv(1)>,<lastnewchar>)
+
+[function vytvor_efekt_pro_svatbu]
+src.newitemsafe(i_fx_sparkle) 
+lastnew.attr=attr_static|attr_decay 
+lastnew.type=1
+lastnew.timer=5
+lastnew.p=<eval src.p_x+{-10 10}> <eval src.p_y+{-10 10}> <src.p_z>)
+lastnew.update
+
+[eof]

@@ -1,0 +1,802 @@
+[ITEMDEF i_cardolanske_pohrebiste_vybuch] 
+Name=Vybuch
+ID=i_fx_explode
+
+ON=@Create
+attr=010
+
+ON=@TIMER
+IF (<More2>!=0)
+ MOVE <tag(smerx)> <more1>
+ More2=<eval <More2>-1>
+ TimerD=<tag(rychlost)>
+ // Say <more2> <TimerD>
+ Return 1
+ELSE
+ // say ZMIZIM
+ENDIF
+
+ON=@STEP
+if(<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+ return 0
+endif
+src.damage_noresponse(<tag(sila)>,dam_fire|dam_magic)
+
+[ITEMDEF i_cardolanske_pohrebiste_dlazdice_spoustejicivybuch]
+Name=dlazdice spoustejici vybuch
+ID=01827
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=dlazka spoustejici vybuch
+
+ON=@CREATE
+MORE1=0
+MORE2=1
+ATTR=04090 //decay, nevermove, invis
+COLOR=0044C
+TIMER=-1
+tag(smerx,1)
+tag(smery,1)
+tag(rychlost,1)
+tag(sila,1)
+tag(dosah,1)
+tag(prodleva,1)
+
+ON=@userDCLICK
+if (src.isGM)
+  //MOREP=<SRC.P> -> pekna hovadina ... na kazdej DClick nekoho kdo nevi co to je se to cely rozmrda ... pozn. Yavanna
+  DIALOG(d_cardolanske_pohrebiste_dlazdice_spoustejicivybuch)
+  return 1
+endif
+
+on=@DropOn_Ground
+moreP=<p>
+
+on=@step
+if (src.isplayer)
+  if (<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+    return 0
+  endif
+  if (<more2>==1)
+    if (<eval(<src.removetrap>/2)> > {0 1000})
+      src.classmessage("<src.sex(Stoupl,Stoupla)> jsi na past, ale nespustila se.")
+    return(1)
+    endif
+    MORE2=0
+    SRC.NEWITEM=i_Cardolanske_pohrebiste_vybuch
+    SRC.ACT.P=<MOREP>
+    SRC.ACT.tag(smerx,<tag(smerx)>)
+    SRC.ACT.tag(smery,<tag(smery)>)
+    SRC.ACT.tag(sila,<tag(sila)>) 
+    SRC.ACT.tag(dosah,<tag(dosah)>)
+    SRC.ACT.tag(rychlost,<tag(rychlost)>)
+    SRC.ACT.more2=<tag(dosah)> 
+    SRC.ACT.more1=<tag(smery)> 
+    SRC.ACT.TIMERD=<tag(rychlost)> 
+    timer=<tag(prodleva)> 
+  endif
+else 
+  return 0
+endif
+
+ON=@TIMER
+IF (<MORE2>==0)
+  MORE2=1
+ENDIF
+RETURN 1  
+
+[DIALOG d_Cardolanske_pohrebiste_dlazdice_spoustejicivybuch]
+page 0
+resizepic 0 0 5100 640 200
+resizepic 15 200 5100 175 40
+button 100 200 <eval g_btn_gray_apply> <eval g_btn_gray_apply_press> 1 0 901
+button 20 200 5200 5201 1 0 900
+text 50 10 1152 6
+text 5 30 1152 1
+resizepic 65 30 2620 200 35
+textentry 75 36 600 20 1152 1 8 // 4 text fields now
+text 5 63 1152 2
+resizepic 65 57 2620 200 35
+textentry 75 63 600 20 1152 2 9
+text 5 90 1152 3
+resizepic 65 84 2620 200 35
+textentry 75 90 600 20 1152 3 10
+text 5 117 1152 4
+resizepic 65 111 2620 200 35
+textentry 75 117 600 20 1152 4 11
+text 5 144 1152 5
+resizepic 65 138 2620 200 35
+textentry 75 144 600 20 1152 5 12
+text 5 171 1152 6
+resizepic 65 165 2620 200 35
+textentry 75 171 600 20 1152 6 13
+
+
+[DIALOG d_Cardolanske_pohrebiste_dlazdice_spoustejicivybuch TEXT]
+1
+smerx
+smery
+rychlost
+sila
+dosah
+prodleva
+nastaveni pro naslapanou past spoustejici pohybujici se explozi
+<?eval tag(smerx)?>	//8
+<?eval tag(smery)?>
+<?eval tag(rychlost)?>	//10
+<?eval tag(sila)?>
+<?eval tag(dosah)?>
+<?eval tag(prodleva)?>
+
+
+[DIALOG d_Cardolanske_pohrebiste_dlazdice_spoustejicivybuch BUTTON]
+ON=901 // The apply button
+tag(smerx,<argtxt(1)>)
+tag(smery,<ARGtxt(2)>)
+tag(rychlost,<ARGtxt(3)>) 
+tag(sila,<ARGtxt(4)>) 
+tag(dosah,<ARGtxt(5)>)
+tag(prodleva,<ARGtxt(6)>)
+
+
+RETURN 0 // Yes, you can have RETURNs in a dialog
+
+
+[ITEMDEF i_Cardolanske_pohrebiste_dvere12]
+Name=dvere
+ID=i_door_metal_bar
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=zakladni dvere
+
+ON=@CREATE
+  MORE1=<UID>
+  MORE2=1000
+  ATTR=010
+  TIMER=-1  
+  tag(LockPicking,"5000")
+  tag(zamknute,"1")
+
+ON=@userDCLICK
+  IF (<tag(zamknute)>==0)
+    SRC.SYSMESSAGE("Odemknuto.")
+    Return 0
+  else
+    SRC.SYSMESSAGE("Zamknuto.")
+    Return 1
+  endif
+
+
+[ITEMDEF i_Cardolanske_pohrebiste_dvere12_tajne]
+Name=kamen
+ID=i_door_secret_stone_3
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=tajne dvere
+
+ON=@CREATE
+  MORE1=<UID>
+  MORE2=1000
+  TIMER=-1
+  ATTR=010  
+  tag(LockPicking,"5000")
+  tag(zamknute,"1")
+
+ON=@userDCLICK
+  IF (<tag(zamknute)>==0)
+    SRC.SYSMESSAGE("Odemknuto.")
+    Return 0
+  else
+    SRC.SYSMESSAGE("Zamknuto.")
+    Return 1
+  endif
+
+[ITEMDEF i_Cardolanske_pohrebiste_packa12]
+Name=packa
+ID=I_sconce
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=packa jako svicka
+
+ON=@CREATE
+  ATTR=010
+  TIMER=-1
+  MORE2=1
+  tag(oteviram1,"0")
+  tag(oteviram2,"0")
+  tag(oteviram3,"0")
+  tag(oteviram4,"0")
+  tag(oteviram5,"0")
+  tag(oteviram6,"0")
+  tag(zaviram1,"0")
+  tag(zaviram2,"0")
+  tag(zaviram3,"0")
+  tag(zaviram4,"0")
+  tag(zaviram5,"0")
+  tag(zaviram6,"0")
+
+ON=@userDCLICK
+  IF (<more2>>0)
+    SRC.tag.CPnastavenipacky=<UID>
+    SRC.DIALOG d_Cardolanske_pohrebiste_nastavenipacky
+    RETURN 1 
+  ELSE
+    SOUND=81
+    SRC.SYSMESSAGE("Oteviram.")
+    if (<tag(oteviram1)>!=0)
+      tag(oteviram1).tag(zamknute,"0")
+      tag(oteviram1).Type=t_door  
+    endif
+    if (<tag(oteviram2)>!=0)
+      tag(oteviram2).tag(zamknute,"0")
+      tag(oteviram2).Type=t_door  
+    endif
+    if (<tag(oteviram3)>!=0)
+      tag(oteviram3).tag(zamknute,"0")
+      tag(oteviram3).Type=t_door
+    endif
+    if (<tag(oteviram4)>!=0)
+      tag(oteviram4).tag(zamknute,"0")
+      tag(oteviram4).Type=t_door
+    endif
+    if (<tag(oteviram5)>!=0)
+      tag(oteviram5).tag(zamknute,"0")
+      tag(oteviram5).Type=t_door
+    endif
+    if (<tag(oteviram6)>!=0)
+      tag(oteviram6).tag(zamknute,"0")
+      tag(oteviram6).Type=t_door
+    endif
+    if (<tag(zaviram1)>!=0)
+      tag(zaviram1).tag(zamknute,"1")
+      tag(zaviram1).Timer=0
+      tag(zaviram1).Type=t_door_locked
+    endif
+    if (<tag(zaviram2)>!=0)
+      tag(zaviram2).tag(zamknute,"1")
+      tag(zaviram2).Timer=0
+      tag(zaviram2).Type=t_door_locked
+    endif
+    if (<tag(zaviram3)>!=0)
+      tag(zaviram3).tag(zamknute,"1")
+      tag(zaviram3).Timer=0
+      tag(zaviram3).Type=t_door_locked
+    endif
+    if (<tag(zaviram4)>!=0)
+      tag(zaviram4).tag(zamknute,"1")
+      tag(zaviram4).Timer=0
+      tag(zaviram4).Type=t_door_locked
+    endif
+    if (<tag(zaviram5)>!=0)
+      tag(zaviram5).tag(zamknute,"1")
+      tag(zaviram5).Timer=0
+      tag(zaviram5).Type=t_door_locked
+    endif
+    if (<tag(zaviram6)>!=0)
+      tag(zaviram6).tag(zamknute,"1")
+      tag(zaviram6).Timer=0
+      tag(zaviram6).Type=t_door_locked
+    endif
+    SRC.NEWITEM=i_Cardolanske_pohrebiste_packa12rozsvicena
+    SRC.ACT.P=<P>
+    SRC.ACT.tag(oteviram1,<tag(oteviram1)>)
+    SRC.ACT.tag(oteviram2,<tag(oteviram2)>)
+    SRC.ACT.tag(oteviram3,<tag(oteviram3)>) 
+    SRC.ACT.tag(oteviram4,<tag(oteviram4)>) 
+    SRC.ACT.tag(oteviram5,<tag(oteviram5)>) 
+    SRC.ACT.tag(oteviram6,<tag(oteviram6)>) 
+    SRC.ACT.tag(zaviram1,<tag(zaviram1)>)
+    SRC.ACT.tag(zaviram2,<tag(zaviram2)>)
+    SRC.ACT.tag(zaviram3,<tag(zaviram3)>) 
+    SRC.ACT.tag(zaviram4,<tag(zaviram4)>)
+    SRC.ACT.tag(zaviram5,<tag(zaviram5)>)
+    SRC.ACT.tag(zaviram6,<tag(zaviram6)>)
+    REMOVE <UID>
+    RETURN 0 
+  ENDIF
+ON=@TIMER
+  RETURN 1
+
+ON=@TARGON_ITEM
+  IF (<MORE2>==1)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi o1 <SRC.TARG.UID>.")
+    tag(oteviram1,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==2)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi o2.")
+    tag(oteviram2,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==3)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi o3.")
+    tag(oteviram3,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==4)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi o4.")
+    tag(oteviram4,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==5)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi o5.")
+    tag(oteviram5,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==6)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi o6.")
+    tag(oteviram6,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==7)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi z1 <SRC.TARG.UID>.")
+    tag(zaviram1,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==8)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi z2.")
+    tag(zaviram2,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==9)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi z3.")
+    tag(zaviram3,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==10)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi z4.")
+    tag(zaviram4,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==11)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi z5.")
+    tag(zaviram5,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==12)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> nastavil jsi z6.")
+    tag(zaviram6,<SRC.TARG.UID>)
+  ENDIF
+  RETURN 1
+
+[ITEMDEF i_Cardolanske_pohrebiste_packa12rozsvicena]
+Name=packa rozsvicena
+ID=I_sconce_lit
+
+ON=@CREATE
+  ATTR=010
+  TIMER=-1
+
+ON=@userDCLICK
+  SRC.SYSMESSAGE("Zaviram.")
+  SOUND=81
+   if (<tag(oteviram1)>!=0)
+     tag(oteviram1).tag(zamknute,"1")
+     tag(oteviram1).Timer=0
+     tag(oteviram1).Type=t_door_locked
+   endif
+   if (<tag(oteviram2)>!=0)
+     tag(oteviram2).tag(zamknute,"1")
+     tag(oteviram2).Timer=0
+     tag(oteviram2).Type=t_door_locked
+   endif
+   if (<tag(oteviram3)>!=0)
+     tag(oteviram3).tag(zamknute,"1")
+     tag(oteviram3).Timer=0
+     tag(oteviram3).Type=t_door_locked
+   endif
+   if (<tag(oteviram4)>!=0)
+     tag(oteviram4).tag(zamknute,"1")
+     tag(oteviram4).Timer=0
+     tag(oteviram4).Type=t_door_locked
+   endif
+   if (<tag(oteviram5)>!=0)
+     tag(oteviram5).tag(zamknute,"1")
+     tag(oteviram5).Timer=0
+     tag(oteviram5).Type=t_door_locked
+   endif
+   if (<tag(oteviram6)>!=0)
+     tag(oteviram6).tag(zamknute,"1")
+     tag(oteviram6).Timer=0
+     tag(oteviram6).Type=t_door_locked
+   endif
+   if (<tag(zaviram1)>!=0)
+     tag(zaviram1).tag(zamknute,"1")
+     tag(zaviram1).Timer=0
+     tag(zaviram1).Type=t_door_locked
+   endif
+   if (<tag(zaviram2)>!=0)
+     tag(zaviram2).tag(zamknute,"1")
+     tag(zaviram2).Timer=0
+     tag(zaviram2).Type=t_door_locked
+   endif
+   if (<tag(zaviram3)>!=0)
+     tag(zaviram3).tag(zamknute,"1")
+     tag(zaviram3).Timer=0
+     tag(zaviram3).Type=t_door_locked
+   endif
+   if (<tag(zaviram4)>!=0)
+     tag(zaviram4).tag(zamknute,"1")
+     tag(zaviram4).Timer=0
+     tag(zaviram4).Type=t_door_locked
+   endif
+   if (<tag(zaviram5)>!=0)
+     tag(zaviram5).tag(zamknute,"1")
+     tag(zaviram5).Timer=0
+     tag(zaviram5).Type=t_door_locked
+   endif
+   if (<tag(zaviram6)>!=0)
+     tag(zaviram6).tag(zamknute,"1")
+     tag(zaviram6).Timer=0
+     tag(zaviram6).Type=t_door_locked
+   endif
+  SRC.NEWITEM=i_Cardolanske_pohrebiste_packa12
+  SRC.ACT.P=<P>
+  SRC.ACT.MORE2=0
+  SRC.ACT.tag(oteviram1,<tag(oteviram1)>)
+  SRC.ACT.tag(oteviram2,<tag(oteviram2)>)
+  SRC.ACT.tag(oteviram3,<tag(oteviram3)>) 
+  SRC.ACT.tag(oteviram4,<tag(oteviram4)>) 
+  SRC.ACT.tag(oteviram5,<tag(oteviram5)>) 
+  SRC.ACT.tag(oteviram6,<tag(oteviram6)>) 
+  SRC.ACT.tag(zaviram1,<tag(zaviram1)>)
+  SRC.ACT.tag(zaviram2,<tag(zaviram2)>)
+  SRC.ACT.tag(zaviram3,<tag(zaviram3)>) 
+  SRC.ACT.tag(zaviram4,<tag(zaviram4)>)
+  SRC.ACT.tag(zaviram5,<tag(zaviram5)>)
+  SRC.ACT.tag(zaviram6,<tag(zaviram6)>)
+  REMOVE <UID>
+  RETURN 0 
+  
+ON=@TIMER
+  RETURN 1
+
+
+[DIALOG d_Cardolanske_pohrebiste_nastavenipacky]
+page 0
+resizepic 0 0 5100 200 235
+
+text 50 10 1152 13
+
+text 5 25 1152 1
+button 30 25 00000845 00000846 1 0 901
+text 5 40 1152 2
+button 30 40 00000845 00000846 1 0 902
+text 5 55 1152 3
+button 30 55 00000845 00000846 1 0 903
+text 5 70 1152 4
+button 30 70 00000845 00000846 1 0 904
+text 5 85 1152 5
+button 30 85 00000845 00000846 1 0 905
+text 5 100 1152 6
+button 30 100 00000845 00000846 1 0 906
+
+text 5 115 1152 7
+button 30 115 00000845 00000846 1 0 907
+text 5 130 1152 8
+button 30 130 00000845 00000846 1 0 908
+text 5 145 1152 9
+button 30 145 00000845 00000846 1 0 909
+text 5 160 1152 10
+button 30 160 00000845 00000846 1 0 910
+text 5 175 1152 11
+button 30 175 00000845 00000846 1 0 911
+text 5 190 1152 12
+button 30 190 00000845 00000846 1 0 912
+
+text 5 210 1152 13
+button 80 210 00000845 00000846 1 0 913
+
+
+[DIALOG d_Cardolanske_pohrebiste_nastavenipacky TEXT]
+ 
+0
+O1
+O2
+O3
+04
+05
+06
+Z1
+Z2
+Z3
+Z4
+Z5
+Z6
+konec nastavovani
+nastaveni pro packy ovladajici dvere v mem dungu
+
+[DIALOG d_Cardolanske_pohrebiste_nastavenipacky BUTTON]
+ONBUTTON=901 
+SRC.SYSMESSAGE("Zamer dvere o1.")
+tag(CPnastavenipacky).MORE2=1
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=902 
+SRC.SYSMESSAGE("Zamer dvere o2.")
+tag(CPnastavenipacky).MORE2=2
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=903 
+SRC.SYSMESSAGE("Zamer dvere o3.")
+tag(CPnastavenipacky).MORE2=3
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=904 
+SRC.SYSMESSAGE("Zamer dvere o4.")
+tag(CPnastavenipacky).MORE2=4
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=905 
+SRC.SYSMESSAGE("Zamer dvere o5.")
+tag(CPnastavenipacky).MORE2=5
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=906 
+SRC.SYSMESSAGE("Zamer dvere o6.")
+tag(CPnastavenipacky).MORE2=6
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=907 
+SRC.SYSMESSAGE("Zamer dvere z1.")
+tag(CPnastavenipacky).MORE2=7
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=908 
+SRC.SYSMESSAGE("Zamer dvere z2.")
+tag(CPnastavenipacky).MORE2=8
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=909
+SRC.SYSMESSAGE("Zamer dvere z3.")
+tag(CPnastavenipacky).MORE2=9
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=910
+SRC.SYSMESSAGE("Zamer dvere z4.")
+tag(CPnastavenipacky).MORE2=10
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=911 
+SRC.SYSMESSAGE("Zamer dvere z5.")
+tag(CPnastavenipacky).MORE2=11
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=912
+SRC.SYSMESSAGE("Zamer dvere z6.")
+tag(CPnastavenipacky).MORE2=12
+tag(CPnastavenipacky).TARGET 
+tag(CPnastavenipacky,"")
+
+ONBUTTON=913
+SRC.SYSMESSAGE("<src.sex(Zamknul,Zamknula)> jsi nastaveni packy, nyni je v provozuschopnem stavu.")
+tag(CPnastavenipacky).MORE2=0
+src.sysmessage("o1 <tag(CPnastavenipacky).tag(oteviram1)>")
+src.sysmessage("o2 <tag(CPnastavenipacky).tag(oteviram2)>")
+src.sysmessage("o3 <tag(CPnastavenipacky).tag(oteviram3)>")
+src.sysmessage("o4 <tag(CPnastavenipacky).tag(oteviram4)>")
+src.sysmessage("o5 <tag(CPnastavenipacky).tag(oteviram5)>")
+src.sysmessage("o6 <tag(CPnastavenipacky).tag(oteviram6)>")
+src.sysmessage("z1 <tag(CPnastavenipacky).tag(zaviram1)>")
+src.sysmessage("z2 <tag(CPnastavenipacky).tag(zaviram2)>")
+src.sysmessage("z3 <tag(CPnastavenipacky).tag(zaviram3)>")
+src.sysmessage("z4 <tag(CPnastavenipacky).tag(zaviram4)>")
+src.sysmessage("z5 <tag(CPnastavenipacky).tag(zaviram5)>")
+src.sysmessage("z6 <tag(CPnastavenipacky).tag(zaviram6)>")
+tag(CPnastavenipacky,"")
+
+RETURN 0 // Yes, you can have RETURNs in a dialog
+
+
+[ITEMDEF i_Cardolanske_pohrebiste_packa2]
+Name=obraz
+ID=0ea6
+Type=t_script
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=packa jako obraz
+
+ON=@CREATE
+  ATTR=010
+  TIMER=-1
+  MORE2=1
+  tag(oteviram1,"0")
+  tag(oteviram2,"0")
+  tag(oteviram3,"0")
+  tag(oteviram4,"0")
+  tag(oteviram5,"0")
+  tag(oteviram6,"0")
+  tag(zaviram1,"0")
+  tag(zaviram2,"0")
+  tag(zaviram3,"0")
+  tag(zaviram4,"0")
+  tag(zaviram5,"0")
+  tag(zaviram6,"0")
+
+ON=@userDCLICK
+  IF (<more2>>0)
+    SRC.tag.CPnastavenipacky=<UID>
+    SRC.DIALOG d_Cardolanske_pohrebiste_nastavenipacky
+    RETURN 1 
+  ELSE
+    IF (<MORE2>==0)
+      SOUND=81
+      SRC.SYSMESSAGE("Oteviram.")
+      if (<tag(oteviram1)>!=0)
+        tag(oteviram1).tag(zamknute,"0")
+        tag(oteviram1).Type=t_door  
+      endif
+      if (<tag(oteviram2)>!=0)
+        tag(oteviram2).tag(zamknute,"0")
+        tag(oteviram2).Type=t_door  
+      endif
+      if (<tag(oteviram3)>!=0)
+        tag(oteviram3).tag(zamknute,"0")
+        tag(oteviram3).Type=t_door
+      endif
+      if (<tag(oteviram4)>!=0)
+        tag(oteviram4).tag(zamknute,"0")
+        tag(oteviram4).Type=t_door
+      endif
+      if (<tag(oteviram5)>!=0)
+        tag(oteviram5).tag(zamknute,"0")
+        tag(oteviram5).Type=t_door
+      endif
+      if (<tag(oteviram6)>!=0)
+        tag(oteviram6).tag(zamknute,"0")
+        tag(oteviram6).Type=t_door
+      endif
+      if (<tag(zaviram1)>!=0)
+        tag(zaviram1).tag(zamknute,"1")
+        tag(zaviram1).Timer=0
+        tag(zaviram1).Type=t_door_locked
+      endif
+      if (<tag(zaviram2)>!=0)
+        tag(zaviram2).tag(zamknute,"1")
+        tag(zaviram2).Timer=0
+        tag(zaviram2).Type=t_door_locked
+      endif
+      if (<tag(zaviram3)>!=0)
+        tag(zaviram3).tag(zamknute,"1")
+        tag(zaviram3).Timer=0
+        tag(zaviram3).Type=t_door_locked
+      endif
+      if (<tag(zaviram4)>!=0)
+        tag(zaviram4).tag(zamknute,"1")
+        tag(zaviram4).Timer=0
+        tag(zaviram4).Type=t_door_locked
+      endif
+      if (<tag(zaviram5)>!=0)
+        tag(zaviram5).tag(zamknute,"1")
+        tag(zaviram5).Timer=0
+        tag(zaviram5).Type=t_door_locked
+      endif
+      if (<tag(zaviram6)>!=0)
+        tag(zaviram6).tag(zamknute,"1")
+        tag(zaviram6).Timer=0
+        tag(zaviram6).Type=t_door_locked
+      endif
+      TIMER=30
+      //MORE2=-1
+    ELSE
+      //MORE2=0
+      //TIMER=0
+    ENDIF
+    RETURN 1 
+  ENDIF
+
+ON=@TIMER
+  //SRC.SYSMESSAGE("Zaviram.")
+  SOUND=81
+  if (<tag(oteviram1)>!=0)
+    tag(oteviram1).tag(zamknute,"1")
+    tag(oteviram1).Timer=0
+    tag(oteviram1).Type=t_door_locked
+  endif
+  if (<tag(oteviram2)>!=0)
+    tag(oteviram2).tag(zamknute,"1")
+    tag(oteviram2).Timer=0
+    tag(oteviram2).Type=t_door_locked
+  endif
+  if (<tag(oteviram3)>!=0)
+    tag(oteviram3).tag(zamknute,"1")
+    tag(oteviram3).Timer=0
+    tag(oteviram3).Type=t_door_locked
+  endif
+  if (<tag(oteviram4)>!=0)
+    tag(oteviram4).tag(zamknute,"1")
+    tag(oteviram4).Timer=0
+    tag(oteviram4).Type=t_door_locked
+  endif
+  if (<tag(oteviram5)>!=0)
+    tag(oteviram5).tag(zamknute,"1")
+    tag(oteviram5).Timer=0
+    tag(oteviram5).Type=t_door_locked
+  endif
+  if (<tag(oteviram6)>!=0)
+    tag(oteviram6).tag(zamknute,"1")
+    tag(oteviram6).Timer=0
+    tag(oteviram6).Type=t_door_locked
+  endif
+  if (<tag(zaviram1)>!=0)
+    tag(zaviram1).tag(zamknute,"1")
+    tag(zaviram1).Timer=0
+    tag(zaviram1).Type=t_door_locked
+  endif
+    if (<tag(zaviram2)>!=0)
+    tag(zaviram2).tag(zamknute,"1")
+    tag(zaviram2).Timer=0
+    tag(zaviram2).Type=t_door_locked
+  endif
+  if (<tag(zaviram3)>!=0)
+    tag(zaviram3).tag(zamknute,"1")
+    tag(zaviram3).Timer=0
+    tag(zaviram3).Type=t_door_locked
+  endif
+  if (<tag(zaviram4)>!=0)
+    tag(zaviram4).tag(zamknute,"1")
+    tag(zaviram4).Timer=0
+    tag(zaviram4).Type=t_door_locked
+  endif
+  if (<tag(zaviram5)>!=0)
+    tag(zaviram5).tag(zamknute,"1")
+    tag(zaviram5).Timer=0
+    tag(zaviram5).Type=t_door_locked
+  endif
+  if (<tag(zaviram6)>!=0)
+    tag(zaviram6).tag(zamknute,"1")
+    tag(zaviram6).Timer=0
+    tag(zaviram6).Type=t_door_locked
+  endif
+  RETURN 1
+
+ON=@TARGON_ITEM
+  IF (<MORE2>==1)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi o1 <SRC.TARG.UID>.")
+    tag(oteviram1,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==2)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi o2.")
+    tag(oteviram2,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==3)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi o3.")
+    tag(oteviram3,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==4)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi o4.")
+    tag(oteviram4,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==5)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi o5.")
+    tag(oteviram5,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==6)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi o6.")
+    tag(oteviram6,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==7)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi z1 <SRC.TARG.UID>.")
+    tag(zaviram1,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==8)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi z2.")
+    tag(zaviram2,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==9)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi z3.")
+    tag(zaviram3,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==10)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi z4.")
+    tag(zaviram4,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==11)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi z5.")
+    tag(zaviram5,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==12)
+    src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi z6.")
+    tag(zaviram6,<SRC.TARG.UID>)
+  ENDIF
+  return 1

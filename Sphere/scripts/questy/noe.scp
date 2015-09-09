@@ -1,0 +1,444 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF i_bottle_form]
+NAME=Forma na lahvicky
+ID=i_clock_frame
+TYPE=t_bottle_form
+FLIP=1
+WEIGHT=200.0
+
+RESOURCES=50 I_LOG_verite
+SKILLMAKE=CARPENTRY 75.0, t_carpentry
+
+CATEGORY=Noe
+SUBSECTION=Other
+DESCRIPTION=Forma na lahvicky
+
+ON=@Create 
+COLOR=0036
+
+
+////////////////////////////////////////////////////   recepty /////////////////////////////////////
+
+[ITEMDEF i_book_shrink]
+NAME=Receptura Shrink Potionu
+ID=i_book_sm_pub
+TYPE=t_book_shrink
+
+CATEGORY=Noe
+SUBSECTION=Knihy receptu
+DESCRIPTION=Recept Shrink
+ON=@Create 
+COLOR=0039
+
+ON=@userDCLICK
+src.SYSMESSAGE=Recept na Shrink potion:	Skillova potreba: Alchemy 80, Surovina: 1 davka Diamantoveho prachu (1 diamant),
+src.SYSMESSAGE=5 spider silk ,10 pumice,5 eye of newt, 1 lahvicka  
+src.SYSMESSAGE=K vyrobe je treba miti u sebe knihu receptu.
+
+
+[ITEMDEF i_book_bottle]
+NAME=Receptura Bottle
+ID=i_book_sm_pub
+
+TYPE=t_book_bottle
+
+CATEGORY=Noe
+SUBSECTION=Knihy receptu
+DESCRIPTION=Recept Bottle
+ON=@Create 
+COLOR=0036
+ON=@userDCLICK
+src.SYSMESSAGE=Recept na alchymistovu lahvicku:	Skillova potreba: Tinkering 75, Surovina: Sklovina, K vyrobe je treba miti u sebe: 1. Recepturu Bottle,	2. Formu na vyrobu lahvicek z kvalitniho dreva Oak., 3. Nastroj tinkera. 
+src.SYSMESSAGE=Vyroba formy: Skillova potreba: Carpentry 75, Surovina: Oak logy, - Vyroba skloviny: Skillova potreba: Mining 51, Surovina: Kremicity pisek
+
+
+////////////////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF I_NECRO_WAND]
+ID=0df2
+NAME=Necromancerova hulka
+RESOURCES=2 i_ingot_silver, 2 i_ingot_gold, 1 I_GEM_DIAMOND
+TYPE=T_WAND
+DAM=2,6
+//SPEED=35
+REQSTR=1
+TWOHANDS=N
+VALUE={16 24}
+WEIGHT=50.0
+CATEGORY=Noe
+SUBSECTION=Other
+DESCRIPTION=Necro Wand
+
+ON=@Create
+HITPOINTS={31 70}
+
+ON=@userDCLICK
+src.premena
+src.newitem=i_NECRO_delay
+src.act.equip
+
+[ITEMDEF i_NECRO_delay]
+NAME=Delay mistr
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+
+ON=@Create
+timer=40 
+
+on=@unequip
+cont.premena_zpet
+
+ON=@Timer
+remove
+return 1
+
+[function premena]
+if (src.profession==class_mag)
+body=c_dragon_red
+src.STR=(<SRC.STR> + 100)
+src.DEX=(<SRC.DEX> + 50)
+src.INT=(<SRC.INT> - 50)
+sfx snd_SPELL_lightning
+elseif (src.profession==class_necro)
+body=C_liche
+STR=(<SRC.STR> + 100)
+DEX=(<SRC.DEX> + 50)
+INT=(<SRC.INT> - 50)
+sfx snd_SPELL_lightning
+endif
+
+[function premena_zpet]
+sfx snd_SPELL_lightning
+src.STR=(<SRC.STR> - 100)
+src.DEX=(<SRC.DEX> - 50)
+src.INT=(<SRC.INT> + 50)
+src.mana=0
+src.stamina=1
+src.body=<src.obody>
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// CERNÍ JEZDCI ///////////////////////////////////////////////
+
+[ITEMDEF i_premena_jezdec]
+ID=01174
+TYPE=0
+NAME=Premena na jezdce
+
+CATEGORY=Noe
+SUBSECTION=questy
+DESCRIPTION=Premena na jezdce
+
+ON=@Create
+COLOR=0989
+ATTR=attr_static
+morep=5284,1648,7,2
+
+ON=@userCLICK
+SRC.sysMESSAGE "Klik te premeni po dobu 60 min na jezdce."
+
+ON=@userDCLICK
+if (<safe.SRC.TAG.prizrak>)
+src.tag.prizrak=
+src.tag.prizrakname=<src.name>
+src.tag.prizraktitle=<src.title>
+src.name=Prizrak
+src.Title=Mordorsky prizrak
+src.newitem i_prizrak_delay
+src.act.equip
+src.newitem i_roba_jezdce
+src.act.equip
+src.newitem i_cap_jezdce
+src.act.equip
+SRC.newitem=i_must_jezdce
+src.act.equip
+src.act.more2=<src.uid>
+src.act.link=<src.uid>
+SRC.COLOR=0989
+endif
+
+[events e_jezdci]
+on=@death
+name=<SRC.TAG.prizrakname>
+title=<SRC.TAG.prizraktitle>
+consume i_roba_jezdce
+consume i_cap_jezdce
+consume i_must_jezdce
+EVENTS -e_jezdci
+color=<ocolor>
+
+[ITEMDEF i_roba_jezdce]
+//ID=01f03 // klasicka roba
+ID=0204E // roba ducha
+NAME=Roba
+
+CATEGORY=Noe
+SUBSECTION=questy
+DESCRIPTION=roba jezdce
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+COLOR=0989
+HITPOINTS=1000
+
+[ITEMDEF i_cap_jezdce]
+ID=01515
+NAME=Plast
+
+CATEGORY=Noe
+SUBSECTION=questy
+DESCRIPTION=Plast jezdce
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+COLOR=0989
+
+[itemdef i_must_jezdce]
+NAME=Temny or
+SOUND=snd_ANIMALS_HORSE1
+ID=i_mt_horse_brown_dk
+ICON=i_pet_horse_brown_dk
+
+ON=@Create
+COLOR=0989
+
+[ITEMDEF i_prizrak_delay]
+NAME=Delay prizrak
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+
+ON=@Create
+timer=3600// zde se nastavuje jakou dobu maji na splneni povysujiciho questu
+
+ON=@Timer
+	// Take the effect we would like.
+CONT.EVENTS= +e_jezdci
+remove
+return 1
+	
+
+[itemdef i_mordorvladce_gate]
+NAME=Brana na ostrov vladce Mordoru
+ID=i_moongate_blue
+TYPE=T_SCRIPT
+CATEGORY=Noe
+SUBSECTION=questy
+DESCRIPTION=Brana na ostrov vladce Mordoru
+
+on=@create
+color=0989
+
+on=@step
+src.tag.prizrak=1
+src.go 2194,3766,-26,2
+
+[ITEMDEF i_vladce_runa]
+ID=01f14
+NAME=Runa vladce Mordoru
+
+CATEGORY=Noe
+SUBSECTION=questy
+DESCRIPTION=Runa vladce Mordoru
+
+ON=@Create
+attr=attr_newbie
+COLOR=0022
+
+ON=@userDCLICK
+sfx snd_SPELL_lightning
+SRC.NEWITEM=i_mordorvladce_gate
+SRC.ACT.COLOR=0989
+SRC.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.TIMER=30
+SRC.ACT.P=<SRC.P>
+
+/////// pokus
+
+
+
+//////////////////////////////////////////////////////////////////// zavod ///////////
+[ITEMDEF i_morthia_teleport]
+ID=04f3
+NAME=Dira v zemi
+
+ON=@Create
+attr=attr_newbie
+COLOR=028
+
+ON=@userDCLICK
+src.sysmessage Vidis velmi uzkou skviru.
+
+
+ON=@step
+if (src.findlayer(25))
+src.sysmessage Tato skvira je velmi uzka na to aby jsi ji protahl tak velké zvire. Sotva se tam vejdes sam.
+elseif (<SRC.findtype(t_figurine))
+src.sysmessage Nesmis mit s sebou zvire...
+else
+src.go 4819,440,5
+endif
+
+
+///////////////////////////////////////////////////////////////////////
+
+////Neviditelne bludiste
+////Stiznosti na: Orfeus
+
+[ITEMDEF i_dlazka_bludiste_1]
+ID=0516
+NAME=Bludistni dlazka
+
+CATEGORY=Moria
+SUBSECTION=Invis Maze
+DESCRIPTION=Odhazovaci dlazka
+
+ON=@Step
+SRC.GO 4535,450,5,100
+
+
+ON=@Create
+COLOR=026
+ATTR=08090
+
+
+
+
+
+
+[ITEMDEF i_dlazka_bludiste_2]
+ID=0516
+NAME=Cilova dlazka
+
+CATEGORY=Moria
+SUBSECTION=Invis Maze
+DESCRIPTION=Cilova dlazka dlazka
+
+ON=@Step
+SERV.B(Soutez "Neviditelne Bludiste" jiz ma sveho vyherce, prosim ostatni soutezici aby opustili bludiste. Dekuji.)
+SRC.SYSMESSAGE("Stal jsi se vitezem, Blahopreji!")
+src.addexp(1000)
+src.GIVEITEM=i_cashiers_check
+lastnew.more1=40000
+src.giveitem=I_scroll_blank
+lastnew.color=026
+lastnew.name=Poukazka na zvire: Ridgeback. Pis page.
+SRC.EVENTS -e_noport
+SRC.EVENTS -e_notele
+IF (<src.tag.realm> == 1)
+    SRC.GO Edoras
+  ELSE
+    SRC.GO Barad-dur
+ENDIF
+REMOVE
+
+ON=@Create
+COLOR=00044
+ATTR=010
+
+
+
+
+
+[ITEMDEF i_dlazka_bludiste_3]
+ID=01173
+NAME=Opousteci kamen
+
+CATEGORY=Moria
+SUBSECTION=Invis Maze
+DESCRIPTION=Kamen pro opusteni
+
+ON=@UserDclick
+DIALOG(d_invismaze)
+RETURN 1
+
+ON=@Create
+COLOR=00981
+ATTR=010
+
+
+
+[DIALOG d_invismaze]
+5,5
+page 0
+gumppic 30 210 07
+text 80 240 40 0 //Opravdu...
+text 130 320 026 1 //Ano
+text 230 320 026 2 //Ne
+button 95 320 0fa5 0fa7 1 0 1
+button 195 320 0fa5 0fa7 2 0 2
+
+[dialog d_invismaze text]
+Opravdu chces opustit bludiste
+Ano
+Ne
+
+
+[dialog d_invismaze button] 
+on=1
+SRC.EVENTS  -e_noport
+SRC.EVENTS  -e_notele
+IF (<src.tag.realm> == 1)
+    SRC.GO Edoras
+  ELSE
+    SRC.GO Barad-dur
+ENDIF
+
+
+
+
+[ITEMDEF i_dlazka_bludiste_4]
+ID=i_moongate_red
+NAME=Brana do neviditelneho bludiste
+
+CATEGORY=Moria
+SUBSECTION=Invis Maze
+DESCRIPTION=Brana do bludiste
+
+ON=@Step
+SRC.EVENTS + e_notele
+SRC.EVENTS + e_noport
+SRC.GO <morep>
+SRC.SySMESSAGE("Vitej v bludisti")
+
+
+
+
+
+[ITEMDEF i_dlazka_bludiste_5]
+ID=i_moongate_red
+NAME=Brana Primo do bludiste
+TYPE=0
+
+
+CATEGORY=Moria
+SUBSECTION=Invis Maze
+DESCRIPTION=Brana do bludiste 2
+
+ON=@Create
+Tag(lidi,5)
+
+ON=@Step
+ IF (<TAG(LIDI)> == 0)
+      SRC.SYSMESSAGE("Bludiste je uz plne, tesime se na vasi ucast priste")
+      RETURN 1
+ ELSE
+      SRC.SySMESSAGE("Vitej v bludisti")
+      SRC.GO <morep>
+      Tag(lidi,<tag(lidi)>-1)
+ ENDIF
+
+
+
+
+
+[events e_notele] 
+on=@spellcast
+ if (argn==22)
+sysmessage(Nesnaz se podvadet!)
+ return 1
+endif
+
+[EOF]

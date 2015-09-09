@@ -1,0 +1,326 @@
+//****************************************************************************
+// SPHERE by : Menasoft ©1997-2002
+// www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//
+// DO NOT MAKE CHANGES TO DEFAULT SCRIPTS! MAKE YOUR ALTERATIONS IN CUSTOM FILES!
+//****************************************************************************
+// FILE LAST UPDATED: Wednesday, July 24, 2002
+//
+//VERSION=0.99u
+//zcela prekopano by enrico
+
+
+
+
+
+
+
+[DEFNAMES TREASURE_MAPS]
+TMOS                        0FFFFFED4 //Treasure Map Offset
+TMS                         08c //Treasure Map Size	200x200 pixels - pins are in pixels
+
+[function randfern]
+dorand 11
+return tm_rocks
+return  i_bone_shards
+return  i_plant_fern
+return  i_plant_rushes
+return  i_plant_fern
+return  i_plant_fern_5
+return  i_plant_bulrushes
+return  i_plant_grasses
+return  i_plant_fern_3
+return  i_plant_fern_4
+return  0913
+enddo
+
+
+[function f_showmap]
+MORE1=((<MOREX> -180)*010000)+(<MOREY> -180)
+MORE2=((<MOREX> +180)*010000)+(<MOREY> +180)
+PIN=105,105	// dead center.
+return 0
+
+
+[typedef T_unidentified_MAP]
+ON=@USERDCLICK
+IF (SRC.CARTOGRAPHY<<TAG.MAP>)||(src.nolightfizz(1))
+ SRC.say(Misto na mape je mi zcela nezname)
+ RETURN 1
+ENDIF
+// MOREP = the treasure location = MOREX,MOREY
+IF !(tag(vylusteno))
+ tag(vylusteno,1)
+ NAME="mapa k pokladu"
+ TYPE=T_MAP
+ finduid(#0402D472F).tag(vylustene_mapy,#+1)
+ SRC.NEWITEM(randfern)//Place trigger random tile on UO Map
+ src.say(Ano, to misto poznavam.)
+ more1=<tag(map)>
+ lastnew.TYPE=T_TREAS_CHEST
+ lastnew.TAG.MAP=<TAG.MAP>
+ lastnew.TIMER=3600
+ lastnew.ATTR=attr_static|attr_move_never
+ lastnew.LINK=<UID>
+ lastnew.P=<morep>
+ lastnew.fix
+ f_showmap
+ RETURN 0
+ENDIF
+
+
+[TYPEDEF T_TREAS_CHEST]
+
+ON=@USERDCLICK
+IF ( <LINK.TOPOBJ.UID> != <SRC.UID> )
+ RETURN 1
+ENDIF
+IF (SRC.FINDLAYER(1).id==i_pickaxe)
+ SRC.ANIM=0B
+ SOUND=0126
+else
+ src.message="Chtelo by to poradny nacini"
+ return 1
+endif
+if (SRC.MINING >  TAG(MAP))&&(nolightfizz(1))
+ if (tag(map) > 975)
+ if (finduid(0f1b52).p == finduid(finduid(0f1b52).tag(mylastnew)).p)
+   finduid(0f1b52).tag(mylastnew).p=<p> //lvl 5
+  else
+   src.message="Kopani je namahave. Odpocin si a zkus to za chvili."
+   return 1
+  endif 
+ elseif (tag(map) > 920)
+ if (finduid(0f19e2).p == finduid(finduid(0f19e2).tag(mylastnew)).p)
+   finduid(0f19e2).tag(mylastnew).p=<p> //lvl 4
+  else
+   src.message="Kopani je namahave. Odpocin si a zkus to za chvili."
+   return 1
+  endif 
+ elseif (tag(map) > 825)
+ if (finduid(0f18ea).p == finduid(finduid(0f18ea).tag(mylastnew)).p)
+   finduid(0f18ea).tag(mylastnew).p=<p> //lvl 3
+  else
+   src.message="Kopani je namahave. Odpocin si a zkus to za chvili."
+   return 1
+  endif 
+ elseif  (tag(map) > 650)
+  if (finduid(0f1784).p == finduid(finduid(0f1784).tag(mylastnew)).p)
+   finduid(0f1784).tag(mylastnew).p=<p> //lvl 2
+  else
+   src.message="Kopani je namahave. Odpocin si a zkus to za chvili."
+   return 1
+  endif 
+ else
+  if (finduid(0f162a).p == finduid(finduid(0f162a).tag(mylastnew)).p)
+   finduid(0f162a).tag(mylastnew).p=<p> //lvl 1
+  else
+   src.message="Kopani je namahave. Odpocin si a zkus to za chvili."
+   return 1
+  endif 
+ endif
+ SRC.MESSAGE="Hura poklad !!"
+ finduid(#0402D472F).tag(vykopane_mapy,#+1)
+ LINK.REMOVE			//remove linked deciphered map
+ REMOVE				//remove trigger plant
+ RETURN 1
+else
+ src.message="Moc to nejde."
+ENDIF
+RETURN 1
+
+on=@timer
+link.tag.remove(vylusteno)
+remove
+
+//*******************************************************************
+
+[ITEMDEF i_u_treasure_map]
+ID=i_map
+NAME="Tajemna mapa"
+
+CATEGORY=Maps - Treasure
+DESCRIPTION=Map
+
+on=@userdclick
+if (type==t_map)
+ src.arrowquest <morep>
+ f_showmap
+ENDIF
+IF !(tag(vylusteno))
+ tag(vylusteno,1)
+ SRC.NEWITEM(randfern)//Place trigger random tile on UO Map
+ lastnew.TYPE=T_TREAS_CHEST
+ lastnew.TAG.MAP=<TAG.MAP>
+ lastnew.TIMER=3600
+ lastnew.ATTR=attr_static|attr_move_never
+ lastnew.LINK=<UID>
+ lastnew.P=<morep>
+ lastnew.fix
+ENDIF
+
+
+ON=@CREATE
+more2={0 65535}
+TYPE=T_unidentified_MAP
+TAG.MAP=<eval {300 1000}>
+finduid(#0402D472F).tag(padnute_mapy,#+1)
+f_Map_GetCoords
+
+[FUNCTION f_Map_GetCoords]
+DORAND 49
+ MOREP=1388,1188,0
+ MOREP=617,518,0
+ MOREP=3366,3819,0
+ MOREP=3331,3507,40
+ MOREP=3366,3727,40
+ MOREP=2747,3485,-1
+ MOREP=2968,3883,20
+ MOREP=1245,1907,2
+ MOREP=2312,2696,0
+ MOREP=1419,2633,0
+ MOREP=1241,3205,60 
+ MOREP=2827,2541,20
+ MOREP=3565,2276,10
+ MOREP=4199,1860,0
+ MOREP=4484,4072,-50
+ MOREP=4628,3902,0 
+ MOREP=3918,3818,54
+ MOREP=4308,3778,0
+ MOREP=848,1766,0 
+ MOREP=714,1818,0
+ MOREP=604,1451,0
+ MOREP=1410,3100,0
+ MOREP=2268,2814,0
+ MOREP=4187,328,0
+ MOREP=934,593,0
+ MOREP=1476,2744,0
+ MOREP=3621,2867,12
+ MOREP=526,3038,10 
+ MOREP=2390,3513,0
+ MOREP=3670,2894,2
+ MOREP=437,3928,10
+ MOREP=158,2033,0
+ MOREP=2960,2490,0
+ MOREP=4817,3624,0
+ MOREP=2828,1692,0
+ MOREP=4080,2052,0
+ MOREP=836,3726,11
+ MOREP=4527,3098,5
+ MOREP=4630,3274,0 
+ MOREP=4398,3163,5
+ MOREP=4435,3122,5
+ MOREP=4563,3229,0
+ MOREP=4490,3275,0
+ MOREP=4562,3444,0
+ MOREP=4568,3360,0 
+ MOREP=1460,1252,0
+ MOREP=2203,1166,0
+ MOREP=2654,4080,0
+ MOREP=2742,3469,10
+ENDDO
+	
+//////////////////////////////////////////////////
+
+
+[ITEMDEF i_u_treasure_map_bonus]
+ID=i_map
+NAME="Vzacna tajemna mapa"
+
+CATEGORY=Maps - Treasure
+DESCRIPTION=Map
+
+on=@userdclick
+if (type==t_map)
+ src.arrowquest <morep>
+ f_showmap
+ENDIF
+IF !(tag(vylusteno))
+ tag(vylusteno,1)
+ SRC.NEWITEM(randfern)//Place trigger random tile on UO Map
+ lastnew.TYPE=t_treas_chest_bonus
+ lastnew.TAG.MAP=<TAG.MAP>
+ lastnew.TIMER=3600
+ lastnew.ATTR=attr_static|attr_move_never
+ lastnew.LINK=<UID>
+ lastnew.P=<morep>
+ lastnew.fix
+ENDIF
+
+
+ON=@CREATE
+more2={0 65535}
+color=098a
+TYPE=T_unidentified_bonus_MAP
+TAG.MAP=1000
+finduid(#0402D472F).tag(padnute_mapy_bonus,#+1)
+f_Map_GetCoords
+
+
+[typedef T_unidentified_bonus_MAP]
+ON=@USERDCLICK
+IF (SRC.CARTOGRAPHY<<TAG.MAP>)||(src.nolightfizz(1))
+ SRC.say(Misto na mape je mi zcela nezname)
+ RETURN 1
+ENDIF
+IF !(tag(vylusteno))
+ tag(vylusteno,1)
+ NAME="mapa k pokladu"
+ TYPE=T_bonus_MAP
+ finduid(#0402D472F).tag(vylustene_mapy_bonus,#+1)
+ SRC.NEWITEM(randfern)
+ src.say(Ano, to misto poznavam.)
+ more1=<tag(map)>
+ lastnew.TYPE=t_treas_chest_bonus
+ lastnew.TAG.MAP=<TAG.MAP>
+ lastnew.TIMER=3600
+ lastnew.ATTR=attr_static|attr_move_never
+ lastnew.LINK=<UID>
+ lastnew.P=<morep>
+ lastnew.fix
+ f_showmap
+ RETURN 0
+ENDIF
+
+[TYPEDEF t_treas_chest_bonus]
+ON=@USERDCLICK
+IF ( <LINK.TOPOBJ.UID> != <SRC.UID> )
+ RETURN 1
+ENDIF
+IF (SRC.FINDLAYER(1).id==i_pickaxe)
+ SRC.ANIM=0B
+ SOUND=0126
+else
+ src.message="Chtelo by to poradny nacini"
+ return 1
+endif
+if (SRC.MINING >=  1200)&&(nolightfizz(1))
+ if (tag(map) == 1000)
+   if (finduid(0DB0F4).p == finduid(finduid(0DB0F4).tag(mylastnew)).p)
+     finduid(0DB0F4).tag(mylastnew).p=<p>
+   else
+     src.message="Kopani je namahave. Odpocin si a zkus to za chvili."
+     return 1
+   endif 
+ endif
+ SRC.MESSAGE="Hura poklad !!"
+ finduid(#0402D472F).tag(vykopane_mapy_bonus,#+1)
+ LINK.REMOVE			//remove linked deciphered map
+ REMOVE				//remove trigger plant
+ RETURN 1
+else
+ src.message="Moc to nejde."
+ENDIF
+RETURN 1
+
+on=@timer
+link.tag.remove(vylusteno)
+remove
+
+
+[EOF]

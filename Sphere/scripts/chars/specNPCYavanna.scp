@@ -1,0 +1,212 @@
+[CHARDEF c_m_phoenix_acid]
+
+ID=c_EAGLE
+NAME=Acid Phoenix
+SOUND=snd_ANIMALS_EAGLE1
+ICON=i_pet_EAGLE
+
+CAN=MT_RUN|MT_WALK
+attack=100
+ARMOR=55
+
+moverate=4
+
+RESOURCES=1 I_BIRD_RAW, 30 i_feather
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_Acid_Damage
+TEVENTS=e_phoenix
+
+CATEGORY=Dungy
+SUBSECTION=Yavanna Monsters
+DESCRIPTION=Phoenix Acid
+
+ON=@Create
+COLOR=0981
+NPC=brain_monster
+FAME=1000
+KARMA=-2500
+STR=2500
+DEX=300
+INT={50 65}
+
+
+maxhits={7000 8000}
+maxstam={400 420}
+maxmana=0
+
+tag.acid_dmg=90
+tag.acid_ppst=1000
+
+tag.experience=<eval {500.0 550.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag.weapflag=dam_physical
+
+tag.resist_poison={750 850}
+tag.resist_summon=750
+tag.resist_fire=700
+
+
+Resist={100.0 120.0}
+WRESTLING={120.0 160.0}
+POISONING={150.0 200.0}
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+
+//////////////////////////
+
+[CHARDEF c_imp_acid]
+ID=c_mongbat
+NAME=Imp
+SOUND=snd_MONSTER_MNGBAT1
+ICON=i_pet_mongbat
+CAN=MT_FLY|MT_WALK
+
+attack=50
+ARMOR=25
+moverate=5
+
+RESOURCES=3 i_hide, 2 i_reag_batwing
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_duplicator
+TEVENTS=e_acid_damage
+
+CATEGORY=Monsters
+SUBSECTION=Caves
+DESCRIPTION=Imp acid
+
+ON=@Create
+COLOR=color_red1
+NPC=brain_monster
+FAME=1000
+KARMA={-2000 -2999}
+
+STR=250
+DEX={90 120}
+INT={86 110}
+
+
+maxhits={200 300}
+maxstam={100 120}
+maxmana={860 1100}
+
+tag.resist_poison={850 950}
+tag.dupecount=3
+
+tag.acid_dmg=<eval {50 90}>
+tag.acid_ppst=1000
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+tag.experience=<eval {15.0 22.0}>
+
+PARRYING={50.0 60.0}
+Resist=50.0
+TACTICS={55.0 70.0}
+WRESTLING={60.0 75.0}
+SpiritSpeak=40.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_IMP
+ITEM=i_gold
+
+
+[CHARDEF c_man_friendly]
+ID=c_man
+NAME=Osoba
+
+ICON=i_pet_MAN
+ANIM=078c7f
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+attack=35
+ARMOR=20
+
+moverate=10
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+
+
+
+CATEGORY=Dungy
+SUBSECTION=Yavanna Monsters
+DESCRIPTION=Man Friendly
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+NPC=brain_human
+
+
+FAME={100 500}
+karma=0
+STR=300
+DEX=60
+INT=10
+
+
+maxhits={400 550}
+maxstam={60 80}
+maxmana=0
+
+tag.experience=<eval {12.0 15.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+
+tag.weapflag=dam_physical|dam_blunt
+
+tag.resist_poison=840
+
+tag.resist_summon=<eval {290 390}>
+
+WRESTLING={50.0 70.0}
+SpiritSpeak=25.0
+
+ITEMnewbie=i_monster_create
+
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=color_snow
+ITEMnewbie=i_sandals
+color=012
+ITEMnewbie=i_tunic
+color=089
+ITEMnewbie=i_pants_long
+color=0961
+
+ON=@NPCSeeNewPlayer
+dorand 3
+  say("Aaah, koho to tu nevidim?!")
+  say("Kde se tady berou lidi...?")
+  emote("nechapave se rozhlizi")
+enddo
+
+ON=@NPCRestock
+ITEM=i_gold
+
+
+
+[eof]

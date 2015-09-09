@@ -1,0 +1,357 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Moria scripty 
+//type=sphere 99z8
+//utvoril vypravejda
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//prvni jsou funkce zabezpecujci spravne otvirani dialogu :o)
+//
+////jmena funkci:               nazev kouzla:
+//
+//f_castpriest_000		Pozehnani
+//f_castpriest_001		N
+//f_castpriest_002		N
+//f_castpriest_003		N
+//f_castpriest_004		N
+//f_castpriest_005		N
+//f_castpriest_006		N
+//f_castpriest_007		N
+//f_castpriest_008		N
+//f_castpriest_009		N
+//
+//f_castpriest_010		N
+//f_castpriest_011		N
+//f_castpriest_012		N
+//f_castpriest_013		N
+//f_castpriest_014		N
+//f_castpriest_015		N
+//f_castpriest_016		N
+//f_castpriest_017		N
+//f_castpriest_018		N
+//f_castpriest_019		N
+//
+//f_castpriest_020		N
+//f_castpriest_021		N
+//f_castpriest_022		N
+//f_castpriest_023		N
+//f_castpriest_024		N
+//f_castpriest_025		N
+//f_castpriest_026		N
+//f_castpriest_027		N
+//f_castpriest_028		N
+//f_castpriest_029		N
+//
+//f_castpriest_030		N
+//f_castpriest_031		N
+//f_castpriest_032		N
+//f_castpriest_033		N
+//f_castpriest_034		N
+//f_castpriest_035		N
+//f_castpriest_036		N
+//f_castpriest_037		N
+//f_castpriest_038		N
+//f_castpriest_039		N
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  testiky
+//
+//tag.statusvira=(<tag.statusvira> +3)
+//tag.statusvira=(<tag.statusvira> -3)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[FUNCTION f_nestriletnasebe]
+if(<?src.targ.uid?>==<?src.uid?>
+return 0
+endif
+
+[FUNCTION f_kolikviry]
+if(<?src.tag.statusvira?><1)
+src.say="nemam dost viry"
+return 0
+endif
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[FUNCTION f_castpriest_000]  //pozehnani
+
+if(<?src.tag.statusvira?><1)
+src.sysmessage="Tva vira neni dost silna k tomuto pozehnani."
+//Sysmessagecol(0bf,"davidek")
+
+else
+tag.statusvira=(<tag.statusvira> -1)
+src.newitemsafe(i_chram_kouzli_000)
+lastnew.equip
+endif
+
+
+
+[itemdef i_chram_kouzli_000]
+id=i_memory
+type=t_eq_script
+name=pozehnani
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target
+src.classmessage("Koho chces zacilit ?")
+timer=30
+
+
+on=@targon_char
+//if(isplayer)
+//lastnew.link=<var(townstone_<src.region.tag(jmeno_mesta)>)>
+
+f_nestriletnasebe
+
+src.targ.say="zasahl mne <?src.name?>"
+//all.say="ahoj"
+src.targ.damage_noresponse(10,dam_god)
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[FUNCTION f_castpriest_001]//pokusne pricitani viry
+tag.statusvira=(<tag.statusvira> +3)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_castpriest_002]
+if (<?src.tag.statusvira?>>0)
+ src.do_a_cyrcle(i_fx_sparkle_2,1)
+ src.forceback
+else
+ src.classmessage(tva vira neni dost silna k provedeni tohoto zazraku.)
+endif
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_castpriest_003] //estino drobne leceni
+if (<?src.tag.statusvira?>>0)
+src.newitemsafe(i_chram_kouzli_003)
+lastnew.equip
+tag.statusvira=(<tag.statusvira> -1)
+else
+src.classmessage(tva vira neni dost silna k provedeni tohoto zazraku.)
+endif
+////////////////////////////////////////////////////
+
+[itemdef i_chram_kouzli_003]
+id=i_memory
+type=t_eq_script
+name=Estina lecba
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target
+src.classmessage(Koho chces lecit ?)
+timer=30
+
+on=@targon_char
+//if(isplayer)
+src.classmessage(vylecen)
+src.targ.Hits=(<?src.targ.Hits?> +12)
+if (<?src.targ.Hits?>><?src.targ.maxHits?>)
+src.targ.Hits=<?src.targ.maxHits?>
+endif
+return 1
+
+
+/////////////////////////////////////////////////////
+
+[function f_effect_a_anti_undeath]//sila, source
+EFFECT 0,03818,12,1,0 
+//EFFECT 0,03709,5,16,1 
+damage_noresponse(<promilerange(<argv(0)>,20,40)>,dam_magic|dam_cold)
+if (<argv(0)>>{0 3000})
+  paralyze(-1)
+endif
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+[FUNCTION f_castpriest_004]
+
+[FUNCTION f_castpriest_005]
+
+[FUNCTION f_castpriest_006]
+
+[FUNCTION f_castpriest_007]
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_castpriest_008]//nocni videni
+src.newitemsafe(i_chram_kouzli_008)
+lastnew.equip
+tag.statusvira=(<tag.statusvira> -1)
+
+
+
+
+////////////////////////////////////////////////////
+
+[itemdef i_chram_kouzli_008]
+id=i_memory
+type=t_eq_script
+name=Vardino svetlo
+
+on=@timer
+remove
+return 0
+
+
+on=@equip
+target
+timer=5
+
+on=@targon_char
+src.targ.newitemsafe(i_chram_vidimvetme)
+lastnew.timer=1
+lastnew.p=<?src.targ.p?>
+//src.targ.lastnew.equip
+
+
+
+/////////////////////////////////////////////////
+[itemdef i_chram_vidimvetme]
+id=i_memory
+layer=1601
+type=t_eq_script
+name=Vardino svetlo
+
+on=@step
+SRC.EFFECT=1,1
+equip
+
+
+
+
+on=@timer
+unequip
+remove
+
+
+on=@equip
+cont.say="uha mam to na sobe"
+cont.nightsight=1
+timer=600
+
+on=@unequip
+cont.nightsight=0
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_castpriest_009]
+
+
+
+[FUNCTION f_castpriest_010]
+
+[FUNCTION f_castpriest_011]
+
+[FUNCTION f_castpriest_012]
+
+[FUNCTION f_castpriest_013]
+
+[FUNCTION f_castpriest_014]
+
+[FUNCTION f_castpriest_015]
+
+[FUNCTION f_castpriest_016]
+
+[FUNCTION f_castpriest_017]  //Zalm velkeho zoufani
+if (<?src.mana?>==<?src.maxmana?>)
+ if (<?src.mana?><50)
+   tag.statusvira=(<?tag.src.statusvira?> +1)
+ endif
+ if (<?src.mana?>>49)&&(<?src.mana?><100)
+   tag.statusvira=(<?src.tag.statusvira?> +2)
+ endif
+ if (<?src.mana?>>99)&&(<?src.mana?><150)
+   src.tag.statusvira=(<?src.tag.statusvira?> +3)
+ endif
+ if (<?src.mana?>>149)
+   src.tag.statusvira=(<?src.tag.statusvira?> +4)
+ endif
+ if (<?src.tag.statusvira?>><?src.tag.maxstatusvira?>)
+  src.tag.statusvira=<?src.tag.maxstatusvira?>
+ endif
+ src.mana=0
+else
+src.sysmessage(Nikdy se nesnaz osidit Valar !)
+src.damage_noresponse(30,dam_god)
+endif
+
+
+[FUNCTION f_castpriest_018]
+
+[FUNCTION f_castpriest_019]
+
+
+
+[FUNCTION f_castpriest_020]
+
+[FUNCTION f_castpriest_021]
+
+[FUNCTION f_castpriest_022]
+
+[FUNCTION f_castpriest_023]
+
+[FUNCTION f_castpriest_024]
+
+[FUNCTION f_castpriest_025]
+
+[FUNCTION f_castpriest_026]
+
+[FUNCTION f_castpriest_027]
+
+[FUNCTION f_castpriest_028]
+
+[FUNCTION f_castpriest_029]
+
+
+
+[FUNCTION f_castpriest_030]
+
+[FUNCTION f_castpriest_031]
+
+[FUNCTION f_castpriest_032]
+
+[FUNCTION f_castpriest_033]
+
+[FUNCTION f_castpriest_034]
+
+[FUNCTION f_castpriest_035]
+
+[FUNCTION f_castpriest_036]
+
+[FUNCTION f_castpriest_037]
+
+[FUNCTION f_castpriest_038]
+
+[FUNCTION f_castpriest_039]
+
+
+
+[EOF]

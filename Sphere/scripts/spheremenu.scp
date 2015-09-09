@@ -1,0 +1,4627 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Friday, April 28, 2000
+//
+//VERSION=0.54
+
+//WEBLINK http:\\www.moria.cz\frame.php?page=pravidla_2
+
+
+[comment MENU MENU_ADMIN]
+SPHERE Client Control Menu
+
+ON=0 GO: Go to the client's location.
+GOTARG //You are now going to the client.
+
+ON=0 SUMMONTO: Bring that client to you
+T.SUMMONTO //The client is summoned
+
+ON=0 SUMMONCAGE: Bring that client to you, in a cage.
+T.SUMMONCAGE //The client is summoned and in the cage
+
+ON=0 JAIL: Send the client to jail.
+T.JAIL //The client is in jail
+
+ON=0 KICK: Kick the client off the server.
+T.KICK //The client is kicked off the server
+
+ON=0 KILL: Kill the client's current character.
+T.KILL // The client is dead
+
+ON=0 RESURRECT: Resurrect the client's character.
+T.RESURRECT //The client is now alive
+
+ON=0 FOLLOW: Follow this character.
+T.FOLLOWED //This might be tricky
+
+ON=0 MESSAGETARG: Send a message
+EVERBTARG HEAR
+
+ON=0 EVERBTARG: Enter any verb on this target.
+EVERBTARG
+
+ON=0 DISCONNECT: Disconnect the client
+T.DISCONNECT
+
+// MENU_PAGEGM -------------------------------------
+
+[FUNCTION HelpPage]
+MENU MENU_help
+
+[MENU MENU_help] // PAGEGM is executed whenever someone presses the "Page GM" button
+SPHERE Main Support Menu
+
+ON=0 Nastaveni a informace
+if (src.isgm==1)
+MENU MENU_HERNI_NASTAVENI_GM
+ELSE
+MENU MENU_HERNI_NASTAVENI
+ENDIF
+
+
+ON=0 Herni prikazy
+MENU MENU_HERNI_PRIKAZY
+
+ON=0 Moria encyklopedia
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+ON=0 Zprava pro GM (page): pred zaslanim zpravy si radne prostudujte pravidla posilani zprav. Zpravy jasne nevyjadrujici problem budou mazany.
+MENU MENU_PAGEGM
+
+
+ON=0 Nouzovy teleport (stuck help): pouzij pri zaseku ci pokud jsi se ztratil - po casovem limitu budes prenesen do sveho domovskeho mesta.
+IF (src.tag(arena))||(src.tag(trestanec))||(<src.region.flags>==06d9f)||(<strlen(<src.region.tag(knihovna)>)>)
+  src.raceMessage("Zde nemuzes pouzit Helproom.")
+ELSE
+  if (strcmpi(<src.region.name>,"tutorial"))
+    if (strcmpi(<src.region.name>,"tutorial high"))
+      if (strcmpi(<src.region.name>,"Start room"))
+        if (strcmpi(<src.region.name>,"Start realmu"))
+          MENU MENU_helproom
+        else
+          src.raceMessage("Zde nemuzes pouzit Helproom.")
+        endif
+      else
+        src.raceMessage("Zde nemuzes pouzit Helproom.")
+      endif
+    else
+      src.raceMessage("Zde nemuzes pouzit Helproom.")
+    endif  
+  else
+    src.raceMessage("Zde nemuzes pouzit Helproom.")
+  endif  
+ENDIF
+
+////////////////////////
+
+[MENU MENU_HERNI_NASTAVENI_GM]   //  vidi jen GMKA !!!
+Umoznuje prednastaveni hernich zalezitosti. Jen pro GM !
+
+ON=0 GM Nastaveni sveta: Sahat jen v nejnutnejsim pripade. Zmeny neprodlene hlasit adminovi nebo Dinivanovi!
+nastaveni
+
+ON=0 INFO: statistiky povolani - zbytecne nepouzivat, laguje!
+statistikapovolani
+
+ON=0 Rychle cestovani: prikaz .gomap
+gomap
+
+ON=0 Kolik je itemu v sektoru?
+var(count,0)
+region.sectors(raisecount)
+smsg v tomto sectoru se nachazi <count> itemu
+
+ON=0 Informace o spawnech v okoli
+spawncount
+
+
+ON=0 Informace o Moria serveru
+serv.INFORMATION
+
+
+
+ON=0 Predchozi
+MENU MENU_help
+
+
+//////////////////////////
+
+[MENU MENU_HERNI_NASTAVENI]
+Umoznuje prednastaveni hernich zalezitosti.
+
+ON=0 Novy level - rozdelit dovednostni body
+explevel
+
+ON=0 Chatovani mezi hraci
+DIALOG d_chat_options
+
+
+
+ON=0 Kdo jsem?
+whoami
+
+ON=0 Informace o Moria serveru.
+serv.INFORMATION
+
+ON=0 Predchozi
+MENU MENU_help
+
+
+[MENU MENU_HERNI_PRIKAZY]
+Umoznuje prednastaveni hernich zalezitosti.
+
+ON=0 Jak jsem hladovy?
+hungry
+
+ON=0 Informace o Moria serveru.
+serv.INFORMATION
+
+ON=0 Predchozi
+MENU MENU_help
+
+/////////////////////////////////////////////////ENCICLOPEDIE ///////////////////////////////
+
+[MENU MENU_MORIA_ENCYKLOPEDIA]
+MORIA ENCIKLOPEDIA 
+
+
+ON=0 HISTORIE STREDOZEME
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+ON=0 Lide Stredozeme
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+ON=0 Realmy - Rozdeleni sveta
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+ON=0 Remesla a Povolani ve Stredozemi
+MENU MENU_MORIA_ENCYKLOPEDIA_POVOLANI
+
+ON=0 Webove Odkazy
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Predchozi
+MENU MENU_help
+
+/////////////
+
+[MENU MENU_MORIA_ENCYKLOPEDIA_POVOLANI]
+Moria encyklopedia
+
+ON=0 Aktualni informace na webu
+WEBLINK http:\\www.moria.cz/www/page=7
+
+ON=0 Remeslnik (craft)
+MENU MENU_MORIA_ENCYKLOPEDIA_POVOLANI
+
+ON=0 Druid - zatim neexistuje
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Mystik - kouzelnik silove a runove magie
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Nekromant - kouzelnik specializujci se na temnou magii a vyvolavani
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Knez (priest)
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Hranicar
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Saman - kmenovy lecitel zabyvajci se okultni prirodni magii
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Zlodej (thief), intrikar, podfukar a skely vykradac hrobek
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Valecnik (warrior) - hlavni sila jakekoliv vojenske skupiny
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+ON=0 Predchozi
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+////////////////
+
+[MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY]
+Odkazy na Webove stranky tykajici se se shardu Moria 
+
+ON=0 Domovska stranka shardu Moria
+WEBLINK http://www.moria.cz/www/
+
+ON=0 Moriawiki - oficialni informacni web
+WEBLINK http://www.moria.cz/wiki/
+
+ON=0 Vyveska - stranka o volnem pokecu o hre na Morii, srazech hracu a naslednych svizelich :o) a nejen to.
+WEBLINK http://vyveska.kec.cz/vyveska/
+
+ON=0 Forum, kde se muzete podelit s tvurci shardu Moria o sve napady a pripominky ke hre.
+WEBLINK http://kec.cz/forum/
+
+ON=0 Odkazy na spratelene servry
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY_SPRATELENE
+
+ON=0 Predchozi
+MENU MENU_MORIA_ENCYKLOPEDIA
+
+
+
+[MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY_SPRATELENE]
+Odkazy na spratelene servry
+
+ON=0 Vanamovy stranky - rady a navody
+WEBLINK http://ultima.profitux.cz/
+
+ON=0 Lu Tzeho stranky - informace o questech, bestiar a dalsi
+WEBLINK http://encyklopedie.moria.cz/
+
+ON=0 Dark Paradise: Otevre domovskou stranku sprateleneho shardu Dark Paradise.
+WEBLINK http://www.darkparadise.cz/
+
+
+ON=0 Predchozi
+MENU MENU_MORIA_ENCYKLOPEDIA_ODKAZY
+
+
+
+[MENU MENU_PAGEGM]
+Zde muzes zaslat zpravu GM, ale nezapomen, ze to ma sva pravidla.
+
+ON=0 Ano, chci, mam doopravdy problem a jsem si vedom trestu za pripadne zneuziti.
+src.sysmessage("Ted muzes poslat zpravu - napis text zpravy a zmackni enter.")
+src.targ=<src>
+everbtarg GMPAGE
+
+ON=0 Ne - stornovani zpravy
+src.sysmessage("Odesilani zpravy pro GM bylo zruseno.")
+
+
+[MENU MENU_helproom]
+Menu pro pouziti nouzoveho teleportu
+
+ON=0 Ano, chci pouzit nouzovy teleport. Jsem zasekly nebo jsem se ztratil.
+newitem i_teleport_delay
+act.equip
+act.tag(myPosition,<src.p>)
+
+ON=0 Ne, chci tuto volbu stornovat.
+sysmessage("Pouziti teleportu bylo stornovano.")
+findid(i_teleport_delay).remove
+accmsg("Vypnul prenos do rodneho mesta - <?region.name?> (<?p?>)")
+
+[events e_stuckdamage]
+on=@aftergetswing
+
+if !(isDead)
+  findid(i_teleport_delay).remove
+  sysmessage("Odpocet prerusen.")
+  events=-e_stuckdamage
+  return 0
+endif
+
+on=@beforegetswing
+on=@spelleffect
+on=@beforegeteffect
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+
+[ITEMDEF i_teleport_delay]
+NAME=Delay Teleport
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+WEIGHT=0.0
+LAYER=layer_special
+
+ON=@Create
+ATTR=attr_invis|attr_decay
+MORE1=30
+MOREP=a_helpdesk
+
+ON=@Equip
+cont.events=+e_stuckdamage
+cont.accmsg("Zapnul prenos do rodneho mesta - <?cont.region.name?> (<?cont.p?>)")
+TIMER=1
+  
+ON=@Timer
+// Take the effect we would like.
+if ( <cont> )
+  if ( <more1> )
+    if (<more1>==30)
+      cont.say("Zbyva 5 minut do prenosu do rodneho mesta.")
+    elseif (<more1>==12)
+      cont.say("Zbyvaji 2 minuty do prenosu do rodneho mesta.")
+    elseif (<more1>==6)
+      cont.say("Zbyva 1 minuta do prenosu do rodneho mesta.")
+    elseif (<more1>==3)
+      cont.say("Zbyva 30 sekund do prenosu do rodneho mesta.")
+    else
+      cont.message("<EVAL <more1>*10>") // put countdown above my head.
+    endif
+    more1=<more1>-1
+    TIMER=10
+    return 1
+  else
+    if (strlen(<tag(myPosition)>))
+      if (<f_distanceFromPos_check(10,<tag(myPosition)>)>)
+        src.redMessage("Prilis jsi se <src.sex(vzdalil,vzdalila)> od mista, kde byl nouzovy teleport spusten!")
+        remove
+        return 1  //jsme prilis daleko od puvodniho mista...
+      endif
+    endif
+    cont.gohome
+    cont.accmsg("(<?name?>) byl prenesen do rodneho mesta - <?cont.region.name?> (<?cont.p?>)")
+    cont.events -e_stuckdamage
+  endif
+endif
+// normal timer fall through is to delete the item
+remove
+return 1
+
+// This is the guildmaster initial selection screen for guildstones
+// Town stones. mayor view
+[MENU MENU_TOWN_MAYOR]
+Town of <Name> (<MasterTitle> <Master>)
+ON=0 Zvol hrace kandidatem mesta.
+RECRUIT
+ON=0 Zobraz obyvatele mesta.
+VIEWROSTER
+ON=0 Zobraz charakter mesta.
+VIEWCHARTER
+ON=0 Deklaruj svou loajalitu starostovi <LoyalTo>.
+DECLAREFEALTY
+ON=0 Zapni zobrazeni nazvu mesta u jmena <AbbreviationToggle>.
+TOGGLEABBREVIATION
+ON=0 Odhlaseni z mesta.
+RESIGN
+ON=0 Seznam nezadoucich osob
+VIEWBANISHED
+ON=0 Zobraz list kandidatu a priznivcu.
+VIEWCANDIDATES
+ON=0 Zobraz seznam mest kterym jsme vyhlasili valku.
+VIEWENEMYS
+ON=0 Zobraz seznam mest ktere nam vyhlasili valku.
+VIEWTHREATS
+ON=0 Otevri funkce starosty <MasterGenderTitle>.
+MASTERMENU
+// This is the member, NON-mayor townstones
+
+[MENU MENU_TOWN_MEMBER]
+Town of <Name> (<MasterTitle> <Master>)
+ON=0 Zvol hrace kandidatem mesta.
+RECRUIT
+ON=0 Zobraz obyvatele mesta.
+VIEWROSTER
+ON=0 Zobraz charakter mesta.
+VIEWCHARTER
+ON=0 Deklaruj svou loajalitu starostovi <LoyalTo>.
+DECLAREFEALTY
+ON=0 Zapni zobrazeni nazvu mesta u jmena <AbbreviationToggle>.
+TOGGLEABBREVIATION
+ON=0 Odhlaseni z mesta.
+RESIGN
+ON=0 Seznam nezadoucich osob
+VIEWBANISHED
+ON=0 Zobraz list kandidatu a priznivcu.
+VIEWCANDIDATES
+ON=0 Zobraz seznam mest kterym jsme vyhlasili valku.
+VIEWENEMYS
+ON=0 Zobraz seznam mest ktere nam vyhlasili valku.
+VIEWTHREATS
+// Mayor functions.
+
+[MENU MENU_TOWN_MAYORFUNC]
+Town of <Name>, Mayoral functions
+ON=0 Zadej nazev mesta. // tato volba automaticky nastaví gildovní zamereni na Or/cha ... Gondor/mordor
+ //if (<region.tag...
+  //CHANGEALIGN 2 //chaoss - mordorani
+ //elseif (<region.tag
+  //CHANGEALIGN 1 //order - gondorani
+//endif
+SETNAME
+ON=0 Zadej zkratku mesta.
+SETABBREVIATION
+//ON=0 Zmen presvedceni mesta (momentalne <AlignType>)
+//CHANGEALIGN
+ON=0 Zadej charakter mesta.
+SETCHARTER
+ON=0 Vyhod clena.
+DISMISSMEMBER
+ON=0 Vyhlas valku.
+DECLAREWAR
+ON=0 Uzavri mir.
+DECLAREPEACE
+ON=0 Potvrd kandidaty a zvol je cleny - otevre seznam.
+ACCEPTCANDIDATE
+ON=0 Vyrad kandidaty - otevre seznam.
+REFUSECANDIDATE
+ON=0 Zadej titul Starosty.
+SETGMTITLE
+ON=0 Zadej titul clenu.
+GRANTTITLE
+ON=0 Zpet na zakladni menu.
+RETURNMAINMENU
+
+// Non-member view.
+[MENU MENU_TOWN_NON]
+<Name> (<MasterTitle> <Master>)
+ON=0 Zobraz cleny mesta.
+VIEWROSTER
+ON=0 Zobraz charakter mesta.
+VIEWCHARTER
+ON=0 Zobraz seznam mest kterym jsme vyhlasili valku.
+VIEWENEMYS
+ON=0 Zobraz seznam mest ktere nam vyhlasili valku.
+VIEWTHREATS
+ON=0 Odhlaseni z predchoziho mesta (nutne pro vstup do jineho mesta).
+RESIGN
+
+// ITEMMENUS SECTION -------------------------------------
+
+// Main start menu, used when /add with no parms are passed
+[MENU MENU_ADDITEM]
+SPHERE Main GM Menu
+ON=0 GameMaster Features
+MENU M_GMFEATURES
+ON=0 Valuables
+MENU M_ADDI_VAL
+ON=0 NPCs
+MENU M_ADDN
+ON=0 Magic Items
+MENU M_ADDI_MAGIC
+ON=0 Tools & Trades
+MENU M_ADDI_TOOLS
+ON=0 Raw Materials
+MENU M_ADDI_RAWMAT
+ON=0 Potions & Flasks
+MENU M_ADDI_POTION
+ON=0 Scattered Materials
+MENU M_ADDI_RAWMAT_MISC
+ON=0 Weapons & Armor
+MENU M_ADDI_WEPARM
+ON=0 Magic Weapons & Armor
+MENU M_ADDI_WEPARM_MAGIC
+ON=0 Equipment & Items
+MENU M_ADDI_PROV
+ON=0 Clothing
+MENU M_ADDI_CLOTHING
+ON=0 Banners & Signs
+MENU M_ADDI_SIGNS
+ON=0 Food
+MENU M_ADDI_FOOD
+ON=0 Plants
+MENU M_ADDI_PLANTS
+ON=0 Rocks, Stones, Boulders
+MENU M_ADDI_STONE
+ON=0 Structures
+MENU M_ADDI_STRUCTURE
+
+// GM Features and Travel Places Menus
+[MENU M_GMFEATURES]
+GameMaster Features
+ON=0 Items
+MENU M_ADDI_GM
+ON=0 Travel to Places
+MENU M_TRAV
+ON=0 Hair & Beards
+MENU M_ADDI_HAIR
+ON=0 House Deeds
+MENU m_addi_deeds
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_GM]
+GameMaster Items
+ON=0 GM Robe (undyed)
+try new=i_robe_gm
+ON=0 Magic Key
+try new=i_key_magic
+ON=0 Teleport Rune
+try new=i_RUNE_GLOWING_1
+ON=0 Lord British Armor
+try new=i_PERSON_LORD_BRITISH
+ON=0 Blackthorne Robe
+try new=i_PERSON_BLACK_THORNE
+ON=0 Death Shroud
+try new=i_deathshroud
+ON=0 PREVIOUS MENU
+MENU M_GMFEATURES
+
+[MENU M_TRAV]
+Travel to Places
+ON=0 Special GM Areas
+MENU M_TRAV_GM
+ON=0 Towns
+MENU M_TRAV_TOWN
+ON=0 Councelor Halls
+MENU M_TRAV_COUNC
+ON=0 Dungeons
+MENU M_TRAV_DUNG
+ON=0 Shrines
+MENU M_TRAV_SHRINE
+ON=0 Graveyards
+MENU M_TRAV_GRAVE
+ON=0 Forts
+MENU M_TRAV_FORT
+ON=0 Sightings
+MENU M_TRAV_SIGHTS
+ON=0 MoonGates
+MENU M_TRAV_MOON
+ON=0 T2A Locations
+MENU M_TRAV_T2A
+ON=0 PREVIOUS MENU
+MENU M_GMFEATURES
+
+[MENU M_TRAV_GM]
+Special GM Areas
+ON=0 Jail #1
+GO JAIL1
+ON=0 Jail #2
+GO JAIL2
+ON=0 Jail #3
+GO JAIL3
+ON=0 Jail #4
+GO JAIL4
+ON=0 Jail #5
+GO JAIL5
+ON=0 Jail #6
+GO JAIL6
+ON=0 Jail #7
+GO JAIL7
+ON=0 Jail #8
+GO JAIL8
+ON=0 Jail #9
+GO JAIL9
+ON=0 Jail #10
+GO JAIL10
+ON=0 Green Acres
+GO GREEN ACRES
+ON=0 Green Acres 2
+GO GREEN ACRES 2
+ON=0 Green Acres 3
+GO GREEN ACRES 3
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_TOWN]
+Towns
+ON=0 Britain
+go Britain
+ON=0 Bucaneer's Den
+go Buccaneer's Den
+ON=0 Cove (center)
+go Cove
+ON=0 Jhelom
+go Jhelom
+ON=0 Minoc
+go Minoc
+ON=0 Moonglow
+go Moonglow
+ON=0 Nujel'm
+go Nujel'm
+ON=0 Ocllo
+go Ocllo
+ON=0 Serpent's Hold
+go Serpent's Hold
+ON=0 Skara Brae
+go Skara Brae
+ON=0 Trinsic
+go Trinsic
+ON=0 Vesper
+go Vesper
+ON=0 Wind
+go Wind
+ON=0 Yew
+go Yew
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_COUNC]
+Councelor Halls
+ON=0 Moonglow
+go Moonglow Councelor's Guild Hall
+ON=0 Skara Brae
+go Skara Brae Councelor's Guild Hall
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_DUNG]
+Dungeons
+ON=0 Covetous (entrance)
+go Covetous Entrance
+ON=0 Deceit (entrance)
+go Deceit Entrance
+ON=0 Despise (entrance)
+go Despise Entrance
+ON=0 Destard (entrance)
+go Destard Entrance
+ON=0 Hythloth (entrance)
+go Hythloth Entrance
+ON=0 Shame (entrance)
+go Shame Entrance
+ON=0 Wrong (entrance)
+go Wrong Entrance
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_SHRINE]
+Shrines
+ON=0 Chaos
+go Chaos
+ON=0 Compassion
+go 1856 876 0
+ON=0 Honesty
+go Honesty
+ON=0 Honor
+go Honor
+ON=0 Humility
+go Humility
+ON=0 Justice
+go Justice
+ON=0 Sacrifice
+go Sacrifice
+ON=0 Spirituality
+go Spirituality
+ON=0 Valor
+go Valor
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_GRAVE]
+Graveyards
+ON=0 Britain
+go Britain Graveyard
+ON=0 Cove
+go Cove Graveyard
+ON=0 Jhelom
+go Jhelom Cemetary
+ON=0 Moonglow
+go Moonglow Cemetary
+ON=0 Nujel'm
+go Nujel'm Cemetary
+ON=0 Vesper
+go Vesper Cemetary
+ON=0 Yew
+go Yew Graveyard
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_FORT]
+Forts
+ON=0 Cove Orc Fort
+go Cove Orc Camp
+ON=0 Yew Brigand Camp
+go Yew Brigand Fort
+ON=0 Yew Fort of the Damned
+go Yew Crypts
+ON=0 Yew Orc Fort
+go Yew Orc Fort
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_SIGHTS]
+Sightings
+ON=0 Trapper's Camp
+go Vesper Tanner's Huts
+ON=0 Fisherman's Huts
+go Fisherman's Hut
+ON=0 Island Temple
+go Temple Isle
+ON=0 Hidden Valley Temple
+go Hidden Valley Temple
+ON=0 Inside Hedge Maze
+go Hedge Maze
+ON=0 Outside Hedge Maze
+go Hedge Maze Entrance
+ON=0 Crossroads NE of Britain
+go Crossroads
+ON=0 Ancient Ruins (Swamp North of Trinsic)
+go Ancient Ruins
+ON=0 Daemon Temple
+go Daemon temple
+ON=0 Jhelom Fighting Pit
+go Jhelom Fighting Pits
+ON=0 Great Waterfall
+go Great Waterfall
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_MOON]
+MoonGates
+ON=0 Britain
+go Britain Moongate
+ON=0 Jhelom
+go Jhelom Moongate
+ON=0 Magincia
+go Magincia Moongate
+ON=0 Minoc/Vesper
+go Minoc-Vesper Moongate
+ON=0 Moonglow
+go Moonglow Moongate
+ON=0 Skara Brae
+go Skara Brae Moongate
+ON=0 Trinsic
+go Trinsic Moongate
+ON=0 Yew
+go Yew Moongate
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_T2A]
+T2A Locations
+ON=0 Delucia
+go Delucia
+ON=0 Papua
+go Papua
+ON=0 Fire Dungeon
+go Fire Dungeon Entrance
+ON=0 Ice Dungeon
+go Ice Dungeon Entrance
+ON=0 Terathan Keep
+go Terathan Keep
+ON=0 Ophidian Lair
+go Ophidian Lair
+ON=0 Delucia Orc Fort
+go Delucia Orc Fort
+ON=0 City of the Dead
+go City of the Dead
+ON=0 Ruins in the Weeds
+go Ruins in the Weeds
+ON=0 Entrances & Exits to T2A
+MENU M_TRAV_T2A_ENT
+ON=0 PREVIOUS MENU
+MENU M_TRAV
+
+[MENU M_TRAV_T2A_ENT]
+Entraces & Exits to T2A
+ON=0 Britain Entrance
+go 1497 1641 20
+ON=0 Britain Exit
+go 6032 1494 5
+ON=0 Cove Entrance
+go 2399 199 0
+ON=0 Cove Exit
+go 6088 3676 18
+ON=0 Cove Entrance 2
+go 1628 3322 0
+ON=0 Cove Exit 2
+go 5154 4063 37
+ON=0 Serpent's Hold Entrance
+go 2923 3407 8
+ON=0 Serpent's Hold Exit
+go 5687 1422 40
+ON=0 Trinsic Entrance
+go 1981 2070 0
+ON=0 Trinsic Exit
+go 5128 3144 99
+ON=0 Trinsic Entrance 2
+go 5900 1410 0
+ON=0 Trinsic Exit 2
+go 5961 1408 0
+ON=0 Vesper Entrance
+go 2778 894 0
+ON=0 Vesper Exit
+go 5697 3656 0
+ON=0 PREVIOUS MENU
+MENU M_TRAV_T2A
+
+[MENU M_ADDI_VAL]
+Valuables
+ON=i_gold <NAME>
+try new=i_gold
+ON=i_ingot_gold <NAME>
+try new=i_ingot_gold
+ON=i_ingot_silver <NAME>
+try new=i_ingot_silver
+ON=i_ingot_copper Copper Ingots
+try new=i_ingot_copper
+ON=i_ingot_iron Iron Ingots
+try new=i_ingot_iron
+ON=i_virtstone_8 Gems
+MENU M_ADDI_GEMS
+ON=i_necklace_gold Jewelery
+MENU M_ADDI_JEWELRY
+
+[MENU M_ADDI_GEMS]
+Gems
+ON=i_gem_amethyst Amethyst
+try new=i_gem_amethyst
+ON=i_gem_citrine Citrine
+try new=i_gem_citrine
+ON=i_gem_diamond Diamond
+try new=i_gem_diamond
+ON=i_gem_emerald Emerald
+try new=i_gem_emerald
+ON=i_gem_amber Piece of Amber
+try new=i_gem_amber
+ON=i_gem_ruby Ruby
+try new=i_gem_ruby
+ON=i_gem_sapphire Saphire
+try new=i_gem_sapphire
+ON=i_gem_star_sapphire Star Saphire
+try new=i_gem_star_sapphire
+ON=i_gem_tourmaline Tourmaline
+try new=i_gem_tourmaline
+
+[MENU M_ADDN_NEW]
+New Creatures
+ON=0 Skeleton Archer
+try newchar=C_M_SKELETONARCHER
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_OPHID]
+T2A Creatures (Ophidian & Terathan)
+ON=0 Ophidian Arch Mage
+try newchar=C_M_OPHIDIAN_ARCHMAGE
+ON=0 Ophidian Mage
+try newchar=c_OPHIDIAN_MAGE
+ON=0 Ophidian Knight
+try newchar=C_M_OPHIDIAN_KNIGHT
+ON=0 Ophidian Matriarch
+try newchar=c_OPHIDIAN_QUEEN
+ON=0 Ophidian Warrior
+try newchar=c_OPHIDIAN_WARRIOR
+ON=0 Terathan Avenger
+try newchar=C_M_TERATHAN_AVENGER
+ON=0 Terathan Drone
+try newchar=c_TERATHAN_DRONE
+ON=0 Terathan Matriarch
+try newchar=c_TERATHAN_MATRIARCH
+ON=0 Terathan Warrior
+try newchar=c_TERATHAN_WARRIOR
+ON=0 PREVIOUS MENU
+MENU M_ADDN_T2A
+
+[MENU M_ADDN]
+NPCs
+ON=0 Males
+MENU M_ADDN_MAL
+ON=0 Females
+MENU M_ADDN_FEM
+ON=0 Wild Animals
+MENU M_ADDN_WILD
+ON=0 Domestic Animals
+MENU M_ADDN_DOM
+ON=0 Living Creatures
+MENU M_ADDN_LIV
+ON=0 Undead Creatures
+MENU M_ADDN_UND
+ON=0 Mythical Creatures
+MENU M_ADDN_MYTH
+ON=0 New Creatures
+MENU M_ADDN_NEW
+ON=0 T2A Creatures
+MENU M_ADDN_T2A
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDN_MAL]
+Male NPCs
+ON=0 Shopkeepers
+MENU M_ADDN_MSHOP
+ON=0 Town Based
+MENU M_ADDN_MTOWN
+ON=0 Wilderness & Town Based
+MENU M_ADDN_MWILD
+ON=0 Fighters & Guards
+MENU M_ADDN_MFIGHT
+ON=0 Evil (Player Killers)
+MENU M_ADDN_MEVIL
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_FEM]
+Female NPCs
+ON=0 Shopkeepers
+MENU M_ADDN_FSHOP
+ON=0 Town Based
+MENU M_ADDN_FTOWN
+ON=0 Wilderness & Town Based
+MENU M_ADDN_FWILD
+ON=0 Fighters & Guards
+MENU M_ADDN_FFIGHT
+ON=0 Evil (Player Killers)
+MENU M_ADDN_FEVIL
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_WILD]
+Wild Animals
+ON=0 Forest
+MENU M_ADDN_WILD_FOR
+ON=0 Swamp
+MENU M_ADDN_WILD_SWAMP
+ON=0 Northern
+MENU M_ADDN_WILD_NOR
+ON=0 Sea
+MENU M_ADDN_WILD_SEA
+ON=0 Flying
+MENU M_ADDN_WILD_FLY
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_DOM]
+Domestic Animals
+ON=0 Horse (brown)
+try newchar=c_horse_brown_dk
+ON=0 Horse (pale)
+try newchar=c_horse_brown_lt
+ON=0 Horse (white)
+try newchar=c_horse_gray
+ON=0 Horse (tan)
+try newchar=c_horse_tan
+ON=0 Pack Horse
+try newchar=c_HORSE_PACK
+ON=0 Llama
+try newchar=c_llama
+ON=0 Pack Llama
+try newchar=c_LLAMA_PACK
+ON=0 Cow (light brown)
+try newchar=c_cow_brown
+ON=0 Cow (black & white)
+try newchar=c_cow_bw
+ON=0 Bull (light brown)
+try newchar=c_bull_brown_lt
+ON=0 Bull (dark brown, spotted)
+try newchar=c_bull_brown_dk
+ON=0 Pig
+try newchar=c_PIG
+ON=0 Sheep (wooly)
+try newchar=c_SHEEP_WOOLLY
+ON=0 Goat
+try newchar=c_GOAT
+ON=0 Cat
+try newchar=c_cat
+ON=0 Dog
+try newchar=c_dog
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_LIV]
+Living Creatures
+ON=0 Corpser
+try newchar=c_corpser
+ON=0 Harpy
+try newchar=c_harpy
+ON=0 Mongbat (subterranean)
+try newchar=c_mongbat
+ON=0 Mongbat (arboreal)
+try newchar=C_M_MONGBAT_ARBOREAL
+ON=0 Ogre
+try newchar=c_OGRE
+ON=0 Ogre Lord
+try newchar=c_m_ogre_lord
+ON=0 Ettin, Lizmen, Orc, Ratmen, Troll
+MENU M_ADDN_ETTIN
+ON=0 Reaper
+try newchar=c_reaper
+ON=0 Slime
+try newchar=c_slime
+ON=0 Giant Scorpion
+try newchar=c_scorpion_giant
+ON=0 Giant Spider
+try newchar=c_spider_giant
+ON=0 Giant Serpent
+try newchar=c_serpent_giant
+ON=0 Giant Rat
+try newchar=c_rat_giant
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_UND]
+Undead Creatures
+ON=0 Spectre
+try newchar=c_SPECTRE
+ON=0 Headless
+try newchar=c_Headless
+ON=0 Liche
+try newchar=c_liche
+ON=0 Liche Lord
+try newchar=c_m_liche_lord
+ON=0 Skeleton
+try newchar=c_skeleton
+ON=0 Skeleton (with axe)
+try newchar=c_skeleton_w_axe
+ON=0 Skeleton (with sword)
+try newchar=c_skeleton_w_sword
+ON=0 Skeletal Knight
+try newchar=c_m_skeleton_knight
+ON=0 Skeletal Mage
+try newchar=c_m_skeleton_mage
+ON=0 Zombie
+try newchar=c_ZOMBIE
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_MYTH]
+Mythical Creatures
+ON=0 Air Elemental
+try newchar=c_elem_AIR
+ON=0 Earth Elemental
+try newchar=c_elem_earth
+ON=0 Fire Elemental
+try newchar=c_elem_fire
+ON=0 Water Elemental
+try newchar=c_elem_water
+ON=0 Wisp
+try newchar=c_WISP
+ON=0 Dragon (red)
+try newchar=c_DRAGON_RED
+ON=0 Dragon (green)
+try newchar=c_DRAGON_GREEN
+ON=0 Drake (red)
+try newchar=c_DRAGON_SMALL_RED
+ON=0 Drake (Black)
+try newchar=c_DRAGON_SMALL_BLACK
+ON=0 Daemon
+try newchar=c_DAEMON
+ON=0 Balron (Elder Daemon)
+try newchar=c_m_balron
+ON=0 Daemon (with sword)
+try newchar=c_DAEMON_W_SWORD
+ON=0 Gargoyle
+try newchar=c_GARGOYLE
+ON=0 Gazer
+try newchar=c_gazer
+ON=0 Elder Gazer
+try newchar=c_m_gazer_elder
+ON=0 Sea Serpent
+try newchar=c_SEA_SERPENT
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_T2A]
+T2A Creatures
+ON=0 Bullfrog
+try newchar=c_bullfrog
+ON=0 Cyclops
+try newchar=c_CYCLOPS
+ON=0 Frost Troll
+try newchar=c_m_frost_troll
+ON=0 Giant Ice Serpent
+try newchar=C_M_ICE_SERPENT
+ON=0 Imp
+try newchar=c_m_imp
+ON=0 Kraken
+try newchar=C_M_KRAKEN
+ON=0 Lava Lizard
+try newchar=c_m_lava_lizard
+ON=0 Mummy
+try newchar=C_M_MUMMY
+ON=0 Nightmare
+try newchar=C_M_NIGHTMARE
+ON=0 Phoenix
+try newchar=C_M_PHOENIX
+ON=0 Stone Gargoyle
+try newchar=c_m_gargoyle_stone
+ON=0 Stone Harpy
+try newchar=c_m_stoneharpy
+ON=0 Giant Toad
+try newchar=c_TOAD_GIANT
+ON=0 Titan
+try newchar=c_TITAN
+ON=0 Wyrm & Wyvern
+MENU M_ADDN_WYRM
+ON=0 Ophidian's & Terathan's
+MENU M_ADDN_OPHID
+ON=0 Ice Creatures & Ostards
+MENU M_ADDN_T2A_ICE
+ON=0 PREVIOUS MENU
+MENU M_ADDN
+
+[MENU M_ADDN_ETTIN]
+Ettin, Lizmen, Orc, Ratmen, Troll
+ON=0 Ettin
+try newchar=c_ettin
+ON=0 Ettin (with axe)
+try newchar=c_ETTIN_W_AXE
+ON=0 Lizardman
+try newchar=c_lizardman
+ON=0 Lizardman (with spear)
+try newchar=c_lizardman_spear
+ON=0 Lizzardman (with mace)
+try newchar=c_lizardman_mace
+ON=0 Orc
+try newchar=c_ORC
+ON=0 Orc (with club)
+try newchar=c_orc_w_club
+ON=0 Orcish Mage
+try newchar=c_m_orc_mage
+ON=0 Orc Captian
+try newchar=c_m_orc_captain
+ON=0 Orc Lord
+try newchar=c_orc_lord
+ON=0 Ratman
+try newchar=c_ratman
+ON=0 Ratman (with warfork)
+try newchar=c_ratman_w_mace
+ON=0 Ratman (with sword)
+try newchar=c_ratman_w_sword
+ON=0 Troll
+try newchar=c_troll
+ON=0 Troll (with mace)
+try newchar=c_troll_w_mace
+ON=0 Troll (with axe)
+try newchar=c_troll_w_axe
+ON=0 PREVIOUS MENU
+MENU M_ADDN_LIV
+
+[MENU M_ADDN_MSHOP]
+Male Shopkeepers
+ON=0 Food
+MENU M_ADDN_MSHOPFOO
+ON=0 Clothing
+MENU M_ADDN_MSHOPCLO
+ON=0 Combat
+MENU M_ADDN_MSHOPCOM
+ON=0 Magery
+MENU M_ADDN_MSHOPMAG
+ON=0 Equipment
+MENU M_ADDN_MSHOPEQ
+ON=0 Other
+MENU M_ADDN_MSHOPO
+ON=0 PREVIOUS MENU
+MENU M_ADDN_MAL
+
+[MENU M_ADDN_MSHOPFOO]
+Male Shopkeepers (food)
+ON=0 Butcher
+try newchar=C_H_BUTCHER
+ON=0 Baker
+try newchar=C_H_BAKER
+ON=0 Farmer
+try newchar=C_H_FARMER
+ON=0 Innkeeper
+try newchar=C_H_INNKEEPER
+ON=0 Cook
+try newchar=C_H_COOK
+ON=0 Waiter
+try newchar=C_H_WAITER
+ON=0 Miller
+try newchar=C_H_MILLER
+ON=0 Beekeeper
+try newchar=C_H_BEEKEEPER
+ON=0 Tavernkeeper
+try newchar=C_H_TAVERNKEEPER
+
+[MENU M_ADDN_MSHOPCLO]
+Male Shopkeepers (cloths)
+ON=0 Cobbler
+try newchar=C_H_COBBLER
+ON=0 Tailor
+try newchar=C_H_TAILOR
+ON=0 Tanner
+try newchar=C_H_TANNER
+ON=0 Weaver
+try newchar=C_H_WEAVER
+ON=0 Fur Trader
+try newchar=C_H_FURTRADER
+
+[MENU M_ADDN_MSHOPCOM]
+Male Shopkeepers (Combat)
+ON=0 Blacksmith
+try newchar=C_H_BLACKSMITH
+ON=0 Weaponsmith (bladed)
+try newchar=C_H_WEAPONSMITH_BLADE
+ON=0 Weaponsmith (blunt)
+try newchar=C_H_WEAPONSMITH_BLUNT
+ON=0 Armourer
+try newchar=C_H_ARMORER
+ON=0 Bowyer
+try newchar=C_H_BOWYER
+
+[MENU M_ADDN_MSHOPMAG]
+Male Shopkeepers (Magery)
+ON=0 Mage
+try newchar=C_H_MAGESHOP
+ON=0 Alchemist
+try newchar=C_H_ALCHEMIST
+ON=0 Herbalist
+try newchar=C_H_HERBALIST
+ON=0 Scribe
+try newchar=C_H_SCRIBE
+
+[MENU M_ADDN_MSHOPEQ]
+Male Shopkeepers (Equip)
+ON=0 Provisioner
+try newchar=C_H_PROVIS
+ON=0 Tinker
+try newchar=C_H_TINKER
+ON=0 Carpenter
+try newchar=C_H_CARPENTER
+ON=0 Architect
+try newchar=C_H_ARCHITECT
+
+[MENU M_ADDN_MSHOPO]
+Male Shopkeepers (Other)
+ON=0 Healer
+try newchar=C_H_HEALER
+ON=0 Jeweler
+try newchar=C_H_JEWELER
+ON=0 MapMaker
+try newchar=C_H_MAPMAKER
+ON=0 Animal Trainer
+try newchar=C_H_ANIMALTRAINER
+
+[MENU M_ADDN_MTOWN]
+Male Town Based
+ON=0 Banker
+try newchar=C_H_BANKER
+ON=0 Minter
+try newchar=C_H_MINTER
+ON=0 Town Crier
+try newchar=C_H_TOWNCRIER
+ON=0 Prisoner
+try newchar=C_H_PRISONER
+ON=0 Thief
+try newchar=C_H_THIEF
+ON=0 Beggar
+try newchar=C_H_BEGGER
+ON=0 Noble
+try newchar=C_H_NOBLE
+ON=0 Mayor
+try newchar=C_H_MAYOR
+ON=0 Gambler
+try newchar=C_H_GAMBLER
+ON=0 Judge
+try newchar=C_H_JUDGE
+ON=0 Artist
+try newchar=C_H_ARTIST
+ON=0 Sculptor
+try newchar=C_H_SCULPTOR
+ON=0 Shipwright
+try newchar=C_H_SHIPWRIGHT
+ON=0 Veterinarian
+try newchar=C_H_VET
+ON=0 Glassblower
+try newchar=C_H_GLASSBLOWER
+
+[MENU M_ADDN_MWILD]
+Male Wilderness & Town
+ON=0 Peasant
+try newchar=C_H_PEASANT
+ON=0 Wandering Healer
+try newchar=C_H_HEALER
+ON=0 Sailor
+try newchar=C_H_SAILOR
+ON=0 Fisherman
+try newchar=C_H_FISHER
+ON=0 Shepherd
+try newchar=C_H_SHEPHERD
+ON=0 Bard
+try newchar=C_H_BARD
+ON=0 Gypsy
+try newchar=C_H_GYPSY
+ON=0 Actor
+try newchar=C_H_ACTOR
+ON=0 Monk
+try newchar=C_H_MONK
+ON=0 Rancher
+try newchar=C_H_RANCHER
+ON=0 Miner
+try newchar=C_H_MINER
+
+[MENU M_ADDN_MFIGHT]
+Male Fighters & Guards
+ON=0 Guard
+try newchar=C_H_GUARD
+ON=0 Jailor
+try newchar=C_H_JAILOR
+ON=0 Mercenary
+try newchar=C_H_MERCENARY
+ON=0 Paladin
+try newchar=C_H_PALADIN
+ON=0 Warrior
+try newchar=C_H_WARRIOR
+ON=0 Ranger
+try newchar=C_H_RANGER
+ON=0 Fighter
+try newchar=C_H_FIGHTER
+ON=0 Weapons Trainer
+try newchar=C_H_WEAPONSTRAINER
+ON=0 Mage
+try newchar=C_H_MAGE
+
+[MENU M_ADDN_MEVIL]
+Male Evil (Player Killers)
+ON=0 Brigand
+try newchar=C_H_BRIGAND
+ON=0 Evil Mage
+try newchar=C_H_EVILMAGE
+ON=0 Pirate
+try newchar=C_H_PIRATE
+
+[MENU M_ADDN_FSHOP]
+Female Shopkeepers
+ON=0 Food
+MENU M_ADDN_FSHOPFOOD
+ON=0 Clothing
+MENU M_ADDN_FSHOPCLOTH
+ON=0 Combat
+MENU M_ADDN_FSHOPCOMB
+ON=0 Magery
+MENU M_ADDN_FSHOPMAG
+ON=0 Equipment
+MENU M_ADDN_FSHOPEQ
+ON=0 Other
+MENU M_ADDN_FSHOPO
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FEM
+
+[MENU M_ADDN_FSHOPFOOD]
+Female Shopkeepers (food)
+ON=0 Butcher
+try newchar=C_H_BUTCHER_F
+ON=0 Baker
+try newchar=C_H_BAKER_F
+ON=0 Farmer
+try newchar=C_H_FARMER_F
+ON=0 Innkeeper
+try newchar=C_H_INNKEEPER_F
+ON=0 Cook
+try newchar=C_H_COOK_F
+ON=0 Waitress
+try newchar=C_H_WAITRESS
+ON=0 Miller
+try newchar=C_H_MILLER_F
+ON=0 Beekeeper
+try newchar=C_H_BEEKEEPER_F
+ON=0 Tavernkeeper
+try newchar=C_H_TAVERNKEEPER_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FSHOPCLOTH]
+Female Shopkeepers (cloths)
+ON=0 Cobbler
+try newchar=C_H_COBBLER_F
+ON=0 Tailor
+try newchar=C_H_TAILOR_F
+ON=0 Tanner
+try newchar=C_H_TANNER_F
+ON=0 Weaver
+try newchar=C_H_WEAVER_F
+ON=0 Fur Trader
+try newchar=C_H_FURTRADER_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FSHOPCOMB]
+Female Shopkeepers (Combat)
+ON=0 Blacksmith
+try newchar=C_H_BLACKSMITH_F
+ON=0 Weaponsmith (bladed)
+try newchar=C_H_WEAPONSMITH_BLADE_F
+ON=0 Weaponsmith (blunt)
+try newchar=C_H_WEAPONSMITH_BLUNT_F
+ON=0 Armorer
+try newchar=C_H_ARMORER_F
+ON=0 Bowyer
+try newchar=C_H_BOWYER_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FSHOPMAG]
+Female Shopkeepers (Magery)
+ON=0 Mage
+try newchar=C_H_MAGESHOP_F
+ON=0 Alchemist
+try newchar=C_H_ALCHEMIST_F
+ON=0 Herbalist
+try newchar=C_H_HERBALIST_F
+ON=0 Scribe
+try newchar=C_H_SCRIBE_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FSHOPEQ]
+Female Shopkeepers (Equip)
+ON=0 Provisioner
+try newchar=C_H_PROVIS_F
+ON=0 Tinker
+try newchar=C_H_TINKER_F
+ON=0 Carpenter
+try newchar=C_H_CARPENTER_F
+ON=0 Architect
+try newchar=C_H_ARCHITECT_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FSHOPO]
+Female Shopkeepers (Other)
+ON=0 Healer
+try newchar=C_H_HEALER_F
+ON=0 Jeweler
+try newchar=C_H_JEWELER_F
+ON=0 MapMaker
+try newchar=C_H_MAPMAKER_F
+ON=0 Animal Trainer
+try newchar=C_H_ANIMALTRAINER_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FTOWN]
+Female Town Based
+ON=0 Banker
+try newchar=C_H_BANKER_F
+ON=0 Minter
+try newchar=C_H_MINTER_F
+ON=0 Town Crier
+try newchar=C_H_TOWNCRIER_F
+ON=0 Prisoner
+try newchar=C_H_PRISONER_F
+ON=0 Thief
+try newchar=C_H_THIEF_F
+ON=0 Beggar
+try newchar=C_H_BEGGER_F
+ON=0 Noble
+try newchar=C_H_NOBLE_F
+ON=0 Mayor
+try newchar=C_H_MAYOR_F
+ON=0 Gambler
+try newchar=C_H_GAMBLER_F
+ON=0 Judge
+try newchar=C_H_JUDGE_F
+ON=0 Artist
+try newchar=C_H_ARTIST_F
+ON=0 Sculptor
+try newchar=C_H_SCULPTOR_F
+ON=0 Shipwright
+try newchar=C_H_SHIPWRIGHT_F
+ON=0 Veterinarian
+try newchar=C_H_VET_F
+ON=0 Glassblower
+try newchar=C_H_GLASSBLOWER_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FWILD]
+Female Wilderness & Town
+ON=0 Peasant
+try newchar=C_H_PEASANT_F
+ON=0 Wandering Healer
+try newchar=C_H_HEAL_WANDER_F
+ON=0 Sailor
+try newchar=C_H_SAILOR_F
+ON=0 Fisherwoman
+try newchar=C_H_FISHER_F
+ON=0 Shepherd
+try newchar=C_H_SHEPHERD_F
+ON=0 Bard
+try newchar=C_H_BARD_F
+ON=0 Gypsy
+try newchar=C_H_GYPSY_F
+ON=0 Actress
+try newchar=C_H_ACTOR_F
+ON=0 Monk
+try newchar=C_H_MONK_F
+ON=0 Rancher
+try newchar=C_H_RANCHER_F
+ON=0 Miner
+try newchar=C_H_MINER_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FFIGHT]
+Female Fighters & Guards
+ON=0 Guard
+try newchar=C_H_GUARD
+ON=0 Jailor
+try newchar=C_H_JAILOR
+ON=0 Mercenary
+try newchar=C_H_MERCENARY
+ON=0 Paladin
+try newchar=C_H_PALADIN
+ON=0 Warrior
+try newchar=C_H_WARRIOR
+ON=0 Ranger
+try newchar=C_H_RANGER
+ON=0 Fighter
+try newchar=C_H_FIGHTER
+ON=0 Weapons Trainer
+try newchar=C_H_WEAPONSTRAINER
+ON=0 Mage
+try newchar=C_H_MAGE
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_FEVIL]
+Female Evil (Player Killers)
+ON=0 Brigand
+try newchar=C_H_BRIGAND_F
+ON=0 Evil Mage
+try newchar=C_H_EVILMAGE_F
+ON=0 Pirate
+try newchar=C_H_PIRATE_F
+ON=0 PREVIOUS MENU
+MENU M_ADDN_FSHOP
+
+[MENU M_ADDN_WILD_FOR]
+Wild Animals (Forest & Jungle)
+ON=0 Brown Bear
+try newchar=c_bear_brown
+ON=0 Black Bear
+try newchar=c_a_black_bear
+ON=0 Grizzly Bear
+try newchar=c_Bear_Grizzly
+ON=0 Cougar
+try newchar=c_a_cougar
+ON=0 Panther
+try newchar=c_panther
+ON=0 Deer (Hind)
+try newchar=c_DOE
+ON=0 Deer (Hart)
+try newchar=c_stag
+ON=0 Mountain Goat
+try newchar=c_a_mountain_goat
+ON=0 Boar
+try newchar=c_pig_big
+ON=0 Rabbit
+try newchar=c_rabbit
+ON=0 Jackrabbit
+try newchar=c_a_jackrabbit
+ON=0 Rat
+try newchar=c_rat
+ON=0 Sewer Rat
+try newchar=c_a_rat_sewer
+ON=0 Grey Wolf
+try newchar=c_a_wolf_gray
+ON=0 Timber Wolf
+try newchar=c_wolf
+ON=0 Gorilla
+try newchar=c_GORILLA
+ON=0 PREVIOUS MENU
+MENU M_ADDN_WILD
+
+[MENU M_ADDN_WILD_SWAMP]
+Wild Animals (Swamp)
+ON=0 Alligator
+try newchar=c_ALLIGATOR
+ON=0 Snake
+try newchar=c_SNAKE
+ON=0 PREVIOUS MENU
+MENU M_ADDN_WILD
+
+[MENU M_ADDN_WILD_NOR]
+Wild Animals (Northern)
+ON=0 Polar Bear
+try newchar=c_BEAR_POLAR
+ON=0 Snow Leopard
+try newchar=C_A_SNOW_LEOPARD
+ON=0 White Wolf
+try newchar=C_A_WOLF_WHITE
+ON=0 PREVIOUS MENU
+MENU M_ADDN_WILD
+
+[MENU M_ADDN_WILD_SEA]
+Wild Animals (Sea)
+ON=i_pet_dolphin Dolphin
+try newchar=c_DOLPHIN
+ON=i_pet_walrus Walrus
+try newchar=c_WALRUS
+ON=i_hand_7 PREVIOUS MENU
+MENU M_ADDN_WILD
+
+[MENU M_ADDN_WILD_FLY]
+Wild Animals (Flying)
+ON=0 Bird
+try newchar=c_BIRD
+ON=0 Tropical Bird
+try newchar=C_BIRD_TROPICAL
+ON=0 Crow
+try newchar=C_BIRD_CROW
+ON=0 Raven
+try newchar=C_BIRD_RAVEN
+ON=0 Magpie
+try newchar=C_BIRD_MAGPIE
+ON=0 Eagle
+try newchar=c_EAGLE
+ON=0 Chicken
+try newchar=c_CHICKEN
+
+[MENU M_ADDN_T2A_ICE]
+T2A Ice Creatures & Ostards
+ON=0 Ice Elemental
+try newchar=c_m_elem_ice
+ON=0 Snow Elemental
+try newchar=c_m_elem_ice
+ON=0 Ice Fiend
+try newchar=C_M_ICEFIEND
+ON=0 Ice Snake
+try newchar=c_ice_snake
+ON=0 Oclock (Desert Ostard)
+try newchar=c_OSTARD_DESERT
+ON=0 Zostrich (Frenzied Ostard)
+try newchar=c_OSTARD_ZOSTRICH
+ON=0 Orn (Forest Ostard)
+try newchar=c_OSTARD_Forest
+ON=0 PREVIOUS MENU
+MENU M_ADDN_T2A
+
+[MENU M_ADDN_WYRM]
+T2A Creatures (Wyrm & Wyvern)
+ON=0 White Wyrm
+try newchar=c_m_dragon_ice
+ON=0 Wyvern
+try newchar=c_m_wyvern
+ON=0 PREVIOUS MENU
+MENU M_ADDN_T2A
+
+[MENU M_ADDI_JEWELRY]
+Valuables (Jewelery)
+ON=i_necklace_metal_beads Beaded Necklace
+try new=i_necklace_metal_beads
+ON=i_necklace_gold Gold Necklace
+try new=i_necklace_gold
+ON=i_necklace_gold_beads Gold Beaded Necklace
+try new=i_necklace_gold_beads
+ON=i_necklace_silver Silver Necklace
+try new=i_necklace_silver
+ON=i_necklace_silver_beads Silver Beaded Necklace
+try new=i_necklace_silver_beads
+ON=i_bracelet_gold Gold Bracelet
+try new=i_bracelet_gold
+ON=i_bracelet_silver Silver Bracelet
+try new=i_bracelet_silver
+ON=i_earrings_gold Gold Earrings
+try new=i_earrings_gold
+ON=i_earrings_silver Silver Earrings
+try new=i_earrings_silver
+ON=i_ring_gold Gold Ring
+try new=i_ring_gold
+ON=i_ring_silver Silver Ring
+try new=i_ring_silver
+ON=i_beads Beads
+try new=i_beads
+
+[MENU M_ADDI_MAGIC]
+Magic Items
+ON=0 Spellbook (empty)
+try new=i_spellbook
+ON=0 Recall Rune (unmarked)
+try new=i_rune_marker
+ON=0 Crystal Ball
+try new=i_crystal_ball
+ON=0 Wands
+MENU M_ADDI_WANDS
+ON=0 Alchemy
+MENU M_ADDI_ALCHEM
+ON=0 Spell Circle 1 Scrolls
+MENU M_ADDI_SCR1
+ON=0 Spell Circle 2 Scrolls
+MENU M_ADDI_SCR2
+ON=0 Spell Circle 3 Scrolls
+MENU M_ADDI_SCR3
+ON=0 Spell Circle 4 Scrolls
+MENU M_ADDI_SCR4
+ON=0 Spell Circle 5 Scrolls
+MENU M_ADDI_SCR5
+ON=0 Spell Circle 6 Scrolls
+MENU M_ADDI_SCR6
+ON=0 Spell Circle 7 Scrolls
+MENU M_ADDI_SCR7
+ON=0 Spell Circle 8 Scrolls
+MENU M_ADDI_SCR8
+ON=0 Reagents
+MENU M_ADDI_REAGS
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_ALCHEM]
+Magic Items (Alchemy)
+ON=0 Mortar
+try new=i_mortar_pestle
+ON=0 Empty Bottle
+try new=i_bottle_empty
+ON=0 Black Potion
+try new=i_bottle_black
+ON=0 Orange Potion
+try new=i_bottle_orange
+ON=0 Blue Potion
+try new=i_bottle_blue
+ON=0 White Potion
+try new=i_bottle_white
+ON=0 Green Potion
+try new=i_bottle_green
+ON=0 Yellow Potion
+try new=i_bottle_yellow
+ON=0 Red Potion
+try new=i_bottle_red
+ON=0 Purple Potion
+try new=i_bottle_purple
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_SCR1]
+Magic Items (Spell Circle 1 Scrolls)
+ON=0 Reactive Armor Scroll
+try new=i_scroll_reactive_armor
+ON=0 Clumsy Scroll
+try new=i_scroll_clumsy
+ON=0 Create Food Scroll
+try new=i_scroll_create_food
+ON=0 Feeblemind Scroll
+try new=i_scroll_feeblemind
+ON=0 Heal Scroll
+try new=i_scroll_heal
+ON=0 Magic Arrow Scroll
+try new=i_scroll_magic_arrow
+ON=0 Night Sight Scroll
+try new=i_scroll_night_sight
+ON=0 Weaken Scroll
+try new=i_scroll_weaken
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_SCR2]
+Magic Items (Spell Circle 2 Scrolls)
+ON=0 Agility Scroll
+try new=i_scroll_agility
+ON=0 Cunning Scroll
+try new=i_scroll_cunning
+ON=0 Cure Scroll
+try new=i_scroll_cure
+ON=0 Harm Scroll
+try new=i_scroll_harm
+ON=0 Magic Trap Scroll
+try new=i_scroll_magic_trap
+ON=0 Magic Untrap Scroll
+try new=i_scroll_magic_untrap
+ON=0 Protection Scroll
+try new=i_scroll_protection
+ON=0 Strength Scroll
+try new=i_scroll_strength
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_SCR3]
+Magic Items (Spell Circle 3 Scrolls)
+ON=0 Bless Scroll
+try new=i_scroll_bless
+ON=0 Fireball Scroll
+try new=i_scroll_fireball
+ON=0 Magic Lock Scroll
+try new=i_scroll_magic_lock
+ON=0 Poison Scroll
+try new=i_scroll_poison
+ON=0 Telekenisis Scroll
+try new=i_scroll_telekinesis
+ON=0 Teleport Scroll
+try new=i_scroll_teleport
+ON=0 UnLock Scroll
+try new=i_scroll_unlock
+ON=0 Wall of Stone Scroll
+try new=i_scroll_wall_of_stone
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_SCR4]
+Magic Items (Spell Circle 4 Scrolls)
+ON=i_scroll_ARCHCURE Archcure Scroll
+try new=i_scroll_ARCHCURE
+ON=0 Archprotection Scroll
+try new=i_scroll_archprotection
+ON=0 Curse Scroll
+try new=i_scroll_curse
+ON=0 Firefield Scroll
+try new=i_scroll_fire_field
+ON=0 Greater Heal Scroll
+try new=i_scroll_greater_heal
+ON=0 Lightning Scroll
+try new=i_scroll_LIGHTNING
+ON=0 Mana Drain Scroll
+try new=i_scroll_mana_drain
+ON=0 Recall Scroll
+try new=i_scroll_recall
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_SCR5]
+Magic Items (Spell Circle 5 Scrolls)
+ON=0 Bladespirit Scroll
+try new=i_scroll_blade_spirits
+ON=0 Dispell Field Scroll
+try new=i_scroll_dispel_field
+ON=0 Ingocnito Scroll
+try new=i_scroll_incognito
+ON=0 Magic Reflection Scroll
+try new=i_scroll_magic_reflection
+ON=0 Mind Blast Scroll
+try new=i_scroll_mind_blast
+ON=0 Paralyze Scroll
+try new=i_scroll_paralyze
+ON=0 Poison Field Scroll
+try new=i_scroll_poison_field
+ON=0 Summon Creature Scroll
+try new=i_scroll_summon_creature
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_SCR6]
+Magic Items (Spell Circle 6 Scrolls)
+ON=0 Dispel Scroll
+try new=i_scroll_dispel
+ON=0 Energy Bolt Scroll
+try new=i_scroll_energy_bolt
+ON=0 Explosion Scroll
+try new=i_scroll_explosion
+ON=0 Invisibility Scroll
+try new=i_scroll_invisibility
+ON=0 Mark Scroll
+try new=i_scroll_mark
+ON=0 Mass Curse Scroll
+try new=i_scroll_mass_curse
+ON=0 Paralyze Field Scroll
+try new=i_scroll_paralyze_field
+ON=0 Reveal Scroll
+try new=i_scroll_reveal
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_SCR7]
+Magic Items (Spell Circle 7 Scrolls)
+ON=0 Chain Lightning Scroll
+try new=i_scroll_chain_lightning
+ON=0 Energy Field Scroll
+try new=i_scroll_energy_field
+ON=0 Flame Strike Scroll
+try new=i_scroll_flamestrike
+ON=0 Gate Travel Scroll
+try new=i_scroll_gate_travel
+ON=0 Mana Vampire Scroll
+try new=i_scroll_mana_vampire
+ON=0 Mass Dispel Scroll
+try new=i_scroll_mass_dispel
+ON=0 Metor Swarm Scroll
+try new=i_scroll_meteor_swarm
+ON=0 Ploymorph Scroll
+try new=i_scroll_polymorph
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_SCR8]
+Magic Items (Spell Circle 8 Scrolls)
+ON=0 Earth Quake Scroll
+try new=i_scroll_earthquake
+ON=0 Energy Vortex Scroll
+try new=i_scroll_energy_vortex
+ON=0 Resurrection Scroll
+try new=i_scroll_resurrection
+ON=0 Air Elemental Scroll
+try new=i_scroll_summon_elem_air
+ON=0 Daemon Scroll
+try new=i_scroll_summon_daemon
+ON=0 Earth Elemental Scroll
+try new=i_scroll_summon_elem_earth
+ON=0 Fire Elemental Scroll
+try new=i_scroll_summon_elem_fire
+ON=0 Water Elemental Scroll
+try new=i_scroll_SUMMON_elem_WATER
+ON=0 PREVIOUS MENU
+MENU M_ADDI_MAGIC
+
+[MENU M_ADDI_REAGS]
+Magic Items (Reagents)
+ON=i_reag_blood_moss Bloodmoss
+try new=i_reag_blood_moss
+ON=i_reag_black_pearl Black Pearl
+try new=i_reag_black_pearl
+ON=i_reag_garlic Garlic
+try new=i_reag_garlic
+ON=i_reag_spider_silk Spider Silk
+try new=i_reag_spider_silk
+ON=i_reag_sulfur_ash Sulfurous Ash
+try new=i_reag_sulfur_ash
+ON=i_reag_ginseng Ginseng
+try new=i_reag_ginseng
+ON=i_reag_mandrake_root Mandrake Root
+try new=i_reag_mandrake_root
+ON=i_reag_nightshade Nightshade
+try new=i_reag_nightshade
+
+[MENU M_ADDI_WANDS]
+Magic Items (Wands)
+ON=i_wand_1 Wand 1
+try new=i_wand_1
+ON=i_wand_2 Wand 2
+try new=i_wand_2
+ON=i_wand_3 Wand 3
+try new=i_wand_3
+ON=i_wand_4 Wand 4
+try new=i_wand_4
+
+[MENU M_ADDI_TOOLS]
+Tools & Trades
+ON=0 Blacksmiths Tools
+MENU M_ADDI_TOOL_SMITH
+ON=0 Carpenters Tools
+MENU M_ADDI_TOOL_CARP
+ON=0 Tailors Tools
+MENU M_ADDI_TOOL_TAIL
+ON=0 Bakers Tools
+MENU M_ADDI_TOOL_COOK
+ON=0 Mages Tools
+MENU M_ADDI_TOOL_MAGE
+ON=0 Alchemists Tools
+MENU M_ADDI_TOOL_ALCH
+ON=0 BeeKeepers Tools
+MENU M_ADDI_TOOL_BEE
+ON=0 Farmers Tools
+MENU M_ADDI_TOOL_FARM
+ON=0 Tinkers Tools
+MENU M_ADDI_TOOL_TINK
+ON=0 TavernKeepers Tools
+MENU M_ADDI_TOOL_TAVR
+ON=0 Fisherman Tools
+MENU M_FISH_TOOLS
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_TOOL_SMITH]
+Tools & Trades (Smithing)
+ON=i_forge Forge
+try new=i_forge
+ON=i_BRAZIER_TALL Brazier tall
+try new=i_BRAZIER_TALL
+ON=i_brazier_small Brazier small
+try new=i_brazier_small
+ON=i_brazier_2 Brazier
+try new=i_brazier_2
+ON=i_anvil Anvil EW
+try new=i_anvil
+ON=i_tongs Tongs
+try new=i_tongs
+ON=i_HAMMER_SMITH Smith Hammer
+try new=i_HAMMER_SMITH
+ON=i_FORGE_BELLOWS_2_part_1_of_3_w Large Forge NS Part1
+try new=i_FORGE_BELLOWS_2_part_1_of_3_w
+ON=i_forge_2_part_2_of_3_w Large Forge NS Part2
+try new=i_forge_2_part_2_of_3_w
+ON=i_forge_2_part_3_of_3_w_4 Large Forge NS Part3
+try new=i_forge_2_part_3_of_3_w_4
+ON=i_forge_2_part_3_of_3_e_4 Large Forge NS Part1
+try new=i_forge_2_part_3_of_3_e_4
+ON=i_forge_2_part_2_of_3_e Large Forge NS Part2
+try new=i_forge_2_part_2_of_3_e
+ON=i_FORGE_BELLOWS_2_part_1_of_3_e Large Forge NS Part3
+try new=i_FORGE_BELLOWS_2_part_1_of_3_e
+ON=i_forge_2_part_3_of_3_n_4 Large Forge EW Part1
+try new=i_forge_2_part_3_of_3_n_4
+ON=i_forge_2_part_2_of_3_n Large Forge EW Part2
+try new=i_forge_2_part_2_of_3_n
+ON=i_FORGE_BELLOWS_2_part_1_of_3_n Large Forge EW Part3
+try new=i_FORGE_BELLOWS_2_part_1_of_3_n
+ON=i_FORGE_BELLOWS_2_part_1_of_3_s Large Forge EW Part1
+try new=i_FORGE_BELLOWS_2_part_1_of_3_s
+ON=i_forge_2_part_2_of_3_s Large Forge EW Part2
+try new=i_forge_2_part_2_of_3_s
+ON=i_forge_2_part_3_of_3_s_4 Large Forge EW Part3
+try new=i_forge_2_part_3_of_3_s_4
+
+[MENU M_ADDI_TOOL_CARP]
+Tools & Trades (Carpenter)
+ON=i_hammer Hammer
+try new=i_hammer
+ON=i_plane_moulding Moulding Plane
+try new=i_plane_moulding
+ON=i_nails Nails
+try new=i_nails
+ON=i_plane_jointing Jointing Plane
+try new=i_plane_jointing
+ON=i_plane_smoothing Smoothing Plane
+try new=i_plane_smoothing
+ON=i_saw Saw
+try new=i_saw
+ON=i_saw_dovetail Dovetail Saw
+try new=i_saw_dovetail
+ON=i_log Logs
+try new=i_log
+
+[MENU M_ADDI_TOOL_TAIL]
+Tools & Trades (Tailor)
+ON=i_spinning_wheel Spinning Wheel
+try new=i_spinning_wheel
+ON=i_loom_upright Upright Loom EW Part1
+try new=i_loom_upright
+ON=i_bench_wood_dark Loom Bench NS
+try new=i_bench_wood_dark
+ON=i_sewing_kit Sewing Kit
+try new=i_sewing_kit
+ON=i_scissors Scissors
+try new=i_scissors
+ON=i_bottle_hair_dye Hair Dye
+try new=i_bottle_hair_dye
+
+[MENU M_ADDI_TOOL_COOK]
+Tools & Trades (Baker)
+ON=i_flour_sifter Flour Sifter
+try new=i_flour_sifter
+ON=i_rolling_pin Rolling Pin
+try new=i_rolling_pin
+ON=i_SPOON_WOOD_SMALL Small Wooden Spoon
+try new=i_SPOON_WOOD_SMALL
+ON=i_SPOON_WOOD_LARGE Large Wooden Spoon
+try new=i_SPOON_WOOD_LARGE
+
+[MENU M_ADDI_TOOL_MAGE]
+Tools & Trades (Mage)
+ON=i_scroll_blank Blank Scroll
+try new=i_scroll_blank
+ON=i_rune_marker Unmarked Recall Rune
+try new=i_rune_marker
+ON=i_reag_blood_moss Reagents
+MENU M_ADDI_REAGS
+ON=i_wand_1 Wands
+MENU M_ADDI_WANDS
+
+[MENU M_ADDI_TOOL_ALCH]
+Tools & Trades (Alchemist)
+ON=i_vial_empty Empty Vial
+try new=i_vial_empty
+ON=i_bottle_empty Empty Bottle
+try new=i_bottle_empty
+ON=i_mortar_pestle Mortar & Pestle
+try new=i_mortar_pestle
+ON=i_reag_blood_moss Reagents
+MENU M_ADDI_REAGS
+
+[MENU M_ADDI_TOOL_BEE]
+Tools & Trades (Beekeeper)
+ON=i_beehive Beehive
+try new=i_beehive
+ON=i_BEE_SWARM Bees
+try new=i_BEE_SWARM
+
+[MENU M_ADDI_TOOL_FARM]
+Tools & Trades (Farmer)
+ON=i_pitchfork Pitchfork
+try new=i_pitchfork
+ON=i_shovel Shovel
+try new=i_shovel
+ON=i_saddle Saddle
+try new=i_saddle
+ON=i_hatchet Hatchet
+try new=i_hatchet
+ON=i_pickaxe Pickaxe
+try new=i_pickaxe
+
+[MENU M_ADDI_TOOL_TINK]
+Tools & Trades (Tinker)
+ON=i_tinker_tools Tinkers Tools
+try new=i_tinker_tools
+ON=i_clock_parts Clock Parts
+try new=i_clock_parts
+ON=i_clock_frame Clock Frame
+try new=i_clock_frame
+ON=i_clock Clock
+try new=i_clock
+ON=i_axel Axle
+try new=i_axel
+ON=i_gears Gears
+try new=i_gears
+ON=i_hinge Hinge
+try new=i_hinge
+ON=i_sextant Sextant
+try new=i_sextant
+ON=i_sextant_parts Sextant Parts
+try new=i_sextant_parts
+ON=i_axel_and_gears Axle with Gears
+try new=i_axel_and_gears
+ON=i_springs Springs
+try new=i_springs
+
+[MENU M_ADDI_TOOL_TAVR]
+Tools & Trades (Tavern)
+ON=i_fork Fork
+try new=i_fork
+ON=i_fork_2 Fork
+try new=i_fork_2
+ON=i_knife Knife
+try new=i_knife
+ON=i_knife_3 Knife
+try new=i_knife_3
+ON=i_silverware Silverware
+try new=i_silverware
+ON=i_silverware_2 Silverware
+try new=i_silverware_2
+ON=i_pitcher_glass Pitcher
+try new=i_pitcher_glass
+ON=i_plate Plate
+try new=i_plate
+ON=i_plate_food Plate of Food
+try new=i_plate_food
+ON=i_goblet_3 Goblet
+try new=i_goblet_3
+ON=i_spoon Spoon
+try new=i_spoon
+ON=i_spoon_2 Spoon
+try new=i_spoon_2
+ON=i_spoon_3 Spoon
+try new=i_spoon_3
+ON=i_mug_ceramic Mug
+try new=i_mug_ceramic
+ON=i_pot_dirty Dirty Pot
+try new=i_pot_dirty
+ON=i_frypan_dirty Dirty Frypan
+try new=i_frypan_dirty
+ON=i_pot Pot
+try new=i_pot
+ON=i_frypan Frypan
+try new=i_frypan
+ON=i_pan Pan
+try new=i_pan
+ON=i_kettle Kettle
+try new=i_kettle
+
+[MENU M_ADDI_RAWMAT]
+Raw Materials
+ON=i_ore_iron Iron Ore
+try new=i_ore_iron
+ON=i_FEATHER Feathers
+try new=i_FEATHER
+ON=i_gem_diamond Gems
+MENU M_ADDI_GEMS
+ON=i_cotton Pile of Cotton
+try new=i_cotton
+ON=i_hide Pile of Hides
+try new=i_hide
+ON=i_garbage Pile of Garbage
+try new=i_garbage
+ON=i_board Board
+try new=i_board
+ON=i_log Log
+try new=i_log
+ON=i_ingot_copper <NAME>
+try new=i_ingot_copper
+ON=i_ingot_gold <NAME>
+try new=i_ingot_gold
+ON=i_ingot_iron <NAME>
+try new=i_ingot_iron
+ON=i_ingot_silver <NAME>
+try new=i_ingot_silver
+
+[MENU M_ADDI_RAWMAT_MISC]
+Scattered Materials
+ON=i_hay_scattered Scattered Hay
+try new=i_hay_scattered
+ON=i_hay_bits_scattered_small Hay Bits
+try new=i_hay_bits_scattered_small
+ON=i_garbage Scattered Garbage
+try new=i_garbage
+
+[MENU M_FISH_TOOLS]
+Tools & Trades (Fisherman)
+ON=i_fishing_pole Fishing Pole
+try new=i_fishing_pole
+ON=i_fishing_net Fishing Net
+try new=i_fishing_net
+ON=i_fishing_net_2 Fishing Net
+try new=i_fishing_net_2
+ON=i_fishing_net_3 Fishing Net
+try new=i_fishing_net_3
+ON=i_fishing_net_4 Fishing Net
+try new=i_fishing_net_4
+ON=i_FISHING_WEIGHT Fishing Weight
+try new=i_FISHING_WEIGHT
+
+[MENU M_ADDI_WEPARM]
+Weapons & Armor
+ON=0 Swords
+MENU M_ADDI_SWORDS
+ON=0 Maces
+MENU M_ADDI_MACES
+ON=0 Axes
+MENU M_ADDI_AXES
+ON=0 Pole Arms
+MENU M_ADDI_POLEARM
+ON=0 Bows
+IF (<SRC.TAG.sip>==1)
+src.raceMessage("Musis pockat na dokonceni probihajici vyroby.")
+ELSE
+MENU M_ADDI_BOWS
+ENDIF
+
+ON=0 Shields
+MENU M_ADDI_SHIELDS
+ON=0 Plate Armor
+MENU M_PLATE_ARMOR
+ON=0 Bone Armor
+MENU M_BONE_ARMOR
+ON=0 Chain Mail Armor
+MENU M_CHAIN_ARMOR
+ON=0 Ring Mail Armor
+MENU M_RING_ARMOR
+ON=0 Studded Leather Armor
+MENU M_STUD_ARMOR
+ON=0 Leather Armor
+MENU M_LEATH_ARMOR
+ON=0 Female Armor
+MENU M_FEM_ARMOR
+ON=0 Helmets
+MENU M_HELMS
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_SWORDS]
+Weapons (Swords)
+ON=i_sword_broad <NAME>
+try new=i_sword_broad
+ON=i_sword_long_b <NAME>
+try new=i_sword_long_b
+ON=i_sword_long <NAME>
+try new=i_sword_long
+ON=i_scimitar <NAME>
+try new=i_scimitar
+ON=i_katana <NAME>
+try new=i_katana
+ON=i_cutlass <NAME>
+try new=i_cutlass
+ON=i_kryss <NAME>
+try new=i_kryss
+ON=i_sword_viking <NAME>
+try new=i_sword_viking
+
+[MENU M_ADDI_MACES]
+Weapons (Maces)
+ON=i_club Club
+try new=i_club
+ON=i_mace Mace
+try new=i_mace
+ON=i_mace_war War Mace
+try new=i_mace_war
+ON=i_hammer_war War Hammer
+try new=i_hammer_war
+ON=i_maul Maul
+try new=i_maul
+ON=i_hammer_pick Hammer Pick
+try new=i_hammer_pick
+
+[MENU M_ADDI_AXES]
+Weapons (Axes)
+ON=i_hatchet Hatchet
+try new=i_hatchet
+ON=i_axe Axe
+try new=i_axe
+ON=i_pickaxe PickAxe
+try new=i_pickaxe
+ON=i_axe_exec Executioner Axe
+try new=i_axe_exec
+ON=i_axe_battle Battle Axe
+try new=i_axe_battle
+ON=i_axe_double Double Axe
+try new=i_axe_double
+ON=i_axe_war War Axe
+try new=i_axe_war
+ON=i_axe_battle_large Large Battle Axe
+try new=i_axe_battle_large
+ON=i_axe_two_hand Two Handed Axe
+try new=i_axe_two_hand
+
+[MENU M_ADDI_POLEARM]
+Weapons (Pole-Arms)
+ON=i_bardiche Bardiche
+try new=i_bardiche
+ON=i_halberd Halberd
+try new=i_halberd
+ON=i_halberd Halberd
+try new=i_halberd
+ON=i_staff_black Black Staff
+try new=i_staff_black
+ON=i_staff_quarter Quarter Staff
+try new=i_staff_quarter
+ON=i_staff_gnarled Gnarled Staff
+try new=i_staff_gnarled
+ON=i_shepherds_crook Shepherds Crook
+try new=i_shepherds_crook
+ON=i_pitchfork Pitchfork
+try new=i_pitchfork
+ON=i_war_fork Warfork
+try new=i_war_fork
+ON=i_spear_short Short Spear
+try new=i_spear_short
+
+[MENU M_ADDI_BOWS]
+Weapons (Bows)
+ON=i_bow Bow
+try new=i_bow
+ON=i_crossbow Crossbow
+try new=i_crossbow
+ON=i_crossbow_heavy Heavy Crossbow
+try new=i_crossbow_heavy
+//ON=i_xbolt Bolts
+//src.tag.sip=1
+//src.newitem i_xbolt_timer
+//src.act.equip
+//try new=i_xbolt
+//ON=i_arrow Arrows
+//src.tag.sip=1
+//src.newitem i_sip_timer
+//src.act.equip
+//try new=i_arrow
+
+
+[ITEMDEF i_sip_timer]
+NAME=Delay Teleport
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+WEIGHT=0.0
+LAYER=layer_special
+
+ON=@Create
+  ATTR=attr_invis|attr_decay
+  MORE1=2
+  MOREP=a_helpdesk
+
+ON=@Equip
+  TIMER=1
+  
+ON=@Timer
+  // Take the effect we would like.
+  if ( <cont> )
+    if ( <more1> )
+      cont.message("<EVAL(<more1>)>") // put countdown above my head.
+      more1=<more1>-1
+      TIMER=1
+      return 1
+    else
+
+      src.tag.sip=0
+
+    endif
+  endif
+  // normal timer fall through is to delete the item
+  remove
+  return 1
+
+
+
+
+[MENU M_ADDI_SHIELDS]
+Weapons (Shields)
+ON=i_shield_round_bronze Bronze Shield
+try new=i_shield_round_bronze
+ON=i_shield_buckler Buckler
+try new=i_shield_buckler
+ON=i_shield_kite_metal Metal Kite Shield
+try new=i_shield_kite_metal
+ON=i_shield_heater Heater Shield
+try new=i_shield_heater
+ON=i_shield_kite_wood Wooden Kite Shield
+try new=i_shield_kite_wood
+ON=i_shield_wood Wooden Shield
+try new=i_shield_wood
+ON=i_shield_round_metal Metal Shield
+try new=i_shield_round_metal
+ON=i_shield_chaos Chaos Shield
+try new=i_shield_chaos
+ON=i_shield_order Order Shield
+try new=i_shield_order
+
+[MENU M_PLATE_ARMOR]
+Armor (Platemail)
+ON=i_platemail_helm Helm
+try new=i_platemail_helm
+ON=i_platemail_gorget Gorget
+try new=i_platemail_gorget
+ON=i_platemail_gloves Gauntlets
+try new=i_platemail_gloves
+ON=i_platemail_arms Arms
+try new=i_platemail_arms
+ON=i_platemail_leggings Legs
+try new=i_platemail_leggings
+ON=i_platemail_chest Breast
+try new=i_platemail_chest
+
+[MENU M_BONE_ARMOR]
+Armor (Bonemail)
+ON=i_bone_helmet Helmet
+try new=i_bone_helmet
+ON=i_bone_gloves Gloves
+try new=i_bone_gloves
+ON=i_bone_arms Arms
+try new=i_bone_arms
+ON=i_bone_leggings Legs
+try new=i_bone_leggings
+ON=i_bone_chest Breast
+try new=i_bone_chest
+
+[MENU M_CHAIN_ARMOR]
+Armor (Chainmail Armor)
+ON=i_chainmail_coif Coif
+try new=i_chainmail_coif
+ON=i_chainmail_leggings Leggings
+try new=i_chainmail_leggings
+ON=i_chainmail_tunic Tunic
+try new=i_chainmail_tunic
+ON=i_chainmail_tunic_decoration Tunic
+try new=i_chainmail_tunic_decoration
+ON=i_chainmail_leggings_decoration Leggings
+try new=i_chainmail_leggings_decoration
+
+[MENU M_RING_ARMOR]
+Armor (Ringmail)
+ON=i_ringmail_gloves Gloves
+try new=i_ringmail_gloves
+ON=i_ringmail_sleeves_decoration Sleeves
+try new=i_ringmail_sleeves_decoration
+ON=i_ringmail_sleeves Sleeves
+try new=i_ringmail_sleeves
+ON=i_ringmail_leggings_decoration Leggings
+try new=i_ringmail_leggings_decoration
+ON=i_ringmail_leggings Leggings
+try new=i_ringmail_leggings
+ON=i_ringmail_tunic_decoration Tunic
+try new=i_ringmail_tunic_decoration
+ON=i_ringmail_tunic Tunic
+try new=i_ringmail_tunic
+
+[MENU M_STUD_ARMOR]
+Armor (Studded Leather)
+ON=i_studded_gorget Gorget
+try new=i_studded_gorget
+ON=i_studded_gloves Gloves
+try new=i_studded_gloves
+ON=i_studded_sleeves Sleeves
+try new=i_studded_sleeves
+ON=i_studded_sleeves_decoration Decorative Sleeves
+try new=i_studded_sleeves_decoration
+ON=i_studded_leggings_decoration Decorative Leggings
+try new=i_studded_leggings_decoration
+ON=i_studded_leggings Leggings
+try new=i_studded_leggings
+ON=i_studded_tunic_decoration Decorative Tunic
+try new=i_studded_tunic_decoration
+ON=i_studded_tunic Tunic
+try new=i_studded_tunic
+
+[MENU M_LEATH_ARMOR]
+Armor (Leather)
+ON=i_leather_gorget Gorget
+try new=i_leather_gorget
+ON=i_leather_gloves Gloves
+try new=i_leather_gloves
+ON=i_leather_sleeves Sleeves
+try new=i_leather_sleeves
+ON=i_leather_leggings Leggings
+try new=i_leather_leggings
+ON=i_leather_leggings_decoration Decorative Leggings
+try new=i_leather_leggings_decoration
+ON=I_LEATHER_TUNIC Tunic
+try new=I_LEATHER_TUNIC
+ON=i_leather_tunic_decoration Decorative Tunic
+try new=i_leather_tunic_decoration
+
+[MENU M_HELMS]
+Armor (Helmets)
+ON=i_helm_closed Close Helm
+try new=i_helm_closed
+ON=i_helm_open Helmet
+try new=i_helm_open
+ON=i_bascinet Bascinet
+try new=i_bascinet
+ON=i_helm_nose Nose Helm
+try new=i_helm_nose
+ON=i_helm_orc Orc Helm
+try new=i_helm_orc
+
+[MENU M_ADDI_WEPARM_MAGIC]
+Magic Weapons & Armor
+ON=0 Ruin
+MENU M_ADDI_WEPARM_RUIN
+ON=0 Might
+MENU M_ADDI_WEPARM_MIGHT
+ON=0 Force
+MENU M_ADDI_WEPARM_FORCE
+ON=0 Power
+MENU M_ADDI_WEPARM_POWER
+ON=0 Vanquishing
+MENU M_ADDI_WEPARM_VANQ
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_WEPARM_RUIN]
+Magic W & A (Ruin)
+ON=i_halberd Halberd of Ruin
+try new=i_HALBERD_RUIN
+ON=i_bardiche Bardiche of Ruin
+try new=i_BARDICHE_RUIN
+ON=i_sword_viking Viking Sword of Ruin
+try new=i_sword_viking_RUIN
+ON=i_crossbow_heavy Heavy Crossbow of Ruin
+try new=i_crossbow_heavy_RUIN
+ON=i_BOW_RUIN Bow of Ruin
+try new=i_BOW_RUIN
+ON=i_pitchfork Pitchfork of Ruin
+try new=i_PITCHFORK_RUIN
+ON=i_KRYSS_RUIN Kryss of Ruin
+try new=i_KRYSS_RUIN
+ON=i_SPEAR_RUIN Spear of Ruin
+try new=i_SPEAR_RUIN
+
+[MENU M_ADDI_WEPARM_MIGHT]
+Magic W & A (Might)
+ON=i_halberd Halberd of Might
+try new=i_HALBERD_MIGHT
+ON=i_bardiche Bardiche of Might
+try new=i_BARDICHE_MIGHT
+ON=i_sword_viking Viking Sword of Ruin
+try new=i_sword_viking_MIGHT
+ON=i_crossbow_heavy Heavy Crossbow of Might
+try new=i_crossbow_heavy_MIGHT
+ON=i_bow Bow of Might
+try new=i_BOW_MIGHT
+ON=i_pitchfork Pitchfork of Might
+try new=i_PITCHFORK_MIGHT
+ON=i_kryss Kryss of Might
+try new=i_KRYSS_MIGHT
+ON=i_spear_short Spear of Might
+try new=i_SPEAR_MIGHT
+
+[MENU M_ADDI_WEPARM_FORCE]
+Magic W & A (Force)
+ON=i_halberd Halberd of Force
+try new=i_HALBERD_FORCE
+ON=i_bardiche Bardiche of Force
+try new=i_BARDICHE_FORCE
+ON=i_sword_viking Viking Sword of Force
+try new=i_sword_viking_FORCE
+ON=i_scimitar Scimitar of Force
+try new=i_SCIMITAR_FORCE
+ON=i_crossbow Crossbow of Force
+try new=i_CROSSBOW_FORCE
+ON=i_crossbow_heavy Heavy Crossbow of Force
+try new=i_crossbow_heavy_FORCE
+ON=i_bow Bow of Force
+try new=i_BOW_FORCE
+ON=i_pitchfork Pitchfork of Force
+try new=i_PITCHFORK_FORCE
+ON=i_kryss Kryss of Force
+try new=i_KRYSS_FORCE
+ON=i_spear Spear of Force
+try new=i_SPEAR_FORCE
+ON=i_spear_short Short Spear of Force
+try new=i_spear_short_FORCE
+
+[MENU M_ADDI_WEPARM_POWER]
+Magic W & A (Power)
+ON=i_halberd Halberd of Power
+try new=i_HALBERD_POWER
+ON=i_bardiche Bardiche of Power
+try new=i_BARDICHE_POWER
+ON=i_sword_viking Viking Sword of Power
+try new=i_sword_viking_POWER
+ON=i_crossbow_heavy Heavy Crossbow of Power
+try new=i_crossbow_heavy_POWER
+ON=i_bow Bow of Power
+try new=i_BOW_POWER
+ON=i_pitchfork Pitchfork of Power
+try new=i_PITCHFORK_POWER
+ON=i_kryss Kryss of Power
+try new=i_KRYSS_POWER
+ON=i_spear Spear of Power
+try new=i_SPEAR_POWER
+ON=i_spear_short Spear of Power
+try new=i_SPEAR_short_POWER
+
+[MENU M_ADDI_WEPARM_VANQ]
+Magic W & A (Vanquishing)
+ON=i_halberd Halberd of Vanquishing
+try new=i_HALBERD_vanq
+ON=i_bardiche Bardiche of Vanquishing
+try new=i_BARDICHE_vanq
+ON=i_scimitar Scimitar of Vanquishing
+try new=i_SCIMITAR_vanq
+ON=i_sword_viking Viking Sword of Vanquishing
+try new=i_SWORD_VIKING_vanq
+ON=i_crossbow Crossbow of Vanquishing
+try new=i_CROSSBOW_vanq
+ON=i_crossbow_heavy Heavy Crossbow of Vanquishing
+try new=i_crossbow_heavy_vanq
+ON=i_bow Bow of Vanquishing
+try new=i_BOW_vanq
+ON=i_pitchfork Pitchfork of Vanquishing
+try new=i_PITCHFORK_vanq
+ON=i_kryss Kryss of Vanquishing
+try new=i_KRYSS_vanq
+ON=i_spear Spear of Vanquishing
+try new=i_SPEAR_vanq
+ON=i_spear_short Spear of Vanquishing
+try new=i_SPEAR_SHORT_vanq
+//ON=i_sword_viking Vanq Daemon Breath
+//try new=i_sword_viking_vanq_daemon_breath
+ON=i_sword_viking Vanqshing and Brimstone
+try new=i_sword_viking_vanq_Brimstone
+ON=i_sword_viking Vanquishing and Electricity
+try new=i_sword_viking_vanq_Electricity
+ON=i_crossbow_heavy Vanquishing Daemon Breath
+try new=i_crossbow_heavy_vanq_Daemon_Breath
+ON=i_bow Vanquishing & Electricity
+try new=i_bow_vanq_Electricity
+ON=i_crossbow_heavy Crossbow of Smite and Electricity
+try new=i_BOW_Smite_Electricity
+
+[MENU M_ADDI_PROV]
+Equipment & Items
+ON=0 Containers
+MENU M_ADDI_PROV_CONT
+ON=0 Furniture
+MENU M_ADDI_PROV_FURN
+ON=0 Ruined Furniture
+MENU M_ADDI_PROV_FURN_RUIN
+ON=0 Decorations
+MENU M_ADDI_PROV_DECO
+ON=0 Wall Hangings
+MENU M_ADDI_PROV_TAPEST
+ON=0 Books
+MENU M_ADDI_PROV_BOOK
+ON=0 Keys
+MENU M_ADDI_PROV_KEY
+ON=0 Light Sources
+MENU M_ADDI_PROV_LIGHT
+ON=0 Lamp Posts & Gates
+MENU M_ADDI_PROV_POST
+ON=0 Training Equipment
+MENU M_ADDI_PROV_TRAIN
+ON=0 Outdoor & Camp Items
+MENU M_ADDI_PROV_CAMP
+ON=0 Symbols
+MENU M_ADDI_PROV_SYMBOL
+ON=0 Bulletin Boards & Trophies
+MENU M_ADDI_PROV_BULLETIN
+ON=0 Gravestones
+MENU M_ADDI_PROV_GRAVE
+ON=0 Gravestones 2
+MENU M_ADDI_PROV_GRAVE_2
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_PROV_CONT]
+Equip & Items (Containers)
+ON=i_backpack Backpack
+try new=i_backpack
+ON=i_bag Leather Bag
+try new=i_bag
+ON=i_pouch Pouch
+try new=i_pouch
+ON=i_basket_square Picnic Basket
+try new=i_basket_square
+ON=i_barrel_open Barrel
+try new=i_barrel_open
+ON=i_TUB_WATER Water Tub
+try new=i_TUB_WATER
+ON=i_tub_empty Empty Tub
+try new=i_tub_empty
+ON=i_keg_small Wooden Keg
+try new=i_keg_small
+ON=i_crate_small Wooden Crate
+try new=i_crate_small
+ON=i_crate_md Medium Wooden Crate
+try new=i_crate_md
+ON=i_crate_lg Large Wooden Crate
+try new=i_crate_lg
+ON=i_Box_Wood Wooden Box
+try new=i_Box_Wood
+ON=i_chest_wooden_brass Wooden Chest
+try new=i_chest_wooden_brass
+ON=i_chest_metal Silver Chest
+try new=i_chest_metal
+ON=i_chest_metal_brass Fancy Chest
+try new=i_chest_metal_brass
+ON=i_box_brass Strong Box
+try new=i_box_brass
+
+[MENU M_ADDI_PROV_FURN]
+Equip & Items (Furniture)
+ON=0 Dressers
+MENU M_ADDI_PROV_DRESSER
+ON=0 Twin Beds
+MENU M_ADDI_PROV_TWIN
+ON=0 Fancy Beds
+MENU M_ADDI_PROV_FBED
+ON=0 Tables
+MENU M_ADDI_PROV_TABLE
+ON=0 Chairs
+MENU M_ADDI_PROV_CHAIR
+ON=0 Benches & Stools
+MENU M_ADDI_PROV_BENCH
+ON=0 Benches & Alters
+MENU M_ADDI_PROV_ALTER
+ON=0 Bookcases
+MENU M_ADDI_PROV_BOOKCASE
+ON=0 Display Case Rails
+MENU M_ADDI_PROV_RAILS
+ON=0 Display Cases
+MENU M_ADDI_PROV_CASES
+ON=0 Misc
+MENU M_ADDI_PROV_COUNTER
+
+[MENU M_ADDI_PROV_DRESSER]
+Equip (Dressers)
+ON=i_dresser Dresser
+try new=i_dresser
+ON=i_bureau Chest of Drawers
+try new=i_bureau
+ON=i_bureau_2 Dark Chest of Drawers
+try new=i_bureau_2
+ON=i_armoir_lt Wood Armoire
+try new=i_armoir_lt
+ON=i_armoir_dk Dark Wood Armoire
+try new=i_armoir_dk
+
+[MENU M_ADDI_PROV_TWIN]
+Equip (Twin Beds)
+ON=i_bed_1 Brown Twin Bed
+try new=i_bed_1
+ON=i_bed_6 Brown Twin Bed
+try new=i_bed_6
+ON=i_bed_2 Gray Twin Bed
+try new=i_bed_2
+ON=i_bed_5 Gray Twin Bed
+try new=i_bed_5
+ON=i_bed_3 White Twin Bed
+try new=i_bed_3
+ON=i_bed_4 White Twin Bed
+try new=i_bed_4
+ON=i_bed_7 White Twin Bed
+try new=i_bed_7
+ON=i_bed_8 White Twin Bed
+try new=i_bed_8
+ON=i_bed_9 White Twin Bed
+try new=i_bed_9
+ON=i_bed_10 White Twin Bed
+try new=i_bed_10
+ON=i_bed_11 White Twin Bed
+try new=i_bed_11
+
+[MENU M_ADDI_PROV_FBED]
+Equip (Fancy Beds)
+ON=i_bed_12 Fancy Double
+try new=i_bed_12
+ON=i_bed_13 Fancy Double
+try new=i_bed_13
+ON=i_bed_14 Fancy Double
+try new=i_bed_14
+ON=i_bed_15 Fancy Double
+try new=i_bed_15
+ON=i_bed_16 Fancy Double
+try new=i_bed_16
+ON=i_bed_17 Fancy Double
+try new=i_bed_17
+ON=i_bed_18 Fancy Double
+try new=i_bed_18
+ON=i_bed_19 Fancy Double
+try new=i_bed_19
+ON=i_bed_20 Fancy Bed
+try new=i_bed_20
+ON=i_bed_21 Fancy Bed
+try new=i_bed_21
+ON=i_bed_22 Fancy Bed
+try new=i_bed_22
+ON=i_bed_23 Fancy Bed
+try new=i_bed_23
+ON=i_bed_24 Fancy Bed
+try new=i_bed_24
+ON=i_bed_25 Fancy Bed
+try new=i_bed_25
+ON=i_bed_26 Fancy Bed
+try new=i_bed_26
+ON=i_bed_27 Fancy Bed
+try new=i_bed_27
+ON=i_bed_28 Fancy Bed
+try new=i_bed_28
+ON=i_bed_29 Fancy Bed
+try new=i_bed_29
+ON=i_bed_30 Bed
+try new=i_bed_30
+
+[MENU M_ADDI_PROV_TABLE]
+Equip (Tables)
+ON=i_TABLE_NIGHTSTAND Nightstand
+try new=i_TABLE_NIGHTSTAND
+ON=i_table_writing Writing Table
+try new=i_table_writing
+// try new=the missing table entries !!!!
+ON=i_TABLE_WOOD_SMOOTH_NARROW_END Smooth Wood Table End
+try new=i_TABLE_WOOD_SMOOTH_NARROW_END
+ON=i_TABLE_WOOD_ROUGH_SMALL Rough Wood Table
+try new=i_TABLE_WOOD_ROUGH_SMALL
+ON=i_TABLE_WOOD_ROUGH_BOARD Table
+try new=i_TABLE_WOOD_ROUGH_BOARD
+
+[MENU M_ADDI_PROV_CHAIR]
+Equip (Chairs)
+ON=i_CHAIR_WOOD_ROUGH_DARK Chair
+try new=i_CHAIR_WOOD_ROUGH_DARK
+ON=i_chair_wood_fancy_cushion Chair
+try new=i_chair_wood_fancy_cushion
+ON=i_chair_wood_cushion Chair
+try new=i_chair_wood_cushion
+ON=i_CHAIR_WOOD Chair
+try new=i_CHAIR_WOOD
+ON=i_CHAIR_WOOD_BAMBOO Chair
+try new=i_CHAIR_WOOD_BAMBOO
+ON=i_chair_stone Stone Throne
+try new=i_chair_stone
+ON=i_chair_throne Throne
+try new=i_chair_throne
+ON=i_chair_throne_lb Lord British's Throne
+try new=i_chair_throne_lb
+
+[MENU M_ADDI_PROV_BENCH]
+Equip (Benches & Stools)
+ON=i_chair_stool_board_rough Foot Stool
+try new=i_chair_stool_board_rough
+ON=i_chair_stool_bar Bar Stool
+try new=i_chair_stool_bar
+ON=i_chair_stool Bar Stool
+try new=i_chair_stool
+ON=i_chair_stool_bamboo Bamboo Stool
+try new=i_chair_stool_bamboo
+ON=i_bench_board_rough_end Bench
+try new=i_bench_board_rough_end
+ON=i_bench_WOOD_SMOOTH_END Bench
+try new=i_bench_WOOD_SMOOTH_END
+ON=i_BENCH_MARBLE Bench
+try new=i_BENCH_MARBLE
+ON=i_BENCH_SANDSTONE Bench
+try new=i_BENCH_SANDSTONE
+ON=i_bench_wood_dark Bench
+try new=i_bench_wood_dark
+ON=i_CHAIR_WOOD_ROUGH_DARK Bench
+try new=i_CHAIR_WOOD_ROUGH_DARK
+ON=i_bench_WOOD_HIGHBACK Bench
+try new=i_bench_WOOD_HIGHBACK
+ON=i_bench_stone_1 Bench
+try new=i_bench_stone_1
+ON=i_bench_stone_2 Bench
+try new=i_bench_stone_2
+
+[MENU M_ADDI_PROV_ALTER]
+Equip (Benches & Alters)
+ON=i_ALTAR_STONE Alter
+try new=i_ALTAR_STONE
+ON=i_bench_WOOD_HIGHBACK Bench
+try new=i_bench_WOOD_HIGHBACK
+ON=i_bench_woodworker_end Workers Bench
+try new=i_bench_woodworker_end
+ON=i_bench_cooper Coopers Bench
+try new=i_bench_cooper
+ON=i_bench_sandstone_end Bench
+try new=i_bench_sandstone_end
+
+[MENU M_ADDI_PROV_BOOKCASE]
+Equip (Bookcases)
+ON=i_BOOKCASE_FULL Bookcase with Books
+try new=i_BOOKCASE_FULL
+ON=i_bookcase Bookcase
+try new=i_bookcase
+
+[MENU M_ADDI_PROV_RAILS]
+Equip (Display Case Rails)
+ON=i_DISPLAYCASE_RAIL_CUSTOM_EDGE Custom Case Rail
+try new=i_DISPLAYCASE_RAIL_CUSTOM_EDGE
+ON=i_DISPLAYCASE_RAIL_CUSTOM_CORNER Custom Case Rail Corner
+try new=i_DISPLAYCASE_RAIL_CUSTOM_CORNER
+ON=i_DISPLAYCASE_RAIL_LONG_END Long Display Rail End
+try new=i_DISPLAYCASE_RAIL_LONG_END
+ON=i_DISPLAYCASE_RAIL_LONG_CENTER Long Display Rail Center
+try new=i_DISPLAYCASE_RAIL_LONG_CENTER
+ON=i_DISPLAYCASE_1_RAIL Display Case 1 Rail
+try new=i_DISPLAYCASE_1_RAIL
+
+[MENU M_ADDI_PROV_CASES]
+Equip (Display Cases)
+ON=i_DISPLAYCASE_BASE_LONG_END Long Display Base, End
+try new=i_DISPLAYCASE_BASE_LONG_END
+ON=i_DISPLAYCASE_BASE_LONG_CENTER Long Display Base, Center
+try new=i_DISPLAYCASE_BASE_LONG_CENTER
+ON=i_DISPLAYCASE_1_BASE Display 1 Base
+try new=i_DISPLAYCASE_1_BASE
+ON=i_DISPLAYCASE_2_BASE Display 2 Base (no rails)
+try new=i_DISPLAYCASE_2_BASE
+ON=i_DISPLAYCASE_BASE_CUSTOM_BLOCK Custom Case Base, Block 
+try new=i_DISPLAYCASE_BASE_CUSTOM_BLOCK
+ON=i_DISPLAYCASE_BASE_CUSTOM_CORNER Custom Case Base, Corner
+try new=i_DISPLAYCASE_BASE_CUSTOM_CORNER
+ON=i_DISPLAYCASE_BASE_CUSTOM_EDGE Custom Case Base, Edge
+try new=i_DISPLAYCASE_BASE_CUSTOM_EDGE
+
+[MENU M_ADDI_PROV_COUNTER]
+Equip (Misc)
+ON=0b3d Counter
+try new=0b3d
+ON=0b3e Counter
+try new=0b3e
+ON=0b3f Counter
+try new=0b3f
+ON=0b40 Counter
+try new=0b40
+ON=i_trough_water Water Trough
+try new=i_trough_water
+
+[MENU M_ADDI_PROV_FURN_RUIN]
+Equip (Ruined Furniture)
+ON=i_CHAIR_WOOD_BAMBOO_BROKEN Chair
+try new=i_CHAIR_WOOD_BAMBOO_BROKEN
+ON=0c12 Armoire
+try new=0c12
+ON=0c13 Armoire
+try new=0c13
+ON=0c14 Bookcase
+try new=0c14
+ON=0c15 Bookcase
+try new=0c15
+ON=i_chair_covered Covered Chair
+try new=i_chair_covered
+ON=i_CHAIR_WOOD_BAMBOO_BROKEN_NOSEAT Bamboo Chair
+try new=i_CHAIR_WOOD_BAMBOO_BROKEN_NOSEAT
+ON=i_chair_wood_fancy_cushion_broken Chair
+try new=i_chair_wood_fancy_cushion_broken
+ON=0c20 Dresser
+try new=0c20
+ON=0c21 Dresser
+try new=0c21
+ON=0c22 Dresser
+try new=0c22
+ON=0c23 Dresser
+try new=0c23
+ON=0c24 Furniture
+try new=0c24
+ON=0c25 Furniture
+try new=0c25
+ON=i_BED_RUINED Bed
+try new=i_BED_RUINED
+ON=i_BED_RUINED_2 Bed
+try new=i_BED_RUINED_2
+ON=i_BED_RUINED_3 Bed
+try new=i_BED_RUINED_3
+ON=i_BED_RUINED_4 Bed
+try new=i_BED_RUINED_4
+ON=i_BED_RUINED_5 Bed
+try new=i_BED_RUINED_5
+ON=i_BED_RUINED_6 Bed
+try new=i_BED_RUINED_6
+
+[MENU M_ADDI_PROV_TAPEST]
+Items (Wall Hangings)
+ON=i_PAINTING_RUINED Ruined Painting
+try new=i_PAINTING_RUINED
+ON=i_portrait_1 Painting
+try new=i_portrait_1
+ON=i_portrait_big Painting
+try new=i_portrait_big
+ON=i_portrait_2 Painting
+try new=i_portrait_2
+ON=0ea2 Painting
+try new=0ea2
+ON=i_portrait_3 Painting
+try new=i_portrait_3
+ON=0ea4 Painting
+try new=0ea4
+ON=i_portrait_4 Painting
+try new=i_portrait_4
+ON=i_portrait_4 Painting
+try new=i_portrait_4
+ON=i_portrait_5 Painting
+try new=i_portrait_5
+ON=i_portrait_6 Painting
+try new=i_portrait_6
+ON=i_tapestry Tapestry
+try new=i_tapestry
+ON=0eab Tapestry
+try new=0eab
+ON=i_tapestry_2 Tapestry
+try new=i_tapestry_2
+ON=0ead Tapestry
+try new=0ead
+ON=i_tapestry_3 Tapestry
+try new=i_tapestry_3
+ON=0eaf Tapestry
+try new=0eaf
+ON=i_dartboard Dartboard
+try new=i_dartboard
+ON=i_dartboard_axe Dartboard
+try new=i_dartboard_axe
+ON=i_dartboard_knives Dartboard
+try new=i_dartboard_knives
+
+[MENU M_ADDI_PROV_BOOK]
+Items (Books)
+ON=i_BOOK_DAMAGED Damaged Books
+try new=i_BOOK_DAMAGED
+
+ON=i_spellbook Empty Spellbook
+try new=i_spellbook
+
+ON=i_book_lg Book
+try new=i_book_lg
+ON=i_BOOK_LG_PUB Book
+try new=i_BOOK_LG_PUB
+
+ON=i_book_sm Book
+try new=i_book_sm
+ON=i_book_sm_pub Book
+try new=i_book_sm_pub
+
+ON=i_book_open Open Book
+try new=i_book_open
+ON=i_BOOK_OPEN_3_red Stack of Books
+try new=i_BOOK_OPEN_3_red
+ON=i_BOOK_OPEN_two_green Stack of Books
+try new=i_BOOK_OPEN_two_green
+ON=i_book_sm_open Open Book
+try new=i_book_sm_open
+ON=i_book_lg_open Open Book
+try new=i_book_lg_open
+ON=i_BOOK_OPEN_red Open Book
+try new=i_BOOK_OPEN_red
+ON=i_BOOK_OPEN_two_brown Open Books
+try new=i_BOOK_OPEN_two_brown
+ON=i_BOOK_OPEN_two_red Open Books
+try new=i_BOOK_OPEN_two_red
+ON=i_BOOK_OPEN_two_blue Open Books
+try new=i_BOOK_OPEN_two_blue
+ON=i_book_of_truth Book of Truth
+try new=i_book_of_truth
+
+[MENU M_ADDI_PROV_KEY]
+Items (Keys)
+ON=i_key_copper Copper Key
+try new=i_key_copper
+ON=i_key_gold Gold Key
+try new=i_key_gold
+ON=i_key_iron Iron Key
+try new=i_key_iron
+ON=i_key_magic Magic Key
+try new=i_key_magic
+ON=i_key_rusty Rusty Iron Key
+try new=i_key_rusty
+ON=i_key_ring Key Ring
+try new=i_key_ring
+
+[MENU M_ADDI_PROV_LIGHT]
+Items (Light Sources)
+ON=i_virtstone_8 Light Source (invisible)
+try new=i_light_source
+ON=i_sconce Sconce Candle
+try new=i_sconce
+ON=i_sconce2 Sconce Candle
+try new=i_sconce2
+ON=i_candle_thin Candle
+try new=i_candle_thin
+ON=i_candle Candle
+try new=i_candle
+ON=i_candle_short Candle
+try new=i_candle_short
+ON=i_candle_lg Candle
+try new=i_candle_lg
+ON=i_candleabra2 Candelabra
+try new=i_candleabra2
+ON=i_candleabra Candelabra
+try new=i_candleabra
+ON=i_skull_candle Skull Candle
+try new=i_skull_candle
+ON=i_torch_wall Wall Torch
+try new=i_torch_wall
+ON=i_torch_wall2 Wall Torch
+try new=i_torch_wall2
+ON=i_lantern Lantern
+try new=i_lantern
+
+[MENU M_ADDI_PROV_POST]
+Items (Lamp Posts & Gates)
+ON=0b20 Lamp Post
+try new=0b20
+ON=0b21 Lamp Post
+try new=0b21
+ON=0b22 Lamp Post
+try new=0b22
+ON=0b23 Lamp Post
+try new=0b23
+ON=0b24 Lamp Post
+try new=0b24
+ON=0b25 Lamp Post
+try new=0b25
+ON=i_moongate_red Red Moongate
+try new=i_moongate_red
+ON=i_moongate_blue Blue Moongate
+try new=i_moongate_blue
+ON=i_moongate_black Black Moongate
+try new=i_moongate_black
+ON=i_moongate_gray Black Moongate
+try new=i_moongate_gray
+
+[MENU M_ADDI_PROV_TRAIN]
+Equip (Training Equip)
+ON=i_training_dummy Training Dummy
+try new=i_training_dummy
+ON=i_pickpocket_dip Pickpocket Dip
+try new=i_pickpocket_dip
+ON=i_archery_butte Archery Butte
+try new=i_archery_butte
+ON=i_archery_butte2 Archery Butte
+try new=i_archery_butte2
+
+[MENU M_ADDI_PROV_CAMP]
+Items (Outdoor & Camp)
+ON=i_GRUESOMESTANDARD Gruesome Standard
+try new=i_GRUESOMESTANDARD
+ON=i_GRUESOMESTANDARD_2 Gruesome Standard
+try new=i_GRUESOMESTANDARD_2
+ON=i_campfire Campfire
+try new=i_campfire
+ON=i_ember_lit Embers
+try new=i_ember_lit
+ON=i_kindling Kindling
+try new=i_kindling
+ON=i_ember Burned Wood
+try new=i_ember
+ON=i_bedroll Bedroll
+try new=i_bedroll
+ON=0a56 Bedroll
+try new=0a56
+ON=i_bedroll_2 Bedroll
+try new=i_bedroll_2
+ON=0a58 Bedroll
+try new=0a58
+ON=0a59 Bedroll
+try new=0a59
+ON=i_hammock Hammock
+try new=i_hammock
+ON=011f1 Hammock
+try new=011f1
+ON=011f2 Hammock
+try new=011f2
+ON=011f3 Hammock
+try new=011f3
+ON=i_cauldron Cauldron
+try new=i_cauldron
+ON=i_kettle Kettle
+try new=i_kettle
+ON=i_CARCASS_BEEF Beef Carcass
+try new=i_CARCASS_BEEF
+ON=i_CARCASS_OTHER Sheep Carcass
+try new=i_CARCASS_OTHER
+ON=i_CHICKEN_SPITTED Spitted Chicken
+try new=i_CHICKEN_SPITTED
+ON=i_RABBIT_SPITTED Spitted Rabbit
+try new=i_RABBIT_SPITTED
+ON=i_spit Spit
+try new=i_spit
+ON=i_CHICKEN_SPITTED_2 Spitted Chicken
+try new=i_CHICKEN_SPITTED_2
+ON=i_RABBIT_SPITTED_2 Spitted Rabbit
+try new=i_RABBIT_SPITTED_2
+ON=i_spit_2 Spit
+try new=i_spit_2
+
+[MENU M_ADDI_PROV_SYMBOL]
+Items (Symbols)
+ON=i_ankh Ankh
+try new=i_ankh
+ON=03 Ankh
+try new=03
+ON=04 Ankh
+try new=04
+ON=05 Ankh
+try new=05
+ON=i_ankh_sacrifice Ankh of Sacrifice
+try new=i_ankh_sacrifice
+ON=i_ankh_sacrifice Ankh of Sacrifice
+try new=i_ankh_sacrifice
+ON=i_ankh_sacrifice_2 Ankh of Sacrifice
+try new=i_ankh_sacrifice_2
+
+[MENU M_ADDI_PROV_BULLETIN]
+Items (Bulletins & Trophy)
+ON=i_bulletin_board Bulletin Board
+try new=i_bulletin_board
+ON=i_bulletin_board_2 Bulletin Board
+try new=i_bulletin_board_2
+ON=i_trophy_bearhead Bear Trophy
+try new=i_trophy_bearhead
+ON=i_trophy_deerhead Deer Trophy
+try new=i_trophy_deerhead
+ON=i_trophy_fish Fish Trophy
+try new=i_trophy_fish
+ON=i_trophy_gorillahead Gorilla Trophy
+try new=i_trophy_gorillahead
+ON=i_trophy_orchead Orc Trophy
+try new=i_trophy_orchead
+ON=i_trophy_polarbearhead Polar Trophy
+try new=i_trophy_polarbearhead
+ON=i_trophy_trollhead Troll Trophy
+try new=i_trophy_trollhead
+
+[MENU M_ADDI_PROV_GRAVE]
+Items (Gravestones)
+ON=i_grave_stone Gravestone
+try new=i_grave_stone
+ON=0ed5 Gravestone
+try new=0ed5
+ON=0ed6 Gravestone
+try new=0ed6
+ON=i_grave_stone_2 Gravestone
+try new=i_grave_stone_2
+ON=0ed8 Gravestone
+try new=0ed8
+ON=i_grave_stone_3 Gravestone
+try new=i_grave_stone_3
+ON=0ed8 Gravestone
+try new=0ed8
+ON=i_grave_stone_3 Gravestone
+try new=i_grave_stone_3
+ON=0eda Gravestone
+try new=0eda
+ON=i_grave_stone_4 Gravestone
+try new=i_grave_stone_4
+ON=0edc Gravestone
+try new=0edc
+ON=0ede Gravestone
+try new=0ede
+ON=i_gravestone Gravestone
+try new=i_gravestone
+
+[MENU M_ADDI_PROV_GRAVE_2]
+Items (Gravestones)
+ON=01166 Gravestone
+try new=01166
+ON=i_gravestone_2 Gravestone
+try new=i_gravestone_2
+ON=01168 Gravestone
+try new=01168
+ON=i_gravestone_3 Gravestone
+try new=i_gravestone_3
+ON=0116a Gravestone
+try new=0116a
+ON=i_gravestone_4 Gravestone
+try new=i_gravestone_4
+ON=0116c Gravestone
+try new=0116c
+ON=i_gravestone_5 Gravestone
+try new=i_gravestone_5
+ON=0116e Gravestone
+try new=0116e
+ON=i_gravestone_6 Gravestone
+try new=i_gravestone_6
+ON=01170 Gravestone
+try new=01170
+ON=i_gravestone_7 Gravestone
+try new=i_gravestone_7
+ON=01172 Gravestone
+try new=01172
+ON=i_gravestone_8 Gravestone
+try new=i_gravestone_8
+ON=01174 Gravestone
+try new=01174
+ON=i_gravestone_9 Gravestone
+try new=i_gravestone_9
+ON=01176 Gravestone
+try new=01176
+ON=i_gravestone_10 Gravestone
+try new=i_gravestone_10
+ON=01178 Gravestone
+try new=01178
+ON=i_gravestone_11 Gravestone
+try new=i_gravestone_11
+ON=0117a Gravestone
+try new=0117a
+ON=i_gravestone_12 Gravestone
+try new=i_gravestone_12
+ON=0117c Gravestone
+try new=0117c
+ON=i_gravestone_13 Gravestone
+try new=i_gravestone_13
+ON=0117e Gravestone
+try new=0117e
+ON=i_gravestone_14 Gravestone
+try new=i_gravestone_14
+ON=01180 Gravestone
+try new=01180
+ON=i_gravestone_15 Gravestone
+try new=i_gravestone_15
+ON=i_gravestone_16 Gravestone
+try new=i_gravestone_16
+ON=i_gravestone_17 Gravestone
+try new=i_gravestone_17
+ON=i_gravestone_18 Gravestone
+try new=i_gravestone_18
+
+[MENU M_ADDI_CLOTHING]
+Clothing
+ON=0 Masks
+MENU M_ADDI_MASKS
+ON=0 Hats
+MENU M_ADDI_HATS
+ON=0 Footware
+MENU M_ADDI_SHOES
+ON=0 Shirts & Pants
+MENU M_ADDI_SHIRTS
+ON=0 Dresses
+MENU M_ADDI_DRESS
+ON=0 Other Outfits
+MENU M_ADDI_OUTFITS
+ON=0 Clothing Accessories
+MENU M_ADDI_ACCESSOR
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_SHOES]
+Clothing (Footware)
+ON=i_boots_calf Calfboots
+try new=i_boots_calf
+ON=i_sandals Sandals
+try new=i_sandals
+ON=i_shoes_plain Shoes
+try new=i_shoes_plain
+ON=i_boots_thigh Thigh Boots
+try new=i_boots_thigh
+
+[MENU M_ADDI_SHIRTS]
+Clothing (Shirts & Pants)
+ON=i_shirt_plain Plain Shirt
+try new=i_shirt_plain
+ON=i_shirt_fancy Fancy Shirt
+try new=i_shirt_fancy
+ON=i_doublet Doublet
+try new=i_doublet
+ON=i_pants_short Short Pants
+try new=i_pants_short
+ON=i_pants_long Long Pants
+try new=i_pants_long
+
+[MENU M_ADDI_DRESS]
+Clothing (Dresses)
+ON=i_dress_full Fancy Dress
+try new=i_dress_full
+ON=i_dress_plain Plain Dress
+try new=i_dress_plain
+ON=i_skirt_long Long Skirt
+try new=i_skirt_long
+
+[MENU M_ADDI_OUTFITS]
+Clothing (Other Outfits)
+ON=i_robe Full Robe
+try new=i_robe
+ON=i_jester_suit Jesters Suit
+try new=i_jester_suit
+ON=i_tunic Tunic
+try new=i_tunic
+ON=i_surcoat Surcoat
+try new=i_surcoat
+ON=i_kilt Kilt
+try new=i_kilt
+
+[MENU M_ADDI_ACCESSOR]
+Clothing (Accessories)
+ON=i_cape Cloak
+try new=i_cape
+ON=i_sash Sash
+try new=i_sash
+ON=i_apron_half Half Apron
+try new=i_apron_half
+ON=i_apron_full Full Apron
+try new=i_apron_full
+
+[MENU M_ADDI_SIGNS]
+Banners & Signs
+ON=0 Banners
+MENU M_ADDI_SIGN_BANNER
+ON=0 Shop Signs A-I
+MENU M_ADDI_SIGN_SHOP_AI
+ON=0 Shop Signs J-Z
+MENU M_ADDI_SIGN_SHOP_JZ
+ON=0 Guild Signs A-I
+MENU M_ADDI_SIGN_GUILD_AI
+ON=0 Guild Signs J-Z
+MENU M_ADDI_SIGN_GUILD_JZ
+ON=0 Sign Posts
+MENU M_ADDI_SIGN_POSTS
+ON=0 Road Signs
+MENU M_ADDI_SIGN_ROAD
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_SIGN_BANNER]
+Banners
+ON=i_banner_hanger_ne Banner Hanger
+try new=i_banner_hanger_ne
+ON=i_BANNER_TATTERED Tattered Banner
+try new=i_BANNER_TATTERED
+ON=0427 Tattered Banner
+try new=0427
+ON=042a Tattered Banner
+try new=042a
+ON=042b Tattered Banner
+try new=042b
+ON=042c Tattered Banner
+try new=042c
+ON=042d Tattered Banner
+try new=042d
+ON=042e Tattered Banner
+try new=042e
+ON=042f Tattered Banner
+try new=042f
+ON=i_banner_1_part_1 Banner
+try new=i_banner_1_part_1
+ON=i_banner_1_part_2 Banner
+try new=i_banner_1_part_2
+ON=i_banner_1_part_3 Banner
+try new=i_banner_1_part_3
+ON=i_banner_2_part_1 Banner
+try new=i_banner_2_part_1
+ON=i_banner_2_part_2 Banner
+try new=i_banner_2_part_2
+ON=i_banner_2_part_3 Banner
+try new=i_banner_2_part_3
+ON=i_banner_14_part_2 Banner
+try new=i_banner_14_part_2
+ON=i_banner_post_11_nw Banner
+try new=i_banner_post_11_nw
+ON=i_banner_post_28_ne Banner
+try new=i_banner_post_28_ne
+ON=i_banner_post_36_nw Banner
+try new=i_banner_post_36_nw
+
+[MENU M_ADDI_SIGN_SHOP_AI]
+Signs (Shops A-I)
+ON=0bbf Armourer
+try new=0bbf
+ON=i_sign_brass Brass Sign
+try new=i_sign_brass
+ON=0ba3 Bakery
+try new=0ba3
+ON=0c0b Bank
+try new=0c0b
+ON=0bb9 Barber Shop
+try new=0bb9
+ON=0bbb Bard
+try new=0bbb
+ON=i_sign_beekeeper BeeKeeper
+try new=i_sign_beekeeper
+ON=0ba9 Butcher
+try new=0ba9
+ON=0bc7 Blacksmith
+try new=0bc7
+ON=0bcd Bowyer
+try new=0bcd
+ON=0bb1 Customs
+try new=0bb1
+ON=0bbd Fletcher
+try new=0bbd
+ON=0bab Healer
+try new=0bab
+ON=0bb3 Inn
+try new=0bb3
+
+[MENU M_ADDI_SIGN_SHOP_JZ]
+Signs (Shops J-Z)
+ON=0bc1 Jeweler
+try new=0bc1
+ON=0bad Mage
+try new=0bad
+ON=0bc9 Painter
+try new=0bc9
+ON=0bcb Provisioner
+try new=0bcb
+ON=0bc5 Reagent Shop
+try new=0bc5
+ON=0bb5 Shipwright
+try new=0bb5
+ON=0bb7 Stables
+try new=0bb7
+ON=0bc3 Tavern
+try new=0bc3
+ON=0c0d Theatre
+try new=0c0d
+ON=0ba5 Tailor
+try new=0ba5
+ON=0ba7 Tinker
+try new=0ba7
+ON=0baf Woodworker
+try new=0baf
+ON=0bcf Wooden Sign
+try new=0bcf
+
+[MENU M_ADDI_SIGN_GUILD_AI]
+Guild Signs A-I
+ON=0bd4 Armaments Guild
+try new=0bd4
+ON=0bd5 Armaments Guild
+try new=0bd5
+ON=0bef Archers Guild
+try new=0bef
+ON=0bf0 Archers Guild
+try new=0bf0
+ON=0bff Assassins Guild
+try new=0bff
+ON=0c00 Assassins Guild
+try new=0c00
+ON=0bd7 Blacksmiths Guild
+try new=0bd7
+ON=0bd8 Blacksmiths Guild
+try new=0bd8
+ON=0bdb Bardic Guild
+try new=0bdb
+ON=0bdc Bardic Guild
+try new=0bdc
+ON=0bdd Barters Guild
+try new=0bdd
+ON=0bde Basters Guild
+try new=0bde
+ON=0c05 Cavalry Guild
+try new=0c05
+ON=0c06 Cavalry Guild
+try new=0c06
+ON=0be3 Cooks Guild
+try new=0be3
+ON=0be4 Cooks Guild
+try new=0be4
+ON=0c07 Fighters Guild
+try new=0c07
+ON=0c08 Fighters Guild
+try new=0c08
+ON=0bf3 Fishermens Guild
+try new=0bf3
+ON=0bf4 Fishermens Guild
+try new=0bf4
+ON=0be5 Healers Guild
+try new=0be5
+ON=0be6 Healers Guild
+try new=0be6
+ON=0beb Illusionist Guild
+try new=0beb
+ON=0bec Illusionist Guild
+try new=0bec
+
+[MENU M_ADDI_SIGN_GUILD_JZ]
+Guild Signs J-Z
+ON=0bed Miners Guild
+try new=0bed
+ON=0bee Miners Guild
+try new=0bee
+ON=0be7 Mages Guild
+try new=0be7
+ON=0be8 Mages Guild
+try new=0be8
+ON=0c09 Merchants Guild
+try new=0c09
+ON=0c0a Merchants Guild
+try new=0c0a
+ON=0bdf Provisioners Guild
+try new=0bdf
+ON=0be0 Provisioners Guild
+try new=0be0
+ON=0bfd Rogues Guild
+try new=0bfd
+ON=0bfe Rogues Guild
+try new=0bfe
+ON=0be9 Sorcerers Guild
+try new=0be9
+ON=0bea Sorcerers Guild
+try new=0bea
+ON=0bf1 Seamens Guild
+try new=0bf1
+ON=0bf2 Seamens Guild
+try new=0bf2
+ON=0bf5 Sailors Guild
+try new=0bf5
+ON=0bf6 Sailors Guild
+try new=0bf6
+ON=0bf7 Shipwrights Guild
+try new=0bf7
+ON=0bf8 Shipwrights Guild
+try new=0bf8
+ON=0be1 Traders Guild
+try new=0be1
+ON=0be2 Traders Guild
+try new=0be2
+ON=0bf9 Tailors Guild
+try new=0bf9
+ON=0bfa Tailors Guild
+try new=0bfa
+ON=0bfb Thieves Guild
+try new=0bfb
+ON=0bfc Thieves Guild
+try new=0bfc
+ON=0c01 Tinkers Guild
+try new=0c01
+ON=0c02 Tinkers Guild
+try new=0c02
+ON=0c03 Warriors Guild
+try new=0c03
+ON=0c04 Warriors Guild
+try new=0c04
+ON=0bd9 Weapons Guild
+try new=0bd9
+ON=0bda Weapons Guild
+try new=0bda
+
+[MENU M_ADDI_SIGN_POSTS]
+Signs (Posts)
+ON=0b97 Wooden Signpost
+try new=0b97
+ON=0b98 Wooden Signpost
+try new=0b98
+ON=0b99 Wooden Signpost
+try new=0b99
+ON=0b9a Wooden Signpost
+try new=0b9a
+ON=0b9b Metal Signpost
+try new=0b9b
+ON=0b9c Metal Signpost
+try new=0b9c
+ON=0b9d Metal Signpost
+try new=0b9d
+ON=0b9e Metal Signpost
+try new=0b9e
+ON=0b9f Metal Signpost
+try new=0b9f
+ON=0ba0 Metal Signpost
+try new=0ba0
+ON=0ba1 Metal Signpost
+try new=0ba1
+ON=0ba2 Metal Signpost
+try new=0ba2
+
+[MENU M_ADDI_SIGN_ROAD]
+Road Signs
+ON=i_sign_post Wooden Sign Post
+try new=i_sign_post
+ON=i_sign_45 Road Sign
+try new=i_sign_45
+ON=i_sign_315 Road Sign
+try new=i_sign_315
+ON=i_sign_000 Road Sign
+try new=i_sign_000
+ON=i_sign_270 Road Sign
+try new=i_sign_270
+ON=i_sign_135 Road Sign
+try new=i_sign_135
+ON=i_sign_090 Road Sign
+try new=i_sign_090
+ON=i_sign_180 Road Sign
+try new=i_sign_180
+ON=i_sign_225 Road Sign
+try new=i_sign_225
+
+[MENU M_ADDI_FOOD]
+Food
+ON=i_hay_sheaf Sheaf of Hay
+try new=i_hay_sheaf
+ON=i_wheat_sheaf Sheaf of Wheat
+try new=i_wheat_sheaf
+ON=i_fruit_watermelon Watermellon
+try new=i_fruit_watermelon
+ON=i_fruit_turnip Turnip
+try new=i_fruit_turnip
+ON=i_fruit_gourd1 Gourd
+try new=i_fruit_gourd1
+ON=i_fruit_gourd2 Gourd
+try new=i_fruit_gourd2
+ON=i_fruit_pumpkin Pumpkin
+try new=i_fruit_pumpkin
+ON=i_fruit_onion Onion
+try new=i_fruit_onion
+ON=i_fruit_lettuce Lettuce
+try new=i_fruit_lettuce
+ON=i_fruit_squash Squash
+try new=i_fruit_squash
+ON=i_fruit_honeydewmelon Honey Melon
+try new=i_fruit_honeydewmelon
+ON=i_fruit_carrot Carrots
+try new=i_fruit_carrot
+ON=i_fruit_cantelope Cantaloupe
+try new=i_fruit_cantelope
+ON=i_fruit_cabbage Cabbage
+try new=i_fruit_cabbage
+ON=i_fruit_corn Ear of Corn
+try new=i_fruit_corn
+ON=i_crop_corn Corn Stalk
+try new=i_crop_corn
+ON=i_crop_sprouts1 Sprouts
+try new=i_crop_sprouts1
+
+[MENU M_ADDI_PLANTS]
+Plants
+ON=i_TREE_SMALL_POTTED Potted Tree
+try new=i_TREE_SMALL_POTTED
+ON=i_TREE_LARGE_POTTED Potted Tree
+try new=i_TREE_LARGE_POTTED
+ON=i_POT_SMALL_FLOWER Flower Pot
+try new=i_POT_SMALL_FLOWER
+ON=i_POT_FLOWER_LARGE Flower Pot
+try new=i_POT_FLOWER_LARGE
+ON=i_PLANT_POTTED_SMALL Flower Pot
+try new=i_PLANT_POTTED_SMALL
+ON=i_FLOWER_POTTED_SMALL Flower Pot
+try new=i_FLOWER_POTTED_SMALL
+ON=i_TREE_SMALL_POTTED_2 Flower Pot
+try new=i_TREE_SMALL_POTTED_2
+ON=i_crop_cotton Cotton Plant
+try new=i_crop_cotton
+ON=i_PLANT_BULRUSHES Bulrushes
+try new=i_PLANT_BULRUSHES
+ON=i_TREE_COCONUTPALM Coconut Palm
+try new=i_TREE_COCONUTPALM
+ON=i_TREE_DATEPALM Date Palm
+try new=i_TREE_DATEPALM
+ON=i_PLANT_ELEPHANTEAR Elephant Ear Plant
+try new=i_PLANT_ELEPHANTEAR
+ON=i_PLANT_FAN Fan Plant
+try new=i_PLANT_FAN
+ON=i_PLANT_FERN Fern
+try new=i_PLANT_FERN
+ON=i_PLANT_FERN_2 Fren
+try new=i_PLANT_FERN_2
+ON=i_PLANT_FERN_3 Large Fern
+try new=i_PLANT_FERN_3
+ON=i_PLANT_CATTAILS Cattails
+try new=i_PLANT_CATTAILS
+ON=i_FLOWER_ORFLUER_2 Orfluer Flowers
+try new=i_FLOWER_ORFLUER_2
+ON=i_FLOWER_ORFLUER_3 Orfluer Flowers
+try new=i_FLOWER_ORFLUER_3
+ON=i_PLANT_WATER Water Plants
+try new=i_PLANT_WATER
+ON=i_PLANT_LILYPAD Lilypad
+try new=i_PLANT_LILYPAD
+ON=i_PLANT_CACTUS_5 Cactus
+try new=i_PLANT_CACTUS_5
+ON=i_PLANT_CACTUS_6 Cactus
+try new=i_PLANT_CACTUS_6
+ON=i_PLANT_CENTURY Century Plant
+try new=i_PLANT_CENTURY
+ON=i_PLANT_CENTURY_2 Century Plant
+try new=i_PLANT_CENTURY_2
+ON=i_crop_mandrake Mandrake Plant
+try new=i_crop_mandrake
+
+[MENU M_ADDI_STRUCTURE]
+Structures
+ON=0 Doors
+MENU M_ADDI_STRUCT_DOOR
+ON=0 Gates (Natural Wood)
+MENU M_ADDI_STRUCT_GATE_1
+ON=0 Gates (Dark Wood)
+MENU M_ADDI_STRUCT_GATE_2
+ON=0 Fences
+MENU M_ADDI_STRUCT_FENCE
+ON=0 Rugs
+MENU M_ADDI_STRUCT_RUGS
+ON=0 Carpets
+MENU M_ADDI_STRUCT_CARPET
+ON=0 Carpets 2
+MENU M_ADDI_STRUCT_CARPET_2
+ON=0 Carpets 3
+MENU M_ADDI_STRUCT_CARPET_3
+ON=0 Pillars
+MENU M_ADDI_STRUCT_PILLAR
+ON=0 Piers
+MENU M_ADDI_STRUCT_PIER
+ON=0 Ladders
+MENU M_ADDI_STRUCT_LADDER
+ON=0 Statues
+MENU M_ADDI_STRUCT_STATUE
+ON=0 Fireplaces
+MENU M_ADDI_STRUCT_FURNACE
+ON=0 Ovens
+MENU M_ADDI_STRUCT_OVEN
+ON=0 PREVIOUS MENU
+MENU MENU_ADDITEM
+
+[MENU M_ADDI_STRUCT_DOOR]
+Structures (Doors)
+ON=i_door_metal Metal Door
+try new=i_door_metal
+ON=i_door_metal_2 Metal Door
+try new=i_door_metal_2
+ON=i_door_metal_bar Barred Metal Door
+try new=i_door_metal_bar
+ON=i_door_rattan Rattan Door
+try new=i_door_rattan
+ON=i_door_wood Wood Door
+try new=i_door_wood
+ON=i_door_wood_4 Wood Door
+try new=i_door_wood_4
+ON=i_door_wood_2 Wood Door
+try new=i_door_wood_2
+ON=i_door_wood_3 Wood Door
+try new=i_door_wood_3
+ON=i_hand_7 PREVIOUS MENU
+MENU M_ADDI_STRUCTURE
+
+[MENU M_ADDI_STRUCT_GATE_1]
+Structures (Gates)
+ON=i_gate_wood Gate
+try new=i_gate_wood
+ON=083a Gate
+try new=083a
+ON=083b Gate
+try new=083b
+ON=083c Gate
+try new=083c
+ON=083d Gate
+try new=083d
+ON=083e Gate
+try new=083e
+ON=083f Gate
+try new=083f
+ON=0840 Gate
+try new=0840
+ON=0841 Gate
+try new=0841
+ON=0842 Gate
+try new=0842
+ON=0843 Gate
+try new=0843
+ON=0844 Gate
+try new=0844
+ON=0845 Gate
+try new=0845
+ON=0846 Gate
+try new=0846
+ON=0847 Gate
+try new=0847
+ON=0848 Gate
+try new=0848
+
+[MENU M_ADDI_STRUCT_GATE_2]
+Structures (Dark Gates)
+ON=i_gate_wood_3 Gates
+try new=i_gate_wood_3
+ON=0867 Gates
+try new=0867
+ON=0868 Gates
+try new=0868
+ON=0869 Gates
+try new=0869
+ON=086a Gates
+try new=086a
+ON=086b Gates
+try new=086b
+ON=086c Gates
+try new=086c
+ON=086d Gates
+try new=086d
+ON=086e Gates
+try new=086e
+ON=086f Gates
+try new=086f
+ON=0870 Gates
+try new=0870
+ON=0871 Gates
+try new=0871
+ON=0872 Gates
+try new=0872
+ON=0873 Gates
+try new=0873
+ON=0874 Gates
+try new=0874
+ON=0875 Gates
+try new=0875
+
+[MENU M_ADDI_STRUCT_RUGS]
+Structures (Rugs)
+ON=0aa9 Rug
+try new=0aa9
+ON=0aaa Rug
+try new=0aaa
+ON=0aab Rug
+try new=0aab
+ON=0aac Rug
+try new=0aac
+ON=0aad Rug
+try new=0aad
+ON=0aae Rug
+try new=0aae
+ON=0aaf Rug
+try new=0aaf
+ON=0ab0 Rug
+try new=0ab0
+ON=0ab1 Rug
+try new=0ab1
+ON=0ab2 Rug
+try new=0ab2
+ON=0ab3 Rug
+try new=0ab3
+ON=0ab4 Rug
+try new=0ab4
+ON=0ab5 Rug
+try new=0ab5
+ON=0ab6 Rug
+try new=0ab6
+ON=0ab7 Rug
+try new=0ab7
+ON=0ab8 Rug
+try new=0ab8
+ON=0ab9 Rug
+try new=0ab9
+ON=0aba Rug
+try new=0aba
+ON=0abb Rug
+try new=0abb
+ON=0abc Rug
+try new=0abc
+
+[MENU M_ADDI_STRUCT_CARPET]
+Structures (Carpets)
+ON=0abd Carpet
+try new=0abd
+ON=0abe Carpet
+try new=0abe
+ON=0abf Carpet
+try new=0abf
+ON=0ac0 Carpet
+try new=0ac0
+ON=0ac1 Carpet
+try new=0ac1
+ON=0ac2 Carpet
+try new=0ac2
+ON=0ac3 Carpet
+try new=0ac3
+ON=0ac4 Carpet
+try new=0ac4
+ON=0ac5 Carpet
+try new=0ac5
+ON=0ac6 Carpet
+try new=0ac6
+ON=0ac7 Carpet
+try new=0ac7
+ON=0ac8 Carpet
+try new=0ac8
+ON=0ac9 Carpet
+try new=0ac9
+ON=0aca Carpet
+try new=0aca
+ON=0acb Carpet
+try new=0acb
+ON=0acc Carpet
+try new=0acc
+ON=0acd Carpet
+try new=0acd
+ON=0ace Carpet
+try new=0ace
+ON=0acf Carpet
+try new=0acf
+ON=0ad0 Carpet
+try new=0ad0
+
+[MENU M_ADDI_STRUCT_CARPET_2]
+Structures (Carpets 2)
+ON=0ad1 Carpet
+try new=0ad1
+ON=0ad2 Carpet
+try new=0ad2
+ON=0ad3 Carpet
+try new=0ad3
+ON=0ad4 Carpet
+try new=0ad4
+ON=0ad5 Carpet
+try new=0ad5
+ON=0ad6 Carpet
+try new=0ad6
+ON=0ad7 Carpet
+try new=0ad7
+ON=0ad8 Carpet
+try new=0ad8
+ON=0ad9 Carpet
+try new=0ad9
+ON=0ada Carpet
+try new=0ada
+ON=0adb Carpet
+try new=0adb
+ON=0adc Carpet
+try new=0adc
+ON=0try new=Carpet
+try new=0add
+ON=0ade Carpet
+try new=0ade
+ON=0adf Carpet
+try new=0adf
+ON=0ae0 Carpet
+try new=0ae0
+ON=0ae1 Carpet
+try new=0ae1
+ON=0ae2 Carpet
+try new=0ae2
+
+[MENU M_ADDI_STRUCT_CARPET_3]
+Structures (Carpets 3)
+ON=0ae3 Carpet
+try new=0ae3
+ON=0ae4 Carpet
+try new=0ae4
+ON=0ae5 Carpet
+try new=0ae5
+ON=0ae6 Carpet
+try new=0ae6
+ON=0ae7 Carpet
+try new=0ae7
+ON=0ae8 Carpet
+try new=0ae8
+ON=0ae9 Carpet
+try new=0ae9
+ON=0aea Carpet
+try new=0aea
+ON=0aeb Carpet
+try new=0aeb
+ON=0aec Carpet
+try new=0aec
+ON=0aed Carpet
+try new=0aed
+ON=0aee Carpet
+try new=0aee
+ON=0aef Carpet
+try new=0aef
+ON=0af0 Carpet
+try new=0af0
+ON=0af1 Carpet
+try new=0af1
+ON=0af2 Carpet
+try new=0af2
+ON=0af3 Carpet
+try new=0af3
+ON=0af4 Carpet
+try new=0af4
+ON=0af5 Carpet
+try new=0af5
+
+[MENU M_ADDI_STRUCT_PILLAR]
+Structures (pillars)
+ON=0db Pillar
+try new=0db
+ON=01da Pillar
+try new=01da
+ON=011b Column
+try new=011b
+ON=011c Column
+try new=011c
+ON=011d Column
+try new=011d
+ON=011e Column
+try new=011e
+ON=011f Column
+try new=011f
+ON=0120 Column
+try new=0120
+ON=0194 Column
+try new=0194
+ON=0195 Column
+try new=0195
+
+[MENU M_ADDI_STRUCT_PIER]
+Structures (piers)
+ON=i_PIER_1 Pier
+try new=i_PIER_1
+ON=03aa Pier
+try new=03aa
+ON=03ab Pier
+try new=03ab
+ON=03ac Pier
+try new=03ac
+ON=03ad Pier
+try new=03ad
+ON=03ae Pier
+try new=03ae
+ON=03af Pier
+try new=03af
+ON=03b0 Pier
+try new=03b0
+ON=i_PIER_2 Rope
+try new=i_PIER_2
+ON=03a7 Rope
+try new=03a7
+ON=03a8 Rope
+try new=03a8
+ON=03a9 Rope
+try new=03a9
+
+[MENU M_ADDI_STRUCT_LADDER]
+Structures (Ladders)
+ON=i_LADDER_WOOD Ladder
+try new=i_LADDER_WOOD
+ON=089a Ladder
+try new=089a
+ON=089b Ladder
+try new=089b
+ON=089c Ladder
+try new=089c
+ON=089d Ladder
+try new=089d
+ON=089e Ladder
+try new=089e
+ON=i_LADDER_WOOD_2 Ladder
+try new=i_LADDER_WOOD_2
+ON=08a0 Ladder
+try new=08a0
+ON=08a1 Ladder
+try new=08a1
+ON=08a2 Ladder
+try new=08a2
+ON=08a3 Ladder
+try new=08a3
+ON=08a4 Ladder
+try new=08a4
+ON=i_LADDER_ROPE Ladder
+try new=i_LADDER_ROPE
+ON=08a6 Ladder
+try new=08a6
+
+[MENU m_addi_deeds]
+Structures (House Deeds)
+ON=i_deed_GUILDSTONE Guildstone
+try new=i_deed_GUILDSTONE
+ON=i_deed Small Stone & Plaster House
+try new=i_deed_house_stone_plaster_small
+ON=i_deed Small Stone House
+try new=i_deed_House_stone_small
+ON=i_deed Small Brick House
+try new=i_deed_House_stone_brick_small
+ON=i_deed Small Wood House
+try new=i_deed_House_stone_wood_small
+ON=i_deed Small Wood & Plaster House
+try new=i_deed_House_wood_plaster_small
+ON=i_deed Small Wood, Thatched Roof
+try new=i_deed_House_wood_thatched_small
+ON=i_deed Blue Tent
+try new=i_deed_tent_blue
+ON=i_deed Green Tent
+try new=i_deed_tent_green
+ON=i_deed Three Room House
+try new=i_deed_house_3room
+ON=i_deed Two Story Wood & Plaster
+try new=i_deed_house_wood_plaster_2story
+ON=i_deed Two Story Stone & Plaster
+try new=i_deed_house_stone_plaster_2story
+ON=i_deed Tower
+try new=i_deed_tower
+ON=i_deed Keep
+try new=i_deed_keep
+ON=i_deed_Castle Castle
+try new=i_deed_Castle
+ON=i_deed_shop_blacksmithy_large Large Blacksmithy Shop
+try new=i_deed_shop_blacksmithy_large
+
+[MENU M_ADDI_STONE]
+Rocks, Stones, Boulders
+ON=i_rock_plain Rock
+try new=i_rock_plain
+ON=01364 Rock
+try new=01364
+ON=01365 Rock
+try new=01365
+ON=01366 Rock
+try new=01366
+ON=i_rock_2 Rock
+try new=i_rock_2
+ON=i_rock_3 Rock
+try new=i_rock_3
+ON=01369 Rock
+try new=01369
+ON=0136a Rock
+try new=0136a
+ON=0136b Rock
+try new=0136b
+ON=i_rock_7 Rock
+try new=i_rock_7
+ON=i_rock_plain_x Rock
+try new=i_rock_plain_x
+ON=03421 Rock
+try new=03421
+ON=0342c Rock
+try new=0342c
+ON=01771 Rock
+try new=01771
+ON=01772 Rock
+try new=01772
+ON=01773 Rock
+try new=01773
+ON=01774 Rock
+try new=01774
+ON=01775 Rock
+try new=01775
+ON=01776 Rock
+try new=01776
+ON=01777 Rock
+try new=01777
+ON=01778 Rock
+try new=01778
+ON=01779 Rock
+try new=01779
+ON=0177a Rock
+try new=0177a
+ON=0177b Rock
+try new=0177b
+ON=0177c Rock
+try new=0177c
+
+[MENU M_ADDI_STRUCT_STATUE]
+Statues
+ON=i_statue_stone_sm Statue
+try new=i_statue_stone_sm
+ON=01225 Statue
+try new=01225
+ON=01226 Statue
+try new=01226
+ON=01227 Statue
+try new=01227
+ON=01228 Statue
+try new=01228
+ON=i_statue_stone_lg Statue
+try new=i_statue_stone_lg
+ON=012a0 Statue
+try new=012a0
+ON=012a1 Statue
+try new=012a1
+ON=012a2 Statue
+try new=012a2
+ON=012a3 Statue
+try new=012a3
+ON=012a4 Statue
+try new=012a4
+ON=i_statue_stone_lg_2 Statue
+try new=i_statue_stone_lg_2
+ON=012af Statue
+try new=012af
+ON=012b0 Statue
+try new=012b0
+ON=i_statue_stone_sm_2 Statue
+try new=i_statue_stone_sm_2
+ON=i_statue_stone_lg_3 Statue
+try new=i_statue_stone_lg_3
+ON=012d7 Statue
+try new=012d7
+ON=i_statue_stone_lg_4 Statue
+try new=i_statue_stone_lg_4
+ON=012d9 Statue
+try new=012d9
+ON=i_statue_stone_sm_3 Statue
+try new=i_statue_stone_sm_3
+ON=0139b Statue
+try new=0139b
+ON=0139c Statue
+try new=0139c
+ON=0139d Statue
+try new=0139d
+ON=i_statue_stone_lg_5 Statue
+try new=i_statue_stone_lg_5
+ON=0139f Statue
+try new=0139f
+ON=013a0 Statue
+try new=013a0
+ON=013a1 Statue
+try new=013a1
+ON=013a2 Statue
+try new=013a2
+ON=013a3 Statue
+try new=013a3
+ON=01f18 Statue
+try new=01f18
+
+[MENU M_ADDI_MASKS]
+Clothing (Masks)
+ON=i_mask_blue Tribal Mask
+try new=i_mask_blue
+ON=i_mask_tribal_red Tribal Mask
+try new=i_mask_tribal_red
+ON=i_mask_orc Orc Mask
+try new=i_mask_orc
+ON=i_mask_bear Bear Mask
+try new=i_mask_bear
+ON=i_mask_deer Deer Mask
+try new=i_mask_deer
+
+[MENU M_ADDI_HATS]
+Clothing (Hats)
+ON=i_hat_floppy Floppy Hat
+try new=i_hat_floppy
+ON=i_hat_wide_brim Wide Brim Hat
+try new=i_hat_wide_brim
+ON=i_cap Cap
+try new=i_cap
+ON=i_hat_straw_tall Tall Straw Hat
+try new=i_hat_straw_tall
+ON=i_hat_straw Straw Hat
+try new=i_hat_straw
+ON=i_hat_wizards Wizard's Hat
+try new=i_hat_wizards
+ON=i_bonnet Bonnet
+try new=i_bonnet
+ON=i_hat_feather Feathered Hat
+try new=i_hat_feather
+ON=i_hat_tricorne Tricorne Hat
+try new=i_hat_tricorne
+ON=i_hat_jester Jester's Cap
+try new=i_hat_jester
+
+[MENU M_ADDI_HAIR]
+Hair & Beards
+ON=i_hair_MOHAWK Mohawk
+try new=i_hair_MOHAWK
+ON=i_hair_PAGEBOY Pageboy
+try new=i_hair_PAGEBOY
+ON=i_hair_BUNS Buns Hair
+try new=i_hair_BUNS
+ON=i_hair_AFRO Afro
+try new=i_hair_AFRO
+ON=i_hair_RECEDING Receeding Hair
+try new=i_hair_RECEDING
+ON=i_hair_2_PIGTAILS Pig Tails
+try new=i_hair_2_PIGTAILS
+ON=i_hair_KRISNA Krisna Hair
+try new=i_hair_KRISNA
+ON=i_beard_SHORT_MED Short Beard
+try new=i_beard_SHORT_MED
+ON=i_beard_LONG_MED Medium Hair
+try new=i_beard_LONG_MED
+ON=i_beard_VANDYKE Vandyke
+try new=i_beard_VANDYKE
+
+[MENU M_ADDI_POTION]
+Potions & Flasks
+ON=i_bottle_black Black Potion
+try new=i_bottle_black
+ON=i_bottle_orange Orange Potion
+try new=i_bottle_orange
+ON=i_bottle_blue Blue Potion
+try new=i_bottle_blue
+ON=i_bottle_white White Potion
+try new=i_bottle_white
+ON=i_bottle_green Green Potion
+try new=i_bottle_green
+ON=i_bottle_red Red Potion
+try new=i_bottle_red
+ON=i_bottle_yellow Yellow Potion
+try new=i_bottle_yellow
+ON=i_bottle_purple Purple Potion
+try new=i_bottle_purple
+ON=i_bottle_empty Empty Potion Bottle
+try new=i_bottle_empty
+ON=i_flaskstand <name>
+try new=i_flaskstand
+ON=i_flask1_blue <name>
+try new=i_flask1_blue
+ON=i_flask1_orange <name>
+try new=i_flask1_orange
+ON=i_flask1_red <name>
+try new=i_flask1_red
+ON=i_flask1_empty <name>
+try new=i_flask1_empty
+ON=i_beaker1_orange <name>
+try new=i_beaker1_orange
+ON=i_beaker1_red <name>
+try new=i_beaker1_red
+ON=i_beaker1_blue <name>
+try new=i_beaker1_blue
+ON=i_beaker1_green <name>
+try new=i_beaker1_green
+ON=i_beaker2_empty <name>
+try new=i_beaker2_empty
+ON=i_beaker2_red <name>
+try new=i_beaker2_red
+ON=i_beaker2_teal <name>
+try new=i_beaker2_teal
+ON=i_beaker2_blue <name>
+try new=i_beaker2_blue
+ON=i_beaker_2_green <name>
+try new=i_beaker_2_green
+ON=i_flask2_red <name>
+try new=i_flask2_red
+ON=i_flask2_purple <name>
+try new=i_flask2_purple
+ON=i_flask2_empty <name>
+try new=i_flask2_empty
+ON=i_FLASK_LONG_orange <name>
+try new=i_FLASK_LONG_orange
+ON=i_FLASK_LONG_purple <name>
+try new=i_FLASK_LONG_purple
+ON=i_flask_long_empty <name>
+try new=i_flask_long_empty
+ON=i_flask2_red_anim <name>
+try new=i_flask2_red_anim
+ON=i_FLASK_LONG_purple_anim <name>
+try new=i_FLASK_LONG_purple_anim
+ON=i_flask1_blue_anim <name>
+try new=i_flask1_blue_anim
+ON=i_FLASK_SMALL <name>
+try new=i_FLASK_SMALL
+ON=i_FLASK_SMALL_GREEN <name>
+try new=i_FLASK_SMALL_GREEN
+
+[MENU M_ADDI_PROV_DECO]
+Equip (Decorations)
+ON=i_decorative_armor Decorative Armor
+try new=i_decorative_armor
+ON=i_decorative_armor_d Decorative Armor
+try new=i_decorative_armor_d
+ON=i_decorative_armor2 Decorative Armor
+try new=i_decorative_armor2
+ON=i_decorative_armor2_d Decorative Armor
+try new=i_decorative_armor2_d
+ON=i_serpent_crest Serpent Crest
+try new=i_serpent_crest
+ON=i_decorative_shield Decorative Shield
+try new=i_decorative_shield
+ON=0156d Decorative Shield
+try new=0156d
+ON=i_decorative_shield_3 Decorative Shield
+try new=i_decorative_shield_3
+ON=01571 Decorative Shield
+try new=01571
+ON=i_decorative_shield_5 Decorative Shield
+try new=i_decorative_shield_5
+ON=01575 Decorative Shield
+try new=01575
+ON=i_decorative_shield_6 Decorative Shield
+try new=i_decorative_shield_6
+ON=01577 Decorative Shield
+try new=01577
+ON=i_decorative_weapons_3 Decorative Weapons
+try new=i_decorative_weapons_3
+ON=01565 Decorative Weapons
+try new=01565
+ON=01566 Decorative Weapons
+try new=01566
+ON=01567 Decorative Weapons
+try new=01567
+ON=i_decorative_weapons_4 Decorative Weapons
+try new=i_decorative_weapons_4
+ON=01569 Decorative Weapons
+try new=01569
+ON=0156A Decorative Weapons
+try new=0156A
+ON=0156B Decorative Weapons
+try new=0156B
+
+[MENU M_FEM_ARMOR]
+Armor (Female Armor)
+ON=i_armor_female_shorts Leather Shorts
+try new=i_armor_female_shorts
+ON=i_armor_female_skirt Leather Skirt
+try new=i_armor_female_skirt
+ON=i_armor_female_bustier Leather Bustier
+try new=i_armor_female_bustier
+ON=i_armor_female_leather Leather Armor
+try new=i_armor_female_leather
+ON=i_armor_female_studded Studded Armor
+try new=i_armor_female_studded
+ON=i_armor_female_bustier_studded Studded Bustier
+try new=i_armor_female_bustier_studded
+ON=i_armor_female_plate Plate Armor
+try new=i_armor_female_plate
+
+[MENU M_ADDI_STRUCT_FURNACE]
+Structures (Fireplaces)
+ON=i_fireplace_sandstone Fireplace
+try new=i_fireplace_sandstone
+ON=045e Fireplace
+try new=045e
+ON=0460 Fireplace
+try new=0460
+ON=045f Fireplace
+try new=045f
+ON=i_fireplace_sandstone_2 Fireplace
+try new=i_fireplace_sandstone_2
+ON=0489 Fireplace
+try new=0489
+ON=0482 Fireplace
+try new=0482
+ON=047b Fireplace
+try new=047b
+ON=i_FIREPLACE_STONE Fireplace
+try new=i_FIREPLACE_STONE
+ON=08d0 Fireplace
+try new=08d0
+ON=08d3 Fireplace
+try new=08d3
+ON=08d4 Fireplace
+try new=08d4
+ON=i_FIREPLACE_STONE_2 Fireplace
+try new=i_FIREPLACE_STONE_2
+ON=08db Fireplace
+try new=08db
+ON=08df Fireplace
+try new=08df
+ON=08de Fireplace
+try new=08de
+ON=i_FIREPLACE_STONE_4 Fireplace
+try new=i_FIREPLACE_STONE_4
+ON=093d Fireplace
+try new=093d
+ON=094b Fireplace
+try new=094b
+ON=0945 Fireplace
+try new=0945
+ON=i_FIREPLACE_STONE_6 Fireplace
+try new=i_FIREPLACE_STONE_6
+ON=0959 Fireplace
+try new=0959
+ON=0967 Fireplace
+try new=0967
+ON=0961 Fireplace
+try new=0961
+
+[MENU M_ADDI_STRUCT_OVEN]
+Structures (Ovens)
+ON=i_oven_sandstone Oven
+try new=i_oven_sandstone
+ON=0462 Oven
+try new=0462
+ON=046e Oven
+try new=046e
+ON=046f Oven
+try new=046f
+ON=i_OVEN_STONE Oven
+try new=i_OVEN_STONE
+ON=092c Oven
+try new=092c
+ON=0931 Oven
+try new=0931
+ON=0930 Oven
+try new=0930
+
+[MENU M_ADDI_STRUCT_FENCE]
+Structures (Fences)
+ON=i_fence_wood Fence
+try new=i_fence_wood
+ON=03b4 Fence
+try new=03b4
+ON=03b5 Fence
+try new=03b5
+ON=03b6 Fence
+try new=03b6
+ON=i_fence_iron Fence
+try new=i_fence_iron
+ON=0822 Fence
+try new=0822
+ON=0823 Fence
+try new=0823
+ON=0835 Fence
+try new=0835
+ON=0836 Fence
+try new=0836
+ON=0837 Fence
+try new=0837
+ON=0838 Fence
+try new=0838
+ON=0849 Fence
+try new=0849
+ON=084a Fence
+try new=084a
+ON=084b Fence
+try new=084b
+ON=i_GATE_WOOD_2 Fence
+try new=i_GATE_WOOD_2
+ON=085d Fence
+try new=085d
+ON=085e Fence
+try new=085e
+ON=085f Fence
+try new=085f
+ON=0860 Fence
+try new=0860
+ON=0861 Fence
+try new=0861
+ON=0862 Fence
+try new=0862
+ON=0863 Fence
+try new=0863
+ON=0864 Fence
+try new=0864
+ON=0865 Fence
+try new=0865
+
+[EOF]
+
+

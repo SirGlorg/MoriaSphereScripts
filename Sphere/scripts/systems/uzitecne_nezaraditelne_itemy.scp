@@ -1,0 +1,788 @@
+//Template pro kolektory ruznych veci  - pouzitelne pri questech
+[typedef t_collector]
+on=@userclick
+ //Yavannu ten vypis sysMessage u collectoru SRAL takze to tu neni. Bylo to tam uplne zbytecne. Kdo to chce ma to tady dole ...
+ //src.sysMessage(Pouziti: Do nasledujicich tagu uloz pozadovane informace)
+ //src.sysMessage(tag(contentsinfo) - To co se napise hraci pri kliknuti na tenhle item)
+ //src.sysMessage(tag(contentstype) - Informace o obsahu kontejneru ktera se vypise hraci pri kliknuti)
+ //src.sysMessage()
+ //src.sysMessage(Zprava pri kliknuti vypada poskladana takto: tag(contentsinfo) tag(contentscount) tag(contentstype))
+ //src.sysMessage(Cili priklad pouziti contentsinfo: Nahrdelnik ma na sobe)
+ //src.sysMessage(contentstype: medvedich zubu)
+ //src.sysMessage(Jejich pocet se zveda pri dclicku a zamereni pozadovaneho cile)
+ //src.sysMessage(Je dobre nastavit na zacatek tag(contentscount) na nulu aby se to cislo take zobrazilo :D )
+ //src.sysMessage(Dalsi potrebne tagy:)
+ //src.sysMessage(tag(maxcontents) - maximalni pocet predmetu ktere pujde do collectoru sebrat, 0 pro neomezeny)
+ //src.sysMessage(tag(target_remove) - Hodnota 1 nebo 0 podle toho zda ma cil zmizet nebo ne)
+ //src.sysMessage(Pro lov ptacku je asi dobre aby mizeli proto dame 1. Pokud zustane 0 tak se zamereny predmet oznaci)
+ ////src.sysMessage(aby nesel sebrat vickrat)
+ //src.sysMessage(Pri nutnosti zamerovat kolekci tento tag nepouzivame)
+ ////src.sysMessage(tag(target_desc) - To co se napise hraci pri dclicku)
+ //src.sysMessage(napr: Zamer mrtveho medveda) 
+ //src.sysMessage(tag(target_id) - jmeno predmetu ktery se musi zamerit pro zvednuti citace)
+ //src.sysMessage(napr: Body of ledni medved)
+ //src.sysMessage(pozn - lze zamerovat i zive tvory - pak je vhodne aby tenhle collector byl treba krabice)
+ //src.sysMessage(tag(absolute_success) - tag s cislem urcujici pri jake hodnote nasledujiciho tag(value_to_check) bude 100% ziskani predmetu)
+ //src.sysMessage(tag(value_to_check) - neco z ceho pujde ziskat cislo pro pravdepodobnosti vypocet uspechu ziskani sbiraneho predmetu)
+ //src.sysMessage(napriklad: tag(value_to_check,100) a tag(absolute_success,200) - pro cca 50% uspesnosti)
+ //src.sysMessage(nebo: tag(value_to_check,src.dex) a tag(absolute_success,180) - z hracovy dexterity a te 180 se pak urci pravdepodobnost sebrani)
+ //src.sysMessage(nebo: tag(value_to_check,src.alchemy) a tag(absolute_success,120.0) - z hracovy alchemy a hodnoty 120.0 - pozor na tu tecku - se zjisti ta sance)
+ //src.sysMessage(nebo: tag(value_to_check,src.tag.level) a tag(absolute_success,50) - totez s levelem - pozor! nutno tu hodnotu v tagu value_to_check psat s tou teckou!!!)
+ //src.sysMessage(atd.)
+ //src.sysMessage(tag(fail_msg) - zprava co se vypise pri neuspesnem sebrani - napr: Ptacek ti uletel, Nejsi dost zkuseny alchymista, Jelen ma po boji parozi prilis zlamane atp.) 
+ //src.sysMessage()
+ //src.sysMessage(Questovni postavy pak at kontroluji primo ten citac tj tag(contentscount) - pocet sebranych itemu)
+src.sysMessage(<tag(contentsinfo)> <eval tag(contentscount)> <tag(contentstype)>)
+
+on=@userdclick
+if (<trigger(@CollectorCheck)> == 1) // used for debugging ingame collector changes 
+  return 1
+endif
+if (<src.isdead>)
+	src.redmessage("Takhle to nepujde")
+endif
+if (<eval tag(contentscount)> >= <eval tag(maxcontents)>)
+  src.sysMessage("Uz se sem vic nevejde.")
+  return 1
+endif
+target(<tag(target_desc)>)
+return 1
+
+on=@targon_char
+if !(src.targ.srccanseelos)
+  src.redmessage("Tam nedosahnes!")
+  return 1
+endif	
+if (src.targ.tag(uncollectable))
+ if (<src.targ.tag(uncollectable)>==1)
+  src.redmessage("Uz nelze ziskat vice")
+  return 1
+ endif
+endif
+if (!strcmpi(<src.targ.name>,<tag(target_id)>)) 
+ if (<eval (<tag(value_to_check)>)> >= <eval {0 <tag(absolute_success)>}>)   
+  if (tag(maxcontents))   
+   if (<eval tag(contentscount)>)
+    if (<eval tag(contentscount)> < <tag(maxcontents)>)
+     tag(contentscount,<eval <eval tag(contentscount)>+1>)
+    else
+     src.sysMessage("Uz se sem vic nevejde")
+    endif
+   else
+    tag(contentscount,1)
+   endif
+  else
+   if (<eval tag(contentscount)>)
+    tag(contentscount,<eval <eval tag(contentscount)>+1>)
+   else
+    tag(contentscount,1)
+   endif
+  endif
+ else //nezdarilo se nic ziskat
+  if (tag(target_remove))
+   if (<tag(target_remove)>==1)
+    src.targ.remove
+   endif
+   if (<tag(target_remove)>==0)
+   	if !(tag(repeatedcollecting))
+      src.targ.tag(uncollectable,1)
+    endif
+   endif
+  else
+   	if !(tag(repeatedcollecting))
+      src.targ.tag(uncollectable,1)
+    endif
+  endif
+  src.redmessage(<tag(fail_msg)>)
+  return 1
+ endif
+ if (tag(target_remove))
+  if (<tag(target_remove)>==1)
+   src.targ.remove
+  endif
+  if (<tag(target_remove)>==0)
+   	if !(tag(repeatedcollecting))
+      src.targ.tag(uncollectable,1)
+    endif
+  endif
+ else
+  if !(tag(repeatedcollecting))
+    src.targ.tag(uncollectable,1)
+  endif
+ endif
+else
+ src.sysMessage(To neni to co bys potreboval)
+ return 1
+endif
+trigger(userclick)
+return 1
+
+on=@targon_item
+if !(src.targ.srccanseelos)
+  src.redmessage("Tam nedosahnes!")
+  return 1
+endif	
+if (src.targ.tag(uncollectable))
+ if (<src.targ.tag(uncollectable)>==1)
+  src.sysMessage(Co jsi potreboval uz jsi ziskal)
+  return 1
+ endif
+endif
+if(<tag.color>)	//napriklad u fenixov rozlisovat ich farbu
+	if(<tag.color>!=<src.targ.color>)
+		src.sysMessage(To neni to co bys potreboval)
+		return 1
+	endif
+endif
+if (src.targ.isevent(t_collection))
+ if (!strcmpi(<src.targ.tag(collector_id)>,<baseid>)) //mame spravny sberac (kosicek napriklad, krabicku atd...)
+  if (<src.targ.tag(next_pick)> <= <serv.time>) //uz lze sbirat
+   if (<src.targ.tag(infinite)>==1)//neni to nekonecna kolekce?
+    if (<eval (<tag(value_to_check)>)> >= <eval {0 <tag(absolute_success)>}>) //podari se nam to utrhnout?
+     if (tag(maxcontents))
+      if  (<eval tag(contentscount)>)
+       if (<eval tag(contentscount)> < <tag(maxcontents)>)
+        tag(contentscount,<eval <eval tag(contentscount)>+1>)
+       else
+        src.sysMessage(Uz se sem vic nevejde)
+       endif
+      else
+       tag(contentscount,1)
+      endif            
+     else
+      if (<eval tag(contentscount)>)
+       tag(contentscount,<eval <eval tag(contentscount)>+1>)
+      else
+       tag(contentscount,1)
+      endif
+     endif
+    else //nezdarilo se nic ziskat     
+     src.redmessage(<tag(fail_msg)>)
+     return 1
+    endif
+    src.targ.tag(next_pick,<eval (<serv.time>+<src.targ.tag(pick_delay)>*10)>) //dalsi pick az za cas !
+    return 1
+   endif
+   if (<src.targ.tag(items_to_pick)> >=1) //mame co utrhnout?
+    if (<eval (<tag(value_to_check)>)> >= <eval {0 <tag(absolute_success)>}>) //podari se nam to utrhnout?
+     if (tag(maxcontents))
+      if (<eval tag(contentscount)>)
+       if (<eval tag(contentscount)> < <tag(maxcontents)>)
+        tag(contentscount,<eval <eval tag(contentscount)>+1>)
+       else
+        src.sysMessage(Uz se sem vic nevejde)
+       endif
+      else
+       tag(contentscount,1)
+      endif      
+      src.targ.tag(items_to_pick,<src.targ.tag(items_to_pick)>-1) //je tam o jednu vecicku mene 	
+     else
+      if (<eval tag(contentscount)>)
+       tag(contentscount,<eval <eval tag(contentscount)>+1>)
+      else
+       tag(contentscount,1)
+      endif
+      src.targ.tag(items_to_pick,<src.targ.tag(items_to_pick)>-1) //je tam o jednu vecicku mene 	
+     endif
+    else //nezdarilo se nic ziskat     
+     src.redmessage(<tag(fail_msg)>)
+     return 1
+    endif
+    src.targ.tag(next_pick,<eval (<serv.time>+<src.targ.tag(pick_delay)>*10)>) //dalsi pick az za cas ! 
+   else
+    src.redmessage(Zde jiz neni nic co bys mohl nejak vyuzit)
+    return 1
+   endif
+  else
+   src.redmessage(Musis jeste chvili pockat nez z toho neco ziskas)
+   return 1
+  endif
+ else
+  src.redmessage(Nemas spravny predmet abys odsud neco mohl ziskat)
+  return 1
+ endif
+else
+ if (src.targ.type==t_corpse)
+  if (src.targ.link)
+   if (src.targ.link.ischar)
+    if (src.targ.link.isplayer)
+     tag(contentscount,0)
+     src.redmessage(Znehodnotil jsi obsah lidskou krvi a musel jsi jej vyhodit)
+     trigger(userclick)
+     return 1
+    endif
+   endif
+  endif
+ endif
+ if (!strcmpi(<src.targ.name>,<tag(target_id)>))
+  if (<eval (<tag(value_to_check)>)> >= <eval {0 <tag(absolute_success)>}>)
+   if (tag(maxcontents))   
+    if (<eval tag(contentscount)>)
+     if (<eval tag(contentscount)> < <tag(maxcontents)>)
+      tag(contentscount,<eval <eval tag(contentscount)>+1>)
+     else
+      src.sysMessage(Uz se sem vic nevejde)
+     endif
+    else
+     tag(contentscount,1)
+    endif
+   else
+    if (<eval tag(contentscount)>)
+     tag(contentscount,<eval <tag(contentscount)>+1>)
+    else
+    tag(contentscount,1)
+    endif
+   endif   
+  else //nezdarilo se nic ziskat
+   if (tag(target_remove))
+    if (<tag(target_remove)>==1)
+     src.targ.remove
+    endif
+    if (<tag(target_remove)>==0)
+     src.targ.tag(uncollectable,1)
+    endif
+   else
+    src.targ.tag(uncollectable,1)
+   endif
+   src.redmessage(<tag(fail_msg)>)
+   return 1
+  endif
+  //podarilo se nam neco sebrat
+  if(tag(target_remove))
+   if(<tag(target_remove)>==1)
+    src.targ.remove
+   endif
+   if(<tag(target_remove)>==0)
+   	if !(tag(repeatedcollecting))
+    	src.targ.tag(uncollectable,1)
+    endif
+   endif
+  else
+   	if !(tag(repeatedcollecting))
+      src.targ.tag(uncollectable,1)
+    endif
+  endif
+ else
+  src.sysMessage(To neni to co bys potreboval)
+  return 1
+ endif
+endif
+trigger(userclick)
+return 1
+
+[function f_collectorFixTargetId]//argv(0)=nove target_id(string), ake ma byt, argv(0)=farba ak treba
+if (<strcmpi(<tag.target_id>,<argv(0)>)>)
+  src.redmessage("Chyba v collectoru - opravuji")
+  tag.target_id="<?argv(0)?>"
+endif
+if (<argv(1)>)//farba
+  tag.color=<argv(1)>
+endif
+
+//Kolekce veci k sebrani collectorem
+[typedef t_collection]
+on=@userclick
+if (src.isgm)
+ src.sysMessage(Pouziti: Do nasledujicich tagu uloz pozadovane informace:)
+ src.sysMessage(tag(collector_id) - id predmetu ktery bude odpovidajicim collectorem)
+ src.sysMessage(- teprve zamereni tohoto t_collectoru na tohle t_collection vyvola pozadovanou odezvu)
+ src.sysMessage(tag(next_pick) - sem na zacatek uloz 0, toto je automaticky tag urcujici jestli uz lze sebrat dalsi vec)
+ src.sysMessage(tag(pick_delay) - sem uloz cas v sekundach znacici prodlevu mezi jednotlivymi ziskavanimi itemu)
+ src.sysMessage(tag(items_to_pick) - sem uloz pocet veci ktere pujde z teto kolekce ziskat celkem)
+ src.sysMessage(tag(infinite) - 1 pokud ma byt pocet sebratelnych predmetu nekonecny. defaultne nastav 0)
+endif
+
+[function f_collector_isFull] // argv(0): optional - item ID that should be checked for existence. ; returns 0 if no Collector found or found collector is not full
+if (<argvcount>)
+  arg(collector,<topobj.findID(<argv(0)>)>)
+  if !(strlen(<arg(collector)>)) // collector not found
+    return 0
+  endif
+else
+  arg(collector,<uid>)
+endif
+if (<collector.tag(maxcontents)> <= <eval collector.tag(contentscount)>) // the collector is full
+  return 1
+else
+  return 0
+endif
+
+//Pouzivan stejnojmennou funkci (viz funkce.scp)
+[itemdef i_wait_then_port]
+Name=Casovac teleportu
+ID=i_memory
+type=t_eq_script
+layer=layer_special
+
+on=@create
+attr=attr_invis|attr_decay
+morep=0 //kam to bude
+
+on=@equip
+timer=<eval tag(kdy)>
+
+on=@timer
+cont.go(<morep>) 
+
+//pouzivan stejnojmennou funkci  (viz funkce.scp)
+[itemdef i_pauza_pred_unequipem]
+NAME=Pauza pred unequipem
+ID=i_memory
+TYPE=T_eq_SCRIPT
+LAYER=layer_special
+
+on=@create
+attr=attr_invis|attr_decay
+more1=0 //tam bude layer predmetu kterej spadne do baglu
+
+on=@equip
+timer=<eval tag(kdy)>
+
+on=@timer
+if(cont.findlayer(<more1>))
+ if(cont.findlayer(<more1>).isitem)
+  if(<more1>==25) //horse
+   cont.dismount
+  else
+   cont.findlayer(<more1>).bounce
+  endif
+  cont.sysMessage(<tag(napis)>)
+ endif
+endif
+
+[itemdef i_pauza_pred_spadnutim_veci]
+NAME=Pauza pred spadnutim veci
+ID=i_memory
+TYPE=T_eq_SCRIPT
+LAYER=layer_special
+
+on=@create
+attr=attr_invis|attr_decay
+more1=0 //tam bude layer predmetu kterej spadne do baglu
+
+on=@equip
+timer=<eval tag(kdy)>
+
+on=@timer
+if(cont.findlayer(<more1>))
+ if(cont.findlayer(<more1>).isitem)
+  if(<more1>==25) //horse
+   cont.dismount
+  else
+   cont.findlayer(<more1>).drop
+  endif
+  cont.sysMessage(<tag(napis)>)
+ endif
+endif
+
+[itemdef i_layerdrop_pad]
+ID=0AEC
+Name=Layer Drop Pad
+
+ON=@Create
+color=colors_green
+attr_movenever(1)
+attr_invis(1)
+tag.thief=100.0
+more1=0
+morex=1
+morey=2
+tag(napis," ")
+tag(napis_step," ")
+
+
+on=@userdclick
+return 1
+if(src.isgm)
+ src.sysMessage(Pouziti - nastav morex podle cisla layeru co ma spadnout - napr zbran: 1,2; kun - 25)
+ src.sysMessage(nastav do morey cas za ktery dotycna vec / kun spadne / shodi ho)
+ src.sysMessage(do tagu 'napis' uloz nejakej napis co se napise - napr. Kun klopytl; Boli te ruka; Boli te hlava atd...)
+ src.sysMessage(do tagu 'napis_step' uloz nejakej napis co se napise kdyz na tu pasticku nekdo slapne a aktivuje ji)
+ src.redmessage(POZOR tento napis nesmi obsahovat zadnou carku ve vete !!!!!!!!!)
+ src.sysMessage(do tagu 'thief' uloz standardni hodnotu skillu potrebneho k odpastovani jako u jinych pasticek - napr 100.0 apd.)
+ return 1
+endif
+
+on=@step
+if(src.isplayer)
+ if(<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+  return 0
+ endif
+ if(strlen(<tag.tm>))
+  if(<tag.tm> < <serv.time>)&&(<more1>==1) //deaktivovana a uz pres cas !  
+   tag.tm=""
+   more1=0
+  endif
+ endif
+ if(<more1>==0)
+  if (<tag.thief> > 0)&&(<src.removetrap> >= <tag.thief>)&&(rand(4)==1)  
+   src.sysMessage deaktivoval jsi past
+   more1=1
+   tag.tm=<eval (<serv.time>+{6000 9000})>
+   return 0
+  endif
+  if (<src.removetrap> > 75.0)&&(rand(4)!=1)
+   src.sysMessage POZOR ! Past !
+   tag.tm=<eval (<serv.time>+30)>
+   more1=1 //deactivate
+  endif
+  if (src.isplayer)&&(<more1>==0)&&(rand(2)==1) //stale neni deaktivovana - slape looser
+   tag.tm=<eval (<serv.time>+100)> //deset sekund na utek
+   more1=1//docasne odstranit
+   src.anim=20 //gethit :) z  
+   src.sysMessage(<tag(napis_step)>)
+   src.f_padaci_pauza(<morey>,<morex>,<tag(napis)>)
+  endif
+ endif
+else
+ return 0
+endif
+
+[itemdef i_summondispell_pad]
+ID=0AEC
+Name=Summon Dispell Pad 
+
+on=@create
+color=colors_yellow
+attr_movenever(1)
+attr_invis(1)
+tag(napis_step," ")
+
+on=@userdclick
+if(src.isgm)
+  src.sysMessage(V tagu 'napis_step' je nejakej chytrej napis co se zobrazi pri slapnuti. BEZ CAREK!!!)
+  return 1
+endif
+
+on=@step
+if(!src.isgm)
+  if (src.issumon)
+    src.remove
+    return 1
+  endif
+  arg(opustila,0)
+  while(src.findid(i_rune_hassummon))
+    arg(opustila,1)
+    arg(runa1,<src.findid(i_rune_hassummon)>)
+    runa1.link.remove //odstraní to zvíøátko 
+    runa1.remove
+  endwhile
+  //while(src.memoryfindtype(MEMORY_friend)) // might cause a bug. Anyway, it seems that it does not work 
+  //src.memoryfindtype(MEMORY_friend).remove
+  //endwhile
+  if(opustila)
+    src.sysMessage(<tag(napis_step)>)
+  endif
+endif
+
+[itemdef i_poisonpad]
+ID=0AEC
+Name=Poison Pad
+
+ON=@Create
+color=0442
+attr_movenever(1)
+attr_invis(1)
+tag.thief=100.0
+tag(poisonDmg,20)
+tag(poisonSpeed,5)
+tag(poisonType,poison_c)
+tag(ppActivateChance,50)
+tag(restime,100)
+
+on=@userdclick
+if (src.isGM)
+  dialog(d_poisonpad)
+  // src.sysMessage(V tagu 'jed' je hodnota jaky to da poison - default je 500)
+  return 1
+endif
+
+on=@step
+if (src.isplayer)
+  if (<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+    return 0
+  endif
+  if (strlen(<tag.tm>))
+    if (<tag.tm> < <serv.time>)&&(<more1>==1) //deaktivovana a uz pres cas !  
+      tag.remove(tm)
+      more1=0
+    endif
+  endif
+  if (<more1>==0)
+    if (f_removeTrap_tryActivateTrap) //checks wheather the player successfully removed the trap, the condition succeed if player doesnt
+      if (<eval tag(ppActivateChance)> == 0)
+        tag(ppActivateChance,50)
+      endif
+      if (<eval tag(ppActivateChance)> > rand(100)) //stale neni deaktivovana - slape looser
+        if (<eval tag(restime)> == 0)
+          tag(restime,100)
+        endif
+        tag(tm,<eval (<serv.time>+<tag(restime)>)>) //gives <restime> ds to escape
+        more1=1 //temporarily deactivate
+        src.anim=20 //gethit :)
+        if (<eval tag(poisonDmg)> == 0)
+          tag.remove(jed)
+          tag(poisonDmg,20)
+        endif
+        if (<eval tag(poisonSpeed)> == 0)
+          tag(poisonSpeed,5)
+        endif
+        if (strlen(<tag(poisonType)>)==0)
+          tag(poisonType,poison_c)
+        endif
+        src.f_poison_doPoison(<tag(poisonDmg)>,<tag(poisonSpeed)>,<tag(poisonType)>) // arg1 ~ dmg; arg2 ~ poison speed in seconds; arg3 ~ poison type function name
+        src.redmessage("<src.sex("Slapl","Slapla")> jsi na jedovaty osten")
+        f_trap_moveTrap
+      endif
+    endif
+  endif
+else
+  return 0
+endif
+
+[dialog d_poisonpad]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,330)
+argo.tag(vyska,<d_def_baseMenu_vyska>+7*<d_def_radek_vyska>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,7,100,201)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Poison dlazdice")
+argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,<lastypos>-3,0fab,0fad,1,0,2)  //help
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Respawn/ds:")
+argo.texta(lastxpos,lastypos+(1*d_def_radek_vyska),<d_def_writecolor>,"Jed sila:")
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),<d_def_writecolor>,"Jed rychlost:")
+argo.texta(lastxpos,lastypos+(3*d_def_radek_vyska),<d_def_writecolor>,"Jed typ:")
+argo.texta(lastxpos,lastypos+(4*d_def_radek_vyska),<d_def_writecolor>,"Sance/%:")
+argo.texta(lastxpos,lastypos+(5*d_def_radek_vyska),<d_def_writecolor>,"RemoveTrap:")
+argo.texta(lastxpos,lastypos+(6*d_def_radek_vyska),<d_def_writecolor>,"MoveTrap:")
+
+argo.settext(10,"<?eval tag(restime)?>") //respawn time
+argo.settext(11,"<?eval tag(poisonDmg)?>") //
+argo.settext(12,"<?eval tag(poisonSpeed)?>") //chance to activate this pad after stepping on it
+argo.settext(13,"<?tag(poisonType)?>") //chance to activate this pad after stepping on it
+argo.settext(14,"<?eval tag(ppActivateChance)?>") //chance to activate this pad after stepping on it
+argo.textentry(<argo.dialog_textpos(1,1)>,198,<d_def_radek_vyska>,textcolor,1,10)    //time to next pad activation in ds
+argo.textentry(lastxpos,lastypos+(1*d_def_radek_vyska),198,<d_def_radek_vyska>,textcolor,2,11)  //poison dmg
+argo.textentry(lastxpos,lastypos+(2*d_def_radek_vyska),198,<d_def_radek_vyska>,textcolor,3,12)  //poison speed
+argo.button(lastxpos,lastypos+(3*<d_def_radek_vyska>)-3,0fab,0fad,1,0,4)  //PoisonType menu
+argo.text(lastxpos+d_def_button_sirka,lastypos+(3*d_def_radek_vyska),<d_def_readcolor>,13)
+argo.textentry(lastxpos,lastypos+(4*d_def_radek_vyska),198,<d_def_radek_vyska>,textcolor,4,14)  //chance in %
+argo.button(lastxpos,lastypos+(5*<d_def_radek_vyska>)-3,0fab,0fad,1,0,5)  //RemoveTrap dialog button
+argo.button(lastxpos,lastypos+(6*<d_def_radek_vyska>)-3,0fab,0fad,1,0,6)  //MoveTrap dialog button
+
+argo.button(<argo.dialog_but_rd>,0fb4,0fb6,1,0,3)//pad goes home
+argo.button(<argo.dialog_but_ld>,0fb7,0fb9,1,0,1)//ok
+argo.button(<lastxbuttpos>+<d_def_button_sirka>,<lastybuttpos>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_poisonpad button]
+on=0
+src.sysMessage("<src.sex(Stornoval,Stornovala)> jsi volbu. Nastaveni zustava nezmeneno.")
+
+on=1
+f_pad_poisonpad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+src.sysMessage("Nastavujes nove hodnoty spawnu.")
+
+on=2 //Help
+f_pad_poisonpad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+dialog(d_poisonpad)
+dialog(d_poisonpad_help)
+
+on=3 // pad goes home
+f_pad_poisonpad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+if (strlen(<tag(moveTrap_basePosition)>))
+  p=<tag(moveTrap_basePosition)>
+  src.sysMessage("Naslapka byla umistena zpet na zakladni pozici.")
+else
+  src.redMessage("Funkce MoveTrap neni nastavena.")
+endif
+dialog(d_poisonpad)
+
+on=4
+f_pad_poisonpad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+menu(menu_poisoningPad_poisonType)
+
+on=5 // removeTrap dialog
+f_pad_poisonpad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+dialog(d_trap_removeTrap,d_poisonpad)
+
+on=6 // moveTrap dialog
+f_pad_poisonpad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+dialog(d_trap_moveTrap,d_poisonpad)
+
+
+[dialog d_poisonpad_help]
+argo.settext(1," Respawn/ds: cas, po kterem lze naslapku znovu aktivovat po predchozim uspesnym seslapnuti v desetinach sekundy.<br><br> Jed sila: je-li vybran typ jedu, ktery dava v nejakem smyslu damage, pak je tato hodnota prave tim damage. V pripade pr. para poisonu nema zadny zvlastni vyznam.<br><br> Jed rychlost: rychlost skytani jedu v sekundach.<br><br> Jed typ: tlacitko nabidne seznam pouzitelnych jedu.<br><br>Sance/%: hodnota v % udavajici pravdepodobnost, s jakou hrac obdrzi poison po uspesnem seslapnuti. Sance MUSI byt nastavena, v opacnem pripade ji bude prirazena defaultni hodnota 50%.<br><br> RemoveTrap & MoveTrap: univerzalni funkce. Popis v jejich dialogu po stistknuti prislusneho tlacitka.")
+argo.f_dialog_HelpCreator("HELP - PoisonPad nastaveni")
+
+//@arg 0 ~ restime
+//@arg 1 ~ poison dmg
+//@arg 2 ~ poison speed
+//@arg 3 ~ activate chance
+[function f_pad_poisonpad_setDialogValues]
+if (<eval argv(0)>)
+  tag(restime,<eval argv(0)>)
+else
+  tag(restime,100)
+endif
+if (<eval argv(1)>)
+  tag(poisonDmg,<eval argv(1)>)
+else
+  tag(poisonDmg,20)
+endif
+if (<eval argv(2)>)
+  tag(poisonSpeed,<eval argv(2)>)
+else
+  tag(poisonSpeed,5)
+endif
+if (<eval argv(3)>)
+  tag(ppActivateChance,<eval argv(3)>)
+else
+  tag(ppActivateChance,50)
+endif
+if (strlen(<tag(poisonType)>)==0)
+  tag(poisonType,poison_c)
+endif
+
+[menu menu_poisoningPad_poisonType]
+Jaky typ jedu se ma udelit?
+
+on=0 konstantni damage
+tag(poisonType,poison_absoluteDmg)
+dialog(d_poisonpad)
+
+
+on=0 procentuelni damage z HP
+tag(poisonType,poison_c)
+dialog(d_poisonpad)
+
+on=0 para poison
+tag(poisonType,poison_para)
+dialog(d_poisonpad)
+
+on=0 stamina poison
+tag(poisonType,poison_stamina)
+dialog(d_poisonpad)
+
+on=0 feeblemind poison
+tag(poisonType,poison_feeblemind)
+dialog(d_poisonpad)
+
+on=0 weaken poison
+tag(poisonType,poison_weaken)
+dialog(d_poisonpad)
+
+on=0 clumsy poison
+tag(poisonType,poison_clumsy)
+dialog(d_poisonpad)
+
+
+[itemdef i_realmpad]
+ID=0AEC
+Name=Realm Pad
+type=t_realmpad
+
+ON=@Create
+attr_movenever(1)
+attr_invis(1)
+more1=1
+morep=1001 1001
+
+on=@userdclick
+if (src.isGM)
+  src.sysMessage(Pouziti - nastav more1 podle cisla realmu tj 1 gondor, 2 mordor, do morep uloz místo kam ma hazet)
+  return 1
+endif
+
+///////////////////////////////////////////////////////////
+//ROCK BOW - ZIVOTNE DULEZITEJ ITEM PRO ELEMENTALY CO MAJ HAZET SUTRY!
+//NEMAZAT!!!!!!!!!!!!!!!!!!
+//TO PLATI PRO VERBATIMA :o)
+///////////////////////////////////////////////////////////
+[itemdef i_bow_rock]
+id=i_crossbow
+TDATA4=i_rock_plain
+tdata3=t_arock
+weight=15
+
+on=@create
+hitpoints=0ffff 
+
+
+[itemdef i_regataBoje]
+id=i_crystal_ball
+name=Boje
+type=t_script
+
+on=@Create
+events=+t_regataBoje
+events=+t_pergamen
+
+[typedef t_regataBoje]
+on=@UserDClick
+if (src.isGM)
+  dialog(d_regataBoje_GM)
+  src.sysMessage("blaf")
+else
+  if (f_regataBoje_findPlayer)
+    src.sysMessage("Jiz jsi se <src.sex(zapsal,zapsala)>.")
+  else
+    tag(hrac_<eval more1>,<src>)
+    src.sysMessage("Zapisujes sve jmeno na list.")
+    more1=<more1>+1
+  endif
+endif
+
+[function f_regataBoje_findPlayer]
+arg(i,0)
+while (<arg(i)> < <more1>)
+  src.sysMessage("<src>,<tag(hrac_<eval arg(i)>)>")
+  if (<src>==<tag(hrac_<eval arg(i)>)>)
+    return 1
+  endif
+  arg(i,#+1)
+endwhile
+return 0
+
+[dialog d_regataBoje_GM]
+argo.SetLocation=225,5
+
+argo.tag(sirka,290)
+argo.tag(vyska,595)
+argo.page(0)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,123,138)
+argo.dialog_pozadi(<argo.tag(nexty)>,26,123,138)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Seznam zapsanych hracu")
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Hrac:")
+argo.texta(<argo.dialog_textpos(1,1)>,<d_def_writecolor>,"Hrac UID:")
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+argo.tag(thisPage,<eval argv(0)>)
+arg(pctRadku,0)
+arg(playerNumber,<argo.tag(thisPage)> * 23)
+argo.dialog_textpos(2,0)
+if (<argo.tag(thisPage)> > 0)
+  argo.button(261,<lastypos>+8,0983,0984,1,0,<eval argo.tag(thisPage)+1500>-1)  //previous page
+endif
+while (<arg(playerNumber)> < <eval more1>) && (<arg(pctRadku)> < 26)
+  argo.texta(lastxpos,lastypos+(<pctRadku>*d_def_radek_vyska),<d_def_readcolor>,<finduid(<tag(hrac_<eval arg(playerNumber)>)>).name>)
+  argo.texta(lastxpos+125,lastypos+(<pctRadku>*d_def_radek_vyska),<d_def_readcolor>,<tag(hrac_<eval arg(playerNumber)>)>)
+  arg(pctRadku,#+1)
+  arg(playerNumber,#+1)
+  if (<arg(pctRadku)> == 26)
+    argo.button(261,<lastypos>+22*<d_def_radek_vyska>,0985,0986,1,0,<eval argo.tag(thisPage)+1500>+1)  //next page
+  endif
+endwhile

@@ -1,0 +1,4135 @@
+//////////////////////////////////////////////////////
+//               B O S S - M A H A T                //
+//                   (c)  Marek                     //
+//////////////////////////////////////////////////////
+
+[CHARDEF c_mahat_boss]          //weak na sekery, piercing a energy
+
+NAME=Pan Mahatu
+CATEGORY=Dungy
+SUBSECTION=Mahat
+DESCRIPTION=Boss Mahatu
+ID=C_MAN
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=120
+ARMOR=100
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_character
+TEVENTS=e_monster
+TEVENTS=e_summoneater              //smaze summona, co zasahne
+TEVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_detect
+TEVENTS=e_phoenix_fire
+TEVENTS=e_illusionist
+TEVENTS=e_parakrik
+TEVENTS=e_autoreflect
+TEVENTS=e_managain
+
+ON=@Create
+COLOR=colors_skin
+NPC=brain_monster
+FAME=100
+KARMA=-5000
+
+STR=1000
+DEX=250
+INT=350
+
+maxhits={29000 30000}
+maxstam={200 250}
+maxmana=1000
+
+tag.experience=<eval {1900.0 2000.0}>
+
+tag.npc_curse_chance=250                // 25% chance to trigger this event
+tag.npc_curse_delay=12,15               // delay between another possible strike
+tag.npc_curse_dmg=40,45                 // dmg 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(npc_summoning_chance,50)            //5% chance
+tag(npc_summoning_time,60)
+tag(npc_summoning_count,4)
+tag(npc_summoning_char[0],c_mahat_boss_sluha)
+tag(npc_summoning_char[1],c_mahat_boss_leaper)
+tag(npc_summoning_char[2],c_mahat_boss_leaper)
+tag(npc_summoning_char[3],c_mahat_boss_etheric)
+
+//typ monstra
+tag(monstertype,humanoid,50)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,750)
+tag(resist_slash,400)          //sekery, zranitelny humanoid
+tag(resist_pierce,400)         //zranitelny humanoid
+tag(resist_blunt,850)
+
+tag(resist_fire,550)
+tag(resist_elect,300)          //brneni nepohlti energii
+tag(resist_cold,850)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+WRESTLING=150.0 
+RESIST={120.0 170.0}
+TACTICS={100.0 150.0}
+PARRYING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+MAGERY=150.0
+EI=120.0
+PROVOCATION=100.0
+PEACEMAKING=100.0
+SpiritSpeak=200.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+//addspell=s_flamestrike
+addspell=s_summon_elem_air
+addspell=s_summon_elem_fire
+//addspell=s_magic_reflection
+
+ITEMnewbie=i_monster_create
+ITEM=i_npc_mount
+tag.mount=i_mt_horse_gray
+tag.mountcolor=098f
+
+ITEMNEWBIE=i_light_source
+ITEMNEWBIE=random_female_hair
+ITEMnewbie=i_bone_helmet
+color=0989
+NAME=Prastara zbroj
+ITEMnewbie=i_sword_long
+color=098f
+NAME=Magicky mec
+ITEMnewbie=i_sandals
+color=0989
+ITEMnewbie=i_bone_leggings
+color=0989
+NAME=Prastara zbroj
+ITEMnewbie=i_bone_chest
+color=0989
+NAME=Prastara zbroj
+ITEMnewbie=i_necklance_silver
+color=0989
+ITEMnewbie=i_bone_gloves
+color=0989
+ITEMnewbie=i_shield_buckler
+color=098f
+NAME=Stit
+ITEMnewbie=i_bone_arms
+color=0989
+NAME=Prastara zbroj
+
+ON=@NPCRestock 
+ITEM=i_gold
+ITEM=random_FOOD,{0 1}
+ITEM=RANDOM_REAGENT,{50 100}
+ITEM=RANDOM_REAGENT_NECRO,{40 50}
+ITEM=i_boss_skull_mahat,1
+
+ON=@hit 
+IF (RAND(10)==1)
+  dorand 4
+    SAYU("Jsi na mem uzemi, zemres!")
+    SAYU("Nikdy me neporazis!")
+    SAYU("V magii je sila!")
+    SAYU("Heru Ruin Val")
+  enddo
+ENDIF
+
+////////////////////////////////////////////////////////////
+
+[CHARDEF c_mahat_boss_sluha]
+ID=c_excelent
+NAME=Sluha Mahatu
+CATEGORY=Dungy
+SUBSECTION=Mahat
+DESCRIPTION=Boss Mahatu - Sluha
+ICON=i_pet_wisp
+SOUND=snd_MONSTER_DAEMON1
+CAN=MT_WALK|mt_run|
+
+attack=120
+ARMOR=120
+moverate=4
+
+resources=9 i_ribs_raw
+BLOODCOLOR=color_o_mithril
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_NPC_Bleed
+TEVENTS=e_npc_stun
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_roundattack
+
+ON=@Create
+NPC=brain_monster
+color=0988
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=400
+
+maxhits={6500 7000}
+maxmana=0
+
+tag.experience=<eval {380.0 400.0}>
+
+tag.roundattack_damage=50,60  //dmg od - do
+tag.roundattack_time=10,12    //prodleva od - do v sek
+tag.roundattack_chance=200    //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag.npc_bleed=300 //30.0%
+
+tag(resist_poison,1000)
+tag(resist_para,960) 
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,750)
+tag(resist_slash,850)
+tag(resist_pierce,499)
+tag(resist_blunt,850)
+
+tag(resist_fire,550)
+tag(resist_elect,750)
+tag(resist_cold,850)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+magery=0
+ei={130.0 140.0}
+peacemaking=100.0
+provocation=100.0
+POISONING={70.0 120.0}
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=100.0
+
+ITEMnewbie=i_monster_create
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////
+
+[chardef c_mahat_boss_leaper]
+id=c_wisp
+ANIM=078c7f
+NAME=Mihotave svetelko
+CATEGORY=Dungy
+SUBSECTION=Mahat
+DESCRIPTION=Leaper
+CAN=MT_WALK
+
+attack=75
+ARMOR=65
+
+BLOODCOLOR=colors_green
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_leaper
+
+ON=@Create
+NPC=brain_monster
+color=color_o_silver
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=1000
+DEX=300
+INT=100
+
+maxhits={1500 1950}
+
+tag.experience=<eval {30.0 35.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(npc_port_distance,9)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,650)
+tag(resist_slash,650)
+tag(resist_pierce,450)
+tag(resist_blunt,450)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+PROVOCATION=100.0
+WRESTLING={95.0 100.0}
+SpiritSpeak=55.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////
+
+[chardef c_mahat_boss_etheric]
+id=c_wisp
+ANIM=078c7f
+NAME=Mihotave svetelko
+CATEGORY=Dungy
+SUBSECTION=Mahat
+DESCRIPTION=Leaper etheric
+CAN=MT_WALK
+
+attack=75
+ARMOR=25
+
+BLOODCOLOR=colors_green
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_leaper
+
+ON=@Create
+NPC=brain_monster
+color=color_o_gold
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=1000
+DEX=300
+INT=100
+
+maxhits={720 750}
+tag.experience=<eval {30.0 35.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(npc_port_distance,9)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,1000)
+tag(resist_slash,1000)
+tag(resist_pierce,1000)
+tag(resist_blunt,1000)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+PROVOCATION=100.0
+SpiritSpeak=55.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+
+//////////////////////////////////////////////////////
+//               B O S S - Carn Dumm                //
+//                   (c)  Marek                     //
+//////////////////////////////////////////////////////
+
+[CHARDEF c_cd_boss]            //weak na slash, pierce + frost
+
+NAME=Mocny Demon
+CATEGORY=Dungy
+SUBSECTION=CD
+DESCRIPTION=Boss CD
+ID=c_daemon_large
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=140
+ARMOR=120
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_character
+TEVENTS=e_monster
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_summoner
+TEVENTS=e_npc_detect
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_parakrik
+TEVENTS=e_lightnings
+TEVENTS=e_explosiondispell
+TEVENTS=e_managain
+TEVENTS=e_npc_curse                    //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_curse_stam               //mass sani staminy
+
+ON=@Create
+NPC=brain_monster
+FAME=100
+KARMA=-5000
+
+STR=10000
+DEX=1000
+INT=500
+
+maxhits={29000 30000}
+maxstam={300 330}
+maxmana=2000
+
+tag.experience=<eval {1700.0 1799.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+
+tag(e_lightnings_chance,50)             // 5.0% chance
+tag(e_lightnings_range,5)
+
+tag.npc_curse_chance=250                // 25% chance to trigger this event
+tag.npc_curse_delay=15,20               // delay between another possible strike
+tag.npc_curse_dmg=30,35                 // dmg 
+
+tag(e_explosiondispell_chance,300) //30% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,20)
+
+tag(npc_summoning_chance,50)            // 5.0% chance
+tag(npc_summoning_time,180)
+tag(npc_summoning_count,4)
+tag(npc_summoning_char[0],c_glmm_daemon_phys_lvl_1)
+tag(npc_summoning_char[1],c_cd_meeler)
+tag(npc_summoning_char[2],c_cd_ovinovac)
+tag(npc_summoning_char[3],c_mahat_boss_etheric)
+
+tag(npc_summoner_count,3)
+tag(npc_summoner_char[0],c_cd_invul)
+tag(npc_summoner_char[1],c_cd_invul)
+tag(npc_summoner_char[2],c_cd_invul)
+
+tag.npc_curse_stam_chance=250          // 25% chance to trigger this event
+tag.npc_curse_stam_delay=15,20         // delay between another possible strike
+tag.npc_curse_stam_dmg=20,30           // stam reduce in between 50 and 60
+
+//typ monstra
+tag(monstertype,daemon,50)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,300)
+tag(resist_pierce,300)
+tag(resist_blunt,950)
+
+tag(resist_fire,950)
+tag(resist_elect,550)
+tag(resist_cold,300)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+WRESTLING=150.0 
+RESIST={150.0 170.0}
+TACTICS={100.0 150.0}
+PARRYING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+MAGERY=150.0
+EI=120.0
+PROVOCATION=100.0
+PEACEMAKING=100.0
+SpiritSpeak=200.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_summon_elem_fire
+//addspell=s_energy_bolt
+//addspell=s_magic_reflection
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock 
+ITEM=i_gold
+ITEM=RANDOM_REAGENT,{50 100}
+ITEM=RANDOM_REAGENT_NECRO,{30 50}
+ITEM=i_boss_skull_cd,1
+
+//////////////////////////////////////////
+
+[chardef c_cd_meeler]
+id=c_wisp
+NAME=Devastator
+CATEGORY=Dungy
+SUBSECTION=CD
+DESCRIPTION=Boss meeler
+CAN=MT_WALK|mt_run
+
+attack=140
+ARMOR=140
+
+BLOODCOLOR=color_o_mithril
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_summoneater                          //smaze summona, co zasahne
+//TEVENTS=e_npc_reactivearmor
+TEVENTS=e_npc_roundattack
+TEVENTS=e_npc_stun
+TEVENTS=e_NPC_Bleed
+TEVENTS=e_explode
+TEVENTS=e_phoenix_fire
+
+ON=@Create
+color=098c
+NPC=brain_monster
+FAME=250
+KARMA=-5000
+
+STR=20000
+DEX=500
+INT=600
+
+maxhits={6000 7000}
+maxstam={600 700}
+maxmana=0
+
+tag.experience=<eval {500.0 550.0}>
+
+Tag.explode_dmg=60
+
+tag.roundattack_damage=50,60    //dmg od - do
+tag.roundattack_time=15,20      //prodleva od - do v sek
+tag.roundattack_chance=200      //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+
+//typ monstra
+tag(monstertype,daemon,80)
+
+tag.weapflag=dam_physical|dam_piercing
+
+tag(resist_poison,1000)
+tag(resist_para,960) 
+tag(resist_summon,1000)
+tag(resist_bleed,750)
+
+tag(resist_sharp,650)
+tag(resist_slash,600)
+tag(resist_pierce,550)
+tag(resist_blunt,150)
+
+tag(resist_fire,400)
+tag(resist_elect,-200)
+tag(resist_cold,100)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+POISONING={300.0 400.0}
+WRESTLING=140.0
+RESIST=250.0
+SpiritSpeak=210.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////
+
+[chardef c_cd_invul]
+id=c_wisp
+NAME=Shadow of Devastator
+CATEGORY=Dungy
+SUBSECTION=CD
+DESCRIPTION=Boss meeler docasny
+CAN=MT_WALK|mt_run
+
+attack=140
+ARMOR=140
+
+BLOODCOLOR=color_o_mithril
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_reactivearmor
+TEVENTS=e_npc_roundattack
+TEVENTS=e_npc_stun
+TEVENTS=e_NPC_Bleed
+TEVENTS=e_explode
+
+ON=@Create
+color=098c
+NPC=brain_monster
+FAME=250
+KARMA=-5000
+
+STR=20000
+DEX=500
+INT=600
+
+maxhits={25000 26000}
+maxstam={900 990}
+maxmana=0
+
+tag.experience=<eval {600.0 700.0}>
+
+Tag.explode_dmg=60
+
+tag.roundattack_damage=40,50    //dmg od - do
+tag.roundattack_time=15,20      //prodleva od - do v sek
+tag.roundattack_chance=200      //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag.weapflag=dam_physical|dam_piercing
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,900)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,850)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,400)
+tag(resist_cold,600)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+POISONING={300.0 400.0}
+WRESTLING=140.0
+RESIST=250.0
+SpiritSpeak=120.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////
+
+[chardef c_cd_ovinovac]
+id=c_wisp
+ANIM=078c7f
+NAME=Mihotave svetelko
+CATEGORY=Dungy
+SUBSECTION=CD
+DESCRIPTION=Leaper ovinovac
+CAN=MT_WALK
+
+attack=45
+ARMOR=25
+
+BLOODCOLOR=colors_green
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_leaper
+TEVENTS=e_ovinovac
+
+ON=@Create
+NPC=brain_monster
+color=01f
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=1000
+DEX=300
+INT=100
+
+maxhits={820 950}
+
+tag.experience=<eval {30.0 35.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(npc_port_distance,5)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,799)
+tag(resist_slash,799)
+tag(resist_pierce,699)
+tag(resist_blunt,699)
+
+tag(resist_fire,400)
+tag(resist_elect,600)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=55.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+
+//////////////////////////////////////////////////////
+//               B O S S - MOUNT DORLAS             //
+//                   (c)  Marek                     //
+//////////////////////////////////////////////////////
+
+[chardef c_MD_boss]             //weak fire + blunt + ostre
+ID=c_shadow
+Name=Pan Mrazu
+CATEGORY=Dungy
+SUBSECTION=Mount Dorlas
+DESCRIPTION=Boss MD
+SOUND=snd_MONSTER_GHOST1
+ICON=i_pet_LICH
+
+CAN=MT_WALK|MT_SWIM|MT_GHOST|MT_USEHANDS
+
+attack=120
+ARMOR=120
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_character
+TEVENTS=e_monster
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_detect
+TEVENTS=e_parakrik
+TEVENTS=e_explosiondispell
+TEVENTS=e_npc_multishot
+TEVENTS=e_managain
+
+ON=@Create
+color=0480
+NPC=brain_monster
+FAME=100
+KARMA=-5000
+
+STR=1000
+DEX=200
+INT=350
+
+maxhits={22000 23000}
+maxstam={200 230}
+maxmana=1000
+
+tag.experience=<eval {1500.0 1599.0}>
+
+tag.multishot_chance=50                        // 5% chance pri zasahu monstra
+tag.multishot_delay=15,20                      // prodleva nez znovu
+tag.multishot_dmg=30,35                        // dmg 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(e_explosiondispell_chance,100) //10% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(npc_summoning_chance,40)  //4.0% chance
+tag(npc_summoning_time,60)
+tag(npc_summoning_count,4)
+tag(npc_summoning_char[0],c_elem_ice)
+tag(npc_summoning_char[1],c_elem_ice)
+tag(npc_summoning_char[2],c_mahat_boss_leaper)
+tag(npc_summoning_char[3],c_mahat_boss_etheric)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,450)              //human krvaci
+
+tag(resist_sharp,150)              //projde skrz
+tag(resist_slash,750)              //odolny na sekery
+tag(resist_pierce,800)             //odolny na sipy
+tag(resist_blunt,200)              //rozdrti
+
+tag(resist_fire,-50)
+tag(resist_elect,450)
+tag(resist_cold,1000)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+//typ monstra
+tag(monstertype,humanoid,50)
+
+WRESTLING=150.0 
+RESIST={120.0 170.0}
+TACTICS={100.0 150.0}
+PARRYING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+MAGERY=150.0
+EI=120.0
+PROVOCATION=100.0
+PEACEMAKING=100.0
+SpiritSpeak=200.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+//addspell=s_magic_reflection
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_FOOD,{0 1}
+ITEM=RANDOM_REAGENT,{60 70}
+ITEM=i_boss_skull_md,1
+
+//////////////////////////////////////////
+
+[chardef c_md_guard]
+id=c_skull_head
+ANIM=078c7f
+NAME=Zamrzla duse
+CATEGORY=Dungy
+SUBSECTION=Mount Dorlas
+DESCRIPTION=Zamrzla duse bosse
+CAN=MT_WALK
+
+attack=65
+ARMOR=25
+
+BLOODCOLOR=colors_green
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_stun
+
+ON=@Create
+NPC=brain_monster
+color=0480
+FAME=500
+KARMA={-1000 -2000}
+STR=1000
+DEX=300
+INT=100
+maxhits={300 350}
+tag.experience=<eval {10.0 15.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[2]>
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,1000)
+tag(resist_slash,1000)
+tag(resist_pierce,1000)
+tag(resist_blunt,1000)
+
+tag(resist_fire,1000)
+tag(resist_elect,1000)
+tag(resist_cold,1000)
+
+//tag(resist_phys,0)
+tag(resist_magic,1000)
+//tag(resist_acid,0)
+
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=55.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+//               B O S S - TUMA OSTO                //
+//                (c)  Marek & Thalion              //
+//////////////////////////////////////////////////////
+
+
+[CHARDEF c_Daemon_aresion] //sharp + cold weak
+ID=c_balron
+NAME=Aresion
+sound=snd_monster_daemon1
+ICON=i_pet_ophid_mage
+ANIM=07fc7f
+CAN=MT_WALK|mt_run|MT_fire_immune
+
+attack=100
+ARMOR=120
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Tuma Osto
+DESCRIPTION=Boss Tuma Osto
+
+RESOURCES=28 i_ribs_raw
+BLOODCOLOR=0996
+
+TEVENTS=e_character
+TEVENTS=e_monster
+TEVENTS=e_summoneater                 //smaze summona, co zasahne
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_detect
+TEVENTS=e_npc_curse                   //vsechny viditelne zrani o dmg
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_parakrik
+TEVENTS=e_explosiondispell
+TEVENTS=e_managain
+
+ON=@Create
+COLOR=colors_wyrm
+NPC=brain_monster
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=10000
+DEX=300
+INT=400
+
+maxhits={20000 21000}
+maxstam={250 290}
+maxmana=1000
+
+tag.experience=<eval {2000.0 2100.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+
+tag(e_explosiondispell_chance,100) //10% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(npc_summoning_chance,30)  //3.0% chance
+tag(npc_summoning_time,60)
+tag(npc_summoning_count,2)
+tag(npc_summoning_char[0],c_glmm_daemon_phys_lvl_2)
+tag(npc_summoning_char[1],c_mahat_boss_etheric)
+
+tag.npc_curse_chance=250                // 25% chance to trigger this event
+tag.npc_curse_delay=15,17               // delay between another possible strike
+tag.npc_curse_dmg=35,40                 // dmg 
+
+//typ monstra
+tag(monstertype,daemon,50)
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,350)
+tag(resist_slash,750)
+tag(resist_pierce,600)
+tag(resist_blunt,950)                //nepruchodna kuze
+
+tag(resist_fire,950)
+tag(resist_elect,700)
+tag(resist_cold,200)                 //citlivost na chlad demon
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+peacemaking=100.0
+provocation=100.0
+POISONING={200.0 300.0}
+Resist=250.0
+WRESTLING=120.0
+magery=120.1
+ei=150.0
+SpiritSpeak=145.0
+
+itemnewbie=i_spellbook
+addspell=s_mass_dispel
+addspell=s_magic_reflection
+addspell=s_lightning
+//addspell=s_energy_bolt
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=random_FOOD,{0 1}
+item=i_gold
+ITEM=i_boss_skull_to,1
+
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_xillyon]       // weak na blunt, energy = meeler
+ID=c_golem_copper
+NAME=Xillyon
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=160
+ARMOR=160
+MOVERATE=3
+
+CATEGORY=Dungy
+SUBSECTION=Tuma Osto
+DESCRIPTION=miniBoss Tuma Osto
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_npc_detect
+//TEVENTS=e_phoenix_fire
+TEVENTS=e_parakrik
+TEVENTS=e_explosiondispell
+TEVENTS=e_npc_stun
+TEVENTS=e_NPC_Bleed
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+
+ON=@Create
+color=01e9
+
+NPC=brain_monster
+FAME=1500
+KARMA={-7500 -10000}
+
+STR=7000
+DEX=400
+INT=0
+
+maxhits={30000 30500}
+maxstam={430 460}
+maxmana=0
+
+tag.experience=<eval {1700.0 1800.0}>
+
+tag.roundattack_damage=50,55        //dmg od - do
+tag.roundattack_time=15,17          //prodleva od - do v sek
+tag.roundattack_chance=600          //60.0%
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=20               // takes 20 of stam
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+
+//typ monstra
+tag(monstertype,golem,60)
+
+tag(e_explosiondispell_chance,150) //15% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag.weapflag=dam_physical|dam_blunt
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,800)
+tag(resist_slash,800)
+tag(resist_pierce,450)
+tag(resist_blunt,150)            //golem tristi se
+
+tag(resist_fire,850)
+tag(resist_elect,150)            //kovovy golem
+tag(resist_cold,450)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=150.0
+SpiritSpeak=200.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=loot_DAEMON
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_TO_guard] // dispelujici servant weak na blunt.
+
+ID=c_skeleton_mage
+NAME=Nemrtvy Carodej
+CATEGORY=Dungy
+SUBSECTION=Tuma Osto
+DESCRIPTION=Boss Guard
+SOUND=snd_MONSTER_SKLETN1
+ICON=i_pet_SKELETON
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_EQUIP|MT_FIRE_IMMUNE
+
+ATTACK=55
+ARMOR=60
+MOVERATE=3
+
+RESOURCES=12 i_reag_bone
+
+BLOODCOLOR=-1
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explosiondispell
+
+ON=@Create
+COLOR=098d
+NPC=brain_undead
+FAME=240
+KARMA={-999 -3999}
+
+STR=1100
+DEX=400
+INT=320
+
+
+maxhits={1900 1999}
+maxstam=350
+maxmana=700
+
+tag.experience=<eval {190.0 199.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//typ monstra
+tag(monstertype,undead,60)
+
+tag(e_explosiondispell_chance,500)  //50.0%
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,10)
+
+tag.weapflag=dam_physical|dam_blunt
+
+tag(resstimer,<eval {45 90}>)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,850)
+tag(resist_slash,650)
+tag(resist_pierce,950)
+tag(resist_blunt,200)
+
+tag(resist_fire,600)
+tag(resist_elect,600)
+tag(resist_cold,400)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={85.0 100.0}
+RESIST={65.0 80.0}
+TACTICS={85.0 100.0}
+WRESTLING=110.0
+MAGERY={120.0 130.0}
+EI={120.0 135.0}
+peacemaking=100.0
+provocation=100.0
+SpiritSpeak=60.0
+
+
+ITEMNEWBIE=i_spellbook
+addspell=s_mass_dispel
+addspell=s_lightning
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=RANDOM_REAGENT,{10 30}
+
+//////////////////////////////////////////////////////
+//               B O S S - ARACHNON                 //
+//                (c)  Marek                        //
+//////////////////////////////////////////////////////
+
+[CHARDEF c_spider_boss] // boss 
+ID=c_spider_elder
+NAME=Pavoucek
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_SPIDER_GIANT
+ANIM=078c7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+
+attack=100
+ARMOR=150
+moverate=5
+
+CATEGORY=Dungy
+SUBSECTION=Arachnon
+DESCRIPTION=Boss
+
+RESOURCES=50 i_reag_spider_silk
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_npc_detect
+TEVENTS=e_ovinovac
+TEVENTS=e_parakrik
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_summoner
+TEVENTS=e_lifeLeech          //kazda rana saje HP
+
+ON=@Create
+COLOR=0555
+NPC=brain_monster
+FAME={100 5000}
+karma=-3000
+
+STR=2000
+DEX=500
+INT=200
+
+maxhits={17000 18000}
+maxstam={200 300}
+maxmana=0
+
+tag.experience=<eval {750.0 800.0}>
+
+tag.roundattack_damage=30,40    //dmg od - do
+tag.roundattack_time=10,15      //prodleva od - do v sek
+tag.roundattack_chance=200      //20.0%
+
+tag(npc_summoning_chance,50)    //5% chance
+tag(npc_summoning_time,60)
+tag(npc_summoning_count,3)
+tag(npc_summoning_char[0],c_tarantule_shadow)
+tag(npc_summoning_char[1],c_tarantule_shadow)
+tag(npc_summoning_char[2],c_mahat_boss_etheric)
+
+tag(npc_summoner_count,2)
+tag(npc_summoner_char[0],c_spider_elder)
+tag(npc_summoner_char[1],c_spider_elder)
+
+tag.npc_lifeLeech=80,90      //tolik si prida kazdou ranou
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+//typ monstra
+tag(monstertype,spider,50)
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,1000)
+tag(resist_para,960) 
+tag(resist_summon,700)
+tag(resist_bleed,-500)
+
+tag(resist_sharp,600)
+tag(resist_slash,-50)           //sekery citlivost
+tag(resist_pierce,600)
+tag(resist_blunt,450)
+
+tag(resist_fire,-50)            //na pavouka ohen
+tag(resist_elect,800)
+tag(resist_cold,300)
+
+WRESTLING=150.0
+tactics=250.0
+POISONING={300.0 400.0}
+peacemaking=1000.0
+provocation=1000.0
+SpiritSpeak=95.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_SPIDER
+ITEM=i_gold
+
+
+//////////////////////////////////////////////////////
+//               B O S S - Tutorial                 //
+//                (c)  Marek                        //
+//////////////////////////////////////////////////////
+
+[chardef c_Daemon_Tutorial]
+ID=c_daemon_large
+Name=Daemon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=105
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix
+TEVENTS=e_explosiondispell
+TEVENTS=e_parakrik
+TEVENTS=e_npc_curse                     //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_summoning
+TEVENTS=e_lightnings
+TEVENTS=e_managain
+
+ON=@Create
+NPC=brain_monster
+color=0901
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=400
+
+maxhits={9000 9500}
+maxmana=2000
+
+tag.experience=<eval {200.0 220.0}>
+
+tag.npc_curse_chance=250                // 25% chance to trigger this event
+tag.npc_curse_delay=15,17               // delay between another possible strike
+tag.npc_curse_dmg=40,45                 // dmg 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(e_explosiondispell_chance,400) //40%
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,20)
+
+tag(e_lightnings_chance,50) // 5 % chance
+tag(e_lightnings_range,3)
+
+tag(npc_summoning_chance,20)  //2.0% chance
+tag(npc_summoning_time,120)
+tag(npc_summoning_count,2)
+tag(npc_summoning_char[0],c_Daemon_ttnb)
+tag(npc_summoning_char[1],c_mahat_boss_etheric)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,650)
+tag(resist_pierce,450)
+tag(resist_blunt,550)
+
+tag(resist_fire,900)
+tag(resist_elect,850)
+tag(resist_cold,550)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+//typ monstra
+tag(monstertype,daemon,50)
+
+magery=120.1
+ei=110.0
+peacemaking=100.0
+provocation=100.0
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=120.0
+
+itemnewbie=i_spellbook
+addspell=s_magic_reflection
+addspell=s_lightning
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=random_FOOD,{0 1}
+ITEM=i_gold
+
+CATEGORY=Dungy
+SUBSECTION=Tutorial
+DESCRIPTION=Demon Mage Tutorial
+
+
+//////////////////////////////////////////////////////
+
+[chardef c_daemon_ttnb]
+ID=c_mongbat
+NAME=Daemon
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_MAN
+ANIM=078c7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_run
+
+attack=55
+ARMOR=60
+moverate=5
+
+RESOURCES=4 i_ribs_raw, 3 i_reag_daemon_bone
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_massleap
+TEVENTS=e_backstub
+
+CATEGORY=Dungy
+SUBSECTION=Tutorial
+DESCRIPTION=Demon Thief nb
+
+ON=@Create
+COLOR=07FFF
+NPC=brain_monster
+FAME=1
+KARMA=-1500
+STR=2000
+DEX=500
+INT=300
+
+maxhits={3000 4000}
+maxstam={400 450}
+maxmana=0
+
+tag.experience=<eval {90.0 100.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//typ monstra
+tag(monstertype,daemon,80)
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,600)
+
+tag(resist_sharp,550)
+tag(resist_slash,450)
+tag(resist_pierce,450)
+tag(resist_blunt,150)
+
+tag(resist_fire,700)
+tag(resist_elect,800)
+tag(resist_cold,600)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+TACTICS=250.0
+WRESTLING=100.0
+SpiritSpeak=55.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+////////////////////////////////////////////////////////////////////////////
+
+[chardef c_smrtka]
+id=c_skull_head
+ANIM=078c7f
+NAME=Ozvena mrtvych
+CATEGORY=Dungy
+SUBSECTION=Pevnost Strachu
+DESCRIPTION=Leaper bleeder
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=40
+ARMOR=15
+MOVERATE=4
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+// TEVENTS=e_iron_eye
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_bleed
+
+ON=@Create
+NPC=brain_monster
+color=098c
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=400
+DEX=300
+INT=100
+
+maxhits={820 950}
+
+tag.experience=<eval {60.0 75.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(npc_port_distance,9)
+
+tag.npc_bleed=800 //80.0%
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,400)
+
+tag(resist_sharp,500)
+tag(resist_slash,500)
+tag(resist_pierce,500)
+tag(resist_blunt,200)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=55.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////
+
+[chardef c_smrtka_run]
+id=c_skull_head
+ANIM=078c7f
+
+NAME=Ozvena mrtvych
+CATEGORY=Dungy
+SUBSECTION=Pevnost Strachu
+DESCRIPTION=Leaper bleeder
+CAN=MT_WALK|MT_RUN|MT_SWIM|MT_GHOST|MT_USEHANDS
+
+attack=20
+ARMOR=25
+MOVERATE=3
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_explosiondispell
+
+ON=@Create
+NPC=brain_monster
+color=0980
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=400
+DEX=300
+INT=100
+
+maxhits={1500 1900}
+maxstam={500 650}
+maxmana=0
+
+tag.experience=<eval {70.0 75.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(e_explosiondispell_chance,67) //6.7% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,30)
+
+tag.npc_bleed=800 //80.0%
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,500)
+tag(resist_slash,500)
+tag(resist_pierce,500)
+tag(resist_blunt,200)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,100)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=55.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+////////////////////////////////////////////////
+
+[CHARDEF c_tarantule_fire]  //// do PS
+
+ID=c_spider_giant
+NAME=Ohniva Tarantule
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_SPIDER_GIANT
+ANIM=078c7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_run
+
+attack=55
+ARMOR=70
+moverate=5
+
+RESOURCES=5 i_reag_spider_silk, 10 i_ribs_raw
+FOODTYPE=
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_massleap
+TEVENTS=e_backstub
+TEVENTS=e_undead
+TEVENTS=e_spider
+
+CATEGORY=Monsters
+SUBSECTION=Spiders
+DESCRIPTION=Tarantule Ohniva
+
+ON=@Create
+COLOR=0981
+NPC=brain_monster
+FAME=1
+KARMA=-1500
+
+STR=2000
+DEX=500
+INT=300
+
+maxhits={8000 9000}
+maxstam={250 300}
+maxmana=0
+
+tag.experience=<eval {290.0 350.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,650)
+tag(resist_summon,00)
+tag(resist_bleed,00)
+
+//weap resists
+tag(resist_sharp,400)
+tag(resist_slash,-200)
+tag(resist_pierce,-200)
+tag(resist_blunt,100)
+
+//magic resists
+tag(resist_fire,900)          // ohniva mutace
+tag(resist_elect,400)
+tag(resist_cold,-350)          // ohniva mutace
+
+//typ monstra
+tag(monstertype,spider,50)
+tag(monstertype2,undead,50)
+
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+TACTICS=250.0
+WRESTLING=100.0
+
+SpiritSpeak=55.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_SPIDER
+item=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_daemon_fireps]
+ID=c_daemon_mage1
+Name=Daemon ohne
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=120
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_stun
+TEVENTS=e_npc_multishot
+TEVENTS=e_explode
+
+ON=@Create
+NPC=brain_monster
+COLOR=0981
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=200
+
+maxhits={3000 3200}
+maxmana=1000
+
+tag.experience=<eval {225.0 250.0}>
+
+Tag.explode_dmg=40
+
+tag.multishot_chance=250                       // 25% chance pri zasahu monstra
+tag.multishot_delay=15,20                      // prodleva nez znovu
+tag.multishot_dmg=30,40                        // dmg in between 30 and 40
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+tag.npc_bleed=400 //40.0%
+
+//typ monstra
+tag(monstertype,daemon,60)
+
+tag(resist_poison,1000)
+tag(resist_para,560) 
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,250)
+tag(resist_pierce,650)
+tag(resist_blunt,550)
+
+tag(resist_fire,900)
+tag(resist_elect,400)
+tag(resist_cold,150)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=95.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+CATEGORY=Dungy
+SUBSECTION=Pevnost Strachu
+DESCRIPTION=Demon summoned
+
+////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_Dragon_Marek_1]          // pokus o draka bez skripteru
+ID=c_dragon_lord
+Name=Drak Mrak
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run
+FOODTYPE=80 t_meat_raw
+
+attack=180
+ARMOR=180
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_detect
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_parakrik
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_explosiondispell
+TEVENTS=e_explode
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_summoner
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Dragon Marek_1
+
+ON=@Create
+COLOR=0997
+NPC=brain_monster
+FAME=1500
+KARMA={-7500 -10000}
+
+STR=7000
+DEX=650
+INT=100
+
+maxhits=32000
+maxstam=5000
+maxmana=1000
+
+tag.experience=<eval {2500.0 2900.0}>
+tag(kudlyimmune,2000000000)
+
+tag.npc_bleed=700 //70.0%
+
+Tag.explode_dmg=70
+
+tag.roundattack_damage=50,55  //dmg od - do
+tag.roundattack_time=15,17    //prodleva od - do v sek
+tag.roundattack_chance=200    //20.0%
+
+tag(e_explosiondispell_chance,67) //6.7% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(npc_summoning_chance,10)  //1.0% chance
+tag(npc_summoning_time,180)
+tag(npc_summoning_count,4)
+tag(npc_summoning_char[0],c_dragon_sluha_war)
+tag(npc_summoning_char[1],c_dragon_sluha_mag)
+tag(npc_summoning_char[2],c_tarantule_fire)
+tag(npc_summoning_char[3],c_smrtka)
+
+tag(npc_summoner_count,3)
+tag(npc_summoner_char[0],c_smrtka)
+tag(npc_summoner_char[1],c_smrtka)
+tag(npc_summoner_char[2],c_tarantule_fire)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+tag(noanimate,1)
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,700)
+tag(resist_pierce,800)
+tag(resist_blunt,000) 
+
+//magic resists
+tag(resist_fire,700)
+tag(resist_elect,400)
+tag(resist_cold,400)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=250.0
+POISONING={200.0 300.0}
+SpiritSpeak=200.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+/////////////////////////////////////////////////
+
+[CHARDEF c_dragon_sluha_mag]
+NAME=Draci prisluhovac
+ID=C_MAN
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=140
+ARMOR=140
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_character
+TEVENTS=e_monster
+TEVENTS=e_looter
+TEVENTS=e_npc_detect
+TEVENTS=e_humanoid
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_roundattack
+TEVENTS=e_parakrik
+TEVENTS=e_lightnings
+TEVENTS=e_managain
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Draci sluzebnik - mage
+
+ON=@Create
+COLOR=colors_skin
+NPC=brain_monster
+FAME=100
+KARMA=-5000
+
+STR=10000
+DEX=1000
+INT=500
+
+NAME=Draci prisluhovac
+
+maxhits={30000 30000}
+maxstam={4000 4300}
+
+maxmana=3000
+mana=1000
+
+tag(e_lightnings_chance,100) //10.0% chance
+tag(e_lightnings_range,5)
+
+tag.experience=<eval {700.0 800.0}>
+
+tag.roundattack_damage=30,40     //dmg od - do
+tag.roundattack_time=15,17       //prodleva od - do v sek
+tag.roundattack_chance=200       //20.0%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,970)
+tag(resist_bleed,850)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,800)
+tag(resist_pierce,100)
+tag(resist_blunt,800)
+
+//magic resists
+tag(resist_fire,500)
+tag(resist_elect,550)
+tag(resist_cold,500)
+
+//typ monstra
+tag(monstertype,humanoid,60)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical //ruzne
+
+WRESTLING=150.0 
+RESIST={120.0 170.0}
+TACTICS={100.0 150.0}
+PARRYING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+MAGERY=400.0
+EI=120.0
+PROVOCATION=100.0
+PEACEMAKING=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_fireball
+addspell=s_lightning
+ITEMnewbie=i_monster_create
+
+ITEM=i_npc_mount
+tag.mount=i_mt_horse_gray
+tag.mountcolor=027
+
+ITEMNEWBIE=i_light_source
+ITEMNEWBIE=random_female_hair
+ITEMnewbie=i_bone_helmet
+color=027
+NAME=Zbroj Ohne
+ITEMnewbie=i_staff_gnarled_copper
+color=067A
+NAME=Hul Ohne
+ITEMnewbie=i_sandals
+color=027
+ITEMnewbie=i_bone_leggings
+color=027
+NAME=Zbroj Ohne
+ITEMnewbie=i_bone_chest
+color=027
+NAME=Zbroj Ohne
+ITEMnewbie=i_necklance_silver
+color=027
+ITEMnewbie=i_bone_gloves
+color=027
+ITEMnewbie=i_bone_arms
+color=027
+NAME=Zbroj Ohne
+
+ON=@NPCRestock 
+ITEM=i_gold
+ITEM=RANDOM_REAGENT,{40 60}
+ITEM=RANDOM_REAGENT_NECRO,{40 45}
+
+/////////////////////////////////////////////////
+
+[CHARDEF c_dragon_sluha_war]
+NAME=Draci prisluhovac
+ID=C_MAN
+
+ICON=i_pet_MAN
+CAN=MT_WALK|MT_RUN|MT_SWIM|MT_GHOST|MT_USEHANDS
+attack=140
+ARMOR=140
+
+moverate=3
+
+BLOODCOLOR=020
+
+TEVENTS=e_character
+TEVENTS=e_monster
+TEVENTS=e_looter
+TEVENTS=e_npc_detect
+TEVENTS=e_humanoid
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_roundattack
+TEVENTS=e_parakrik
+TEVENTS=e_explode
+
+CATEGORY=Monsters
+SUBSECTION=Dragons and Drakes
+DESCRIPTION=Draci sluzebnik - war
+
+ON=@Create
+COLOR=colors_skin
+NPC=brain_monster
+FAME=100
+KARMA=-5000
+STR=5375
+DEX=1000
+INT=500
+NAME=Draci prisluhovac
+
+maxhits={30000 30000}
+maxstam={4000 4300}
+
+maxmana=3000
+mana=3000
+
+tag.experience=<eval {700.0 800.0}>
+
+Tag.explode_dmg=40
+
+tag.roundattack_damage=35,45  //dmg od - do
+tag.roundattack_time=10,12    //prodleva od - do v sek
+tag.roundattack_chance=200    //20.0%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,970)
+tag(resist_bleed,850)
+
+//weap resists
+tag(resist_sharp,700)
+tag(resist_slash,700)
+tag(resist_pierce,700)
+tag(resist_blunt,700)
+
+//magic resists
+tag(resist_fire,500)
+tag(resist_elect,550)
+tag(resist_cold,500)
+
+//typ monstra
+tag(monstertype,humanoid,60)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical //ruzne
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=200.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+PEACEMAKING=100.0
+
+ITEMNEWBIE=i_light_source
+ITEMNEWBIE=random_female_hair
+itemnewbie=i_axe_exec
+Color=098A
+itemnewbie=i_sandals
+Color=098A
+itemnewbie=i_cape
+Color=098A
+itemnewbie=i_bone_gloves
+Color=098a
+itemnewbie=i_bone_helmet
+Color=098A
+itemnewbie=i_bone_arms
+Color=098A
+itemnewbie=i_bone_leggings
+Color=098A
+itemnewbie=i_bone_chest
+Color=098A
+
+ON=@NPCRestock 
+ITEM=i_gold
+ITEM=RANDOM_REAGENT,{40 60}
+ITEM=RANDOM_REAGENT_NECRO,{40 45}
+
+/////////////////////////////////////////////////
+
+[CHARDEF c_phantom_bomber]
+
+ID=c_man
+NAME=Phantom
+SOUND=snd_MONSTER_GHOST1
+ICON=i_pet_zombie
+ANIM=07bc7f
+CAN=MT_WALK|MT_RUN|MT_SWIM|MT_GHOST|MT_USEHANDS
+ATTACK=6
+ARMOR=20
+
+MOVERATE=3
+
+RESOURCES=
+
+//=r_dungeon,r_spooky
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explode
+
+CATEGORY=Dungy
+SUBSECTION=Specials
+DESCRIPTION=Phantom vybuchujici
+
+ON=@Create
+COLOR=07FFF
+NPC=brain_undead
+FAME=30
+KARMA={-2000 -3999}
+STR=200
+DEX=2000
+INT=45
+
+maxhits={100 160}
+maxstam=300
+maxmana=0
+
+tag.experience=10.0
+
+Tag.explode_dmg=30
+
+//mystik
+tag(hypnotizable,0) //nezhypnotizujes
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+//other resists
+tag(resist_para,1000) //individualni
+//weap resists
+tag(resist_pierce,800)
+//typ monstra
+tag(monstertype,undead,60)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical //ruzne
+
+wrestling=110.0
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+WRESTLING={185.0 200.0}
+SpiritSpeak=30.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_deathrobe
+COLOR=027
+ITEMNEWBIE=i_cape
+NAME=Death cloak
+COLOR=027
+ITEMNEWBIE=i_lantern_lit
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////////////
+//////////////////////  OKRIDLENCI   /////////////////////////
+//////////////////////////////////////////////////////////////
+
+[chardef 07b] 
+DEFNAME=c_harfan
+NAME=Harfan
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=80
+ARMOR=65
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan zakladni
+
+RESOURCES=10 i_ribs_raw,30 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_leaper
+TEVENTS=e_NPC_Bleed
+TEVENTS=e_npc_stun
+TEVENTS=e_npc_critic                           //sance na kritik melee
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=200
+INT=100
+
+maxhits={1800 2000}
+maxstam={200 224}
+maxmana=0
+
+tag.experience=<eval {120.0 130.0}>
+
+tag.npc_bleed=300 //30.0%
+
+tag.npc_critic_chance=250                    // 25% chance to trigger this event
+tag.npc_critic_dmg=20,30                     // dmg in between 20 and 30
+
+tag.npc_port_timer=20
+tag(npc_port_distance,5)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>        //STR 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,650)
+tag.resist_para=<eval {600 720}>
+tag(resist_summon,650)
+tag(resist_bleed,300)
+
+tag(resist_sharp,150)
+tag(resist_slash,150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+PARRYING={90.0 100.0}
+WRESTLING={100.0 110.0}
+Resist=100.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+//ITEMNEWBIE=i_sword_long
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_FOOD,{0 1}
+ITEM=RANDOM_REAGENT,{10 20}
+
+/////////////////////////////////////////////////
+
+[chardef 04a]
+DEFNAME=c_harfan_shadow
+NAME=Harfan
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_GORILLA1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=50
+ARMOR=45
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan thief
+
+RESOURCES=10 i_ribs_raw,20 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_massleap
+TEVENTS=e_backstub
+
+ON=@Create
+NPC=brain_monster
+color=07FFF     // pruhledna
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=250
+INT=100
+
+maxhits={1100 1200}
+maxstam={300 334}
+maxmana=0
+
+tag.experience=<eval {60.0 65.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>        //STR 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,900)
+tag.resist_para=<eval {900 1000}>
+tag(resist_summon,650)
+tag(resist_bleed,300)
+
+tag(resist_sharp,150)
+tag(resist_slash,150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-150)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+PARRYING={90.0 100.0}
+WRESTLING={100.0 110.0}
+Resist=100.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+//ITEMNEWBIE=i_sword_long
+
+ON=@NPCRestock
+ITEM=random_FOOD,{0 1}
+ITEM=i_gold
+
+/////////////////////////////////////////////////
+
+[CHARDEF c_harfan_leap] 
+NAME=Harfan
+ID=c_harfan_shadow
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=40
+ARMOR=25
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan leaper
+
+RESOURCES=10 i_ribs_raw,20 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_bleed
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=250
+INT=100
+
+maxhits={600 700}
+maxstam={300 334}
+maxmana=0
+
+tag.experience=<eval {40.0 50.0}>
+
+tag.npc_bleed=800 //80.0%
+
+tag(npc_port_distance,9)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>        //STR 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,900)
+tag.resist_para=<eval {900 1000}>
+tag(resist_summon,650)
+tag(resist_bleed,300)
+
+tag(resist_sharp,150)
+tag(resist_slash,150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-150)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+PARRYING={90.0 100.0}
+WRESTLING={100.0 110.0}
+HIDING={120.0 140.0}
+STEALTH={130.0 140.0}
+Resist=100.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+//ITEMNEWBIE=i_sword_long
+
+ON=@NPCRestock
+ITEM=random_FOOD,{0 1}
+ITEM=i_gold
+
+/////////////////////////////////////////////////
+
+[CHARDEF c_harfan_warrior] 
+NAME=Harfan bojovnik
+ID=c_harfan
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=100
+ARMOR=70
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan melee
+
+RESOURCES=10 i_ribs_raw,30 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_summoneater                        //smaze summona, co zasahne
+TEVENTS=e_npc_leaper
+TEVENTS=e_NPC_Bleed
+//TEVENTS=e_npc_critic                           //sance na kritik melee
+TEVENTS=e_npc_roundattack
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=300
+INT=100
+
+maxhits={3000 3050}
+maxstam={300 334}
+maxmana=0
+
+tag.experience=<eval {190.0 195.0}>
+
+tag.npc_bleed=300 //60.0%
+
+tag.npc_port_timer=7
+tag(npc_port_distance,9)
+
+tag.npc_critic_chance=250                    // 25% chance to trigger this event
+tag.npc_critic_dmg=20,30                     // dmg in between 20 and 30
+
+tag.roundattack_damage=40,45    //dmg od - do
+tag.roundattack_time=10,15      //prodleva od - do v sek
+tag.roundattack_chance=200      //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>        //DMG 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,900)
+tag(resist_bleed,800)
+
+tag(resist_sharp,250)
+tag(resist_slash,250)        //sekery
+tag(resist_pierce,50)
+tag(resist_blunt,-50)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,150)
+
+PARRYING={90.0 100.0}
+WRESTLING={100.0 110.0}
+Resist=200.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+//ITEMNEWBIE=i_axe_battle_large
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_FOOD,{0 1}
+ITEM=RANDOM_REAGENT,{10 20}
+
+/////////////////////////////////
+
+[CHARDEF c_harfan_mage] 
+NAME=Harfan mag
+ID=c_harfan
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=65
+ARMOR=40
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan mage
+
+RESOURCES=10 i_ribs_raw,30 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_lightnings
+TEVENTS=e_explosiondispell
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=150
+INT=220
+
+maxhits={1700 1850}
+maxstam={100 150}
+maxmana=2000
+
+tag.experience=<eval {150.0 155.0}>
+
+tag(e_explosiondispell_chance,200)                    //20%
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(e_lightnings_chance,200)   //20%
+tag(e_lightnings_range,5)     // kolik blesku v linii
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>        //INT 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_lightning|dam_magic
+
+//other resists
+tag(resist_poison,600)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,850)
+tag(resist_bleed,500)
+
+tag(resist_sharp,150)
+tag(resist_slash,150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-150)
+
+tag(resist_fire,500)
+tag(resist_elect,500)
+tag(resist_cold,250)
+
+PARRYING=100
+Resist=200.0
+WRESTLING=100.0
+magery=100.0
+ei=60.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell s_lightning
+addspell s_fireball
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_FOOD,{0 1}
+ITEM=RANDOM_REAGENT,{20 25}
+
+/////////////////////////////////
+
+[CHARDEF c_harfan_etheric] 
+NAME=Harfan
+ID=c_harfan
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=55
+ARMOR=40
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan mage
+
+RESOURCES=10 i_ribs_raw,30 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_lightnings
+
+ON=@Create
+color=07FFF                       // pruhledna
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=250
+INT=220
+
+maxhits={2000 2250}
+maxstam={200 234}
+maxmana=2000
+
+tag.experience=<eval {100.0 105.0}>
+
+tag(e_lightnings_chance,200)   //20%
+tag(e_lightnings_range,5)     // kolik blesku v linii
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>        //INT 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_lightning|dam_magic
+
+//other resists
+tag(resist_poison,600)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,850)
+tag(resist_bleed,500)
+
+tag(resist_sharp,150)
+tag(resist_slash,150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-150)
+
+tag(resist_fire,500)
+tag(resist_elect,500)
+tag(resist_cold,250)
+
+PARRYING=100
+Resist=200.0
+WRESTLING=100.0
+magery=100.0
+ei=60.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell s_lightning
+addspell s_fireball
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=RANDOM_REAGENT,{20 25}
+
+/////////////////////////////////
+
+[CHARDEF c_harfan_ranger] 
+NAME=Harfan strelec
+ID=c_harfan
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=50
+ARMOR=50
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan Archer
+
+RESOURCES=10 i_ribs_raw,30 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_npc_sniper                            //Pøidá dmg k útoku po ránì def= 50
+TEVENTS=e_NPC_multishot
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=150
+INT=100
+
+maxhits={2200 2250}
+maxstam={200 234}
+maxmana=0
+
+tag.experience=<eval {120.0 125.0}>
+
+tag.npc_sniper_dmg=30                     //o 30 HP
+tag.npc_sniper_chance=300                 //30% Defaultne 20%
+
+tag.multishot_chance=50                        // 5% chance pri zasahu monstra
+tag.multishot_delay=15,20                      // prodleva nez znovu
+tag.multishot_dmg=20,30                        // dmg in between 30 and 40
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>        //DEX
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,600)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,950)
+tag(resist_bleed,700)
+
+tag(resist_sharp,250)
+tag(resist_slash,250)        //sekery
+tag(resist_pierce,50)
+tag(resist_blunt,-50)
+
+tag(resist_fire,200)
+tag(resist_elect,300)
+tag(resist_cold,150)
+
+ARCHERY={120.0 130.0}
+PARRYING=90.0
+WRESTLING=110.0
+Resist=150.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+ITEMNEWBIE=i_arrow,{50 75}
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_FOOD,{0 1}
+
+
+/////////////////////////////////
+
+[CHARDEF c_harfan_archmage] 
+NAME=Harfan Archmag
+ID=c_harfan
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=75
+ARMOR=60
+moverate=3
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan Archmage
+
+RESOURCES=15 i_ribs_raw,40 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_explosiondispell
+TEVENTS=e_parakrik
+TEVENTS=e_npc_curse                     //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_summoning
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=450
+INT=250
+
+maxhits={3000 3250}
+maxstam={200 234}
+maxmana=2000
+
+tag.experience=<eval {190.0 195.0}>
+
+tag(e_explosiondispell_chance,200)                    //20%
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag.npc_curse_chance=250                // 25% chance to trigger this event
+tag.npc_curse_delay=10,12               // delay between another possible strike
+tag.npc_curse_dmg=30,35                 // dmg 
+
+tag(npc_summoning_chance,50)                       //5%
+tag(npc_summoning_time,120)                        //nezakouzli znovu 120 sek
+tag(npc_summoning_count,1)                         //pocet
+tag(npc_summoning_char[0],c_harfan_shadow)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>        //STR 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,40)
+
+tag.weapflag=dam_lightning|dam_magic
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {800 950}>
+tag(resist_summon,950)
+tag(resist_bleed,900)
+
+tag(resist_sharp,250)
+tag(resist_slash,250)        //sekery
+tag(resist_pierce,50)
+tag(resist_blunt,-150)
+
+tag(resist_fire,600)
+tag(resist_elect,600)
+tag(resist_cold,300)
+
+PARRYING=100
+Resist=200.0
+WRESTLING=100.0
+magery=120.0
+ei=75.0
+SpiritSpeak=65.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell s_lightning
+addspell s_fireball
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_goldITEM=random_FOOD,{0 1}
+ITEM=RANDOM_REAGENT,{40 45}
+
+/////////////////////////////////
+
+[CHARDEF 175]
+DEFNAME=c_harfan_boss
+NAME=Harfan General
+SOUND=snd_ANIMALS_EAGLE1
+//SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|MT_USEHANDS|MT_EQUIP
+
+attack=70
+ARMOR=70
+moverate=5
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan BOSS
+
+RESOURCES=30 i_ribs_raw,60 i_feather
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_npc_sniper                           //Pøidá dmg k útoku po ránì def= 50
+TEVENTS=e_NPC_multishot
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_explosiondispell
+TEVENTS=e_npc_summoning
+TEVENTS=e_parakrik
+TEVENTS=e_npc_detect
+TEVENTS=e_npc_stun
+TEVENTS=e_npc_curse_stam            //mass sani staminy
+
+ON=@Create
+//color=0989
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=450
+INT=100
+
+maxhits={25000 26000}
+maxstam={400 450}
+maxmana=0
+
+tag.experience=<eval {800.0 815.0}>
+
+tag.roundattack_damage=55,65    //dmg od - do
+tag.roundattack_time=10,12      //prodleva od - do
+tag.roundattack_chance=950      //95%
+tag.pullAll_distance=10         //o kolik posun
+
+tag.npc_sniper_dmg=40                          //o 40 HP
+tag.npc_sniper_chance=400                      //40% Defaultne 20%
+
+tag(e_explosiondispell_chance,400)                    //40%
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,25)
+
+tag.npc_curse_stam_chance=250       // 25% chance to trigger this event
+tag.npc_curse_stam_delay=15,25      // delay between another possible strike
+tag.npc_curse_stam_dmg=30,35        // stam reduce in between 30 and 35
+
+tag.multishot_chance=200                       // 20% chance pri zasahu monstra
+tag.multishot_delay=10,15                      // prodleva nez znovu
+tag.multishot_dmg=40,40                        // dmg in between 30 and 40
+
+tag(npc_summoning_chance,200)                      //20%
+tag(npc_summoning_time,60)                         //nezakouzli znovu 60 sek
+tag(npc_summoning_count,3)                         //pocet
+tag(npc_summoning_char[0],c_harfan_etheric)
+tag(npc_summoning_char[1],c_harfan_shadow)
+tag(npc_summoning_char[2],c_harfan_leap)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>        //DEX
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,humanoid,50)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {900 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,700)
+
+tag(resist_sharp,850)
+tag(resist_slash,450)        //sekery
+tag(resist_pierce,150)
+tag(resist_blunt,450)
+
+tag(resist_fire,-50)         //peri
+tag(resist_elect,350)
+tag(resist_cold,750)
+
+ARCHERY=120.0
+PARRYING=100.0
+WRESTLING=110.0
+Resist=150.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+ITEMNEWBIE=i_arrow,{200 225}
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=i_bylina,{0 1}       //na alchemy quest
+ITEM=random_FOOD,{1 3}
+
+///////////////////////////////////////////////////////////
+
+[chardef 0315]
+DEFNAME=c_thing
+NAME=Mazlicek
+ICON=i_pet_elem_earth
+anim=0ffc78c7f
+SOUND=snd_MONSTER_CORPSR1
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=90
+moverate=3
+
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_stun
+TEVENTS=e_npc_leaper
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan mazlicek
+
+ON=@Create
+NPC=brain_monster
+FAME=20
+KARMA=-3000
+
+STR=1000
+DEX=300
+INT=100
+
+maxhits={1700 1850}
+maxstam={200 300}
+maxmana=0
+
+tag.experience=<eval {55.0 60.0}>
+
+tag.npc_port_timer=3
+tag(npc_port_distance,9)
+
+tag(hypnotizable,0)
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.weapflag=dam_physical
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,700)
+
+tag(resist_sharp,150)
+tag(resist_slash,150)        //sekery
+tag(resist_pierce,450)
+tag(resist_blunt,-350)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+WRESTLING={90.0 100.0}
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+HIDING={120.0 140.0}
+STEALTH={130.0 140.0}
+RESIST=200.0
+SpiritSpeak=55.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=RANDOM_REAGENT,{10 15}
+ITEM=i_gold
+
+
+///////////////////////////////////////////////////////////
+
+[chardef c_thing_ovinovac]
+ID=c_thing
+NAME=Mazlicek
+ICON=i_pet_elem_earth
+SOUND=snd_MONSTER_CORPSR1
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=90
+moverate=3
+
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+
+CATEGORY=Dungy
+SUBSECTION=Andele
+DESCRIPTION=Harfan mazlicek
+
+ON=@Create
+NPC=brain_monster
+FAME=20
+KARMA=-3000
+
+STR={700 750}
+DEX={350 380}
+INT=50
+
+maxhits={1700 1850}
+maxstam={500 600}
+maxmana=0
+
+tag.experience=<eval {45.0 55.0}>
+
+tag(hypnotizable,0)
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.weapflag=dam_physical
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,700)
+
+tag(resist_sharp,150)
+tag(resist_slash,150)        //sekery
+tag(resist_pierce,450)
+tag(resist_blunt,-350)
+
+tag(resist_fire,700)
+tag(resist_elect,700)
+tag(resist_cold,500)
+
+WRESTLING={90.0 100.0}
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+HIDING={120.0 140.0}
+STEALTH={130.0 140.0}
+RESIST=200.0
+SpiritSpeak=55.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+/////////////////////////////////////////////////////
+//////////////  BONUSOVA MAPKA  /////////////////////
+/////////////////////////////////////////////////////
+
+[chardef c_mapka_demon]
+ID=c_daemon_mage1
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=135
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 18 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_summoneater                //smaze summona, co zasahne
+TEVENTS=e_phoenix
+TEVENTS=e_explode
+TEVENTS=e_explosiondispell
+TEVENTS=e_dragon_regeneration
+TEVENTS=e_fire_dragon               // draci dech
+
+CATEGORY=Monsters
+SUBSECTION=Marek
+DESCRIPTION=specialni monstrum do mapky
+
+ON=@Create
+NPC=brain_monster
+color=0124
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=100
+
+maxhits={15000 15500}
+maxstam={400 420}
+maxmana=0
+
+tag.experience=<eval {670.0 700.0}>
+
+Tag.explode_dmg=45
+
+tag(e_explosiondispell_chance,200)      //20%
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,20)
+
+tag(dragon_fire_chance,800)  	        // 80% - sanca zasadenia
+tag(dragon_fire_dmg,60)  		// dmg po prechode
+tag(dragon_fire_type,4)			// typ ohna - jedovaty
+tag(dragon_fire_delay,60)		// prodleva kedy zase moze pustit ohen
+
+tag.npc_bleed=500                       //50.0%
+
+tag.regeneration_hp=100                 // pocet hp ktore zregeneruje
+tag.regeneration_speed=10               // rychlost regeneracie v sekundach
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,daemon,40)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {900 990}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,00)
+tag(resist_pierce,650)
+tag(resist_blunt,550)
+
+tag(resist_fire,900)
+tag(resist_elect,600)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={105.0 110.0}
+TACTICS={85.0 120.0}
+WRESTLING={105.0 110.0}
+SpiritSpeak=125.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_mapka_spirit]
+id=c_wisp
+//NAME=Spirit
+NAME=Bystrozraky
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=60
+ARMOR=60
+moverate=4
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_summoneater              //smaze summona, co zasahne
+TEVENTS=e_parakrik
+TEVENTS=e_explosiondispell
+TEVENTS=e_npc_curse               //vsechny viditelne zrani o dmg
+TEVENTS=e_dragon_regeneration
+
+CATEGORY=Monsters
+SUBSECTION=Marek
+DESCRIPTION=specialni monstrum do mapky
+
+ON=@Create
+color=color_o_adamantinum
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=5000
+DEX=250
+INT=380
+
+maxhits={16000 17000}
+maxstam={225 275}
+maxmana=1000
+
+tag.experience=<eval {550.0 600.0}>
+
+tag(e_explosiondispell_chance,200) //20% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,20)
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=15,17         // delay between another possible strike
+tag.npc_curse_dmg=40,45           // dmg 
+
+tag.regeneration_hp=100          // pocet hp ktore zregeneruje
+tag.regeneration_speed=10        // rychlost regeneracie v sekundach
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)            //ducha neotravis
+tag.resist_para=<eval {880 970}>
+tag(resist_summon,950)
+tag(resist_bleed,1000) 
+
+//weap resists
+tag(resist_sharp,400)
+tag(resist_slash,400)
+tag(resist_pierce,-100)
+tag(resist_blunt,-200)
+
+//magic resists
+tag(resist_fire,400)
+tag(resist_elect,-400)
+tag(resist_cold,400)
+
+//typ monstra
+tag(monstertype,spirit,60)
+
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+ei=108.0
+magery=120.0
+Resist=155.0
+WRESTLING=120.0
+SpiritSpeak=100.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_lightning
+addspell=s_explosion
+addspell=s_energy_bolt
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{50 75}
+
+/////////////////////////////////////////////////////
+
+[CHARDEF c_mapka_golem]
+ID=c_golem_copper
+//NAME=Golem
+NAME=Siroky
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=145
+ARMOR=150
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_pushall
+TEVENTS=e_npc_reactivearmor
+TEVENTS=e_npc_roundattack
+TEVENTS=e_parakrik
+TEVENTS=e_npc_detect               //spouští detekci každých 55s
+
+CATEGORY=Monsters
+SUBSECTION=Marek
+DESCRIPTION=specialni monstrum do mapky
+
+ON=@Create
+color=color_o_adamantinum
+NPC=brain_monster
+FAME=1200
+KARMA={-7500 -10000}
+
+STR=6188
+DEX=400
+INT=0
+
+maxhits={17000 17600}
+maxstam={370 420}
+maxmana=0
+
+tag.experience=<eval {800.0 850.0}>
+
+tag(e_pushall_time,10)
+tag(e_pushall_chance,500) // 50.0%
+
+tag.hit_damage=85
+
+tag.roundattack_damage=50,60          //dmg od - do
+tag.roundattack_time=10,12            //prodleva od - do v sek
+tag.roundattack_chance=300            //30.0%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,1000)    //golemove jsou z 99% imunni proti jedu
+tag(resist_para,1000)      //indivindi podle monstra - vetsinou immune
+tag(resist_summon,950)     //indivindi podle monstra
+tag(resist_bleed,1000)     //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,500)
+tag(resist_pierce,700)
+tag(resist_blunt,-400)     // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,800)
+tag(resist_elect,-500)      //nachylnost na elektrinu
+tag(resist_cold,100)   
+
+//typ monstra
+tag(monstertype,golem,60)
+//tag(monstertype2,undead,60)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=250.0
+SpiritSpeak=125.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//item=i_ore_adamantinum,1
+item=i_gold
+
+//////////////////////////////////////////
+
+[CHARDEF c_mapka_ranger]
+ID=c_titan
+NAME=Dlouhy
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN
+
+attack=55
+ARMOR=80
+moverate=5
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater                   //smaze summona, co zasahne
+TEVENTS=e_npc_sniper                    //Pøidá dmg k útoku po ránì
+TEVENTS=e_npc_detect
+TEVENTS=e_npc_stun
+TEVENTS=e_dragon_regeneration
+
+CATEGORY=Monsters
+SUBSECTION=Marek
+DESCRIPTION=specialni monstrum do mapky
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2500
+DEX=350
+INT=60
+
+maxhits={25500 25700}
+maxstam={400 450}
+maxmana=0
+
+tag.experience=<eval {610.0 620.0}>
+
+tag.npc_sniper_dmg=30           //o 30 HP
+tag.npc_sniper_chance=300       //30% Defaultne 20%
+
+tag.regeneration_hp=100          // pocet hp ktore zregeneruje
+tag.regeneration_speed=10        // rychlost regeneracie v sekundach
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//dex 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,00)
+tag.resist_para=<eval {800 900}>
+tag(resist_summon,900)
+tag(resist_bleed,400)                  //krvaci
+
+tag(resist_sharp,-150)
+tag(resist_slash,450)   // sekery
+tag(resist_pierce,00)
+tag(resist_blunt,550)
+
+tag(resist_fire,-400)
+tag(resist_elect,600)
+tag(resist_cold,400)
+
+PARRYING={100.0 110.0}
+WRESTLING={100.0 110.0}
+ARCHERY={110.0 115.0}
+resist=100.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+ITEMNEWBIE=i_arrow,{50 75}
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_FOOD,{0 1}
+ITEM=RANDOM_REAGENT,{10 20}
+
+//////////////////////////////////////////////////////////////
+//////////////////////   TEST   //////////////////////////////
+//////////////////////////////////////////////////////////////
+
+[CHARDEF c_titan_test]
+ID=c_titan
+NAME=Testoid
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN
+
+attack=10
+ARMOR=80
+moverate=3
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_emotedmg
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Titan
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=100
+DEX=100
+INT=0
+
+maxhits=20000
+maxstam=200
+maxmana=0
+
+tag.experience=<eval {100.0 110.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,00)
+tag.resist_para=<eval {10 20}>
+tag(resist_summon,1000)
+tag(resist_bleed,500)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)   // sekery
+tag(resist_pierce,000)
+tag(resist_blunt,00)
+
+tag(resist_fire,00)
+tag(resist_elect,00)
+tag(resist_cold,00)
+
+WRESTLING=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+
+
+//////////////////////////////////////////////////////////////
+/////////////////////  TO WORK  //////////////////////////////
+//////////////////////////////////////////////////////////////
+
+[chardef 02fe] 
+
+NAME=Shagarsky bojovnik
+DEFNAME=c_shagar_warrior
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_elem_earth
+CAN=MT_WALK|mt_run|mt_equip|MT_USEHANDS
+
+attack=85
+ARMOR=70
+moverate=3
+
+RESOURCES=18 i_ribs_raw
+
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Shagar (war)
+
+ON=@Create
+
+NPC=brain_monster
+FAME=1000
+karma=-3000
+
+STR={150 155}
+DEX={450 560}
+INT={200 205}
+
+maxhits={4100 4350}
+maxstam={300 350}
+maxmana=0
+
+tag.experience=<eval {98.0 112.0}>
+
+tag(hypnotizable,0)
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.resist_poison=300
+tag.resist_summon=<eval {550 750}>
+tag.resist_pierce=<eval {400 800}>
+
+
+WRESTLING={90.0 100.0}
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+RESIST=200.0
+SpiritSpeak=50.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[chardef 02fd] 
+NAME=Shagarsky bojovnik
+DEFNAME=c_shagar_mage
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_elem_earth
+CAN=MT_WALK|mt_run|mt_equip|MT_USEHANDS
+
+attack=60
+ARMOR=70
+moverate=3
+
+RESOURCES=18 i_ribs_raw
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Shagar (mage)
+
+ON=@Create
+NPC=brain_monster
+FAME=1000
+KARMA=-3000
+STR={700 750}
+DEX={250 260}
+INT={200 205}
+
+maxhits={3100 3350}
+maxstam={300 350}
+maxmana={1500 1550}
+
+tag.experience=<eval {98.0 112.0}>
+
+tag(poisoning_dmg,18) // affects spell_poison
+tag(poisoning_MvM_dmg,60) // affects spell_poison
+
+tag(hypnotizable,0)
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.resist_poison=250
+tag.resist_summon=<eval {550 750}>
+tag.resist_pierce=<eval {400 800}>
+
+WRESTLING={70.0 100.0}
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+RESIST=200.0
+MAGERY=150.0
+EI={90.0 100.0}
+SpiritSpeak=50.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_spellbook
+addspell=s_greater_heal 
+addspell=s_paralyze
+addspell=s_poison
+ 
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=RANDOM_REAGENT,{10 20}
+
+
+///////////////////////////////////////////////////////////
+
+[chardef 02fc] 
+NAME=Shagarsky bojovnik
+DEFNAME=c_shagar_archer
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_elem_earth
+CAN=MT_WALK|mt_run|mt_equip|MT_USEHANDS
+
+attack=70
+ARMOR=70
+moverate=4
+
+RESOURCES=18 i_ribs_raw
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Shagar (archer)
+
+ON=@Create
+NPC=brain_monster
+FAME=1000
+KARMA=-3000
+
+STR={1700 1750}
+DEX=500
+INT={150 155}
+
+maxhits={4100 4350}
+maxstam={250 290}
+maxmana=0
+
+tag.experience=<eval {198.0 240.0}>
+
+tag(hypnotizable,0)
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.resist_poison=300
+tag.resist_summon=<eval {550 750}>
+tag.resist_pierce=<eval {400 800}>
+
+wrestling=110.0
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+RESIST=200.0
+archery={100.0 120.0}
+SpiritSpeak=45.0
+
+NPC=brain_monster
+ITEMnewbie=i_monster_create
+ITEMnewbie=i_bow
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEMNEWBIE=i_arrow,40
+
+///////////////////////////////////////////////////////////
+
+[chardef 02fb] 
+NAME=Elder Drone
+DEFNAME=c_drone_large
+sound=snd_monster_exodus
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run
+
+attack=135
+ARMOR=85
+moverate=3
+
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_drone_large
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Elder Drone
+
+ON=@Create
+
+NPC=brain_monster
+FAME=2000
+KARMA=-3000
+STR={700 750}
+DEX=700
+INT={450 555}
+
+maxhits={19500 18850}
+maxstam={450 490}
+maxmana={1500 1550}
+
+tag.experience=<eval {495.0 557.0}>
+
+tag(hypnotizable,0)
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag.weapflag=dam_physical|dam_slashing|dam_piercing
+
+tag.resist_poison=1000
+tag.resist_summon=<eval {650 750}>
+tag.resist_pierce=<eval {400 800}>
+tag.resist_elect=<eval {350 495}>
+
+WRESTLING={70.0 100.0}
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+RESIST=200.0
+MAGERY=3000.0
+EI={90.0 100.0}
+SpiritSpeak=110.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_spellbook
+addspell=s_greater_heal 
+
+ON=@NPCRestock
+ITEM=RANDOM_REAGENT,{10 20}
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[chardef 02f4] 
+NAME=Drone
+DEFNAME=c_drone_small
+sound=snd_monster_exodus
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run|mt_equip|MT_USEHANDS
+
+attack=20
+ARMOR=85
+moverate=3
+
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Drone
+
+ON=@Create
+
+NPC=brain_monster
+FAME=20
+KARMA=-3000
+STR={700 750}
+DEX={550 660}
+INT={150 155}
+
+maxhits={450 550}
+maxstam={450 490}
+maxmana={1500 1550}
+
+tag.experience=<eval {15.0 25.0}>
+
+tag(hypnotizable,0)
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag.weapflag=dam_physical
+
+tag.resist_poison=1000
+tag.resist_summon=<eval {650 750}>
+tag.resist_pierce=<eval {400 800}>
+tag.resist_elect=<eval {350 495}>
+
+WRESTLING={70.0 100.0}
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+RESIST=200.0
+ARCHERY=100.0
+SpiritSpeak=85.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_cross_bow_heavy
+
+
+ON=@NPCRestock
+ITEM=RANDOM_REAGENT,{10 20}
+ITEM=i_gold
+
+/////////////////////////////////
+
+
+[eof]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,179 @@
+[SPEECH spk_Baradsky_banker]
+ON=*job*
+ON=*work*
+ON=*what*do*do*
+ON=*profession*
+ON=*tva*prace*?*
+ON=*prace*
+ON=*co*delas*?*
+ON=*occupation*
+	IF ( <COMPLEXITY.HIGH> || <COMPLEXITY.MEDIUM> )
+		DORAND 3
+			SAYJsem banker, <SRC.SEX milord milady>.
+			SAY Zastupuji banku v  <REGION.NAME>, <SRC.SEX milord milady>.
+			
+		ENDDO
+	ELSE
+		DORAND 3
+			SAY "zde si muze bezpecne ulozit obcan Mordoru sve penize" .
+			SAY "Radi Vam zde <REGION.NAME>, <SRC.SEX milord milady> poskytneme nase sluzby."
+			
+		ENDDO
+	ENDIF
+
+ON=*Balance*
+ON=*stav*penez*
+	SAY=Na vasich depozitnich uctech je <SRC.BANKBALANCE> zlatych.
+        ENDIF 
+
+ON=*Bank*
+ON=*k*uctu*
+ON=*ulozit*penize*
+ON=*ulozit*prachy*
+ON=*ulozit*cenosti*
+	src.BANKSELF
+        ENDIF
+
+
+ON=hi
+ON=hello*
+ON=greetings*
+ON=good*see*thee*
+ON=Hail*
+ON=Greet
+ON=*hej*ty*
+ON=*dobrej*
+ON=*dobrej*bankeri*
+	SAY=Zdravim Vas, nase penezni sluzby Vam jsou k dispozici?
+        ENDIF       
+
+
+ON=*to*je*doba*
+	SAY="hech..   Jaka doba ?  Chcete si to snad skusit misto me ?
+        ENDIF
+
+ON=*rob*
+ON=*steal*
+ON=*hold up*
+ON=*schovej se*
+ON=*prepadnem*ho*
+ON=*prepadnem*jej*
+ON=*prepadnem*banku*
+ON=*prepadnem*bankere*
+ON=*zabij*bankere*
+	DORAND 4
+                SAY "Straze, Jsou tu nejaka individua!! "                 
+		SAY "Straze, pomoooc bankovni prepadeni."
+                SAY "Ja si vas hlidam.  Jestli se priblizite zavolam straze !!"  
+	ENDDO
+
+ON=*coin*
+ON=*money*
+ON=*currency*
+ON=*deposit*
+ON=*transaction*
+ON=*account*
+	IF ( <COMPLEXITY.HIGH> || <COMPLEXITY.MEDIUM> )
+		DORAND 4
+			SAY Jiste radi vam uschovame bezpecne vase cennosti, ci provedeme financni transakce.
+		ENDDO
+	ELSE
+		DORAND 4
+			SAY Jiste radi vam uschovame bezpecne vase cennosti, ci provedeme financni transakce.
+		ENDDO
+	ENDIF
+
+
+ON=*gold*
+        SAY "Zlato, si u nas muzete kdykoli uschovat i vyzvednout"
+ 	ENDDO
+
+ON=*silver*
+        SAY "Stribro si u nas muzete kdykoli uschovat i vyzvednout"
+	ENDDO
+
+ON=*copper*
+	SAY Medene a jine blbosti, si u nas muzete kdykoli uschovat i vyzvednout, i jine cennosti
+	ENDDO
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+	SAY=Dekujeme ze jste vyuzily nasich sluzeb ci se k tomu brzy odhodlate.
+	BYE
+	return 1
+
+ON=ACCOUNT
+	SAY=Sorry tyto informace jsou provatni.
+
+ON=COIN
+	SAY=We accept only the coin of the realm.
+
+ON=COPPER
+	SAY=A copper piece is the smallest coin we accept.
+
+ON=CURRENCY
+	SAY=We deal in gold, silver and copper.
+
+ON=Bank
+ON=DEPOSIT
+ON=GOLD
+ON=MONEY
+ON=SILVER
+ON=TRANSACTION
+	src.BANKSELF
+
+ON=HOLD UP
+	SAY=Pomooc! Pomooc!
+
+//RANDOM=Greenspan, that rogue!  Ah... I remember the lovely days of Volker...
+//DEFAULT=Pardon me?
+
+
+
+
+
+
+[SPEECH spk_Baradsky_mestan]
+
+ON=*kde*jsem*
+ON=*kde*jsem*?*
+ON=*kde*se*nachazim?
+             	DORAND 5
+                   SAY= Rekneme ze tohle tady je rise Marghulova .
+                   SAY= Rekneme ze to tu vsichni nazivame baradem.Jinak celim jmenem to je Barad-Dur. Ty nejsi mistni ze ? 
+                   SAY= Od te doby co tu bydlim se to naziva Barad-Dur V prekladu hlavni mesto Mordoru, a sidlo Marghula.
+                   SAY= Jsi v Hlavnim meste  a ptas se kde jsi ?
+                   SAY= nejspis tady ? 
+        ENDDO
+
+ON=*hi*
+	SAY= " se necemu smejes ? "
+        ENDo       
+
+
+ON=*hej*ty*
+          DORAND 2
+              SAY= " to jako ja ? "
+              SAY= " To mluvis na me ? "
+        ENDo       
+
+ON=*jo*
+          DORAND 2
+              SAY= "Co jo ?"
+              SAY= "Jo co ?"
+        ENDo       
+
+
+ON=*kapitan*
+                   SAY= Kapitana straze najdes v kasarnach pobliz brany do mesta .
+        ENDDO
+
+
+
+
+
+
+
+
+[EOF]

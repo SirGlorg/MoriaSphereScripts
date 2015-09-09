@@ -1,0 +1,63 @@
+[CHARDEF c_gq012_selka]
+NAME=Selka Enrica
+ID=c_woman
+CAN=MT_WALK, MT_SPEAK
+
+TSPEECH=spk_gq012_selka
+
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+STR={36 50}
+DEX={36 50}
+INT={51 65}
+
+tag(noanimate,1)
+
+ON=@NPCRestock
+ITEMnewbie=i_ring_silver
+COLOR=00
+ITEMnewbie=i_kilt
+COLOR=083E
+ITEMnewbie=i_apron_half
+COLOR=0746
+ITEMnewbie=i_sandals
+COLOR=00
+ITEMnewbie=i_hair_long
+COLOR=08A5
+ITEMnewbie=i_shirt_plain
+COLOR=096D
+
+ON=@userDClick
+IF (SRC.TARG.DISTANCE > 3)
+ SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+ELSE
+ f_gq012_selka
+ENDIF
+
+// Potkan ...
+[CHARDEF c_gq012_selka_hrabos]
+NAME=Hrabos
+ID=c_rat_giant
+
+DAM=6,15
+ARMOR=13
+
+ON=@Create
+NPC=brain_undead
+STR={150 170}
+DEX={54 79}
+INT={30 55}
+
+PARRYING={40.0 80.0}
+MAGICRESISTANCE={30.0 66.0}
+TACTICS={55.0 84.0}
+WRESTLING={55.0 74.0}
+tag.experience=<eval {10.0 12.0}>
+FAME=300
+KARMA={-3800 -4500}
+
+
+
+ON=@NPCRestock
+ITEM=loot_zombie

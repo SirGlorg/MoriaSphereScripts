@@ -1,0 +1,173 @@
+[itemdef i_sword_dancing]
+name=Targolanuv tancici mec (artefakt)
+ID=i_cutlass
+DAM=32
+
+on=@create
+hitpoints=0ffff
+color=0997
+attr=
+
+ON=@userdCLICK
+if (src.memoryfindtype(MEMORY_WAR_TARG))
+ arg(storeact,<src.act>)
+ src.newnpc c_sword_dancing
+ src.act.color=<color>
+ cont=<src.act>
+ src.act.findlayer(21).link=<uid>
+ src.act.newmemory(<src>)
+ src.ACT.act.COLOR=memory_ipet
+ src.act.newitem i_dancing_sword_memory
+ src.act.act.timer=1
+ src.act.act.link=<src>
+ src.act.act.cont=<src.act>
+ src.act=arg(storeact)
+else
+ sayua <color> 0 0 1 Neni zde zadny cil...
+endif
+return 1
+
+[ITEMDEF i_dancing_sword_memory]
+ID=i_memory
+TYPE=t_eq_script
+name=dancing sword timer
+
+on=@timer
+timer 1
+cont.say muj pan je <link.name>
+if (link.isdead)
+ if (<cont.findlayer(21).link.attr>&attr_newbie)
+  cont.findlayer(21).link.cont=<link>
+ else
+  cont.findlayer(21).link.drop
+  cont.go 1 1
+  cont.remove
+ endif
+elseif (link.mana>3)
+ link.mana=<eval <link.mana>-3>
+else
+ cont.go <link.P>
+ cont.findlayer(21).link.cont=<link>
+ cont.remove
+endif
+return 1
+
+[CHARDEF 026f]
+DEFNAME=c_sword_dancing 
+NAME=Targolanuv tancici mec (artefakt)
+CAN=MT_WALK|MT_RUN|MT_FLY 
+dam=30
+armor=100
+
+ON=@Create 
+karma=-10000
+NPC=brain_monster
+str=150
+dex=150
+int=150
+wrestling=100.0
+tactics=100.0
+
+on=@gethit
+return 1
+on=@spelleffect
+return 1
+ON=@userdCLICK
+if (findid(i_dancing_sword_memory).link==<src>)
+go <findid(i_dancing_sword_memory).link.P>
+findlayer(21).link.cont=<findid(i_dancing_sword_memory).link>
+remove
+endif
+
+
+///////////////////////////////////////////////////////
+[ITEMDEF i_Deguarianova_roba]
+NAME=Deguarianova roba (unique item)
+ID=0204E // roba ducha
+REQSTR=30 
+WEIGHT=30.0
+TYPE=t_armor
+ARMOR=40 
+VALUE=500
+RESOURCES=130 i_cloth 
+SKILLMAKE=1000.0 tailoring 
+CATEGORY=Unique items
+SUBSECTION=Unique items - mag
+DESCRIPTION=Deguarianova roba
+
+
+ON=@Create
+COLOR=0986
+HITPOINTS=1000
+
+ON=@userCLICK
+SRC.SYSMESSAGE("Deguarianova roba byla stvorena za sedmeho uplnku od pocatku nadvlady Saurona. Obarvena je casti Deguarinovy krve smisene se zlatym prachem.")
+
+ON=@Equip
+	src.int=(<src.int> + 20)
+	src.str=(<src.str> + 20)
+	src.dex=(<src.dex> - 20)	
+	src.spelleffect 36 1000 // magic reflection
+	src.spelleffect 15 1000 //protekce
+	src.spelleffect 29 1000 //great heal
+	src.magery=(<src.magery> + 200)
+	src.meditation=(<src.meditation> + 300)
+	src.ei=(<src.ei> + 300)
+
+
+
+ON=@Unequip
+	src.int=(<src.int> - 20)
+	src.str=(<src.str> - 20)
+	src.dex=(<src.dex> + 20)
+	src.spelleffect 28 1000 //curse
+	SRC.FLAGS=<SRC.flags>&~statf_nightsight
+	src.magery=(<src.magery> - 200)
+	src.meditation=(<src.meditation> - 300)
+	src.ei=(<src.ei> - 300)
+	SRC.FLAGS=<SRC.flags>|statf_hallucinating
+
+[itemdef i_sword_blood]
+NAME=Ragnarog (artefakt)
+id=i_sword_viking
+DAM=50
+WEIGHT=60.0
+
+CATEGORY=Noe
+SUBSECTION=Quest
+DESCRIPTION=Ragnarog (artefakt)
+
+on=@create
+hitpoints=500
+color=colors_blood
+
+on=@equip
+cont.tag.mi_hitsreg=<eval <cont.tag.mi_hitsreg>-3>
+cont.rarefresh
+
+//on=@unequip
+//cont.tag.mi_hitsreg=<eval <cont.tag.mi_hitsreg>+3>
+//cont.rarefresh
+
+
+[ITEMDEF i_krvavy_mec] // tento mec je mrtvej klidne ho smazat jak se da do hry druhy ragnarog nahrazuje ho Ragnarog nad nim zatim je toto jen pro prvnicast questu
+NAME=Ragnarog
+id=i_sword_viking
+DAM=10
+
+
+CATEGORY=Noe
+SUBSECTION=Quest
+DESCRIPTION=Ragnarog (obyc)
+
+ON=@Create
+color=colors_blood
+HITPOINTS=1
+attr=attr_newbie
+
+ON=@userCLICK
+src.sysmessage("Chvile Ragnarogu teprve prijde a tento mec ozije.")
+
+// Itemdef krvavyho kamene presunut do aktivniho questu - soubor q007_HaradirovoSelatko.scp
+
+[eof]

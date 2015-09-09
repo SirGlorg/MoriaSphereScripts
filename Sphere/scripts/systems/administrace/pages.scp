@@ -1,0 +1,153 @@
+[FUNCTION Pages]
+PageMan(<args>)
+
+[FUNCTION PageMan]
+Dialog(d_Pages,<args>)
+
+[DIALOG d_Pages]
+ //argo.ContextEnum(0,046)
+argo.tag(sortby,<?argv(0)?>)
+argo.GMPageList(<?argo.tag.sortby?>)
+if (!safe(argo.contextcount))
+ src.sysmessage("No GM pages to list")
+ break
+endif
+
+SetLocation=0,0				// ok*
+
+argo.tag(sirka,<d_def_Pages_sirka>)
+argo.tag(vyska,<d_def_Pages_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29,29,29,70,29,130,29)
+argo.dialog_zpruhledni
+
+texta(<argo.dialog_textpos(0,0)>,2301,Pages dialog - seznam nevyrizench page)
+texta(<lastxpos>+400,<lastypos>,<d_def_writecolor>,ONLINE)
+texta(<lastxpos>+500,<lastypos>,<d_def_NAcolor>,OFFLINE)
+
+texta(<argo.dialog_textpos(1,0,1)>,2301,char)
+textA(<argo.dialog_textpos(1,1)>,2301,pos)
+textA(<argo.dialog_textpos(1,2,1)>,2301,smaz)
+//button(<argo.dialog_textpos(1,2)>,4005,4007,1,0,1)
+textA(<argo.dialog_textpos(1,3)>,2301,Cas)
+//button(<argo.dialog_textpos(1,3,1)>,4005,4007,1,0,2)
+textA(<argo.dialog_textpos(1,5)>,2301,Account)
+//button(<argo.dialog_textpos(1,5)>,4005,4007,1,0,3)
+textA(<argo.dialog_textpos(1,6,1)>,2301,Odpo)
+textA(<argo.dialog_textpos(1,7)>,2301,Duvod)
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,4)//cancel
+
+
+argo.tag(firsti,<eval argv(1)>)
+arg(imax,<argo.tag(firsti)>+<argo.tag(radku)>)
+if (argo.tag(firsti))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,5) // prev
+endif
+if (arg(imax)>=argo.contextcount)
+ arg(imax,<argo.contextcount>)
+else
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,6) // next
+endif
+
+arg(index,<eval argv(1)>)
+arg(ypos,<argo.tag(obj_y[2])>)
+
+while (index<imax)
+ arg(iPage,<?argo.ContextEnum(index)?>)
+ arg(pcolor,<qval(<arg(iPage).account.privflags>&priv_Connected,<d_def_writecolor>,<d_def_NAcolor>)>)
+ if(strlen(<arg(iPage).tag(replied)>))
+  if(<eval arg(iPage).tag(replied)>==1)
+   arg(mscolor,1740)//nejaka oranzova sracka
+   arg(replied,1)
+   arg(odpovedka,<arg(iPage).tag(odpovedka)>)
+   arg(odpovidac,<arg(iPage).tag(odpovidac)>)
+  endif
+ else 
+  arg(mscolor,2301)//default
+  arg(replied,0)
+ endif
+ argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,(4*index)+100)
+ argo.button(<argo.tag(sloupec_x[1])>,ypos,4005,4007,1,0,(4*index)+101)
+ argo.button(<argo.tag(sloupec_x[2])>,ypos,4005,4007,1,0,(4*index)+102) 
+ argo.button(<argo.tag(sloupec_x[4])>,ypos,4005,4007,1,0,(4*index)+103)
+ argo.button(<argo.tag(sloupec_x[6])>,ypos,4011,4013,1,0,2000+index) //odpovez
+ 
+ argo.textA(<argo.tag(sloupec_x[3])>,ypos,pcolor,"<?SectoDays(<arg(iPage).time>)?>")
+ argo.textA(<argo.tag(sloupec_x[5])>+<d_def_odsazeni>,ypos,pcolor,"<?arg(iPage).name?>")
+ if(<arg(replied)>==1)
+  argo.textA(<argo.tag(sloupec_x[7])>+<d_def_odsazeni>,ypos,mscolor,"<?strmid(<?arg(iPage).reason?>.O: <?arg(odpovedka)?>,0,180)?>. By: <?arg(odpovidac)?>")
+ else
+  argo.textA(<argo.tag(sloupec_x[7])>+<d_def_odsazeni>,ypos,mscolor,"<?arg(iPage).reason?>")
+ endif
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+
+[DIALOG d_Pages BUTTON]
+ON=0
+	return
+on=1
+//src.smsg sort time
+DIALOG(d_Pages,status,<argo.tag(firsti)>)
+on=2
+//src.smsg sort account
+DIALOG(d_Pages,Accountname,<argo.tag(firsti)>)
+on=3
+//src.smsg sort reason
+DIALOG(d_Pages,Reason,<argo.tag(firsti)>)
+on=4
+return
+
+on=5//prev
+DIALOG(d_Pages,<argo.tag(sortby)>,<argo.tag(firsti)>-<argo.tag(radku)>)
+on=6//next
+DIALOG(d_Pages,<argo.tag(sortby)>,<argo.tag(firsti)>+<argo.tag(radku)>)
+
+ON=@AnyButton 
+if(argn >= 2000) //opoved
+ arg(radek,<eval argn-2000>)
+ arg(iPage,<argo.ContextEnum(radek)>)
+ pagereply(<iPage>)
+ return 1
+else
+ arg(radek,<eval (argn-100)/4>)
+ arg(iPage,<argo.ContextEnum(radek)>)
+ arg(iprikaz,<eval argn-(100+(<radek>*4))>)
+endif
+
+if !(arg(iprikaz))
+  accountmgr.findname(<arg(iPage).account.name>).lastcharuid.try srccome
+elseif (arg(iprikaz)==1)
+  try go(<arg(iPage).p>)
+elseif (arg(iprikaz)==2)
+  try arg(iPage).delete
+  DIALOG(d_Pages,<argo.tag(sortby)>,<argo.tag(firsti)>)
+else 
+  try accountinfo(<arg(iPage).account.name>)
+endif
+
+[function pagereply] //komu
+var(komuplayer,<finduid(<accountmgr.findname(<argv(0).account.name>).lastcharuid>)>)
+var(puvpage,<argv(0).reason>)
+var(odpovidac,<src.name>)
+var(odpovidanapage,<argv(0)>)
+src.input("Odpovez na page: <argv(0).reason> hraci: <komuplayer>(<komuplayer.account.name>)-<komuplayer.name>",pageresponse,)
+
+[function pageresponse]
+src.sysmessage(Na co odpovidam: <puvpage>. Co odpovidam: <args>. Komu:<komuplayer>(<komuplayer.name>))
+odpovidanapage.tag(odpovidac,<var(odpovidac)>)
+odpovidanapage.tag(odpovedka,<args>)
+odpovidanapage.tag(replied,1)
+arg(odpoved,"Odp na page <puvpage>: <args>.By: <src.name>")
+komuplayer.pagereplymessage(<strmid(<odpoved>,0,160)>)
+var(puvpage,"")
+var(komuplayer,"")
+var(odpovidanapage,"")
+var(odpovidac,"")
+
+
+[eof]

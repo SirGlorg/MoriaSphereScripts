@@ -1,0 +1,7127 @@
+[function dclickMe]
+consume(i_dclickMe)
+newitemsafe(i_dclickMe)
+arg(myDclicker,<lastnew>)
+myDclicker.p=<p>
+myDclicker.dclick
+myDclicker.remove
+
+[itemdef i_dclickME]
+name=vain dclicker
+id=i_memory
+type=t_script
+
+on=@create
+attr=010
+timer=1
+
+on=@UserDClick
+return 1
+
+on=@timer
+remove
+
+[function isDefined]//arg - hodnota promìnné
+if (safe(<eval (<args>)>))
+ return 1
+else
+ return 0
+endif
+
+[function hasStaff]//args - material z nehoz ma hul bejt (nebo z lepsiho)
+if (isgm)
+ return 1
+endif
+if (findlayer(2))
+ //if (findlayer(2).isstaff)
+  if (staff_<findlayer(2).baseid> >= material_<args>)
+   return 1
+  endif
+ //endif
+endif
+return 0
+
+[function hasCrook]//args - material z nehoz ma hul bejt (nebo z lepsiho)
+if (isgm)
+  return 1
+endif
+if (findlayer(2))
+  if (findlayer(2).iscrook)
+    if (crook_<findlayer(2).baseid> >= material_<args>)
+      return 1
+    endif
+  endif
+endif
+return 0
+
+[function dialogclose]//argument je cislo tlacitka co se jakoze zmackne, nebo defname dialogu a cislo tlacitka
+if (argvcount > 1) 
+  arg(dialoguid,<hval argv(0)>) //defname dialogu = d_muj_dialog
+  arg(buttonid,<hval argv(1)>)  //cislo tlacitka = 0,1,...101,102 atd.
+else
+  arg(dialogmemory,<findtype(t_message)>)
+  if (arg(dialogmemory))
+    arg(dialoguid,<hval arg(dialogmemory).more2>)
+    arg(buttonid,<hval argv(0)>)
+  else
+    return
+  endif
+endif
+
+arg(stringtosend, 0bf <split2bytes(13)> <split2bytes(04)> <split4bytes(<hval arg(dialoguid)>)> <split4bytes(<hval arg(buttonid)>)>)
+//logmsg(<arg(stringtosend)>)
+sendpacket(<arg(stringtosend)>)
+
+
+[function sectorinfo]
+sysMessage(Sektor: <sector>)
+
+[function convertbombtypes]
+if (type==t_container)||(type==t_eq_bank_box)
+ if (rescount)
+  arg(u,0)
+  while(u < rescount)
+   findcont(u).convertbombtypes
+   arg(u,#+1)
+  endwhile
+ endif
+else
+ if (dispid==i_bottle_purple)&&(type==t_potion)
+  if (topobj.isplayer)&&(topobj.isonline)
+   src.sysMessage(Nalezena bomba u online hrace <topobj.name> na pozici <topobj.p>) 
+  endif
+  type=t_potion_bomba 
+ endif
+endif
+
+[function convertbombtypesonplayers]//convertbombtypesonplayers
+if (isplayer)||(isgm)
+ findlayer(21).convertbombtypes //batoh
+ findlayer(29).convertbombtypes //banka
+endif
+
+[function arrowend]
+arrowquest 0
+
+[function repairplayers]
+if (isplayer)
+ dismount //odkonit 
+ consume(1000 t_custom_spell) //lahve
+ consume(1000 t_custom_dispellable)
+ events(-e_spelleffect)
+ spelleffect(41,1000) //dispell
+ spelleffect(11,1000) //cure 
+ events(+e_spelleffect) 
+ say("all stay") //zastavit kone
+ eqlayers(cont=<findlayer(21)>) //svléct
+ zakladstats //resetovat
+endif
+
+[function respawncertain] //args - id monster
+if (strlen(<args>))
+ nukeall(respawnspawns(<args>))
+else
+ nukeall(respawnspawns)
+endif
+
+[function respawnspawns]
+if (type==t_spawn_char)
+  if (strlen(<args>))
+    if (<more1>==<args>)
+      if (tag(lastspawned).ischar)
+        tag(lastspawned).remove   
+      endif
+      timer=1
+    else
+    endif
+  else //vsechny spawny
+    if (tag(lastspawned))
+      if (finduid(<tag(lastspawned)>))
+        if (finduid(<tag(lastspawned)>).ischar)
+          finduid(<tag(lastspawned)>).remove    
+        endif
+      endif
+    endif
+    srccome
+    dclick
+    spawnfull 
+  endif
+endif
+
+[function keyswipe]
+//findlayer(101).emptycont
+if (cont.layer==101)
+ remove
+endif
+
+[function removehitching]
+while(findid(i_hitching_memory))
+ findid(i_hitching_memory).remove
+endwhile
+
+[function equipcontents] //argv0 - komu
+while(rescount)
+ arg(itemek,<findcont(0)>)
+ itemek.cont=<argv(0)>
+ itemek.layer=<itemek.typedef.layer>
+ itemek.update
+endwhile
+
+[function movecontents]//argv0 - kam
+while(rescount)
+ arg(itemek,<findcont(0)>)
+ itemek.cont=<argv(0)>
+ itemek.update
+endwhile
+
+[function makeplayernoninvul]
+if (isplayer)&&(flag_invul==1)
+ src.sysMessage(Invul byl: <name>)
+ invul=0
+endif
+
+[function makenpcnoninvul]
+if (npc)&&(flag_invul==1)&&(!isvendor)
+ src.sysMessage(Invul byl: <name>)
+ invul=0
+endif
+
+[function redeedship]
+if (src.isdead)
+  src.redMessage("Musis byt nazivu.")
+  return 1
+endif
+newitemsafe(i_target_shippacker)
+lastnew.timer=60
+lastnew.equip
+
+[itemdef i_target_shippacker]
+name=Zamerovac sbaleni lode
+id=i_memory
+type=t_eq_script
+
+on=@create
+attr=010
+
+on=@timer
+remove
+
+on=@equip
+target("Zamer svou lod.")
+
+on=@targon_item
+if (src.targ.type==t_ship)
+ if (src.targ.more1==src) || (src.isgm)
+  if (!(<src.region.flags>&region_flag_ship))
+   arg(jmeno,<src.targ.name>)
+   src.targ.DeedConvert  
+   arg(deed,<src.act>)
+   deed.name="Sbalena lod bez klice <jmeno>"
+   //deed.dispid=i_deed_ship
+   deed.update
+  else
+   src.sysMessage("Lod muzes sbalit jen na sousi.")
+  endif
+ else
+  src.redMessage("Musis byt <src.sex(majitelem,majitelkou)> lodi.")
+ endif  
+else
+ src.sysMessage("Zameruj pouze lode.")
+endif
+remove
+return 1
+
+[function message_me]
+if (tag(messagescount))
+ dialog d_login_messages
+ return 1  
+endif
+
+[function redMessage_me]
+if (tag(redMessagescount))
+ dialog d_login_redMessages
+ return 1
+endif 
+
+[function delayedmessage] //args - text
+if (isonline)&&(uid!=094dfd)&&(uid!=0F0BEF)&&(uid!=09fa43)&&(uid!=02b7c73)&&(uid!=0646af) //pro Dinivana, Eufegenii a Verbatima vzdy do tabulky, aj Heckovi/y ten je tiez fajnovy, a Herma!
+ classmessage("<args>")
+else
+ //Do tabulky vzdy - jsou asi slepi takze jim to projistotu budem take ukladat 
+ //Takze hovno - nasrat jim, delaj pak moc chytry coz jim neprislusi. Vyskakovat si nebudou
+ if (tag(messagescount)) //uz ma nejake zpravy ve fronte
+  arg(dalsi,<eval <tag(messagescount)>+1>)
+  tag(message_<arg(dalsi)>,<args>)
+  tag(messagescount,<arg(dalsi)>)
+ else //prvni zprava do fronty
+  tag(messagescount,1)
+  tag(message_<tag(messagescount)>,<args>)  
+ endif 
+endif
+
+[function pagereplymessage] //args - text
+//if (isonline)&&(uid!=094dfd)&&(uid!=017857e)&&(uid!=09fa43) //pro Dinivana, Eufegenii a Verbatima vzdy do tabulky
+ classmessage("<args>")
+//else
+ //Do tabulky vzdy - jsou asi slepi takze jim to projistotu budem take ukladat 
+ //Takze hovno - nasrat jim, delaj pak moc chytry coz jim neprislusi. Vyskakovat si nebudou
+ if (tag(messagescount)) //uz ma nejake zpravy ve fronte
+  arg(dalsi,<eval <tag(messagescount)>+1>)
+  tag(message_<arg(dalsi)>,<args>)
+  tag(messagescount,<arg(dalsi)>)
+ else //prvni zprava do fronty
+  tag(messagescount,1)
+  tag(message_<tag(messagescount)>,<args>)  
+ endif 
+//endif
+
+[function delayedredMessage] //args - text
+if (isonline)&&(uid!=094dfd)&&(uid!=017857e)&&(uid!=09fa43) //pro Dinivana a Eufegenii vzdy do tabulky
+ redMessage("<args>")
+else
+ //Do tabulky vzdy - jsou asi slepi takze jim to projistotu budem take ukladat 
+ //Takze hovno - nasrat jim, delaj pak moc chytry coz jim neprislusi. Vyskakovat si nebudou
+ if (tag(redMessagescount)) //uz ma nejake zpravy ve fronte
+  arg(dalsi,<eval <tag(redMessagescount)>+1>)
+  tag(redMessage_<arg(dalsi)>,<args>)
+  tag(redMessagescount,<arg(dalsi)>)
+ else //prvni zprava do fronty
+  tag(redMessagescount,1)
+  tag(redMessage_<tag(redMessagescount)>,<args>)  
+ endif 
+endif
+
+
+[itemdef i_delayed_messages]
+id=i_memory
+type=t_eq_script
+name=Delayed messages counter
+
+on=@create
+timer=5
+
+on=@timer
+cont.message_me
+remove
+
+[itemdef i_delayed_redMessages]
+id=i_memory
+type=t_eq_script
+name=Delayed redMessages counter
+
+on=@create
+timer=5
+
+on=@timer
+cont.redMessage_me
+remove
+
+[function multi_damage]
+if (srccansee)
+  arg(dist,<src.distancefrom(<uid>)>)
+  effect(3,<s_explosion.EFFECTID>,6,15,1)
+  sound=<s_explosion.sound>
+  if (!<dist>)
+    damage_noresponse(<argv(0)>,dam_god)
+  else
+    damage_noresponse(<eval (<argv(0)>/<arg(dist)>)>,dam_god)
+  endif
+endif
+
+[function f_pocet_vadnych_spawnu]
+var(pocet_vadnych_spawnu, 0)
+src.xxi f_smazat_vadne_spawny
+src.go(1,1,0,<mapplane>)
+src.self
+src.go(6136,4088,0,<mapplane>)
+src.self
+var(pocet_vadnych_spawnu,"")
+
+[function f_smazat_vadne_spawny]
+if (<dispid>==i_pet_wisp)&&(<baseid>==i_worldgem_bit)&&(<type>==t_spawn_char)&&(<more1>==00)
+ remove
+endif
+
+[function fixNumber]
+arg(len, <strlen(<args>)>)
+while (arg(len)>0) 
+  arg(pattern,<arg(pattern)>[-0123456789])
+  arg(len, <eval arg(len)-1>)
+endwhile
+
+if (STRMATCH(<args>,<arg(pattern)>))
+ return <eval args>
+else
+ //src.sysMessage("strmatch '<args>' failed")
+ src.accmsg("Mozny pokus o podvod s chybnym prikazem <args>")
+ return 0
+endif
+
+[function fixNumberPositive]
+arg.number=<fixnumber(<args>)>
+if (<arg.number> < 0)
+ return 0
+else
+ return <arg.number>
+endif
+
+[itemdef i_port_randomvicinity]
+id = i_moongate_red
+type = t_port_randomvicinty
+name = port do nahodnyho okoli - pokud mozno docasny reseni campeni moongatu
+
+on=@create
+attr_invis=1
+attr_movenever = 1
+
+[typedef t_port_randomvicinty]
+on=@step
+if (src.isplayer)
+  arg(badposition, 1)
+  while arg(badposition)
+    src.p(<eval {(p_x-15) (p_x+15)}>, <eval {(p_y-15) (p_y+15)}>, <p_z>, <mapplane>)
+    src.fix
+    if (src.p_z == p_z)
+      arg(badposition, 0)
+    endif
+  endif
+  src.go(<src.p>)
+endif
+
+[function nastav_home] 
+if (isplayer)
+home=<home_<tag(nation)>>
+endif
+
+[function prodleva_pred_novym_pokusem] //argv(0) - kolik dsekund
+newitemsafe(i_delayer)
+lastnew.timerd=<argv(0)>
+equip(<lastnew>)
+
+[itemdef i_delayer]
+id=i_memory
+type=t_eq_script
+name=Prodleva pred dalsimi pokusy
+
+on=@create
+attr=attr_invis|attr_decay
+
+on=@timer
+remove
+return 0
+
+[function getskilldifficulty] //argumenty= (cislo jmeno_skillu1,cislo jmeno_skillu2) atd...
+singleparse(<argv(0)>) //rozseknout na <firstnumb>, <secondnumb>
+ if (strcmpi(<secondnumb>,skill_inscription)) //0 pokud anoo
+  var(magery,<firstnumb>) //prvni byla magery
+ else
+  var(insc,<firstnumb>)
+ endif
+singleparse(<argv(1)>)
+ if (strcmpi(<secondnumb>,skill_inscription)) //0 pokud ano
+  var(magery,<firstnumb>) //druha byla magery
+ else
+  var(insc,<firstnumb>)
+ endif
+//dalsi evt. skilly nas nezajimaj
+return 1
+
+[function vyrob_customsvitek] //argv(0) = cislo kouzla k vyrobeni, argv(1,2) - insc, magery (narocnosti)
+if (!<argv(0)>)
+ src.redMessage("Chyba! Kontaktuj GM.") 
+ src.findid(i_vyrobce_svitku).remove
+ return 0
+endif
+if (!<src.restest 1 i_scroll_blank>)
+ src.redMessage("Nemas dost svitku.") 
+ src.findid(i_vyrobce_svitku).remove
+ return 0
+endif
+arg(mana_po_vyrobe,<eval (<src.mana>-<eval (<a_manause[<argv(0)>]>)/2>)>)
+if (<arg(mana_po_vyrobe)> > 0)
+ if (<src.mana> < <arg(mana_po_vyrobe)>)
+  src.redMessage("Nemas dost many.") 
+  src.findid(i_vyrobce_svitku).remove
+  return 0
+ endif
+else
+  src.redMessage("Nemas dost many.") 
+  src.findid(i_vyrobce_svitku).remove
+  return 0
+endif
+//src.sysMessage("Puvodni cislo kouzla: <argv(0)>")
+if (<src.findid(i_vyrobce_svitku).more1>) //dokud ma co vyrabet
+ src.newitemsafe(i_vyrobni_timer)
+ lastnew.more1=<argv(0)> //co se bude vyrabet
+ lastnew.tag(insc,<argv(1)>)
+ lastnew.tag(magery,<argv(2)>) //zatim nepouzito, ale co kdyby nekdy...
+ lastnew.equip
+else
+ src.classmessage("Vyroba ukoncena.")
+ src.findid(i_vyrobce_svitku).remove
+endif
+return 1
+
+[itemdef i_vyrobce_svitku]
+id=i_memory
+name=Pocita vyrobene svitky custom
+type=t_eq_script
+
+on=@create
+attr=attr_invis|attr_decay
+
+[itemdef i_vyrobni_timer]
+id=i_memory
+name=K vyrobe customsvitku
+type=t_eq_script
+
+on=@create
+attr=attr_invis|attr_decay
+timer=3
+
+on=@timer
+//cont.sysMessage("Insc: <tag(insc)>, magery: <tag(magery)>, cislo svitku: <more1>")
+if (vyroba_fizzle(<tag(insc)>,<cont.inscription>))
+ cont.consume(1 i_scroll_blank)
+ cont.mana=<eval (<cont.mana>-<eval (<a_manause[<more1>]>)/2>)>
+ cont.newitemsafe(<a_scrollitem[<more1>]>)
+ lastnew.bounce
+ cont.findid(i_vyrobce_svitku).more1=<eval (<cont.findid(i_vyrobce_svitku).more1>-1)>
+ cont.vyrob_customsvitek(<more1>,<tag(insc)>,<tag(magery)>) //kouzlo,narocnosti skillu 
+else
+ cont.consume(1 i_scroll_blank)
+ cont.mana=<eval (<cont.mana>-<eval (<a_manause[<more1>]>)/2>)>
+ cont.classmessage("Vyroba se nezdarila - dalsi pokus") 
+ cont.vyrob_customsvitek(<more1>,<tag(insc)>,<tag(magery)>) //kouzlo,narocnosti skillu 
+endif
+remove 
+
+[function vyroba_fizzle]
+//<argv(0)> naroky svitku
+//<argv(1)> tentyz skill vyrobce
+//vypocet pravdepodobnosti neuspechu, je to zvoleny pomerne chytre (mezi 2/3 a 5/3 narocnosti svitku)
+arg(dolni_mez,<eval ((<argv(0)>)/3)*2>)
+arg(horni_mez,<eval ((<argv(0)>)/3)*5>)
+if (<arg(horni_mez)> > 1000)
+ arg(pomoc,<eval (<arg(horni_mez)>-1000)>)
+ arg(horni_mez,<eval (((<arg(pomoc)>)/2)+1000)>) //horni mez zmensit na polovicni vzdalenost od 1000
+endif
+if (<argv(1)> < <arg(dolni_mez)>)
+ arg(compareskill,0) //nevyrobi nic
+ src.redMessage("Nejsi dost <src.sex(zrucny,zrucna)>.")
+else
+ arg(compareskill,<argv(1)>)
+endif
+if (<arg(compareskill)> < <eval ({<arg(dolni_mez)> <arg(horni_mez)>})>)
+ //src.sysMessage({<arg(dolni_mez)>, <arg(horni_mez)>}, skill: <arg(compareskill)>)
+ return 0
+endif
+ //src.sysMessage({<arg(dolni_mez)>, <arg(horni_mez)>}, skill: <arg(compareskill)>)
+return 1
+
+[function wait_then_port]//argv(0) - jak dlouho cekat, argv(1,2,3,4) - kam portovat (x,y,z,m)
+src.newitemsafe(i_wait_then_port)
+lastnew.morep(<argv(1)> <argv(2)> <argv(3)> <argv(4)>)
+lastnew.tag(kdy,<eval argv(0)>)
+lastnew.equip
+
+[function f_padaci_pauza]//argv(0) - jak dlouho cekat, argv(1) - kterej layer, argv(2) - napis
+src.newitemsafe(i_pauza_pred_spadnutim_veci) //vec na zem ! (kun dismount)
+lastnew.more1=<argv(1)>
+lastnew.tag(kdy,<eval argv(0)>)
+if (strlen(<argv(2)>))
+ lastnew.tag(napis,<argv(2)>)
+else
+ lastnew.tag(napis," ")
+endif
+lastnew.equip
+
+[function f_svlikaci_pauza] //argv(0) - jak dlouho cekat, argv(1) - kterej layer, argv(2) - napis
+src.newitemsafe(i_pauza_pred_unequipem) //vec do baglu
+lastnew.more1=<argv(1)>
+lastnew.tag(kdy,<eval argv(0)>)
+if (strlen(<argv(2)>))
+ lastnew.tag(napis,<argv(2)>)
+else
+ lastnew.tag(napis," ")
+endif
+lastnew.equip
+
+[function f_zbyva_casu] //argv(0) - od kdy se pocita, argv(1) - jakej byl tehdy limit , decisekundy!!!!!
+arg(zbyva_casu,<eval (<argv(1)>-(<serv.time>-<argv(0)>))>) 
+arg(dni,<eval (arg(zbyva_casu)/<den>)>)
+if (<arg(dni)>)
+ return <arg(dni)/10> dni
+endif
+arg(hodin,<eval (arg(zbyva_casu)/36000)>) //hodina ma 3600s
+if (<arg(hodin)>)
+ return <arg(hodin)/10> hodin
+endif
+arg(minut,<eval ((arg(zbyva_casu)-(arg(hodin)*36000))/600)>)
+if (<arg(minut)>)
+ return <arg(minut)/10> minut
+endif
+arg(sekund,<eval ((((arg(zbyva_casu))-(arg(hodin)*36000))-(arg(minut)*600))/10)>)
+if (<arg(sekund)>)
+ return <arg(sekund)/10> sekund
+endif
+
+[function removetarget]
+while (memoryfindtype(MEMORY_WAR_targ))
+ memoryfindtype(MEMORY_WAR_targ).remove
+endwhile
+
+[function removefight]
+while (memoryfindtype(MEMORY_FIGHT))
+ memoryfindtype(MEMORY_FIGHT).remove
+ 
+endwhile
+
+[function vyvrhel_prevest]
+if (f_check_tag_realm)
+  return 1
+else
+  if (<eval tag(realm)>==1)&&(kills>19)
+    vyvrhel(1)
+  endif
+endif
+return 0
+
+[function f_check_tag_realm] //returns 0 if ok; arg > 0 if not
+if !(strcmpi("<tag(realm)>","realm_"))
+  accMsg("ERROR: Hrac <uid> ma spatne nastaveny realm.")
+  redMessage("Zda se, ze tva postava ma spatne nastaveny realm. Napis page!")
+  return 1
+else
+  return 0
+endif
+
+[function vyvrhel]
+if !(args)
+ tag(realm,<tag(realm)>*(-1))
+ if (tag(realm)==1)
+  kills=0
+  fame=0
+  karma=0
+ else
+  kills=30000
+  fame=0
+  karma=-3000
+ endif
+else
+ if (tag(realm)>0)
+  tag(realm,<tag(realm)>*(-1))
+  kills=30000
+  fame=0
+  karma=-3000
+ endif
+Endif
+if (<tag(realm)> < 0) //je to cerstvy vyvrhel
+ tag(puvodni_jmeno,<name>) //ulozit si jmeno
+ name=Vyvrhel <name>
+else //je zpatky
+ name=<tag(puvodni_jmeno)>
+ tag.remove(puvodni_jmeno)
+endif
+
+[function prislusnost_realmu]
+if (tag(realm)<0)
+ Return Ano
+else
+ Return Ne
+endif
+
+[function statistikapovolani]
+if (argvcount)
+  arg(dny,<eval args>)
+else
+  arg(dny,30)
+endif
+write("Statistika povolani za poslednich <arg(dny)> dni")
+arg(dny,<eval serv.time-(arg(dny)*24*60*60*10)>)
+arg(i,0)
+while (arg(i)<11)
+  var(statspovolani_celkem[arg(i)],0)
+  var(statspovolani_veteran[arg(i)],0)
+  var(statspovolani_poslednidoba[arg(i)],0)
+  var(statspovolani_poslednidoba_veteran[arg(i)],0)
+  var(statspovolani_gondoru[arg(i)],0)
+  arg(i,#+1)
+endwhile
+var(gondoru_celkem,0)
+
+allplayers(f_statistikapovolani(<arg(dny)>))
+write("celkem, veteranu, celkem za posledni dobu, celkem veteranu za posledni dobu.")
+write("veteran=vic jak 10. level")
+arg(i,0)
+while (arg(i)<11)
+  arg(povolani_name,<findres(profession,arg(i)).name>)
+  write("<arg(povolani_name)>: <var(statspovolani_celkem[arg(i)])>, <var(statspovolani_veteran[arg(i)])>, <var(statspovolani_poslednidoba[arg(i)])>, <var(statspovolani_poslednidoba_veteran[arg(i)])>, <var(statspovolani_gondoru[arg(i)])>")
+  arg(i,#+1)
+endwhile
+write("gondoru celkem: <var(gondoru_celkem)>")
+
+[function f_statistikapovolani]
+arg(profID,<nid(profession)>)
+var(statspovolani_celkem[arg(profID)],#+1)
+if (tag(level)>10)
+  var(statspovolani_veteran[arg(profID)],#+1)
+endif
+if (tag(lastlogoutedAt)>args)
+  var(statspovolani_poslednidoba[arg(profID)],#+1)
+  if (tag(level)>10)
+    var(statspovolani_poslednidoba_veteran[arg(profID)],#+1)
+  endif
+endif
+if (tag(realm)==1)
+  var(statspovolani_gondoru[arg(profID)],#+1)
+  var(gondoru_celkem,#+1)
+endif
+
+[function forgetothers]//pro plevel 1
+if (!act)
+  return
+else
+  arg(storeact,<act>)
+  arg(targmemory,<memoryfindtype(MEMORY_WAR_targ)>)
+  while (arg(targmemory))
+    arg(targmemory).color=<eval arg(targmemory).color&~MEMORY_WAR_targ>
+    arg(targmemory,<memoryfindtype(MEMORY_WAR_targ)>)
+  endwhile
+  arg(targmemory,<memoryfind(<arg(storeact)>)>)
+  arg(targmemory).color=<eval arg(targmemory).color|MEMORY_WAR_targ>
+endif
+
+[typedef t_shaft_multi]
+on=@userdclick
+multiitem_create(<typedef.tdata1>, <eval amount*typedef.tdata2>)
+remove
+
+on=@dropon_obj
+multiitem_create(<typedef.tdata1>, <eval amount*typedef.tdata2>)
+remove
+
+[typedef t_arrow_piercing_multi]
+on=@userdclick
+multiitem_create(<typedef.tdata1>,<eval 20*amount>)
+remove
+
+on=@dropon_obj
+multiitem_create(<typedef.tdata1>,<eval 20*amount>)
+remove
+
+[function multiitem_create]
+src.lognewitemsafe(<argv(0)>)
+lastnew.amount=<argv(1)>
+lastnew.logcont(<src>)
+tag(craftedby,"<tag(craftedby)>")
+
+[function countclients]
+VAR.CLIENTCOUNT=<EVAL <VAR.CLIENTCOUNT> + 1>
+
+//opraveno Dinivanem
+[itemdef i_shiphaste]
+id=01ea7
+type=t_eq_script
+name=Ship Speed Control
+
+ON=@timer
+topobj.more1.sysMessage(Timer)
+tag(oldlink,<link>) //lod
+tag(linkid,<link.id>) //id lode
+tag(linkname,<link.name>) //jmeno lode
+tag(linkmore1,<link.more1>) //uid majitele lodi
+link=<more1> //to byl majitel lodi
+if (itemExists(<link>))
+  if (strlen(<link.flags>))
+    if (<link.region.flags>&region_flag_ship)
+      link=<tag.oldlink>
+      tag.remove(oldlink)
+      var(clientcount,0)
+      region.allclients(countclients) //spocitat pasazery na lodi
+      tag(maxtimercount,<eval (<clientcount>/3)+1>)
+      tag(timercount,0)
+      if (<tag(timercount)> < <tag(maxtimercount)>)
+        tag(timercount,<tag(maxtimercount)>)
+      endif
+      timer=<eval <tag(timercount)>>
+      link.timerd=<eval <tag(timercount)>>
+      return 1
+    endif
+  endif
+endif //Srat na to pokud neni na palube!
+tag(oldlink).tag.remove(hasteuid) //odstranit z lode 
+remove //ten gem
+return 1
+
+[function f_shiphasteTARTAROS]
+return 0 //not implemented
+if !(<safe.tag.HASTEUID>)
+ src.newitem i_shiphaste
+ tag.HASTEUID=<src.act.uid>
+ src.act.LINK=<UID>
+ src.act.MORE1=<src.UID>
+ src.act.name=Ship Speed Control for <name>
+ src.act.ATTR=attr_invis|attr_move_never
+ src.act.P=<P>
+ src.act.TIMER=1
+ENDIF
+
+[itemdef i_shiphasteTARTAROS]
+id=01ea7
+type=t_eq_script
+name=Ship Speed Control
+
+ON=@Timer
+tag.OLDLINK=<LINK>
+LINK=<MORE1>
+if !(<LINK.REGION.FLAGS>&region_flag_ship) //Don't do anything unless they're actually on board
+  LINK=<eval <tag.OLDLINK>>
+  tag.OLDLINK=
+  LINK.tag.HASTEUID=
+  remove
+  RETURN 1
+ELSE
+  LINK=<eval <tag.OLDLINK>>
+  tag.OLDLINK=
+  TIMERd=1
+  LINK.TIMERd=2
+  RETURN 1
+ENDIF
+
+[function setpassword]
+if (strlen(<args>))
+  account.password="<args>"
+  smsg("Heslo k uctu zmeneno na '<account.password>'")
+else
+  smsg("Zadavej ve formatu '.setpassword(noveheslo)'")
+endif
+
+[function zrus_spawny]
+var(zruseno_spawnu,0)
+nukeall(zrusitspawny)
+src.sysMessage("Zruseno <var(zruseno_spawnu)> spawnu")
+
+[function obnov_spawny]
+var(obnoveno_spawnu,0)
+nukeall(obnovitspawny)
+src.sysMessage("Obnoveno <var(obnoveno_spawnu)> spawnu")
+var(zruseno_spawnu,"")
+var(obnoveno_spawnu,"")
+
+[function zrusitspawny]
+if (type==t_spawn_char)
+ type=t_negated_spawn_char
+ tag(old_timer,<timer>)
+ timer=0fffffff
+ var(zruseno_spawnu,#+1)
+endif 
+
+[function obnovitspawny]
+if (type==t_negated_spawn_char)
+ type=t_spawn_char
+ timer=<tag(old_timer)>
+ tag.remove(old_timer)
+ var(obnoveno_spawnu,#+1)
+endif 
+
+[typedef t_negated_spawn_char]
+on=@timer
+timer=0fffffff
+return 1
+
+
+
+//[typedef T_potion_shrink]
+//on=@userdclick
+//target
+//return 1
+
+//on=@targon_char
+//if (src.targ.flag_conjured)
+//  target
+//  return 1
+//elseif !(src.targ.ismypet)
+//  target
+//  return 1
+//elseif (src.targ.distance>3)
+//  target
+//  return 1
+//elseif !(src.targ.srccanseelos)
+//  target
+//  return 1
+//endif
+//src.targ.shboun
+//src.newitemsafe(<hval typedef.tdata1>)
+//lastnew.bounce
+//remove
+//return 1
+
+[typedef t_figurine_2]
+on=@userdclick
+if !(strlen(<src.region.tag(noshrink)>))
+  if (tag(my_id))
+    if (!<more1l>)
+      src.sysMessage("Tento shrink je vporadku a pri pristim poklikani uz vrati zvire.")
+      more1 = 1
+      return 1
+    endif
+    src.newnpc(<tag(my_id)>)
+    src.act.p=<topobj.p>
+    src.act.color=<color>
+    src.act.name=<name>
+    src.act.newmemory(<src>)
+    src.act.act.color=<src.act.act.color>|MEMORY_IPET
+    src.act.food=<tag(myfood)>
+    src.act.hits=<tag(myhits)>
+    src.act.findlayer(21).remove
+    if(<src.act.id> == c_m_phoenix_poison) || (<src.act.id> == c_m_phoenix)// OPRAVA FENY
+      src.act.events=-e_npc_leaper
+    endif
+    if (strlen(<tag(origTaming)>))
+      src.act.taming=<tag(origTaming)>
+    endif
+    remove
+  else
+    arg.d = <findres(chardef, <more1>)>
+    if (<arg.d>)
+      if (<?findres(itemdef, <?<arg(d)>.icon?>)?> == <?dispid?>)
+        src.sysMessage("Byl sem pokazy, ale uz vporadku. Pristi poklikani uz vrati zvire.")
+        tag(my_id, <arg.d>)
+        more1 = 0
+        return 1
+      endif
+    endif
+    src.redMessage("Jsem pokazeny shrink.")
+    return 1
+  endif
+else
+  src.redMessage("Tady to neodshrinknes...")
+endif
+return 1
+
+
+
+[typedef T_potion_shrink]//jestli to nefunguje, tak to rozbil enrico
+on=@userdclick
+target
+return 1
+
+
+on=@targon_char
+if (src.targ.flag_conjured)
+  target
+  return 1
+elseif !(src.targ.ismypet)
+  target
+  return 1
+elseif (src.targ.distance>3)
+  target
+  return 1
+elseif !(src.targ.srccanseelos)
+  target
+  return 1
+elseif (src.targ.isplayer)  
+  target
+  return 1
+elseif (src.targ.tag(noshrink))
+  target 
+  return 1
+elseif (src.targ.isvendor)
+  target 
+  return 1
+elseif (src.targ.isAnimated)
+  target
+  return 1
+endif
+
+src.newitem=<src.targ.typedef.icon>
+src.act.name=<src.targ.name>
+src.act.color=<src.targ.color>
+src.act.tag(my_id,<src.targ.id>)
+src.act.tag(MYHITS,<src.targ.hits>)
+src.act.tag(MYFOOD,<src.targ.food>)
+src.act.more1=1
+src.act.type=t_figurine_2
+src.act.bounce
+src.targ.remove
+if (amount==1)
+ remove
+else
+ amount=<amount>-1
+endif
+
+return 1
+
+
+
+[function follow]
+if (src.findid(i_follow))
+  src.consume(1000 i_follow)
+else
+  src.sysMessage("Following <name>")
+  src.newitemsafe(i_follow)
+  src.equip(lastnew)
+  lastnew.link=<uid>
+  lastnew.timerd=1
+  lastnew.more2=<src.flag_war>
+endif
+
+[itemdef i_follow]
+name=following
+id=i_memory
+type=t_eq_script
+
+on=@timer
+if (more2!=cont.flag_war)
+  remove
+else
+  cont.go(<link.topobj.p>)
+  cont.updatex
+  timerd=1
+endif
+return 1
+
+on=@unequip
+src.sysMessage("Following stopped.")
+
+[function weaponcreate]
+events +t_allweapons
+hitpoints=<eval (<nastaveni_durability_<argv(0)>>*<nastaveni_durability_<def.dispid>>)/1000>
+if (argvcount>1)
+color=color_<argv(1)>
+else
+color=color_o_<argv(0)>
+endif
+if (isbow)
+  events +t_allbows
+elseif (isstaff)
+  events +t_allstaves
+elseif (type==T_WEAPON_MACE_SMITH)
+  if (typedef.layer==1)
+    events +t_cm_blacksmithing_target
+  endif
+elseif (type==t_weapon_fence)
+  if (typedef.layer==1)
+    events +t_cm_bowcrafting_target
+  endif
+endif
+
+[typedef t_post_hitching]
+on=@userdclick
+src.newitemsafe(i_hitching_memory)
+lastnew.equip
+lastnew.timer=60
+lastnew.target("Zamer zvire, ktere chces uvazat.")
+return 1
+
+[itemdef i_hitching_memory]
+name=hitching memory
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 1
+
+ON=@targON_ITEM
+target
+RETURN 1
+
+ON=@targON_CHAR 
+src.sysMessage("<src.sex(Zameril,Zamerila)> jsi <src.targ.name>.")
+if (src.targ.ISPLAYER)
+ src.sysMessage("Hrace neni mozne uvazovat.")
+ RETURN 1
+ENDIF
+if !(src.targ.ismypet)
+  src.sysMessage("Toto zvire ti nepatri.")
+  RETURN 1
+endif
+if (src.targ.flag_immobile)
+  src.targ.flag_immobile=0
+  src.sysMessage("<src.sex(Odvazal,Odvazala)> jsi <src.targ.name> od stojanu.")
+  RETURN 1
+ELSE
+  src.targ.flag_immobile=1
+  src.sysMessage("<src.targ.name> je uvazan.")
+  RETURN 1
+ENDIF
+remove
+return 1
+
+[typedef t_garbage_can]
+on=@userdclick
+open
+return 1
+
+on=@STACKON
+timer=1
+more=15
+
+on=@timer
+if (more)
+  say("<more>")
+  more=<eval more-1>
+  if (rescount)
+    timer 1
+  endif
+else
+  emptycont
+endif
+return 1
+
+[function f_potionkeg_empty]
+MOREP=0,0
+tag(id,0)
+color=0
+name=
+
+[typedef t_keg_potion]
+//on=@UserToolTip  //99z8 nechodi 
+//if (morex)
+//  message("(<morex> <?<findres(itemdef,<tag(id)>)>.name?>)")
+//endif
+
+ON=@userCLICK
+if (morex)&&(STRCMPI(<src.tag(clienttype)>,"new"))//0 pokud ano
+  message("(<morex> <?<findres(itemdef,<tag(id)>)>.name?>)")
+endif
+
+ON=@userDCLICK
+if (!f_lockeditem)
+  target("Kterym lektvarem chces soudek naplnit?")
+endif
+return 1
+
+ON=@targON_ITEM
+if (src.targ.type==t_garbage_can)
+ if (src.targ.srccanseelos)&&(src.targ.distance<3)
+  f_potionkeg_empty
+  src.SOUND=snd_Z_END_LIQUID
+  src.sysMessage("Soudek byl vyprazdnen.")
+  return 1
+ else
+  src.sysMessage("Jsi od soudku prilis daleko.")
+  return 1
+ endif  
+elseif (src.targ.type==t_bottle_empty)
+ if !(morex)
+  src.sysMessage("Neni mozne pouzit prazdny soudek.")
+  return 1
+ endif
+ if (<src.targ.topobj>!=<src>)
+  src.sysMessage("Musis u sebe mit prazdnou lahvicku.")
+  return 1
+ endif
+ src.sysMessage("<src.sex(Naplnil,Naplnila)> jsi lahvicku.")
+ SOUND=snd_Z_END_LIQUID
+ if (<src.targ.amount> < <eval moreX> )
+  arg(amnt,<src.targ.amount>)
+ else
+  arg(amnt,<eval moreX>)
+ endif
+ src.newitem=<tag(id)>
+ lastnew.amount=<arg(amnt)>
+ lastnew.attr=0
+ lastnew.cont=<src.targ.cont> 
+ src.targ.amount=<src.targ.amount>-<arg(amnt)>
+ if !(<src.targ.amount>)
+  src.targ.remove
+ endif
+ moreX=<moreX>-<arg(amnt)>
+ if (<uid>==<topobj.uid>)
+  src.accmsg("Natocil <?arg(u)?> <?<findres(itemdef,<tag(id)>)>.name?> z uid=<?uid?> (<?amount?> <?name?>) umisten <?p?> (<?region.name?>)")
+ else
+  src.accmsg("Natocil <?arg(u)?> <?<findres(itemdef,<tag(id)>)>.name?> z uid=<?uid?> (<?amount?> <?name?>) umisten uid=<?cont.uid?> (<?cont.name?>) topobj=<?topobj.uid?> (<?topobj.name?>)")
+ endif
+ if !(moreX)
+  f_potionkeg_empty
+ endif
+ return 1
+elseif (src.targ.type==t_potion)||(src.targ.type==t_allpotions)||(src.targ.type==t_drink)||(src.targ.type==T_potion_shrink)||(src.targ.type==t_speedpotions)||(src.targ.type==t_potion_bomba)
+ if (src.targ.srccanseelos)&&(src.targ.distance<3)&&(src.targ.topobj==src)
+  if (tag(id))&&(src.targ.BASEID!=tag(id))
+   src.sysMessage("Lektvary nemuzes michat.")
+   RETURN 1
+  elseif (MOREX>999) // max 1000 potion
+   src.sysMessage("Soudek uz je plny.")
+   RETURN 1
+  elseif (MOREX==0)
+   tag(id,<src.targ.BASEID>) // store potion baseid i_potion_xxx
+  endif
+  arg(addPotionCount,1000-<moreX>)
+  if (<src.targ.amount> < <arg(addPotionCount)>)
+    arg(addPotionCount,<src.targ.amount>)
+  endif
+  MOREX=<eval moreX+arg(addPotionCount)>
+  src.SOUND=snd_Z_END_LIQUID
+  src.sysMessage("<src.sex(Naplnil,Naplnila)> jsi soudek lektvarem <src.targ.name>.")
+  color=<src.targ.color>
+  if (src.targ.color==0)
+    if (src.targ.dispid==i_bottle_blue)//blue
+      color=058
+    elseif (src.targ.dispid==i_bottle_orange)//orange
+      color=02b
+    elseif (src.targ.dispid==i_bottle_purple)//purple
+      color=0df
+    elseif (src.targ.dispid==i_bottle_yellow)//yellow
+      color=035
+    elseif (src.targ.dispid==i_bottle_black)//black
+      color=03d6
+    elseif (src.targ.dispid==i_bottle_green)//green
+      color=044
+    elseif (src.targ.dispid==i_bottle_red)//red
+      color=021
+    elseif (src.targ.dispid==i_bottle_white)//white
+      color=0482
+    endif  
+  endif
+  arg(emptyBottlesType,<src.targ.typedef.tdata1>)
+  if (<arg(addPotionCount)> == <src.targ.amount>)
+    src.targ.remove
+  else
+    src.targ.amount=<src.targ.amount> - <arg(addPotionCount)>
+  endif
+  src.newitem(<arg(emptyBottlesType)>)  // pridame prazdne lahve
+  arg(newPot,<lastnew>)
+  arg(newPot).amount=<arg(addPotionCount)>
+  arg(newPot).ATTR=0
+  arg(newPot).bounce
+  return 1
+ else
+  src.sysMessage("To je prilis daleko nebo tam nevidis.")
+ endif
+endif
+target
+return 1
+
+[typedef t_allweapons]
+on=@userclick
+if (STRCMPI(<src.tag(clienttype)>,"old"))//0 pokud ano
+ return 1
+endif
+if (topobj==src)||(src.isgm)
+  src.smsg("Durabilita: <more1l>/<more1h>")
+endif
+
+on=@equip
+if (typedef.layer==2)
+  arg(index,0)
+  while (arg(index)<cont.rescount)
+   arg(founditem,<cont.findcont(arg(index))>)
+   if (arg(founditem).layer==2)
+     if (arg(founditem)!=uid)
+       arg(founditem).unequip
+       break
+     endif
+   endif
+   arg(index,#+1)
+  endwhile
+endif
+src.temporary_null
+
+on=@unequip
+src.temporary_null
+
+on=@targon_ground
+if !(src.f_canReachG(<src.targp>))
+  return 1
+endif
+
+[function showbowtype_old]
+if (type==t_weapon_bow_run)
+ message("('Run')")
+else
+ message("('Stand')")
+endif
+[function showbowtype_new]
+return 0
+[function showbowtype_]
+return 1
+
+[typedef t_allbows]
+on=@userclick
+showbowtype_<src.tag(clienttype)>
+
+on=@userdclick
+return 1
+
+on=@equip
+if (type==t_weapon_bow_run)
+  if !(typedef.dam)
+    arg(standbowID,<strmid(<baseid>,0,<STRLEN(<baseid>)>-4)>)
+    if (findres(itemdef,arg(createID))!=i_unused)
+      typedef.dam=<?<arg(standbowID)>.dam?>
+    endif
+  endif
+  if (src.profession==class_ranger)||(src.isgm)
+    src.events +e_runarcher
+  else
+    switchthisbow
+  endif
+endif
+
+on=@unequip
+if (src.profession==class_ranger)||(src.profession==class_thief)
+  src.macefighting=0
+endif
+src.events -e_runarcher
+
+[typedef t_allstaves]
+on=@userdclick
+arg(staffmaxmana,<eval nastaveni_staffmaxmana_<baseid>>)
+if (src.mana==src.maxmana)&&(more2l<arg(staffmaxmana))
+ arg(manaswap,<eval ((src.statslevel*100)+3000)>)//koeficient podle levelu
+ more2l=<eval more2l+(src.mana*arg(manaswap))/10000>
+ src.mana=0
+ if (more2l>arg(staffmaxmana))
+  src.mana=<eval ((<more2l>-<arg(staffmaxmana)>)*10000)/<arg(manaswap)>>
+  more2l=<arg(staffmaxmana)>
+ endif
+elseif (src.mana<src.maxmana)
+ arg(manadiff,<eval src.maxmana-src.mana>)
+ if (more2l<arg(manadiff))
+  src.mana=<src.mana>+<more2l>
+  more2l=0
+ else
+  src.mana=<src.maxmana>
+  more2l=<eval more2l-arg(manadiff)>
+ endif
+endif
+sound 250
+trigger @userclick
+return 0
+
+on=@userclick
+arg(staffmaxmana,<eval nastaveni_staffmaxmana_<baseid>>)
+if (STRCMPI(<src.tag(clienttype)>,"old"))//0 pokud ano
+ return 1
+endif
+if ((<src>==<topobj>)||(src.isgm))
+  src.classmessage("Mana v holi: <?more2l?>/<?arg(staffmaxmana)?>")
+endif
+
+on=@unequip
+if (more2l>0)
+  classmessage("Mana v holi je vazana na tvou mysl - sundanim hole mana z hole vyprchala.")
+  more2l=0
+endif
+
+[typedef t_allarmors]
+on=@equip
+src.temporary_null
+tag.OMadded=<eval armorOM>
+src.tag.armordef=<eval <src.tag.armordef>>+<tag.OMadded>
+src.tag.armorCount=<eval <src.tag.armorCount>+<returnArmorByLayer(<typedef.layer>,<typedef.tdata1>)> >
+
+on=@unequip
+src.temporary_null
+src.tag.armordef=<eval <src.tag.armordef>>-<tag.OMadded>
+tag(OMadded,"")
+src.tag.armorCount=<eval <src.tag.armorCount>-<returnArmorByLayer(<typedef.layer>,<typedef.tdata1>)> >
+if (<src.tag.armorCount><0)
+  src.tag.armorCount=0
+endif
+
+on=@userclick
+if (STRCMPI(<src.tag(clienttype)>,"old"))//0 pokud ano
+ return 1
+endif
+src.smsg("Durabilita: <more1l>/<more1h>")
+
+[typedef t_allshields]
+on=@userdclick
+safe src.findlayer(2).bounce
+
+on=@equip
+src.temporary_null
+src.tag.armorCount=<eval <src.tag.armorCount>+<returnArmorByLayer(<typedef.layer>,<typedef.tdata1>)> >
+
+on=@unequip
+src.temporary_null
+src.tag.armorCount=<eval <src.tag.armorCount>-<returnArmorByLayer(<typedef.layer>,<typedef.tdata1>)> >
+if (<src.tag.armorCount><0)
+  src.tag.armorCount=0
+endif
+
+on=@userclick
+if (STRCMPI(<src.tag(clienttype)>,"old"))//0 pokud ano
+ return 1
+endif
+src.smsg("Durabilita:<more1l>/<more1h>")
+
+[function armorcreate]//ie (copper,plate)
+events +t_allarmors
+hitpoints=<eval (<nastaveni_durability_<argv(0)>>*<nastaveni_durability_<argv(1)>>*<layerar[typedef.layer]>)/100000>
+color=color_o_<argv(0)>
+if (def.layer==24)
+ events +t_uneq_4
+elseif (def.layer==4)
+ events +t_uneq_24
+elseif (def.layer==5)
+ events +t_uneq_13_19
+elseif (def.layer==13)
+ events +t_uneq_5
+elseif (def.layer==19)
+ events +t_uneq_5
+endif
+
+[function shieldcreate]
+events +t_allshields
+hitpoints=<eval (<nastaveni_durability_<argv(0)>>*<nastaveni_durability_<argv(1)>>*<layerar[typedef.layer]>)/100000>
+color=color_o_<argv(0)>
+
+[typedef t_uneq_24]
+on=@equip
+safe cont.findlayer(24).unequip
+
+[typedef t_uneq_4]
+on=@equip
+safe cont.findlayer(4).unequip
+
+[typedef t_uneq_5]
+on=@equip
+safe cont.findlayer(5).unequip
+
+[typedef t_uneq_13_19]
+on=@equip
+safe cont.findlayer(13).unequip
+safe cont.findlayer(19).unequip
+
+[function logdupe]
+arg(mnozstvi,1)
+if (argvcount)
+  arg(mnozstvi,<eval args>)
+endif
+if (ischar)
+  try x logdupe(<arg(mnozstvi)>)
+else
+  while (arg(mnozstvi)>0)
+    dupe
+    src.accmsg("dupe: created item uid=<lastnew> (<amount> <lastnew.name>)")
+    arg(mnozstvi,#-1)
+  endwhile
+endif
+
+[function fastwalk]
+if (findlayer(25))
+  return 0
+endif
+newitem i_mount_fake
+equip <act.uid>
+flags=<flags>&~statf_onhorse
+sysMessage("You move like quicksilver.")
+
+[itemdef i_mount_fake]
+id=i_pet_horse
+name=faked horse speeding up players
+layer=30
+type=t_eq_script
+
+on=@equip
+link=<src.uid>
+more2=<src.uid>
+layer=25
+type=t_eq_horse
+update
+
+[function iscommander]
+if (npc)
+ return 0
+elseif (isgm)
+ return 2
+elseif (account.tag(commander))
+ return <account.tag(commander)>
+else
+ return 0
+endif
+
+[function escortme]//default is the escorting npc
+if (array_find(src.tag.escortchar,<uid>)>-1)
+ src.sysMessage("<name> no longer escorts you.")
+ src.array_findremove(tag.escortchar,<uid>)
+ events -e_nomove
+else
+ src.sysMessage("<name> now escorts you.")
+ src.events +e_escorting
+ src.array_add(tag.escortchar,<uid>)
+ events +e_nomove
+endif
+
+[events e_escorting]
+on=@step
+if (tag(escortchar_00))
+ if (flag_running)
+  array_foreachuid(tag.escortchar,makerun(<dir_inttochar(<dir>)>))
+ else
+  array_foreachuid(tag.escortchar,makewalk(<dir_inttochar(<dir>)>))
+ endif
+else
+ events -e_escorting
+endif
+
+[function makerun]
+arg(storeevents,<events>)
+events -e_nomove
+arg(storepos,"<p>")
+run(<args>)
+p=<arg(storepos)>
+move(<args>)
+events +arg(storeevents)
+
+[function makewalk]
+arg(storeevents,<events>)
+events -e_nomove
+arg(storepos,"<p>")
+walk(<args>)
+p=<arg(storepos)>
+move(<args>)
+events +arg(storeevents)
+
+[function allcontainersClick]
+if (topobj==src)||(src.isgm)
+  message("(<rescount> ks)")
+endif
+return 0
+
+[function srccombatLOS]
+if !(srccanseelos)
+elseif ((src.p_z-p_z)>19)||((src.p_z-p_z)<(-19))
+else
+ return 1
+endif
+return 0
+
+[function nextday]//vrati pocet sekund do dalsiho checku
+arg(odminule,<eval (<serv.rtime>%(3600*24))-(3*3600)>)
+arg(tonextday,<eval (24*3600)-odminule>)
+return <tonextday>
+
+[function logbounce]
+bounce
+src.Accmsg("bounced uid=<uid> (<amount> <name>) from uid=<cont> (<cont.name>) topobj=<topobj> (<topobj.name>)")
+
+[function SectoDays]
+arg(seconds,<eval args>)
+arg(hours,<eval <seconds>/(3600)>)
+arg(seconds,<eval <seconds>-(<hours>*(3600))>)
+arg(mins,<eval <seconds>/(60)>)
+arg(seconds,<eval <seconds>-(<mins>*(60))>)
+return"<hours>:<mins>:<seconds>"
+
+[function Sectoyears]
+arg(seconds,<eval args>)
+arg(years,<eval <seconds>/(3600*24*365)>)
+arg(seconds,<eval <seconds>-(<years>*(3600*24*365))>)
+return"<years>:<SectoDays(<seconds>)>"
+
+[function npcExists]
+if (safe finduid(<argv(0)>).npc)
+  return 1
+endif
+return 0
+
+[function playerExists]
+if (charExists(<argv(0)>))
+  if (safe finduid(<argv(0)>).isPlayer) // this call accepts the ERROR as true, when the item is tested
+    return 1
+  endif
+endif
+return 0
+
+[function charExists]
+if (safe finduid(<argv(0)>).isChar)
+  return 1
+endif
+return 0
+
+[function itemExists]
+if (safe finduid(<argv(0)>).isItem)
+  return 1
+endif
+return 0
+
+[function isDead]
+if (<flags>&statf_dead)
+ return 1
+else
+ return 0
+endif
+
+//checks whether the action is being triggered upon the character
+//and that the character is not an possibly unwanted target
+//returns 1 if the action may be triggered upon an unwanted target
+[function charIsUnsafe]
+if (isGM)
+  return 1
+elseif (isDead)
+  return 1
+endif
+return 0
+
+[function isChardef]
+if (hval(<hval uid>&0ff000000)==08e000000)
+ return 1
+endif
+return 0
+
+[function isItemdef]
+if (hval(<hval uid>&0ff000000)==0a2000000)
+ return 1
+endif
+return 0
+
+[function new]
+act=0
+if !(argvcount)
+ MENU MENU_ADDITEM
+endif
+arg(tocreate,<hval args>)
+if (hval(<arg(tocreate)>&0ff000000)==0a2000000)//itemdef
+ newi(<arg(tocreate)>)
+elseif (hval(<arg(tocreate)>&0ff000000)==08e000000)
+ newc(<arg(tocreate)>)
+elseif (findres(itemdef,arg(tocreate)))
+ newi(<arg(tocreate)>)
+elseif (findres(chardef,arg(tocreate)))
+ newc(<arg(tocreate)>)
+else
+src.sysMessage("Spatny argument.")
+endif
+//if (act)
+//elseif (act.isitem)
+//elseif (act.ischar)
+//endif
+
+[function lognewnpc]
+arg(sfnact,<act>)
+newnpc(<hval args>)
+accmsg("creates char uid=<lastnewchar> (<lastnewchar.name>)")
+act=<arg(sfnact)>
+
+[function srccome]
+src.go <topobj.p>
+
+
+[function return_true]
+//(condition, 1st arg, 2nd arg)
+//returns first argument, if the condition is true, otherwise the second argument is returned
+if (<argv(0)>)
+  return<argv(1)>
+else
+  return<argv(2)>
+endif
+
+[function return_nth]
+//n, args
+return<argv(argv(0))>
+
+[function change_nth]
+//change_nth(<cisloMenenyhoArgumentu>,<jmenoTagu>,<novaHodnota>,<tag>-konkretne hodnoty)  // prva hodnota ma index 1 nie 0
+if (<argv(0)><1)||(<argv(0)>><argvcount>-3)
+  return(0)
+endif
+arg(i,1)
+while (<i> < eval(<argvcount>-2))
+  if (<i>==<argv(0)>)
+    if (<i>==1)
+      arg(result,<argv(2)>)
+    else
+      arg(result,<arg(result)>,<argv(2)>)
+    endif
+  else
+    if (<i>==1)
+      arg(result,<argv(i+2)>)
+    else
+      arg(result,<arg(result)>,<argv(i+2)>)
+    endif
+  endif
+  arg(i,#+1)
+endwhile
+tag(<argv(1)>,<arg(result)>)
+
+[function return_fromNth] //argv(0) - position from which the arguments should be returned, rest- the arguments to parse
+arg(i,<eval argv(0)>)
+arg(count,0)
+while (<arg(i)> < <argvcount>)
+  if (<arg(count)> > 0)
+    arg(computedArg,<arg(computedArg)>,<argv(<arg(i)>)>)
+  else
+    arg(computedArg,<argv(<arg(i)>)>)
+  endif
+  arg(count,#+1)
+  arg(i,#+1)
+endwhile
+return<arg(computedArg)>
+
+[function isadmin]
+if (isplayer)
+ if (account.plevel>5)
+  return 1
+ endif
+endif
+return 0
+
+[function Nuke]
+src.sysMessage("Pouzij .xx, nebo .xxi")
+//if (argvcount)
+//  sysMessage "Select region to <?argv?> items:"
+//  XXI.<?argv?>
+//else
+//  sysMessage "Select region to delete items:"
+//  XXI.remove
+//endif
+
+[function NukeChar]
+src.sysMessage("Pouzij .xx, nebo .xxc")
+//if (argvcount)
+//  sysMessage "Select region to <?argv?> items:"
+//  XXC.<?argv?>
+//else
+//  sysMessage "Select region to delete items:"
+//  XXC.remove
+//endif
+
+[function skillcheckstats]
+hiding=0
+f_skillcheckstats(<args>)
+hiding=100
+f_skillcheckstats(<args>)
+hiding=200
+f_skillcheckstats(<args>)
+hiding=300
+f_skillcheckstats(<args>)
+hiding=500
+f_skillcheckstats(<args>)
+hiding=750
+f_skillcheckstats(<args>)
+hiding=1000
+f_skillcheckstats(<args>)
+hiding=1200
+f_skillcheckstats(<args>)
+
+[function f_skillcheckstats]
+arg(i,0)
+arg(counter,0)
+while arg(i)<1000
+  arg(counter,#+<skillcheck(hiding,<eval args>)>)
+  arg(i,#+1)
+endwhile
+logmsg("skill <hiding>:::value <eval args>:::success <arg(counter)>")
+
+[function reveal]
+if (<flags>&0800008)
+  flag_hidden=0
+  flag_invisible=0
+  invis 0
+  smsg("<sex(Byl jsi objeven,Byla jsi objevena)>.")
+endif
+
+[function allinstances]
+src.invis 0
+if (argvcount>1)
+ arg(property,<argv(0)>)
+ arg(comm,<argv(1)>)
+else
+ arg(property,<baseid>)
+ arg(comm,<args>)
+endif
+if (isitem)
+ arg(f_run,goitemid)
+else
+ arg(f_run,gocharid)
+endif
+arg(storep,<src.p>)
+arg(firstuid,0)
+arg(lastuid,0)
+src.try <f_run>(<arg(property)>)
+while (<src.act>!=<arg(firstuid)>)&&(<src.act.baseid>==<arg(property)>)&&(<src.act>!=<arg(lastuid)>)
+ arg(nowuid,<src.act>)
+ src.act.try(<arg(comm)>)
+ if (<arg(firstuid)>==0)
+  arg(firstuid,<arg(nowuid)>)
+ endif
+ arg(lastuid,<src.act>)
+ src.try <f_run>(<arg(property)>)
+endwhile
+src.go <storep>
+
+
+[function alloftype]
+src.invis 0
+if (argvcount>1)
+ arg(property,<argv(0)>)
+ arg(comm,<argv(1)>)
+else
+ arg(property,<type>)
+ arg(comm,<args>)
+endif
+arg(storep,<src.p>)
+arg(firstuid,0)
+arg(lastuid,0)
+src.try gotype(<arg(property)>)
+while (<src.act>!=<arg(firstuid)>)&&(<src.act.type>==<arg(property)>)&&(<src.act>!=<arg(lastuid)>)
+ arg(nowuid,<src.act>)
+ src.act.try(<arg(comm)>)
+ if (<arg(firstuid)>==0)
+  arg(firstuid,<arg(nowuid)>)
+ endif
+ arg(lastuid,<src.act>)
+ src.try gotype(<arg(property)>)
+endwhile
+src.go <storep>
+
+[function array_add]//adds at the end, returns the index
+//<argv(0)>   array name
+//<argv(1)>   value 
+arg(u,0) 
+while (<?safe <argv(0)>_<arg(u)>?>) 
+ arg(u,<arg(u)>+1) 
+endwhile
+<argv(0)>_<arg(u)>=<argv(1)>
+return <arg(u)> 
+
+[function array_find]//returns index of the value (-1 if not found)
+//<argv(0)>   array name
+//<argv(1)>   value 
+arg(u,0) 
+while (<?safe <argv(0)>_<arg(u)>?>) 
+ if (!strcmpi(<?<argv(0)>_<arg(u)>?>,<?argv(1)?>)) 
+  return <arg(u)> 
+ endif 
+ arg(u,<arg(u)>+1) 
+endwhile 
+return -1 
+
+[function array_remove]//removes the indexed item (and moves the rest)
+//<argv(0)>   array name
+//<argv(1)>   index 
+arg(u,<argv(1)>) 
+while (<?safe <argv(0)>_<arg(u)>?>) 
+ if (<?safe <argv(0)>_<eval arg(u)+1>?>)
+  <argv(0)>_<arg(u)>=<safe <argv(0)>_<eval arg(u)+1>>
+ else 
+  <argv(0)>_<arg(u)>="" //jen smazat
+ endif
+ arg(u,<arg(u)>+1) 
+endwhile 
+
+[function array_findremove]//removes item with this value (uses array_remove and array_find) 
+//<argv(0)>   array name
+//<argv(1)>   value 
+arg(cislo,<?array_find(<argv(0)>,<argv(1)>)?>) 
+if (<arg(cislo)>>-1) 
+array_remove(<argv(0)>,<arg(cislo)>) 
+return 1 
+endif 
+return 0 
+
+[function array_foreach]//runs functions so that each of them gets the value as its argument
+//<argv(0)>   array name
+//<argv(1)>   function name
+arg(u,0) 
+while (<?safe <argv(0)>_<arg(u)>?>) 
+ <argv(1)>(<?<argv(0)>_<arg(u)>?>) 
+ arg(u,<arg(u)>+1) 
+endwhile 
+
+[function array_foreachuid]//for arrays containing UIDs - runs the given functinos on all the objects. if some of the UIDs is invalid, removes the item.
+//<argv(0)>   array name
+//<argv(1)>   function name
+arg(u,0) 
+while (<?safe <argv(0)>_<arg(u)>?>) 
+ if (finduid(<?<argv(0)>_<arg(u)>?>))
+ //elseif (safe finduid(<?<argv(0)>_<arg(u)>?>).ischar) 
+  finduid(<?<argv(0)>_<arg(u)>?>).<?argv(1)?> 
+ else
+  array_remove(<argv(0)>,<arg(u)>)
+ endif
+ arg(u,<arg(u)>+1) 
+endwhile 
+
+[function array_dump]//sysmessaging all the names and values - usable from console too
+//<argv(0)>   array name
+arg(u,0) 
+while (<?safe <args>_<arg(u)>?>) 
+ src.smsg("<args>_<arg(u)>=<?<args>_<arg(u)>?>")
+ arg(u,<arg(u)>+1) 
+endwhile 
+
+[function array_clear]//what could it be? :)
+//<argv(0)>   array name
+arg(u,0) 
+while (strlen(<?safe <argv(0)>_<arg(u)>?>)>0)
+<argv(0)>_<arg(u)>=""
+arg(u,<arg(u)>+1) 
+endwhile 
+
+[function array_size]//size of given array
+//<argv(0)> array name
+arg(u,0)
+while(<?safe <argv(0)>_<u>?>)
+ arg(u,<arg(u)>+1)
+endwhile
+return <arg(u)>
+
+[function array_get]//gets value of item on given position
+//<argv(0)> array name
+//<argv(1)> position
+if (<?safe <argv(0)>_<argv(1)>?>)
+ return<?<argv(0)>_<argv(1)>?>
+else
+ return -1
+endif
+
+[function array_getremove]//gets value of item on given position and removes the item
+//<argv(0)> array name
+//<argv(1)> position
+arg(retval,<?array_get(<argv(0)>,<argv(1)>)?>) 
+if (<arg(retval)>>-1) 
+ array_remove(<argv(0)>,<argv(1)>) 
+endif 
+return<retval> //either the desired value or -1
+
+
+[function array_test]
+src.smsg("ADD 1 3 5 7 9: dump: remove 1: dump: findremove 5: dump: clear: dump")
+array_add("var.test",1)
+array_add("var.test",3)
+array_add("var.test",5)
+array_add("var.test",7)
+array_add("var.test",9)
+src.smsg("added")
+src.smsg("size of var.test: <array_size(var.test)>")
+array_dump("var.test")
+array_remove("var.test",1)
+src.smsg("removed first")
+array_dump("var.test")
+array_findremove("var.test",5)
+src.smsg("findremoved 5")
+array_dump("var.test")
+array_clear("var.test")
+src.smsg("cleared")
+array_dump("var.test")
+
+[function input]//nadpis, value, default
+tag(input_text,"<argv(0)>")
+tag(input_valname,"<argv(1)>")
+tag(input_default,"<argv(2)>")
+dialog d_input
+
+[dialog d_input]
+350,350
+argo.tag(sirka,400)
+argo.tag(vyska,<eval 23+(2*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+argo.settext(100,<tag(input_text)>)
+argo.text(<argo.dialog_textpos(0,0)>,0481,100)
+argo.settext(101,<tag(input_default)>)//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[DIALOG d_input BUTTON]
+on=0
+tag(input_text,"")
+tag(input_valname,"")
+tag(input_default,"")
+safe(<src.tag.cv_lastdialog>)
+src.tag(cv_lastdialog,"")
+
+ON=1
+<tag(input_valname)>="<argtxt(1)>"
+tag(input_text,"")
+tag(input_valname,"")
+tag(input_default,"")
+safe(<src.tag.cv_lastdialog>)
+src.tag(cv_lastdialog,"")
+
+[function informovat]//kolik radku,array?,nadpis,jmeno stringu,SetLocation_arg1,SetLocation_arg2
+if (argv(1))
+ arg(i,0)
+ while (i<argv(1))
+  tag(informovat_text,<?safe tag(informovat_text)?><?<argv(3)>[i]?><br>)
+  arg(i,#+1)
+ endwhile
+else
+ tag(informovat_text,<?<argv(3)>?>)
+endif
+if (argvcount == 6)
+ dialog(d_informovat,<argv(0)>,<argv(2)>,<argv(4)>,<argv(5)>)
+else
+ dialog(d_informovat,<argv(0)>,<argv(2)>)
+endif
+
+[dialog d_informovat]
+if (argvcount == 4)
+ argo.SetLocation=<argv(2)>,<argv(3)>
+else
+ argo.SetLocation=50,50
+endif
+argo.tag(sirka,400)
+argo.tag(vyska,<eval ((1+argv(0))*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argv(0)>)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,<argv(1)>)
+argo.settext(100,"<tag(informovat_text)>")//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+argo.htmlgump(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_def_odsazeni+(2*(d_def_okraj+d_def_skvira))),argv(0)*d_def_radek_vyska,100,0,1)
+//argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+//argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+tag(informovat_text,"")
+
+[dialog d_informovat text]
+
+[dialog d_informovat button]
+on=0
+
+[function potvrdit]//funkce pro ANO, text
+tag(potvrd_funkce,"<argv(0)>")
+tag(potvrd_text,"<argv(1)>")
+dialog d_potvrdit
+
+[dialog d_potvrdit]
+100,100
+argo.tag(sirka,300)
+argo.tag(vyska,<eval 23+(5*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,4)
+argo.dialog_zpruhledni
+
+argo.settext(101,Potvrzeni prikazu)
+argo.text(<argo.dialog_textpos(0,0)>,0481,101)
+argo.settext(100,<tag(potvrd_text)>)//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+argo.HTMLGUMP(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),4*d_def_radek_vyska,100,0,1)
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[DIALOG d_potvrdit BUTTON]
+on=0
+tag(potvrd_funkce,"")
+tag(potvrd_text,"")
+
+ON=1
+debugtry(<tag.potvrd_funkce>)
+tag(potvrd_funkce,"")
+tag(potvrd_text,"")
+
+[function f_dialog_YesNo] // funkce Yes No pro potvrzeni jednoduchych akci - jde jen o hotove telo dialogu
+SetLocation=285,250
+tag(sirka,230)
+tag(vyska,90)
+dialog_prvni
+dialog_pozadi(<tag(nexty)>,1)
+dialog_pozadi(<tag(nexty)>,2,102,101)
+dialog_zpruhledni
+
+if (strlen(<argv(0)>))
+  texta(<dialog_textpos(0,0)>,d_def_WriteColor,<argv(0)>)
+else
+  texta(<dialog_textpos(0,0)>,d_def_WriteColor,Opravdu chces provest akci?)
+endif
+//Yes button
+button(<tag(sloupec_x[0])>+<d_def_skvira>,<tag(obj_y[1])>+15,4005,4007,1,0,1)
+texta(<tag(sloupec_x[0])>+<d_def_button_sirka>+<d_def_skvira>,<tag(obj_y[1])>+15,d_def_WriteColor,Ano)
+//No button
+button(<tag(sloupec_x[1])>+<d_def_skvira>,<tag(obj_y[1])>+15,4005,4007,1,0,2)
+texta(<tag(sloupec_x[1])>+<d_def_button_sirka>+<d_def_skvira>,<tag(obj_y[1])>+15,d_def_WriteColor,Ne)
+
+[function singleparse]
+var(firstnumb,<StrGetTok("<args>",0," ")>)
+var(secondnumb,<StrGetTok("<args>",1," ")>)
+
+[function changestat] //stat,o kolik
+if (<argv(1)> != 0)
+  arg(actualstat,<?<argv(0)>?>)
+  arg(changedstat,<eval <arg(actualstat)>+(<argv(1)>)>)
+  if (arg(changedstat)<0)
+    arg(changedstat,0)
+  elseif (arg(changedstat) > stats_MAXIMUM)
+    arg(changedstat,<stats_MAXIMUM>)
+  endif
+  if (arg(changedstat)!=arg(actualstat))
+    <argv(0)>=<arg(changedstat)>
+  endif
+endif
+
+[function promilerange]
+//power
+//effect min
+//effect max
+return <eval <argv(1)>+(((<argv(2)>-<argv(1)>)*<argv(0)>)/1000)>
+
+[function changestatpoint]//statpoint,o kolik
+if (argv(1))
+ arg(actualstat,<?<argv(0)>?>)
+ arg(changedstat,<eval <arg(actualstat)>+(<argv(1)>)>)
+ arg(maxstat,<?max<argv(0)>?>)
+ if (arg(changedstat)<0)
+  arg(changedstat,0)
+ elseif (arg(changedstat)>arg(maxstat))
+  arg(changedstat,<arg(maxstat)>)
+ endif
+ if (arg(changedstat)!=arg(actualstat))
+  <argv(0)>=<arg(changedstat)>
+ endif
+endif
+
+[function truncatestat]
+arg(maxstat,<?max<args>?>)
+if (<?<args>?>>arg(maxstat))
+ <args>(<arg(maxstat)>)
+endif
+
+[function truncateallstats]
+truncatestat(stam)
+truncatestat(hits)
+truncatestat(mana)
+
+[function intset]
+tag(intellev,<eval args>)
+intel=<eval args>
+
+[function dexset]
+tag(dexlev,<eval args>)
+dex=<eval args>
+
+[function strset]
+tag(strlev,<eval args>)
+str=<eval args>
+
+[function vitset]
+tag(vitlev,<eval args>)
+vit=<eval args>
+
+[function levelset]
+tag(level,<eval args>)
+
+[function nudgeup]
+zset(<eval p_z+(args)>)
+
+[function nudgedown]
+zset(<eval p_z-(args)>)
+
+[function zset]
+p(<p_x>,<p_y>,<eval (args)>,<mapplane>)
+updatex
+
+[function fixbow]
+return 1  //docasne zastavena funkce - buguje to opravi to snad nekdo kdo vi co to ma delat poradne :)
+switchbow
+
+[function switchbow]
+if (findlayer(2))
+  return <findlayer(2).switchthisbow>
+endif
+
+[function switchthisbow]
+if (isbow)
+  if (type==t_weapon_bow_run)
+    arg(createID,<strmid(<baseid>,0,<STRLEN(<baseid>)>-4)>)
+    arg(damset,-1)
+    src.classmessage("Zbran ve 'stand' modu")
+  else
+    if (src.profession==class_ranger)||(src.profession==class_thief)||(src.isgm)
+      arg(createID,<baseid>_run)
+      arg(damset,<typedef.dam>)
+      src.classmessage("Zbran v 'run' modu")
+    else
+      src.redMessage("Nesmis pouzivat run zbrane.")
+      return 1
+    endif
+  endif
+  if (findres(itemdef,arg(createID))!=i_unused)
+    src.newitemsafe(<arg(createID)>)
+    arg(createdbow,<lastnew>)
+    if (<arg(createdbow).baseid>==<arg(createID)>)
+      arg(createdbow).copyprops(<uid>)
+      if (arg(damset)>-1)
+        arg(createdbow).typedef.dam=<arg(damset)>
+      endif
+      remove
+      arg(createdbow).equip
+      src.skill(-1)
+      return 1
+    endif
+  endif
+endif
+src.redMessage("Prepnuti nemozne - neexistuje odpovidajici verze zbrane.")
+return 0
+
+[function copyprops]//uid odkud kopirovat
+link=<args>
+morep=<link.morep>
+more1=<link.more1>
+more2=<link.more2>
+color=<link.color>
+name="<link.name>"
+//timer=<link.timer>
+amount=<link.amount>
+destroyevents
+copyevents(<safe link.events>,)
+//kopirovani tagu:
+tag(clear)
+arg(u,0)
+while (<u><<link.tag(getcount)>)
+ arg(tagname,<link.tag(enum,<u>)>)
+ //try tag.radek[<eval <strmid(<arg(tagname)>,5,0ff)>>]=<?tag.<arg(tagname)>?>
+ tag(<arg(tagname)>,<?link.tag.<arg(tagname)>?>)
+ arg(u,#+1)
+endwhile
+link=<link.link>
+
+[function copyevents]
+arg(i,<argvcount>-1)
+while arg(i)
+  events +<argv(arg(i)-1)>
+  arg(i,#-1)
+endwhile
+
+[events e_dummy]
+on=@step
+return 1
+
+on=@gethit
+hits=10000
+return 0
+
+on=@death
+hits=<maxhits>
+return 1
+
+[function GMclient]
+var(ntimes,1)
+serv.allclients(GMonetime(<args>))
+var(ntimes,"")
+
+[function GMonetime]
+if (account.plevel>3)
+ if (ntimes)
+  <args>
+  var(ntimes,0)
+ endif
+endif
+
+[function firstclient]
+var(ntimes,1)
+serv.allclients(onetime(<args>))
+var(ntimes,"")
+
+[function onetime]
+if (ntimes)
+ <args>
+ var(ntimes,0)
+endif
+
+[itemdef i_chest_weapset]
+id=i_bag
+
+on=@create
+attr=attr_move_never
+tag(metal,copper)
+
+on=@userdclick
+emptycont
+color=color_o_<tag.metal>
+name=<tag.metal> weapons
+weapset(<tag(metal)>)
+
+[function weapset]//metals
+arg(u,0)
+while (arg(u)<33)
+ newloot("<n_weapons_armors[u]>_<args>",1)
+ arg(u,#+1)
+endwhile
+newloot(i_arrow_<args>,1000)
+newloot(i_xbolt_<args>,1000)
+newloot(i_arrow_piercing_<args>,1000)
+newloot(i_xbolt_piercing_<args>,1000)
+
+[itemdef i_gate_onehit]
+id=i_moongate_red
+name=nastavi 1 hp
+
+on=@step
+src.hits=1
+
+on=@userdclick
+src.hits=1
+
+[itemdef i_chest_items]
+id=i_bag
+name=Items
+
+on=@create
+attr=attr_move_never
+
+on=@userdclick
+src.food=<src.def.maxfood>
+src.smsg("Jidlo nastaveno na max.")
+emptycont
+newloot=i_pet_horse_tan
+newloot=i_spellbook_8
+lastnew.morex=0ffff
+newloot=i_bandage,1000
+newloot=tm_reagbag
+newloot=tmp_ingots
+newloot=i_potion_heal
+lastnew.dupe(20)
+newloot=i_potion_healgreat
+lastnew.dupe(20)
+newloot=i_potion_invisibility
+lastnew.dupe(20)
+newloot=i_potion_refreshgreater
+lastnew.dupe(20)
+newloot=i_drum
+newloot=i_pickaxe
+NEWLOOT=i_mortar_pestle
+NEWLOOT=i_keg_potion
+NEWLOOT=i_gold,60000
+newloot=i_deed_vendor
+newloot=i_deed_guildstone
+
+[template tmp_ingots]
+container=i_pouch
+
+item=i_scroll_blank,500
+item=i_bottle_empty,500
+
+item=i_ingot_copper,500
+item=i_ingot_iron,500
+item=i_ingot_gold,500
+item=i_ingot_silver,500
+item=i_ingot_verite,500
+item=i_ingot_valorite,500
+item=i_ingot_obsidian,500
+item=i_ingot_adamantinum,500
+item=i_ingot_mithril,500
+item=i_ingot_shadow,500
+
+item=i_log_copper,500
+item=i_log_iron,500
+item=i_log_verite,500
+item=i_log_valorite,500
+item=i_log_obsidian,500
+item=i_log_adamantinum,500
+item=i_log_mithril,500
+
+[itemdef i_chest_armorset]
+id=i_bag
+
+on=@create
+attr=attr_move_never
+tag(metal,copper)
+tag(armortyp,plate)
+
+on=@userdclick
+emptycont
+name=<tag.metal> <tag.armortyp> armors
+color=color_o_<tag.metal>
+armorset(<tag.metal>,<tag.armortyp>)
+
+[function armorset]//kov, druh
+arg(u,<f_<argv(1)>defname(0,<argv(0)>)>)
+while (arg(u)>0)
+ arg(defname,<f_<argv(1)>defname(<u>,<argv(0)>)>)
+ newloot(arg(defname))
+ arg(u,<u>-1)
+endwhile
+
+[function onestring]
+if (argvcount)
+ arg(u,0)
+ arg(text,"")
+ while (arg(u)<argvcount)
+  arg(text,"<arg(text)><argv(u)> ")
+  arg(u,#+1)
+ endwhile
+ return"<arg(text)>"
+endif
+return"<args>"
+
+[function onestring2]
+if (argvcount)
+ arg(u,0)
+ arg(text,"")
+ while (arg(u)<argvcount)
+  arg(text,"<arg(text)>_<argv(u)>")
+  arg(u,#+1)
+ endwhile
+ return"<arg(text)>"
+endif
+return"<args>"
+
+[function killstotal]
+if (<safe isplayer>)
+ return <eval tag.monsterkillstotal>+<eval tag.playerkillstotal>
+endif
+return 0
+
+[itemdef i_allaccounts]
+id=i_memory
+type=t_eq_script
+
+on=@timer
+src=<cont>
+tag(max,#+100)
+src.accmsg("counts next accounts: <eval tag(max)>")
+while (tag(min)<tag(max))
+ if !(accountmgr.findenum(<tag(min)>))
+   remove
+   return 0
+ endif
+ try accountmgr.findenum(<tag(min)>).<tag(args)>
+ tag(min,#+1)
+endwhile
+if (var(allaccsaving))
+  serv.save 1
+  timer=5
+else
+  timer=1
+endif
+return 1
+
+[function allaccounts]
+//if (isplayer)
+//  newitemsafe(i_allaccounts)
+//  lastnew.equip
+//  lastnew.tag(args,"<args>")
+//  lastnew.timer=1
+//  lastnew.tag(min,1)
+//  lastnew.tag(max,0)
+//else
+  arg(u,1)
+  while (accountmgr.findenum(<u>))
+   accountmgr.findenum(<u>).<args>
+   arg(u,#+1)
+  endwhile
+//endif
+
+[function getbow]//by enrico
+findtype(t_weapon_xbow).equip
+findtype(t_weapon_bow_run).equip
+
+
+
+[function allplayers]
+allaccounts(accountchars(<args>))
+
+[function accountchars]
+arg(u,0)
+while (arg(u)<chars)
+ char(<u>).<args>
+ arg(u,#+1)
+endwhile
+
+//[function shboun]
+//if (npc)
+//dospell_final(72,1000)
+//lastnew.bounce
+//endif
+
+[function shboun]//a tohle pripadne taky rozbil enrico
+src.newitemsafe(i_targetshr)
+lastnew.equip
+
+
+[function huu]
+show name
+
+//[function shrink]//a tohle pripadne taky rozbil enrico //a zaremoval to tartaros, bo to vubec nema existovat, shrinkovani pres kouzla uz nepouzivame, ze...
+//dospell_final(72,1000)
+
+[itemdef i_targetshr]
+name=target shrink
+id=i_memory
+type=t_eq_script
+
+on=@equip
+target
+src.classmessage("Zamer zvire.")
+timer=15
+
+on=@timer
+remove
+return 0
+
+on=@targon_char
+if (src.targ.tag(noshrink))
+ target("Zvire nelze shrinknout.")
+ return 1
+else
+ f_shrink(<src.targ>,<src>)
+ remove
+ return 1
+endif
+
+[function f_shrink]  //argv(0) == npc that we'd like to shrink || argv(1) == who is the one to give the shrink to
+argv(0).newitem=<argv(0).typedef.icon>
+arg(myShrink,<lastnew>)
+arg(myShrink).name=<argv(0).name>
+arg(myShrink).color=<argv(0).color>
+arg(myShrink).tag(my_id,<argv(0).id>)
+arg(myShrink).tag(MYHITS,<argv(0).hits>)
+arg(myShrink).tag(MYFOOD,<argv(0).food>)
+arg(myShrink).more1=1
+arg(myShrink).type=t_figurine_2
+arg(myShrink).cont=<argv(1).findlayer(21)>
+arg(myShrink).tag(origTaming,<argv(0).taming>)
+argv(0).remove
+
+[function equipjezditka]
+src.newitem=<src.targ.typedef.icon>
+src.act.name=<src.targ.name>
+src.act.color=<src.targ.color>
+src.act.MORE1=<src.targ.id>
+src.act.bounce
+src.targ.remove
+remove
+
+
+
+
+[function tempspawn]//id, amount, homedist
+newitemsafe(i_spawnfull_timer)
+lastnew.timer=1
+lastnew.p=<p>
+lastnew.more1=0
+arg(timeruid,<lastnew>)
+newitemsafe(01ea7)
+lastnew.events +t_char_tempspawn
+lastnew.P=<P>
+lastnew.type=34
+lastnew.more=<argv(0)>
+lastnew.amount=<argv(1)>
+lastnew.morep=1,2,<argv(2)>
+lastnew.ATTR=0b0
+finduid(<arg(timeruid)>).link=<lastnew>
+
+[typedef t_char_tempspawn]
+on=@timer
+if (morem)
+ if !(more2)
+  remove
+ endif
+endif
+morem=<morem>+1
+return 0
+
+[function myaction]
+if (action!=-1)
+ if (action==067)
+  return"Wandering"
+ elseif (action==076)
+  return"AFK"
+ elseif (action==06d)
+  return"Going Home"
+ elseif (action==00) 
+  return"Skill_Alchemy"
+ endif
+ return<action>
+endif
+if (findid(i_discordance_timer))
+ if (findid(i_discordance_timer).more1==1)
+  return"Skill_Discordance"
+ endif
+elseif (findid(i_medit_timer))
+ if (findid(i_medit_timer).timer>(-1))
+  return"Skill_Meditation"
+ endif
+elseif (findid(i_peacemaking_timer))
+ if (findid(i_peacemaking_timer).more1==1)
+  return"Skill_Peacemaking"
+ endif
+elseif (findid(i_potion_poison_timer))
+ if (findid(i_potion_poison_timer).more1==1)
+  return"Skill_Poisoning"
+ endif
+elseif (findid(i_provo_timer))
+ if (findid(i_provo_timer).more1>1)
+  return"Skill_Provocation"
+ endif
+elseif (findid(i_taming))
+ if (findid(i_taming).timer>(-1))
+  return"Skill_Taming"
+ endif
+elseif (findid(i_hiding_timer))
+  if (findid(i_hiding_timer).more1==1)
+    return"Hiding"
+  endif
+elseif (findid(i_mem_lockpick))
+ return"Skill_Lockpicking"  
+elseif (findid(i_vyroba_latky))
+ return"Skill_Tailoring"
+elseif (findid(i_delayer))
+ return"Delaying"
+endif
+
+[itemdef i_ismyfriend]
+id=i_memory
+layer=77
+type=t_src_changer
+name=ismyfriendsrc
+
+on=@equip
+var(varismyfriend,<link.ismyfriend>)
+remove
+
+[function ismyfriend]
+if (ispet)//nejsem svuj pan
+ return <finduid(<master>).ismyfriend>
+elseif (src.ispet)//src neni svuj pan, change src.
+ newitemsafe(i_ismyfriend)
+ lastnew.link=<uid>
+ safe(finduid(<src.master>).equip(<lastnew>))//debug
+ return <varismyfriend>
+else
+ return <f_ismyfriend>
+endif
+
+[function f_ismyfriend]
+if (<src>==<uid>)
+ //say shodne UID
+ return 1
+elseif (isonmyside)
+ //say isonmyside
+ return 1
+elseif (ismyguard)
+ //say ismyguard
+ return 1
+elseif (iguardhim)
+ //say iguardhim
+ return 1
+//elseif (isinmyguild)
+// say shodna guilda
+// return 1
+//elseif (isinfriendguild)
+// say pratelska guilda
+// return 1
+//elseif (isinmyparty)
+// say party
+// return 1
+endif
+return 0
+
+[function isonmyside]
+if (isplayer)
+ if (src.isplayer)
+  if (src.tag(realm)==tag(realm))
+   return 1
+  endif
+ endif
+else//jsem NPC
+ if (flag_spawned)
+  if (src.flag_spawned)//obe ze spawnu
+   if (ismurderer)
+    if (src.ismurderer)
+     return 1
+    endif
+   else
+    if !(src.ismurderer)
+     return 1
+    endif
+   endif
+  endif 
+ endif
+endif
+return 0
+
+[function mark]
+morep=<src.p>
+
+[function ismyguard]
+if (npc)
+ if (typedef.tag(guard))
+  if (src.isplayer)
+   if (typedef.tag.guard==1)
+    if (src.tag(realm)>0) 
+     if (!(src.flag_criminal))||(isfrommytown)
+      if !(src.ismurderer)
+       if (src.tag(realm)==1)
+        return 1
+       endif
+      endif
+     endif
+    endif
+   elseif (typedef.tag.guard==2)
+    if (src.tag(realm)>0)
+     if (src.tag(realm)==2)
+      return 1
+     endif
+    endif
+   endif
+  endif
+ endif
+endif
+return 0
+
+[function iguardhim]
+if (isplayer)
+ if (src.npc)
+  if (src.typedef.tag(guard))
+   if (src.typedef.tag(guard)==1)
+    if !(flag_criminal)
+     if (tag(realm)==1)
+      return 1
+     endif
+    endif
+   elseif (src.typedef.tag(guard)==2)
+    if (tag(realm)==2)
+     return 1
+    endif
+   endif
+  endif
+ endif
+endif
+return 0
+
+[function isinmyguild]
+if (<src>!=<uid>)
+ if (<strlen(<findid(i_memory_guild).link>)>)
+  if !(strcmpi(<findid(i_memory_guild).link>,<src.findid(i_memory_guild).link>))
+   return 1
+  endif
+ endif
+endif
+return 0
+
+[function isinfriendguild]
+return 0
+
+[function isinmyparty]
+return 0
+
+[function ismymaster]
+if (<master>==<src>)
+ return 1
+endif
+return 0
+
+[function isnonmobile]
+return <eval(<flag_freeze>+<flag_stone>+<flag_immobile>)>
+
+[function speedmet]
+newitemsafe(i_speed)
+lastnew.p=<p>
+lastnew.link=<uid>
+lastnew.timerd=1
+
+[function lognewitemsafe]
+if (strlen("<args>"))
+  arg(sfnact,<act>)
+  newitem(<hval args>)
+  accmsg("creates item uid=<lastnew> (<lastnew.name>)")
+  act=<arg(sfnact)>
+endif
+
+[function newitemsafe]
+if (strlen("<args>")) //v argumentu neco je ?
+  if (isItem)
+    var(nastaveni_guardian_uid).say(<serverTime> !!!!!! ERROR: neco se snazi delat item na objektu: <uid.name> !!!!!!)
+  else
+    arg(sfnact,<act>)
+    newitem(<hval argv(0)>)
+    act=<arg(sfnact)>
+    return 1
+  endif
+endif
+return 0
+
+[function newitemSafeChar]
+if (strlen("<args>")) //v argumentu neco je ?
+  nastaveni_guardian_uid.newitem(<hval argv(0)>)
+  return<lastnew>
+endif
+return 0
+
+[function f_newitemsafe]
+if !(<itemdone>)
+  newitemsafe(<args>)
+  var(itemdone,1)
+endif
+
+[function newequipsafe]
+if (strlen("<args>")) //v argumentu neco je ?
+  if (isItem)
+    var(nastaveni_guardian_uid).say(<serverTime> !!!!!! ERROR: neco se snazi equipnout item na objektu: <uid.name> !!!!!!)
+  else
+    arg(sfnact,<act>)
+    newequip(<hval argv(0)>)
+    act=<arg(sfnact)>
+  endif
+endif
+return 0
+
+[function random2]
+return <eval {<argv(0)> <argv(1)>}>
+
+[function damstats]
+src=<uid>
+arg(trydam,5)
+arg(tryarmor,0)
+while (arg(tryarmor)<=150)
+  eqlayers(setarmor(<arg(tryarmor)>))
+  arg(trydam,5)
+  while (arg(trydam)<=150)
+    arg(celkdam,0)
+    arg(u,0)
+    while (arg(u)<1000)
+      hits=1000
+      damage <arg(trydam)> dam_physical
+      arg(celkdam,<arg(celkdam)>+<eval 1000-<hits>>)
+      arg(u,#+1)
+    endwhile
+    logmsg("a:<?arg(tryarmor)?>,d:<?arg(trydam)?>, celkdam:<?arg(celkdam)?>")
+    arg(trydam,<arg(trydam)>+5)
+  endwhile
+  arg(tryarmor,<arg(tryarmor)>+5)
+endwhile
+
+[function setarmor]
+more1=-1
+def.armor=<args>
+drop
+equip
+
+[function freetag]
+if !(tag(<args>)) //kdyz ma tag hodnotu 0
+  tag.remove(<args>)
+endif
+
+[function destroyevents]
+while (<eval events>)
+ removefirstevent(<events>)
+endif
+
+[function removefirstevent]
+events -<argv(0)>
+
+[function allstats]
+int=<args>
+dex=<args>
+str=<args>
+maxhits=<args>
+maxmana=<args>
+maxstam=<args>
+
+[function changeallstats]
+int=<eval int+(args)>
+dex=<eval dex+(args)>
+str=<eval str+(args)>
+maxhits=<eval maxhits+(args)>
+maxmana=<eval maxmana+(args)>
+maxstam=<eval maxstam+(args)>
+
+[function isstaff]
+if (type==T_WEAPON_MACE_STAFF)
+ return 1
+endif
+return 0
+
+[function iscrook]
+if (type==T_WEAPON_MACE_CROOK)
+ return 1
+else
+ return 0
+endif
+
+[function istwohandmace]
+if (typedef.dispid==i_hammer_war)
+elseif (typedef.dispid==i_maul)
+else
+return 0
+endif
+return 1
+
+[function isshield]
+if (type==T_shield)
+ return 1
+endif
+return 0
+
+[function ismace]
+if (type==T_WEAPON_MACE_SMITH)
+ return 1
+endif
+return 0
+
+[function isfencing]
+if (typedef.dispid==i_dagger)||(id==i_knife_skinning)
+ return 0
+elseif (type==T_WEAPON_FENCE)
+ return 1
+endif
+
+[function issword]
+if (typedef.dispid==i_hatchet)
+ return 0
+elseif (type==T_WEAPON_sword)
+ return 1
+endif
+
+[function isleather]
+if (type==t_armor_leather)
+ if (typedef.tdata3==0)   
+  return 1                
+ endif                    
+endif                     
+return 0                  
+                          
+[function isstudded]      
+if (isarmor)||(isshield)        
+ if (typedef.tdata3==armortype_studded)     
+  return 1                                    
+ endif                                        
+endif                                         
+return 0                             
+                                              
+[function isring]
+if (isarmor)||(isshield)    
+ if (typedef.tdata3==armortype_ring)  
+  return 1                            
+ endif                                
+endif                                 
+return 0                              
+                                      
+[function ischain]
+if (isarmor)||(isshield)    
+ if (typedef.tdata3==armortype_chain) 
+  return 1                            
+ endif                                
+endif                                 
+return 0                              
+
+[function isbone]    
+if (isarmor)        
+ if (typedef.tdata3==armortype_bone)  
+  return 1                            
+ endif                                
+endif                                 
+return 0                              
+                                      
+[function isbow]
+if (typedef.dispid==i_bow)    
+elseif (typedef.dispid==i_crossbow)
+elseif (typedef.dispid==i_crossbow_heavy)
+else
+return 0
+endif
+return 1
+
+[function hasBow]
+if (findlayer(1))
+  if (findlayer(1).isBow)
+    return 1
+  endif
+elseif (findlayer(2))
+  if (findlayer(2).isBow)
+    return 1
+  endif
+endif
+return 0
+
+[function isbolt]
+if (typedef.dispid==i_xbolt)    
+else
+return 0
+endif
+return 1
+
+
+[function isarrow]
+if (typedef.dispid==i_arrow)    
+else
+  return 0
+endif
+return 1
+
+
+[function Isplate]
+if (isarmor)||(isshield)
+ if (typedef.tdata3==armortype_plate)
+  return 1
+ endif
+endif
+return 0
+
+[function ispet]
+if (safe isChar)
+  if (<flags>&statf_pet)
+    return 1
+  endif
+endif
+return 0
+
+[function isjezditko]
+if !(safe ischar)
+  src.accmsg("ERROR: funkce isjezditko se provadi na itemu (<name>,<uid>)")
+  return 0
+endif
+if (obody==c_llama)
+elseif (obody==c_llama_pack)
+elseif (obody==c_horse_tan)
+elseif (obody==c_horse_gray)
+elseif (obody==c_horse_brown_dk)
+elseif (obody==c_horse_brown_lt)
+elseif (obody==c_horse_pack)
+elseif (obody==c_a_mustang_black)
+elseif (obody==c_a_mustang_chocolate)
+elseif (obody==c_a_mustang_crimson)
+elseif (obody==c_a_mustang_grey_pack)
+elseif (obody==c_a_mustang_grey)
+elseif (obody==c_a_mustang_pamamino)
+elseif (obody==c_a_mustang_pamamino_pack)
+elseif (obody==c_a_mustang_redroan)
+elseif (obody==c_a_mustang_redroan_pack)
+elseif (obody==c_a_mustang_roan_pack)
+elseif (obody==c_a_mustang_roan)
+elseif (obody==c_a_mustang_sky)
+elseif (obody==c_a_mustang_skygray)
+elseif (obody==c_a_mustang_wimmimate)
+elseif (obody==c_a_mustang_wimmimate_pack)
+elseif (obody==c_a_mustang__invul)  //to neni chyba, opravdu tam sou dve pomlcky
+elseif (obody==c_m_ridgeback)
+elseif (obody==c_m_ridgeback_savage)
+elseif (obody==c_ostard_desert)
+elseif (obody==c_ostard_forest)
+elseif (obody==c_ostard_zostrich)
+elseif (obody==c_ostard_zostrich_jmeno1)
+elseif (obody==c_ostard_zostrich_jmeno2)
+elseif (obody==c_ostard_zostrich_jmeno3)
+elseif (obody==c_ostard_zostrich_green)
+else
+  return 1
+else
+  return 0
+endif
+return 1
+
+[function isconjured]
+if (<flags>&statf_conjured)
+return 1
+endif
+return 0
+
+
+[function ishungry]
+if ({0 9} > <eval <food>+2>)&&(isgm==0)
+return 1
+endif
+return 0
+
+[function ishungrymsg]
+if (ishungry)
+redMessage("Ve tvem soustredeni te rusi hlad...")
+return 1
+endif
+return 0
+
+[function isthrowing_monster]
+if (obody==c_ogre)||(obody==c_ogre_lord)||(obody==c_ettin)||(obody==c_cyclops)||(obody==c_elem_rock)||(obody==c_elem_ice_archer)||(obody==c_elem_snow_archer)||(obody==c_elem_rock)||(obody==c_moria_jeskyni_Obr)
+ return 1
+else
+ return 0
+endif
+
+[function isshooting_monster]
+if (obody==c_skeleton_archer)||(obody==c_skeleton_archer_lvl_2)||(obody==c_skeleton_archer_lvl_3)||(obody==c_skeleton_archer_lvl_4)
+ return 1
+else
+ return 0
+endif
+
+[function ismistr_povolani]
+arg(u,0)
+//finduid(094dfd).sysMessage("Src: <src>, uid: <uid>")
+while (arg(u)<50) 
+ arg(skillname,<findres(skill,<arg(u)>).name>) 
+ if !(strcmpi(<obody>,mistr_<arg(skillname)>))
+  //finduid(094dfd).sysMessage("<obody>")
+  return 1
+ endif 
+ arg(u,#+1)
+endwhile
+return 0
+
+[function armorsum]
+return <eval((avervalue(<typedef.armor>)/2)+ac)>
+
+[function avervalue]
+return <eval (<argv(0)>+<argv(1)>)>
+
+[function greykarma]
+if (body==c_man)||(body==c_woman)
+karma=-1
+else
+karma=0
+endif
+
+[function iscasting]
+if (action==skill_magery)
+ return 1
+elseif (findid(i_customspell_timer))
+ return 1
+else
+ return 0
+endif
+
+[function isinvis]
+if (flags&0802008)
+ return 1
+else
+ return 0
+endif
+
+[function MASTER]
+if (ispet)
+ if (memoryfindtype(memory_ipet).link.ispet)
+  return <memoryfindtype(memory_ipet).link.master>
+ else
+  return <memoryfindtype(memory_ipet).link>
+ endif
+else
+ return <uid>
+endif
+
+[function addexp]
+if (<tag(hypno_mystik)>) //mystik v monstru neco zabil
+  tag(experience,#+(<eval(args)>)) //jen expy, zadny levely ani nic.
+else
+  if ((<strlen(<tag(rp_rank)>)>) && (<eval(args)> > 0))
+    arg(exptogive,<eval(args)>+(<eval(args)>*<RP_Rank[<tag(rp_rank)>]>)/100)
+  else
+    arg(exptogive,<eval(args)>)
+  endif
+  tag(experience,#+<exptogive>) 
+  if (isplayer)
+    f_srovnatlevel
+    newitemsafe(i_addexp)
+    lastnew.tag(kolik,<args>)
+    safe equip(lastnew)
+    racemessage("<sex Ziskal Ziskala> jsi <exptogive> zkusenosti.")
+  endif
+endif
+
+[itemdef i_addexp]
+id=i_memory
+layer=77
+type=t_src_changer
+name=temporary addexp
+
+on=@equip
+cont.accmsg("obtained <tag(kolik)> exp. Has now #<eval cont.tag(experience)># experience and #<eval cont.tag(level)># level.")
+remove
+
+[function animate]
+if (src.isplayer)
+  if (tag(brain)==6)
+    accmsg("Hrac <name> uidcka <uid> se pokusil animatnout brain vendor.")
+    src.sysmessage("Toto nelze ozivovat!")
+    return 1
+  endif
+  if (isitem&&<type>==t_corpse) // 06c pro testsphere, t_corpse pro morii
+      if (link)
+        return 1
+      endif
+
+      src.newnpc <morex>
+
+      if (<lastnewchar.tag(noanimate)>==1) //animatnout nepujde cokoliv, co ma tag(noanimate)
+        lastnewchar.remove
+        src.f_fizzleefect
+        src.redmessage("S timto telem nelze dale pracovat.")
+        return 1
+      endif
+      
+      if (<src.tag(ra_ucinnost)> > 0)
+        if (<src.tag(ra_ucinnost)> < 11)
+          arg(strop,(<src.tag(ra_ucinnost)>*2)+100)
+          //src.redmessage("Strop procento <strop> u 10")
+        else
+          arg(strop,<src.tag(ra_ucinnost)>+110)
+          //src.redmessage("Strop procento <strop> u oo")
+        endif
+      else
+        arg(strop,100)
+      endif
+      
+      arg(strop_spruce,<eval(500*100*<strop>)>/10000)
+      arg(strop_chestnut,<eval(1000*100*<strop>)>/10000)
+      arg(strop_oak,<eval(1500*100*<strop>)>/10000)
+      arg(strop_teak,<eval(2500*100*<strop>)>/10000)
+      arg(strop_mahagon,<eval(4000*100*<strop>)>/10000)
+      arg(strop_eben,<eval(6000*100*<strop>)>/10000)
+      arg(strop_elven,<eval(9000*100*<strop>)>/10000)
+      
+      if(<lastnewchar.tag(experience)> <= <strop_spruce>)
+        if (!src.hasStaff(spruce))
+          src.sysMessage("Na toto monstrum nestaci tvoje hul.")
+          lastnewchar.remove
+          src.f_fizzleefect
+          return 1
+        endif
+      elseif (<lastnewchar.tag(experience)> <= <strop_chestnut>)
+        if (!src.hasStaff(chestnut))
+          src.sysMessage("Na toto monstrum nestaci tvoje hul.")
+          lastnewchar.remove
+          src.f_fizzleefect
+          return 1
+        endif
+      elseif (<lastnewchar.tag(experience)> <= <strop_oak>)
+        if (!src.hasStaff(oak))
+          src.sysMessage("Na toto monstrum nestaci tvoje hul.")
+          lastnewchar.remove
+          src.f_fizzleefect
+          return 1
+        endif
+      elseif (<lastnewchar.tag(experience)> <= <strop_teak>)
+        if (!src.hasStaff(teak))
+          src.sysMessage("Na toto monstrum nestaci tvoje hul.")
+          lastnewchar.remove
+          src.f_fizzleefect
+          return 1
+        endif
+      elseif (<lastnewchar.tag(experience)> <= <strop_mahagon>)
+        if (!src.hasStaff(mahagon))
+          src.sysMessage("Na toto monstrum nestaci tvoje hul.")
+          lastnewchar.remove
+          src.f_fizzleefect
+          return 1
+        endif
+      elseif (<lastnewchar.tag(experience)> <= <strop_eben>)
+        if (!src.hasStaff(eben))
+          src.sysMessage("Na toto monstrum nestaci tvoje hul.")
+          lastnewchar.remove
+          src.f_fizzleefect
+          return 1
+        endif
+      elseif (<lastnewchar.tag(experience)> <= <strop_elven>)
+        if (!src.hasStaff(elven))
+          src.sysMessage("Na toto monstrum nestaci tvoje hul.")
+          lastnewchar.remove
+          src.f_fizzleefect
+          return 1
+        endif
+      endif
+      
+      sound snd_SPELL_ANIMATE_DEAD
+      contents(nonewbie(drop))
+    
+      lastnewchar.eqlayers(nonewbie(remove))
+      lastnewchar.findlayer(21).contents(nonewbie(remove))
+      lastnewchar.p=<p>
+      lastnewchar.updatex
+      lastnewchar.tag(isAnimated,1)
+      lastnewchar.food=<lastnewchar.def.maxfood>
+      lastnewchar.skill 062
+      lastnewchar.events +e_animate_monster
+      lastnewchar.karma = 0
+      
+      src.newitemsafe(i_rune_vzboureni)
+      lastnew.link=<lastnewchar>
+      src.equip(lastnew)
+
+      lastnewchar.newmemory(<src>)
+      lastnew.color=memory_ipet|MEMORY_GUARD
+      lastnew.more1=04
+      lastnew.MORE2=<SERV.TIME>
+      lastnew.MOREP=<link.P>
+      
+      lastnewchar.newitem(i_npcanimate_remove)
+      arg(timer_an,<eval(<src.tag(level)>/2)>+50)
+      //src.redmessage("Zaklad timer <timer_an>")
+      if (<src.tag(ra_vydrz)> > 0)
+        if (<src.tag(ra_vydrz)> < 11) 
+          arg(timer_an,<eval((<timer_an>*100)*(((<src.tag(ra_vydrz)>*3)+100)))>/10000)
+          //src.redmessage("pak timer 10 je <timer_an>")
+        else
+          arg(timer_an,<eval((<timer_an>*100)*((<src.tag(ra_vydrz)>+120)))>/10000)
+          //src.redmessage("pak timer RA<src.tag(ra_vydrz)> je <timer_an>")
+        endif
+      endif
+      lastnew.timer = <timer_an> 
+      lastnew.link = <src>
+      lastnewchar.equip(<lastnew>)
+
+      remove
+  else
+    src.redmessage("Toto neni telo.")
+    return 1
+  endif
+else
+  src.tag(animating,<uid>)
+  src.summon(<morex>)
+endif
+return 1
+
+[EVENTS e_animate_monster]
+ON=@death
+remove
+return 1
+
+[function isAnimated]
+if (<eval <tag(isAnimated)>>)
+  return 1
+else
+  return 0
+endif
+
+[function isSelfResurrected]
+if (<eval <tag(isSelfResurrected)>>)
+  return 1
+else
+  return 0
+endif
+
+[function isResurrectedNPC]
+if (NPC)
+  if (isAnimated)
+    return 1
+  elseif (isSelfResurrected)
+    return 1
+  endif
+endif
+return 0
+
+[function f_animate_transfer]
+safe(lastnewchar.equip(<uid>))
+
+[itemdef i_npcanimate_remove]
+ID=i_memory
+NAME=mazatko
+TYPE=T_EQ_SCRIPT
+
+ON=@Create
+if(<timer> > 150)
+  timer = 150
+endif
+
+ON=@Timer
+link.sysMessage("Monstrum se rozplynulo.")
+cont.remove
+
+[itemdef i_rune_vzboureni]
+ID=i_memory
+NAME=runa vzboureni
+TYPE=T_EQ_SCRIPT
+
+ON=@Equip
+timer=1
+
+ON=@timer
+if !(safe.link.npc)
+ remove
+ return 1
+endif
+  arg(ubermany,<eval(<link.tag(experience)>/<nastaveni_ability_animatemanadrain>)>+1)
+  //cont.redmessage(Zaklad mana je <ubermany>)
+if (<cont.tag(ra_mana_narocnost)> < 11)
+  arg(ubermany,<eval((<ubermany>*100)*(100-(<cont.tag(ra_mana_narocnost)>*2)))>/10000)
+  //cont.redmessage(A pak 10 u <ubermany>)
+else
+  arg(ubermany,<eval((<ubermany>*100)*(90-<cont.tag(ra_mana_narocnost)>))>/10000)
+  //cont.redmessage(A pak oo u <ubermany>)
+endif
+if (<cont.mana> > <arg(ubermany)>)
+ cont.mana=<eval(<cont.mana>-<arg(ubermany)>)>
+ timer=1
+else
+ cont.sysMessage("Uz si nedokazal udrzet monstrum na zivu.")
+ link.remove
+ remove
+endif
+return 1
+
+[itemdef i_rune_conjured]
+name=conjured creature
+id=i_rune_summon_creature 
+type=t_custom_dispellable
+layer=70
+
+on=@equip
+cont.flags=<link.topobj.flags>|statf_conjured
+
+ON=@unequip
+cont.sound snd_SPELL_teleport
+cont.go 1,1 //simulace efektu zmizeni
+cont.hits=
+return 1
+
+on=@timer
+remove
+return 1
+
+[function nonewbie]
+if !(<attr>&attr_newbie)
+ <args>
+endif
+
+[function uidinfo]
+act=<args>
+sysMessage("Name: <act.name>")
+sysMessage("cont: <act.cont.name>, <act.cont.uid>")
+sysMessage("Topobj: <act.topobj.name>, <act.topobj.uid>")
+sysMessage("Amount: <act.amount>")
+
+[function usering]
+safe(findlayer(8).dclick)
+
+[function usehand]
+if (findlayer(1))
+ findlayer(1).dclick
+else
+ findlayer(2).dclick
+endif
+
+[function guardit]
+newitem i_guardit
+act.equip
+
+[itemdef i_guardit]
+id=i_memory
+type=t_eq_script
+name=guardit rune
+
+on=@timer
+remove
+return 1
+
+on=@equip
+timer 50
+target("Zamer dvere/kontejner/telepad, ktery ma byt strazen.")
+
+on=@userdclick
+target("Zamer spawn strazce.")
+return 1
+
+on=@targon_item
+if (more1)
+ if (src.targ.type==t_spawn_char)
+  src.targ.tag(negateOnDeath,1)
+  link=<more1>
+  link.link=<src.targ>
+  link=""
+  remove
+  return 1
+ else
+  src.targ.say toto neni character spawn.
+  remove
+  return 1
+ endif
+else
+ more1=<src.targ>
+ if (src.targ.type==t_door)||(src.targ.type==t_door_guarded)
+  src.targ.type=t_door_guarded
+  dclick
+  return 1
+ elseif (src.targ.type==t_container)||(src.targ.type==t_container_guarded)
+  src.targ.type=t_container_guarded
+  dclick
+  return 1
+ elseif (src.targ.type==t_telepad)||(<src.targ.type==t_telepad_guarded)
+  src.targ.type=t_telepad_guarded
+  dclick
+  return 1
+ else
+  src.targ.say("Neznamy typ... nastav rucne :P")
+  src.sysMessage("Typ: t_door_guarded, t_container_guarded, t_telepad_guarded")
+  src.sysMessage("Strazenou vec nalinkovat na spawn strazce")
+  src.sysMessage("more1=barva zpravy")
+  src.sysMessage("Dej vedet, proc to nastalo, at se muze upravit skript.")
+  return 1
+ endif
+endif
+
+[typedef t_telepad_guarded]
+on=@step
+if (<itemExists(<link>)>)
+  if (link.more2)
+    src.sysMessage("Neprojdes, dokud je strazce brany nazivu!")
+    return 1
+  endif
+endif
+if (src.isPlayer)
+  src.go <morep>
+  return 1
+endif
+
+[typedef t_door_guarded]
+on=@userdclick
+if (<link>)
+  tag(spwnlink,<link>)
+  link=""
+endif
+if (more2==0)
+ more2=<dispid>
+ morep=<p>
+endif
+if (dispid!=more2) 
+ type=t_door
+ dclick
+ type=t_door_guarded
+ more2=<dispid>
+ morep=<p>
+elseif (tag(spwnlink).more2)
+ if (src.isGM)
+  src.sysMessage("Strazce je stale na zivu.")
+  type=t_door
+  dclick
+  type=t_door_guarded
+ else
+   src.sysMessage("Neprojdes, dokud je strazce pruchodu nazivu!")
+ endif
+else
+type=t_door
+dclick
+type=t_door_guarded
+endif
+return 1
+
+on=@timer
+dispid=<more2>
+p=<morep>
+update
+return 1
+
+[typedef t_container_guarded]
+on=@userdclick
+if (<eval link.more2>)
+ src.sysMessage("Nedostanes se dovnitr, dokud je strazce nazivu!")
+ return 1
+else
+open
+//return 1 //doufam, ze to nebylo dulezity :) ale mne to sere bo poklady
+endif
+
+[function potionmana]
+if (findid(i_potion_managreater))
+  findid(i_potion_managreater).dclick
+  return 1
+elseif (findid(i_potion_mana))
+  findid(i_potion_mana).dclick
+  return 1
+else
+  findid(i_potion_manaless).dclick
+  return 1
+endif
+
+[function potioncure]
+if (findid(i_potion_curegreat))
+  findid(i_potion_curegreat).dclick
+  return 1
+elseif (findid(i_potion_cure))
+  findid(i_potion_cure).dclick
+  return 1
+else
+  findid(i_potion_cureless).dclick
+  return 1
+endif
+
+[function potionexplosion]
+if (findid(i_potion_lava))
+  findid(i_potion_lava).dclick
+  return 1
+elseif (findid(i_potion_explosiongreat))
+  findid(i_potion_explosiongreat).dclick
+  return 1
+elseif (findid(i_potion_explosion))
+  findid(i_potion_explosion).dclick
+  return 1
+else
+  findid(i_potion_explosionless).dclick
+  return 1
+endif
+
+[function potioninvis]
+findid(i_potion_invisibility).dclick
+
+[function potionreactive]
+findid(i_potion_reactive).dclick
+
+[function potionreflection]
+findid(i_potion_reflection).dclick
+
+[function potionnightsight]
+findid(i_potion_nightsight).dclick
+
+[function potionshrink]
+if (findid(i_potion_shrink))
+  findid(i_potion_shrink).dclick
+  return 1
+endif
+
+[function dragonresist]
+if (findid(i_potion_dragon_resist))
+  findid(i_potion_dragon_resist).dclick
+  return 1
+endif
+
+
+[function potionheal]
+if (findid(i_potion_healgreat))
+  findid(i_potion_healgreat).dclick
+  return 1
+elseif (findid(i_potion_heal))
+  findid(i_potion_heal).dclick
+  return 1
+else
+  findid(i_potion_healless).dclick
+  return 1
+endif
+
+[function elixirheal]
+findid(i_potion_HealElixir).dclick
+
+[function potionrefresh]
+if (findid(i_potion_refreshgreater))
+  findid(i_potion_refreshgreater).dclick
+  return 1
+elseif (findid(i_potion_refresh))
+  findid(i_potion_refresh).dclick
+  return 1
+else
+  findid(i_potion_refreshless).dclick
+  return 1
+endif
+
+[function elixirrefresh]
+findid(i_potion_RefreshElixir).dclick
+
+[function potionenergy]
+if (findid(i_potion_energygreat))
+  findid(i_potion_energygreat).dclick
+  return 1
+elseif (findid(i_potion_energy))
+  findid(i_potion_energy).dclick
+return 1
+else
+  findid(i_potion_energyless).dclick
+return 1
+endif
+
+[function elixirenergy]
+findid(i_potion_EnergyElixir).dclick
+
+[function potionstrength]
+if (findid(i_potion_strengthgreat))
+  findid(i_potion_strengthgreat).dclick
+  return 1
+elseif (findid(i_potion_strength))
+  findid(i_potion_strength).dclick
+  return 1
+else
+  findid(i_potion_strengthless).dclick
+  return 1
+endif
+
+[function elixirstrength]
+findid(i_potion_StrengthElixir).dclick
+
+[function potionclever]
+if (findid(i_potion_clevergreat))
+  findid(i_potion_clevergreat).dclick
+  return 1
+elseif (findid(i_potion_clever))
+  findid(i_potion_clever).dclick
+  return 1
+else
+  findid(i_potion_cleverless).dclick
+  return 1
+endif
+
+[function elixirclever]
+findid(i_potion_CleverElixir).dclick
+
+[function potionagility]
+if (findid(i_potion_agilitygreat))
+  findid(i_potion_agilitygreat).dclick
+  return 1
+elseif (findid(i_potion_agility))
+  findid(i_potion_agility).dclick
+  return 1
+else
+  findid(i_potion_agilityless).dclick
+  return 1
+endif
+
+[function elixiragility]
+findid(i_potion_AgilityElixir).dclick
+
+[function potionreflex]
+findid(i_potion_reflection).dclick
+
+[function potionmobility]
+findid(i_potion_mobility).dclick
+
+[function potionspellshield]
+findid(i_potion_shield).dclick
+
+[function elixirspellshield]
+findid(i_potion_Shieldelixir).dclick
+
+[function potionstoneskin]
+findid(i_potion_stoneskin).dclick
+
+[function elixirstoneskin]
+findid(i_potion_Stoneskinelixir).dclick
+
+[function mshield]
+findid(i_customscroll_manashield).dclick
+
+
+[function bandage]
+findid(i_bandage).dclick
+
+[function bandageblood]
+findid(i_bandage_bloody).dclick
+
+[function regy]
+//dialog d_regy
+dialog(d_regy2)
+
+[function f_personal_light_level]
+//tag(packet,"04e <split4bytes(<uid>)> <hval(<argv(0)>)>")
+sendpacket(04e <split4bytes(<uid>)> <hval <argv(0)>>)
+
+[function huedeffect]
+//arg(htype,<argv(0)>)
+//itemid,<argv(1)>
+//speed,<argv(2)>
+//frames,<argv(3)>
+//explode,<argv(4)>
+//hue,<argv(5)>
+//fixdir,<argv(6)>
+//rendermode,<argv(7)>
+serv.allclients(sendpacket(0c0 <hval(<argv(0)>)> <split4bytes(<uid>)> <split4bytes(<src>)> <split2bytes(<nid(<argv(1)>)>)>  <split2bytes(<p_x>)> <split2bytes(<p_y>)> <hval(<p_z>)> <split2bytes(<src.p_x>)> <split2bytes(<src.p_y>)> <hval(<src.p_z>)> <hval(<argv(2)>)> <hval(<argv(3)>)> 00 00 <hval(<argv(6)>)> <hval(<argv(4)>)> <split4bytes(<argv(5)>)> <split4bytes(<argv(7)>)>))
+
+//i_fire_column
+[function countframes]
+echo f_countframes(<?<args>.dupelist?>)
+
+[function f_countframes]
+return <argvcount>
+
+[function srcchangehighlight]//src gets the packet, default is the target char
+src.sendpacket(<changehighlightpacket(<args>)>)
+
+[function changehighlight]//uid to get the packet,highlight
+arg(sendto,<finduid(argv(0))>)
+if (sendto)//target valid
+ src.smsg("sending to <arg(sendto)>")
+ sendpacket(<arg(sendto).changehighlightpacket(<argv(1)>)>)
+endif
+src.smsg("not sending")
+
+[function changehighlightpacket]//returns packet
+return"077 <split4bytes(<hval uid>)> <split2bytes(<nid(body)>)> <split2bytes(<p_x>)> <split2bytes(<p_y>)> <hval(p_z)> <hval(dir)> <split2bytes(<color>)> 00 <argv(0)>"
+
+[function split2bytes]
+return"<?hval(<argv(0)> >> 8)?> <?hval(<argv(0)>&0ff)?>"
+
+[function split4bytes]
+return"<hval (<argv(0)>&0ff000000)/01000000> <hval (<argv(0)>&0ff0000)/010000> <hval (<argv(0)>&0ff00)/0100> <hval <argv(0)>&0ff>"
+//return"<?hval(<argv(0)> >> 24)?> <?hval((<argv(0)> >> 16)&0ff)?> <?hval((<argv(0)> >> 8)&0ff)?> <?hval(<argv(0)>&0ff)?>"
+
+[dialog d_regy]
+100,0
+resizepic 100 100 9250 400 180
+tilepic 120 120 3962
+tilepic 125 125 3962
+tilepic 160 120 3963
+tilepic 165 125 3963
+tilepic 210 120 3972
+tilepic 215 125 3972
+tilepic 240 120 3973
+tilepic 245 125 3973
+tilepic 280 120 3974
+tilepic 285 125 3974
+tilepic 320 120 3976
+tilepic 325 125 3976
+tilepic 360 120 3980
+tilepic 365 125 3980
+tilepic 400 120 3981
+tilepic 405 125 3981
+htmlgump 130 140 40 20 0 0 0 0
+htmlgump 170 140 40 20 1 0 0 0
+htmlgump 215 140 40 20 2 0 0 0
+htmlgump 250 140 40 20 3 0 0 0
+htmlgump 290 140 40 20 4 0 0 0
+htmlgump 330 140 40 20 5 0 0 0
+htmlgump 370 140 40 20 6 0 0 0
+htmlgump 410 140 40 20 7 0 0 0
+
+tilepic 120 170 3960
+tilepic 125 175 3960
+tilepic 160 170 3961
+tilepic 165 175 3961
+tilepic 210 170 3964
+tilepic 215 175 3964
+tilepic 240 170 3965
+tilepic 245 175 3965
+tilepic 280 170 3966
+tilepic 285 175 3966
+tilepic 320 170 3967
+tilepic 325 175 3967
+tilepic 360 170 3968
+tilepic 365 175 3968
+tilepic 400 170 3969
+tilepic 405 175 3969
+tilepic 440 170 3970
+tilepic 445 175 3970
+htmlgump 130 190 40 20 8 0 0 0
+htmlgump 170 190 40 20 9 0 0 0
+htmlgump 215 190 40 20 10 0 0 0
+htmlgump 250 190 40 20 11 0 0 0
+htmlgump 290 190 40 20 12 0 0 0
+htmlgump 330 190 40 20 13 0 0 0
+htmlgump 370 190 40 20 14 0 0 0
+htmlgump 410 190 40 20 15 0 0 0
+htmlgump 450 190 40 20 16 0 0 0
+
+tilepic 120 220 3971
+tilepic 125 225 3971
+tilepic 160 220 3975
+tilepic 165 225 3975
+tilepic 210 220 3977
+tilepic 215 225 3977
+tilepic 240 220 3978
+tilepic 245 225 3978
+tilepic 280 220 3979
+tilepic 285 225 3979
+tilepic 320 220 3982
+tilepic 325 225 3982
+tilepic 360 220 3983
+tilepic 365 225 3983
+tilepic 400 220 3984
+tilepic 405 225 3984
+tilepic 440 220 3985
+tilepic 445 225 3985
+htmlgump 130 240 40 20 17 0 0 1
+htmlgump 170 240 40 20 18 0 0 0
+htmlgump 215 240 40 20 19 0 0 0
+htmlgump 250 240 40 20 20 0 0 0
+htmlgump 290 240 40 20 21 0 0 0
+htmlgump 330 240 40 20 22 0 0 0
+htmlgump 370 240 40 20 23 0 0 0
+htmlgump 410 240 40 20 24 0 0 0
+htmlgump 450 240 40 20 25 0 0 0
+
+[dialog d_regy text]
+<?rescount i_reag_black_pearl?>
+<?rescount i_reag_blood_moss?>
+<?rescount i_reag_garlic?>
+<?rescount i_reag_ginseng?>
+<?rescount i_reag_mandrake_root?>
+<?rescount i_reag_nightshade?>
+<?rescount i_reag_sulfur_ash?>
+<?rescount i_reag_spider_silk?>
+<?rescount i_reag_batwing?>
+<?rescount i_reag_blackmoor?>
+<?rescount i_reag_blood_spawn?>
+<?rescount i_reag_blood_vial?>
+<?rescount i_reag_bone?>
+<?rescount i_reag_brimstone?>
+<?rescount i_reag_daemon_bone?>
+<?rescount i_reag_fertile_dirt?>
+<?rescount i_reag_dragon_blood?>
+<?rescount i_reag_executioners_cap?>
+<?rescount i_reag_eye_of_newt?>
+<?rescount i_reag_obsidian?>
+<?rescount i_reag_pig_iron?>
+<?rescount i_reag_pumice?>
+<?rescount i_reag_serpent_scale?>
+<?rescount i_reag_volcanic_ash?>
+<?rescount i_reag_dead_wood?>
+<?rescount i_reag_worm_heart?>
+
+[dialog d_regy button]
+
+[dialog d_regy2]
+argo.setlocation=50,50
+resizepic(50,50,9250,300,480)
+arg(xx,60)
+arg(yy,0)
+arg(ii,0)
+while (<ii> < <regy_defs_number>)
+  argo.tilepic(<arg(xx)>,<eval(75+35*<yy>)>, <return_nth(2,<regy_defs[<ii>]>)>)
+  argo.tilepic(<arg(xx)>+5,<eval(80+35*<yy>)>, <return_nth(2,<regy_defs[<ii>]>)>)
+  argo.texta(<arg(xx)>+50,<eval(80+35*<yy>)>,0,"<?rescount(<return_nth(1,<regy_defs[<ii>]>)>)?>")
+  arg(yy,#+1)
+  if (<ii>==12)
+    arg(xx,200)
+    arg(yy,0)
+  endif
+  arg(ii,#+1)
+endwhile
+
+[dialog d_regy2 text]
+
+[dialog d_regy2 button]
+
+[function recallhome]
+if (<src.restest 1 i_scroll_recall>)
+  safe(src.findid(i_scroll_recall).dclick)
+  act=<findid(i_rune_base).uid>
+  last //what was this ? an Error triggering call /// maybe it calls error, but it's not working without it
+  return 1
+else
+  if (strlen(<findtype(t_spellbook)>))
+    arg(mySpellbook,<findtype(t_spellbook)>)
+    if (<arg(mySpellbook).hasspell(32)>)  // has recall in spellbook ?
+      safe(cast 020)
+      act=<findid(i_rune_base).uid>
+      last //what was this ? an Error triggering call
+      return 1
+    endif
+  endif
+endif
+redMessage("Nemas u sebe recall formuli!")
+
+[function greenmessage]
+sysMessagecol(044,"<args>")
+
+[function redMessage]
+sysMessagecol(021,"<args>")
+
+[function bluemessage]
+sysMessagecol(063,"<args>")
+
+[function classmessage]
+sysMessagecol(057,"<args>")
+//if (strlen(<tag.classcolor>))
+//sysMessagecol(<eval <tag.classcolor>>,"<args>")
+//else
+//sysMessagecol(5,"<args>")
+//endif
+
+[function disconnect]
+sendpacket(082 00)
+
+[function racemessage]
+sysMessagecol(<color>,"<args>")
+
+[function strtoascii]
+var(asciitext,"")
+arg(u,0)
+arg(asciilen,<eval <argv(0)>>)
+while (<arg(u)> < <arg(asciilen)>)
+ var(asciitext,"<?safe asciitext?> <?hval strgetascii("<argv(1)>",<u>)?>")
+ arg(u,<eval <u>+1>)
+endwhile
+return <asciitext>
+
+[function sysMessagecol] 
+//sysMessage(<argv(1)>)
+//return 0
+//debug
+if (isitem)
+  return 0
+elseif (npc)
+  return 0
+endif
+if (<ARGVCOUNT>!=2)
+  src.sysMessage("smsgcol: spatne zadano")
+  return 0
+endif
+arg(length,<strlen(<argv(1)>)>+45)
+if (arg(length)>83+45)
+ arg(length,<eval 83+45>)
+endif
+var(packet,01c <?hval (<length>&0ff00)/0100?> <?hval <length>&0ff?> 00 00 00 00 00 00 02 <?hval (<argv(0)>&0ff00)/0100?> <?hval <argv(0)>&0ff?> 00 03 053 079 073 074 065 06d 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <?strtoascii((<length>-45),"<argv(1)>")?> 00)
+sendpacket(<packet>)
+
+[function messagecol]
+// barva,text
+if (src.npc)
+return 0
+endif
+if (ARGVCOUNT!=2)
+sysMessage("msgcol: spatne zadano")
+return 0
+endif
+arg(length,<strlen(<argv(1)>)>+45)
+if (arg(length)>83+45)
+ arg(length,<eval 83+45>)
+endif
+src.sendpacket(01c <split2bytes(<arg(length)>)> <hval (<uid>&0ff000000)/01000000> <hval (<uid>&0ff0000)/010000> <hval (<uid>&0ff00)/0100> <hval <uid>&0ff> 00 00 03 <hval (<argv(0)>&0ff00)/0ff> <hval <argv(0)>&0ff> 00 03 <strtoascii(30,"<name>")> <strtoascii((<length>-45),"<argv(1)>")> 00)
+
+[function paperdoll]
+var(packet,"088 <split4bytes(<this>)><strtoascii(60,<args>)> <hval(FLAG_war)>")
+//logmsg(<var(packet)>)
+src.sendpacket(<var(packet)>)
+
+[function counsectors]
+var(count,0)
+region.sectors(raisecount)
+smsg("count: <count>")
+
+[function raisecount]
+var(count,<count>+1)
+
+[function getNameHue]
+//What color should our name be? 
+//default obj = the name to examine 
+if (isItem) 
+ return 0
+elseif (isGM)
+ return 035
+elseif (isnazgul)
+ return 03c2
+elseif (isinmyguild)
+ //srcchangehighlight(2)
+ return 044 //03c
+elseif (ismurderer) 
+ //I am bad
+ return 026
+elseif (flag_criminal) //i am a graycolored 
+ return 03e9
+elseif (isneutral)
+ return 03e9
+elseif (src.MemoryFind(UID))
+  if (src.MemoryFind(UID).color&01)
+    //src saw me commit a crime 
+    return 03e9
+  endif
+ENDIF
+return 063 //blue
+
+[function posInRange] // argv(0) - range in which the position should be calculated
+arg(newX,<p_x>+<eval {-<argv(0)> <argv(0)>}>)
+arg(newY,<p_y>+<eval {-<argv(0)> <argv(0)>}>)
+return <eval arg(newX)>,<eval arg(newY)>,<p_z>,<mapplane>
+
+[function f_distanceFromPos] //args = position, to which I'd like to count distance
+newitemsafe(i_gold)
+lastnew.p=<args>
+arg(dist,<distancefrom(<lastnew>)>)
+lastnew.remove
+if (<eval argv(3)> != <mapplane>)
+  var(distanceFromPos_sameMapplane,0)
+else
+  var(distanceFromPos_sameMapplane,1)
+endif
+return <arg(dist)>
+
+[function f_distanceFromPos_check]
+arg(myDist,<src.f_distanceFromPos(<eval argv(1)>,<eval argv(2)>,<eval argv(3)>,<eval argv(4)>)>)
+if (<arg(myDist)> > <argv(0)>) || !(<eval var(distanceFromPos_sameMapplane)>)
+  var(distanceFromPos_sameMapplane,"")
+  return 1
+else
+  var(distanceFromPos_sameMapplane,"")
+  return 0
+endif
+
+[function f_canReachZ] // can reach item considering the Z position
+// argv(0) - max distance
+if (<distance> > <argv(0)>)
+  return 0
+elseif ((<src.z> > <eval <z> +4>) || (<src.z> < <eval <z>-4>))
+endif
+
+[function f_canReachG]
+if (isGM)
+  return 1
+endif
+if (f_canseelosG(<args>))
+  if (f_distanceFromPos_check(3,<args>))
+    sysMessage("To je moc daleko.")
+    return 0
+  endif
+  return 1
+else
+  return 0
+endif
+
+[function f_canseelosG]  //line of sight of position on the ground
+newitemsafe(i_bag)
+lastnew.p=<args>
+if !(finduid(lastnew).srccombatLOS)
+  sysMessage("You cannot reach that.")
+  lastnew.remove
+  return 0
+endif
+lastnew.remove
+return 1
+
+
+[function f_canseelos]
+newitemsafe(i_cansee)
+lastnew.link=<args>
+safe equip(<lastnew>)
+return <var(cslos)>
+
+[itemdef i_cansee]
+id=i_memory
+layer=77
+type=t_src_changer
+name=cansee memory
+
+on=@equip
+var(cslos,<link.srccanseelos>)
+remove
+
+[function movetype] 
+temporary_null
+newitem i_sortitem 
+equip(act)
+act.timer 20
+act.tag(function,type)
+if (strlen(<args>))
+  act.tag(max,<fixnumber(<args>)>)
+else
+  act.tag(max,0ff)
+endif
+
+[function moveitem] 
+temporary_null
+newitem i_sortitem 
+equip(act)
+act.timer=20
+act.tag(function,item)
+if (strlen(<args>))
+  act.tag(max,<fixnumber(<args>)>)
+else
+  act.tag(max,0ff)
+endif
+
+[itemdef i_sortitem] 
+id=i_memory
+name=sortitem 
+type=t_eq_script 
+layer=30 
+
+on=@timer
+remove
+return 0
+
+on=@equip 
+target("Co chces presunout?")
+
+on=@targon_item 
+if (<src.targ.baseid> == i_truhla_heslo ) || (<src.targ.type> == mit_main) || (<src.targ.baseid> == i_gembox) // vyjimky
+ src.redMessage("Sem nelze predmety presunout.")
+ remove
+ return 1
+elseif (more1 == 0) && (<src.targ.cont> == <src>)
+  src.redMessage("Prikaz nelze pouzit na predmety, ktere mas na sobe.")
+  return 1
+endif
+if (more1)
+ if (<src.targ.type>!=t_container)
+  target    
+  return 1        
+ elseif (<src.targ.topobj>!=<src>)&&(src.isgm==0)
+  target
+  return 1  
+ elseif (<src.targ>==<link>)
+  target
+  return 1
+ endif
+ var(itemcont,<src.targ>)
+ var(itemtype,<tag.itemtype>)
+ var(itembaseid,<tag.itembaseid>)
+ var(maxtomove,<tag.max>)
+ var(moved,0)
+ src.accmsg("moves from uid=<link> (<link.name>) topobj=<link.topobj> (<link.topobj.name>) to uid=<hval itemcont> (<finduid(itemcont).name>) topobj=<finduid(itemcont).topobj> (<finduid(itemcont).topobj.name>)")
+ var(cantmovenext,0)
+ link.contents2(f_sort<tag.function>)
+ var(cantmovenext,"")
+ remove
+ return 1
+else
+ if (src.targ.baseid==i_ring_power)||(src.targ.baseid==i_leading_ring_power)
+  src.sysMessage("Ani to nezkousej, bugere.")
+  remove
+  return 1
+ endif
+ if (<src.targ.topobj>!=<src>)&&(src.isgm==0)
+  src.sysMessage("Vec musis mit u sebe.")
+  remove
+  return 1
+ endif
+ tag(itemtype,<src.targ.type>) //type of the item
+ tag(itembaseid,<src.targ.baseid>)//baseid of the item
+ more1=1
+ link=<src.targ.cont>//the bag the item is in
+ if (<src.targ.type>==t_container)
+  cont.sysMessage("Nelze aplikovat na kontejnery.")
+  return 1
+ endif
+ target("Kam je chces dat?")
+ return 1
+endif
+return 1
+
+[function f_sorttype]
+if (cantmovenext)
+ //src.sysMessage("Vic se tam uz nevejde.")  -radsi bez hlasky
+ return 1
+endif 
+if (<cont>!=<itemcont>)
+ if (moved<maxtomove)
+  if (type==itemtype)
+   if (movable==0)&&(src.isgm==0)
+    src.sysMessage("<name> nelze presunout.")
+   else    
+    if (<uid>==<itemcont.cont>) //chce to soupnout do neceho co uz ma v sobe (batoh do pytliku co je uvnitr napriklad)
+     src.accmsg("Hrac <src> (<src.name>) se snazi o podvod s kontejnery pri moveitem")
+     return 1
+    else 
+     if (itemcont.rescount < 255)
+      src.sysMessage("<amount>x <name>")
+      cont=<itemcont>
+     else      
+      var(cantmovenext,1)
+      return 1
+     endif
+    endif
+    var(moved,<moved>+1)
+    src.accmsg("moves uid=<uid> (<amount> <name>)")
+   endif
+  endif
+ endif
+endif
+
+[function f_sortitem]    
+if (cantmovenext)
+ //src.sysMessage("Vic se tam uz nevejde!") - radsi bez hlasky
+ return 1
+endif 
+if (<cont>!=<itemcont>)
+ if (moved<maxtomove)
+  if (baseid==itembaseid)
+   if (movable==0)&&(src.isgm==0)
+    src.sysMessage("<name> nelze presunout.")
+   else    
+    if (<uid>==<itemcont.cont>) //chce to soupnout do neceho co uz ma v sobe (batoh do pytliku co je uvnitr napriklad)
+     src.accmsg("Hrac <src> (<src.name>) se snazi o podvod s kontejnery pri moveitem")
+     return 1
+    else 
+     if (itemcont.rescount < 255)
+      cont=<itemcont>
+     else      
+      var(cantmovenext,1)
+      return 1
+     endif
+    endif
+    src.accmsg("moves uid=<uid> (<amount> <name>)")
+    var(moved,<moved>+1)
+   endif
+  endif
+ endif
+endif
+
+[function stackitem]
+temporary_null
+newitem i_stackitem 
+act.equip
+act.timer 20
+
+[itemdef i_stackitem]
+id=i_memory
+name=stackitem 
+type=t_eq_script
+layer=30 
+
+on=@timer
+remove
+return 0
+
+on=@equip 
+target("Ve kterem kontejneru chces prerovnat veci?")
+
+on=@targon_item 
+if (<src.targ.type>!=t_container)
+ src.sysMessage("Toto neni kontejner.")
+ remove
+ return 1
+elseif (<src.targ.topobj>!=<src>)&&(<src.isgm>==0)
+ src.sysMessage("Kontejner musis mit u sebe.")
+ remove
+ return 1
+endif
+src.newitem i_bag
+link=<src.act>
+link.p=<src.p>
+var(secondbag,<link>)
+src.targ.contents(f_allcontainers) //opraveni bugu
+src.targ.contents(f_allitems)
+link.contents(cont=<src.targ>)
+link.remove
+var(secondbag,"")
+remove
+return 1
+
+[function f_allcontainers]
+if (iscontainer)
+  cont=<var(secondbag)>
+endif
+
+[function f_allitems]
+amount=<cont.rescount(<baseid>)>
+cont=<var(secondbag)>
+src.targ.contents(f_removeid(<baseid>))
+src.accmsg("leaves uid=<uid> (<amount> <name>)")
+
+var(craftedbywasted,0)
+if (tag(craftedby))
+  if (var(craftedbywasted))
+    tag(craftedby,<hval(tag(craftedby)|craftexp_gotexp)>)
+  endif
+endif
+
+[function f_removeid] 
+if (baseid==args)
+ if (tag(craftedby)&craftexp_gotexp)
+  var(craftedbywasted,1)
+ endif
+ src.accmsg("stacks uid=<uid> (<amount> <name>)")
+ remove
+endif
+
+[function eqlayers]
+safe(findlayer(layer_hand1).<args>)
+safe(findlayer(layer_hand2).<args>)
+safe(findlayer(layer_shoes).<args>)
+safe(findlayer(layer_pants).<args>)
+safe(findlayer(layer_shirt).<args>)
+safe(findlayer(layer_helm).<args>)
+safe(findlayer(layer_gloves).<args>)
+safe(findlayer(layer_ring).<args>)
+safe(findlayer(layer_light).<args>)
+safe(findlayer(layer_collar).<args>)
+safe(findlayer(layer_half_apron).<args>)
+safe(findlayer(layer_chest).<args>)
+safe(findlayer(layer_wrist).<args>)
+safe(findlayer(layer_beard).<args>)
+safe(findlayer(layer_tunic).<args>)
+safe(findlayer(layer_ears).<args>)
+safe(findlayer(layer_arms).<args>)
+safe(findlayer(layer_cape).<args>)
+safe(findlayer(layer_robe).<args>)
+safe(findlayer(layer_skirt).<args>)
+safe(findlayer(layer_legs).<args>)
+safe(findlayer(layer_horse).<args>)
+
+[function eqvendorlayers]
+safe(findlayer(layer_hand1).<args>)
+safe(findlayer(layer_hand2).<args>)
+safe(findlayer(layer_shoes).<args>)
+safe(findlayer(layer_pants).<args>)
+safe(findlayer(layer_shirt).<args>)
+safe(findlayer(layer_helm).<args>)
+safe(findlayer(layer_gloves).<args>)
+safe(findlayer(layer_ring).<args>)
+safe(findlayer(layer_light).<args>)
+safe(findlayer(layer_collar).<args>)
+safe(findlayer(layer_half_apron).<args>)
+safe(findlayer(layer_chest).<args>)
+safe(findlayer(layer_wrist).<args>)
+safe(findlayer(layer_beard).<args>)
+safe(findlayer(layer_tunic).<args>)
+safe(findlayer(layer_ears).<args>)
+safe(findlayer(layer_arms).<args>)
+safe(findlayer(layer_cape).<args>)
+safe(findlayer(layer_robe).<args>)
+safe(findlayer(layer_skirt).<args>)
+safe(findlayer(layer_legs).<args>)
+
+
+[function layerremove]
+if (findlayer.<args>)
+findlayer.<args>.remove
+endif
+
+[function clone]
+if (isitem) || (<uid> == <src>)
+  return 0
+endif
+src.profession=<eval <safe profession>>
+src.tag(skillrank,<tag.skillrank>)
+src.tag(race,<tag.race>)
+src.name=<name>
+src.title=<title>
+src.body=<body>
+src.obody=<obody>
+src.color=<color>
+src.oskin=<oskin>
+src.karma=<karma>
+src.fame=<fame>
+src.tag(experience,<tag.experience>)
+src.kills=<kills>
+src.str=<str>
+src.dex=<dex>
+src.int=<int>
+src.hits=<hits>
+src.stam=<stam>
+src.mana=<mana>
+src.tag(level,<tag.level>)
+src.update
+
+src.allskills 0
+arg(dupesk,0)
+while (arg(dupesk)<50)
+  src.<findres(skill,arg(dupesk)).name>=<?<findres(skill,arg(dupesk)).name>?>
+  arg(dupesk,#+1)
+endwhile
+
+src.privshow 0//<qval <eval <safe gm>+<safe privshow>>?1:0>
+//src.events(-0)
+//src.events=<events>
+
+src.eqlayers(remove)
+src.layerremove(layer_hair)
+
+//var(uid,<src>)
+eqlayers(dupelayer)
+
+[function dupelayer]
+dupe
+src.equip(newitem)
+newitem.updatex
+//src.newitem=<baseid>
+//src.act.dispid=<dispid>
+//src.act.name=<name>
+//src.act.color=<color>
+//src.act.more1=<more1>
+//src.act.more2=<more2>
+//src.act.morex=<morex>
+//src.act.morey=<morey>
+//src.act.morez=<morez>
+//src.act.morem=<morem>
+//src.act.attr=<attr>
+//src.act.equip
+//src.act.updatex
+
+[function goplayer]
+if (findid.i_goplayer)
+ p=<findid(i_goplayer).morep>
+ findid(i_goplayer).remove
+ update
+else
+ invis 1
+ newitem i_goplayer
+ act.morep=<p>
+ act.tag.name=<args>
+ act.equip//cont=<uid>
+ //act.f_goplayer
+endif
+
+[itemdef i_goplayer]
+id=i_memory
+type=t_eq_script
+name=go player
+
+on=@equip
+tag.going=1
+while (<tag.going>==1)
+cont.goname(<tag.name>)
+if strmatch(<cont.act.topobj.name>,<tag.name>)
+ if (cont.act.topobj.ischar)&&(cont.act.topobj.npc==0)
+  tag.going=0
+  cont.act=<cont.act.topobj.uid>
+  cont.sysMessage("<tag.name> is here in <cont.region.name>.")
+  remove
+ endif
+elseif (cont.act.baseid==i_relating_crystal)
+ if strmatch(<cont.act.link.topobj.name>,<tag.name>)&&(cont.act.link.topobj.ischar)&&(cont.act.link.topobj.npc==0)
+  tag.going=0 
+  cont.p <cont.act.link.p>
+  cont.sysMessage("Linked from: <cont.act.topobj.link.name>")
+  cont.act=<cont.act.link>
+  cont.update
+  cont.sysMessage("<tag.name> is here in <cont.region.name>.")
+  remove
+ endif
+elseif (cont.act.type==t_eq_memory_obj)
+ if strmatch(<cont.act.link.name>,<tag.name>)&&(cont.act.link.ischar)&&(cont.act.link.npc==0)
+  tag.going=0 
+  cont.p <cont.act.link.p>
+  cont.sysMessage("Linked from: <cont.act.topobj.name>")
+  cont.act=<cont.act.link>
+  cont.update
+  cont.sysMessage("<tag.name> is here in <cont.region.name>.")
+  remove
+ endif
+endif
+if (cont.act.uid==<hval <safe tag.first>>)
+ tag.going=0
+ cont.p <morep>
+ cont.update
+ cont.sysMessage("Zadny hrac jmenem <tag.name> nebyl nalezen.")
+ remove
+endif
+if !(strlen(<tag(first)>))
+ tag.first=<cont.act.uid>
+endif
+endwhile
+remove
+
+[itemdef i_port_mordor]
+id=i_moongate_red
+type=t_script
+name=Brana Mordor
+
+on=@step
+if (src.ismurderer)
+src.go <morep>
+endif
+return 1
+
+[itemdef i_port_gondor]
+id=i_moongate_red
+type=t_script
+name=Brana Gondor
+
+on=@step
+if (src.ismurderer==0)
+src.go <morep>
+endif
+return 1
+
+[itemdef i_gate_undelay]
+name=Undelay Gate
+id=i_moongate_red
+type=t_script
+
+ON=@STEP
+src.findid(i_delay_timer).remove
+return 1
+
+[itemdef i_gate_delay_specific]
+name=Specific Delay Gate
+id=i_moongate_red
+type=t_script
+
+ON=@Create
+color=098b
+ATTR=010
+MORE1=20//pocet vterin k odpoctu
+
+ON=@STEP
+if (src.npc==0)
+ if (link.isitem)
+  src.sysMessage("Musis pockat.")
+ else  
+  src.newitem=i_delay_timer
+  src.act.MORE1=<MORE1>
+  src.act.link=<uid>
+  src.act.MOREP=<MOREP>
+  src.act.EQUIP
+  link=<src.act>
+ endif
+endif
+
+[itemdef i_delay_timer]
+id=i_memory
+name=Teleport Delay Timer
+type=T_EQ_SCRIPT
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+
+ON=@EQUIP
+TIMER=1
+
+on=@unequip
+if (link.isitem)
+ link.link=-1
+endif
+
+ON=@Timer
+if (more1)
+ cont.sysMessage("Cas do presunu: <eval <more1>>")
+ more1=<eval <more1>-1>
+ TIMER=1
+ return 1
+else
+ cont.GO <MOREP>
+ remove
+ return 1
+endif
+
+[function typearmor]
+if (<ac>!=<args>)
+typedef.armor=<eval <typedef.armor>-(<ac>-<args>)>
+endif
+
+//[function changeshield]
+//if (memoryfindtype(0400))
+// if (memoryfindtype(0400).link.align)
+//  if (findlayer(2).isshield)
+//   act=<findlayer.2.uid>
+//  else
+//   newitem i_shield_null
+//   act.cont=<uid>
+//  endif
+//  if (memoryfindtype(0400).link.align==1)
+//   act.dispid=i_shield_order
+//  else
+//   act.dispid=i_shield_chaos
+//  endif
+//  act.updatex
+//  return 1
+// endif
+//endif
+//sysMessage("Musis byt clenem PvP guildy.")
+//
+//[itemdef i_shield_null]
+//id=i_shield_buckler
+//armor=0
+//weight=0
+//
+//on=@userdclick
+//removefromview
+//remove
+//return 1
+//
+//on=@pickup_pack
+//removefromview
+//remove
+//return 1
+//
+//on=@pickup_ground
+//removefromview
+//remove
+//return 1
+//
+//on=@equip
+//removefromview
+//remove
+//return 1
+
+[function class]
+events=+e_gethit
+events=+e_spelleffect
+clearclass
+events=+e_allplayers
+events=+e_character
+if (argvcount)
+  arg(class,<args>)
+elseif (strlen(<tag.class>))
+  arg(class,<tag.class>)
+else
+  redMessage("Chyba class! Volej GM! Jsi rozbity.")
+  return 1
+endif
+safe(events=+e_<arg(class)>)
+safe(profession=class_<arg(class)>)
+tag(class,<strmid(<profession>,6,20)>)
+src.tag(classcolor,color_<tag.class>)
+setplayer
+if (profession==prof_undeclared)
+  sysMessage("Problem s tvoji postavou - kontaktuj GM.")
+endif
+return <profession>
+
+[function clearclass]
+events -e_necro 
+events -e_mag 
+events -e_priest 
+events -e_war 
+events -e_ranger 
+events -e_thief 
+events -e_shaman 
+events -e_craft
+events -e_mystik
+
+[itemdef i_gate_goodness]
+name=Gate of goodness
+id=i_moongate_blue
+type=T_SCRIPT
+CATEGORY=Other
+SUBSECTION=gates
+DESCRIPTION=brana pro vynulovani kills
+
+on=@step
+src.kills=0
+
+[function ismagic]
+if (<safe tag.magic>)
+return 1
+elseif (findid(i_rune_curse))
+elseif (findid(i_rune_bless))
+elseif (findid(i_rune_clumsy))
+elseif (findid(i_rune_feeblemind))
+elseif (findid(i_rune_weaken))
+elseif (findid(i_rune_agility))
+elseif (findid(i_rune_cunning))
+elseif (findid(i_rune_strength))
+elseif (findid(i_honorcounter))
+elseif (findid(i_fearcounter))
+elseif (findid(i_stealthbonus))
+elseif (findid(i_bloodritual))
+elseif (findid(i_voodoo_stats))
+else
+return 0
+endif
+return 1
+
+[function iscontainer]
+if !(isitem)
+ RETURN 0
+elseIF (type==t_container)
+ RETURN 1
+ELSEif (<safe rescount>)
+ RETURN 1
+ENDIF
+return 0
+
+[function countamount]
+if (iscontainer)
+var(amount_sum,0)
+contents(f_contamount)
+return <amount_sum>
+endif
+
+[function f_contamount]
+var(amount_sum,<amount_sum>+<amount>)
+
+[function dspnext]
+act.try show typedef.resdispid
+act.try typedef.resdispid=<act.typedef.resdispid>+1
+act.try updatex
+
+[function dspprev]
+act.try show typedef.resdispid
+act.try typedef.resdispid=<act.typedef.resdispid>-1
+act.try updatex
+
+[function dspset]
+act.try show typedef.resdispid
+act.try typedef.resdispid=<eval args>
+act.try updatex
+
+[function givegold]
+arg(goldyet,<eval args>)
+while (arg(goldyet)>0)
+  if (arg(goldyet)<=65535)
+    src.newitemsafe(i_gold)
+    src.accmsg("gave <arg(goldyet)> gold (uid=<lastnew>) to uid=<uid> (<name>) topobj=<topobj> (<topobj.name>)")
+    lastnew.AMOUNT=<arg(goldyet)>
+    lastnew.CONT(<uid>)
+    arg(goldyet,0)
+  else
+    src.newitemsafe(i_gold)
+    src.accmsg("gave 60000 gold (uid=<lastnew>) to uid=<uid> (<name>) topobj=<topobj> (<topobj.name>)")
+    lastnew.AMOUNT=60000
+    lastnew.CONT(<uid>)
+    arg(goldyet,#-60000)
+  endif
+endwhile
+
+[function newmemory]
+var(newmemoryact,<act.uid>)
+if (memoryfind(<args>))
+ memoryfind(<args>).remove
+endif
+newitem i_memory
+equip(act)
+act.link=<args>
+
+[function runxtimes]
+arg(u,<argv(0)>)
+while (u>0)
+ <argv(1)>
+ arg(u,#-1)
+enddo
+
+[function f_fizzleefect]
+// odstranen src -> imho je zbytecny
+EFFECT=3,i_fx_smoke_small,0,20,10
+sfx=92
+if (isPlayer)
+  message("Kouzlo se nezdarilo.")
+endif
+
+[events e_rychlost]
+on=@step
+vpredsafe
+vpredsafe
+vpredsafe
+vpredsafe
+vpredsafe
+
+[function rychlost]
+if <isevent.e_rychlost>
+events -e_rychlost
+else
+events +e_rychlost
+endif
+
+
+[function vpredsafe]
+arg(vpredsafact,<act>)
+newnpc(c_dummy)
+act.p=<p>
+act.walk(<dir_inttochar(<dir>)>)
+//if !({0 4}) //snad to min laguje a snizil se i pocet CC
+p=<act.p>
+//updatex //vypada to ze todle nemaj clienti moc radi kdyz zrusim tu cast za else s go a necham jen tudle tak je z leapu v 95% cc a vypada to ze to funguje i bez toho
+//else
+//go <act.p>
+//endif
+act.remove
+act=<arg(vpredsafact)>
+
+[function vzadsafe]
+arg(vpredsafact,<act>)
+newnpc(c_dummy)
+act.p=<p>
+act.walk(<dir_inttochar(<dir_revert(<dir>)>)>)
+//if !({0 4}) //snad to min laguje a snizil se i pocet CC
+p=<act.p>
+//updatex //vypada to ze todle nemaj clienti moc radi kdyz zrusim tu cast za else s go a necham jen tudle tak je z leapu v 95% cc a vypada to ze to funguje i bez toho
+//else
+//go <act.p>
+//endif
+act.remove
+act=<arg(vpredsafact)>
+
+
+
+
+[chardef c_dummy]
+id=c_man
+name=dummy
+
+on=@create
+flag_insubstantial=1
+
+[events e_nomove]
+on=@step
+move <dir_inttochar(<dir_revert(<dir>)>)>
+updatex
+
+
+
+[function dir_revert]
+doswitch <args>
+return 4
+return 5
+return 6
+return 7
+return 0
+return 1
+return 2
+return 3
+enddo
+
+[function dir_inttochar]
+doswitch <args>
+return"n"
+return"ne"
+return"e"
+return"se"
+return"s" 
+return"sw"
+return"w"
+return"nw"
+enddo
+
+[function dir_inttocoords]
+doswitch <args>
+  return"0,-1"
+  return"1,-1"
+  return"1,0"
+  return"1,1"
+  return"0,1"
+  return"-1,1"
+  return"-1,0"
+  return"-1,-1"
+enddo
+
+[function isfighting]
+if (action==skill_wrestling)
+elseif (action==skill_swordsmanship)
+elseif (action==skill_fencing)
+elseif (action==skill_macefighting)
+elseif (action==skill_archery)
+else
+  return 0
+endif
+return 1
+
+[function isfighting_melee]
+if (action==skill_wrestling)
+elseif (action==skill_swordsmanship)
+elseif (action==skill_fencing)
+elseif (action==skill_macefighting)
+  if (itemExists(<findlayer(2)>))
+    if (findlayer(2).type==t_weapon_bow_run)
+      return 0
+    endif
+  endif
+else
+  return 0
+endif
+return 1
+
+[function isfighting_ranged]
+if (action==skill_archery)
+  return 1
+elseif (action==skill_macefighting)
+  if (itemExists(<findlayer(2)>))
+    if (findlayer(2).type==t_weapon_bow_run)
+      return 1
+    endif
+  endif
+  return 0
+endif
+return 0
+
+[function iscrafting]
+if (action==skill_cooking)
+elseif (action==skill_blacksmith)
+elseif (action==0) //skill_alchemy
+elseif (action==skill_carpentry)
+elseif (action==skill_Tinkering)
+elseif (action==skill_bowcraft)
+elseif (action==skill_Tailoring)
+elseif (action==skill_Carpentry)
+elseif (action==Skill_Inscription)
+elseif (action==Skill_cartography)
+else
+ return 0
+endif
+return 1
+
+[function ismacroing]
+if (action==skill_cooking)
+elseif (action==skill_blacksmith)
+elseif (action==0) //skill_alchemy
+elseif (action==skill_carpentry)
+elseif (findid(i_taming))
+  if (findid(i_taming).timer>(-1))
+    return 1
+  endif
+elseif (findid(i_delayer))
+elseif (findid(i_mem_lockpick))
+elseif (findid(i_vyroba_latky))
+elseif (action==skill_lumberjack)
+elseif (action==skill_mining)
+elseif (action==skill_fishing)
+elseif (action==skill_Tinkering)
+elseif (action==skill_bowcraft)
+elseif (action==skill_Tailoring)
+elseif (action==skill_Carpentry)
+elseif (action==Skill_Inscription)
+elseif (action==Skill_cartography)
+else
+  return 0
+endif
+return 1
+
+[function sqrt_int]
+if (<eval <args>>==0)
+ return 0
+endif
+arg(root1,<eval <args>*10000>)
+arg(root2,<eval <args>*10000>)
+arg(sqrt_tries,0)
+arg(sqrt,-1)
+while (<sqrt_tries><30)
+ arg(lastroot,<root1>)
+ arg(sqrt_tries,<sqrt_tries>+1)
+ arg(root1,<eval (<root1>/2)+((<root2>/<root1>)/2)>)
+ 
+ if (<lastroot>==<root1>)||(<lastroot>==(<root1>-1))
+  arg(sqrt,<lastroot>)
+  return <sqrt>
+ endif
+endwhile
+return <sqrt>
+
+[function canbeweapon]
+if (def.layer==1)||(def.layer==2)
+ return 1
+endif
+return 0
+
+[function isweapon]
+if (type==t_weapon_sword)
+elseif (type==t_weapon_fence)
+elseif (type==t_weapon_mace_smith)
+elseif (type==t_weapon_mace_crook)
+elseif (type==t_weapon_mace_staff)
+elseif (type==t_weapon_bow_run)
+elseif (type==t_weapon_bow)
+elseif (type==t_weapon_xbow)
+else
+return 0
+endif
+return <uid>
+
+[function isarmor]
+if (type==t_armor)
+elseif (type==t_armor_leather)
+else
+return 0
+endif
+return 1
+
+[function isArmed]
+
+if (src.findlayer(1))
+  if (src.findlayer(1).isweapon)
+    return 1
+  endif
+elseif (src.findlayer(2))
+  if (src.findlayer(2).isweapon)
+    return 1
+  endif
+endif
+return 0
+
+[function hex]
+sysMessage="<hval <args>>"
+return <hval <args>>
+
+[function dec]
+sysMessage <eval <args>>
+return <eval <args>>
+
+[function canPay]
+arg(shouldpay,<eval args>)
+if (src.isgm)
+  return 2
+endif
+arg(totalgold,<eval findlayer(21).rescount(t_gold)+bankbalance>)
+if (arg(shouldpay)>arg(totalgold)) //the amount to pay is more then you own??
+  return 0
+else
+  return 1
+endif
+
+[function pay]
+arg(shouldpay,<eval args>)
+if (src.isgm)
+  classmessage("Jako GM nic neplatis.")
+  return 1
+endif
+if (canPay(<arg(shouldpay)>)) //you have enough to pay
+  if (arg(shouldpay) > src.findlayer(21).rescount(t_gold)) // don't have enought money in the backpack
+    findlayer(29).consumegoldamount(<eval arg(shouldpay)-findlayer(21).rescount(t_gold)>) //remove the rest of the money from bank
+    findlayer(21).consumeallgold //pay all the money from backpack
+  else
+    findlayer(21).consumegoldamount(<arg(shouldpay)>) // pay only the necessarry amount from the backpack
+  endif
+  accmsg("Has paied #<arg(shouldpay)># gp.")
+  return 1
+else
+  classmessage("Potrebujes <arg(shouldpay)> zlatych.") //refuse transaction
+  accmsg("Hasn't got #<arg(shouldpay)># gp.")
+  return 0
+endif
+
+[function consumegoldamount] //move enough gold so that we can pay
+//args- amount of gold left to move
+arg(yettohandle,<eval args>)
+//we know that there is enough of this
+while (arg(yettohandle)>0)
+  arg(foundpile,<findtype(t_gold)>)
+  arg(foundamount,<arg(foundpile).amount>) //amount found
+  if (arg(foundamount)<=arg(yettohandle))
+    //pile is not big enough, so move it all
+    arg(yettohandle,#-<arg(foundpile).amount>)
+    arg(foundpile).remove
+  else //not entire pile needed
+    //ie yettohandle < foundamount
+    arg(foundpile).amount=<eval arg(foundamount)-arg(yettohandle)>
+    arg(yettohandle,0)
+  endif
+endwhile
+
+[function consumeallgold]
+while (findtype(t_gold))
+  findtype(t_gold).remove
+endwhile
+if (findtype(t_gold))
+ //in case sphere made something weird with the loop protection
+  consumeallgold
+endif
+
+[function logmsg]
+serv.smsg("<args>\n")
+
+[function accmsg]
+//logmsg("accmsg: uid=<uid> (<name>) src=<src> (<src.name>)")
+if (charExists(<uid>))
+  if (isplayer)
+    try s(<serverTime> <?args?>)
+  endif
+elseif (safe src.isplayer)
+  src.try s(<?args?>)
+endif
+
+[function s]
+
+[function detachitem]
+if (<amount>>1)
+var(detamount,<amount>-1)
+amount=1
+dupe(detamount)
+endif
+
+[function contents]
+//logmsg("object of contents:<uid>, <name>, id:<Baseid>")
+if (<safe rescount>)
+ arg(count,<rescount>)
+ while (arg(count))
+  arg(count,<eval <arg(count)>-1>)
+  findcont(<arg(count)>).<args>
+ endwhile
+endif
+
+[function contents2]
+if (<safe rescount>)
+  arg(count,<rescount>)
+  while (arg(count))
+    arg(count,<eval <arg(count)>-1>)
+    if (<safe findcont(<arg(count)>).rescount>) 
+      if !(findcont(<arg(count)>).id==i_truhla_heslo)  //nebudeme prohledavat objekty uvnitr secure truhly.
+        findcont(<arg(count)>).contents2(<args>)
+      endif
+    endif
+    findcont(<arg(count)>).<args>
+  endwhile
+endif
+
+[function contentsNoBank]
+if (<safe rescount>)
+  arg(count,<rescount>)
+  while (arg(count))
+    arg(count,<eval <arg(count)>-1>)
+    if (<safe findcont(<arg(count)>).rescount>)
+      if !(<eval findcont(<arg(count)>).layer> == 29) //bank box
+        findcont(<arg(count)>).contentsNoBank(<args>)
+      endif
+    endif
+    findcont(<arg(count)>).<args>
+  endwhile
+endif
+
+
+[function contentsToCont]
+// argv(0) == container, argv(1) == the amount of items to move
+if (<safe rescount>)
+ arg(count,<argv(1)>)
+ while (arg(count))
+  arg(count,<eval <arg(count)>-1>)
+  findcont(<arg(count)>).cont=<argv(0)>
+ endwhile
+endif
+
+[function ismurderer]
+if (charExists(<uid>))
+  if (isplayer)
+    if (kills>serv.murdermincount)||(karma<=-8000) 
+      return 1
+    else
+      return 0
+    endif
+  elseif (brain==BRAIN_UNDEAD)||(brain==BRAIN_MONSTER)||(brain==BRAIN_ANIMAL)
+    if (karma<=-800)
+      return 1
+    else
+      return 0
+    endif
+  elseif (brain==BRAIN_BESERK)
+    return 1
+  elseif (karma<=-3000)
+    return 1
+  else
+    return 0
+  endif
+else //this is item ! ! !
+  return 0
+endif
+
+[function isneutral]
+if (isplayer)
+ if (karma<serv.PlayerNeutral) 
+  return 1
+ else
+  return 0
+ endif
+elseif (brain==BRAIN_BESERK)||(brain==BRAIN_MONSTER)||(brain==BRAIN_UNDEAD)
+ if (karma<=0)
+  return 1
+ else
+  return 0
+ endif
+elseif (brain==BRAIN_ANIMAL)
+  if (karma<=100)
+    return 1
+  else
+    return 0
+  endif
+elseif (karma<0)
+  return 1
+else
+  return 0
+endif
+
+[function bounceitem]
+newitemsafe(<args>)
+lastnew.cont=<findlayer(21)>
+
+[function giveitem]
+if (ischar)
+ lognewitemsafe(<argv(0)>)
+ if (argvcount>1)
+  lastnew.amount=<argv(1)>
+ endif
+ lastnew.logcont(<uid>)
+else
+ src.lognewitemsafe(<argv(0)>)
+ if (argvcount>1)
+  lastnew.amount=<argv(1)>
+ endif
+ lastnew.logcont(<uid>)
+endif
+
+[function logcont]//
+if (baseid==i_ring_power)||(baseid==i_leading_ring_power)||(baseid==i_generals_bracelet)
+ return 1
+endif
+arg(moveto,<finduid(args)>)
+src.accmsg("moves uid=<uid> (<amount> <name>) from uid=<cont> (<cont.name>) topobj=<topobj> (<topobj.name>) TO uid=<arg(moveto)> (<arg(moveto).name>) topobj=<arg(moveto).topobj> (<arg(moveto).topobj.name>)")
+cont=<arg(moveto)>
+
+[function logpi]
+//arg(moveto,<finduid(args)>)
+//src.Accmsg(moved uid=<uid> (<amount> <name>) from uid=<cont> (<cont.name>) topobj=<topobj> (<topobj.name>) TO pos=<args>)
+p=<args>
+trigger(@dropon_ground)
+updatex
+
+[function logpc]
+arg(moveto,<finduid(args)>)
+src.Accmsg(moved uid=<uid> (<name>) TO pos=<args>)
+p=<args>
+updatex
+
+[function class_cancast]//class abbrev
+arg(spellnumber,<eval (<actarg1>&0ffff)-1>)
+if (arg(spellnumber)<32)
+ if (isbit(<?spells_<args>_0_0?>,<?arg(spellnumber)?>))
+  return 1
+ endif
+elseif (<arg(spellnumber)><64)
+ if (isbit(<?spells_<args>_0_1?>,<?arg(spellnumber)?>))
+  return 1
+ endif
+else
+ if (isbit(<?spells_<args>_0_2?>,<?arg(spellnumber)?>))
+  return 1
+ endif
+endif
+return 0
+
+[function hasspell]
+arg(spellnumber,<eval (<args>&0ffff)-1>)
+if (<arg(spellnumber)><32)
+ if (isbit(<more1>,<arg(spellnumber)>))
+  return 1
+ endif
+elseif (<arg(spellnumber)><64)
+ if (isbit(<more2>,<arg(spellnumber)>))
+  return 1
+ endif
+else
+ if (isbit(<morex>,<arg(spellnumber)>))
+  return 1
+ endif
+endif
+return 0
+
+[function fullbook]
+if !(src.findtype(t_spellbook))
+src.sysMessage("Musis u sebe mit knihu.")
+return 0
+endif
+newitem i_fullbookmem
+equip(act)
+
+[itemdef i_fullbookmem]
+id=i_memory
+type=t_eq_script
+name=fullbook memory
+
+on=@equip
+timer 20
+target("Ze ktereho kontejneru chces knihu naplnit?")
+
+on=@timer
+remove
+return 1
+
+on=@targon_item
+if !(src.findtype(t_spellbook))
+src.sysMessage("Musis u sebe mit knihu.")
+return 1
+elseif !(src.targ.iscontainer)
+src.sysMessage("Toto neni kontejner.")
+return 1
+elseif (<src.targ.topobj>!=<src>)
+src.sysMessage("Kontejner musis mit u sebe.")
+return 1
+elseif !(src.targ.findtype(t_scroll))
+src.sysMessage("V tomto kontejneru nejsou zadne svitky.")
+return 1
+endif
+src.act=<uid>
+link=<src.findtype(t_spellbook)>
+src.targ.contents(f_fullbook)
+remove
+return 1
+
+[function f_fullbook]
+if (type==t_scroll)
+  if !(src.act.link.hasspell(<morex>))
+    src.act.link.addspell(<morex>)
+    consume 1
+  endif
+elseif (type==t_customspell_scroll)
+  if !(src.act.link.hasspell(<morex>))
+    srrc.act.link.addspell(<morex>)
+    consume 1
+  endif
+endif
+
+[function emptybook]
+//say <findres(spell,12).scrollitem>
+newitem i_emptybookmem
+act.equip
+
+[itemdef i_emptybookmem]
+id=i_memory
+type=t_eq_script
+name=emptybook memory
+
+on=@equip
+timer 60
+target("Ze ktere knihy chces vyndat svitky?")
+
+on=@targon_item
+if (src.targ.type!=t_spellbook)
+ src.sysMessage("Toto neni kouzelnicka kniha.")
+elseif (src.targ.topobj.uid!=src.uid)&&(src.isgm==0)
+ src.sysMessage("Knihu musis mit u sebe.")
+else
+ arg(bookloop,1)
+ arg(tocont,<src.reccont>)
+ while (bookloop<71)
+  if (src.targ.hasspell(<bookloop>))
+   src.newitemsafe(<findres(spell,<bookloop>).scrollitem>)//i_scroll_clumsy    
+   lastnew.logcont(<arg(tocont)>)
+  endif
+  arg(bookloop,<bookloop>+1)
+ endwhile
+ src.targ.more1=0
+ src.targ.more2=0
+ src.targ.morex=0
+endif
+remove
+return 1
+
+on=@timer
+remove
+return 0
+
+[function gotofirstchar]
+var(gotofirst,0)
+nukecharall f_ftfirst
+
+[function f_ftfirst]
+if (<gotofirst>==0)
+ src.go <p>
+endif
+if (<npc>)
+var(gotofirst,<gotofirst>+1)
+endif
+
+[function gohome]
+go <home>
+
+[function npcspawn]
+if (npc)
+ if (memoryfindtype(memory_ispawned))
+  try <args>
+ endif
+endif
+
+[function npcfree]
+if (npc)
+ if (memoryfindtype(memory_ispawned)==0)&&(memoryfindtype(memory_ipet)==0)
+  try <args>
+ endif
+endif
+
+[function nukecharall]
+xxc <args>
+arg(storepos,<p>)
+p=1 1 0 <mapplane>
+self
+go(6143,4095,0,<mapplane>)
+self
+go <arg(storepos)>
+
+[function nukeall]
+xxi <args>
+arg(storepos,<p>)
+p=1 1 0 <mapplane>
+self
+go(6143,4095,0,<mapplane>)
+self
+go <arg(storepos)>
+
+[function spawnfull]
+if (type==t_spawn_char)
+  src.newitem i_spawnfull_timer
+  src.act.link=<uid>
+  src.act.timer=1
+  src.act.p=<p>
+  src.act.more1=0
+endif
+
+[itemdef i_spawnfull_timer]
+id=i_gold
+type=t_script
+name=fullspawner (.x spawnfull)
+
+on=@create
+attr=attr_invis
+
+on=@timer
+if (<link.amount>><link.more2>)&&(link.type==t_spawn_char)//&&(<eval <more1>><100)
+more1=<eval <more1>+1>
+link.timer=0
+timer 1
+else
+ remove
+endif
+return 1
+
+[function isspid]
+if (<more>==<spawnedid>)
+ try <args>
+endif
+
+[function getspid]
+var(spawnedid,<more1>)
+src.sysMessage("Typ spawnu je <spawnedid>, <hval <spawnedid>>")
+
+[function spawncount]
+var(charspawn,0)
+var(charspawnbad,0)
+var(spcntmode,<eval args>)
+nukeall(f_spwncnt)
+src.sysMessage("Spatnych npc spawnu: <eval charspawnbad>")
+src.sysMessage("NPC spawnu celkem: <eval charspawn>")
+
+[function f_spwncnt]
+if (type==t_spawn_char)
+ if (<eval more1>==0)||(timer<0)
+  var(charspawnbad,#+1)
+  remove
+ else
+    var(charspawn,#+1)
+ endif
+ if (var(spcntmode))
+  srccome
+  dclick
+  spawnfull
+ endif
+endif
+
+[function skillgain]
+arg(skillname,<findres(skill,<args>).key>)
+arg(skillvalue,<?<arg(skillname)>?>)
+if (npc)||(<region.flags>&region_flag_safe)
+ logmsg("skillgain none")
+else
+ if (arg(skillvalue)<profession.<arg(skillname)>)
+  arg(advrate,<eval (advrate_<arg(skillname)>)>)
+  arg(rand,<eval {0 <eval ((<arg(skillvalue)>*<arg(skillvalue)>)/(1000000/<arg(advrate)>))> }>)//mnozstvi pokusu na skillgain
+  if !(arg(rand))//||(<isgm>)
+   <arg(skillname)>=<eval <arg(skillvalue)>+1>
+  endif
+ endif 
+endif
+
+[itemdef i_npc_mount]
+id=i_memory
+type=t_eq_script
+name=mountmemory
+
+on=@create
+timer=0
+
+on=@timer
+if (tag(mount))
+ cont.newitemsafe(<tag(mount)>)
+else
+ cont.newitemsafe(i_mt_horse_tan)
+endif
+//lastnew.more2=<cont>
+//lastnew.link=<cont>
+if (tag(mountcolor))
+ lastnew.color=<eval <tag(mountcolor)>> 
+else
+ lastnew.color=<color>
+endif
+lastnew.cont=<cont>
+remove
+return 0
+
+[function specability]
+if (findid(i_spec_ability_counter))
+ if ({0 100000}<eval(tag(ability)))
+  return 1
+ endif
+endif
+return 0
+
+[function specability_craft]
+if (findid(i_spec_ability_counter))
+  if ({0 100000} < <eval(<tag(ability)>+<eval(argv(0))>*<nastaveni_ability_craft_vigour>)>)
+    return 1
+  endif
+endif
+return 0
+
+[typedef t_packbankcheck]
+
+[function packorbank]
+arg(TEMPTYPE,<type>)
+type=t_packbankcheck
+if (TOPOBJ == UID)
+  arg(RETURN,0)
+ELSEIF (TOPOBJ.FINDLAYER(21).FINDTYPE(t_packbankcheck))
+  arg(RETURN,1)
+ELSEIF (TOPOBJ.FINDLAYER(29).FINDTYPE(t_packbankcheck))
+  arg(RETURN,2)
+ENDIF
+type=<arg(TEMPTYPE)>
+RETURN <arg(RETURN)>
+
+[function reccont]
+if (finduid(tag(reccont)))
+  if (tag(reccont).iscontainer)
+    if (tag(reccont).topobj==uid)
+      if (tag(reccont).packorbank==1)||(tag(reccont)==findlayer(21))
+        return <tag(reccont)>
+      endif
+    endif
+  endif
+endif
+return <findlayer(21)>
+
+[function setreceivingcontainer]
+if (findid(i_reccont))
+  consume(i_reccont)
+endif
+newitemsafe(i_reccont)
+lastnew.equip
+
+[itemdef i_reccont]
+id=i_memory
+type=t_eq_script
+name=reccont memory
+
+on=@equip
+timer 20
+target("Zamer kontejner.")
+
+on=@timer
+remove
+
+on=@targon_item
+if !(src.targ.iscontainer)
+ src.redMessage("Toto neni kontejner!")
+elseif (src.targ.id == i_truhla_heslo)
+ src.redMessage("Do teto truhly nelze umistovat vyrobky.")
+else
+ src.tag(reccont,<src.targ>)
+endif
+remove
+return 1
+
+[function namebag]
+newitem i_namecontainer
+act.equip
+act.tag.name=<args>
+
+[itemdef i_namecontainer]
+id=i_memory
+type=t_eq_script
+name=contname memory
+
+on=@equip
+timer 20
+target("Zamer kontejner, ktery chces pojmenovat.")
+
+on=@targon_item
+if (<src.targ.type> != t_container)
+ src.sysMessage("Toto neni kontejner.")
+elseif (<src.targ.topobj.uid> != <src.uid>) 
+ src.sysMessage("Kontejner musis mit u sebe.")
+else
+ src.targ.name=<tag.name>
+endif
+remove
+return 1
+
+on=@timer
+remove
+return 0
+
+[function f_vyroba_latky]
+if (<src.rescount(i_vyroba_latky)>)
+ src.redMessage("Uz vyrabis.")
+ src.AccMsg("Postava <src.name> cislo <src> vyrabi latku nebo nite prilis rychle.")
+ return 0
+endif
+src.newequip(i_vyroba_latky)
+arg(memtimer,<lastnew>)
+memtimer.timer=3
+memtimer.more2=<argv(1)>
+arg(jmenovyrobku,<argv(1).name>)
+if !(<eval <src.tailoring>/<mnozkoef>>)  // kolik zdroju muzu zpracovat
+ arg(muzezpr,6)
+else
+ arg(muzezpr,<eval <src.tailoring>/<mnozkoef>>*6)
+endif
+arg(mnozstvi_zdroju,<src.rescount(<argv(0)>)>)
+if (<mnozstvi_zdroju> >= <muzezpr>)
+ memtimer.more1=<pocet_z_<argv(2)>>*<muzezpr>
+else
+ memtimer.more1=<pocet_z_<argv(2)>>*<mnozstvi_zdroju>
+endif
+src.consume(<muzezpr> <argv(0)>)
+if (argvcount > 3)
+  argv(3).f_spinningwheel_rotate
+  memtimer.tag(spinrotate,<argv(3)>)
+endif
+
+[itemdef i_vyroba_latky]
+id=i_memory
+name=vyroba vlny
+type=t_eq_script
+
+on=@Timer
+if strlen(<tag.spinrotate>)
+ tag(spinrotate).f_spinningwheel_norotate
+endif
+src.newitem(<more2>,<more1>)
+lastnew.bounce
+src.skillGain(skill_tailoring)
+remove
+
+[function f_spinningwheel_rotate]
+if (dispid == i_spinning_wheel)
+ dispid=01016
+elseif (dispid == 01019)
+ dispid=0101a
+elseif (dispid == 0101c)
+ dispid=0101d
+elseif (dispid == 010a4)
+ dispid=010a5
+else
+ return 0
+endif
+update
+return 1
+
+[function f_spinningwheel_norotate]
+if (dispid == 01016)
+ dispid=i_spinning_wheel
+elseif (dispid==0101a)
+ dispid=01019
+elseif (dispid == 0101d)
+ dispid=0101c
+elseif (dispid == 010a5)
+ dispid=010a4
+else
+ return 0
+endif
+update
+return 1
+
+[typedef t_telepad] // by Mandos, aby ten kram fungoval i na duchy a i v pripade invis gate
+on=@step
+if (src.isplayer)
+//  src.EFFECT=3,i_fx_smoke,6,15,1//smazano by enrico. Jestli chcete efekt, dejte si to konkretniho itemu
+  src.GO <MOREP>
+endif
+
+[typedef t_realmpad]//portne jen danej realm (dle more1 bud 1 nebo 2) (ZAKAZ VSTUPU)
+on=@step
+if (src.isplayer)
+ if (<src.tag(realm)>==<more1>)
+  src.GO <morex> <morey> <morez> <morem>
+  src.sysMessage("Nejsi <src.sex(opravnen,opravnena)> vstoupit.") 
+ endif
+endif
+
+[events e_nofield]
+on=@spellcast
+if (argn==24)||(argn==28)||(argn==39)||(argn==47)||(argn==50)
+ sysMessage("Toto kouzlo zde nejde pouzit.")
+ return 1
+endif
+
+[events e_noport]
+on=@spellcast
+if (argn==32)
+ sysMessage("Nelze cestovat kouzlem.")
+ return 1
+endif
+
+on=@itemequip
+if (act==i_travelstone_delay)
+ sysMessage("Dostavnik te neprijal.")
+ return 1
+endif
+
+on=@itemstep
+if ((act.type==t_telepad2)&&(act.id!=i_port_start2))
+ sysMessage("Brana te neprijala.")
+ return 1
+endif
+
+[function nolightfizz] argv0  -0 bez napisu, 1 s napisem
+//je mi lito ale musi to bejt takhle vetveny protoze kdyz to bylo v jednom radku 
+//tak napr absence cehokoliv v ruce pusobila chybove vypisy a tech se radeji vyvarujeme, ze 
+if (flag_nightsight==1)||(<sector.light> < <eval {0 64}>)||(isneartype(t_light_lit,2))||(safe findid(i_hypno_delka))
+  return 0
+else 
+  if (findlayer(2))
+    if (findlayer(2).type==t_light_lit)      
+      return 0
+    else
+      if (<argv(0)>)
+        sysMessage("Je spatne videt.")
+      endif
+      return 1
+    endif
+  else
+    if (<argv(0)>)
+      sysMessage("Je spatne videt.")
+    endif
+    return 1
+  endif
+endif
+
+[function hungryhurts]
+if (food <1)
+ damage_noresponse(10,dam_god)
+ sysMessage("Umiras hlady...")
+endif
+
+[function fizzmagictravel]
+if (actarg1==32)||(actarg1==52) //zrovna kouzlim recall, brana
+ stopmagery
+endif
+
+[function showfood]
+arg(ham1,<strgettok("<return_nth(1,<typedef.foodtype>)>",0," ")>,<strgettok("<return_nth(1,<typedef.foodtype>)>",1," ")>)
+arg(ham2,<strgettok("<return_nth(2,<typedef.foodtype>)>",0," ")>,<strgettok("<return_nth(2,<typedef.foodtype>)>",1," ")>)
+arg(ham3,<strgettok("<return_nth(3,<typedef.foodtype>)>",0," ")>,<strgettok("<return_nth(3,<typedef.foodtype>)>",1," ")>)
+arg(ham4,<strgettok("<return_nth(4,<typedef.foodtype>)>",0," ")>,<strgettok("<return_nth(4,<typedef.foodtype>)>",1," ")>)
+return <arg(ham1)>,<arg(ham2)>,<arg(ham3)>,<arg(ham4)>
+
+
+[function whoami]
+sysMessage("Jsem <tag.class> <name>, <tag.nation>, <tag.title>.")
+sysMessage("<sex(Premohl,Premohla)> jsem <tag.playerkillstotal> nepratel a <tag.monsterkillstotal> monster.")
+sysMessage("Ja <sex(sam jsem byl porazen,sama jsem byla porazena)> <deaths>krat.")
+sysMessage("Ziji jiz <eval <age>/86400> dni.")
+
+[function addflesh]
+if (src.targ.tag(rezal))
+else
+ src.targ.tag(rezal,1)
+ if (src.targ.link.obody==c_man)
+  src.newitemsafe(i_flesh_head)
+ else
+  src.newitemsafe(i_flesh_head_2)
+ endif
+ lastnew.p=<src.targ.p>  
+ lastnew.link=<src.targ.link>
+ lastnew.name=<lastnew.link.name> 
+ lastnew.timer=300
+ lastnew.attr_decay=1
+ src.newitemsafe(i_flesh_torso)
+ lastnew.p=<src.targ.p>  
+ lastnew.link=<src.targ.link>
+ lastnew.timer=300
+ lastnew.attr_decay=1
+ src.newitemsafe(i_flesh_left_arm)
+ lastnew.p=<src.targ.p>  
+ lastnew.link=<src.targ.link>
+ lastnew.timer=300
+ lastnew.attr_decay=1
+ src.newitemsafe(i_flesh_right_arm)
+ lastnew.p=<src.targ.p>  
+ lastnew.link=<src.targ.link>
+ lastnew.timer=300
+ lastnew.attr_decay=1
+ src.newitemsafe(i_flesh_left_leg)
+ lastnew.p=<src.targ.p>  
+ lastnew.link=<src.targ.link>
+ lastnew.timer=300
+ lastnew.attr_decay=1
+ src.newitemsafe(i_flesh_right_leg)
+ lastnew.p=<src.targ.p>  
+ lastnew.link=<src.targ.link>
+ lastnew.timer=300
+ lastnew.attr_decay=1
+ arg(deftocreate, <hval({0122a 1 0122b 1 0122c 1 0122d 1 0122e 1})>)
+ src.newitemsafe(<findres(itemdef,<arg(deftocreate)>)>)
+ lastnew.p=<src.targ.p>  
+ lastnew.name=krev
+ lastnew.timer=300
+endif
+
+[function kermel]
+return<finduid(#094dfd)>
+
+[function eufegenie]
+return<finduid(#0F0BEF)>
+
+[itemdef i_checkownerforpet]
+id=i_memory
+name=test majitele
+type=t_eq_script
+
+on@=create
+attr=attr_invis|attr_decay
+timer=10
+
+on=@equip
+tag(owner,<cont.master>)
+
+on=@timer
+timer=10
+if (tag(owner)==<cont.master>)
+else
+ cont.hits=0
+endif
+
+[itemdef i_resyncer]
+id=i_memory
+type=t_eq_script
+name=resyncer 
+
+on=@create
+timer=1
+
+on=@timer
+if (strlen(<cont.tag(login_p)>))
+  cont.p=<cont.tag(login_p)> //pro jistotu podruhe po 1s. Jeden nikdy nevi
+  cont.tag.remove(login_p)
+endif
+cont.resync
+cont.update
+remove
+return 1
+
+
+[function do_a_cyrcle]
+arg(u,0)
+while (arg(u)<16)
+  newitemsafe(<argv(0)>)
+  lastnew.p=<p>
+  if (argv(1))
+    lastnew.timer=<argv(1)>
+  endif
+  if (argv(2))
+    lastnew.color=<argv(2)>
+  endif
+  lastnew.move(0,-1)
+  doswitch u
+    lastnew.move(2,-1,0,0)
+    lastnew.move(1,-2,0,0)
+    lastnew.move(0,-2,0,0)
+    lastnew.move(-1,-2,0,0)
+    lastnew.move(-2,-1,0,0)
+    lastnew.move(-3,0,0,0)
+    lastnew.move(-3,1,0,0)
+    lastnew.move(-3,2,0,0)
+    lastnew.move(-2,3,0,0)
+    lastnew.move(2,3,0,0)
+    lastnew.move(3,0,0,0)
+    lastnew.move(3,1,0,0)
+    lastnew.move(3,2,0,0)
+    lastnew.move(1,4,0,0)
+    lastnew.move(0,4,0,0)
+    lastnew.move(-1,4,0,0)
+  enddo
+  lastnew.fix
+  arg(u,#+1)
+endif
+
+[function nakrm]
+newitemsafe(i_krmitko)
+equip(<lastnew>)
+
+[itemdef i_krmitko]
+name=target krmeni
+id=i_memory
+type=t_eq_script
+
+on=@equip
+target
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targon_item
+return 1
+
+on=@targon_char
+if (src.targ.srccanseelos)
+  if (src.distancefrom(<src.targ>) < 4)
+    src.nakrmho
+  else
+    src.sysMessage("Jsi prilis daleko.")
+  endif
+else
+  src.sysMessage("Nevidis na cil.")
+endif
+return 1
+
+
+[function nakrmho]
+if (targ.isplayer)
+  sysMessage("To neni NPC.")
+  return 1
+endif
+if (<targ.food> >= <targ.typedef.maxfood>)
+  sysMessage("Zvire ted neni hladove.")
+  return 1
+endif
+arg(i,2)
+arg(foundSomething,0)
+while (<arg(i)> < 10)
+  arg(foundFood,1) //allows first iteration (repeat / until simulation)
+  while (targ.food < <targ.typedef.maxfood>) && (<arg(foundFood)> == 1)
+    arg(foundFood,0)
+    if (findtype(<return_nth(<arg(i)>,<targ.showfood>)>))
+      arg(foundSomething,1)
+      arg(foundFood,1)
+      arg(foodID,<findtype(<return_nth(<arg(i)>,<targ.showfood>)>)>)
+      arg(foodWeight,<eval <arg(foodID).weight>/<arg(foodID).amount>>)
+      if (<arg(foodWeight)> < 10)
+        arg(foodWeight,10)
+      endif
+      //sysMessage("Weight: <arg(foodWeight)>")
+      arg(neededWeight,<eval (<targ.typedef.maxfood>-<targ.food>)*10>)
+      arg(neededCount,<eval <neededWeight>/<arg(foodWeight)>>)
+      //sysMessage("NeededWeight: <arg(neededWeight)>")
+      //sysMessage("counting: <eval ((<arg(neededCount)>*<arg(foodWeight)>)/10)> lower than <eval (<targ.typedef.maxfood>-<targ.food>)>")
+      if (<eval ((<arg(neededCount)>*<arg(foodWeight)>)/10)> < <eval (<targ.typedef.maxfood>-<targ.food>)>)  // we want the animal totaly full, so we'll give it an extra piece of food even though its weight won't be fully utilised
+        arg(neededCount,#+1)
+      endif
+      //sysMessage("NeededCount: <arg(neededCount)>")
+      if (<rescount(<arg(foodID).ID>)> < <arg(neededCount)>)
+        arg(neededCount,<rescount(<arg(foodID).ID>)>)
+      endif
+      //sysMessage("Final neededCount: <arg(neededCount)>")
+      //sysMessage("Changing food to: <eval (<targ.food>+(<arg(neededCount)>*<arg(foodWeight)>)/10)>")
+      targ.emote("eat some <arg(foodID).name>")
+      consume(<arg(neededCount)>,<arg(foodID).ID>)
+      targ.food=<eval (<targ.food>+((<arg(neededCount)>*<arg(foodWeight)>)/10))>
+    endif
+  endwhile
+  arg(i,#+2)
+endwhile
+if (<arg(foundSomething)> == 0)
+  redMessage("Nemas u sebe nic, o co by zvire stalo.")
+else
+  sfx(<eval {58 60}>) //eating sound
+  targ.anim(3)  //eat animation
+endif
+
+/////////////////////////////////////////
+////////////// Zmena Jmena //////////////
+/////////////////////////////////////////
+
+[function newname]
+if (isGM)
+  newitemsafe(i_zmenjmeno_target_timer)
+  equip(lastnew)
+elseif (<uid> != <src>) && !(npc)
+  f_newname
+endif
+
+[itemdef i_zmenjmeno_target_timer]
+id=i_memory
+type=t_eq_script
+name=namechanger
+
+on=@equip
+dclick
+
+on=@userdclick
+timer=60
+target("Zamer hrace, ktereho chces prejmenovat.")
+return 1
+
+on=@targon_item
+target
+return 1
+
+on=@targon_char
+if !(src.targ.npc) && !(src.targ.isGM)  //jde o hrace
+  src.targ.f_newname
+else
+  src.sysMessage("Tomuhle jmeno zmenit nelze.")
+endif
+remove
+return 1
+
+on=@timer
+remove
+return 1
+
+[function f_newname]
+if (isevent(e_zmenajmena))
+  if (strcmpi(<name>,"Zvol si jmeno a pis page"))
+    tag.remove(starejmeno)
+    tag.remove(jmenozmenil)
+    tag.remove(duvodzmenyjmena)
+    stone=0
+    tag.remove(muted)
+    events=-e_zmenajmena
+    sysMessage("Jsi <sex(propusten,propustena)>, prijemnou hru.")
+    gohome
+  else
+    src.redMessage("Hraci musis pred propustenim zmenit jmeno prikazem .x name=nove_jmeno!")
+  endif
+else
+  tag.starejmeno="<name>"
+  name="Zvol si jmeno a pis page"
+  dialog(d_zmenajmena_duvod)
+endif
+
+[dialog d_zmenajmena_duvod]
+5,5
+page 0
+tag(targPlayer,<argv(1)>)
+resizepic 50 50 2620 500 200
+textentry 150 120 340 347 2116 1 1
+text 80 80 1152 0
+button 250 190 2311 2312 1 0 1
+
+
+[dialog d_zmenajmena_duvod text]
+Duvod a potvrzeni zmeny jmena
+Misto tohoto textu uved duvod zmeny.
+
+
+[dialog d_zmenajmena_duvod button]
+on=0
+dialog(d_zmenajmena_duvod)
+
+on=1
+events=+e_zmenajmena
+tag.duvodzmenyjmena="<argtxt(1)>"
+src.redMessage("Duvod zmeny zni: <argtxt(1)>")
+tag.jmenozmenil="<src.name>"
+stone=1
+tag.muted=1
+newitem(i_dialog_zmena_jmena)
+equip(<lastnew>)
+go(<eval {5575 5587}>,<eval {798 813}>,0,250)
+
+
+[dialog d_zmenajmena]
+5,5
+page 0
+resizepic 50 50 2620 700 250
+text 80 80 1152 0
+text 80 105 1152 1
+text 100 130 2116 2
+text 80 155 1152 3
+text 100 180 2116 4
+text 80 205 1152 5
+text 80 230 1152 6
+
+[dialog d_zmenajmena text]
+Byli jsme nuceni vam docasne znemoznit hrani z duvodu nevhodneho jmena vasi postavy.
+Duvodem je:
+"<?src.tag.duvodzmenyjmena?>"
+Toto rozhodnuti ucinil:
+<?src.tag.jmenozmenil?>
+Napis prosim PAGE a do ni uved sve nove jmeno. Jmeno ti bude co nejdrive
+zmeneno a tva postava bude uvolnena. Peclive prostuduj pravidla pro jmena hracu!
+
+
+[dialog d_zmenajmena button]
+
+
+[EVENTS e_zmenajmena]
+on=@login
+dialog d_zmenajmena
+
+[itemdef i_dialog_zmena_jmena]
+id=i_memory
+type=t_eq_script
+name=dialogshow item
+
+on=@equip
+timer=1
+topobj.dialog(d_zmenajmena)
+
+on=@timer
+remove
+return 1
+
+[function f_showfoodtype]
+if (return_nth(8,<targ.showfood>))
+  return <typename_<return_nth(2,<targ.showfood>)>>,<typename_<return_nth(4,<targ.showfood>)>>,<typename_<return_nth(6,<targ.showfood>)>>,<typename_<return_nth(8,<targ.showfood>)>>
+elseif (return_nth(6,<targ.showfood>))
+  return <typename_<return_nth(2,<targ.showfood>)>>,<typename_<return_nth(4,<targ.showfood>)>>,<typename_<return_nth(6,<targ.showfood>)>>
+elseif (return_nth(4,<targ.showfood>))
+  return <typename_<return_nth(2,<targ.showfood>)>>,<typename_<return_nth(4,<targ.showfood>)>>
+else
+  return <typename_<return_nth(2,<targ.showfood>)>>
+endif
+
+[function f_alore]
+if (charExists(<act>))
+  if (act.ispet)
+    src.message("<act.name> patri osobe jmenem <finduid(<act.master>).name>.")
+  else
+    src.message("<act.name> je svym vlastnim panem.")
+  endif
+  if (animallore>{0 1000})&&((act.npc==1) || (act.taming > 0))
+    if (<act.food> < <act.typedef.maxfood>/4)
+      src.message("<act.name> ma velky hlad.")
+    elseif (<act.food> < <act.typedef.maxfood>/2)
+      src.message("<act.name> jeste zdaleka nema plny zaludek.")
+    elseif (<act.food> < <act.typedef.maxfood>)
+      src.message("<act.name> jeste nejake to jidlo zvladne.")
+    else
+      src.message("<act.name> ma dost a funi.")
+    endif
+    if (animallore >= <act.animallore>)
+      src.message("<act.name> se zivi vecmi jako: <f_showfoodtype>.")
+      if (safe.strlen(act.tag(magic_horse)))
+        src.sysMessage("Jizdou na tomto zvireti ziskas nasledujici schopnosti:")
+        src.newitemsafe(i_show_animal_bonus)
+        arg(show_bonus,<lastnew>)
+        show_bonus.<act.tag(magic_horse)>_mif
+        show_bonus.mif_finishitem
+        var(magicname,"")
+        show_bonus.mif_skillinfo(<show_bonus.tag.imi_skill_present>)
+        show_bonus.mif_othersinfo(<show_bonus.tag.imi_other_present>)
+        show_bonus.remove
+      endif
+    else
+      src.message("ale snad jen Yavanna vi, co ta potvora zere.")
+    endif
+  elseif (act==<uid>)&&(flag_onhorse==1)
+    if (findid(i_hladovitko).tag(myfood) < <findid(i_hladovitko).tag(mymaxfood)>/4)
+      src.message("<findid(i_hladovitko).tag(myname)> ma velky hlad.")
+    elseif (findid(i_hladovitko).tag(myfood) < <findid(i_hladovitko).tag(mymaxfood)>/2)
+      src.message("<findid(i_hladovitko).tag(myname)> jeste zdaleka nema plny zaludek.")
+    elseif (findid(i_hladovitko).tag(myfood) < <findid(i_hladovitko).tag(mymaxfood)>)
+      src.message("<findid(i_hladovitko).tag(myname)> jeste nejake to jidlo zvladne.")
+    else
+      src.message("<findid(i_hladovitko).tag(myname)> ma dost a funi.")
+    endif
+  else
+    src.message("Nic jsi <src.sex(nezjistil,nezjistila)>.") 
+  endif
+else
+  src.redMessage("To neni zvire.")
+endif
+
+[itemdef i_show_animal_bonus]
+id=i_rune_marker
+type=t_eq_script
+name=ShowAnimalBonus
+
+on=@create
+timer=1
+
+on=@timer
+remove
+
+[function f_fixleech]
+if (isevent(e_hitsleech))
+ events=-e_hitsleech
+ events=+e_hitsleech
+endif
+if (isevent(e_stamleech))
+ events=-e_stamleech
+ events=+e_stamleech
+endif
+if (isevent(e_manaleech))
+ events=-e_manaleech
+ events=+e_manaleech
+endif
+
+[function presun]
+newitem(i_presouvatko)
+lastnew.equip
+
+[itemdef i_presouvatko]
+id=i_memory
+name=presouvatko
+type=t_eq_script
+
+ON=@Equip
+target("Co chces presunout?")
+Timer=60
+
+ON=@targOn_Char
+if (<More2>==0)
+ link=<src.targ.uid>
+ More2=1
+ targetG("Kam s nim?")
+ Return 1
+ElseIf (<More2>==1)
+ link.p=<src.targP>
+ link.update
+ remove
+ Return 1
+endif
+Return 1
+
+On=@targOn_Item
+if (<More2>==0)
+ link=<src.targ.uid>
+ More2=1
+ targetG("Kam s tim?")
+ Return 1
+ElseIf (<More2>==1)
+ link.p=<src.targP>
+ link.update
+ remove
+ Return 1
+endif
+
+On=@targOn_Ground
+if (<More2>==1)
+ link.p=<src.targP>
+ link.update
+ remove
+ Return 1
+endif
+
+On=@Timer
+remove
+return 1
+
+[function gatewalk]
+if (safe.tag(gatewalk))
+  tag.remove(gatewalk)
+  sysMessage("Nyni muzes prochazet magickymi branami.")
+else
+  tag(gatewalk,1)
+  redMessage("<sex Rozhodl Rozhodla> jsi se vyhybat magickym branam.")
+endif
+return 1
+
+[function npchome]
+if (npc)
+//  arg(h_position,<home>)
+  src.sysMessage("NPC vyslano na Home: <home>")
+  go(<home>)
+else
+  src.sysMessage("To neni NPC.")
+endif
+
+[function gonpchome]
+if (npc)
+  src.go(<home>)
+  src.updatex
+else
+  src.sysMessage("To neni NPC.")
+endif
+
+[function spoctiSkilly]
+arg(u,0)
+arg(spRec,<tag.level>*5)
+arg(spUsd,0)
+while (arg(u)<50)
+  arg(skillname,<findres(skill,<arg(u)>).name>)
+  if !(<arg(u)> == 7) && !(<arg(u)> == 8) && !(<arg(u)> == 11) && !(<arg(u)> == 12) && !(<arg(u)> == 13) && !(<arg(u)> == 18) && !(<arg(u)> == 23) && !(<arg(u)> == 24) && !(<arg(u)> == 34) && !(<arg(u)> == 35) && !(<arg(u)> == 37) && !(<arg(u)> == 44) && !(<arg(u)> == 45) && !(<arg(u)> == 0) //7 == blacksmith, 8 == bowcraft, 11 == carpentry, 12 == cartography, 13 == cooking, 18 == fishing, 23 == inscription, 24 == lockpick, 34 == tailoring, 35 == taming, 37 == tinkering, 44 == lumberjacking, 45 == mining
+    if (<eval safe.base_<tag.class>_<arg(skillname)>> < <eval arg(skillname)>)
+      if (<eval arg(skillname)> < 300)
+        arg(spUsd,#+<eval <eval arg(skillname)>/50>)
+        src.sysMessage("Po <arg(skillname)> mam <arg(spUsd)> bodu.")
+      else
+        if (<eval safe.base_<tag.class>_<arg(skillname)>> == 0)
+          if (<eval arg(skillname)> < 550)
+            arg(spUsd,#+<eval <eval arg(skillname)>/50>-1)  // skill zacina na 0 a ma hodnotu mezi 30 a 50ti. Odecitame 5% od mistra -> neztracej se skillbody
+            src.sysMessage("Po <arg(skillname)> mam <arg(spUsd)> bodu.")
+          elseif (<eval arg(skillname)> < 800)
+            arg(i,<eval (<eval <eval arg(skillname)>-550> / 50)> * 2)
+            arg(spUsd,#+<eval 9+<arg(i)>>)
+            src.sysMessage("Po <arg(skillname)> mam <arg(spUsd)> bodu.")
+          else
+            arg(i,<eval (<eval <eval arg(skillname)>-800> / 50)> * 3)
+            arg(spUsd,#+<eval 17+<arg(i)>>)
+            src.sysMessage("Po <arg(skillname)> mam <arg(spUsd)> bodu.")
+          endif
+        else
+          if (<eval arg(skillname)> < 550)
+            arg(i,<eval (<eval <eval arg(skillname)>-300> / 50)>)  // skill zacina na 30 a ma hodnotu mezi 30 a 50ti.
+            arg(spUsd,#+<arg(i)>)
+            src.sysMessage("Po <arg(skillname)> mam <arg(spUsd)> bodu.")
+          elseif (<eval arg(skillname)> < 800)
+            arg(i,<eval (<eval <eval arg(skillname)>-550> / 50)> * 2)
+            arg(spUsd,#+<eval 4+<arg(i)>>)
+            src.sysMessage("Po <arg(skillname)> mam <arg(spUsd)> bodu.")
+          else
+            arg(i,<eval (<eval <eval arg(skillname)>-800> / 50)> * 3)
+            arg(spUsd,#+<eval 12+<arg(i)>>)
+            src.sysMessage("Po <arg(skillname)> mam <arg(spUsd)> bodu.")
+          endif
+        endif
+      endif      
+      src.sysMessage("_________")
+    endif
+  endif
+  arg(u,#+1)
+endwhile
+src.sysMessage("Hrac rozdelil <eval arg(spUsd)> bodu a dostal jich <eval arg(spRec)>.")
+
+[function f_changeHome]
+if (<strlen(<memoryfindtype(MEMORY_ISPAWNED).link.tag(homePozice)>)>)
+  home=<memoryfindtype(MEMORY_ISPAWNED).link.tag(homePozice)>
+endif
+
+[function correctProfName]
+arg(nm,<profession.name>)
+if !(strcmp("<arg(nm)>","Necro"))
+  arg(nm,Necromant)
+elseif !(strcmp("<arg(nm)>","War"))
+  arg(nm,Warior)
+endif
+return<arg(nm)>
+
+[function logThrough] // argv(0) == account, that should be set for mofification; argv(1) == optional argument determines whether the account should be activated for login through blocked IPs (1) or deactivated(0) / no 2nd argument(default) means login through blocked IPs activation (== 1)
+arg(targetAcc,<accountmgr.findname(<argv(0)>)>)
+if (<argvcount>)
+  if (<strlen(<targetAcc.tag(loginThroughBlockIP)>)>)
+    targetAcc.tag.remove(loginThroughBlockIP)
+    src.sysMessage("Uctu <argv(0)> byl smazan existujici zaznam o IP vyjimce")
+  endif
+  if (<argvcount> == 2)
+    if !(<eval argv(1)>)  // deactivation of the loginthrough
+      targetAcc.tag.remove(loginThroughBlock)
+      targetAcc.tag.remove(loginThroughBlockIP)
+      src.sysMessage("Uctu <argv(0)> byly odstraneny podminky na login v blokovanych segmentech.")
+      return 1
+    endif
+  endif // this is an activation of a loginthrough
+  targetAcc.tag(loginThroughBlock,1)
+  src.sysMessage("Ucet <argv(0)> dostal vyjimku pro login skrz blokovane segmenty.")
+else
+  src.redMessage("Funkce byla volana s nespravnym poctem parametru!")
+  src.redMessage("Parametrem funkce je jmeno uctu.")
+  src.redMessage("Napr .logThrough=marekC")
+endif
+
+[function returnArmorByLayer] //armorCouter pre kudly , <argv(0)> = layer, <argv(1)> = tdata1
+//say(<argv(0)>, <argv(1)>)
+//vypocty su podla funkcie CountArmorByMaterial - specabilities.scp (mozno trochu zmenene)
+arg(armorCount,0)
+if (<argv(0)>==4) //nohy
+  arg(armorCount,<eval (3*<argv(1)>)>)
+endif
+if (<argv(0)>==6) //hlava
+  arg(armorCount,<eval (2*<argv(1)>)>)
+endif
+if (<argv(0)>==7) //ruky
+  arg(armorCount,<eval (<argv(1)>)>)
+endif
+if (<argv(0)>==13) //hrud
+  arg(armorCount,<eval (4*<argv(1)>)>)
+endif
+if (<argv(0)>==19) //lokty
+  arg(armorCount,<eval (2*<argv(1)>)>)
+endif
+if (<argv(0)>==2) //stit
+  arg(armorCount,<eval (<argv(1)>)>)
+endif
+//if (<argv(0)>==10) //krk
+//  arg(armorCount,0)
+//endif
+return <arg(armorCount)>
+
+[function armorCountLogIn]//pri logine to spocita armorCount -> je to novy tag tak aby s tym neboli problemy // ak to bude niekto menit tak mente rovnako aj tie cisla vo funkcii returnArmorByLayer (tie nasobitele)
+arg(countedArmor,0)
+if (<findlayer(2)>)
+  if (findlayer(2).type==t_shield)
+    arg(countedArmor,#+(<findlayer(4).typedef.tdata1>))
+  endif
+endif
+if (<findlayer(4)>)
+  if (findlayer(4).type==t_armor) || (findlayer(4).type==t_armor_leather)
+    arg(countedArmor,#+(3*<findlayer(4).typedef.tdata1>))
+  endif
+endif
+if (<findlayer(6)>)
+  if (findlayer(6).type==t_armor) || (findlayer(6).type==t_armor_leather)
+    arg(countedArmor,#+(2*<findlayer(6).typedef.tdata1>))
+  endif
+endif
+if (<findlayer(7)>)
+  if (findlayer(7).type==t_armor) || (findlayer(7).type==t_armor_leather)
+    arg(countedArmor,#+(<findlayer(13).typedef.tdata1>))
+  endif
+endif
+if (<findlayer(13)>)
+  if (findlayer(13).type==t_armor) || (findlayer(13).type==t_armor_leather)
+    arg(countedArmor,#+(4*<findlayer(13).typedef.tdata1>))
+  endif
+endif
+if (<findlayer(19)>)
+  if (findlayer(19).type==t_armor) || (findlayer(19).type==t_armor_leather)
+    arg(countedArmor,#+(2*<findlayer(19).typedef.tdata1>))
+  endif
+endif
+tag.armorCount=<arg(countedArmor)>
+return 1
+
+[defnames regy_defs]
+regy_defs_number  26
+regy_defs[0]  i_reag_black_pearl,3962
+regy_defs[1]  i_reag_blood_moss,3963
+regy_defs[2]  i_reag_garlic,3972
+regy_defs[3]  i_reag_ginseng,3973
+regy_defs[4]  i_reag_mandrake_root,3974
+regy_defs[5]  i_reag_nightshade,3976
+regy_defs[6]  i_reag_sulfur_ash,3980
+regy_defs[7]  i_reag_spider_silk,3981
+regy_defs[8]  i_reag_batwing,3960
+regy_defs[9]  i_reag_blackmoor,3961
+regy_defs[10]  i_reag_blood_spawn,3964
+regy_defs[11]  i_reag_blood_vial,3965
+regy_defs[12]  i_reag_bone,3966
+regy_defs[13]  i_reag_brimstone,3967
+regy_defs[14]  i_reag_daemon_bone,3968
+regy_defs[15]  i_reag_fertile_dirt,3969
+regy_defs[16]  i_reag_dragon_blood,3970
+regy_defs[17]  i_reag_executioners_cap,3971
+regy_defs[18]  i_reag_eye_of_newt,3975
+regy_defs[19]  i_reag_obsidian,3977
+regy_defs[20]  i_reag_pig_iron,3978
+regy_defs[21]  i_reag_pumice,3979
+regy_defs[22]  i_reag_serpent_scale,3982
+regy_defs[23]  i_reag_volcanic_ash,3983
+regy_defs[24]  i_reag_dead_wood,3984
+regy_defs[25]  i_reag_worm_heart,3985
+
+[function ensureTag] //argv(0) - tag, that should be defined
+if !(<tag(<argv(0)>)>)
+  tag(<argv(0)>,0)
+endif
+//if !(strlen(<tag.argv(0)>)
+//  tag(<argv(0)>,0)
+//endif
+
+[function strDenyFalseInput]
+if (<strmatch("<args>","*(*")>)||(<strmatch("<args>","*[*")>)||(<strmatch("<args>","*]*")>)||(<strmatch("<args>","*<*")>)||(<strmatch("<args>","*{*")>)
+  redMessage("Neplatny vstup!")
+  return""
+else
+  return<args>
+endif
+
+
+// puts the object that has been stacked on this next to it, no matter where it stands
+// function is supposed to be called from stackOn trigger
+// argv(0) the item that has been stackedOn (should be <argo> of @stackOn trigger)
+[function f_stackOn_dropBy]
+if (<topobj> == <src>) //if the player has the item on him
+  argv(0).bounce
+  dclick
+elseif (<cont>) // the bag wiht magic item is in the container other than on player
+  argv(0).cont=<cont>
+else //the item bag is laying on the ground 
+  argv(0).p=<p>
+endif
+
+
+//this typedef should have defined:
+//   tag.
+[typedef t_efectedByPickAxe]
+on=@userDclick
+if (src.isGM)
+  src.sysMessage("This item is effected by pickaxe.")
+endif
+
+on=@triggerPickaxing
+return 0
+
+on=@pickaxed
+return 0
+
+on=@afterPickaxing
+tag.remove(Pickaxing) // removes the indicator telling, that somebody is working with the item
+
+[itemdef i_pickaxingDelay]
+id=i_memory
+type=t_eq_script
+name=Prodleva pred dokoncenim kopani
+
+on=@create
+attr=attr_invis|attr_decay
+
+on=@timer
+if (<itemExists(<link>)>)
+  link.trigger(@pickaxed)
+  if (<itemExists(<link>)>) // could be removed during pickaxed timer
+    link.trigger(@afterPickaxing)
+  endif
+else
+  cont.sysMessage("WTF!")
+endif
+
+
+//safely reduces the stamina
+[function reduceStamina] //argv(0): amount of stamina that is wanted to be reduced
+if(src.ischar)
+  arg(reduce,<eval argv(0)>)
+  if (<arg(reduce)> > <stamina>)
+    arg(reduce,<stamina>)
+  endif
+  stamina=<eval (stamina-arg(reduce))>
+endif
+
+/////////////////////////////////////////////////
+// L I N K S   A D D I N G   F R A M E W O R K //
+//              (c) GM Yavanna                 //
+//    reusable functions to adds links to      //
+//    a specific object                        //
+/////////////////////////////////////////////////
+
+[function f_spawnLinks_add] //argv(0): the item, that should be added; argv(1): optional - name of the spawn tag
+if (<argvcount> == 2)
+  arg(tagName,<argv(1)>)
+else
+  arg(tagName,spawn)
+endif
+if (argv(0).type==t_spawn_char)
+  tag(<arg(tagName)>[<eval tag(<arg(tagName)>sCount)>],<argv(0)>)
+  tag(<arg(tagName)>sCount,<eval <tag(<arg(tagName)>sCount)>+1>)
+  return 1
+else
+  return 0
+endif
+
+[function f_spawnLinks_remove] // argv(0): link number; argv(1): optional - name of the spawn tag
+if (<argvcount> == 2)
+  arg(tagName,<argv(1)>)
+else
+  arg(tagName,spawn)
+endif
+arg(spwNumber,<eval argv(0)>)
+while (<arg(spwNumber)> < <eval <tag(<arg(tagName)>sCount)>-1>)
+  tag(<arg(tagName)>[<eval spwNumber>],<tag(<arg(tagName)>[<eval spwNumber+1>])>)
+  arg(spwNumber,#+1)
+endwhile
+tag(<arg(tagName)>sCount,<eval <tag(<arg(tagName)>sCount)>-1>)
+tag.remove(<arg(tagName)>[<eval spwNumber>])
+
+[function absolute]
+if (argv(0) < 0)
+  return<eval -(<argv(0)>)>
+else
+  return<argv(0)>
+endif
+
+//argv(0): the value, that should be added
+//argv(1): name of the adding tag
+[function f_customLink_add]
+arg(tagName,<argv(1)>)
+tag(<arg(tagName)>[<eval tag(<arg(tagName)>sCount)>],<argv(0)>)
+tag(<arg(tagName)>sCount,<eval <tag(<arg(tagName)>sCount)>+1>)
+return 1
+
+//argv(0): name of the removing tag; argv(1): link number
+[function f_customLink_remove]
+arg(tagName,<argv(0)>)
+arg(linkNumber,<eval argv(1)>)
+while (<arg(linkNumber)> < <eval <tag(<arg(tagName)>sCount)>-1>)
+  tag(<arg(tagName)>[<eval linkNumber>],<tag(<arg(tagName)>[<eval linkNumber+1>])>)
+  arg(linkNumber,#+1)
+endwhile
+tag(<arg(tagName)>sCount,<eval <tag(<arg(tagName)>sCount)>-1>)
+tag.remove(<arg(tagName)>[<eval linkNumber>])
+
+[function absolute]
+if (argv(0) < 0)
+  return<eval -(<argv(0)>)>
+else
+  return<argv(0)>
+endif
+
+// generates adding item target. Run on the object of linkAdder
+[function f_customLink_target] // argv(0): link name; argv(1): replacing existing tag ? (0/1); argv(2) - if replacing tag, then the number of replacing tag; argv(3): optional - dialog name
+src.newequip(i_customLink_target)
+arg(clTarget,<lastnew>)
+clTarget.tag(linkName,<argv(0)>)
+clTarget.link=<uid>
+if (<eval argv(1)>)
+  clTarget.more1=<argv(1)> // set to replace mode
+  clTarget.more2=<argv(2)> // set the replacing position
+endif
+if (<argvcount> >= 3)
+  cltarget.tag(throwDialog,<return_fromNth(4,<args>)>) //in case of cascade dialogs, the rest of the arguments will be saved
+endif
+
+[itemdef i_customLink_target]
+id=i_memory
+type=t_eq_script
+name=Custom Link target
+
+on=@Equip
+target("Zamer predmet, ktery ma byt pridan.")
+timer=60
+
+on=@Timer
+remove
+return 1
+
+on=@TargOn_Item
+f_customLink_target_TargOn
+return 1
+
+on=@TargOn_Char
+f_customLink_target_TargOn
+return 1
+
+[function f_customLink_target_TargOn]
+if (<more1>) // replacing existing tag
+  link.tag(<tag(linkName)>[<eval more2>],<src.targ>)
+else
+  link.f_customLink_add(<src.targ>,<tag(linkName)>)
+endif
+if (<strlen(<tag(throwDialog)>)>)
+  link.dialog(<tag(throwDialog)>)
+endif
+remove
+
+//counts the dialog height for rows
+//argv(0): the name of a tag
+//argv(1): object upon which the tag is called
+//argv(2): optional - limit of displayed rows
+[function f_customLink_D_rowsHeight]
+arg(rows,<f_customLink_D_getRows(<argv(0)>,<argv(1)>,<eval argv(2)>)>)
+return<eval (((<arg(rows)>+1)*<d_def_radek_vyska>)+(2*<d_def_skvira>))>
+
+[function f_customLink_D_rowsWidth]
+return<eval (d_def_baseMenu_sirka+def_customLink_Name+def_customLink_Text+(3*def_customLink_Button)+(4*d_def_skvira))>
+
+[defnames def_customLink_D]
+def_customLink_Name     100
+def_customLink_Button   30
+def_customLink_Text     138
+
+//sets the columns parameters in the dialog_pozadi function
+//this function should be run upon a dialog object (ARGO inside the dialog body)
+//argv(0): the name of a tag
+//argv(1): object upon which the tag is called
+//argv(2): optional - limit of displayed rows
+[function f_customLink_D_setColumns]
+arg(rows,<f_customLink_D_getRows(<argv(0)>,<argv(1)>,<eval argv(2)>)>)
+dialog_pozadi(<tag(nexty)>,1,<def_customLink_Name>,<def_customLink_Button>,<def_customLink_Text>,<def_customLink_Button>,<def_customLink_Button>)           //sector headline
+dialog_pozadi(<tag(nexty)>,<arg(rows)>,<def_customLink_Name>,<def_customLink_Button>,<def_customLink_Text>,<def_customLink_Button>,<def_customLink_Button>) //link rows
+
+//argv(0): the name of a tag
+//argv(1): object upon which the tag is called
+//argv(2): the number of a section in which the region starts - matches the first argument of a function dialog_textpos
+//argv(3): optional - limit of displayed rows
+[function f_customLink_D_print]
+texta(<dialog_textpos(<argv(2)>,0)>,<d_def_readcolor>,"Link:")
+texta(<dialog_textpos(<argv(2)>,1)>,<d_def_readcolor>,"Ad")
+texta(<dialog_textpos(<argv(2)>,2)>,<d_def_readcolor>,"UID:")
+texta(<dialog_textpos(<argv(2)>,3)>,<d_def_readcolor>,"Go")
+texta(<dialog_textpos(<argv(2)>,4)>,<d_def_readcolor>,"Del")
+dialog_textpos(<eval (argv(2)+1)>,0)
+arg(rowsCount,0)
+while (<arg(rowsCount)> < <f_customLink_D_getRows(<argv(0)>,<argv(1)>,<eval argv(2)>)>)
+  texta(lastxpos,lastypos+(<arg(rowsCount)>*d_def_radek_vyska),<d_def_writecolor>,"<argv(0)> <eval arg(rowsCount)+1>:")
+  texta(lastxpos+def_customLink_Name+def_customLink_Button+(2*d_def_skvira),lastypos+(<arg(rowsCount)>*d_def_radek_vyska),<d_def_readcolor>,<argv(1).tag(<argv(0)>[<eval arg(rowsCount)>])>)
+  button(lastxpos+def_customLink_Name,lastypos+(<arg(rowsCount)>*d_def_radek_vyska)-d_def_odsazeni,0fa5,0fa7,1,0,<eval <arg(rowsCount)>+100>)	//nastav novej spawn
+  button(lastxpos+def_customLink_Name+def_customLink_Text+def_customLink_Button+(3*d_def_skvira)-d_def_odsazeni,lastypos+(<arg(rowsCount)>*d_def_radek_vyska),0fb4,0fb6,1,0,<eval <arg(rowsCount)>+400>)	//jdi na spawn
+  button(lastxpos+def_customLink_Name+def_customLink_Text+(2*def_customLink_Button)+(4*d_def_skvira)-d_def_odsazeni,lastypos+(<arg(rowsCount)>*d_def_radek_vyska),0fb1,0fb3,1,0,<eval <arg(rowsCount)>+700>)	//delete spawn
+  arg(rowsCount,#+1)
+endwhile
+
+//argv(0): tag name
+//argv(1): object upon which the tag is called
+//argv(2): rows limit, 0 if no limit
+[function f_customLink_D_getRows]
+arg(tagName,<argv(0)>)
+arg(rows,<eval argv(1).tag(<arg(tagName)>sCount)>)
+if (<eval argv(2)>)
+  if (<arg(rows)> > <argv(2)>)
+    arg(rows,<argv(2)>)
+  endif
+endif
+return<arg(rows)>
+
+/////////////////////////////////////////////////
+                    //  //                       
+/////////////////////////////////////////////////
+
+
+[function curiosityAlert]
+accMsg("CuriosityAlert: (<uid>,<uid.name>) saha na predmet <argv(0)> na pozici <p>")
+
+//all my pets in the range of 15 steps except Vendors
+//function is supposed to be triggered upon the player, that owns the searched pets
+//argv(0) - triggered function
+[function allVisiblePets]
+arg(result,<finduid(<inDistance_getChars(20,<src>)>)>)
+arg(i,0)
+while (<arg(i)> < <result.tag(objectsCount)>)
+  result.tag(object[<eval arg(i)>]).f_allVisiblePets(<uid>,<argv(0)>)
+  arg(i,#+1)
+endwhile
+result.remove
+
+
+
+//argv(0) - src
+//argv(1) - triggered function
+[function f_allVisiblePets]
+if (isPet)
+  if (distancefrom(<argv(0)>) < 20) // all pets in the range of 20 steps
+    var(allVisiblePets_hasLink,0)
+    contents(f_allVisiblePets_hasMemoryLink(<argv(0)>))
+    if (<var(allVisiblePets_hasLink)>) // link to the player was found - this is our player's pet
+      if !(isVendor) // no vendors
+        <argv(1)> //trigger the passed function
+      endif
+    endif
+  endif
+endif
+
+//argv(0) - src
+[function f_allVisiblePets_hasMemoryLink]
+if (type==t_eq_memory_obj)
+  if (<link> == <argv(0)>) // This is a memory item of a wanted player
+    if ((<color>&<memory_friend>) || (<color>&<memory_ipet>)) // color == memory type, watch [DEFNAMES MEM_FLAGS]
+      var(allVisiblePets_hasLink,1)
+    endif
+  endif
+endif
+
+
+// argv0 - gondor speech, argv1 = mordor speech
+[function splitRealm]
+if (<eval.tag(realm)> == 2)
+  return<argv(1)>
+else
+  return<argv(0)>
+endif
+
+//this function is called upon CHARS !
+[function delayFunction] //argv(0) timer is seconds; argv(1) function name
+newEquip(i_delayed_function)
+lastnew.tag(function,<argv(1)>)
+lastnew.timer=<eval argv(0)>
+
+
+[itemdef i_delayed_function]
+id=i_memory
+type=t_eq_script
+name=zpozdena funkce
+
+on=@create
+attr=attr_invis|attr_decay
+
+on=@timer
+cont.<tag.function>
+remove
+return 0
+
+
+///////////////////////////////////////////////////////////////////
+//      P L A Y E R    T I M E   T A G    F R A M E W O R K      //
+//                                                               //
+
+//adds unified player UID & appropriate tag onto the item
+//argv(0) - player UID, argv(1) - time to add in ds, argv(2) - tag name
+[function f_playerTime_add]
+f_customLink_add("<argv(0)>,<eval <serv.time>+<argv(1)>>",<argv(2)>)
+
+//goes through the list and removes expired tags
+//argv(0) - tag name
+[function f_playerTime_clear]
+arg(i,0)
+arg(removed,0)
+while (<arg(i)> < <eval tag(<argv(0)>sCount)>)
+  if (<return_nth(2,<tag(<argv(0)>[<eval arg(i)>])>)> < <serv.time>)
+    arg(removed,#+1)
+    tag.remove(<argv(0)>[<eval arg(i)>])
+  else
+    tag(<argv(0)>[<eval arg(i)-arg(removed)>],<tag(<argv(0)>[<eval arg(i)>)>)
+  endif
+  arg(i,#+1)
+endwhile
+return <arg(removed)>
+
+//tells whether the given player is already recorded (with a valid time)
+//the list is cleaned in the process
+// argv(0) player uid
+// argv(1) tag name
+// RETURNS: 0 if player has no record
+[function f_playerTime_hasRecord]
+arg(i,0)
+arg(removed,0)
+arg(playerIsRecorded,0)
+arg(totalCount,<eval tag(<argv(1)>sCount)>)
+while (<arg(i)> < <eval arg(totalCount)>)
+  if (<return_nth(2,<tag(<argv(1)>[<eval arg(i)>])>)> < <serv.time>)
+    arg(removed,#+1)
+    tag.remove(<argv(1)>[<eval arg(i)>])
+  else
+    if (<arg(playerIsRecorded)> == 0)
+      if (<return_nth(1,<tag(<argv(1)>[<eval arg(i)>])>)> == <argv(0)>) // this is the player that we are looking for
+        arg(playerIsRecorded,1)
+      endif
+    endif
+    if (<arg(removed)>)
+      tag(<argv(1)>[<eval arg(i)-arg(removed)>],<tag(<argv(1)>[<eval arg(i)>])>)
+      tag.remove(<argv(1)>[<eval arg(i)>])
+    endif
+  endif
+  arg(i,#+1)
+endwhile
+tag(<argv(1)>sCount,<eval <arg(totalCount)>-<arg(removed)>>)
+return <arg(playerIsRecorded)>
+
+
+//////////////////////////////////////////////////
+//      T A R G E T   R E A D Y   I T E M       //
+//
+//     manages removal on timer and unequip
+//
+
+[defnames def_eqTarget]
+def_eqTarget_Item        000000001
+def_eqTarget_Char        000000002
+def_eqTarget_Ground      000000004
+
+// function in argv(0) should return 1 if unsuccessful check (re-trigger target); 0 if OK
+//argv(0) - function to run on successfull target, argv(1) - target message
+[function targetChar]
+f_target_setBase(<argv(0)>,<argv(1)>)
+lastnew.tag.tgFlags=<lastnew.tag.tgFlags>|<def_eqTarget_Char>
+lastnew.equip
+
+//argv(0) - function to run on successfull target, argv(1) - target message
+[function targetItem]
+f_target_setBase(<argv(0)>,<argv(1)>)
+lastnew.tag.tgFlags=<lastnew.tag.tgFlags>|<def_eqTarget_Item>
+lastnew.equip
+
+//argv(0) - function to run on successfull target, argv(1) - target message
+[function targetGround]
+f_target_setBase(<argv(0)>,<argv(1)>)
+lastnew.tag.tgFlags=<lastnew.tag.tgFlags>|<def_eqTarget_Ground>
+lastnew.equip
+
+//argv(0) - function to run on successfull target, argv(1) - target message
+[function targetObj]
+f_target_setBase(<argv(0)>,<argv(1)>)
+lastnew.tag.tgFlags=<lastnew.tag.tgFlags>|<def_eqTarget_Item>
+lastnew.tag.tgFlags=<lastnew.tag.tgFlags>|<def_eqTarget_Char>
+lastnew.equip
+
+//argv(0) - function to run on successfull target, argv(1) - target message
+[function targetAll]
+f_target_setBase(<argv(0)>,<argv(1)>)
+lastnew.tag.tgFlags=<lastnew.tag.tgFlags>|<def_eqTarget_Char>
+lastnew.tag.tgFlags=<lastnew.tag.tgFlags>|<def_eqTarget_Item>
+lastnew.tag.tgFlags=<lastnew.tag.tgFlags>|<def_eqTarget_Ground>
+lastnew.equip
+
+[function f_target_setBase]
+newItemSafe(i_eq_target)
+lastnew.tag(tgFunction,<argv(0)>)
+sysMessage(<argv(1)>)
+
+//tests, whether the function can be successfully triggered upon the target. Otherwise recalls targetting
+//argv(0) - <flag> type of the targetted object (item/char/ground)
+[function f_target_triggerFunction]
+if (<tag.tgFlags>&<argv(0)>)
+  if !(<eval src.targ.<tag(tgFunction)>>)
+    remove
+    return 1
+  endif
+endif
+target("Spatny cil, zkus to znovu.")
+return 0
+
+[itemDef i_eq_target]
+id=i_memory
+type=t_eq_script
+name=Target
+
+on=@Timer
+remove
+
+on=@Create
+tag(tgFlags,00)
+timer=60
+
+on=@Equip
+if (<tag.tgFlags>&<def_eqTarget_Ground>)
+  targetg
+else
+  target
+endif
+
+on=@targon_item
+f_target_triggerFunction(<def_eqTarget_Item>) //retriggers target if necessary
+return 1
+
+on=@targon_char
+f_target_triggerFunction(<def_eqTarget_Char>)
+return 1
+
+on=@targon_ground
+f_target_triggerFunction(<def_eqTarget_Ground>)
+return 1
+
+//scraps the number to fall into a given range
+// argv(0) - THE number
+// argv(1) - minimal value
+// argv(2) - maximal value
+[function num_range]
+if (<argv(0)> < <argv(1)>)
+  return<argv(1)>
+elseif (<argv(0)> > <argv(2)>)
+  return<argv(2)>
+else
+  return<argv(0)>
+endif
+
+// argv(0) - the chance (ie. if argv(1) == 2 && chance == 30 then function call equals 30% chance of success)
+// argv(1) - number of decimal units - ie. 1 ~ range in 1-10, 2 ~ 1 - 100, 3 ~ 1 - 1000 etc 
+[function chance]
+if ({1 <pow(10,<argv(1)>)>} <= <argv(0)>)
+  return 1
+else
+  return 0
+endif
+
+// argv(0) = number that should be powered
+// argv(1) = the exponent of a power function
+[function pow]
+if (<argv(1)> < 0)
+  return -1
+elseif (<argv(1)> == 0)
+  return 1
+elseif (<argv(0)> == 0)
+  return 0
+elseif ((<argv(1)>%2) == 0)
+  return <pow(<argv(0)>*<argv(0)>,<argv(1)>/2)>
+elseif ((<argv(1)>%2) == 1)
+  return <eval (<argv(0)>*<pow(<argv(0)>*<argv(0)>,<argv(1)>/2)>)>
+else
+  return 0
+endif
+
+// increases the given tag
+//argv(0) - tag name
+[function tagInc]
+tag(<argv(0)>,<eval <eval tag(<argv(0)>)>+1>)
+
+// decreases the given tag
+//argv(0) - tag name
+[function tagDec]
+tag(<argv(0)>,<eval <eval tag(<argv(0)>)>-1>)
+
+//greather than
+// argv(0) first argument
+// argv(1) second argument
+// returns 1 if the first argument is greater than the second
+[function gt]
+if (argv(0) > argv(1)) 
+  return 1
+else
+  return 0
+endif
+
+//lower than
+// argv(0) first argument
+// argv(1) second argument
+// returns 1 if the first argument is lower than the second
+[function lt]
+if (argv(0) < argv(1))
+  return 1
+else
+  return 0
+endif
+
+//vymena poradia e_hitsleech a e_war/e_thief (ak su nespravne -> e_hitsleech je skor) - uz NEPLATI (23.2.2013)
+//ak ma nejaky z leech eventov tak ich hodi na koniec (pouziju sa ako posledne) - PLATI
+[function f_fix_events]
+if(((profession==class_war)||(profession==class_thief)||profession==class_ranger)&&(isevent(e_hitsleech)||isevent(e_stamleech)||isevent(e_manaleech)))
+  if(<isevent(e_hitsleech)>)
+    events -e_hitsleech
+    events +e_hitsleech
+  endif
+  if(<isevent(e_stamleech)>)
+    events -e_stamleech
+    events +e_stamleech
+  endif
+  if(<isevent(e_stamleech)>)
+    events -e_manaleech
+    events +e_manaleech
+  endif
+endif
+//arg(i,1)
+//arg(pos_e_class,0)
+//arg(pos_e_hitsleech,0)
+//if (<profession>==class_war)
+//  arg(event_class_name,"e_war")
+//elseif (<profession>==class_thief)
+//  arg(event_class_name,"e_thief")
+//elseif (<profession>==class_ranger)
+//  arg(event_class_name,"e_ranger")
+//else
+//  return 1
+//endif
+
+//while(<arg(i)><=<argvcount>)
+//  arg(event_name,<return_nth(<arg(i)>,<argv>)>)
+//  if (strcmpi(<arg(event_name)>,<arg(event_class_name)>)==0)
+//    arg(pos_e_class,<arg(i)>)    
+//  elseif (strcmpi(<event_name>,"e_hitsleech")==0)
+//    arg(pos_e_hitsleech,<arg(i)>)    
+//  endif
+//  arg(i,#+1)
+//endwhile
+
+//ak je e_hitsleech skor ako e_war/e_thief tak hodime e_hitsleech na koniec
+//if ((<arg(pos_e_class)>!=0)&&(<arg(pos_e_hitsleech)>!=0))
+//  if (<arg(pos_e_class)>><arg(pos_e_hitsleech)>)
+//    events -e_hitsleech
+//    events +e_hitsleech
+//  endif
+//endif
+
+[function isInCity]
+if ((<strlen(<region.tag(housenumber)>)>) || (<strlen(<region.tag(jmeno_mesta)>)>)) 
+  return 1
+else
+  return 0
+endif
+
+[function omraceni]
+//if (profession==class_war)||(profession==class_priest)||(profession==class_craft)
+//  if (<tag(ra_stuntattack_disabled)>)
+//    tag.remove(ra_stuntattack_disabled)
+//    src.sysMessage("Aktivuji omracujici uder")
+//  else
+//    tag(ra_stuntattack_disabled,1)
+//    src.sysMessage("Deaktivuji omracujici uder")
+//  endif
+//else
+//  src.sysMessage("Nemuzes pouzivat tuto abilitu.")
+//endif
+if (profession==class_war)||(profession==class_priest)||(profession==class_craft)
+if (<stam><40)
+  sysMessage("Tohle ted nedokazes...")
+  return 1
+endif
+if !(tag(omraceni_next))
+	tag(omraceni_next,0)
+endif
+if (<tag(omraceni_next)> > <serv.time>)
+  classMessage("Abilitu jeste nemuzes pouzit.")
+  return 1
+endif
+if !(tag(ra_stuntattack))
+	sysmessage("Tohle nedokazes")
+	return 1	
+elseif (<tag(ra_stuntattack)> == 0)
+	sysmessage("Tohle nedokazes")
+	return 1
+endif
+if (<tag(ra_stuntattack)> > 10)
+	arg(sanca,10)
+else
+	arg(sanca,<tag(ra_stuntattack)>)
+endif
+
+if (chance(<arg(sanca)>,1))
+	arg(prodleva,200)
+	if (tag(ra_stuntattack_prodleva))
+		if  (<tag(ra_stuntattack_prodleva)> > 9) && (<tag(ra_stuntattack_prodleva)> < 20)
+			arg(prodleva,170)
+		elseif (<tag(ra_stuntattack_prodleva)> > 19) && (<tag(ra_stuntattack_prodleva)> < 30)
+			arg(prodleva,140)
+		elseif (<tag(ra_stuntattack_prodleva)> == 30)
+			arg(prodleva,110)
+		endif
+	endif
+
+  reduceStamina(40)
+
+  tag(zmrazeni,1)
+  sysmessage("Muzes zasadit omracujici uder!")
+
+	//say("serv time: <serv.time>, prodleva: <arg(prodleva)>, spolu: <eval <serv.time>+<arg(prodleva)>>")
+  tag(omraceni_next,<eval <serv.time>+<arg(prodleva)>>)
+else
+	sysmessage("Nepodarilo sa ti pripravit omracujici uder!")
+endif
+else
+	sysmessage("Tohle neni pro tebe")
+  return 1
+endif
+
+[function attack_is_physical]
+if (<tag(weapflag)>)
+  if (<isbit(<tag(weapflag)>,1)>)
+    return 1
+  endif  
+endif
+return 0
+
+[function attack_is_magical]
+if (<tag(weapflag)>)
+  if (<isbit(<tag(weapflag)>,2)>)
+    return 1
+  endif
+endif
+return 0
+
+[function newnpcTime] // argv(0) - baseid, argv(1) - cas v sekundach kdy se ma smazat * vrací uid vytvoøeného charu
+newnpc(argv(0))
+newitemsafe(i_hm_npc_remove)
+lastnewchar.equip(<lastnew>)
+lastnew.timer = <eval argv(1)>
+return <lastnewchar>
+
+[eof]

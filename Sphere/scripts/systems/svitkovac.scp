@@ -1,0 +1,516 @@
+[defnames scroll_case]
+maxscrolls	999
+
+[ITEMDEF i_scroll_case]
+ID=i_spellbook
+RESOURCES=10 i_scroll_blank,15 I_LOG_obsidian, 10 i_gem_diamond
+SKILLMAKE=CARPENTRY 90.0, t_carpentry
+TYPE=t_svitkovac
+WEIGHT=10.0
+LAYER=1
+NAME=Svitkovac
+
+ON=@CREATE
+tag(scroll[1],0)
+COLOR=0985
+
+CATEGORY=Svitkovac
+SUBSECTION=Svitkovac
+DESCRIPTION=Svitkovac
+
+
+//ATTR=04
+
+[typedef t_svitkovac]
+ON=@userDCLICK
+//if !(f_checkrightsmes(<itemlevel>))
+  SRC.SOUND=85
+  src.tag(dynamdialog,0)
+  DIALOG d_scroll_case2
+//endif
+RETURN 1
+
+
+ON=@TARGON_ITEM
+IF (src.targ.topobj.uid!=src.uid)&&(src.isgm==0)
+  src.sysmessage Svitek musis mit v batohu!
+  return 1
+elseif (src.targ.type!=020)&&(src.targ.type!=t_scroll)&&(src.targ.type!=t_customspell_scroll)
+  src.sysmessage Toto neni svitek!
+  DIALOG d_scroll_case2
+else 
+  arg(amount,<SRC.TARG.AMOUNT>)
+  arg(inbook,<eval <safe.TAG(scroll[<src.targ.morex>])>>)
+  arg(free,<maxscrolls>-<arg(inbook)>)
+  arg(taken,<arg(amount)>)
+  if (arg(free)<arg(amount))
+    arg(taken,<arg(free)>)
+  endif
+  TAG(scroll[<src.targ.morex>],<eval arg(inbook)+arg(taken)>)
+  src.targ.consume(<arg(taken)>)
+  target Uloz dalsi svitek?
+endif
+return 1
+
+//////////////Start the GUMP//////////////////
+
+[function f_dial]
+if (<args>==1)||(<args>==9)
+var.razeni=-1
+endif
+var.sc_dialnumb=<eval <src.tag(dynamdialog)>+<args>>
+if (<safe.TAG(scroll[<sc_dialnumb>])>)
+var.razeni=<eval <var.razeni>+1>
+var.razeniY=<eval <var.razeni>*15>
+return 0
+else
+return -1
+endif
+
+[DIALOG d_scroll_case]
+100, 100
+//page 0
+gumppic 0 10 2200
+gumppic 25 50 57
+gumppic 45 50 58
+gumppic 60 50 58
+gumppic 75 50 58
+gumppic 90 50 58
+gumppic 105 50 58
+gumppic 120 50 58
+gumppic 130 50 59
+
+gumppic 190 50 57
+gumppic 210 50 58
+gumppic 225 50 58
+gumppic 240 50 58
+gumppic 255 50 58
+gumppic 270 50 58
+gumppic 285 50 58
+gumppic 295 50 59
+
+button 310 38 4033 4033 1 0 19//Button 17 - Next page
+button 50 38 4033 4033 1 0 18//Button 18 - insert scroll
+
+//Text
+// croppedtext  // 6 = x,y,sx,sy,page,startindex
+
+text 210 15 1300 32 // 33 - 2nd page
+text 50 15 1300 33 // 34 - 1st page
+text 68 36 1300 34 // 35 - Add Scroll
+//text 328 36 1300 34 // 36 - Next Page
+
+button 30 185 2225 2225 1 0 30//1st - 8th circle buttons
+button 67 185 2226 2226 1 0 30
+button 103 185 2227 2227 1 0 31
+button 137 185 2228 2228 1 0 31
+
+button 200 185 2229 2229 1 0 32
+button 233 185 2230 2230 1 0 32
+button 269 185 2231 2231 1 0 33
+button 306 185 2232 2232 1 0 33
+
+
+page <f_dial(1)>
+button 25 <eval 65+<var.razeniY>> 2103 2104 1 0 1//Button 1
+croppedtext 40 <eval 60+<var.razeniY>> 110 17 0 0// 1
+croppedtext 70 <eval 60+<var.razeniY>> 110 17 0 16// 1
+page <f_dial(2)>
+button 25 <eval 65+<var.razeniY>> 2103 2104 1 0 2//Button 2
+croppedtext 40 <eval 60+<var.razeniY>> 110 17 0 1// 2
+croppedtext 70 <eval 60+<var.razeniY>> 110 17 0 17// 2
+page <f_dial(3)>
+button 25 <eval 65+<var.razeniY>> 2103 2104 1 0 3//Button 3
+croppedtext 40 <eval 60+<var.razeniY>> 110 17 0 2// 3
+croppedtext 70 <eval 60+<var.razeniY>> 110 17 0 18// 3
+page <f_dial(4)>
+button 25 <eval 65+<var.razeniY>> 2103 2104 1 0 4//Button 4
+croppedtext 40 <eval 60+<var.razeniY>> 110 17 0 3// 4
+croppedtext 70 <eval 60+<var.razeniY>> 110 17 0 19// 4
+page <f_dial(5)>
+button 25 <eval 65+<var.razeniY>> 2103 2104 1 0 5//Button 5
+croppedtext 40 <eval 60+<var.razeniY>> 110 17 0 4// 5
+croppedtext 70 <eval 60+<var.razeniY>> 110 17 0 20// 5
+page <f_dial(6)>
+button 25 <eval 65+<var.razeniY>> 2103 2104 1 0 6//Button 6
+croppedtext 40 <eval 60+<var.razeniY>> 110 17 0 5// 6
+croppedtext 70 <eval 60+<var.razeniY>> 110 17 0 21// 6
+page <f_dial(7)>
+button 25 <eval 65+<var.razeniY>> 2103 2104 1 0 7//Button 7
+croppedtext 40 <eval 60+<var.razeniY>> 110 17 0 6// 7
+croppedtext 70 <eval 60+<var.razeniY>> 110 17 0 22// 7
+page <f_dial(8)>
+button 25 <eval 65+<var.razeniY>> 2103 2104 1 0 8//Button 8
+croppedtext 40 <eval 60+<var.razeniY>> 110 17 0 7// 8
+croppedtext 70 <eval 60+<var.razeniY>> 110 17 0 23// 8
+page <f_dial(9)>
+button 185 <eval 65+<var.razeniY>> 2103 2104 1 0 9 //Button 9
+croppedtext 200 <eval 60+<var.razeniY>> 110 17 0 8// 9
+croppedtext 230 <eval 60+<var.razeniY>> 110 17 0 24//9
+page <f_dial(10)>
+button 185 <eval 65+<var.razeniY>> 2103 2104 1 0 10 //Button 10
+croppedtext 200 <eval 60+<var.razeniY>> 110 17 0 9// 10
+croppedtext 230 <eval 60+<var.razeniY>> 110 17 0 25//10
+page <f_dial(11)>
+button 185 <eval 65+<var.razeniY>> 2103 2104 1 0 11 //Button 11
+croppedtext 200 <eval 60+<var.razeniY>> 110 17 0 10// 11
+croppedtext 230 <eval 60+<var.razeniY>> 110 17 0 26//11
+page <f_dial(12)>
+button 185 <eval 65+<var.razeniY>> 2103 2104 1 0 12//Button 12
+croppedtext 200 <eval 60+<var.razeniY>> 110 17 0 11// 12
+croppedtext 230 <eval 60+<var.razeniY>> 110 17 0 27//12
+page <f_dial(13)>
+button 185 <eval 65+<var.razeniY>> 2103 2104 1 0 13//Button 13
+croppedtext 200 <eval 60+<var.razeniY>> 110 17 0 12// 13
+croppedtext 230 <eval 60+<var.razeniY>> 110 17 0 28//13
+page <f_dial(14)>
+button 185 <eval 65+<var.razeniY>> 2103 2104 1 0 14//Button 14
+croppedtext 200 <eval 60+<var.razeniY>> 110 17 0 13// 14
+croppedtext 230 <eval 60+<var.razeniY>> 110 17 0 29//14
+page <f_dial(15)>
+button 185 <eval 65+<var.razeniY>> 2103 2104 1 0 15//Button 15
+croppedtext 200 <eval 60+<var.razeniY>> 110 17 0 14// 15
+croppedtext 230 <eval 60+<var.razeniY>> 110 17 0 30//15
+page <f_dial(16)>
+button 185 <eval 65+<var.razeniY>> 2103 2104 1 0 16//Button 16
+croppedtext 200 <eval 60+<var.razeniY>> 110 17 0 15// 16
+croppedtext 230 <eval 60+<var.razeniY>> 110 17 0 31//16
+//Some extra text
+
+[DIALOG d_scroll_case TEXT]
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+1])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+2])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+3])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+4])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+5])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+6])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+7])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+8])?>
+//page 2
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+9])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+10])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+11])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+12])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+13])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+14])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+15])?>
+<?safe.TAG(scroll[<src.tag(dynamdialog)>+16])?>
+<?findres(spell,<src.tag(dynamdialog)>+1).name?>
+<?findres(spell,<src.tag(dynamdialog)>+2).name?>
+<?findres(spell,<src.tag(dynamdialog)>+3).name?>
+<?findres(spell,<src.tag(dynamdialog)>+4).name?>
+<?findres(spell,<src.tag(dynamdialog)>+5).name?>
+<?findres(spell,<src.tag(dynamdialog)>+6).name?>
+<?findres(spell,<src.tag(dynamdialog)>+7).name?>
+<?findres(spell,<src.tag(dynamdialog)>+8).name?>
+<?findres(spell,<src.tag(dynamdialog)>+9).name?>
+<?findres(spell,<src.tag(dynamdialog)>+10).name?>
+<?findres(spell,<src.tag(dynamdialog)>+11).name?>
+<?findres(spell,<src.tag(dynamdialog)>+12).name?>
+<?findres(spell,<src.tag(dynamdialog)>+13).name?>
+<?findres(spell,<src.tag(dynamdialog)>+14).name?>
+<?findres(spell,<src.tag(dynamdialog)>+15).name?>
+<?findres(spell,<src.tag(dynamdialog)>+16).name?>
+//
+<?eval (<src.tag(dynamdialog)>/8)+2)?>. Kruh
+<?eval (<src.tag(dynamdialog)>/8)+1)?>. Kruh
+Pridej svitek
+Dalsi strana
+
+[DIALOG d_scroll_case BUTTON]
+on=0
+SRC.SOUND=85
+RETURN 1
+
+on=1
+src.tag(dynamdialog,<eval <src.tag(dynamdialog)>+1>)
+dialog d_scroll_case_remove
+on=2
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+2>)
+dialog d_scroll_case_remove
+on=3
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+3>)
+dialog d_scroll_case_remove
+on=4
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+4>)
+dialog d_scroll_case_remove
+on=5
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+5>)
+dialog d_scroll_case_remove
+on=6
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+6>)
+dialog d_scroll_case_remove
+on=7
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+7>)
+dialog d_scroll_case_remove
+on=8
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+8>)
+dialog d_scroll_case_remove
+on=9
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+9>)
+dialog d_scroll_case_remove
+on=10
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+10>)
+dialog d_scroll_case_remove
+on=11
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+11>)
+dialog d_scroll_case_remove
+on=12
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+12>)
+dialog d_scroll_case_remove
+on=13
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+13>)
+dialog d_scroll_case_remove
+on=14
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+14>)
+dialog d_scroll_case_remove
+on=15
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+15>)
+dialog d_scroll_case_remove
+on=16
+src.tag(dynamdialog,<eval <src.tag.dynamdialog>+16>)
+dialog d_scroll_case_remove
+
+on=17 //next pages
+DIALOG d_scroll_case
+on=18
+target
+on=19
+arg(u,1)
+while(arg(u)<71)
+ if (<eval <safe.tag(scroll[arg(u)])>>)
+  src.newitem <findres(spell,arg(u)).scrollitem>
+  src.act.bounce
+  tag(scroll[arg(u)],<tag(scroll[arg(u)])>-1)
+ endif
+ arg(u,<arg(u)>+1)
+endwhile
+
+on=30 //spell circle buttons
+src.tag.dynamdialog=0
+  dialog d_scroll_case
+on=31
+src.tag.dynamdialog=16
+  dialog d_scroll_case
+on=32
+src.tag.dynamdialog=32
+  dialog d_scroll_case
+on=33
+src.tag.dynamdialog=48
+  dialog d_scroll_case
+
+
+//****************************************
+//Added functions and dialog by Vlade
+
+[dialog d_scroll_case_remove]
+100,100
+resizepic 0 0 2600 340 180
+page 0
+text 70 20 1152 0
+text 70 50 995 1
+button 140 120 2103 2104 1 0 1
+text 160 120 995 2
+gumppic 30 80 1143
+textentry  40 83 250 20 32 0 3
+button 40 120 249 248 1 0 2//okay
+
+[dialog d_scroll_case_remove text]
+<?findres(spell,<src.tag(dynamdialog)>).name?>
+Kolik svitku odebrat??
+Vsechny
+1 //5
+
+[dialog d_scroll_case_remove button]
+on=1 //remove 1
+f_scroll_case_remove(<tag(scroll[<src.tag.dynamdialog>])>)
+on=2 //remove 5
+f_scroll_case_remove(<fixnumber(<argtxt(0)>)>)
+
+
+//* f_scroll_case_remove
+[function f_scroll_case_remove]
+arg(scrolls,<tag(scroll[<src.tag.dynamdialog>])>)
+arg(wanted,<eval <args>>)
+if (arg(scrolls)<arg(wanted))
+ arg(wanted,<arg(scrolls)>)
+endif
+if (arg(wanted)<=0)
+ src.sysmessage Cislo musi byt vetsi nez 0.
+ return 1
+endif
+if (<src.tag.dynamdialog> < 96)  //kvoli customscrollom
+  src.newitem=<findres(spell,<src.tag(dynamdialog)>).scrollitem>
+else
+  if (<src.tag.dynamdialog>==101)  //frostbolt
+    src.newitem=i_customscroll_frostbolt
+  elseif (<src.tag.dynamdialog>==104)  //manashield
+    src.newitem=i_customscroll_manashield
+  endif
+endif
+src.act.amount=arg(wanted)
+src.act.bounce
+tag(scroll[<src.tag(dynamdialog)>],<eval <tag(scroll[<src.tag(dynamdialog)>])>-arg(wanted)>)
+src.sysmessage You take out <arg(wanted)> scrolls.
+return 1
+
+//novy svitkovac (by heck)
+
+[DIALOG d_scroll_case2]
+argo.setlocation=100,100
+//page 0
+argo.gumppic(10,10,2200)
+argo.gumppic(35,50,57) //ciara hore nalavo
+argo.gumppic(55,50,58)
+argo.gumppic(70,50,58)
+argo.gumppic(85,50,58)
+argo.gumppic(100,50,58)
+argo.gumppic(115,50,58)
+argo.gumppic(130,50,58)
+argo.gumppic(140,50,59)
+
+argo.gumppic(200,50,57)//ciara hore napravo
+argo.gumppic(220,50,58)
+argo.gumppic(235,50,58)
+argo.gumppic(250,50,58)
+argo.gumppic(265,50,58)
+argo.gumppic(280,50,58)
+argo.gumppic(295,50,58)
+argo.gumppic(305,50,59)
+
+argo.button(320,38,4033,4033,1,0,19) //vybrat z kazdeho 1
+argo.button(150,38,4033,4033,1,0,18) //pridat
+
+argo.button(40,185,2225,2225,1,0,30) //1st - 8th circle buttons
+argo.button(77,185,2226,2226,1,0,30)
+argo.button(113,185,2227,2227,1,0,31)
+argo.button(147,185,2228,2228,1,0,31)
+argo.button(210,185,2229,2229,1,0,32)
+argo.button(243,185,2230,2230,1,0,32)
+argo.button(279,185,2231,2231,1,0,33)
+argo.button(316,185,2232,2232,1,0,33)
+
+argo.button(0,15,02635,02635,1,0,34)  //necro
+argo.button(0,40,02634,02634,1,0,35)  //other
+
+argo.texta(32,15,0,"Nekro")
+argo.texta(32,38,0,"Jine")
+argo.texta(110,38,1300,"Pridat")
+argo.texta(280,38,1300,"Vybrat")
+
+if (<src.tag.dynamdialog> < 64)
+  argo.texta(90,12,1300,"<?eval (<src.tag(dynamdialog)>/8)+1)?>. Kruh")
+  argo.texta(250,12,1300,"<?eval (<src.tag(dynamdialog)>/8)+2)?>. Kruh")
+else 
+  if (<src.tag.dynamdialog> < 80)
+    argo.texta(90,12,1300,"Nekro")
+  else
+    argo.texta(90,12,1300,"Jine")
+  endif
+endif
+
+arg(ii,<src.tag.dynamdialog>+1)
+arg(yy,0)
+arg(xx,35)
+while (<arg(ii)> <= <src.tag.dynamdialog>+16) 
+  if (<safe.TAG(scroll[<arg(ii)>])>)
+    argo.button(<arg(xx)>,<eval 65+<arg(yy)>*15>,2103,2104,1,0,<eval(<arg(ii)>-<src.tag.dynamdialog>)>) // buttony 1-16
+    argo.texta(<arg(xx)>+15,<eval 60+<arg(yy)>*15>,0,<?safe.TAG(scroll[<arg(ii)>])?>)
+    if (<arg(ii)> < 96) //kvoli customspellom
+      argo.texta(<arg(xx)>+45,<eval 60+<arg(yy)>*15>,0,<?findres(spell,<arg(ii)>).name?>)
+    else
+      if (<arg(ii)>==101)//frostbolt
+        argo.texta(<arg(xx)>+45,<eval 60+<arg(yy)>*15>,0,"Frost Bolt")
+      elseif (<arg(ii)>==104)//manashield
+        argo.texta(<arg(xx)>+45,<eval 60+<arg(yy)>*15>,0,"Mana Shield")
+      endif
+    endif
+    arg(yy,#+1)
+  endif
+  if (<arg(ii)>==<src.tag.dynamdialog>+8)
+    arg(xx,195)
+    arg(yy,0)
+  endif
+  arg(ii,#+1)
+endwhile
+
+[DIALOG d_scroll_case2 text]
+
+[DIALOG d_scroll_case2 button]
+on=0
+src.tag.remove(dynamdialog)
+src.sound=85
+return(1)
+
+on=30 //spell circle
+  src.tag.dynamdialog=0
+  dialog(d_scroll_case2)
+on=31
+  src.tag.dynamdialog=16
+  dialog(d_scroll_case2)
+on=32
+  src.tag.dynamdialog=32
+  dialog(d_scroll_case2)
+on=33
+  src.tag.dynamdialog=48
+  dialog(d_scroll_case2)
+on=34
+  src.tag.dynamdialog=64
+  dialog(d_scroll_case2)
+on=35
+  src.tag.dynamdialog=96
+  dialog(d_scroll_case2)
+
+on=@anybutton
+if (<argn>==18) //pridat
+  target
+endif
+
+if (<argn>==19) //vybrat (1 z kazdeho)
+  arg(u,1)
+  while (arg(u)<71)
+    if (<eval <safe.tag(scroll[arg(u)])>>)
+      src.newitem <findres(spell,arg(u)).scrollitem>
+      src.act.bounce
+      tag(scroll[arg(u)],<tag(scroll[arg(u)])>-1)
+    endif
+    arg(u,<arg(u)>+1)
+  endwhile
+endif
+
+if (<argn> > 0) && (<argn> < 17)  //vyberanie
+  src.tag.dynamdialog=<src.tag.dynamdialog>+<argn>  //ulozime to co budeme vyberat
+  dialog(d_scroll_case2_remove)
+endif
+
+return(1)
+
+[dialog d_scroll_case2_remove]
+arg(scroll,<src.tag.dynamdialog>)
+argo.setlocation=100,100
+argo.resizepic(0,0,09D8,340,180)
+argo.page(0)
+argo.text(90,30,1152,0)
+argo.text(90,50,995,1)
+argo.button(140,120,2103,2104,1,0,1)
+argo.text(160,120,995,2)
+argo.gumppic(30,80,1143)
+if (<arg(scroll)> < 64)
+  argo.gumppic(35,35,08BF+<arg(scroll)>)//icon
+endif
+argo.textentry(40,83,250,20,32,0,3)
+argo.button(40,120,249,248,1,0,2)//okay
+
+[dialog d_scroll_case2_remove text]
+<?findres(spell,<arg(scroll)>).name?> ( <?safe.TAG(scroll[<arg(scroll)>])?> )
+Kolik svitku odebrat?
+Vsechny
+1
+
+[dialog d_scroll_case2_remove button]
+on=1 //remove all
+f_scroll_case_remove(<tag(scroll[<src.tag.dynamdialog>])>)
+on=2 //remove x
+f_scroll_case_remove(<fixnumber(<argtxt(0)>)>)
+
+[eof]

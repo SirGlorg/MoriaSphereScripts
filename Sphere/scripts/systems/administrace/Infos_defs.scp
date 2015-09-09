@@ -1,0 +1,661 @@
+[function nienna_ledova_kralovna]
+f_flame_around
+findlayer(3).color=0985    //sandale
+findlayer(4).color=0985    //nohy
+findlayer(11).color=0990   //vlasy
+findlayer(13).color=0985   //armor
+findlayer(19).color=0985   //ramena
+findlayer(25).color=0980   //horse
+
+[function nienna_ordinary]
+f_flame_around
+findlayer(3).color=098D    //sandale
+findlayer(4).color=098D    //nohy
+findlayer(11).color=098E   //vlasy
+findlayer(13).color=098D   //armor
+findlayer(19).color=098D   //ramena
+findlayer(25).color=098D   //horse
+
+
+[function nienna]
+safe resurrect
+body=0191
+gm=1
+invul=1
+debug=0
+allshow=0
+name=Nienna
+privshow=0
+color=099b
+
+Events=+Prof_Undeclared
+Tag.Title="(Vala)"
+Tag.realm=2
+Tag.nation="Valar"
+Tag.race=Vala
+
+newequip(i_hair_long)
+lastnew.color=098E
+
+newnpc=c_horse_tan
+act.color=098D
+act.name=Phobos
+act.karma=-10000
+act.hits=10000
+act.food=500
+act.dclick
+
+newequip(i_armor_female_studded_mithril)
+lastnew.color=098D
+lastnew.name=Studded Armor
+lastnew.attr=014
+
+newequip(i_bone_leggings_mithril)
+lastnew.color=098D
+lastnew.name=Bone Leggings
+lastnew.attr=014
+
+newequip(i_bracelet_gold)
+lastnew.color=098B
+lastnew.attr=014
+
+newequip(i_bone_arms_mithril)
+lastnew.color=098D
+lastnew.name=Bone Arms
+lastnew.attr=014
+
+newequip(i_ring_gold)
+lastnew.color=098B
+lastnew.name=Nienna's ring of wrath
+lastnew.attr=014
+
+newequip(i_earrings_gold)
+lastnew.color=098B
+lastnew.attr=014
+
+newequip(i_necklace_gold)
+lastnew.color=098B
+lastnew.name=Nienna's necklace of sorrow
+lastnew.attr=014
+
+newequip i_sandals
+lastnew.color=098D
+lastnew.attr=014
+
+newitemsafe=i_spear_mithril
+lastnew.color=098b
+lastnew.type=t_gm_tool
+lastnew.name=Bugerkilling Spear of Nienna
+lastnew.attr=014
+lastnew.equip
+
+str=10000
+hits=25000
+mana=25000
+stam=25000
+fame=-10000
+karma=-10000
+dex=2500
+int=2500
+food=99
+tag.level=100
+MaxHits=25000
+MaxMana=25000
+MaxStam=25000
+Anatomy=100.0
+AnimalLore=100.0
+ItemID=100.0
+ArmsLore=100.0
+Parrying=100.0
+EI=100.0
+Healing=100.0
+Herding=100.0
+Magery=100.0
+Resist=100.0
+Tactics=100.0
+Poisoning=100.0
+Taming=100.0
+Tracking=100.0
+Veterinary=100.0
+Swordsmanship=100.0
+Fencing=100.0
+Wrestling=100.0
+Lumberjacking=100.0
+Mining=100.0
+Meditation=100.0
+Musicianship=100.0
+SpiritSpeak=100.0
+
+[function yavanna_ordinary]
+f_flame_around
+findlayer(3).color=0998    //sandale
+findlayer(4).color=084f    //nohy
+findlayer(11).color=0425   //vlasy
+findlayer(13).color=084f   //armor
+findlayer(19).color=084f   //ramena
+findlayer(25).color=0998   //horse
+
+[function yavanna]
+if (isDead)
+  safe resurrect
+endif
+name=Yavanna
+f_setIfDiffers(body,0191)
+f_setIfDiffers(gm,1)
+f_setIfDiffers(flag_invul,1)
+f_setIfDiffers(nightsight,1)
+f_setIfDiffers(debug,0)
+f_setIfDiffers(allshow,0)
+f_setIfDiffers(privshow,0)
+f_setIfDiffers(color,099b)
+
+Tag.Title="(Vala) Kralovna Zeme"
+Tag.nation="Valar"
+Tag.race=Vala
+
+newitem(i_yavanna_zbrzditko)
+lastnew.equip
+lastnew.timer=2
+
+f_equipIfNotOn(i_hair_long,11,0425)
+f_equipIfNotOn(i_armor_female_studded_mithril,13,084f,014,Studded Armor)//argv(0) item ID //argv(1) layer //argv(2) color //argv(3) attr //argv(4) name
+f_equipIfNotOn(i_bone_arms_mithril,19,084f,014,Bone Arms)
+f_equipIfNotOn(i_bone_leggings_mithril,4,084f,014,Bone Leggings)
+f_equipIfNotOn(i_necklace_gold,10,098b,014,The Necklace of a dark forrest)
+f_equipIfNotOn(i_bracelet_gold,14,0989,014,The Bracelet of a golden tree)
+f_equipIfNotOn(i_ring_gold,8,0989,014,Yavanna's ring of bushes)
+f_equipIfNotOn(i_sandals,3,0998,014,Sandale)
+f_equipIfNotOn(i_hat_floppy,6,0986,014,Klobouk)
+f_equipIfNotOn(i_staff_gnarled_mithril,2,098f,014)
+if (findid(i_bow_mithril))
+else
+  newitemsafe=i_bow_mithril
+  lastnew.color=098f
+  lastnew.attr=014
+  lastnew.bounce
+endif
+
+[function f_yavanna_part2]
+if (findlayer(layer_horse))
+else
+  newnpc=c_ostard_zostrich
+  act.color=0998
+  act.name=Deimos
+  act.karma=-10000
+  act.hits=10000
+  act.food=99
+  act.dclick
+endif
+
+tag(level,100)
+f_setIfDiffers(str,10000)
+f_setIfDiffers(hits,25000)
+f_setIfDiffers(mana,25000)
+f_setIfDiffers(stam,25000)
+f_setIfDiffers(fame,10000)
+f_setIfDiffers(karma,10000)
+f_setIfDiffers(dex,2500)
+f_setIfDiffers(int,2500)
+f_setIfDiffers(food,99)
+f_setIfDiffers(MaxHits,25000)
+f_setIfDiffers(MaxMana,25000)
+f_setIfDiffers(MaxStam,25000)
+f_setIfDiffers(Anatomy,100.0)
+f_setIfDiffers(AnimalLore,100.0)
+f_setIfDiffers(ItemID,100.0)
+f_setIfDiffers(ArmsLore,100.0)
+f_setIfDiffers(Parrying,100.0)
+f_setIfDiffers(EI,1000.0)
+f_setIfDiffers(Healing,1000.0)
+f_setIfDiffers(Herding,100.0)
+f_setIfDiffers(Magery,100.0)
+f_setIfDiffers(Resist,100.0)
+f_setIfDiffers(Tactics,100.0)
+f_setIfDiffers(Poisoning,100.0)
+f_setIfDiffers(Taming,100.0)
+f_setIfDiffers(Tracking,100.0)
+f_setIfDiffers(Veterinary,100.0)
+f_setIfDiffers(Swordsmanship,100.0)
+f_setIfDiffers(Fencing,100.0)
+f_setIfDiffers(Wrestling,100.0)
+f_setIfDiffers(Lumberjacking,100.0)
+f_setIfDiffers(Mining,100.0)
+f_setIfDiffers(Meditation,100.0)
+f_setIfDiffers(Musicianship,100.0)
+f_setIfDiffers(SpiritSpeak,1000.0)
+
+[function f_setIfDiffers] //argv(0) - name, argv(1) - value
+if (<eval <argv(0)>> != <eval argv(1)>)
+  <argv(0)>=<eval argv(1)>
+endif
+
+//argv(0) item ID
+//argv(1) layer
+//argv(2) color
+//argv(3) attr
+//argv(4) name
+[function f_equipIfNotOn]
+if (findlayer(<argv(1)>))
+  if (findlayer(<argv(1)>).id==<argv(0)>)
+    return
+  endif
+endif
+newequip=<argv(0)>
+if (strlen(<argv(2)>))
+  lastnew.color=<argv(2)>
+endif
+if (strlen(<argv(3)>))
+  lastnew.attr=<argv(3)>
+endif
+if (strlen(<argv(4)>))
+  lastnew.name=<argv(4)>
+endif
+
+[itemdef i_yavanna_zbrzditko]
+id=i_memory
+type=t_eq_script
+name= zbrzdujici item
+
+on=@timer
+cont.f_yavanna_part2
+remove
+
+[function verb]
+
+safe resurrect
+body=c_man_gm
+invul=1
+invis=1
+debug=0
+allshow=0
+name=GM Verbatim
+privshow=0
+color=07fff
+newnpc=c_llama
+act.name=Arana
+act.karma=-10000
+act.hits=10000
+act.food=99
+act.color=098b
+act.dclick
+newequip i_beard_mustache
+newequip i_shepherds_crook_adamantinum
+lastnew.color=0638
+lastnew.type=t_gm_tool
+lastnew.name=Nastroj spravedlnosti
+newequip i_mask_deer
+lastnew.color=098c
+newequip i_chainmail_tunic
+lastnew.color=098c
+newequip i_boots_calf
+lastnew.color=098c
+newequip i_sword_viking_mithril
+lastnew.color=0635
+lastnew.name=Zihadlo nejen na skrety
+str=10000
+hits=10000
+mana=10000
+stam=10000
+fame=10000
+karma=-10000
+dex=250
+int=250
+food=99
+tag.level=100
+MaxHits=25000
+MaxMana=25000
+MaxStam=25000
+Anatomy=100.0
+AnimalLore=100.0
+ItemID=100.0
+ArmsLore=100.0
+Parrying=100.0
+EI=100.0
+Healing=1000.0
+Herding=100.0
+Magery=100.0
+Resist=100.0
+Tactics=100.0
+Poisoning=100.0
+Taming=100.0
+Tracking=100.0
+Veterinary=100.0
+Swordsmanship=100.0
+Fencing=100.0
+Wrestling=100.0
+Lumberjacking=100.0
+Mining=100.0
+Meditation=100.0
+Musicianship=100.0
+SpiritSpeak=100.0
+
+
+[function tyr]
+safe resurrect
+gm=1
+eqlayers(remove)
+body=c_man_gm
+invul=1
+allshow=0
+name=GM Tyrael
+privshow=0
+color=098b
+newnpc=c_horse_brown_dk
+act.color=098b
+act.dclick
+newequip(i_robe)
+lastnew.dispid=i_deathshroud
+lastnew.color=098b
+lastnew.type=t_gm_tool
+newequip i_shepherds_crook_adamantinum
+lastnew.color=098b
+newequip i_kridla
+
+[events e_blaze_fake]
+on=@step
+newitemsafe(i_fire_column_tart)
+lastnew.p=<p>
+
+[ITEMDEF i_fx_tart]
+id=i_moongate_blue
+
+on=@create
+dispid=01af4
+more1=0 //stoupa
+timerd=1
+
+on=@timer
+if (more1==0)
+  if (dispid<01afb)
+    dispid=<eval dispid+1>
+    timerd=1
+    updatex
+  else
+    link.invisk
+    more1=1
+    timerd=1
+  endif
+elseif (more1==1)
+  if (dispid!=i_moongate_blue)
+    dispid=i_moongate_blue
+    updatex
+    timer=3
+  else
+    dispid=01afb
+    updatex
+    more1=2
+    timerd=1
+  endif
+elseif (more1==2)
+  if (dispid>01af4)
+    dispid=<eval dispid-1>
+    updatex
+    timerd=1
+  else
+    remove
+  endif
+endif
+return 1
+
+[function invisg]
+newitemsafe(i_fx_tart)
+lastnew.link=<uid>
+lastnew.p=<p>
+
+[function invisk]
+arg(u,0)
+while (arg(u)<16)
+ newitemsafe(i_fire_column_tart)
+ lastnew.p=<p>
+ lastnew.move(0,-1)
+ doswitch u
+  lastnew.move(2,-1,0,0)
+  lastnew.move(1,-2,0,0)
+  lastnew.move(0,-2,0,0)
+  lastnew.move(-1,-2,0,0)
+  lastnew.move(-2,-1,0,0)
+  lastnew.move(-3,0,0,0)
+  lastnew.move(-3,1,0,0)
+  lastnew.move(-3,2,0,0)
+  lastnew.move(-2,3,0,0)
+  lastnew.move(2,3,0,0)
+  lastnew.move(3,0,0,0)
+  lastnew.move(3,1,0,0)
+  lastnew.move(3,2,0,0)
+  lastnew.move(1,4,0,0)
+  lastnew.move(0,4,0,0)
+  lastnew.move(-1,4,0,0)
+ enddo
+ lastnew.fix
+ arg(u,#+1)
+endif
+invis
+
+[itemdef i_fire_column_tart]
+id=i_fire_column
+type=t_normal
+
+on=@create
+attr=attr_decay
+timer=2
+
+[function namo]
+safe resurrect
+gm=1
+body=c_man_gm
+color 0481
+invul=1
+allshow=0
+name=Mandos
+privshow=0
+newnpc=c_horse_tan
+act.color=098e
+act.dclick
+newequip i_robe_gm
+lastnew.color=098c
+newequip i_cape
+lastnew.color=099d
+newequip (i_bandana)
+lastnew.dispid=i_bone_helmet
+lastnew.color=0981
+lastnew.type=t_gm_tool
+newequip i_torch_lit
+lastnew.type=t_gm_tool
+lastnew.color=098f
+lastnew.name=ohen smrti
+newequip i_war_fork
+lastnew.type=t_gm_tool
+lastnew.color=098c
+
+[function tart]
+safe resurrect
+gm=1
+eqlayers(remove)
+body=c_man_gm
+color=0481
+invul=1
+allshow=0
+name=Tatarkos
+newnpc=c_ostard_zostrich
+act.color=098d
+act.dclick
+newitem=i_robe
+act.dispid=i_deathshroud
+act.color=0995
+act.type=t_gm_tool
+equip(act)
+newitem i_spellbook_8
+act.morex=0fff
+bounce(act)
+equip(act)
+
+//[function perun]
+//safe resurrect
+//gm=1
+//eqlayers(remove)
+//body=c_man_gm
+//color=0999
+//invul=1
+//allshow=0
+//name=GM Perun
+//privshow=0
+//newnpc=c_ostard_zostrich
+//act.color=1
+//act.dclick
+//newitem=i_robe
+//act.dispid=i_deathshroud
+//act.color=0999
+//act.type=t_gm_tool
+//equip(act)
+//newitem i_spellbook_8
+//act.morex=0fff
+//act.color=0999
+//bounce(act)
+//equip(act)
+
+[function zlejgm]
+safe resurrect
+gm=1
+body=c_man_gm
+invul=1
+allshow=0
+name=GAMEMASTER
+privshow=1
+newnpc=c_horse_tan
+act.color=0481
+act.dclick
+newequip i_robe_gm
+lastnew.color=1
+newequip i_cape
+lastnew.color=1
+newequip i_torch_lit
+lastnew.type=t_gm_tool
+lastnew.name=ohen spravedlnost
+
+[function aldaron]
+if (src.isGM)
+  if (tag(gm_aldaron)==0)
+    if findlayer(22).id==i_deathrobe
+      findlayer(22).color=0999        //death roba
+      findlayer(22).name=Roba Smrti    
+    else
+      newequip(i_deathrobe)
+      lastnew.color=0999
+      lastnew.name=Roba Smrti
+      lastnew.attr=014
+    endif
+    if findlayer(2).id==i_spear_mithril
+      findlayer(2).color=098b       //spear
+      findlayer(2).name=Aldaronova Kopia    
+    else
+      newequip(i_spear_mithril)
+      lastnew.color=098b
+      lastnew.name=Aldaronova Kopia
+      lastnew.attr=014
+    endif
+    if findlayer(10).id==i_necklace_gold
+      findlayer(10).color=0       //nicklace
+    else
+      if findlayer(10).id==i_necklace_silver
+        findlayer(10).remove
+      endif
+      newequip(i_necklace_gold)
+      lastnew.color=0
+      lastnew.attr=014
+    endif
+    if findlayer(layer_horse).id==i_mt_ostard_zostrich
+      findlayer(layer_horse).color=0480
+    else
+      newnpc=c_ostard_zostrich_jmeno3
+      act.color=0480
+      act.karma=-10000
+      act.hits=10000
+      act.food=99
+      act.dclick
+    endif
+    tag(gm_aldaron,1)
+  elseif (tag(gm_aldaron)==1)
+    if findlayer(22).id==i_deathrobe
+      findlayer(22).color=098F        //death roba
+      findlayer(22).name=Roba Smrti    
+    else
+      newequip(i_deathrobe)
+      lastnew.color=098F
+      lastnew.name=Roba Smrti
+      lastnew.attr=014
+    endif
+    if findlayer(2).id==i_spear_mithril
+      findlayer(2).color=0986       //spear
+      findlayer(2).name=Aldaronova Kopia    
+    else
+      newequip(i_spear_mithril)
+      lastnew.color=0986
+      lastnew.name=Aldaronova Kopia
+      lastnew.attr=014
+    endif
+    if findlayer(10).id==i_necklace_silver
+      findlayer(10).color=0       //nicklace
+    else
+      if findlayer(10).id==i_necklace_gold
+        findlayer(10).remove
+      endif
+      newequip(i_necklace_silver)
+      lastnew.color=0
+      lastnew.attr=014
+    endif
+    if findlayer(layer_horse).id==i_mt_ostard_zostrich
+      findlayer(layer_horse).color=0988
+    else
+      newnpc=c_ostard_zostrich_jmeno3
+      act.color=0988
+      act.karma=-10000
+      act.hits=10000
+      act.food=99
+      act.dclick
+    endif
+    tag(gm_aldaron,2)
+  else
+    if findlayer(22).id==i_deathrobe
+      findlayer(22).color=0995       //death roba
+      findlayer(22).name=Roba Smrti    
+    else
+      newequip(i_deathrobe)
+      lastnew.color=0995
+      lastnew.name=Roba Smrti
+      lastnew.attr=014
+    endif
+    if findlayer(2).id==i_spear_mithril
+      findlayer(2).color=0999       //spear
+      findlayer(2).name=Aldaronova Kopia    
+    else
+      newequip(i_spear_mithril)
+      lastnew.color=0999
+      lastnew.name=Aldaronova Kopia
+      lastnew.attr=014
+    endif
+    if findlayer(10).id==i_necklace_silver
+      findlayer(10).color=0       //nicklace
+    else
+      if findlayer(10).id==i_necklace_gold
+        findlayer(10).remove
+      endif
+      newequip(i_necklace_silver)
+      lastnew.color=0
+      lastnew.attr=014
+    endif
+    if findlayer(layer_horse).id==i_mt_ostard_zostrich
+      findlayer(layer_horse).color=0980
+    else
+      newnpc=c_ostard_zostrich_jmeno3
+      act.color=0980
+      act.karma=-10000
+      act.hits=10000
+      act.food=99
+      act.dclick
+    endif
+    tag(gm_aldaron,0)
+  endif
+else
+  src.sysmessage("Toto nesmies pouzivat...")
+endif
+[eof]

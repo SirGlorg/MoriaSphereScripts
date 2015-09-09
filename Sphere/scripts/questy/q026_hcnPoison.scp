@@ -1,0 +1,386 @@
+/////////////////////////////////////////////////
+//                                             //
+//              Otrava z Hrobek                //
+//                                             //
+//  Namet GM Yavanna, naskriptoval GM Yavanna  //
+//                                             //
+/////////////////////////////////////////////////
+
+// Kostru questu lze vycist z questmenu.
+// Zainteresovana hlavni NPC: klerik Andor, carodejka Roxana, carodej Unas
+//                vedlejsi NPC: Orillus, Rachel, ?Pocestny?, mastickar, experimentator a casem dalsi lecitele 
+//                pozn. - NPC v otaznikach zatim nejsou implementovany
+
+[defnames d_def_q026]
+def_q026_CureResources      20,30,100,50,2,4500,2500 // batwings, bones, obsidian, SA, obsid ing, spruce, chestnut
+def_q026_poisonTimer        "{400 800}"
+
+
+[function f_q026_HCNPoison_remove]
+findID(i_q026_hcn_memoryPoison).remove
+sound(486)
+
+[function f_q026_HCNPoison_give]
+if (<eval qtag(q026_hcnPoison)>) // the player has been already poisoned
+  if (<eval qtag(q026_hcnPoison)> < 15) // player is still poisoned !
+    if (rand(100) < 70) // 70% of the strikes are enhanced by poison penalty
+      arg(poisonPenalize,<eval {30 50}>)
+      var(ubrano,<eval (var(ubrano)*arg(poisonPenalize))/30>) // increases the npc's damage to 5/3 * dmg
+      sysMessage("Bolest z otravy prochazi celym tvym telem.")
+    endif
+  endif
+else
+  sound(481)
+  events=+e_q026_hcnCurePoison_check
+  newequip(i_q026_hcn_memoryPoison)
+endif
+
+
+///////////////////////////
+//   Poisonning events   //
+///////////////////////////
+
+[events e_q026_hcnPoisoning_NPC]
+on=@afterswing
+if (action==skill_magery) || (var(dodged)==1) || (strlen(<act.tag(energyofshield)>))
+  return 0
+endif
+act.f_q026_HCNPoison_give
+
+on=@Created
+on=@DrinkingPotion
+on=@AfterGetSwing
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_q026_hcnCurePoison_check]
+on=@DrinkingPotion
+if (<argo.id> == i_potion_CureLess)
+elseif (<argo.id> == i_potion_Cure)
+elseif (<argo.id> == i_potion_CureGreat)
+else
+  return 1
+endif
+qtag(q026_hcnPoison,2,36) // cure neleci jed z HCN !
+events=-e_q026_hcnCurePoison_check
+
+on=@Created
+on=@AfterSwing
+on=@AfterGetSwing
+on=@BeforeGetSwing
+on=@BeforeDoEffect
+on=@BeforeGetEffect
+
+
+/////////////////////////
+//    D i a l o g s    //
+/////////////////////////
+
+// h e a l e r s //
+[function f_q026_hcnPoison_HealersDialog_Request]
+if (<eval src.qtag(q026_hcnPoison)> == 2) || (<eval src.qtag(q026_hcnPoison)> == 3)
+  if (src.tag(realm)==1) // gondor
+    setText(newTextLine,"<?def_questDialog_colorTextResponse?>Omlouvam se, ze obtezuji, ale jsem <?src.sex("nakazen","nakazena")?> zvlastni chorobou z hrobek cernych Numenorejcu. Nevis, co by mi mohlo byt?")
+  else
+    setText(newTextLine,"<?def_questDialog_colorTextResponse?>Hele, jsem <?src.sex("nakazen","nakazena")?> jakousi zvlastni chorobou z hrobek cernych Numenorejcu. Co to je?")
+  endif
+  questDialog_addResponse(1,0,1,"q026_hcnPoison") // long text & link to page & new page
+endif
+
+[function f_q026_hcnPoison_HealersDialog_Answer] // argv(0) - the npc that we are talking to
+if (<eval src.qtag(q026_hcnPoison)> == 2) || (<eval src.qtag(q026_hcnPoison)> == 3)
+  dialog_page("q026_hcnPoison")  
+  setText(newTextLine,"Hmmm... Tak s timhle si nevim rady. Zda se mi, ze tva otrava je magickeho puvodu. Opravdu nic tak podivneho jsem ve svem zivote <?argv(0).sex("nevidel","nevidela")?>. S takovym problemem ti muze pomoci jen nejaky zkuseny klerik. Poohledni se po nekom, kdo se vyzna v jedech.")
+  questDialog_HTMLGUMP
+  if (<eval src.qtag(q026_hcnPoison)> == 2)
+    setText(newTextLine,"*Podekovat a popremyslet o sdelene informaci*")
+    questDialog_addResponse(0,1,1,"q026_hcnPoison",1) // short text & exit buttonpage & new button
+  endif
+endif
+
+[function f_q026_hcnPoison_HealersDialog_Button] //argv(0) == button number (<argn>)
+if (<eval src.qtag(q026_hcnPoison)> == 2)
+  if (<argv(0)> == dialog_linkButton("q026_hcnPoison"))
+    src.qtag(q026_hcnPoison,3,36) // jdi najit nejakeho klerika
+    return 1
+  endif
+endif
+return 0
+
+// k l e r i k   A n d o r //
+[function f_q026_hcnPoison_Andor_Request]
+if (<eval src.qtag(q026_hcnPoison)> == 3) // potrebuju rady od klerika
+  if (src.tag(realm)==1) // gondor
+    setText(newTextLine,"<?def_questDialog_colorTextResponse?>U Yavanny. Ty se zabyvas jedy? <?src.sex("Nakazil","Nakazila")?> jsem se zvlastni chorobou v hrobkach cernych Numenorejcu. Nevis, co by mi mohlo byt?")
+  else
+    setText(newTextLine,"<?def_questDialog_colorTextResponse?>U Saurona prokletyho, ty se zabyvas jedy? <?src.sex("Nakazil","Nakazila")?> jsem se zvlastni chorobou v hrobkach cernych Numenorejcu. Nevis co to je?!")
+  endif
+  questDialog_addResponse(1,0,1,"q026_hcnPoison") // long text & link to page & new page
+endif
+
+[function f_q026_hcnPoison_Andor_Answer]
+if (<eval src.qtag(q026_hcnPoison)> == 3) // potrebuju rady od klerika
+  dialog_page("q026_hcnPoison")  
+    setText(newTextLine,"<def_questDialog_colorTextEmote>*Klerik se nejprve nejiste pousmal, pote vsak na tebe upnul svuj pohled a jeho tvar zkamenela. Cely ten pachnouci kolos se v nahlem vystrizliveni a pristoupil k tobe.*<def_questDialog_colorTextNormal> Mohu ?")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Dovolit klerikovi, aby te prohledl.*")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_2",1) // short text & page buttonpage & new button
+
+  dialog_page("q026_hcnPoison_2")  
+    setText(newTextLine,"<def_questDialog_colorTextEmote>*Andor vzal tvou hlavu do dlani a patrave si te prohledl. Po chvili se odmlcel a usedl na zidli. Sklopil zrak...*<def_questDialog_colorTextNormal>")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"Co se deje ?!")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_3") // short text & page buttonpage & new button
+
+  dialog_page("q026_hcnPoison_3")  
+    setText(newTextLine,"Tva choroba neni bezna. Citim v tobe velke mnozstvi temne energie. Otrava te vysava zevnitr a postupne pohlcuje. Kdysi davno jsem cetl o podobnych priznacich. Ve velkych knihovnach lze zvedet vice o zapomenutych jedech, ovsem prehled v takovem mnozstvi informaci je spise domenou dlouhovekych kouzelniku. Co ti jini lecitele nedokazali sdelit je, ze jde spise o proklti nez otravu. Cerna magie ti sala z kazdeho poru v tele a neustale v tobe sili. Poptej se u starych, moudrych carodeju. Ti snad budou vedet vic. Ja tve prokleti vylecit nedokazu.")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Odejit a porozhlednout se po carodeji, ktery by ti mohl pomoci*")
+    questDialog_addResponse(0,1,1,"q026_hcnPoison",1) // short text & exit buttonpage & new button
+endif
+
+[function f_q026_hcnPoison_Andor_Button] //argv(0) == button number (<argn>)
+if (<eval src.qtag(q026_hcnPoison)> == 3) // potrebuju rady od klerika
+  if (<argv(0)> == dialog_linkButton("q026_hcnPoison"))
+    src.qtag(q026_hcnPoison,4,36) // jdi najit nejakeho kouzelnika
+  endif
+endif
+
+
+// c a r o d e j   U n a s //
+[function f_q026_hcnPoison_Unas_Request]
+if (<eval src.qtag(q026_hcnPoison)> == 4) // potrebuju rady od maga.
+  setText(newTextLine,"<?def_questDialog_colorTextResponse?>Zdravim te. Shanim se po nejakem magovi, ktery se vyzna v praktikach starych nekromantu. <?src.sex("Byl jsem otraven","Byla jsem otravena")?> v hrobkach cernych Numenorejcu a nikdo si mou otravou nevi rady.")
+  questDialog_addResponse(1,0,1,"q026_hcnPoison") // long text & link to page & new page
+elseif (<eval src.qtag(q026_hcnPoison)> == 5) //shanim informace primo Unase
+  setText(newTextLine,"<?def_questDialog_colorTextResponse?>Ah ! Prave tebe shanim! <?src.sex("Dozvedel","Dozvedela")?>") jsem se, ze mas obsahle znalosti o praktikach starych nekromantu. Potrebuji vylecit mou otravu z hrobek cernych Numenorejcu.")
+  questDialog_addResponse(1,0,1,"q026_hcnPoison") // long text & link to page & new page
+elseif (<eval src.qtag(q026_hcnPoison)> == 11) //mam knihu z chramu poznani
+  setText(newTextLine,"<?def_questDialog_colorTextResponse?>Znovu te zdravim priteli. Podarilo se mi dostat do chramu vedeni a ziskat z Numenorejske knihovny tuto knihu. Jeji obsah je vsak pro mne necitelny. Dokazes jej rozlustit? Potrebuji lek na svou otravu.")
+  questDialog_addResponse(1,0,1,"q026_hcnPoison") // long text & link to page & new page
+endif
+
+[function f_q026_hcnPoison_Unas_Answer]
+if (<eval src.qtag(q026_hcnPoison)> == 4) || (<eval src.qtag(q026_hcnPoison)> == 5) // potrebuju rady od maga || shanim primo carodeje Unase
+  dialog_page("q026_hcnPoison") 
+    setText(newTextLine,"Ooo... Otrava z hrobek v pousti rikas. <def_questDialog_colorTextEmote>*Kouzelnik se dlouze zamyslel, nez znovu promluvil*<def_questDialog_colorTextNormal>")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Pokracovat*")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_2",1) // short text & page button & new button
+
+  dialog_page("q026_hcnPoison_2")  
+    setText(newTextLine,"Ach ano... Mozna ti mohu pomoci. Povim ti pro mnohe davno zapomenuty pribeh, jez jsem poskladal z nepatrnych odkazu. Precetl jsem tisice knih pri studiich puvodu nekomantskych praktik a myslim, ze bys <src.sex("mel","mela")> vedet, co naznacuji...")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"Posloucham...")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_3") // short text & page button & new button
+
+  dialog_page("q026_hcnPoison_3")  
+    setText(newTextLine,"Jeste za casu Melkora, prvniho temneho pana, se nekteri z mocnych Maiar strzenych temnou stranou zreklo povysene libovule sveho vladce. Zahledeli se do vlastnich tuzeb a prahli po vlastni moci. Odmitli dale bojovat pro jine a zavrhli okolni svet. Ve vysokych horach a hlubokych kobkach vystaveli rozlehle ukryty, ktere obestreli kletbami a znetvorenymi, nemrtvymi prisluhovaci, kteri meli branit jejich klid v hlubinach.")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Poslouchat dal*")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_4",1) // short text & page button & new button
+    
+  dialog_page("q026_hcnPoison_4")  
+    setText(newTextLine,"Po staletich vsak jejich odpor prerostl v nenavist. Prestali prochazet sva sklepeni a zabarikadovali se v nejhlubsich komorach. Bez vedeni se zdala jejich sidla po letech pusta a nenapadna. Do jejich ukrytu se zacali odvazovat prvni skupiny vedene mocnymi cernoknezniky, kteri prahli po vedomostech ukrytych v norach spicich Maiar. Nejuspesnejsimi z dobyvatelu techto brlohu byli prave davni Numenorejci. Jejich nekromanti si tak osvojili mnohe vedomosti o magickych branach, zamcich, jedech, a dokonce se odvazovali probouzet mrtve. Tyto znalosti pak vyuzivali pro ochranu hrobek svych kralu a pecetili je tak proti chamtivym zlodejum.")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Pokracovat*")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_5",1) // short text & page button & new button
+    
+  dialog_page("q026_hcnPoison_5")  
+    setText(newTextLine,"<src.sex("Rikal","Rikala")> jsi, ze k tve otrave doslo prave v hrobkach cernych Numenorejcu. Je-li tomu tak, pak tve vyleceni zavisi na nalezeni davno zapomenutych alchymistickych knih Numenorejskych nekromantu. Z nekolika pramenu jsem vycetl zminku o davnem chramu vedeni, ktery vyuzivaly narody jako neutralni uzemi pro uschovani a vymenu vedomosti. Zkoumam tuto oblast a cele Numenorejske vedeni po dlouha leta a vse nasvedcuje tomu, ze lezi uprostred techto neprostupnych bazin. Bez a najdi cestu do tohoto chramu. Patrej po ostatcich Numenorejske knihovny. Je-li na tvou otravu lek a budes-li mit stesti, pak jej tam najdes hotovy, nebo alespon popsany v nejake knize.")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Podekovat a vydat se do bazin.*")
+    questDialog_addResponse(0,1,1,"q026_hcnPoison",1) // short text & exit button & new button & emote
+elseif (<eval src.qtag(q026_hcnPoison)> == 11) //mam knihu z chramu poznani
+  dialog_page("q026_hcnPoison")  
+    setText(newTextLine,"Ach vyborne! Ukaz, podivam se na tu knihu...")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Podat carodeji knihu*")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_2",1) // short text & page button & new button & emote
+    
+  dialog_page("q026_hcnPoison_2")
+    setText(newTextLine,"<def_questDialog_colorTextEmote>*Carodej nejprve nejaky cas zkoumal text v knize, nez se znovu vzprimil a promluvil.*<def_questDialog_colorTextNormal> Ano.. Ano toto jsou stare alchymisticke symboly. Jde o sifru. Kazdy alchymista nejakou pouziva, aby chranil sva tajemstvi. Je tu mnoho masti, lektvaru a rozboru jejich ucinku. Ukaz, prohlednu si te a popis mi, co presne tva otrava zpusobuje.")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Popsat carodeji priznaky tve otravy*")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_3",1) // short text & page button & new button & emote
+    
+  dialog_page("q026_hcnPoison_3")
+    setText(newTextLine,"<def_questDialog_colorTextEmote>*Carodej te prohledl a opet se na nejaky cas zaboril do urputne studie knihy. Po nekolika minutach se k tobe obratil s nadeji ve tvari.*<def_questDialog_colorTextNormal> Tady je to! Otrava prizraku. Jde o velmi mocnou temnou magii.. Aaah, tato neni lidskeho puvodu... Mas velike stesti. Zachoval se cely popis vyroby protileku a navic, je-li muj vyklad spravny, ziskas proti tomuto jedu trvalou imunitu. Neni cas otalet! Tady, vezmi si recept, ktery ti sepisu. Jeho priprava vyzaduje spoustu zkusenosti, az nadlidskou presnost pri priprave a mnoho surovin. Ani jedno ti nemohu nabidnout. Znam jedineho cloveka, ktery je neceho takoveho schopen. Vydej se za Roxanou. Zije po dlouha leta na jihu Temneho Hvozdu. Hodne stesti!")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Prevzit recept a vydat se za Roxanou*")
+    questDialog_addResponse(0,1,1,"q026_hcnPoison",1) // short text & exit button & new button & emote
+endif
+
+[function f_q026_hcnPoison_Unas_Button] //argv(0) == button number (<argn>)
+if (<eval src.qtag(q026_hcnPoison)> == 4) || (<eval src.qtag(q026_hcnPoison)> == 5)
+  if (<argv(0)> == dialog_linkButton("q026_hcnPoison"))
+    src.qtag(q026_hcnPoison,6,36) // jdi najit nejakeho kouzelnika
+    return 1
+  endif
+elseif (<eval src.qtag(q026_hcnPoison)> == 11) //mam knihu z chramu poznani
+  if (<argv(0)> == dialog_linkButton("q026_hcnPoison"))
+    src.qtag(q026_hcnPoison,12,36) // jdi najit roxanu
+    return 1
+  endif
+endif
+return 0
+
+// c a r o d e j k a   R o x a n a //
+[function f_q026_hcnPoison_Roxana_Request]
+if (<eval src.qtag(q026_hcnPoison)> == 12) // mam recept na jed
+  setText(newTextLine,"<?def_questDialog_colorTextResponse?> Posila mne carodej Unas. <?src.sex("byl jsem otraven","byla jsem otravena")?> a potrebuji zhotovit lektvar. Pry jsi jedina, kdo to dokaze. <?src.sex("Nenalehal","Nenalehala")?> bych tolik, ale je to velmi nalehave!")
+  questDialog_addResponse(1,0,1,"q026_hcnPoison") // long text & link to page & new page
+endif
+
+[function f_q026_hcnPoison_Roxana_Bring]
+if (<eval src.qtag(q026_hcnPoison)> == 13) // nosim suroviny
+  if (<f_q026_hcnPoison_ResourcesCheck>) // have bring all the necessary resources !
+    setText(newTextLine,"<def_questDialog_colorTextResponse><src.sex("Donesl","Donesla")> jsem ti vsechny suroviny na protilek, ktere jsi chtela. Muzes mi ho ted vyrobit ?")
+    questDialog_addResponse(1,0,1,"q026_hcnPoison") // long text & page button & new page
+  else // don't have all the resources yet
+    setText(newTextLine,"*Odevzdat nejake suroviny na lek otravy z hrobek*")
+    questDialog_addResponse(0,1,1,"q026_hcnPoison_resources",1) // short text & exit button & new page & emote
+  endif
+endif
+
+[function f_q026_hcnPoison_Roxana_Answer]
+if (<eval src.qtag(q026_hcnPoison)> == 12) // mam recept na jed
+  dialog_page("q026_hcnPoison") 
+    setText(newTextLine,"Podivam se na to... Ukaz mi ten recept.")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Predat Unasuv recept carodejce*")
+    questDialog_addResponse(0,0,1,"q026_hcnPoison_2",1) // short text & page button & new button
+
+  dialog_page("q026_hcnPoison_2")  
+    setText(newTextLine,"Oh, nic takoveho jsem jeste nevidela. Pokud ale Unas veri, ze ti to pomuze, pak tomu tak bude. Suroviny na pripravu si ale musis obstarat <?src.sex("sam","sama")?>. Nektere prisady mam, ale spousta mi toho jeste chybi. Cely lektvar se navic musi pripravit v obrovskem zaru, a tak bude potreba spousta dreva. Tu mas, sepisu ti, co vse jeste potrebuji donest. A priprav se, ze za svou ochotu a cas po tobe budu chtit 20 tisic zlatych. Je toho hodne, tak mi to nos postupne. Ja si to tady budu ukladat.")
+    questDialog_HTMLGUMP
+    setText(newTextLine,"*Prevzit od carodejky seznam a vydat se pro suroviny*")
+    questDialog_addResponse(0,1,1,"q026_hcnPoison_acceptTask",1) // short text & exit button & new button
+elseif (<eval src.qtag(q026_hcnPoison)> == 13) // nosim suroviny
+  if (<eval tag(q026_checkedResources)>) // all resources has been delivered
+    dialog_page("q026_hcnPoison") 
+      setText(newTextLine,"Vyborne! Dobra tedy, dej mi tech slibenych 20 tisic a mas ho mit.")
+      questDialog_HTMLGUMP
+      setText(newTextLine,"Promin, nemam u sebe dost penez. Vratim se pozdeji.")
+      questDialog_addResponse(0,1,1,"q026_hcnPoison_noMoney") // short text & exit button & new button
+      if (<src.canPay_from_char(20000)>)
+        setText(newTextLine,"*Predat carodejce penize a ziskat protilek*")
+        questDialog_addResponse(0,1,1,"q026_hcnPoison_getCure",1) // short text & exit button & new button
+      endif
+  endif
+endif
+
+[function f_q026_hcnPoison_Roxana_Button] //argv(0) == button number (<argn>)
+if (<eval src.qtag(q026_hcnPoison)> == 12) // mam recept na jed
+  if (<argv(0)> == dialog_linkButton("q026_hcnPoison_acceptTask"))
+    src.qtag(q026_hcnPoison,13,36)
+    src.qtag(q026_hcnPoison_resources,"0,0,0,0,0,0,0")
+    return 1
+  else
+  endif
+elseif (<eval src.qtag(q026_hcnPoison)> == 13) // nosim suroviny
+  if (<argv(0)> == dialog_linkButton("q026_hcnPoison_resources"))
+    src.f_questMenu_reportQuest(36) // show the quest scroll
+    src.f_q026_hcnPoison_ResourcesGive
+    return 1
+  elseif (<argv(0)> == dialog_linkButton("q026_hcnPoison_getCure"))
+    if (<src.pay_from_char(20000)>) // 1 if successfully payed
+      src.giveItem(i_q026_hcnPoison_Cure)
+      src.qtagremove(q026_hcnPoison_resources)
+      src.qtag(q026_hcnPoison,14,36)
+      //TODO add cure to the players backpack
+    else
+      argv(1).say("Tak kde mas ty penize ?!")
+    endif
+    return 1
+  elseif (<argv(0)> == dialog_linkButton("q026_hcnPoison_noMoney"))
+    return 1
+  endif
+endif
+return 0
+
+[function f_q026_hcnPoison_ResourceRemain] // argv(0) - the number of the resource that should be chceked (starts from 1)
+arg(remaining,<eval <return_nth(<eval argv(0)>,<def_q026_CureResources>)>-<return_nth(<eval argv(0)>,<qtag(q026_hcnPoison_resources)>)>>) // formula: required_resources - given_resources
+if (<eval arg(remaining)> <= 0)
+  return 0
+else
+  return <eval arg(remaining)>
+endif
+
+[function f_q026_hcnPoison_ResourcesGive]
+arg(consumed,<f_q026_hcnPoison_consumeOne(1,i_reag_batwing)>)
+arg(sum[1],<eval arg(consumed)+<return_nth(1,<qtag(q026_hcnPoison_resources)>)>>)
+
+arg(consumed,<f_q026_hcnPoison_consumeOne(2,i_reag_bone)>)
+arg(sum[2],<eval arg(consumed)+<return_nth(2,<qtag(q026_hcnPoison_resources)>)>>)
+
+arg(consumed,<f_q026_hcnPoison_consumeOne(3,i_reag_obsidian)>)
+arg(sum[3],<eval arg(consumed)+<return_nth(3,<qtag(q026_hcnPoison_resources)>)>>)
+
+arg(consumed,<f_q026_hcnPoison_consumeOne(4,i_reag_sulfur_ash)>)
+arg(sum[4],<eval arg(consumed)+<return_nth(4,<qtag(q026_hcnPoison_resources)>)>>)
+
+arg(consumed,<f_q026_hcnPoison_consumeOne(5,i_ingot_obsidian)>)
+arg(sum[5],<eval arg(consumed)+<return_nth(5,<qtag(q026_hcnPoison_resources)>)>>)
+
+arg(consumed,<f_q026_hcnPoison_consumeOne(6,i_log_copper)>)
+arg(sum[6],<eval arg(consumed)+<return_nth(6,<qtag(q026_hcnPoison_resources)>)>>)
+
+arg(consumed,<f_q026_hcnPoison_consumeOne(7,i_log_iron)>)
+arg(sum[7],<eval arg(consumed)+<return_nth(7,<qtag(q026_hcnPoison_resources)>)>>)
+
+src.qtag(q026_hcnPoison_resources,"<arg(sum[1])>,<arg(sum[2])>,<arg(sum[3])>,<arg(sum[4])>,<arg(sum[5])>,<arg(sum[6])>,<arg(sum[7])>",36)
+
+// returns the number of consumed resources
+[function f_q026_hcnPoison_consumeOne] // argv(0) : reag number; argv(1) : reagent id
+arg(resToConsume,0)
+arg(resToGive,<eval f_q026_hcnPoison_ResourceRemain(<eval argv(0)>)>)
+if (<arg(resToGive)>) // there is something to add
+  arg(resToConsume,<rescount(<argv(1)>)>)
+  sysMessage("found: <arg(resToConsume)> of <argv(1)>")
+  if (<arg(resToConsume)> > <arg(resToGive)>) // check for number of the resources in the player's backpack, so as not to give more than necessary
+    arg(resToConsume,<arg(resToGive)>)
+  endif
+  if (<arg(resToConsume)>)
+    consume(<arg(resToConsume)>,<argv(1)>)
+    sysMessage("consuming <arg(resToConsume)> of <argv(1)>")
+  endif
+endif
+return<eval arg(resToConsume)>
+
+
+[function f_q026_hcnPoison_ResourcesCheck] // checks, whether all the resources has been delivered
+if (<return_nth(1,<src.qtag(q026_hcnPoison_resources)>)> >= <return_nth(1,<def_q026_CureResources>)>) // batwings
+  if (<return_nth(2,<src.qtag(q026_hcnPoison_resources)>)> >= <return_nth(2,<def_q026_CureResources>)>) // bones
+    if (<return_nth(3,<src.qtag(q026_hcnPoison_resources)>)> >= <return_nth(3,<def_q026_CureResources>)>) // obsidian reg
+      if (<return_nth(4,<src.qtag(q026_hcnPoison_resources)>)> >= <return_nth(4,<def_q026_CureResources>)>) // SA
+        if (<return_nth(5,<src.qtag(q026_hcnPoison_resources)>)> >= <return_nth(5,<def_q026_CureResources>)>) // obsidian ing
+          if (<return_nth(6,<src.qtag(q026_hcnPoison_resources)>)> >= <return_nth(6,<def_q026_CureResources>)>) // spruce log
+            if (<return_nth(7,<src.qtag(q026_hcnPoison_resources)>)> >= <return_nth(7,<def_q026_CureResources>)>) // chestnut log
+              tag(q026_checkedResources,1)
+              return 1
+            endif
+          endif
+        endif
+      endif
+    endif
+  endif
+endif
+tag(q026_checkedResources,0)
+return 0
+
+[itemdef i_q026_hcnPoison_Cure]
+id=i_flask1_red
+name=Lek na jed z hrobek
+
+on=@create
+attr=014 // movenever & newbie
+
+on=@UserDClick
+src.f_q026_HCNPoison_remove
+src.qtag(q026_hcnPoison,15,36)
+src.effect(3,<s_bless.effectID>,6,15,1)
+f_sound_DrinkPoiton
+remove
+return 1

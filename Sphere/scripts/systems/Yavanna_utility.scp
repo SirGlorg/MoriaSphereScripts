@@ -1,0 +1,433 @@
+//-------------Yavanna`s utility----------
+
+//////////////////////////////////////////////
+////////       Time Operations        ////////
+//////////////////////////////////////////////
+
+[function XDaysLater]	// argv(0) number of days
+arg(NeededYear,<getYear>)
+arg(NeededMonth,<getMonth>)
+arg(NeededDay,<getDay>)
+arg(NeededHour,<getHour>)
+arg(NeededMinute,<getMinute>)
+
+arg(NeededDay,<NeededDay>+<eval argv(0)>)
+while (<NeededDay> > <d_month_days_<NeededMonth>>)
+ arg(NeededDay,#-<d_month_days_<NeededMonth>>)
+ if (<NeededMonth> == 12)
+  arg(NeededMonth,1)
+  arg(NeededYear,#+1)
+ else
+  arg(NeededMonth,#+1)
+ endif
+endwhile
+arg(CountedXDaysLater,"<NeededYear>,<NeededMonth>,<NeededDay>,<NeededHour>,<NeededMinute>")
+Return<CountedXDaysLater>
+
+[function XDaysLaterFrom]	// argv(0) number of days - rest arguments==<NeededYear>,<NeededMonth>,<NeededDay>,<NeededHour>,<NeededMinute>
+arg(NeededYear,<eval argv(1)>)
+arg(NeededMonth,<eval argv(2)>)
+arg(NeededDay,<eval argv(3)>)
+arg(NeededHour,<eval argv(4)>)
+arg(NeededMinute,<eval argv(5)>)
+
+arg(NeededDay,<NeededDay>+<eval argv(0)>)
+while (<NeededDay> > <d_month_days_<NeededMonth>>)
+ arg(NeededDay,#-<d_month_days_<NeededMonth>>)
+ if (<NeededMonth> == 12)
+  arg(NeededMonth,1)
+  arg(NeededYear,#+1)
+ else
+  arg(NeededMonth,#+1)
+ endif
+endwhile
+arg(CountedXDaysLater,"<NeededYear>,<NeededMonth>,<NeededDay>,<NeededHour>,<NeededMinute>")
+Return<CountedXDaysLater>
+
+[function XMonthsLater]	//can be aswell used to discount months from passed date
+arg(ThisYear,<getYear>)
+arg(ThisMonth,<getMonth>+<eval argv(0)>)
+arg(ThisDay,<getDay>)
+arg(ThisHour,<getHour>)
+arg(ThisMinute,<getMinute>)
+if (<arg(ThisMonth)> > 0)
+  while (<arg(ThisMonth)> > 12)
+    arg(ThisYear,#+1)
+    arg(ThisMonth,#-12)
+  endwhile
+else
+  while (<arg(ThisMonth)> < 1)
+    arg(ThisYear,#-1)
+    arg(ThisMonth,#+12)
+  endwhile
+endif
+if (<ThisDay> > <d_month_days_<ThisMonth>>)
+  arg(ThisDay,<d_month_days_<ThisMonth>)
+endif
+arg(CountedXMonthsLater,"<ThisYear>,<ThisMonth>,<ThisDay>,<ThisHour>,<ThisMinute>")
+return<CountedXMonthsLater>
+
+[function XMonthsLaterFrom]	// argv(0) number of months - rest arguments==<NeededYear>,<NeededMonth>,<NeededDay>,<NeededHour>,<NeededMinute>
+arg(ThisYear,<eval argv(1)>)
+arg(ThisMonth,<eval argv(2)>+<eval argv(0)>)
+arg(ThisDay,<eval argv(3)>)
+arg(ThisHour,<eval argv(4)>)
+arg(ThisMinute,<eval argv(5)>)
+if (<arg(ThisMonth)> > 0)
+  while (<arg(ThisMonth)> > 12)
+    arg(ThisYear,#+1)
+    arg(ThisMonth,#-12)
+  endwhile
+else
+  while (<arg(ThisMonth)> < 1)
+    arg(ThisYear,#-1)
+    arg(ThisMonth,#+12)
+  endwhile
+endif
+if (<ThisDay> > <d_month_days_<ThisMonth>>)
+  arg(ThisDay,<d_month_days_<ThisMonth>)
+endif
+arg(CountedXMonthsLater,"<ThisYear>,<ThisMonth>,<ThisDay>,<ThisHour>,<ThisMinute>")
+return<CountedXMonthsLater>
+
+[function MonthLater]
+arg(CountedMonthLater,<XDaysLater(31)>)
+Return<CountedMonthLater>
+
+[function isMonthLater]
+if (<argvcount> == 0)
+  return 0
+endif
+arg(ThisYear,<getYear>)
+arg(ThisMonth,<getMonth>)
+arg(ThisDay,<getDay>)
+arg(ThisHour,<getHour>)
+arg(ThisMinute,<getMinute>)
+if (<ThisYear> > <argv(0)>)
+  return 1
+elseif (<ThisYear> == <argv(0)>)
+  if (<ThisMonth> > <argv(1)>)
+    return 1
+  elseif (<ThisMonth> == <argv(1)>)
+    if (<ThisDay> > <argv(2)>)
+      return 1
+    elseif (<ThisDay> == <argv(2)>)
+      if (<ThisHour> > <argv(3)>)
+        return 1
+      elseif (<ThisHour> == <argv(3)>)
+        if (<ThisMinute> > <argv(4)>)
+          return 1
+        endif
+      endif
+    endif
+  endif
+endif
+return 0
+
+[function timeMonthLaterSH]
+return"<argv(0)>:<argv(1)>:<argv(2)>:<argv(3)>:<argv(4)>"
+
+[function timeMonthLater]
+return"<argv(0)> <argv(2)>.<argv(1)> <argv(3)>h:<argv(4)>min"
+
+[function dsToRTime] // argv(0) -> cas v ds
+arg(days,<argv(0)> / 864000)
+arg(remo,<arg(days)> * 864000)
+arg(remain,<argv(0)> - <arg(remo)>)
+arg(hod,<arg(remain)>/36000)
+arg(remo,<arg(hod)> * 36000)
+arg(remain,<arg(remain)>-<arg(remo)>)
+arg(min,<arg(remain)>/600)
+arg(remo,<arg(min)> * 600)
+arg(remain,<arg(remain)>-<arg(remo)>)
+arg(sec,<arg(remain)> / 10)
+return"<arg(days)> dni <arg(hod)> hod <arg(min)> min <arg(sec)> sec"
+
+//////////////////////////////////////////////
+////////    NB Experience enhancer    ////////
+//////////////////////////////////////////////
+
+[typedef t_nbexp_enhancer]
+on=@UserDClick
+if (src.isGM)
+  src.dialog(d_nbexp_enhancer,<tag.lvl_limit>,<tag.exp_const>,<tag.time_limit>,<tag.message>,<tag.message2>,<uid>)
+else
+ arg(exp_to_give,(<tag(lvl_limit)>-<src.tag(level)>) * <tag.exp_const>)
+ arg(enhancer_tag,nbexp_enhancer_<hval <uid>>)
+ if (exp_to_give > 0)
+  if !(strlen(<src.qtag(<enhancer_tag>)>) && (<tag.time_limit> == 0))
+   if (src.qtag(<enhancer_tag>) < <serv.time>)
+    src.addexp(<exp_to_give>)
+    src.qtag(<enhancer_tag>,<serv.time>+10*60*60*<tag(time_limit)>)
+    src.SysMessage(<tag.message>)
+   else
+    src.SysMessage(<tag.message2>)
+   endif
+  else
+   src.SysMessage("Hmm... Tady uz nic zajimaveho nezjistis.")
+  endif
+ else
+  src.SysMessage("Hmm... nic zajimaveho jsi <src.sex nezjistil nezjistila>.")
+  src.qtagremove(<enhancer_tag>)
+ endif
+endif
+return 1
+
+[dialog d_nbexp_enhancer]
+argo.SetLocation=15,5
+
+argo.tag(sirka,396)
+argo.tag(vyska,404)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,3,248,120)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,10)
+argo.dialog_zpruhledni
+
+argo.tag(enhancer_uid,<argv(5)>)
+arg(sloupec_prvni_x,<d_def_okraj>+<d_def_skvira>+<d_def_odsazeni>)
+arg(sloupec_prvni_y,<d_def_okraj>+<d_def_skvira>)
+argo.textA(sloupec_prvni_x,sloupec_prvni_y+0*(<d_def_radek_vyska>+<d_def_skvira>),42,"NB Experience Enhancer")
+argo.button(sloupec_prvni_x+340,sloupec_prvni_y-3,0fb1,0fb3,1,0,0)//cancel
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.textA(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_readcolor>,"Lvl limit:")
+argo.textA(sloupec_prvni_x,sloupec_prvni_y+1*<d_def_radek_vyska>,<d_def_readcolor>,"Exp. konstanta:")
+argo.textA(sloupec_prvni_x,sloupec_prvni_y+2*<d_def_radek_vyska>,<d_def_readcolor>,"Time limit / hodiny:")
+
+argo.settext(1000,<argv(0)>)
+argo.settext(1001,<argv(1)>)
+argo.settext(1002,<argv(2)>)
+argo.textEntry(sloupec_prvni_x+251,sloupec_prvni_y+0*<d_def_radek_vyska>,50,<d_def_radek_vyska>,<d_def_writecolor>,1,1000)
+argo.textEntry(sloupec_prvni_x+251,sloupec_prvni_y+1*<d_def_radek_vyska>,50,<d_def_radek_vyska>,<d_def_writecolor>,2,1001)
+argo.textEntry(sloupec_prvni_x+251,sloupec_prvni_y+2*<d_def_radek_vyska>,50,<d_def_radek_vyska>,<d_def_writecolor>,3,1002)
+
+arg(sloupec_prvni_y,#+(3*<d_def_radek_vyska>)+<d_def_skvira>)
+argo.textA(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_readcolor>,Message - dostane expy:)
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.settext(1004,<argv(3)>)
+argo.textEntry(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,360,<d_def_radek_vyska>,<d_def_writecolor>,4,1004)
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.textA(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_readcolor>,Message - prisel brzy - nedostane expy:)
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.settext(1006,<argv(4)>)
+argo.textEntry(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,360,<d_def_radek_vyska>,<d_def_writecolor>,5,1006)
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.settext(1007,"Vypocet experience:<br> Experience se pocitaji takto:<br>('lvl_limit' - 'lvl_hrace') * 'exp_const'<br>Nejvice tudiz dostane hrac na 0 lvlu (a to presne LvlLimit nasobek experience konstanty), nejmene pak hrac s lvlem o jeda mensim, nez je hodnota Lvl Limitu. Ziskane experience takto ubyvaji s levelem hrace vzdy o hodnotu konstanty na kazdem levelu.<br><br>Message:<br> Message je RP informace, ktera by se mela zobrazit pri poklikani na item.<br> Message jsou dve, prvni se zobrazi v pripade, ze jsou splneny vsechny podminky pro ziskani expu, ta druha v pripade, ze hrac prisel prilis brzy na to, aby experience znovu dostal.<br><br>Time Limit:<br> Time limit je doba v hodinach, po ktere muze hrac znovu ziskat experience. Pokud je hodnota nastavena na 0, pak hrac ziska expy jen jednou. Tag obsahujici informaci o moznosti ziskat experience se automaticky smaze pri doubleclicku na item v pripade, ze prekroci limit dany levelem pro ziskavani expu.")
+argo.HTMLGump(sloupec_prvni_x,sloupec_prvni_y,365,10*<d_def_radek_vyska>,1007,0,32)
+
+arg(sloupec_prvni_y,#+(10*<d_def_radek_vyska>)+<d_def_skvira>)
+argo.button(sloupec_prvni_x+340,sloupec_prvni_y-3,0fb7,0fb9,1,0,1)//OK
+
+[dialog d_nbexp_enhancer button]
+on=0
+src.SysMessage("nastaveni stornovana")
+
+on=1
+arg(enhancer,<argo.tag(enhancer_uid)>)
+src.SysMessage("Lvl Limit: <argtxt(1)>")
+enhancer.tag(lvl_limit,<argtxt(1)>)
+src.SysMessage("Experience Konstanta: <argtxt(2)>")
+enhancer.tag(exp_const,<argtxt(2)>)
+src.SysMessage("Time Limit: <argtxt(3)>")
+enhancer.tag(time_limit,<argtxt(3)>)
+enhancer.tag(message,<argtxt(4)>)
+enhancer.tag(message2,<argtxt(5)>)
+
+[typedef t_link_dclick]
+on=@UserDClick
+if (src.isGM)
+  target("Na co chces predmet nalinkovat ?")
+else
+  link.dclick
+endif
+return 1
+
+on=@TargOn_Item
+link=<src.targ>
+return 1
+  
+on=@TargOn_Char
+link=<src.targ>
+return 1
+
+on=@TargOn_Ground
+target("Linkovat item na zem nema smysl.")
+return 1
+
+//////////////////////////////////////////////
+////////    B r a n a    L e v e l    ////////
+//////////////////////////////////////////////
+
+[itemdef i_brana_lvl]
+NAME=Brana
+ID=i_moongate_blue
+TYPE=T_normal
+CATEGORY=Questy
+SUBSECTION=Brana portujici jen dany lvl
+DESCRIPTION=Brana
+
+ON=@step
+if (<src.tag.level> >= <more2>)
+	src.go(<morep>)
+ELSE
+	src.redmessage("Nemas dostatek sily projit touto branou")
+endif
+
+
+
+//////////////////////////////////////////////
+////////    D e a t h    R o b a      ////////
+//////////////////////////////////////////////
+
+[itemdef i_deathshroud_npc]
+NAME=Temna roba
+ID=i_deathshroud
+TYPE=t_clothing
+
+ON=@Create
+HITPOINTS={21 30}
+
+
+
+/////////////////////////////////////////
+////////      Y a v a n n a      ////////
+/////////////////////////////////////////
+
+[FUNCTION Kementari]
+return<finduid(#022EAE6)>
+
+[FUNCTION invisy]
+newitemsafe(i_fx_yavanna)
+lastnew.link=<uid>
+lastnew.p=<p>
+
+[FUNCTION invisy_1]
+invis
+sfx snd_SPELL_flamestrike
+SOUND=015
+NewItemSafe=i_fire_column 
+lastnew.COLOR=0995
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=2
+lastnew.P=<P>
+lastnew.MOVE(1,1,0,0)
+NewItemSafe=i_fire_column 
+lastnew.COLOR=0995
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=2
+lastnew.P=<P>
+lastnew.MOVE(1,-1,0,0)
+NewItemSafe=i_fire_column 
+lastnew.COLOR=0995
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=2
+lastnew.P=<P>
+lastnew.MOVE(-1,1,0,0)
+NewItemSafe=i_fire_column 
+lastnew.COLOR=0995
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=2
+lastnew.P=<P>
+lastnew.MOVE(-1,-1,0,0)
+
+NewItemSafe=i_fx_sparkle
+lastnew.COLOR=0995
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=4
+lastnew.P=<P>
+lastnew.MOVE n
+NewItemSafe=i_fx_sparkle
+lastnew.COLOR=0995
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=4
+lastnew.P=<P>
+lastnew.MOVE s 
+NewItemSafe=i_fx_sparkle
+lastnew.COLOR=0995
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=4 
+lastnew.P=<P> 
+lastnew.MOVE w 
+NewItemSafe=i_fx_sparkle
+lastnew.COLOR=0995
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=4
+lastnew.P=<P>
+lastnew.MOVE e
+
+NewItemSafe=i_fx_sparkle
+lastnew.COLOR=0985
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=5
+lastnew.P=<P>
+lastnew.MOVE(2,2,0,0)
+NewItemSafe=i_fx_sparkle
+lastnew.COLOR=0985
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=5 
+lastnew.P=<P>
+lastnew.MOVE(2,-2,0,0)
+NewItemSafe=i_fx_sparkle
+lastnew.COLOR=0985
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=5
+lastnew.P=<P>
+lastnew.MOVE(-2,2,0,0)
+NewItemSafe=i_fx_sparkle
+lastnew.COLOR=0985
+lastnew.ATTR=attr_static|attr_decay 
+lastnew.TIMER=5
+lastnew.P=<P>
+lastnew.MOVE(-2,-2,0,0)
+
+[ITEMDEF i_fx_yavanna]
+id=i_moongate_blue
+
+on=@create
+dispid=01af4
+more1=0
+timerd=1
+
+on=@timer
+if (more1==0)
+  if (dispid<01afb)
+    dispid=<eval dispid+1>
+    timerd=1
+    updatex
+  else
+    link.invisy_1
+    more1=1
+    timerd=1
+  endif
+elseif (more1==1)
+  if (dispid!=i_moongate_blue)
+    dispid=i_moongate_blue
+    updatex
+    timer=3
+  else
+    dispid=01afb
+    updatex
+    more1=2
+    timerd=1
+  endif
+elseif (more1==2)
+  if (dispid>01af4)
+    dispid=<eval dispid-1>
+    updatex
+    timerd=1
+  else
+    remove
+  endif
+endif
+return 1
+
+[EOF]

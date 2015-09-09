@@ -1,0 +1,44 @@
+///:::::Ruzni obyvatele mest apod.:::::///
+///:::::Orfeus (Moria - www.moria.cz)::///
+///:::::Last update: 09/08/06::::::::::///
+
+
+//////////////Ambra (Hnuj)
+[chardef c_q100_hobitin_ambra]
+id=c_woman
+name=Ambra
+
+TEVENTS=e_character
+TSPEECH=spk_q100_hobitin_ambra
+
+CATEGORY=Moria Questy
+SUBSECTION=Inhabitats
+DESCRIPTION=Hnojeni
+
+on=@create
+TITLE=Zahradnice
+NPC=brain_vendor
+COLOR=color_clovek
+STR=1000
+DEX=1000
+INT=1000
+
+tag(noAnimate,1)
+
+ITEMNEWBIE=i_hair_buns
+COLOR=00750
+ITEMnewbie=i_robe
+COLOR=06BA
+ITEMnewbie=i_boots_thigh
+COLOR=0
+ITEMnewbie=i_pitchfork
+COLOR=0
+ATTR=00004
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+  return 1
+else
+  f_q100_hobitin_ambra
+ENDIF

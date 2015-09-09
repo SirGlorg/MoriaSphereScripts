@@ -1,0 +1,728 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Saturday, June 3, 2000
+//
+//VERSION=0.54
+
+
+[ITEMDEF i_atlas_map]
+defname=i_atlas_map
+id=i_spellbook
+name=Atlas map
+resources=5 i_hide,2 i_thread
+skillmake=carpentry 50.0, tailoring 30.0, 1 t_carpentry, 1 t_sewing_kit
+
+ON=@Create
+tag(pocetmap,0)
+color=0263
+
+ON=@userDCLICK
+dialog d_atlas_map
+RETURN 1
+
+ON=@TARGON_ITEM
+if (<src.targ.topobj>!=<src>)&&(src.isgm==0)
+ src.redmessage("Atlas musis mit u sebe.")
+elseif (src.targ.baseid==i_map_blank)
+ if (tag(pocetmap) >= 64000)
+  src.redmessage("Vic map uz se do atlasu nevejde.")
+ else
+  tag(pocetmap,#+<src.targ.amount>)
+  src.targ.remove
+ endif
+elseif (src.targ.type==t_container)
+ src.targ.contents(f_pridat_mapy(<uid>))
+endif
+Target("Pridat dalsi?")
+return 1
+
+[dialog d_atlas_map]
+100,100
+page 0
+gumppic(0,0,510)
+gumppic(10,10,0232f)  // kompas
+gumppic(230,60,032)    //  pecetni oddelovac
+text 240 40 1152 1
+text 220 20 1152 2
+text 240 88 1152 3
+text 240 118 1152 4
+text 240 148 1152 5
+HTMLGUMP(20,80,180,300,0,0,0)
+button 220 90 4033 4033 1 0 1//dalsi mapy
+button 220 120 4033 4033 1 0 2//vyndat mapy
+button 370 0 015e8 015e8 0 2 3 //stranka globalni mapy
+gumppic(280,148,2443)
+textentry  290 150 350 120 32 0 6
+page 2
+button 370 0 015e8 015e8 0 1 3 //stranka globalni mapy
+gumppic 60 50 5528 
+
+// Mesta
+button 203 210 2360 2360 1 0 1 // Tharbad 
+text 213 205 90 8
+button 255 230 2360 2360 1 0 2 // Lorien 
+text 250 235 0c4 9
+button 245 155 2360 2360 1 0 3 // Roklinka 
+text 255 150 0c4 10
+button 362 375 2360 2360 1 0 4 // Harad 
+text 372 370 026 11
+button 355 245 2360 2360 1 0 5	// Rhun
+text 365 240 026 12
+button 240 350 2360 2360 1 0 6	// Dol Amroth
+text 215 335 0c4 13
+button 345 345 2360 2360 1 0 7	// Nurn
+text 355 333 026 14
+button 315 315 2360 2360 1 0 8	// Minas Morgul
+text 327 315 026 15
+button 325 305 2360 2360 1 0 9	// Barad-Dur
+text 335 300 026 16
+button 265 385 2360 2360 1 0 10	// Umbar
+text 260 392 90 17
+button 240 280 2360 2360 1 0 11 // Edoras
+text 230 265 0c4 18
+button 280 316 2360 2360 1 0 12 // Minas Tirith
+text 245 300 0c4 19
+button 308 140 2360 2360 1 0 13	// Dol + kralostvi pod horou
+text 275 122 0c4 20
+button 177 150 2360 2360 1 0 14	// Fornost
+text 160 135 0c4 21
+button 120 165 2360 2360 1 0 15	// Sede Pristavy
+text 90 145 0c4 22
+
+
+[dialog d_atlas_map text]
+<BASEFONT SIZE="+5" COLOR="#000080"><CENTER>    ATLAS MAP                A           MAPA SVETA</CENTER></BASEFONT>
+<?tag(pocetmap)?>
+Pocet map v atlasu:
+Pridat dalsi mapy
+Vyndat mapy
+Pocet
+0
+0
+Tharbad 
+Lorien 
+Roklinka
+Harad 
+Rhun
+Dol Amroth
+Nurn 
+Minas Morgul
+Barad-Dur 
+Umbar 
+Edoras 
+Minas Tirith 
+Dol + kralostvi pod horou
+Fornost 
+Sede Pristavy 
+0
+0
+0
+0
+
+[dialog d_atlas_map button]
+on=0
+return 1
+
+on=1
+TARGET("Zamer mapu, nebo kontejner s mapami.")
+return 1
+
+on=2
+arg(vyndatmap,<fixNumber(<argtxt(0)>)>)
+if (<arg(vyndatmap)> > 60000)
+  arg(vyndatMap,60000)
+elseif (<eval arg(vyndatmap)> <= 0)
+  src.redMessage("Nelze zadat nekladnou hodnotu.")
+  return 1
+endif
+if (<arg(vyndatmap)> > <tag(pocetmap)>)
+	if (<eval tag(pocetmap)>)
+		arg(vyndatMap,<tag(pocetmap)>)
+	else
+		src.redMessage("V atlasu nejsou zadne mapy!")
+		return 1
+	endif
+endif
+src.newitem(i_map_blank)
+lastnew.amount=<arg(vyndatMap)>
+lastnew.bounce
+tag(pocetmap,#-<arg(vyndatMap)>)
+return 1
+
+on=3
+page 2
+
+
+
+[function f_pridat_mapy]
+if (baseid==i_map_blank)
+ finduid(<argv(0)>).tag(pocetmap,#+<amount>)
+ remove
+endif
+
+
+[ITEMDEF 04261]
+DEFNAME=i_map_blank
+ID=i_map
+NAME=Blank Map
+TYPE=T_MAP_BLANK
+VALUE=3
+can_pile=0
+RESOURCES=1 I_LOG_copper
+SKILLMAKE=CARPENTRY 80.0, t_carpentry
+
+CATEGORY=Maps
+SUBSECTION=General Maps
+DESCRIPTION=Blank Map
+
+ON=@Create
+MORE1=0
+MORE2=0
+
+
+//////////////////////////
+[DIALOG d_playertravel_2] 
+SetLocation=0,0 // This makes the gump start in the top left corner of the screen
+page 0
+resizepic 0 0 3600 640 480 
+gumppic 1 1 5500 
+gumppic 60 50 5528 
+gumppic 2 2 5536 
+button 555 5 5513 5514 1 0 0
+
+text 450 360 90 4
+button 450 385 2360 2360 0 1 0	// Stredozeme
+text 470 380 80 5
+//button 450 405 2360 2360 0 4 0	// Vychodo zeme
+//text 470 400 80 6
+//button 450 425 2360 2360 0 5 0	// Jihozeme
+//text 470 420 80 7
+
+page 1
+text 450 50 90 0 
+button 450 75 2360 2360 0 1 0	// Mesta
+text 470 70 80 1
+button 450 95 2360 2360 0 2 0	// Dungeony
+text 470 90 80 2
+button 450 115 2360 2360 0 3 0	// Doly
+text 470 110 80 3
+
+// Towns
+button 203 210 2360 2360 1 0 1 // Tharbad 
+text 213 205 90 8
+button 255 230 2360 2360 1 0 2 // Lorien 
+text 250 235 0c4 9
+button 245 155 2360 2360 1 0 3 // Roklinka 
+text 255 150 0c4 10
+button 362 375 2360 2360 1 0 4 // Harad 
+text 372 370 026 11
+button 355 245 2360 2360 1 0 5	// Rhun
+text 365 240 026 12
+button 240 350 2360 2360 1 0 6	// Dol Amroth
+text 215 335 0c4 13
+button 345 345 2360 2360 1 0 7	// Nurn
+text 355 333 026 14
+button 315 315 2360 2360 1 0 8	// Minas Morgul
+text 327 315 026 15
+button 325 305 2360 2360 1 0 9	// Barad-Dur
+text 335 300 026 16
+button 265 385 2360 2360 1 0 10	// Umbar
+text 260 392 90 17
+button 240 280 2360 2360 1 0 11 // Edoras
+text 230 265 0c4 18
+button 280 316 2360 2360 1 0 12 // Minas Tirith
+text 245 300 0c4 19
+button 308 140 2360 2360 1 0 13	// Dol + kralostvi pod horou
+text 275 122 0c4 20
+button 177 150 2360 2360 1 0 14	// Fornost
+text 160 135 0c4 21
+button 120 165 2360 2360 1 0 15	// Sede Pristavy
+text 90 145 0c4 22
+
+page 2
+text 450 50 90 0
+button 450 75 2360 2360 0 1 0	// MESTA
+text 470 70 80 1
+button 450 95 2360 2360 0 2 0	// Dungeony
+text 470 90 80 2
+button 450 115 2360 2360 0 3 0	// Doly
+text 470 110 80 3
+
+
+
+///////////////////
+
+
+[ITEMDEF 04262]
+DEFNAME=i_map_STOCK_1
+ID=i_map
+TYPE=T_MAP
+NAME=Map of Vesper
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Vesper
+
+ON=@Create
+MORE2=0bf803f4
+MORE1=0a4c0250
+
+[ITEMDEF 04263]
+DEFNAME=i_map_STOCK_2
+ID=i_map
+NAME=Map of Yew
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Yew
+
+ON=@Create
+MORE2=02fe04f5
+MORE1=00ec02e5
+
+[ITEMDEF 04264]
+DEFNAME=i_map_STOCK_3
+ID=i_map
+NAME=Map of Skara Brae
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Skara Brae
+
+ON=@Create
+MORE2=03c00994
+MORE1=020c0810
+
+[ITEMDEF 04265]
+DEFNAME=i_map_STOCK_4
+ID=i_map
+NAME=Map of Jhelom
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Jhelom
+
+ON=@Create
+MORE2=05f80fd8
+MORE1=04400df4
+
+[ITEMDEF 04266]
+DEFNAME=i_map_STOCK_5
+ID=i_map
+NAME=Map of Trinsic
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Trinsic
+
+ON=@Create
+MORE2=08460b88
+MORE1=07000a46
+
+[ITEMDEF 04267]
+// Map of Minoc template
+DEFNAME=i_map_STOCK_6
+ID=i_map
+NAME=Map of Minoc
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Minoc
+
+ON=@Create
+MORE2=0a9202be
+MORE1=09380164
+
+[ITEMDEF 04268]
+DEFNAME=i_map_STOCK_7
+// Map of Bucaneer's Den template
+ID=i_map
+NAME=Map of Bucaneer's Den
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Bucaneer's Den
+
+ON=@Create
+MORE2=0acf08d7
+MORE1=0a380818
+
+[ITEMDEF 04269]
+DEFNAME=i_map_STOCK_8
+// Map of Serpent's Hold template
+ID=i_map
+NAME=Map of Serpent's Hold
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Serpent's Hold
+
+ON=@Create
+MORE2=0c1c0e37
+MORE1=0a9a0d01
+
+[ITEMDEF 0426a]
+DEFNAME=i_map_STOCK_9
+// Map of Nujelm template
+ID=i_map
+NAME=Map of Nujelm
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Nujelm
+
+ON=@Create
+MORE2=0ef80590
+MORE1=0d760406
+
+[ITEMDEF 0426b]
+DEFNAME=i_map_STOCK_10
+// Map of Magincia template
+ID=i_map
+NAME=Map of Magincia
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Magincia
+
+ON=@Create
+MORE2=0eea08fa
+MORE1=0dca07e6
+
+[ITEMDEF 0426c]
+DEFNAME=i_map_STOCK_11
+// Map of Ocllo template
+ID=i_map
+NAME=Map of Ocllo
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Ocllo
+
+ON=@Create
+MORE2=0eba0ab6
+MORE1=0dfe0998
+
+[ITEMDEF 0426d]
+DEFNAME=i_map_STOCK_12
+// Map of Moonglow template
+ID=i_map
+NAME=Map of Moonglow
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Moonglow
+
+ON=@Create
+MORE2=0127c05f8
+MORE1=0103c0328
+
+[ITEMDEF 0426e]
+DEFNAME=i_map_STOCK_13
+// Map of Britain template
+ID=i_map
+NAME=Map of Britain
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 40.0
+
+CATEGORY=Maps
+SUBSECTION=City Maps
+DESCRIPTION=Britain
+
+ON=@Create
+MORE2=06c80784
+MORE1=04440574
+
+[ITEMDEF 0426f]
+DEFNAME=i_map_STOCK_14
+// Map of Minoc to Yew template
+ID=i_map
+NAME=Map of Minoc to Yew
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 60.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Minoc to Yew
+
+ON=@Create
+MORE2=09000c00
+MORE1=00000100
+
+[ITEMDEF 04270]
+DEFNAME=i_map_STOCK_15
+// Map of Minoc to Vesper template
+ID=i_map
+NAME=Map of Minoc to Vesper
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 60.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Minoc to Vesper
+
+ON=@Create
+MORE2=0b3e02ea
+MORE1=09a3023c
+
+[ITEMDEF 04271]
+DEFNAME=i_map_STOCK_16
+// Map of Britain to Trinsic template
+ID=i_map
+NAME=Map of Britain to Trinsic
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 60.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Britain to Trinsic
+
+ON=@Create
+MORE2=09000c00
+MORE1=04000500
+
+[ITEMDEF 04272]
+DEFNAME=i_map_STOCK_17
+// Map of Trinsic to Bucaneer's Den template
+ID=i_map
+NAME=Map of Trinsic to Bucaneer's Den
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Trinsic to Bucaneer's Den
+
+ON=@Create
+MORE2=0c000c00
+MORE1=07000700
+
+[ITEMDEF 04273]
+DEFNAME=i_map_STOCK_18
+// Map of Bucaneer's Den to Ocllo template
+ID=i_map
+NAME=Map of Bucaneer's Den to Ocllo
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Bucaneer's Den to Ocllo
+
+ON=@Create
+MORE2=0f000c00
+MORE1=0a000700
+
+[ITEMDEF 04274]
+DEFNAME=i_map_STOCK_19
+// Map of Trinsic to Jhelom template
+ID=i_map
+NAME=Map of Trinsic to Jhelom
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Trinsic to Jhelom
+
+ON=@Create
+MORE2=09000fff
+MORE1=01000700
+
+[ITEMDEF 04275]
+DEFNAME=i_map_STOCK_20
+// Map of Vesper to Nujelm template
+ID=i_map
+NAME=Map of Vesper to Nujelm
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Vesper to Nujelm
+
+ON=@Create
+MORE2=0f000600
+MORE1=0a4c0250
+
+[ITEMDEF 04276]
+DEFNAME=i_map_STOCK_21
+// Map of Nujelm to Magincia template
+ID=i_map
+NAME=Map of Nujelm to Magincia
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Nujelm to Maginicia
+
+ON=@Create
+MORE2=0f000900
+MORE1=0d000400
+
+[ITEMDEF 04277]
+DEFNAME=i_map_STOCK_22
+// Map of Bucden to Magincia template
+ID=i_map
+NAME=Map of Bucden to Magincia
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Bucaneer's Den to Magincia
+
+ON=@Create
+MORE2=0f000a00
+MORE1=0a000700
+
+[ITEMDEF 04278]
+DEFNAME=i_map_STOCK_23
+// Map of Magincia to Ocllo template
+ID=i_map
+NAME=Map of Magincia to Ocllo
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Magincia to Ocllo
+
+ON=@Create
+MORE2=0f000900
+MORE1=0d000700
+
+[ITEMDEF 04279]
+DEFNAME=i_map_STOCK_24
+// Map of Serpent's Hold to Ocllo template
+ID=i_map
+NAME=Map of Serpent's Hold to Ocllo
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Serpent's Hold to Ocllo
+
+ON=@Create
+MORE2=0f000f00
+MORE1=0a000a00
+
+[ITEMDEF 0427a]
+DEFNAME=i_map_STOCK_25
+// Map of Moonglow to Nujelm template
+ID=i_map
+NAME=Map of Moonglow to Nujelm
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Moonglow to Nujelm
+
+ON=@Create
+MORE2=013000600
+MORE1=00d000300
+
+[ITEMDEF 0427b]
+DEFNAME=i_map_STOCK_26
+// Map of Yew to Britain template
+ID=i_map
+NAME=Map of Yew to Britain
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Yew to Britain
+
+ON=@Create
+MORE2=07000800
+MORE1=00000200
+
+[ITEMDEF 0427c]
+DEFNAME=i_map_STOCK_27
+// Map of Britain to Skara Brae template
+ID=i_map
+NAME=Map of Britain to Skara Brae
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 70.0
+
+CATEGORY=Maps
+SUBSECTION=Travelling Maps
+DESCRIPTION=Britian to Skara Brae
+
+ON=@Create
+MORE2=06c80a00
+MORE1=01000700
+
+[ITEMDEF 0427d]
+DEFNAME=i_map_STOCK_28
+ID=i_map
+NAME=Map of the World
+TYPE=T_MAP
+RESOURCES=i_map_blank
+SKILLMAKE=CARTOGRAPHY 100.0
+
+CATEGORY=Maps
+SUBSECTION=General Maps
+DESCRIPTION=Map of the World
+
+ON=@Create
+MORE1=0
+MORE2=0144f0fff
+
+[EOF]

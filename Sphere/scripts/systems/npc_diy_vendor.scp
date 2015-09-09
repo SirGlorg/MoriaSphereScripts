@@ -1,0 +1,1082 @@
+[itemdef i_diy_vendor_pridavac]
+name=Zamerovac
+id=i_memory
+type =t_eq_script
+
+ON=@create
+    attr=010
+
+ON=@timer
+    remove
+
+ON=@equip
+    target(Zamer item,ktery chces pridat)
+    
+ON=@targon_item
+arg(spawn,<uid.tag(spawn)>)
+arg(spawn).tag(<uid.tag(adresa)>_<eval <uid.tag(pocet)>>,<src.targ.name>,<src.targ.baseid>,0,0,0,0,0)
+
+
+
+
+
+[speech spk_diy_vendor]
+ON = *hi*
+ON = *dobry*
+ON = *ahoj*
+ON = *zdravi*
+ON = *buy*
+ON = *koupit*
+ON = *nakup*   
+IF (<distance>>8)
+	if (src.isdead)
+		src.redmessage("Jako duch tohle nemuzes!")
+		return 1
+	endif
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude") 
+ELSE
+    DIALOG (d_dyi_vendor)
+ENDIF
+  IF (src.isgm)
+    DIALOG(d_dyi_vendor_gmmenu)
+  ENDIF
+return 1
+
+////////////////////////////////////////////////////////
+///////////////gump-zacatek/////////////////////////////
+////////////////////////////////////////////////////////
+[DIALOG d_dyi_vendor]   
+page 0
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+resizepic (20,200,2620,640,350) 
+gumppic (30,210,03182) // podklad pod ksichtiky	
+gumppic (40,215,0<eval <arg(my_spawn).tag(obrazek)> >) // ksichtik   3000-3164
+
+IF(<eval <src.tag(diy_vendor_nezavirat)> >==0)// IF kontroluje jestli hrac v gumpu pokracuje,nebo jestli ho otevira poprve.
+  src.tag(diy_vendor_adresa,0)
+  src.tag.remove(diy_vendor_nezavirat)
+ else
+  src.tag.remove(diy_vendor_nezavirat)
+ENDIF
+
+
+
+//nasledujici buttony se vykresli kdekoli ve stromu buttonu hrac bude
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_1)>)>>3) ///pokud je zadany button gump_0_button_1,tak ho vykresli
+  argo.button(160,330,0988,0988,1,0,1)
+  argo.text(168,332,1152,1)
+  argo.settext(1,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_1)>)>") 
+ENDIF  
+  
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_2)>)>>3) ///pokud je zadany button gump_0_button_2,tak ho vykresli
+  argo.button(325,330,0988,0988,1,0,2)
+  argo.text(333,332,1152,2)
+  argo.settext(2,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_2)>)>") 
+ENDIF 
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_3)>)>>3) ///pokud je zadany button gump_0_button_3,tak ho vykresli
+  argo.button(490,330,0988,0988,1,0,3)
+  argo.text(498,332,1152,3)
+  argo.settext(3,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_3)>)>") 
+ENDIF
+      
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_4)>)>>3) ///pokud je zadany button gump_0_button_4,tak ho vykresli
+  argo.button(160,360,0988,0988,1,0,4)
+  argo.text(168,362,1152,4)
+  argo.settext(4,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_4)>)>") 
+ENDIF
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_5)>)>>3) ///pokud je zadany button gump_0_button_5,tak ho vykresli
+  argo.button(325,360,0988,0988,1,0,5)
+  argo.text(333,362,1152,5)
+  argo.settext(5,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_5)>)>") 
+ENDIF 
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_6)>)>>3) ///pokud je zadany button gump_0_button_6,tak ho vykresli
+  argo.button(490,360,0988,0988,1,0,6)
+  argo.text(498,362,1152,6)
+  argo.settext(6,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_6)>)>") 
+ENDIF
+
+//nasledujicich 6 buttonu se vykresli poze v casti stromu buttonu,v ktere jsou nastavene
+
+IF(<eval <src.tag(diy_vendor_adresa)> >>0) 
+  IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_1)>)>>3) ///pokud je zadany button gump_<adresa>_button_1,tak ho vykresli
+    argo.button(160,330,0988,0988,1,0,71)
+    argo.text(168,332,1152,71)
+    argo.settext(71,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)>>_button_1)>)>") 
+  ENDIF  
+  
+  IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_2)>)>>3) ///pokud je zadany button gump_<adresa>_button_2,tak ho vykresli
+    argo.button(325,330,0988,0988,1,0,72)
+    argo.text(333,332,1152,72)
+    argo.settext(72,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)>>_button_2)>)>") 
+  ENDIF 
+
+  IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_3)>)>>3) ///pokud je zadany button gump_<adresa>_button_3,tak ho vykresli
+    argo.button(490,330,0988,0988,1,0,73)
+    argo.text(498,332,1152,73)
+    argo.settext(73,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)>>_button_3)>)>") 
+  ENDIF
+      
+  IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_4)>)>>3) ///pokud je zadany button gump_<adresa>_button_4,tak ho vykresli
+    argo.button(160,360,0988,0988,1,0,74)
+    argo.text(168,362,1152,74)
+    argo.settext(74,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)>>_button_4)>)>") 
+  ENDIF
+
+  IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_5)>)>>3) ///pokud je zadany button gump_<adresa>_button_5,tak ho vykresli
+    argo.button(325,360,0988,0988,1,0,75)
+    argo.text(333,362,1152,75)
+    argo.settext(75,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)>>_button_5)>)>") 
+  ENDIF 
+
+  IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_6)>)>>3) ///pokud je zadany button gump_<adresa>_button_6,tak ho vykresli
+    argo.button(490,360,0988,0988,1,0,76)
+    argo.text(498,362,1152,76)
+    argo.settext(76,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)>>_button_6)>)>") 
+  ENDIF
+ENDIF
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_1)>)>>0) //vykresleni buttonu k nabidce 1 
+  argo.button(30,400,0fa5,0fa7,1,0,81)
+  argo.text(60,400,50,81) 
+  argo.settext(81,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_1)>)>")
+ENDIF  
+  
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_2)>)>>0)  //vykresleni buttonu k nabidce 2 
+  argo.button(30,425,0fa5,0fa7,1,0,82)
+  argo.text(60,425,50,82) 
+  argo.settext(82,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_2)>)>")
+ENDIF 
+  
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_3)>)>>0)  //vykresleni buttonu k nabidce 3 
+  argo.button(30,450,0fa5,0fa7,1,0,83)
+  argo.text(60,450,50,83) 
+  argo.settext(83,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_3)>)>")
+ENDIF   
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_4)>)>>0)  //vykresleni buttonu k nabidce 4 
+  argo.button(30,475,0fa5,0fa7,1,0,84)
+  argo.text(60,475,50,84) 
+  argo.settext(84,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_4)>)>")
+ENDIF   
+  
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_5)>)>>0)  //vykresleni buttonu k nabidce 5
+  argo.button(30,500,0fa5,0fa7,1,0,85)
+  argo.text(60,500,50,85) 
+  argo.settext(85,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_5)>)>")
+ENDIF 
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_6)>)>>0)  //vykresleni buttonu k nabidce 6 
+  argo.button(325,400,0fa5,0fa7,1,0,86)
+  argo.text(355,400,50,86) 
+  argo.settext(86,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_6)>)>")
+ENDIF   
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_7)>)>>0)  //vykresleni buttonu k nabidce 7 
+  argo.button(325,425,0fa5,0fa7,1,0,87)
+  argo.text(355,425,50,87) 
+  argo.settext(87,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_7)>)>")
+ENDIF 
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_8)>)>>0)  //vykresleni buttonu k nabidce 8 
+  argo.button(325,450,0fa5,0fa7,1,0,88)
+  argo.text(355,455,50,88) 
+  argo.settext(88,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_8)>)>")
+ENDIF   
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_9)>)>>0)  //vykresleni buttonu k nabidce 9 
+  argo.button(325,475,0fa5,0fa7,1,0,89)
+  argo.text(355,475,50,89) 
+  argo.settext(89,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_9)>)>")
+ENDIF   
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_10)>)>>0)  //vykresleni buttonu k nabidce 10 
+  argo.button(325,500,0fa5,0fa7,1,0,90)
+  argo.text(355,500,50,90) 
+  argo.settext(90,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_10)>)>")
+ENDIF   
+
+
+IF (<eval <src.tag(diy_vendor_adresa)> >==0)
+  IF(<eval <strlen(<arg(my_spawn).tag(uvodtxt)>)> >>0)
+    argo.HTMLGUMP(170,230,440,100,151,0,36)
+    argo.settext(151,"<arg(my_spawn).tag(uvodtxt)>")    
+  ENDIF 
+ else 
+  IF(<eval <strlen(<src.tag(diy_vendor_text)>)> >>0)
+    argo.HTMLGUMP(170,230,440,100,150,0,36)
+    argo.settext(150,"<src.tag(diy_vendor_text)>")    
+  ENDIF 
+argo.button(630,525,00005780,00005781,1,0,10)
+ENDIF
+
+[DIALOG d_dyi_vendor button]
+ON=@anybutton  
+IF (<distance><11)
+  IF(<argn>>0)&&(<argn><7)
+    arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+     src.tag(diy_vendor_text,<f_diy_vendor_vrattext(<arg(my_spawn).tag(gump_0_button_<eval <argn>>)>)>)
+    src.tag(diy_vendor_adresa,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(gump_0_button_<argn>)>)> >)
+    src.tag(diy_vendor_nezavirat,1)
+   dialog(d_dyi_vendor)
+  ENDIF  
+       
+  IF(<argn>>70)&&(<argn><77)
+    arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+    src.tag(diy_vendor_text,<f_diy_vendor_vrattext(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<eval <argn>-70>)>)>)
+    src.tag(diy_vendor_adresa,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<eval <argn>-70>)>)> >)
+    src.tag(diy_vendor_nezavirat,1)
+    dialog(d_dyi_vendor)
+  ENDIF        
+
+  IF ((<argn>>80)&&(<argn><91))
+    var(diy_vendor_nabidka_<src.name>,0)
+    src.contents(f_diy_nabidka_open)
+    IF(<eval <var(diy_vendor_nabidka_<src.name>)> >==0)
+      arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+      dialog(d_dyi_vendor_nabidka,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <argn>-80>)>)> >,gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <argn>-80>)
+      src.tag(diy_vendor_nezavirat,1)
+      dialog(d_dyi_vendor)
+     else
+      src.sysmessage("Nabidka je jiz otevrena")
+      src.tag(diy_vendor_nezavirat,1)
+      dialog(d_dyi_vendor)
+    ENDIF
+    var(diy_vendor_nabidka_<src.name>,"")
+  ENDIF 
+ENDIF  
+
+ON=10   
+src.tag.remove(diy_vendor_text)
+dialog(d_dyi_vendor)
+
+ON=0
+src.tag.remove(diy_vendor_nezavirat) 
+src.tag.remove(diy_vendor_adresa,0) 
+src.tag.remove(diy_vendor_text)
+
+ ///////////////Gump nabidky///////////////////
+
+[DIALOG d_dyi_vendor_nabidka]    
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+argo.SetLocation=285,0
+argo.tag(sirka,800)
+IF (<eval <arg(my_spawn).tag(<argv(1)>_pocet)>><4)
+  argo.tag(vyska,<eval <arg(my_spawn).tag(<argv(1)>_pocet)>+4>*21)
+ else 
+  argo.tag(vyska,(<eval <arg(my_spawn).tag(<argv(1)>_pocet)>+4>*205)/10)
+ENDIF  
+
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)   
+argo.dialog_pozadi(<argo.tag(nexty)>,<eval <arg(my_spawn).tag(<argv(1)>_pocet)>>,30,350,140,140)
+argo.dialog_zpruhledni
+
+argo.tag(diy_vendor_adr,<argv(1)>)
+argo.tag(nab,<argv(0)>)
+IF (<argv(0)>==0) 
+  argo.tag(diy_vendor_nabidka,1)
+ else
+  argo.tag(diy_vendor_nabidka,2)
+ENDIF
+
+IF (<eval <argo.tag(nab)>>==0)
+  argo.texta(<argo.dialog_textpos(1,0)>,20,prodat                                                Cena ks/gp          mas na prodej      ke koupi ) 
+  arg(pocitadlo,1)
+  WHILE(<eval <arg(pocitadlo)>><=<eval <arg(my_spawn).tag(<argv(1)>_pocet)> >)
+    IF (<eval <f_diy_vendor_hodnotavtagu(5,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>==0)&&(<eval <f_diy_vendor_hodnotavtagu(4,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>==0)
+      arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>,<f_diy_zmena_tagu(100,3,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>)
+    ENDIF
+    IF (<eval <f_diy_vendor_hodnotavtagu(5,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>==0)&&(<eval <f_diy_vendor_hodnotavtagu(4,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>0)
+      arg(my_spawn).tag((<argv(1)>_<eval <arg(pocitadlo)>>)>)>,<f_diy_zmena_tagu(<eval <f_diy_vendor_hodnotavtagu(4,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>,3,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>) 
+    ENDIF  
+    argo.texta(50,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>)
+    argo.texta(470,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<eval <f_diy_vendor_hodnotavtagu(2,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>)
+    argo.texta(600,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<eval <src.rescount(<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>)>> ks)
+    argo.texta(720,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<eval <f_diy_vendor_hodnotavtagu(3,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>)
+    argo.button(<d_def_okraj>+<d_def_skvira>,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,0fa5,0fa7,1,0,<eval <arg(pocitadlo)>+10>)
+    arg(pocitadlo,#+1)
+  ENDWHILE 
+ 
+ else
+  argo.texta(<argo.dialog_textpos(1,0)>,20,koupit                                                Cena ks/gp         muzes si dovolit     na prodej) 
+  arg(pocitadlo,1)
+  WHILE(<eval <arg(pocitadlo)>><=<eval <arg(my_spawn).tag(<argv(1)>_pocet)> >)
+    IF (<eval <f_diy_vendor_hodnotavtagu(5,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>==0)&&(<eval <f_diy_vendor_hodnotavtagu(4,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>==0)
+      arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>,<f_diy_zmena_tagu(100,3,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>)
+    ENDIF
+    IF (<eval <f_diy_vendor_hodnotavtagu(5,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>==0)&&(<eval <f_diy_vendor_hodnotavtagu(4,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>0)
+      arg(my_spawn).tag((<argv(1)>_<eval <arg(pocitadlo)>>)>)>,<f_diy_zmena_tagu(<eval <f_diy_vendor_hodnotavtagu(4,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>,3,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>) 
+    ENDIF  
+    argo.texta(50,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>)
+    argo.texta(470,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<eval <f_diy_vendor_hodnotavtagu(2,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>)
+    IF (<f_diy_vendor_hodnotavtagu(2,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>==0) then
+      argo.texta(600,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,INF.) 
+     ELSE 
+      argo.texta(580,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<eval <eval <src.bankbalance>+<src.rescount(i_gold)> >/<eval <f_diy_vendor_hodnotavtagu(2,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)> > > ks)
+    ENDIF
+    argo.texta(720,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<eval <f_diy_vendor_hodnotavtagu(3,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>>)
+    argo.button(<d_def_okraj>+<d_def_skvira>,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,0fa5,0fa7,1,0,<eval <arg(pocitadlo)>+10>)
+    arg(pocitadlo,#+1)
+  ENDWHILE 
+
+ENDIF
+
+
+argo.texta(<argo.dialog_textpos(0,1)>,400,                                 <f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(<argv(1)>)>)>)
+
+argo.button(<d_def_okraj>+<d_def_skvira>,<eval <argo.tag(vyska)>>-<eval <d_def_okraj>>+20,0fb1,0fb3,1,0,0)
+argo.texta(<d_def_okraj>+<d_def_skvira>+32,<eval <argo.tag(vyska)>>-<eval <d_def_okraj>>+20,42,"zavrit" )
+
+
+[DIALOG d_dyi_vendor_nabidka button]
+
+        
+ON=@anybutton
+IF (<distance><11)
+  IF ((<argn>>10)&&(<argn><37)) 
+      arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+      dialog(d_dyi_vendor_nabidka,<eval <argo.tag(nab)>>,<argo.tag(diy_vendor_adr)>)  
+      dialog(d_dyi_vendor_smlouva,<eval <argo.tag(diy_vendor_nabidka)>>,<arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>_<eval <argn>-10>)>)
+  ENDIF   
+ENDIF
+
+ ///////////////Gump "smlouvy"///////////////////
+[DIALOG d_dyi_vendor_smlouva]
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+argo.tag(diy_vendor_smlouva,<eval <src.tag(diy_vendor_nabidka)>>)
+argo.tag(diy_vendor_zbozi,<argv(4)>,<argv(3)>,<argv(2)>,<argv(7)>)
+argo.tag(diy_vendor_nabidka,<argv(0)>)
+argo.SetLocation=385,0 
+argo.tag(sirka,350)
+argo.tag(vyska,115)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)  
+argo.dialog_pozadi(<argo.tag(nexty)>,1,70)
+argo.dialog_zpruhledni
+ 
+argo.texta(20,14,400,            SMLOUVA) 
+IF (<eval <argo.tag(diy_vendor_nabidka)>>==1)
+  argo.texta(20,34,400,Smlouva o prodeji "<argv(1)>" )  
+ else
+  argo.texta(20,34,400,  Smlouva o nakupu "<argv(1)>" ) 
+ENDIF
+
+argo.texta(-70,58,400,            POCET) 
+
+argo.textentry(88,58,220,<d_def_radek_vyska>,120,10,10)
+argo.settext(10,"0")
+
+argo.button(13,80,0fb7,0fb9,1,0,1)
+argo.button(310,80,0fb1,0fb3,1,0,) 
+  
+[DIALOG d_dyi_vendor_smlouva button]
+
+ON=1
+
+
+IF (<distance> > 11)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude") 
+ ELSE
+  arg(pocet,<fixNumber(<argtxt(10)>)>)
+  IF (<eval <arg(pocet)>>>0) && (<eval <arg(pocet)>><=<eval <f_diy_vendor_hodnotavtagu(0,<argo.tag(diy_vendor_zbozi)>)>>)
+     IF (<eval <argo.tag(diy_vendor_nabidka)>>==1)
+       IF (<src.restest(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>,<eval <arg(pocet)>>)>)  
+         src.consume(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>,<eval <arg(pocet)>>)
+         src.giveitem(i_gold,<eval <f_diy_vendor_hodnotavtagu(1,<argo.tag(diy_vendor_zbozi)>)>>*<eval <arg(pocet)>>)
+        ELIF (<eval <src.rescount(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>)>>>0)    
+         src.sysMessage("Mas u sebe jen <eval <src.rescount(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>)>> kusu,ale ja je vemu...")
+         src.giveitem(i_gold,<eval <src.rescount(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>)>>*<eval <f_diy_vendor_hodnotavtagu(1,<argo.tag(diy_vendor_zbozi)>)>>)
+         src.consume(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>,<eval <src.rescount(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>)>>)
+        else
+         src.sysMessage("Nesplnujes obchodni podminky") 
+       ENDIF  
+     ENDIF
+     IF (<eval <argo.tag(diy_vendor_nabidka)>>==2)
+       IF (src.pay(<eval <arg(pocet)>>*<eval <f_diy_vendor_hodnotavtagu(1,<argo.tag(diy_vendor_zbozi)>)>>))
+         IF (<eval <f_diy_vendor_hodnotavtagu(3,<argo.tag(diy_vendor_zbozi)>)>>==0)
+            arg(counter,0)
+            WHILE(<eval <arg(counter)>><<eval <arg(pocet)>>)
+              src.newitem(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>).bounce
+              arg(counter,#+1)
+            ENDWHILE
+         ENDIF   
+         IF (<eval <f_diy_vendor_hodnotavtagu(3,<argo.tag(diy_vendor_zbozi)>)>>==1)
+             src.newitem(<f_diy_vendor_hodnotavtagu(2,<argo.tag(diy_vendor_zbozi)>)>)
+             lastnew.amount=<eval <arg(pocet)>>
+             lastnew.bounce
+         ENDIF
+        else
+         src.sysMessage("Nesplnujes obchodni podminky")  
+       ENDIF  
+     ENDIF 
+    else
+     src.sysMessage("Nezkousej me obalamutit...")    
+  ENDIF
+ENDIF  
+  
+ //////////////////////////////////////////////////////
+ ///////////////EDITACE GUMPU PRO GM///////////////////
+ //////////////////////////////////////////////////////
+[DIALOG d_dyi_vendor_gmmenu]
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+
+IF(<eval <src.tag(diy_vendor_nezavirat)> >==0)// IF kontroluje jestli hrac v gumpu pokracuje,nebo jestli ho otevira poprve.
+  src.tag(diy_vendor_adresa,0)
+  src.tag.remove(diy_vendor_nezavirat)
+  src.tag.remove(diy_vendor_nabidka)
+  src.tag.remove(zboziuprava)
+ else
+  src.tag.remove(diy_vendor_nezavirat)
+ENDIF
+
+IF(<eval <arg(my_spawn).tag(obrazek)> >==0)
+  arg(my_spawn).tag(obrazek,3000)
+ENDIF  
+  
+page 0
+resizepic (20,200,3000,1200,800) 
+button (200,260,0fa5,0fa7,1,0,11)
+text(255,260,20,30)
+settext(30,"text k nultemu gumpu")
+button (200,290,0fa5,0fa7,1,0,71)//nastaveni jmena
+text(255,290,20,0)
+settext(0,"Zmenit jmeno")
+gumppic(70,290,098D)
+textentry(75,291,100,50,90,71,71)
+settext(71,"<src.targ.name>")
+button (200,230,0fa5,0fa7,1,0,70)// nastaveni obrazku
+text(255,230,20,1)
+settext(1,"Nastavit obrazek(cislo 3000-3164)")
+gumppic(70,230,098D)
+textentry(75,231,100,50,90,70,70)
+settext(70,"<arg(my_spawn).tag(obrazek)>")
+text(28,305,350,2)
+settext(2,"--------------------------------------------Edit buttonu,aktualni adresa:  <eval <src.tag(diy_vendor_adresa)> >  ----------------------------------")
+settext(7,"Smaz button a vse co je v podmenu")
+settext(6,"Editovat button")
+
+
+
+  settext(151,"POZORR!!ZAKAZUJU DAVAT DO NAZVU NABIDEK,BUTTONU a ITEMU CARKY!!!CARKY POUZIJTE POUZE V TEXTU,JINAK SE VENDOR ROZSYPE!!!Dale pak si uvedomte,ze pridavate button,nabidku v casti gumpu,kam ste se proklikali.Pokud zvolite button v gumpu 0,tak bude button viditelny ze vsech ostatnich gumpu(adresa=!0) a nepude jiz pridat jinde.Nastavujte spravne zda je item stuckovatelny nebo ne, pri hazeni do batohu to pri spatne volbe bude delat neplechu,lagovat a shazovat.")
+  HTMLGUMP(500,220,700,100,151,0,0)
+
+
+
+//EDIT PVNIHO BUTTONU
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_1)>)>>3) ///pokud je zadany button gump_0_button_1,tak ho vykresli
+  argo.button(85,330,0988,0988,1,0,1)
+  argo.text(93,332,50,8)
+  argo.settext(8,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_1)>)>") 
+ ELIF (<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_1)>)>>3)   ///pokud je zadany button gump_<adresa>_button_1,tak ho vykresli
+  argo.button(85,330,0988,0988,1,0,114)
+  argo.text(93,332,50,8)
+  argo.settext(8,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_1)>)>") 
+ENDIF  
+button (55,360,0fa5,0fa7,1,0,72) //editovat button
+text(85,360,800,6)
+button (55,390,0fa5,0fa7,1,0,78) // smazat danny button
+text(85,390,800,7)
+
+//EDIT DRUHEHO BUTTONU
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_2)>)>>3) ///pokud je zadany button gump_0_button_2,tak ho vykresli
+  argo.button(485,330,0988,0988,1,0,2)
+  argo.text(493,332,50,9)
+  argo.settext(9,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_2)>)>")
+ ELIF (<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_2)>)>>3)    ///pokud je zadany button gump_<adresa>_button_1,tak ho vykresli
+  argo.button(485,330,0988,0988,1,0,115)
+  argo.text(493,332,50,9)
+  argo.settext(9,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_2)>)>")   
+ENDIF
+button (455,360,0fa5,0fa7,1,0,73) //editovat button
+text(485,360,800,6)
+button (455,390,0fa5,0fa7,1,0,79) // smazat danny button
+text(485,390,800,7)
+
+//EDIT TRETIHO BUTTONU
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_3)>)>>3) ///pokud je zadany button gump_0_button_3,tak ho vykresli
+  argo.button(885,330,0988,0988,1,0,3)
+  argo.text(893,332,50,10)
+  argo.settext(10,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_3)>)>")
+ ELIF (<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_3)>)>>3) 
+  argo.button(885,330,0988,0988,1,0,116)
+  argo.text(893,332,50,10)
+  argo.settext(10,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_3)>)>")  
+ENDIF  
+button (855,360,0fa5,0fa7,1,0,74) //editovat button
+text(885,360,800,6)
+button (855,390,0fa5,0fa7,1,0,80) // smazat danny button
+text(885,390,800,7)
+
+//EDIT CTVRTEHO BUTTONU
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_4)>)>>3) ///pokud je zadany button gump_0_button_4,tak ho vykresli
+  argo.button(85,430,0988,0988,1,0,4)
+  argo.text(93,432,50,11)
+  argo.settext(11,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_4)>)>")
+ ELIF (<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_4)>)>>3) 
+  argo.button(85,430,0988,0988,1,0,117)
+  argo.text(93,432,50,11)
+  argo.settext(11,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_4)>)>")  
+ENDIF
+button (55,460,0fa5,0fa7,1,0,75) //editovat button
+text(85,460,800,6)
+button (55,490,0fa5,0fa7,1,0,81) // smazat danny button
+text(85,490,800,7)
+
+//EDIT PATEHO BUTTONU
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_5)>)>>3) ///pokud je zadany button gump_0_button_5,tak ho vykresli
+  argo.button(485,430,0988,0988,1,0,5)
+  argo.text(493,432,50,12)
+  argo.settext(12,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_5)>)>")
+ ELIF (<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_5)>)>>3) 
+  argo.button(485,430,0988,0988,1,0,118)
+  argo.text(493,432,50,12)
+  argo.settext(12,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_5)>)>")    
+ENDIF
+button (455,460,0fa5,0fa7,1,0,76) //editovat button
+text(485,460,800,6)
+button (455,490,0fa5,0fa7,1,0,82) // smazat danny button
+text(485,490,800,7)
+
+//EDIT SESTEHO BUTTONU
+IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_6)>)>>3) ///pokud je zadany button gump_0_button_6,tak ho vykresli
+  argo.button(885,430,0988,0988,1,0,6)
+  argo.text(893,432,50,13)
+  argo.settext(13,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_0_button_6)>)>")
+ ELIF (<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_6)>)>>3) 
+  argo.button(885,430,0988,0988,1,0,119)
+  argo.text(893,432,50,13)
+  argo.settext(13,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_6)>)>")  
+ENDIF  
+button (855,460,0fa5,0fa7,1,0,77) //editovat button
+text(885,460,800,6)
+button (855,490,0fa5,0fa7,1,0,83) // smazat danny button
+text(885,490,800,7)
+
+
+argo.text(28,530,350,14)
+argo.settext(14,"--------------------------------------------Nabidky v buttonu adresa:  <eval <src.tag(diy_vendor_adresa)> >  ----------------------------------")
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_1)>)>>0)
+  argo.button(55,555,0fa5,0fa7,1,0,84)//EDIT PRVNI NABIDKY
+  argo.text(85,555,50,17)
+  argo.settext(17,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_1)>)>")
+  argo.button(55,595,0fa5,0fa7,1,0,104)
+  argo.text(85,595,800,16)
+  argo.settext(16,"Smaz nabidku a jeji obsah")
+ENDIF
+button(55,575,0fa5,0fa7,1,0,94)
+text (85,575,800,15)
+settext(15,"Editovat nabidku")
+
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_2)>)>>0)
+  argo.button(55,635,0fa5,0fa7,1,0,85)//EDIT DRUHE NABIDKY
+  argo.text(85,635,50,18)
+  argo.settext(18,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_2)>)>")
+  argo.button(55,675,0fa5,0fa7,1,0,105)
+  argo.text(85,675,800,16)
+ENDIF  
+button(55,655,0fa5,0fa7,1,0,95)
+text(85,655,800,15)
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_3)>)>>0)
+  argo.button(55,715,0fa5,0fa7,1,0,86)//EDIT TRETI NABIDKY
+  argo.text(85,715,50,19)
+  argo.settext(19,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_3)>)>")
+  argo.button(55,755,0fa5,0fa7,1,0,106)
+  argo.text(85,755,800,16)
+ENDIF 
+button (55,735,0fa5,0fa7,1,0,96)
+text (85,735,800,15)
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_4)>)>>0)
+  argo.button(55,795,0fa5,0fa7,1,0,87)//EDIT CTVRTE NABIDKY
+  argo.text(85,795,50,20)
+  argo.settext(20,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_4)>)>")
+  argo.button(55,835,0fa5,0fa7,1,0,107)
+  argo.text(85,835,800,16)
+ENDIF 
+button(55,815,0fa5,0fa7,1,0,97)
+text(85,815,800,15)
+
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_5)>)>>0)
+  argo.button(55,875,0fa5,0fa7,1,0,88)//EDIT PATE NABIDKY
+  argo.text(85,875,50,21)
+  argo.settext(21,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_5)>)>")
+  argo.button(55,915,0fa5,0fa7,1,0,108)
+  argo.text(85,915,800,16)
+ENDIF 
+button(55,895,0fa5,0fa7,1,0,98)
+text(85,895,800,15)
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_6)>)>>0)
+  argo.button(655,555,0fa5,0fa7,1,0,89)//EDIT SESTE NABIDKY
+  argo.text(685,555,50,22)
+  argo.settext(22,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_6)>)>")
+  argo.button(655,595,0fa5,0fa7,1,0,109)
+  argo.text(685,595,800,16)
+ENDIF 
+button (655,575,0fa5,0fa7,1,0,99)
+text (685,575,800,15)
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_7)>)>>0)
+  argo.button(655,635,0fa5,0fa7,1,0,90)//EDIT SEDME NABIDKY
+  argo.text(685,635,50,23) 
+  argo.settext(23,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_7)>)>")
+  argo.button(655,675,0fa5,0fa7,1,0,110)
+  argo.text(685,675,800,16)
+ENDIF 
+button(655,655,0fa5,0fa7,1,0,100)
+text(685,655,800,15)
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_8)>)>>0)
+  argo.button(655,715,0fa5,0fa7,1,0,91)//EDIT OSME NABIDKY
+  argo.text(685,715,50,24)
+  argo.settext(24,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_8)>)>")
+  argo.button(655,755,0fa5,0fa7,1,0,111)
+  argo.text(685,755,800,16)
+ENDIF 
+button(655,735,0fa5,0fa7,1,0,101)
+text(685,735,800,15)
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_9)>)>>0)
+  argo.button(655,795,0fa5,0fa7,1,0,92)//EDIT DEVATE NABIDKY
+  argo.text(685,795,50,25)
+  argo.settext(25,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_9)>)>")
+  argo.button(655,835,0fa5,0fa7,1,0,112)
+  argo.text(685,835,800,16)
+ENDIF 
+button(655,815,0fa5,0fa7,1,0,102)
+text(685,815,800,15)
+
+
+IF(<STRLEN(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_10)>)>>0)
+  argo.button(655,875,0fa5,0fa7,1,0,93)//EDIT DESATE NABIDKY
+  argo.text(685,875,50,26)
+  argo.settext(26,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_10)>)>")
+  argo.button(655,915,0fa5,0fa7,1,0,113)
+  argo.text(685,915,800,16)
+ENDIF 
+button(655,895,0fa5,0fa7,1,0,103)
+text(685,895,800,15)
+
+argo.button(1190,970,00005780,00005781,1,0,10)
+
+
+[DIALOG d_dyi_vendor_gmmenu text]
+Zmenit jmeno
+
+
+[DIALOG d_dyi_vendor_gmmenu button]
+ON=0
+src.tag.remove(diy_vendor_adresa)
+src.tag.remove(diy_vendor_nezavirat)
+
+ON=70
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(obrazek,<eval <argtxt(70)>>)
+
+ON=71
+src.targ.name=<argtxt(71)>
+
+ON=11
+dialog(d_diy_uvodnitxt_edit)
+
+ON=10
+src.tag(diy_vendor_adresa,0)
+dialog(d_dyi_vendor_gmmenu)
+src.tag(diy_vendor_nezavirat,1) 
+
+ON=@anybutton
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+IF (<argn>>71)&&(<argn><78) //buttony 72-77 jsou na editaci buttonu viditelnych hracem.
+  IF(<STRLEN(<arg(my_spawn).tag(gump_0_button_<argn>)>)><3)||(<eval <src.tag(diy_vendor_adresa)> >==0)
+    dialog(d_diy_hlavni_buttony_edit,<eval <argn>-71>)
+    src.tag(diy_vendor_nezavirat,1)
+   else
+    src.sysMessage("pozice buttonu je jiz v zacatecnim(gump_0)obsazena.Nelze pridat ")
+  ENDIF 
+ENDIF  
+ 
+IF (<argn>>78)&&(<argn><84) 
+    arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+    arg(my_spawn).tag.remove(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<eval <argn>-77>) 
+ENDIF  
+
+IF(<argn>>0)&&(<argn><7)
+  arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+  src.tag(diy_vendor_text,<f_diy_vendor_vrattext(arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<argn>))>)
+  src.tag(diy_vendor_adresa,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(gump_0_button_<argn>)>)> >,<argn>)
+  src.tag(diy_vendor_nezavirat,1)
+  dialog(d_dyi_vendor_gmmenu)
+ENDIF   
+
+IF (<argn>>83)&&(<argn><94) 
+  var(diy_vendor_nabidka_gm_<src.name>,0)
+    src.contents(f_diy_nabidka_gm_open)
+    IF(<eval <var(diy_vendor_nabidka_gm_<src.name>)> >==0)
+    arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+    dialog(d_diy_nabidka_gm,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <argn>-83>)>)> >,gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <argn>-83>)
+   else
+    src.sysmessage("Jednu nabidku jiz mas otevrenou")
+  ENDIF  
+  var(diy_vendor_nabidka_gm_<src.name>,"")
+  src.tag(diy_vendor_nezavirat,1)
+  dialog(d_dyi_vendor_gmmenu)  
+ENDIF  
+
+IF(<argn>>93)&&(<argn><104)
+    dialog(d_diy_hlavni_nabidka_edit,<eval <argn>-93 >)
+    src.tag(diy_vendor_nezavirat,1)
+ENDIF
+
+IF(<argn>>113)&&(<argn><120)
+  arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+  src.tag(diy_vendor_lastadrgm,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<eval <argn>-113>)>)> >,<argn>)
+  src.tag(diy_vendor_adresa,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<eval <argn>-113>)>)> >)
+  src.tag(diy_vendor_nezavirat,1)
+  dialog(d_dyi_vendor_gmmenu)
+ENDIF    
+
+IF (<argn>>103)&&(<argn><115) 
+  arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+  arg(pocitadlo,1)
+  WHILE (<eval <arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <argn>-103>_pocet)>>><eval <arg(pocitadlo)>-1>)
+    arg(my_spawn).tag.remove(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <argn>-103>_<eval <arg(pocitadlo)>>)
+    arg(pocitadlo,#+1)
+  ENDWHILE  
+  arg(my_spawn).tag.remove(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <argn>-103>_pocet)
+  arg(my_spawn).tag.remove(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <argn>-103>)
+ENDIF
+
+ON=0
+src.tag.remove(diy_vendor_adresa)
+src.tag.remove(diy_vendor_nezavirat)
+src.tag.remove(diy_vendor_text)
+src.tag.remove(diy_vendor_lastadrgm)
+
+///////////////gump na edit buttonu//////////////////////////////// 
+ 
+[DIALOG d_diy_hlavni_buttony_edit]
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(buton,<argv(0)>)
+argo.SetLocation=285,0
+argo.tag(sirka,1200)
+argo.tag(vyska,110)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,100)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,100)
+argo.dialog_zpruhledni
+argo.texta(<argo.dialog_textpos(0,0)>,30,"                     Nastaveni buttonu")
+argo.texta(<argo.dialog_textpos(1,0)>,42,"Nazev buttonu:")
+argo.texta(<argo.dialog_textpos(2,0)>,42,"       Text:")
+argo.settext(1000,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<argv(0)>)>)>")
+argo.textentry(<argo.dialog_textpos(1,1)>,100,<d_def_radek_vyska>,100,10,1000)//Nazev buttonu
+argo.settext(1001,"<f_diy_vendor_vrattext(<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<argv(0)>)>)>")
+argo.textentry(<argo.dialog_textpos(2,1)>,1000,<d_def_radek_vyska>,100,11,1001,)//Text
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fa5,0fa7,1,0,1)
+argo.texta(<d_def_okraj>+<d_def_skvira>+50,(<argo.tag(vyska)>-<d_def_okraj>)-23,42,"Nastavit")
+
+[DIALOG d_diy_hlavni_buttony_edit button]
+
+ON=1
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_button_<arg(my_spawn).tag(buton)>,<eval <eval <src.tag(diy_vendor_adresa)> >*10>+<eval <arg(my_spawn).tag(buton)> >,<argtxt(10)>,<argtxt(11)>) //nastavuje tag,podle ktereho se hraci vypisuji buttony
+dialog(d_dyi_vendor_gmmenu)
+
+ON=@anybutton
+arg(my_spawn).tag.remove(buton)
+dialog(d_dyi_vendor_gmmenu)
+
+////////////////////////gump na pridani uvodniho textu/////////////////////////////////
+[DIALOG d_diy_uvodnitxt_edit]
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+argo.SetLocation=285,0
+argo.tag(sirka,600)
+argo.tag(vyska,90)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,80)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,2,"                             Zadani uvodniho textu")
+argo.texta(<argo.dialog_textpos(1,0)>,3,"text")
+argo.textentry(<argo.dialog_textpos(1,1)>,420,<d_def_radek_vyska>,100,1,100)
+argo.settext(100,"<arg(my_spawn).tag(uvodtxt)>")
+argo.button(<d_def_okraj>+<d_def_skvira>,((<argo.tag(vyska)>-<d_def_okraj>))-23,0fa5,0fa7,1,0,1)
+argo.texta(<d_def_okraj>+<d_def_skvira>+35,((<argo.tag(vyska)>-<d_def_okraj>))-23,4,"Nastav")
+
+[DIALOG d_diy_uvodnitxt_edit button]
+ON=1
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(uvodtxt,<argtxt(1)>)
+dialog(d_dyi_vendor_gmmenu)
+
+////////////////////////gump na pridani nabidky/////////////////////////////////
+[DIALOG d_diy_hlavni_nabidka_edit]
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(buton,<argv(0)>)
+argo.SetLocation=285,0
+argo.tag(sirka,600)
+argo.tag(vyska,110)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,100)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,30,"                             Nastaveni nabidky")
+argo.texta(<argo.dialog_textpos(1,0)>,42,"nazev nabidky:")
+argo.settext(100,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <arg(my_spawn).tag(buton)> >)>                )>")
+argo.textentry(<argo.dialog_textpos(1,1)>,420,<d_def_radek_vyska>,100,1,100)
+argo.button(<d_def_okraj>+<d_def_skvira>,((<argo.tag(vyska)>-<d_def_okraj>)-<d_def_radek_vyska>)-23,0fa5,0fa7,1,0,1)
+argo.texta(<d_def_okraj>+<d_def_skvira>+50,((<argo.tag(vyska)>-<d_def_okraj>)-<d_def_radek_vyska>)-23,42,"VYKUP   (Nastavi nabidku jako vykup.Veci v nabidce bude vendor vykupovat.)")
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fa5,0fa7,1,0,2)
+argo.texta(<d_def_okraj>+<d_def_skvira>+50,(<argo.tag(vyska)>-<d_def_okraj>)-23,42,"PRODEJ  (Nastavi nabidku jako prodej.Veci v nabidce bude vendor prodavat.)")
+
+[DIALOG d_diy_hlavni_nabidka_edit button]
+ON=1 //VYKUP
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <arg(my_spawn).tag(buton)> >,0,<argtxt(1)>)
+arg(my_spawn).tag.remove(buton)
+dialog(d_dyi_vendor_gmmenu)
+ON=2//prodej
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(gump_<eval <src.tag(diy_vendor_adresa)> >_nabidka_<eval <arg(my_spawn).tag(buton)> >,1,<argtxt(1)>)
+arg(my_spawn).tag.remove(buton)
+dialog(d_dyi_vendor_gmmenu)
+
+ON=@anybutton
+dialog(d_dyi_vendor_gmmenu)
+arg(my_spawn).tag.remove(buton)
+
+////////////////////////////////////////////////////////////
+//////////////GUMP NABIDKY GM/////////////////////////////////
+///////////////////////////////////////////////////////////
+[DIALOG d_diy_nabidka_gm]
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+argo.tag(diy_vendor_adr,<argv(1)>)
+argo.SetLocation=285,0
+argo.tag(sirka,800)
+IF (<eval <arg(my_spawn).tag(<argv(1)>_pocet)>><4)
+  argo.tag(vyska,<eval <arg(my_spawn).tag(<argv(1)>_pocet)>+4>*21)
+ else 
+  argo.tag(vyska,(<eval <arg(my_spawn).tag(<argv(1)>_pocet)>+4>*205)/10)
+ENDIF  
+
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<eval <arg(my_spawn).tag(<argv(1)>_pocet)>>,30,300,28,100,100,100)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,1)>,400,                                 <f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(<argv(1)>)>)>)
+argo.texta(<argo.dialog_textpos(1,0)>,20,Smazat                                     edit     cena         max.ks.     respawn      ks/respawn)
+arg(pocitadlo,1)
+
+WHILE(<eval <arg(pocitadlo)>><=<eval <arg(my_spawn).tag(<argv(1)>_pocet)> >)
+  argo.texta(50,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>)
+  argo.button(<d_def_okraj>+<d_def_skvira>,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,0fa5,0fa7,1,0,<eval <arg(pocitadlo)>+10>)
+  argo.button(348,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,0fa5,0fa7,1,0,<eval <arg(pocitadlo)>+50>)
+  argo.texta(385,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<f_diy_vendor_hodnotavtagu(2,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>))
+  argo.texta(488,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<f_diy_vendor_hodnotavtagu(4,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>))
+  argo.texta(591,<eval <arg(pocitadlo)>+2>*<d_def_radek_vyska>,100,<f_diy_vendor_hodnotavtagu(5,<arg(my_spawn).tag(<argv(1)>_<eval <arg(pocitadlo)>>)>)>))
+  arg(pocitadlo,#+1)
+ENDWHILE  
+
+argo.button(<d_def_okraj>+<d_def_skvira>,<eval <argo.tag(vyska)>>-<eval <d_def_okraj>>+20,0fa5,0fa7,1,0,1)
+argo.texta(<d_def_okraj>+<d_def_skvira>+32,<eval <argo.tag(vyska)>>-<eval <d_def_okraj>>+20,42,"Pridej zbozi" )
+
+
+[Dialog d_diy_nabidka_gm button]
+ON=1
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+IF (<eval <arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>_pocet)> ><26)
+  arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>_pocet,<eval <arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>_pocet)>+1>)
+  f_diy_vendor_pridejitem(<memoryfindtype(Memory_ISpawned).link>,<argo.tag(diy_vendor_adr)>,<eval <arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>_pocet)> >)  
+ else
+  src.sysMessage("Nabidka je jiz plna") 
+ENDIF  
+dialog(d_diy_nabidka_gm,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>)>)> >,<argo.tag(diy_vendor_adr)>)
+
+ON=@anybutton
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+  IF (<eval <argn>>>50)&&(<eval <argn>><76)
+    IF (<eval <src.tag(diy_vendor_uprava_gm)> >==0)
+      dialog(d_diy_vendor_uprava,<argo.tag(diy_vendor_adr)>_<eval <argn>-50>)
+     else
+      src.sysmessage("uprava je jiz otevrena")
+    ENDIF  
+    dialog(d_diy_nabidka_gm,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>)>)> >,<argo.tag(diy_vendor_adr)>)
+  ENDIF  
+  
+  IF (<eval <argn>>>10)&&(<eval <argn>><26)
+   arg(pocitadlo,<argn>-10)
+   WHILE(<eval <arg(pocitadlo)>><<eval <arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>_pocet)>>)
+    arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>_<eval <arg(pocitadlo)>>,<arg(my_spawn).tag(<argo.tag(diy_vendor_adr)>_<eval <arg(pocitadlo)>+1>)>)
+    arg(pocitadlo,#+1)
+   ENDWHILE
+   arg(my_spawn).tag(<src.tag(diy_vendor_adr)>_pocet,#-1)
+   dialog(d_diy_nabidka_gm,<eval <f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(<src.tag(diy_vendor_adr)>)>)> >,<src.tag(diy_vendor_adr)>)
+  ENDIF  
+
+
+/////////////////////////uprava zbozi v nabidkach/////////////////////
+[DIALOG d_diy_vendor_uprava]
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+src.tag(diy_vendor_uprava_gm,1)
+argo.SetLocation=300,300
+argo.tag(sirka,350)
+argo.tag(vyska,250)
+argo.tag(zbozi,<argv(0)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,120)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,120)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,170)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,170)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,170)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,220)
+
+argo.dialog_zpruhledni
+argo.texta(<argo.dialog_textpos(0,0)>,400,        UPRAVA ZBOZI )
+argo.texta(<argo.dialog_textpos(1,0)>,60,Jmeno)
+argo.texta(<argo.dialog_textpos(2,0)>,60,"ID" predmetu) 
+argo.texta(<argo.dialog_textpos(3,0)>,60,Cena jednoho kusu)
+argo.texta(<argo.dialog_textpos(4,0)>,60,Aktualni pocet kusu)
+argo.texta(<argo.dialog_textpos(5,0)>,60,Maximalni pocet kusu)
+argo.texta(<argo.dialog_textpos(6,0)>,60,Doba spawnu(desitky minut))
+
+argo.textentry(140,34,220,<d_def_radek_vyska>,100,10,10)
+argo.settext(10,"<f_diy_vendor_hodnotavtagu(0,<arg(my_spawn).tag(<argv(0)>)>)>")
+argo.textentry(140,56,220,<d_def_radek_vyska>,100,11,11)
+argo.settext(11,"<f_diy_vendor_hodnotavtagu(1,<arg(my_spawn).tag(<argv(0)>)>)>")
+argo.textentry(190,78,220,<d_def_radek_vyska>,100,12,12)
+argo.settext(12,"<f_diy_vendor_hodnotavtagu(2,<arg(my_spawn).tag(<argv(0)>)>)>")
+argo.textentry(190,100,220,<d_def_radek_vyska>,100,13,13)
+argo.settext(13,"<f_diy_vendor_hodnotavtagu(3,<arg(my_spawn).tag(<argv(0)>)>)>")
+argo.textentry(190,122,220,<d_def_radek_vyska>,100,14,14)
+argo.settext(14,"<f_diy_vendor_hodnotavtagu(4,<arg(my_spawn).tag(<argv(0)>)>)>")
+argo.textentry(240,144,220,<d_def_radek_vyska>,100,15,15)
+argo.settext(15,"<f_diy_vendor_hodnotavtagu(5,<arg(my_spawn).tag(<argv(0)>)>)>")
+
+
+argo.texta(53,167,60,NEstuckovatelny item)
+argo.texta(53,187,60,Stuckovatelny item)
+IF (<eval <f_diy_vendor_hodnotavtagu(6,<arg(my_spawn).tag(<argv(0)>)>)>>==0)
+  argo.gumppic(13,167,9904)
+  argo.button(13,187,0fa5,0fa7,1,0,2)
+ else
+  argo.button(13,167,0fa5,0fa7,1,0,3) 
+  argo.gumppic(13,187,9904)
+ENDIF
+
+argo.button(<d_def_okraj>+<d_def_skvira>,<eval <argo.tag(vyska)>>-<eval <d_def_okraj>>+20,0fa5,0fa7,1,0,1)
+argo.texta(<d_def_okraj>+<d_def_skvira>+32,<eval <argo.tag(vyska)>>-<eval <d_def_okraj>>+20,42,"NASTAVIT" )
+
+[DIALOG d_diy_vendor_uprava button]
+ON=@anybutton
+src.tag.remove(diy_vendor_uprava_gm)
+
+ON=1
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(<argo.tag(zbozi)>,<argtxt(10)>,<argtxt(11)>,<argtxt(12)>,<argtxt(13)>,<argtxt(14)>,<argtxt(15)>,<eval <f_diy_vendor_hodnotavtagu(6,<arg(my_spawn).tag(<argo.tag(zbozi)>)>)>>)
+src.tag.remove(diy_vendor_uprava_gm)
+
+ON=2
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(<argo.tag(zbozi)>,<argtxt(10)>,<argtxt(11)>,<argtxt(12)>,<argtxt(13)>,<argtxt(14)>,<argtxt(15)>,<eval <f_diy_vendor_hodnotavtagu(6,<arg(my_spawn).tag(<argo.tag(zbozi)>)>)>>)
+arg(my_spawn).tag(<argo.tag(zbozi)>,<f_diy_zmena_tagu(1,6,<arg(my_spawn).tag(<argo.tag(zbozi)>)>)>)
+dialog(d_diy_vendor_uprava,<argo.tag(zbozi)>)
+
+ON=3
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+arg(my_spawn).tag(<argo.tag(zbozi)>,<argtxt(10)>,<argtxt(11)>,<argtxt(12)>,<argtxt(13)>,<argtxt(14)>,<argtxt(15)>,<eval <f_diy_vendor_hodnotavtagu(6,<arg(my_spawn).tag(<argo.tag(zbozi)>)>)>>)
+arg(my_spawn).tag(<argo.tag(zbozi)>,<f_diy_zmena_tagu(0,6,<arg(my_spawn).tag(<argo.tag(zbozi)>)>)>)
+dialog(d_diy_vendor_uprava,<argo.tag(zbozi)>)
+////////////////////////////////////////////////////////////
+//////////////FUNKCE///////////////////////////////////////
+///////////////////////////////////////////////////////////
+  
+[FUNCTION f_diy_vendor_hodnotavtagu]  
+return<argv(<argv(0)>+1)>
+
+[FUNCTION f_diy_vendor_vrattext]
+arg(counter,3)
+arg(text,<argv(2)>)
+WHILE(<eval <arg(counter)>><=<argvcount>-1)
+  arg(text,<arg(text)>,<argv(<arg(counter)>)>)
+  arg(counter,#+1)
+ENDWHILE  
+return<arg(text)>
+
+[FUNCTION f_diy_zmena_tagu] //funkce na zmenu urcite casti tagu: argv(0)=>nova hodnota , argv(1)=>pozice v tagu(pocitana jako parametry funkce od 0) , argv(2,3,4,..,x)=> hodnoty tagu
+  arg(counter,3)  
+  IF (<argv(1)>==0)
+    arg(new,<argv(0)>)
+  ELSE
+    arg(new,<argv(2)>)
+  ENDIF
+    
+  WHILE (<arg(counter)><<eval <argvcount>>)
+    IF(<arg(counter)>==<argv(1)>+2)
+      arg(new,<arg(new)>,<argv(0)> )
+    ELSE  
+     arg(new,<arg(new)>,<argv(<eval <arg(counter)>>)>)     
+    ENDIF  
+    IF (<eval <argv(0)> >==3)&&(<eval <arg(counter)> >==4)
+      arg(counter,<eval <argvcount>>)
+    ELSE  
+      arg(counter,#+1)
+    ENDIF
+  ENDWHILE    
+return<arg(new)>  
+
+
+[FUNCTION f_diy_vendor_pridejitem]
+  newitemsafe(i_diy_vendor_pridavac)
+  lastnew.timer=60
+  lastnew.tag(spawn,<argv(0)>)
+  lastnew.tag(adresa,<argv(1)>)
+  lastnew.tag(pocet,<argv(2)>)
+  lastnew.equip
+return 1
+
+
+[FUNCTION f_diy_nabidka_open]
+if (<eval <var(diy_vendor_nabidka_<src.name>)> >==0)
+  if (<STRCMPI(<more2>,0960004FC)>==0)
+    var(diy_vendor_nabidka_<src.name>,1)
+  endif
+endif
+
+[FUNCTION f_diy_nabidka_gm_open]
+if (<eval <var(diy_vendor_nabidka_gm_<src.name>)> >==0)
+  if (<STRCMPI(<more2>,096000502)>==0)
+    var(diy_vendor_nabidka_gm_<src.name>,1)
+  endif
+endif
+  
+[EOF]                                                                                                                                                                                                                                                                                                                                                                                                                        

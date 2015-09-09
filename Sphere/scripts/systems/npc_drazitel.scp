@@ -1,0 +1,652 @@
+[function f_npc_drazitel]
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+if (0<my_spawn.tag(realm)>==<src.tag(realm)>)
+  dialog(d_npc_drazitel)
+elseif !(src.isgm)
+  Say("Nech me byt !")
+endif
+
+if (src.isgm)
+  dialog(d_npc_drazitel_statistika,<my_spawn>)
+endif
+
+[speech spk_drazitel]
+ON = *hi*
+ON = *dobry*
+ON = *ahoj*
+ON = *zdravi*
+ON = *buy*
+ON = *koupit*
+ON = *nakup*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_npc_drazitel
+endif
+return 1
+
+[DIALOG d_npc_drazitel]
+5,5
+page 0
+resizepic(20,200,2620,640,350)
+arg(prodejce,prodejce_<hval <memoryfindtype(Memory_ISpawned).link>>)
+arg(buy_radek_vyska,25)
+gumppic(30,210,03182) // podklad pod ksichtiky	
+gumppic(40,215,03001) // ksichtik   3000-3164
+
+argo.button(160,330,0988,0988,0,2,0)	// Kdo jsi ?/Jak jdou obchody
+argo.button(325,330,0988,0988,0,3,0)	// Mohu Pomoci?
+argo.button(490,330,0988,0988,0,4,0)	// Obchodovat ?
+//argo.button(160,360,0988,0988,0,5,0)	// Hledam praci
+//argo.button(325,360,0988,0988,0,6,0)	// Nesu ti ...
+argo.button(490,360,0988,0988,0,7,0)	// Prohlednout ...
+
+argo.settext(0,"<?name?>, prodejce")	// Jmeno a titul
+argo.text(220,210,52,0)		//
+
+if <src.qtag(<prodejce>)>	// uz se videli ?
+  argo.settext(1,"Jak jdou obchody?")
+  argo.text(182,332,1152,1)
+else
+  argo.settext(1,"Kdo Jsi?")
+  argo.text(215,332,1152,1)
+endif
+argo.settext(2,Mohu Pomoci?)
+argo.settext(3,Obchodovat?)
+argo.settext(4,Hledam Praci)
+argo.settext(5,Nesu Ti)
+argo.settext(6,Prohlednout)
+argo.text(360,332,1152,2)	//
+argo.text(538,332,1152,3)	//
+//argo.text(202,361,1152,4)	//
+//argo.text(385,361,1152,5)	//
+argo.text(540,361,142,6)	//
+
+page 1 // pozdrav na uvitanou
+IF (<src.qtag(<prodejce>)>)
+  argo.settext(10," Radost te tu znovu videt! Nejake prani?")
+else
+  argo.settext(10," Vitam te! Mhou ti neco nabidnout?")
+ENDIF
+argo.HTMLGUMP(170,230,440,100,10,0,36)
+
+page 2 // Kdo jsi, jak jdou obchody ?
+IF (<src.qtag(<prodejce>)>)
+  argo.settext(20," Aah dekuji ti za optani, jde to skvele ! Poptavka je stale vysoka, to nemohu rict.")
+else
+  argo.settext(20," Jmenuji se <?name?>, obchoduji s nejruznejsimi surovinami. Prodavam kvalitni uhli, vzacne nerosty nebo tetivy, ze kterych si vybere i nejnarocnejsi Ranger! Jen si prohlidni mou nabidku a uvidis <?src.sex sam sama?>...")
+ENDIF
+src.qtag(<prodejce>,1)
+HTMLGUMP(170,230,440,100,20,0,36)
+
+page 3  //mohu pomoci ?
+argo.settext(30," Hmm... Nevim.. Opravdu nevim o nicem, s cim by jsi mi ted <?src.sex mohl mohla?> pomoci, je mi lito, vypadas schopne...")
+HTMLGUMP(170,230,440,100,30,0,36)
+
+page 4 //obchodovat
+argo.button(160,360,0988,0988,0,4,0)	// Dalsi zbozi
+argo.settext(50,"Dalsi zbozi")
+argo.text(202,361,777,50)		// Dalsi zbozi
+argo.button(325,360,0988,0988,1,0,1)	// Koupit
+argo.settext(51,"Koupit")
+argo.text(385,361,777,51)		// Koupit
+
+argo.settext(40," Tak se na to podivame... Co bys <?src.sex rad rada?>?<br> Zbozi, ktere se ti libi si nasbirej a ja ti to napocitam.")
+HTMLGUMP(170,230,440,100,40,0,36)
+argo.button(25,395,0fa5,0fa7,0,8,0)  // Kovarske Potreby
+argo.button(25,415,0fa5,0fa7,0,9,0)  // Krejcovske Potreby
+argo.button(25,435,0fa5,0fa7,0,10,0)  // Aktivacni krystaly - hole
+argo.button(25,455,0fa5,0fa7,0,11,0)  // Tetivy - luky a kuse
+
+argo.settext(41,"Kovarske potreby")//uhli 250
+argo.settext(42,"Krejcovske potreby")// 10.000
+argo.settext(43,"Aktivacni krystaly") // aktivacni krystal spruce -> maha 30 60 400 1.200 12.000
+argo.settext(44,"Hole") // aktivacni krystal spruce -> maha 30 60 400 1.200 12.000
+argo.settext(45,"Tetivy")// titivy spruce -> maha 25 45 300 900 9.000
+argo.settext(46,"Luky a Kuse") // aktivacni krystal spruce -> maha 30 60 400 1.200 12.000
+argo.settext(47,"")
+argo.settext(48,"ks")
+argo.settext(49,"cena/ks :")
+
+argo.text(60,395,152,41)
+argo.text(60,415,152,42)
+argo.text(60,435,152,43)
+argo.text(210,435,142,44)
+argo.text(60,455,152,45)
+argo.text(210,455,142,46)
+
+page 5 // empty
+
+page 6 // empty
+
+page 7 // prohlednout
+argo.settext(70," Statny mladik s obchodnim duchem.<br> Po letmem rozhlednuti jsi <?src.sex presvedcen presvedcena?>, ze tento nenapadny hoch ti muze na miste nabidnout vice zbozi, nez by jsi kdy <?src.sex("byl schopen","byla schopna")?> ve svem zivote spotrebovat ty spolu se <?src.sex("svou zenou","svym muzem")?> a vasimi peti ratolestmi...")
+HTMLGUMP(170,230,440,100,70,0,36)
+
+
+page 8 // Kovarske Potreby
+argo.button(160,360,0988,0988,0,4,0)	// Dalsi zbozi
+argo.settext(50,"Dalsi zbozi")
+argo.text(202,361,777,50)		// Dalsi zbozi
+argo.button(325,360,0988,0988,1,0,1)	// Koupit
+argo.settext(51,"Koupit")
+argo.text(385,361,777,51)		// Koupit
+
+gumppic(202,395,098D) // podklad pod pocet
+argo.settext(80,"Mam tu jen kvalitni a suche uhli! Bud si <?src.sex jist jista?>, ze ti s nim vyhen nikdy nevyhasne.<br> Najednou ti muzu nalozit az 1 000 kusu.")
+argo.settext(81,"Uhli:")
+argo.settext(811,"250 gp")
+HTMLGUMP(170,230,440,100,80,0,36)
+argo.text(60,395,152,81)
+argo.text(308,395,152,48)	// ks.
+argo.text(380,395,152,49)	// cena/ks:
+argo.text(480,395,152,811)
+argo.textentry(210,396+0*(buy_radek_vyska),90,<d_def_radek_vyska>,52,1,47)
+
+
+page 9 // Krejcovske Potreby
+argo.button(160,360,0988,0988,0,4,0)	// Dalsi zbozi
+argo.settext(50,"Dalsi zbozi")
+argo.text(202,361,777,50)		// Dalsi zbozi
+argo.button(325,360,0988,0988,1,0,1)	// Koupit
+argo.settext(51,"Koupit")
+argo.text(385,361,777,51)		// Koupit
+
+gumppic(202,395,098D) // podklad pod pocet
+argo.settext(90," Myslim, ze tyhle nite si zaslouzi tvou pozornost. Mas li zalibu v kvalitnich latkach, tato krejcovska lahudka te jiste neurazi.")
+argo.settext(91,"Magicka Nit:")
+argo.settext(911,"10.000 gp")
+HTMLGUMP(170,230,440,100,90,0,36)
+argo.text(60,395,152,91)
+argo.text(308,395,152,48)	// ks.
+argo.text(380,395,152,49)	// cena/ks:
+argo.text(480,395,152,911)
+argo.textentry(210,396+0*(buy_radek_vyska),90,<d_def_radek_vyska>,52,2,47)
+
+
+page 10 // Aktivacni krystaly
+argo.button(160,360,0988,0988,0,4,0)	// Dalsi zbozi
+argo.settext(50,"Dalsi zbozi")
+argo.text(202,361,777,50)		// Dalsi zbozi
+argo.button(325,360,0988,0988,1,0,1)	// Koupit
+argo.settext(51,"Koupit")
+argo.text(385,361,777,51)		// Koupit
+
+gumppic(202,395+0*(buy_radek_vyska),098D) // podklad pod pocet
+gumppic(202,395+1*(buy_radek_vyska),098D) // podklad pod pocet
+gumppic(202,395+2*(buy_radek_vyska),098D) // podklad pod pocet
+gumppic(202,395+3*(buy_radek_vyska),098D) // podklad pod pocet
+gumppic(202,395+4*(buy_radek_vyska),098D) // podklad pod pocet
+argo.settext(100," Mam tu velke mnozstvi magickych krystalu, dobry remeslnik vi jak je upnout na hul. V rukou maga je to pak velmi mocna zbran!<br> Neber si vsak vice, jak 100 kusu naraz. Beztak by jsi to <src.sex nepobral nepobrala>.")
+argo.settext(101,"Krystal Mahagon:")
+argo.settext(1011,"12.000 gp")
+argo.settext(102,"Krystal Teak:")
+argo.settext(1021,"1.200 gp")
+argo.settext(103,"Krystal Oak:")
+argo.settext(1031,"400 gp")
+argo.settext(104,"Krystal Chestnut:")
+argo.settext(1041,"60 gp")
+argo.settext(105,"Krystal Spruce:")
+argo.settext(1051,"30 gp")
+
+HTMLGUMP(170,230,440,100,100,0,36)
+argo.text(60,395+0*(buy_radek_vyska),152,101)
+argo.text(60,395+1*(buy_radek_vyska),152,102)
+argo.text(60,395+2*(buy_radek_vyska),152,103)
+argo.text(60,395+3*(buy_radek_vyska),152,104)
+argo.text(60,395+4*(buy_radek_vyska),152,105)
+
+argo.text(308,395+0*(buy_radek_vyska),152,48)	// ks.
+argo.text(308,395+1*(buy_radek_vyska),152,48)	// ks.
+argo.text(308,395+2*(buy_radek_vyska),152,48)	// ks.
+argo.text(308,395+3*(buy_radek_vyska),152,48)	// ks.
+argo.text(308,395+4*(buy_radek_vyska),152,48)	// ks.
+
+argo.text(380,395+0*(buy_radek_vyska),152,49)	// cena/ks:
+argo.text(380,395+1*(buy_radek_vyska),152,49)	// cena/ks:
+argo.text(380,395+2*(buy_radek_vyska),152,49)	// cena/ks:
+argo.text(380,395+3*(buy_radek_vyska),152,49)	// cena/ks:
+argo.text(380,395+4*(buy_radek_vyska),152,49)	// cena/ks:
+
+argo.text(480,395+0*(buy_radek_vyska),152,1011)
+argo.text(480,395+1*(buy_radek_vyska),152,1021)
+argo.text(480,395+2*(buy_radek_vyska),152,1031)
+argo.text(480,395+3*(buy_radek_vyska),152,1041)
+argo.text(480,395+4*(buy_radek_vyska),152,1051)
+
+argo.textentry(210,396+0*(buy_radek_vyska),90,<d_def_radek_vyska>,52,3,47)
+argo.textentry(210,396+1*(buy_radek_vyska),90,<d_def_radek_vyska>,52,4,47)
+argo.textentry(210,396+2*(buy_radek_vyska),90,<d_def_radek_vyska>,52,5,47)
+argo.textentry(210,396+3*(buy_radek_vyska),90,<d_def_radek_vyska>,52,6,47)
+argo.textentry(210,396+4*(buy_radek_vyska),90,<d_def_radek_vyska>,52,7,47)
+
+
+page 11 // Tetivy
+argo.button(160,360,0988,0988,0,4,0)	// Dalsi zbozi
+argo.settext(50,"Dalsi zbozi")
+argo.text(202,361,777,50)		// Dalsi zbozi
+argo.button(325,360,0988,0988,1,0,1)	// Koupit
+argo.settext(51,"Koupit")
+argo.text(385,361,777,51)		// Koupit
+
+gumppic(202,395+0*(buy_radek_vyska),098D) // podklad pod pocet
+gumppic(202,395+1*(buy_radek_vyska),098D) // podklad pod pocet
+gumppic(202,395+2*(buy_radek_vyska),098D) // podklad pod pocet
+gumppic(202,395+3*(buy_radek_vyska),098D) // podklad pod pocet
+gumppic(202,395+4*(buy_radek_vyska),098D) // podklad pod pocet
+argo.settext(110," Zde je ma zasoba tetiv. Mam tu par levnych kousku pro nenarocne, ale i drahe, kvalitni a velmi pevne tetivy, ktere udrizi napnutou i tu nejtuzsi kusi!<br> Neber si vsak vice, jak 100 kusu naraz. Beztak by jsi to <src.sex nepobral nepobrala>.")
+argo.settext(111,"Tetiva Mahagon:")
+argo.settext(1111,"9.000 gp")
+argo.settext(112,"Tetiva Teak:")
+argo.settext(1121,"900 gp")
+argo.settext(113,"Tetiva Oak:")
+argo.settext(1131,"300 gp")
+argo.settext(114,"Tetiva Chestnut:")
+argo.settext(1141,"45 gp")
+argo.settext(115,"Tetiva Spruce:")
+argo.settext(1151,"25 gp")
+
+HTMLGUMP(170,230,440,100,100,0,36)
+argo.text(60,395+0*(buy_radek_vyska),152,111)
+argo.text(60,395+1*(buy_radek_vyska),152,112)
+argo.text(60,395+2*(buy_radek_vyska),152,113)
+argo.text(60,395+3*(buy_radek_vyska),152,114)
+argo.text(60,395+4*(buy_radek_vyska),152,115)
+
+argo.text(308,395+0*(buy_radek_vyska),152,48)	// ks.
+argo.text(308,395+1*(buy_radek_vyska),152,48)	// ks.
+argo.text(308,395+2*(buy_radek_vyska),152,48)	// ks.
+argo.text(308,395+3*(buy_radek_vyska),152,48)	// ks.
+argo.text(308,395+4*(buy_radek_vyska),152,48)	// ks.
+
+argo.text(380,395+0*(buy_radek_vyska),152,49)	// cena/ks:
+argo.text(380,395+1*(buy_radek_vyska),152,49)	// cena/ks:
+argo.text(380,395+2*(buy_radek_vyska),152,49)	// cena/ks:
+argo.text(380,395+3*(buy_radek_vyska),152,49)	// cena/ks:
+argo.text(380,395+4*(buy_radek_vyska),152,49)	// cena/ks:
+
+argo.text(480,395+0*(buy_radek_vyska),152,1111)
+argo.text(480,395+1*(buy_radek_vyska),152,1121)
+argo.text(480,395+2*(buy_radek_vyska),152,1131)
+argo.text(480,395+3*(buy_radek_vyska),152,1141)
+argo.text(480,395+4*(buy_radek_vyska),152,1151)
+
+argo.textentry(210,396+0*(buy_radek_vyska),90,<d_def_radek_vyska>,52,8,47)
+argo.textentry(210,396+1*(buy_radek_vyska),90,<d_def_radek_vyska>,52,9,47)
+argo.textentry(210,396+2*(buy_radek_vyska),90,<d_def_radek_vyska>,52,10,47)
+argo.textentry(210,396+3*(buy_radek_vyska),90,<d_def_radek_vyska>,52,11,47)
+argo.textentry(210,396+4*(buy_radek_vyska),90,<d_def_radek_vyska>,52,12,47)
+
+[dialog d_npc_drazitel button]
+on=0
+say("Bylo mi potesenim")
+
+on=1
+if <src.findid(i_drazitel_memory)>
+  src.RedMessage("Nejdrive si vyrid prvni objednavku")
+  return 1
+endif
+src.newequip(i_drazitel_memory)
+lastnew.timer=600
+arg(uhli,<f_drazitel_check_value(<fixNumber(<argtxt(1)>)>,1000)>) 		// 1.arg== pocet, 2.arg== maxamount
+arg(nit,<f_drazitel_check_value(<fixNumber(<argtxt(2)>)>,1000)>) 		// 1.arg== pocet, 2.arg== maxamount
+arg(krystal_maha,<f_drazitel_check_value(<fixNumber(<argtxt(3)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(krystal_teak,<f_drazitel_check_value(<fixNumber(<argtxt(4)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(krystal_oak,<f_drazitel_check_value(<fixNumber(<argtxt(5)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(krystal_chestnut,<f_drazitel_check_value(<fixNumber(<argtxt(6)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(krystal_spruce,<f_drazitel_check_value(<fixNumber(<argtxt(7)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(tetiva_maha,<f_drazitel_check_value(<fixNumber(<argtxt(8)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(tetiva_teak,<f_drazitel_check_value(<fixNumber(<argtxt(9)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(tetiva_oak,<f_drazitel_check_value(<fixNumber(<argtxt(10)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(tetiva_chestnut,<f_drazitel_check_value(<fixNumber(<argtxt(11)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+arg(tetiva_spruce,<f_drazitel_check_value(<fixNumber(<argtxt(12)>)>,100)>) 	// 1.arg== pocet, 2.arg== maxamount
+dialog(d_npc_drazitel_souhrn,<uhli>,<nit>,<krystal_maha>,<krystal_teak>,<krystal_oak>,<krystal_chestnut>,<krystal_spruce>,<tetiva_maha>,<tetiva_teak>,<tetiva_oak>,<tetiva_chestnut)>,<tetiva_spruce>)
+
+
+[DIALOG d_npc_drazitel_souhrn]
+argo.SetLocation=205,150
+
+argo.tag(sirka,396)
+argo.tag(vyska,380)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,73,180,113)
+argo.dialog_pozadi(<argo.tag(nexty)>,12,73,180,80,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,2,256,113)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,256,113)
+argo.dialog_zpruhledni
+
+arg(sloupec_prvni_x,<d_def_okraj>+<d_def_skvira>+<d_def_odsazeni>)
+arg(sloupec_prvni_y,<d_def_okraj>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*(<d_def_radek_vyska>+<d_def_skvira>),42,"Nakupni Listek")
+argo.button(sloupec_prvni_x+340,sloupec_prvni_y-3,0fb1,0fb3,1,0,0)//cancel
+
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+1*(<d_def_radek_vyska>+<d_def_skvira>),<d_def_writecolor>,"Pocet ks:")
+argo.texta(sloupec_prvni_x+76,sloupec_prvni_y+1*(<d_def_radek_vyska>+<d_def_skvira>),<d_def_writecolor>,"Jmeno Polozky:")
+argo.texta(sloupec_prvni_x+256,sloupec_prvni_y+1*(<d_def_radek_vyska>+<d_def_skvira>),<d_def_writecolor>,"Cena:")
+
+
+arg(i,0)
+arg(k,0)
+arg(sum,0)
+arg(pamet,<src.findid(i_drazitel_memory)>)
+arg(sloupec_prvni_y,#+2*<d_def_radek_vyska>+<d_def_skvira>)
+while (<k> < 12)
+  if (argv(<k>) > 0)
+    argo.texta(sloupec_prvni_x,sloupec_prvni_y+<i>*<d_def_radek_vyska>,<d_def_writecolor>,<argv(<k>)>)
+    argo.texta(sloupec_prvni_x+69,sloupec_prvni_y+<i>*<d_def_radek_vyska>,<d_def_writecolor>,<f_drazitel_souhrn_name(<k>)>)
+    argo.texta(sloupec_prvni_x+256,sloupec_prvni_y+<i>*<d_def_radek_vyska>,<d_def_writecolor>,<argv(k)>*<f_drazitel_souhrn_value(<k>)>)
+    argo.button(sloupec_prvni_x+339,sloupec_prvni_y+(<i>*<d_def_radek_vyska>),4005,4007,1,0,<k>+1)
+    arg(sum,#+<argv(k)>*<f_drazitel_souhrn_value(<k>)>)
+    pamet.tag(pocet_<eval <k>+1>,<argv(<k>)>)
+    arg(i,#+1)
+  endif
+arg(k,#+1)
+endwhile
+
+arg(sloupec_prvni_y,#+(12*<d_def_radek_vyska>)+<d_def_skvira>)
+arg(konto,<eval src.findlayer(21).rescount(t_gold)+src.bankbalance>)
+arg(zustatek,<eval <konto>-<sum>>)
+argo.texta(210,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,"Soucet:")
+argo.texta(214,sloupec_prvni_y+1*<d_def_radek_vyska>,<d_def_writecolor>,"Konto:")
+argo.texta(sloupec_prvni_x+256,sloupec_prvni_y+0*<d_def_radek_vyska>,52,<sum>)
+argo.texta(sloupec_prvni_x+256,sloupec_prvni_y+1*<d_def_radek_vyska>,52,<konto>)
+
+arg(sloupec_prvni_y,#+(2*<d_def_radek_vyska>)+<d_def_skvira>)
+argo.texta(192,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,"Zustatek:")
+if (<zustatek> > 0)
+  argo.texta(sloupec_prvni_x+256,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,<zustatek>)
+else
+  argo.texta(sloupec_prvni_x+256,sloupec_prvni_y+0*<d_def_radek_vyska>,42,<zustatek>)
+endif
+pamet.tag(suma,<sum>)
+pamet.tag(zustatek,<zustatek>)
+argo.button(sloupec_prvni_x+340,sloupec_prvni_y+(1*<d_def_radek_vyska>),0fb7,0fb9,1,0,<k>+1)//ok
+
+
+[dialog d_npc_drazitel_souhrn button]
+ON=0
+Src.SysMessage("Zbozi odmitnuto.")
+Src.findid(i_drazitel_memory).remove
+Say("Bylo mi potesenim, priste se ti snad neco bude hodit.")
+
+ON=1
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,1)
+
+ON=2
+src.sysmessage("button 2")
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,2)
+
+ON=3
+src.sysmessage("button 3")
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,3)
+
+ON=4
+src.sysmessage("button 4")
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,4)
+
+ON=5
+src.sysmessage("button 5")
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,5)
+
+ON=6
+src.sysmessage("button 6")
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,6)
+
+ON=7
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,7)
+
+ON=8
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,8)
+
+ON=9
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,9)
+
+ON=10
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,10)
+
+ON=11
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,11)
+
+ON=12
+f_drazitel_souhrn_nuluj(<src.findid(i_drazitel_memory)>,12)
+
+ON=13
+arg(pamet,<Src.findid(i_drazitel_memory)>)
+if !(pamet)
+  src.sysmessage("<name> zapomnel tvou objednavku, vyber si znovu")
+  return 1
+endif
+arg(cena,<eval finduid(pamet).tag(suma)>)
+if !(<src.pay(<cena>)>)
+  finduid(pamet).remove
+  return 1
+endif
+arg(drazitel_spawn,<memoryfindtype(Memory_ISpawned).link>)	// na spawn se budou logovat pocty prodanych itemu a cena
+if !(src.isgm)
+  f_npc_drazitel_vybrano(<cena>,<drazitel_spawn>)
+endif
+arg(thistag_value,<eval finduid(pamet).tag(pocet_1)>)
+if <eval finduid(pamet).tag(pocet_1)>
+  drazitel_spawn.tag(pocet_1,<eval <drazitel_spawn.tag(pocet_1)>+<thistag_value>>)
+  src.newitem(i_coal)
+  lastnew.amount=<thistag_value>
+  lastnew.bounce
+endif
+arg(thistag_value,<eval finduid(pamet).tag(pocet_2)>)
+if <eval finduid(pamet).tag(pocet_2)>
+  drazitel_spawn.tag(pocet_2,<eval <drazitel_spawn.tag(pocet_2)>+<thistag_value>>)
+  src.newitem(i_magicka_nit)
+  lastnew.amount=<thistag_value>
+  lastnew.bounce
+endif
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_3)>>,i_krystal_mahagon,3,<drazitel_spawn>)//<finduid(pamet).tag(pocet_3)>
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_4)>>,i_krystal_teak,4,<drazitel_spawn>)
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_5)>>,i_krystal_oak,5,<drazitel_spawn>)
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_6)>>,i_krystal_chestnut,6,<drazitel_spawn>)
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_7)>>,i_krystal_spruce,7,<drazitel_spawn>)
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_8)>>,i_tetiva_mahagon,8,<drazitel_spawn>)
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_9)>>,i_tetiva_teak,9,<drazitel_spawn>)
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_10)>>,i_tetiva_oak,10,<drazitel_spawn>)
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_11)>>,i_tetiva_chestnut,11,<drazitel_spawn>)
+f_drazitel_vydej_bagl(<eval 0+<finduid(pamet).tag(pocet_12)>>,i_tetiva_spruce,12,<drazitel_spawn>)
+finduid(pamet).remove
+
+
+[function f_drazitel_vydej_bagl]
+arg(un_numero_ici,<argv(0)>)
+arg(drazitel_spawn,<argv(3)>)
+if <un_numero_ici>
+  drazitel_spawn.tag(pocet_<argv(2)>,<eval <drazitel_spawn.tag(pocet_<argv(2)>)>+<un_numero_ici>>)
+  if (<un_numero_ici> > 5)
+    src.newitem(i_bag).bounce
+    arg(my_bag,<lastnew>)
+    my_bag.name=Zbozi
+  else
+    arg(my_bag,<src.findlayer(21)>)
+  endif
+  while <un_numero_ici>
+    src.newitem(<argv(1)>).cont=<my_bag>
+    arg(un_numero_ici,#-1)
+  endwhile
+endif
+
+[function f_drazitel_souhrn_nuluj]
+arg(pamet,<argv(0)>)
+pamet.tag(pocet_<argv(1)>,0)
+arg(uhli,<eval finduid(pamet).tag(pocet_1)>)
+arg(nit,<eval finduid(pamet).tag(pocet_2)>)
+arg(krystal_maha,<eval finduid(pamet).tag(pocet_3)>)
+arg(krystal_teak,<eval pamet.tag(pocet_4)>)
+arg(krystal_oak,<eval pamet.tag(pocet_5)>)
+arg(krystal_chestnut,0)
+arg(krystal_chestnut,<eval pamet.tag(pocet_6)>)
+arg(krystal_spruce,<eval pamet.tag(pocet_7)>)
+arg(tetiva_maha,<eval pamet.tag(pocet_8)>)
+arg(tetiva_teak,<eval pamet.tag(pocet_9)>)
+arg(tetiva_oak,<eval pamet.tag(pocet_10)>)
+arg(tetiva_chestnut,<eval pamet.tag(pocet_11)>)
+arg(tetiva_spruce,<eval pamet.tag(pocet_12)>)
+dialog(d_npc_drazitel_souhrn,<uhli>,<nit>,<krystal_maha>,<krystal_teak>,<krystal_oak>,<krystal_chestnut>,<krystal_spruce>,<tetiva_maha>,<tetiva_teak>,<tetiva_oak>,<tetiva_chestnut)>,<tetiva_spruce>)
+
+
+[function f_drazitel_souhrn_name]
+if <argv(0)> == 0
+  return Uhli
+elseif <argv(0)> == 1
+  return Magicka Nit
+elseif <argv(0)> == 2
+  return Krystal Mahagon
+elseif <argv(0)> == 3
+  return Krystal Teak
+elseif <argv(0)> == 4
+  return Krystal Oak
+elseif <argv(0)> == 5
+  return Krystal Chestnut
+elseif <argv(0)> == 6
+  return Krystal Spruce
+elseif <argv(0)> == 7
+  return Tetiva Mahagon
+elseif <argv(0)> == 8
+  return Tetiva Teak
+elseif <argv(0)> == 9
+  return Tetiva Oak
+elseif <argv(0)> == 10
+  return Tetiva Chestnut
+elseif <argv(0)> == 11
+  return Tetiva Spruce
+endif
+
+[function f_drazitel_souhrn_value]
+if <argv(0)> == 0
+  return 250
+elseif <argv(0)> == 1
+  return 10000
+elseif <argv(0)> == 2
+  return 12000
+elseif <argv(0)> == 3
+  return 1200
+elseif <argv(0)> == 4
+  return 400
+elseif <argv(0)> == 5
+  return 60
+elseif <argv(0)> == 6
+  return 30
+elseif <argv(0)> == 7
+  return 9000
+elseif <argv(0)> == 8
+  return 900
+elseif <argv(0)> == 9
+  return 300
+elseif <argv(0)> == 10
+  return 45
+elseif <argv(0)> == 11
+  return 25
+endif
+
+[function f_drazitel_check_value]
+if (0<argv(0)> > 0)
+  if (<argv(0)> > <argv(1)>)
+    return <argv(1)>
+  else
+    return <argv(0)>
+  endif
+else
+  return 0
+endif
+
+[itemdef i_drazitel_memory]
+name=drazitel pamet
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+
+///////////////////////////////////////////////////////////////////////
+////////////////////// S T A T I S T I K A   G M //////////////////////
+///////////////////////////////////////////////////////////////////////
+
+[DIALOG d_npc_drazitel_statistika]
+argo.SetLocation=205,150
+
+argo.tag(sirka,370)
+argo.tag(vyska,320)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,161)
+argo.dialog_pozadi(<argo.tag(nexty)>,12,180,161)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+arg(sloupec_prvni_x,<d_def_okraj>+<d_def_skvira>+<d_def_odsazeni>)
+arg(sloupec_prvni_y,<d_def_okraj>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*(<d_def_radek_vyska>+<d_def_skvira>),42,"Statistika vykoupeneho zbozi")
+argo.button(sloupec_prvni_x+314,sloupec_prvni_y-3,0fb1,0fb3,1,0,0)		//cancel
+
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+1*(<d_def_radek_vyska>+<d_def_skvira>),52,"Jmeno Polozky:")
+argo.texta(sloupec_prvni_x+183,sloupec_prvni_y+1*(<d_def_radek_vyska>+<d_def_skvira>),52,"Vykoupeno Ks:")
+
+arg(i,0)
+arg(k,0)
+arg(sloupec_prvni_y,#+2*<d_def_radek_vyska>+<d_def_skvira>)
+while (<k> < 12)
+  argo.texta(sloupec_prvni_x,sloupec_prvni_y+<i>*<d_def_radek_vyska>,<d_def_writecolor>,<f_drazitel_souhrn_name(<k>)>)
+  arg(k,#+1)
+  argo.texta(sloupec_prvni_x+186,sloupec_prvni_y+<i>*<d_def_radek_vyska>,<d_def_writecolor>,<f_value_cascade(<argv(0).tag(pocet_<k>)>)> ks)
+  arg(i,#+1)  
+endwhile
+
+arg(sloupec_prvni_y,#+(12*<d_def_radek_vyska>)+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,52,"Celkem prodano za:")
+argo.texta(sloupec_prvni_x+186,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,<argv(0).tag(milions)>M <argv(0).tag(thousands)>K <argv(0).tag(units)> gp)
+
+
+
+[function f_value_cascade]
+arg(my_number,0+<argv(0)>)
+arg(milions,(0+<my_number>)/1000000)
+if <milions>
+  arg(my_number,#-<milions>*1000000)
+  arg(thousands,(0+<my_number>)/1000)
+  arg(my_number,#-<thousands>*1000)
+  return"<milions>M <thousands>K <my_number>"
+endif
+arg(thousands,(0+<my_number>)/1000)
+if <thousands>
+  arg(my_number,#-<thousands>*1000)
+  return"<thousands>K <my_number>"
+endif
+if <my_number>
+  return"<my_number>"
+else
+  return 0
+endif
+
+
+[function f_npc_drazitel_vybrano]
+arg(my_number,0+<argv(0)>)
+arg(milions,(0+<my_number>)/1000000)
+arg(my_number,#-<milions>*100000)
+arg(thousands,(0+<my_number>)/1000)
+arg(my_number,#-<thousands>*1000)
+arg(units,0+<my_number>)
+
+if (<argv(1).tag(units)>+<units> > 999)
+  arg(my_number,(<argv(1).tag(units)>+<units>)/1000)
+  arg(thousands,#+<my_number>)
+  arg(units,#-(<my_number>*1000))
+endif
+argv(1).tag(units,<eval <argv(1).tag(units)>+<units>>)
+
+if (<argv(1).tag(thousands)>+<thousands> > 999)
+  arg(my_number,(<argv(1).tag(thousands)>+<thousands>)/1000)
+  arg(milions,#+<my_number>)
+  arg(thousands,#-(<my_number>*1000))
+endif
+argv(1).tag(thousands,<eval <argv(1).tag(thousands)>+<thousands>>)
+argv(1).tag(milions,<eval <argv(1).tag(milions)>+<milions>>)
+[eof]

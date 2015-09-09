@@ -1,0 +1,248 @@
+/////////// bedna na regy ///////////
+[itemdef i_q008_benda_regy]
+ID=09a9
+TYPE=t_normal
+NAME=Bedna na regy pro Ancama
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=Bedna regy
+
+ON=@Create
+Color=0989
+Attr= 014
+
+ON=@UserDClick
+target(<tag(target_desc)>)
+src.sysMessage("Jaky reagent chces pridat do Ancamovy bedny?")
+return 1
+
+ON=@TargOn_Char
+src.sysMessage("Tohle sem cpat nebudes... alespon ne zive.")
+return 1
+
+ON=@TargOn_Ground
+src.sysMessage("At se divas jak se divas, na tom miste nic uzitecneho nevidis.")
+return 1
+
+ON=@TargOn_Item
+if !(src.targ.srccanseelos)
+ src.sysMessage("Nevidis na to, z tehle strany to nepujde")
+ return 1
+endif
+if ( <src.targ.distance> > 3)
+ src.sysMessage("Je to prilis daleko.")
+ return 1
+endif
+if (<src.targ.type> == t_reagent) // je to reagent
+ if ((<eval tag.mnozstvi_regu> < 2500) && (<tag.nasbirano> == 0)) // zjisti, zda je jiz bedna dostatecne nacpana
+  tag.mnozstvi_regu = (<eval tag.mnozstvi_regu> + <src.targ.amount>) //
+ else
+  tag.nasbirano=1
+  tag.remove(mnozstvi_regu)
+ endif  
+ src.targ.remove
+ src.sysMessage("<src.sex Vlozil Vlozila> jsi do bedny regy.")
+ return 1
+else
+ src.sysMessage("Jsi si temer jisty, ze tohle se Ancamovi hodit nebude.") 
+ return 1
+endif
+
+ON=@StackOn
+ Src.sysMessage("Do truhly pridas veci pomoci double-clicku")
+ argo.cont=<src.findlayer(21)>
+ return 1
+
+/////////// vrata do ohrady 1 ///////////
+
+[itemdef i_q008_vrata_1]
+ID=i_gate_wood_3
+Type=t_door_locked
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=Dvere do ohrady
+
+ON=@Create
+more1=1
+attr=012
+
+on=@UserDClick
+if !(<eval safe.tag(mustspawnid).tag(lastspawned).ischar> == 1)
+ arg(mustangIsNotThere,1)
+elseif (<safe.tag(mustspawnid).tag(lastspawned).isPet> == 1)
+ arg(mustangIsNotThere,1)
+else
+ arg(mustangIsNotThere,0)
+endif
+if (<src.tag(q008_black)> == 4)
+elseif ( (<src.tag(q008_black)> == 3) && (<arg(mustangIsNotThere)>) )
+ if (<more1> == 0)
+ else
+   more1=0
+ endif
+ return 0
+elseif (<src.tag(q008_black)> == 2)
+ return 0
+endif
+src.sysMessage("Dvere jsou pevne zavrene.")
+return 1
+
+on=@Timer
+more1=1
+
+
+/////////// vrata do ohrady 2 ///////////
+
+[itemdef i_q008_vrata_2]
+ID=i_gate_wood_3
+Type=t_door
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=Dvere do ohrady 2
+
+ON=@Create
+attr=012
+
+
+
+[ITEMDEF i_q008_pad_closeDoor_inside]
+ID=0AEC
+NAME=Quest Black - Zavirac prvnich dveri in
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=dlazdice spanek
+
+ON=@Create
+attr=090
+COLOR=098f
+
+ON=@UserDClick
+Target("Zamer dvere, ktere se maji zabouchnout.")
+return 1
+
+ON=@TargOn_Item
+if (src.targ.id == i_q008_vrata_1)
+ link=<src.targ>
+ src.sysMessage("Script tety Yavanny vzal uspesne dvere v uvahu.")
+ //elseif ((src.targ.type == t_spawn_char) && (src.targ.more1 == c_a_mustang_black))
+ //src.sysMessage("Script tety Yavanny vzal uspesne v uvahu spawn mustanga")
+else
+ src.redMessage("Zamerujes co nemas. Musis zamerit prvni dvere k mustangovi.")
+endif
+return 1
+
+ON=@step
+if (src.isGM)
+ src.sysMessage("Dlazka zavira dvere za hracem")
+ return 0
+else
+ if !(<eval safe.link.tag(mustspawnid).tag(lastspawned).ischar> == 1)	//pokud uz tam mustang neni
+  arg(otevri,1)
+ elseif (<safe.link.tag(mustspawnid).tag(lastspawned).isPet> == 1)	//pokud uz je mustang ochocenej
+  arg(otevri,1)
+ else
+  arg(otevri,0)
+ endif
+ if (<arg(otevri)>)
+  if !(link.more1 == 0)		//jsou-li dvere zavreny
+   link.more1=0			//umozni otevrit dvere
+  endif
+  return 1
+ elseif (<link.more1>==0)
+  if (<src.tag.q008_black> != 3)
+    link.timer=0
+    src.sysMessage("Zaviras za sebou branku.")
+    src.sysMessage("Ted jiz neni cesty zpet!")
+    src.tag.q008_black=3
+    src.addExp(100)
+  endif
+ endif
+endif
+
+[ITEMDEF i_q008_pad_closeDoor_outside]
+ID=0AEC
+NAME=Quest Black - Zavirac prvnich dveri out
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=dlazdice spanek
+
+ON=@Create
+attr=090
+COLOR=098f
+
+ON=@UserDClick
+Target("Zamer prvni dvere do ohrady.")
+return 1
+
+ON=@TargOn_Item
+if (src.targ.id == i_q008_vrata_1)
+ link=<src.targ>
+ src.sysMessage("Script tety Yavanny vzal uspesne dvere v uvahu.")
+else
+ src.redMessage("Zamerujes co nemas. Musis zamerit prvni dvere k mustangovi.")
+endif
+return 1
+
+ON=@step
+if src.isgm
+ src.sysMessage("Dlazka zavira dvere za hracem")
+ return 0
+else
+ if !(<eval safe.link.tag(mustspawnid).tag(lastspawned).ischar> == 1)
+  arg(zavri,1)
+ elseif (<safe.link.tag(mustspawnid).tag(lastspawned).isPet> == 1)
+  arg(zavri,1)
+ else
+  arg(zavri,0)
+ endif
+ if (<arg(zavri)>)
+  if (<src.tag(q008_black)> == 3)
+   src.tag.q008_black = 4
+  endif
+  if (link.more1 == 0)
+   link.timer=0
+  endif
+ elseif (src.tag.q008_black==2)
+  if (<link.more1> == 1)
+   src.sysMessage("Oteviras branku k mustangovi")
+  endif
+  link.more1=0
+  return 1
+ else
+  if (link.more1 == 0)
+   link.timer=0
+  endif
+ endif
+endif
+
+
+/////////// dlazka - zrusi spanek mustangovi ///////////
+
+[ITEMDEF i_dlazka_rmpeacemade] // nutne nastavit tag mustspawnid
+ID=0AEC
+NAME=Kontroluj Mustanga
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=dlazdice spanek
+
+ON=@Create
+attr=090
+COLOR=098f
+
+ON=@step
+if src.isgm
+ src.sysMessage("Dlazka rusi peacemade -tj uspani- mustanga")
+ return 0
+else
+ if (<eval safe.tag(spawnid).tag(lastspawned).isChar> == 1)
+  tag(spawnid).tag(lastspawned).events=-e_peacemade
+ endif
+endif
+
+[eof]

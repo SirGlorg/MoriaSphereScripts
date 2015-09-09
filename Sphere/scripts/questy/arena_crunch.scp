@@ -1,0 +1,83 @@
+[SPEECH spk_crunch_arenaVchod] 
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj* 
+SAY("Zdravim! Mas zajem podivat se do areny? Poplatek je 200 zlatych. Mas-li je, staci rict ARENA!")
+
+ON=*ARENA*
+if (<src.rescount i_gold> >= 200) && (<src.tag(realm)> > 0)
+  SRC.consume=200 i_gold
+  SRC.NEWITEM(i_portitko_arena).equip
+  arg(portitko,<lastnew>)
+  if (src.tag(realm) == 1)
+    arg(portitko).moreP=5060,1195,0,5
+  elseif (src.tag(realm) == 2)
+    arg(portitko).moreP=5060,1195,0,55
+  else
+    arg(portitko).remove
+  endif
+else
+  SAY("Nemas u sebe 200 zlatych. Je mi lito, ale nejsme charita.")
+endif
+
+[SPEECH spk_crunch_strazceAreny] 
+ 
+ON=*hi* 
+ON=*ahoj*
+ON=*zdravim*
+ON=*cus*
+ON=*hoj*
+    
+SAY("Vitej v arene <src.name>, potrebujes pomoci?")
+ 
+ON=*help*
+ON=*pomoc* 
+SAY("Zde muzes trenovat svoje dovednosti v boji proti svym protivnikum. Potrebujes vedet, kde je vychod? Nebo chces do areny?")
+
+ 
+ON=*Arena* 
+SAY("Vchod do trenovaci areny je ta modra brana.")
+ 
+ON=*exit* 
+ON=*vychod* 
+SAY("Tou cervenou branou.") 
+
+
+[ITEMDEF i_portitko_arena] 
+ID=i_memory 
+Name=Portitko do murdocovy areny
+TYPE=T_EQ_SCRIPT 
+ 
+ 
+ON=@CREATE 
+ATTR=attr_invis|attr_decay 
+MORE1=30 
+MOREP=
+ 
+ON=@EQUIP 
+TIMER=1 
+ 
+ON=@Timer 
+if (more1) 
+ cont.sysmessage("Cas do presunu: <eval <more1>> s")
+ more1=<eval <more1>-1>
+ TIMER=1
+ return 1
+else
+ src.racemessage("<src.sex(Vstoupil,Vstoupila)> jsi do areny - pro jeji opusteni pouzij prislusnou gatu, bude ti vracena karma.") // a killy)
+ src.tag(deathspits,<src.deaths>)
+ src.tag(karmapits,<src.karma>)
+ src.tag(murderpits,<src.kills>)
+ src.tag(famepits,<src.fame>)
+ src.tag(realmpits,<src.tag(realm)>)
+ src.tag(playerkillstotal_bk,<eval(<src.tag(playerkillstotal)>)>)
+ src.tag(monsterkillstotal_bk,<eval(<src.tag(monsterkillstotal)>)>)
+ SRC.EVENTS(+e_arena)
+ SRC.TAG(ARENA,1)
+ cont.GO <MOREP>
+ remove
+ return 1
+endif
+
+
+[eof]

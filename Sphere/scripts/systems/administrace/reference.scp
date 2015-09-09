@@ -1,0 +1,187 @@
+[function ref]
+src.dialog(d_reference_prop,<uid>,0)
+
+[dialog d_reference_prop]
+argo.tag(sirka,<d_def_refer_sirka>)
+argo.tag(vyska,<d_def_refer_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,40,140,140,100)
+
+argo.dialog_zpruhledni
+argo.tag(from,<argv(0)>)
+
+if (<strlen(<argo.tag(from)>)>)
+  if (<safe strlen(<argo.tag(from).typedef>)>)
+    argo.texta(<argo.dialog_textpos(0)>,2301,"Property k "<argo.tag(from).name>" - instanci tridy <argo.tag(from).GetObjectClass>")
+    argo.button(400,<var(lastypos)>,4005,4007,1,0,3)
+    argo.texta(430,<var(lastypos)>,2301,typedef reference(<argo.tag(from).baseid>))
+  else
+    argo.texta(<argo.dialog_textpos(0)>,2301,"Property k "<argo.tag(from).name>" - <argo.tag(from).GetObjectClass>")
+  endif
+endif
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,5)//cancel
+
+argo.button(670,<var(lastypos)>,4005,4007,1,0,4)
+argo.texta(700,<var(lastypos)>,2301,Metody)
+
+texta(<argo.dialog_textpos(1,0)>,2301,Enum)
+texta(<argo.dialog_textpos(1,1)>,2301,Jmeno)
+texta(<argo.dialog_textpos(1,2)>,2301,Hodnota)
+texta(<argo.dialog_textpos(1,3)>,2301,Zakl. typ)
+texta(<argo.dialog_textpos(1,4)>,2301,Popis)
+
+argo.tag(firsti,<eval argv(1)>)
+arg(index,<eval argv(1)>)
+arg(imax,<argv(1)>+<argo.tag(radku)>)
+if (imax>GetPropCount)
+ arg(imax,<GetPropCount>)
+endif
+
+//if ((index%<argo.tag(radku)>)==0)
+if (index>0)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+if ((<argv(1)>+<argo.tag(radku)>)<getpropcount)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+endif
+//endif
+
+arg(ypos,<argo.tag(obj_y[2])>)
+
+if (strlen(<argo.tag(from)>))
+  while (index<imax)
+    argo.texta(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>,<ypos>,2301,"<index>")
+    argo.texta(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,<ypos>,2301,"<safe argo.tag(from).Enumprop(index,1)>")
+    argo.texta(<argo.tag(sloupec_x[2])>+<d_def_odsazeni>,<ypos>,2301,"<safe argo.tag(from).Enumprop(index,2)>")
+    argo.texta(<argo.tag(sloupec_x[3])>+<d_def_odsazeni>,<ypos>,2301,"<safe argo.tag(from).Enumprop(index,16)>")
+    argo.texta(<argo.tag(sloupec_x[4])>+<d_def_odsazeni>,<ypos>,2301,"<safe argo.tag(from).Enumprop(index,4)>") 
+    arg(ypos,#+<d_def_radek_vyska>)
+    arg(index,#+1)
+  endwhile
+endif
+
+[dialog d_reference_prop button]
+on=1 //prev
+if (<strlen(<argo.tag(from)>)>)
+  src.dialog(d_reference_prop,<argo.tag(from)>,<eval <argo.tag(firsti)>-<argo.tag(radku)>>)
+else
+  src.redMessage("Chyba v hodnote tag(from) !")
+endif
+
+on=2 //next
+if (<strlen(<argo.tag(from)>)>)
+  src.dialog(d_reference_prop,<argo.tag(from)>,<eval <argo.tag(firsti)>+<argo.tag(radku)>>)
+else
+  src.redMessage("Chyba v hodnote tag(from) !")
+endif
+
+on=3
+if (<strlen(<argo.tag(from)>)>)
+  src.dialog(d_reference_prop,<argo.tag(from).typedef.uid>,0)
+else
+  src.redMessage("Chyba v hodnote tag(from) !")
+endif
+
+on=4
+if (<strlen(<argo.tag(from)>)>)
+  src.dialog(d_reference_method,<argo.tag(from).uid>,0)
+else
+  src.redMessage("Chyba v hodnote tag(from) !")
+endif
+
+on=5
+return
+
+
+[dialog d_reference_method]
+argo.tag(sirka,<d_def_refer_sirka>)
+argo.tag(vyska,<d_def_refer_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,40,140,100)
+argo.dialog_zpruhledni
+argo.tag(from,<argv(0)>)
+
+if (<strlen(<argo.tag(from)>)>)
+  if (<safe strlen(<argo.tag(from).typedef>)>)
+    if (<safe strlen(<argo.tag(from).typedef.uid>)>)
+      argo.texta(<argo.dialog_textpos(0)>,2301,"Property k "<name>" - instanci tridy <GetObjectClass>")
+      argo.button(400,<var(lastypos)>,4005,4007,1,0,3)
+      argo.texta(430,<var(lastypos)>,2301,typedef reference(<baseid>))
+    else
+      argo.texta(<argo.dialog_textpos(0)>,2301,"Property k "<name>" - <GetObjectClass>")
+    endif
+  endif
+endif
+argo.button(670,<var(lastypos)>,4005,4007,1,0,4)
+argo.texta(700,<var(lastypos)>,2301,Property)
+
+texta(<argo.dialog_textpos(1,0)>,2301,Enum)
+texta(<argo.dialog_textpos(1,1)>,2301,Jmeno)
+texta(<argo.dialog_textpos(1,2)>,2301,Zakladni typ)
+texta(<argo.dialog_textpos(1,3)>,2301,Popis)
+
+argo.tag(firsti,<eval argv(1)>)
+arg(index,<eval argv(1)>)
+arg(imax,<argv(1)>+<argo.tag(radku)>)
+if (imax>GetmethodCount)
+ arg(imax,<GetmethodCount>)
+endif
+
+arg(ypos,<argo.tag(obj_y[2])>)
+if (strlen(<argo.tag(from)>))
+  while (index<imax)
+    argo.texta(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>,<ypos>,2301,<index>)
+    argo.texta(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,<ypos>,2301,"<safe argo.tag(from).Enummethod(index,1)>")
+    argo.texta(<argo.tag(sloupec_x[2])>+<d_def_odsazeni>,<ypos>,2301,"<safe argo.tag(from).Enummethod(index,16)>")
+    argo.texta(<argo.tag(sloupec_x[3])>+<d_def_odsazeni>,<ypos>,2301,"<safe argo.tag(from).Enummethod(index,4)>")
+    if (index%<argo.tag(radku)>)==0)
+      if (index)
+        argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>,0fa,0fb,1,0,1) // prev
+      endif
+      if ((<argv(1)>+<argo.tag(radku)>)<getmethodcount)
+        argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+      endif
+    endif
+    arg(ypos,#+<d_def_radek_vyska>)
+    arg(index,#+1)
+  endwhile
+endif
+
+[dialog d_reference_method button]
+on=1
+if (<strlen(<argo.tag(from)>)>)
+  src.dialog(d_reference_method,<argo.tag(from)>,<eval <argo.tag(firsti)>-<argo.tag(radku)>>)
+else
+  src.redMessage("Chyba v hodnote tag(from) !")
+endif
+
+on=2
+if (<strlen(<argo.tag(from)>)>)
+  src.dialog(d_reference_method,<argo.tag(from)>,<eval <argo.tag(firsti)>+<argo.tag(radku)>>)
+else
+  src.redMessage("Chyba v hodnote tag(from) !")
+endif
+
+on=3
+if (<strlen(<argo.tag(from)>)>)
+  src.dialog(d_reference_method,<argo.tag(from).typedef.uid>,0)
+else
+  src.redMessage("Chyba v hodnote tag(from) !")
+endif
+
+on=4
+if (<strlen(<argo.tag(from)>)>)
+  src.dialog(d_reference_prop,<argo.tag(from).uid>,0)
+else
+  src.redMessage("Chyba v hodnote tag(from) !")
+endif
+
+[eof]

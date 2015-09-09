@@ -1,0 +1,107 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Friday, April 28, 2000
+
+// Purpose: UNKNOWN
+// Notes:  General Shopkeeper Speech File.
+// Current Keyword List:
+//	buy, supplies, wares, sell, *thou*purchase*, *you*purchase*, *you*buy*
+//	*I*sale*, *what*thou*sell*, *what*thou*sale*, *what*you*sell*, *what*you*sale*,
+//	*can*you*sell*, *can*you*sale*
+//
+[SPEECH spk_hlavakrvaka]
+ON=*hi*
+ON=*ahoj*
+Say Za hlavu krvaveho prizraku zaplatim 50000 zlatych
+
+on=*hlava*
+on=*sell*
+if (src.findid(i_flesh_head).link==(024B9F2))
+  src.giveitem(i_gold,50000)
+  src.findid((i_flesh_head).link==(024B9F2)).remove
+  say Skvele ! Tady je odmena
+  return 0
+elseif (src.findid(i_flesh_head).link==(0228696))
+  src.giveitem(i_gold,50000)
+  src.findid((i_flesh_head).link==(0228696)).remove  
+  say Skvele ! Tady je odmena
+  return 0
+elseif (src.restest(i_flesh_head))
+  say Tohle neni hlava krvaveho prizraku. Za podvody se plati !
+  src.consume(i_gold,50000)
+  src.sysmessage prisel jsi o 50000 zlatych
+  return 0
+endif
+say Dyt nic nemas. Nevotravuj !
+  
+
+
+[SPEECH spk_shopkeep]
+
+ON=*sell*
+SAY Dekuji ale nemam zajem nic koupit, jsem chudy, velmi rad bych od tebe neco koupil ale mych 12 deti potrebuje denne chleb, navic bohuzel setrim na kravu co by me mlekem obdarila abych sve hladove deti mohl napojit i jinou tekutinou nez pramenitou vodou. 
+
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+
+SAY Sluzebnik vasnosti.
+buy
+
+ON=Hi
+ON=Hello
+ON=Hail
+ON=Greet
+
+	SAY=Zbozi na prodej, vseho dostatek, nejlepsi ceny jen u me.
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+
+	SAY=Dekuji vasnosto, navstivte opet muj skromny kramek.
+	BYE
+	return 1
+
+ON=What do you do
+ON=Job
+
+	SAY=Tva cesta je nelehka jiste ocenis mou nabidku, pokud ne preji mnoho stesti.
+	
+
+
+
+
+[SPEECH spk_panzvirat]
+
+ON=*sell*
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+ON=*Hi*
+ON=*Hello*
+ON=*Dobry*
+ON=*den*
+ON=Bye
+ON=Goodbye
+ON=*zlata*
+ON=*pane*
+ON=*otep*
+ON=*zde*
+ON=*jsem*
+ON=*zde*
+ON=*ress*
+ON=*pomoc*
+ON=*kdo*
+	SAY=Dekuji ti za navraceni Zlate otepi. Tento artefakt byl odcizen a jeho sila ne nesmela dostat do cizich rukou. Odmenou ti bud hlt elixiru prirodniho poznani ktery najdeš v mem dome.
+
+[EOF]
+
+

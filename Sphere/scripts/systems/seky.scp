@@ -1,0 +1,394 @@
+//////////////////////// S E K Y ////////////////////////
+
+[function check]
+arg(sum, <fixNumber(<args>)>)
+arg(min_value,5000) // minimalni hodnota, jakou muze check mit
+arg(max_value,10000000) // maximalni hodnota, jakou muze check mit
+if (arg(sum) <= 0)
+  src.sysMessage("Zadavej ve formatu .check(xx), kde xx je mnozstvi penez, ktere chces do seku vlozit.")
+  return 1
+elseif (<arg(sum)> < <min_value>)
+  src.redMessage("Hodnota seku je prilis mala. Minimalni hodnota je <min_value> gp.")
+  return 1
+elseif (<arg(sum)> > <max_value>)
+  src.redMessage("Hodnota seku je prilis velka. Maximalni hodnota je <max_value> gp.")
+  return 1
+elseif (pay_from_bank(<arg(sum)>)) //mas v bance dost penez ? + ty penize sezere
+  src.newItemSafe(i_cashiers_check)
+  lastnew.more=<arg(sum)>
+  lastnew.cont=<src.findLayer(21)>
+  lastnew.tag(check_value,<arg(sum)>)
+  AccMsg("BYL VYTVOREN SEK: uid: <lastnew> hodnota: <arg(sum)> gp.")
+  src.sysMessage("Sek na <arg(sum)> gp byl umisten do tveho batohu.")
+  src.sound=04f
+  return 1
+endif
+
+[function canPay_from_bank]
+if (src.isgm)
+  return 2
+endif
+arg(shouldpay,<eval args>)
+if (arg(shouldpay) > bankbalance) //the amount to pay is more then you own??
+  return 0
+else
+  return 1
+endif
+
+[function pay_from_bank]
+if (src.isgm)
+  classmessage("Jako gm neplatis nic")
+  return 1
+endif
+arg(shouldpay,<eval args>)
+if (canPay_from_bank(<arg(shouldpay)>)) //you have enough to pay
+  findLayer(29).consumegoldamount(<arg(shouldpay)>) //consume money from bank.
+else //the amount to pay is more then you own??
+  classmessage("V bance nemas dostatek penez. Potrebujes <arg(shouldpay)> gp.") //refuse transaction
+  accmsg("Hasn't got #<arg(shouldpay)># gp.")
+  return 0
+endif
+accmsg(Has now #<eval args># gp.)
+return 1
+
+
+//////////////////////// M E S C E ////////////////////////
+
+[function mesec]
+if !(<argvcount>)
+  mesec(<rescount(i_gold)>)
+  return 1
+endif
+arg(sum, <fixNumber(<args>)>)
+arg(min_value,500) // minimalni hodnota, jakou muze check mit
+if (<arg(sum)><=0)
+  src.sysMessage("Zadavej ve formatu .mesec(xx), kde xx je mnozstvi penez, ktere chces do mesce vlozit.")
+  return 1
+elseif (<arg(sum)> < <min_value>)
+  src.redMessage("Takto maly obnos nelze umistit do mesce")
+elseif (pay_from_char(<arg(sum)>)) //mas u sebe dost penez ? + ty penize sezere
+  f_vytvor_mesec(<arg(sum)>,<findLayer(21)>)
+  return 1
+endif
+
+//argv(0) - GP to create
+//argv(1) - container into which the money will be send
+[function f_vytvor_mesec]
+arg(gp_need,<argv(0)>)
+while (<gp_need> > <nastaveni_max_amount_pokladnice>)
+  newItemSafe(i_cashiers_pokladnicka)
+  arg(new_pokladnicka,<lastnew>)
+  new_pokladnicka.more1=<nastaveni_max_amount_pokladnice>
+  new_pokladnicka.cont=<argv(1)>
+  AccMsg("BYL VYTVOREN mesec: uid: <new_pokladnicka> hodnota: <nastaveni_max_amount_pokladnice> gp v containeru: <argv(1)>,<argv(1).name>.")
+  arg(gp_need,#-<nastaveni_max_amount_pokladnice>)
+endwhile
+if (<gp_need> <= <nastaveni_max_amount_mesec>)
+  newItemSafe(i_cashiers_mesec)
+  arg(new_mesec,<lastnew>)
+  new_mesec.more1=<gp_need>
+  new_mesec.cont=<argv(1)>
+  AccMsg("BYL VYTVOREN mesec: uid: <new_mesec> hodnota: <gp_need> gp v containeru: <argv(1)>,<argv(1).name>.")
+elseif (<gp_need> <= <nastaveni_max_amount_pokladnice>)
+  newItemSafe(i_cashiers_pokladnicka)
+  arg(new_pokladnicka,<lastnew>)
+  new_pokladnicka.more1=<gp_need>
+  new_pokladnicka.cont=<argv(1)>
+  AccMsg("BYL VYTVOREN mesec: uid: <new_pokladnicka> hodnota: <gp_need> gp v containeru: <argv(1)>,<argv(1).name>.")
+endif
+src.sound=037
+return 1
+
+[function canPay_from_char]
+if (src.isgm)
+  return 2
+endif
+arg(shouldpay,<eval args>)
+if (arg(shouldpay) > <eval findLayer(21).rescount(t_gold)>) //the amount to pay is more then you own??
+  return 0
+else
+  return 1
+endif
+
+
+[function pay_from_char]
+if (src.isgm)
+  classmessage("Jako gm neplatis nic")
+  return 1
+endif
+arg(shouldpay,<eval args>)
+if (canPay_from_char(<arg(shouldpay)>)) // have enough
+  findLayer(21).consumegoldamount(<arg(shouldpay)>) //pay from the player's backpack
+else // don't have enough gp
+  classmessage("potrebujes <arg(shouldpay)> gp.") //refuse transaction
+  accmsg(Hasn't got #<arg(shouldpay)># gp.)
+  return 0
+else //you have enough to pay
+endif
+accmsg(Has now #<eval args># gp.)
+return 1
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////// I T E M Y   M E S C E / S E K Y ////////////////////////
+
+[itemdef i_cashiers_mesec]
+ID=i_bag
+Name=Mesec
+TYPE=t_normal
+WEIGHT=50
+
+CATEGORY=Ferals Stuff
+SUBSECTION=Misc
+DESCRIPTION=Cashiers Mesec (weight 1)
+
+on=@create
+color=0995
+attr=00
+
+on=@userClick
+message (<more> gp)
+return 1
+
+on=@stackOn
+if (<argo.type> == t_gold)
+  if ((<f_what_is_this_container> == 1) || (<f_what_is_this_container> == 2))    //mesec je na charu nebo v bance
+    if ((<eval more1> + <argo.amount>) <= <nastaveni_max_amount_mesec>) //celkovej pocet mensi nez max mesec
+      more1 = <more1> + <argo.amount>
+      src.sysMessage("Do mesce bylo vlozeno <argo.amount> gp.")
+      src.AccMsg("Do mesce: <uid> prisypano <argo.amount> v gp, nova hodnota: <eval <more1>> gp.")
+      argo.remove
+    else
+      src.AccMsg("Prisypany gp do mesce <uid>. Mesec smazan a vytvari se novy.")
+      src.f_vytvor_mesec(<eval more1>+<argo.amount>,<cont>)
+      argo.remove
+      remove
+    endif
+  else
+    argo.cont=<src.findLayer(21)>
+    src.redMessage("Mesec i penize musis mit u sebe")
+    return 1    
+  endif
+elseif ((<argo.id> == i_cashiers_mesec) || (<argo.id> = i_cashiers_pokladnicka))
+  if ((<f_what_is_this_container> == 1) || (<f_what_is_this_container> == 2))    //mesec je na charu nebo v bance
+    if ((<eval more1> + <eval argo.more1>) <= <nastaveni_max_amount_mesec>) //celkovej pocet mensi nez max mesec
+      more1 = <more1> + <eval argo.more1>
+      src.AccMsg("Sesypany mesce. Smazan: <argo>. Vlozeno do: <uid>. Nova hodnota: <eval <more1>>.")
+      argo.remove
+      src.sysMessage("<src.sex Presypal Presypala> jsi penize.")
+    else
+      src.AccMsg("Sesypany mesce. Vysoka hodnota. smazany mesce <argo> a <uid> a vytvari se novy.")
+      src.f_vytvor_mesec(<eval more1>+<eval argo.more1>,<cont>)
+      src.sysMessage("<src.sex Presypal Presypala> jsi penize.")
+      argo.remove
+      remove
+    endif
+  else
+    argo.cont=<src.findLayer(21)>
+    src.redMessage("Oba mesce musis mit u sebe")
+    return 1    
+  endif
+else
+  argo.bounce
+  src.sysMessage("Tohle je mesec na penize!")
+  return 1
+endif
+
+on=@userDClick
+if (<topobj> == <src>)
+  dialog(d_cashiers_mesec,<more>)
+  return 1
+else
+  src.sysMessage("Zde nelze mesec vyprazdnit.")
+  return 1
+endif
+
+
+[itemdef i_cashiers_pokladnicka]
+ID=0e80
+Name=Pokladnicka
+TYPE=t_normal
+WEIGHT=90
+DupeList=09a8
+
+CATEGORY=Ferals Stuff
+SUBSECTION=Misc
+DESCRIPTION=Cashiers Mesec (weight 1)
+
+on=@create
+color=0995
+attr=00
+
+on=@userClick
+message (<more> gp)
+return 1
+
+on=@stackOn
+if (<argo.type> == t_gold)
+  if ((<f_what_is_this_container> == 1) || (<f_what_is_this_container> == 2))    //mesec je na charu nebo v bance
+    if ((<eval more1>+<argo.amount>) <= <nastaveni_max_amount_pokladnice>) //celkovej pocet mensi nez max mesec
+      more1 = <more1> + <argo.amount>
+      src.sysMessage("Do pokladnice bylo vlozeno <argo.amount> gp.")
+      src.AccMsg("Do pokladnice: <uid> prisypano <argo.amount> v gp, nova hodnota: <eval <more1>> gp.")
+      argo.remove
+    else
+      src.AccMsg("Prisypany gp do pokladnicky <uid>. Pokladnicka smazana a vytvari se nova.")
+      src.f_vytvor_mesec(<eval more1>+<argo.amount>,<src.findLayer(21)>)
+      argo.remove
+      src.sysMessage("Pokladnice je plna.")
+      remove
+    endif
+  else
+    argo.cont=<src.findLayer(21)>
+    src.redMessage("Mesec i penize musis mit u sebe")
+    return 1    
+  endif
+elseif ((<argo.id> == i_cashiers_mesec) || (<argo.id> = i_cashiers_pokladnicka))
+  if ((<f_what_is_this_container> == 1) || (<f_what_is_this_container> == 2))    //mesec je na charu nebo v bance
+    if ((<eval more1> + <eval argo.more1>) <= <nastaveni_max_amount_pokladnice>)  //celkovej pocet mensi nez max mesec
+      more1 = <more1> + <eval argo.more1>
+      src.AccMsg("Sesypany mesce. Smazan: <argo>. Vlozeno do: <uid>. Nova hodnota: <eval <more1>>.")
+      argo.remove
+      src.sysMessage("<src.sex Presypal Presypala> jsi penize.")
+    else
+      src.AccMsg("Sesypany mesce. Vysoka hodnota. smazany mesce <argo> a <uid> a vytvari se novy.")
+      src.f_vytvor_mesec(<eval more1>+<eval argo.more1>,<cont>)
+      src.sysMessage("<src.sex Presypal Presypala> jsi penize.")
+      argo.remove
+      remove
+    endif
+  else
+    argo.cont=<src.findLayer(21)>
+    src.redMessage("Oba mesce musis mit u sebe")
+    return 1
+
+  endif
+else
+  argo.bounce
+  src.sysMessage("Tohle je pokladnice na penize!")
+  return 1
+endif
+
+on=@userDClick
+if (<topobj> == <src>)
+  dialog(d_cashiers_mesec,<more>)
+  return 1
+else
+  src.sysMessage("Zde nelze pokladnici vyprazdnit.")
+  return 1
+endif
+
+///////////////////////////////////////////////////////
+///////////////////// D I A L O G /////////////////////
+
+[dialog d_cashiers_mesec]
+argo.SetLocation=290,280
+argo.tag(sirka,220)
+argo.tag(vyska,<eval 23+(2*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+argo.settext(101,Kolik gp chces vyjmout ?)
+argo.text(<argo.dialog_textpos(0,0)>,0481,101)
+argo.settext(102,"<?argv(0)?>") 
+argo.textentry(18,35,198,<d_def_radek_vyska>,52,1,102)
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+argo.button(<d_def_okraj>+170,(<argo.tag(vyska)>-<d_def_okraj>)-23,4005,4007,1,0,2)//all
+
+[dialog d_cashiers_mesec button]
+on=0
+src.sysMessage("<src.sex Stornoval Stornovala> jsi volbu.")
+
+
+on=1
+if (<topobj> == src)
+  arg(mnyAmount,<fixNumber(<argtxt(1)>)>)
+  if (<arg(mnyAmount)> >= 500) && ((<more1>-<arg(mnyAmount)>) >= 500)
+    src.f_vytvor_mesec(<arg(mnyAmount)>,<cont>)
+    if (<arg(mnyAmount)> < <more1>)
+      more1=<more1>-<arg(mnyAmount)>
+      src.AccMsg("Mesec rozmenen. Nova hodnota je: <eval more1>gp a smenny mesec ma hodnotu <arg(mnyAmount)>gp.")
+    else
+      remove
+    endif
+  else
+    src.sysMessage("Na tuto hodnotu penize nerozdelis.")
+  endif
+else
+  src.sysMessage("Predmet musis mit u sebe!")
+endif
+
+on=2
+if (<topobj> == <src>)
+  arg(my_nosnost,<eval 20+<eval 4*<topobj.Str>>>)
+  arg(my_weight,<eval <topobj.Weight>/10>)
+  arg(money_weight,<eval <more1>/500>)
+  if (<my_nosnost> < (<eval <money_weight>+<my_weight>>)) && (f_what_is_this_container == 2) && (<more> > 1000)
+    if (<my_nosnost> > <my_weight>+1)
+      arg(val_givemoney,<eval <eval <my_nosnost>-<my_weight>>*500>)
+      if (<eval more1-<val_givemoney>> < 500)
+        arg(val_givemoney,#+500)
+      endif
+      src.givegold(<val_givemoney>,<cont>)
+      src.sound=037
+      more1=<eval more1-<val_givemoney>>
+      src.sysMessage("Vice minci nepoberes.")
+      src.AccMsg("Byl VYSYPAN mesec: <uid>. Vysypano bylo <val_givemoney>gp. V mesci zustalo <more>gp.")
+    else
+      src.redMessage("Jsi <src.sex pretizeny pretizena>.")
+    endif
+  else
+    src.givegold(<more>,<cont>)
+    src.sound=037
+    src.sysMessage("<src.sex Vysypal Vysypala> jsi <more> gp.")
+    src.AccMsg("Byl KOMPLETNE VYSYPAN mesec: <uid>. Vysypano bylo <more> gp.")
+    remove
+  endif
+else
+  src.sysMessage("Predmet musis mit u sebe!")
+endif
+return 1
+
+[function f_what_is_this_container]
+arg(me,<uid>)
+if !(<me.cont>)
+  return 0
+endif
+while (<me.cont>) && !(safe.me.cont.ischar)
+  arg(me,<me.cont>)
+endwhile
+if (<me.layer>==29)
+  return 1 //jsem v bance
+elseif (safe.me.cont.ischar)
+  return 2 //jsem v/na charu
+else
+  return 3 //jsem nekde jinde
+endif
+ 
+
+//#####################################################
+
+[itemdef i_cashiers_check]
+ID=i_deed
+Name=Cashiers Check
+TYPE=t_normal
+
+CATEGORY=Ferals Stuff 
+SUBSECTION=Misc 
+DESCRIPTION=Cashiers Check (blank)
+
+on=@create
+color=035
+
+on=@userClick
+message (<more> gp)
+return 1
+
+on=@userDClick
+src.sysMessage(Proplatit sek ti muze jen banker)
+return 1
+
+[EOF]

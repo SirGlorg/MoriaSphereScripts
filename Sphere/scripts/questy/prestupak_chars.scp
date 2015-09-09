@@ -1,0 +1,162 @@
+[chardef c_q041_prestupak_paserak]
+id=c_man
+name=Paserak
+
+attack=70
+ARMOR=70
+moverate=5
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TSPEECH=spk_q041_paserak
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_npc_sniper                           //Pøidá dmg k útoku po ránì def= 50
+TEVENTS=e_NPC_multishot
+
+CATEGORY=Moria Questy
+SUBSECTION=q041_prestupak
+DESCRIPTION=Paserak
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=1000
+DEX=400
+INT=1000
+
+maxhits=15500
+maxstam={400 450}
+maxmana=00
+
+tag.npc_sniper_dmg=40                          //o 40 HP
+tag.npc_sniper_chance=400                      //40% Defaultne 20%
+
+tag.multishot_chance=200                       // 20% chance pri zasahu monstra
+tag.multishot_delay=10,15                      // prodleva nez znovu
+tag.multishot_dmg=40,40                        // dmg in between 30 and 40
+
+tag(noanimate,1)
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {900 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,700)
+
+tag(resist_sharp,450)
+tag(resist_slash,450)        //sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,150)
+
+tag(resist_fire,300)
+tag(resist_elect,500)
+tag(resist_cold,500)
+
+ARCHERY=120.0
+PARRYING=100.0
+WRESTLING=110.0
+Resist=150.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+ITEMNEWBIE=i_arrow,{200 225}
+
+ITEMnewbie=i_sandals
+COLOR=0000
+ITEMNEWBIE=i_RINGMAIL_LEGGINGS
+ITEMNEWBIE=i_RINGMAIL_TUNIC
+ITEMNEWBIE=i_RINGMAIL_SLEEVES
+ITEMNEWBIE=i_ringmail_gloves
+ITEMnewbie=i_cape
+COLOR=047D
+ITEMnewbie=i_necklace_gold
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+  return 1
+else
+  f_q041_paserak
+ENDIF
+
+////////////////
+
+[chardef c_q041_prestupak_elf]
+id=c_man
+name=Elf
+
+attack=25
+ARMOR=20
+moverate=3
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_sniper        //Pøidá dmg k útoku po ránì
+
+CATEGORY=Moria Questy
+SUBSECTION=q041_prestupak
+DESCRIPTION=Elf
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=600
+DEX=90
+INT=50
+
+maxhits={940 990}
+maxstam={90 100}
+maxmana=0
+
+tag.experience=<eval {15.0 18.0}>
+
+tag(noanimate,1)
+
+tag.npc_sniper_chance=200         //20%
+tag.npc_sniper_dmg=10             //o 10 HP
+
+tag(monstertype,humanoid,40)
+
+tag(resist_poison,250)
+tag.resist_para=<eval {100 200}>
+tag(resist_summon,350)
+tag(resist_bleed,-100)
+
+tag(resist_sharp,100)
+tag(resist_slash,100)
+tag(resist_pierce,-150)
+tag(resist_blunt,50)
+
+tag(resist_fire,100)
+tag(resist_elect,100)
+tag(resist_cold,50)
+
+PARRYING=50.0
+ARCHERY={70.0 80.0}
+WRESTLING=75.0
+Resist=60.0
+
+ITEMNEWBIE=i_hair_short
+COLOR=047D
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+ITEMNEWBIE=i_arrow,{50 75}
+
+ITEMnewbie=i_sandals
+COLOR=0000
+ITEMnewbie=i_pants_long
+COLOR=047D
+ITEMnewbie=i_cape
+COLOR=047D
+ITEMnewbie=i_tunic
+ITEMnewbie=i_necklace_gold
+
+ON=@death
+if (<act.qtag(q041_paserak)> == 4)
+	act.qtag(q041_paserak,5,51)
+endif

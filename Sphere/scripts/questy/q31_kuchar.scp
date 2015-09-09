@@ -1,0 +1,291 @@
+[ITEMDEF i_q31_kuchar_kolektor]
+ID=i_backpack
+NAME=Vak na mrtvoly ptacku
+TYPE=t_collector
+WEIGHT=1
+
+on=@CREATE
+COLOR=042
+ATTR=010|04
+tag(contentsinfo,"Ve vaku je")
+tag(contentstype,"tel ptacku")
+tag(contentsamount,0)
+tag(maxcontents,50)
+tag(target_remove,1)
+tag(target_desc,"Kterou mrtvolu ptacka strcis do batuzku?")
+tag(target_id,"Body of Ptacek")
+tag(absolute_success,200)
+tag(value_to_check,150)
+tag(contentscount,0)
+tag(fail_msg,"Telo je prilis poskozeno, nez aby se mohlo kuchari hodit...")
+
+ON=@CollectorCheck
+
+
+//////////////// SPEECHE, DIALOGY ////////////////
+
+[SPEECH spk_q31_kuchar]
+on=*Ahoj*
+on=*Zdravim*
+on=*Dobry den*
+
+if (<distance> > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q31_kuchar
+endif
+
+[FUNCTION f_q31_kuchar]
+if (<eval src.tag.realm> ==2) 
+  say("AAAAAA, Mordorani !!! Zachran se kdo muzes !!!")
+elseif (<eval src.tag.q31_neuspel> ==1)
+  say("S tebou se uz nemam o cem bavit. Nerus me prosim mam praci!")
+elseif  (<eval src.tag.q31_kuchar> ==0) 
+  dialog(d_q31_kuchar_1)
+elseif (<eval src.tag.q31_kuchar> ==1) 
+  dialog(d_q31_kuchar_2)
+elseif (<eval src.tag.q31_kuchar> ==2)
+  dialog(d_q31_kuchar_3)
+endif
+
+      
+      
+      
+      
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////Vysvetleni zakladnich pojmu, vyznamu tagu a v kratkosti obsah jednotlivych dialogu.
+///Nejdrive tagy:
+///q31_kuchar_1 = zakladni tag, znaci ze si hrac nechal od Kuchare zadat ukol ptacky, zaroven otevira druhy dialog ( d_q31_kuchar_2 ) cimz zamezuje opetovnemu plneni questu.
+///q31_kuchar_2 = tento tag dostava hrac kdyz splni quest s ptacky, ukoncuje quest a zaroven otevira dialog treti  ( d_q31_kuchar_3 )
+///q31_neuspel = tento tag hrac dostava kdyz neco zkazi, zalze kuchari ci ho odmitne. Pres speeche hrace nepusti k plneni questu a jen mu odsekne ze nema cas.
+///Dialogy:
+///d_q31_kuchar_1 = zakladni dialog, hrac si muze nechat zadat ukol nebo pokecat o specialitach, muze taky dostat neprijemny neuspel tag.
+///d_q31_kuchar_2 = prostredni dialog, hrac zde muze ukoncit plneni ukolu ( a vyslouzit si neuspel tag ) a nebo ukol splnit. Moc kecu kuchar nema - specha s tema ptackama
+///d_q31_kuchar_3 = konecny dialog, kuchar mu v rychlosti dekuje za splneni ukolu a omlouva se ze na nej nema cas nebot neco vyrizuje.
+///Itemy:
+///i_q31_kuchar_kolektor = kolektor na tela ptacku
+///
+///Crafted by Darken
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[dialog d_q31_kuchar_1]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03001 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)  // kdo jsi?
+
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36) // chces pomoct?
+button 25 395 0fa5 0fa7 0 7 0  //  Rad to udelam    
+text 60 395 152 13
+button 25 415 0fa5 0fa7 0 8 0  //  Ne promin specham  
+text 60 415 152 14
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36) // tve speciality
+button 25 395 0fa5 0fa7 0 9 0  //  trochu 
+text 60 395 152 17
+button 25 415 0fa5 0fa7 0 10 0  //  nic mi to nerika 
+text 60 415 152 18
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)    // hledam praci
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)   //nesu ti
+
+page 6 
+HTMLGUMP(170,230,440,100,12,0,36)// prohlednout
+
+page 7
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 1 0 1 //  prijem ukolu
+text 60 395 152 21 // ano beru
+
+page 8
+HTMLGUMP(170,230,440,100,16,0,36) // kdyz hrac odmitne ukol s ptackama - kuchar se nastve a nastavuje tag - q31_kuchar_neuspel_1
+button 25 395 0fa5 0fa7 1 0 2 //  hrac odchazi a dostava vysi uvedeny tag.
+text 60 395 152 22 // * Odchazi *
+
+page 9
+HTMLGUMP(170,230,440,100,19,0,36) // pochybuje o tom ze clovek zna lektvar
+button 25 395 0fa5 0fa7 1 0 3  //  vymyslet si
+text 60 395 152 23
+button 25 415 0fa5 0fa7 0 11 0  //  priznat ze nic nevim
+text 60 415 152 24
+
+page 10
+HTMLGUMP(170,230,440,100,20,0,36) // vypraveni o lektvaru
+
+page 11
+HTMLGUMP(170,230,440,100,25,0,36) // hrac se priznal kuchari ze lhal, kuchart mu promiji.
+
+
+
+
+[dialog d_q31_kuchar_1 text]
+Kuchar Mrkvicka //0
+Kdo jsi?
+Muzu pomoci?
+Tve speciality?
+Hledam praci
+Nesu ti...
+Prohlednout
+Zdravicko, ja jsem kuchar Mrkvicka. Nejlepsi a nejskvelejsi kuchar v okoli *Pratelsky se usmal*.
+Hmno... mohl bys. Mam spoustu zakazek a zrovna si jeden bohac preje obrovske mnozstvi me speciality - ptacich peceni. Kdyby sis chtel trochu vydelat, muzes jich pro me par nachytat. Dobre se ti odmenim ! Co ty na to?
+Oooo toho je spousty. Jidla cizokrajna, mistni speciality... neexistuje nic, co bych nedokazal uvarit. Sbiram take stare recepty, nasi predkove byli skutecne velci gurmani - to se moc nevi. Slysel jsi nekdy o Osvezujicim likeru elfky Ariadne? 
+Ja si vystacim sam, velky kuchar nikoho jineho nepotrebuje // 10
+Copak mi neses?
+Kuchar Mrkvicka je trochu pri tele, s veselym oblicejem a vysokym sebevedomim. Jsi si vsak <?src.sex(jisty,jista)?>, ze to je take skvely kuchar.
+<?src.sex(Rad,Rada)?> to udelam.
+Ne. Promin, ale pospicham. Urcite se najde nekdo jiny.
+To jsem rad, ze nemusim hledat nekoho jineho. Snad to zvladnes. Zabit ptacka prece nemuze byt tak slozite, co rikas? Vezmi si tady tenhle batuzek a prines mi ... hm ... 50 jakychkoli mrtvych ptacku... a pospes si prosim!
+No co se da delat <basefont color="#ffff88">*Zaskaredil se*<basefont color="#ffffff"> ty mas urcite lepsi veci na praci...
+Ale ano... neco mi to rika... 
+Ne, povis mi o co jde? Nazev zni zajimave.
+Vazne? <basefont color="#ffff88">*Zatvaril se pochybovacne*<basefont color="#ffffff"> Tak to mi jiste muzes rict, z ceho se mel napoj skladat?
+Jiste jiste... je to velmi zajimave, Ariadne byla jedna z nejlepsich kucharek - vymyslela skvele recepty a par z nich by se mohlo vyrovnat snad i mym delikatesam <basefont color="#ffff88">*Zatvaril se zasnene*<basefont color="#ffffff">, jeji nejvetsi dilo byl Osvezujici liker, toho si nejvic povazovala a chranila jeho recept. Pry pomahal regenerovat unavene telo a pri pravidelnych davkach zpusobovalo takrka nezranitelnost. A navic... ten napoj mel naprosto dokonalou chut. Jemnou, podmanivou... <basefont color="#ffff88">*Zasnil se*<basefont color="#ffffff"> Ach, jaka skoda, ze se recept na vzdy ztratil spolu s Ariadne. // 20
+Udelam to!
+Odejit
+Vymyslet si nejake slozeni a rict ho kuchari
+Priznat, ze jsem si <?src.sex(vymyslel,vymyslela)?>
+Nic se nedeje... kazdy se dnes snazi zaujmout *Usmal se*
+
+[dialog d_q31_kuchar_1 button]
+on=0
+return 1
+
+on=1
+IF {<eval src.tag.q31_kuchar> ==0}
+  say("Doufam ze se vratis co nejdrive, hodne stesti.")
+  src.tag.q31_kuchar=1
+  src.redmessage(Prijmas ukol)
+  SRC.GIVEITEM=i_q31_kuchar_kolektor
+else
+  src.redmessage("Kontaktuj gm nekde se stala chyba")
+endif
+
+
+
+on=2
+src.tag.remove(q31_kuchar)
+src.tag.q31_neuspel=1
+src.sysMessage("Asi jsi kuchare nastval, vypada nasupene")
+
+on=3
+SAY("Nesnasim lhare a lidi kteri si vymysleji. Jdi prosim, mam praci.")
+src.tag.remove(q31_kuchar)
+src.tag.q31_neuspel=1
+
+
+endif
+
+[dialog d_q31_kuchar_2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03001 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+
+
+page 1
+HTMLGUMP(170,230,440,100,1,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  mam to
+text 60 395 152 2
+button 25 415 0fa5 0fa7 1 0 2  //  jeste ne
+text 60 415 152 3
+button 25 435 0fa5 0fa7 1 0 3  //  nechci uz to delat
+text 60 435 152 4
+button 25 455 0fa5 0fa7 1 0 4  // Vymenit kolektor      
+text 60 455 1152 5   //
+
+
+[dialog d_q31_kuchar_2 text]
+Kuchar Mrkvicka
+Ach, to jsi ty. Jsem rad, ze te vidim. Mam ted strasne moc prace. <basefont color="#ffff88">*Rozhodil rukama*<basefont color="#ffffff"> Tak co, uz mas, oc jsem te prosil?
+Jiste, tady to mas!
+Bohuzel jeste ne, ale uz na tom pracuji.
+Ne. Uz to nechci delat. Dej to nekomu jinemu, jo?
+!!!VYMENIT NEFUNKCNI PYTLIK ZA NOVY!!!
+
+
+
+
+
+[dialog d_q31_kuchar_2 button]
+on=1
+if <src.restest i_q31_kuchar_kolektor> && (<src.findid(i_q31_kuchar_kolektor).tag.contentscount>==50) 
+  src.tag.q31_kuchar=2
+  src.sysMessage("Skvele, splnil jsi kucharuv ukol. Zaslouzis si odmenu.")
+  say("Dekuji ti mnohokrat! Tady je tva odmena.")
+  src.addexp(50)
+  src.consume(i_q31_kuchar_kolektor)
+  src.giveitem(i_pet_llama)
+  f_quest_complete(4)  // splnenie questu "Kuchar Mrkvicka"
+  return 1
+else
+  src.sysMessage("Jeste nemas 50 ptacku!")
+  Return 1
+endif
+
+on=2
+say("Dobra ale pospes si prosim, jiz neni mnoho casu.")
+on=3
+say("HMMMMMMMMM ... pripravil jsi mne o mnoho casu. At uz te tu nevidim ! A ten pytel na ty ptaky si vezmu!")
+src.tag.remove(q31_kuchar)
+src.tag.q31_neuspel=1
+src.consume(i_q31_kuchar_kolektor)
+endif
+
+on=4
+if (<src.restest i_q31_kuchar_kolektor>)
+  src.consume(i_q31_kuchar_kolektor)
+  src.giveitem(i_q31_kuchar_kolektor)
+  src.redmessage("Opraveno")
+endif
+
+[dialog d_q31_kuchar_3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03001 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+
+page 1
+HTMLGUMP(170,230,440,100,1,0,36)
+button 160 330 0988 0988 1 0 1  // Kdo jsi ?     
+text 200 332 1152 2   // 
+
+[dialog d_q31_kuchar_3 text]
+Kuchar Mrkvicka 
+Aaaa priteli jsem rad ze te zase vidim! Bohuzel si ted s tebou nemohu popovidat mam tady spoustu prace.... zrovna tady jde nekdo s kym potrebuju nutne mluvit... mej se.
+*Odejit*
+
+[dialog d_q31_kuchar_3 button]
+
+on=1
+SAY("Mej se a nekdy se zastav...")

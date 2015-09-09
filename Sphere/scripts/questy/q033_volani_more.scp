@@ -1,0 +1,473 @@
+////////////////////////////////////////////////
+//VETESNIK IGNAC
+////////////////////////////////////////////////
+[function f_q033_vetesnikignac]
+if (src.qtag(q033) < 1)
+  src.qtag(q033,0)
+endif
+dialog(d_q033_vetesnikignac)
+
+[speech spk_q033_vetesnikignac]
+on = *ahoj*
+on = *hi*
+
+if (<distance>>3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q033_vetesnikignac
+endif
+
+
+
+[dialog d_q033_vetesnikignac]
+5,5
+page 0
+
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod xicht  
+gumppic 40 215 03102 // obrazek xichtu   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+if (src.qtag(q033) == 1)
+  argo.HTMLGUMP(170,230,440,100,17,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 18  
+elseif (src.qtag(q033) == 2)
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 18  
+elseif (src.qtag(q033) == 3)
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+  argo.button 25 395 0fa5 0fa7 0 8 2
+  argo.text 60 395 152 22  
+elseif (src.qtag(q033) == 4)
+  argo.HTMLGUMP(170,230,440,100,25,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 24  
+elseif (src.qtag(q033) == 5)
+  argo.HTMLGUMP(170,230,440,100,28,0,36)
+  argo.button 25 395 0fa5 0fa7 0 9 0
+  argo.text 60 395 152 29  
+elseif (src.qtag(q033) == 6)
+  argo.HTMLGUMP(170,230,440,100,25,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 24  
+elseif (src.qtag(q033) == 7)
+  argo.HTMLGUMP(170,230,440,100,25,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 4
+  argo.text 60 395 152 30  
+elseif (src.qtag(q033) == 8)
+  argo.HTMLGUMP(170,230,440,100,31,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 32  
+else
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 1
+  argo.text 60 395 152 13
+  argo.button 25 415 0fa5 0fa7 0 7 0
+  argo.text 60 415 152 14
+endif
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+
+page 5
+if (src.qtag(q033) == 3) && (<src.rescount i_q033_piratovo_lano> == 1))
+  argo.HTMLGUMP(170,230,440,100,11,0,36)
+  argo.button 25 395 0fa5 0fa7 0 8 2
+  argo.text 60 395 152 20  
+elseif (src.qtag(q033) == 7)
+  argo.HTMLGUMP(170,230,440,100,25,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 4
+  argo.text 60 395 152 30  
+else
+  argo.HTMLGUMP(170,230,440,100,11,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 16
+endif
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,15,0,36)
+
+page 8
+HTMLGUMP(170,230,440,100,23,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 2
+argo.text 60 395 152 24
+
+page 9
+HTMLGUMP(170,230,440,100,26,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 3
+argo.text 60 395 152 27
+
+[dialog d_q033_vetesnikignac text]
+Podivny vetesnik ignac // 0
+Kdo jsi? // 1
+Muzu pomoci? // 2
+Obchodovat? // 3
+Hledam praci // 4
+Nesu ti // 5
+Prohlednout // 6
+Vitej! Jmenuji se Ignac a jsem ten, kdo si umi vazit hezkych vecicek! // 7
+No... rad sbiram ruzne veci. A tak nejak se mi naskytnul jeden...hmm, rekneme moc zajimavy obchod daleko na mori. Ale bohuzel nemam moznost se na domluvene misto setkani dostat. Mam rozestavenou svou vlastni malou barku, ale jeste par veci mi chybi... predevsim potrebuji lanovi do plachet a napada me jen jediny clovek, ktery by mi jej mohl opatrit. Je to pirat Renfer, driv jsme spolu obchodovali a dluzi mi malou sluzbicku. Zkus jej vyhledat, snad ho presvedcis. Kde se presne nachazi netusim, ale urcite se bude nekde ozirat se svymi kumpany na lodi, jak ho znam.Prosim, prines mi ta lana!// 8
+Nemam co bych ti nabidl. Naopak se ted po spouste veci shanim a penez se mi nedostava. // 9
+Tak to zkus spis nekde ve meste, ne tady v divocine.//10
+Copak pro me mas? // 11
+Vidis podivneho, neposedneho cloveka. Rukama porad smejdi po kapsach a znaleckym okem posuzuje vsechny predmety, ktere mas u sebe. Nevypada vsak nebezpecne. Spis zvedave. // 12
+Ale jo, ja jsem pro kazde dobrodruzstvi. //13
+Nene, nejsem zrovna tulacky typ... // 14
+Dobra cizince, ale tvou vstricnost si budu pamatovat, az budu mit neco, co bys treba mohl potrebovat... // 15
+Momentalne nemam nic, co by te mohlo zajimat... //16
+Uz jsem ti rekl vse potrebne, co tu jeste delas? Tady zadni pirati nejsou... //17
+Jdu na to! //18
+Mas pro me ta lana? //19
+Mam to lanovi! //20
+Ale jiste! Mas pro me ty provazy? //21
+Pohled, jake ti nesu krasne lanovi! //22
+Nadhera! Jsem ti moc vdecny! Bohuzel jsem ale zjistil, ze pouha lana nejsou to jedine, co mi k uspesnemu vypluti chybi... bez plachty toho na otevrenem mori moc nezmuzu... potreboval bych od tebe jeste dalsi sluzbicku... najdi rybare Volka, urcite bude nekde vysedavat v nejakym tichem, zapadlem koutku u vody. Driv jsme spolu dost obchodovali, je to sice vydriduch, ale latky ma prvotridni. //23
+Jdu na to! //24
+Uz mas ty plachty? //25
+No tohle! Co si o sobe mysli! Zadny magicky predmet ze sve sbirky mu davat nebudu! Pokud mi chces pomoci, nejaky sezen a rekni Volkovi, ze je ode me... Pokud se ti podari donest mi tu latku, odmena te nemine a snad ti nejak vykompenzuji shaneni toho magickeho predmetu... //26
+Dobra, nejaky mu sezenu a donesu //27
+Tak uz mi neses latku na plachty? //28
+Bohuzel, Volek po tobe chce pytlik s magickym predmetem... //29
+Tady je latka! //30
+Diky, ale uz jsi mi pomohl az az! Ted nerus, at se mohu dat do stavby sve barky! //31
+Dobra, stastnou plavbu! //32
+
+
+[dialog d_q033_vetesnikignac button]
+on=1
+if (0<src.qtag(q033)> ==0)
+  src.qtag(q033,1,33)
+  say("Diky moc, hodne stesti s tou piratskou chatrou!.")
+endif
+
+on=2
+if ( (0<src.qtag(q033)> ==3) && (<src.rescount i_q033_piratovo_lano> == 1))
+  src.qtag(q033,4,33)
+  say("Prozatim diky!")
+  src.consume(i_q033_piratovo_lano)
+  src.addexp(300)
+else
+  say("Vzdyt ho nemas!")
+endif
+
+on=3
+if (0<src.qtag(q033)> ==5)
+  src.qtag(q033,6,33)
+  say("Hodne stesti s hledanim onoho predmetu... Tady neco na prilepsenou!")
+  src.givegold(10000)
+endif
+
+on=4
+if( (0<src.qtag(q033)> ==7) && (<src.rescount i_q033_plachtova_latka> == 1))
+  src.qtag(q033,8,33)
+  say("Dekuji! Jsem ti zavazan!")
+  src.consume(i_q033_plachtova_latka)
+  src.addexp(500)
+  f_quest_complete(33)  // splneni questu "Volani more"
+  src.givegold(5000)
+else
+  say("Vzdyt ji nemas!")
+endif
+
+
+////////////////////////////////////////////////
+//Pirat renfer
+////////////////////////////////////////////////
+[function f_q033_piratrenfer]
+  if (src.qtag(q033) < 1)
+    src.qtag(q033,0)
+  endif
+dialog(d_q033_piratrenfer)
+
+[speech spk_q033_piratrenfer]
+on = *ahoj*
+on = *hi*
+
+if (<distance>>3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q033_piratrenfer
+endif
+
+
+[dialog d_q033_piratrenfer]
+5,5
+page 0
+
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod xicht  
+gumppic 40 215 03104 // obrazek xichtu   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+if (src.qtag(q033) == 1)
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0
+  argo.text 60 395 152 9  
+elseif (src.qtag(q033) == 2)
+  argo.HTMLGUMP(170,230,440,100,17,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 18  
+elseif (src.qtag(q033) == 3)
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 21  
+elseif (src.qtag(q033) == 4)
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 21  
+elseif (src.qtag(q033) == 5)
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 21  
+elseif (src.qtag(q033) == 6)
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 21  
+elseif (src.qtag(q033) == 7)
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 21  
+elseif (src.qtag(q033) == 8)
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 21  
+else  
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+endif
+
+page 3
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,11,0,36)
+
+page 5
+if (src.qtag(q033) == 2)
+  argo.HTMLGUMP(170,230,440,100,12,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 2
+  argo.text 60 395 152 19  
+else
+  argo.HTMLGUMP(170,230,440,100,12,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 1
+  argo.text 60 395 152 13
+endif
+
+page 6
+HTMLGUMP(170,230,440,100,14,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,15,0,36)
+argo.button 25 395 0fa5 0fa7 1 7 1
+argo.text 60 395 152 16  
+
+
+[dialog d_q033_piratrenfer text]
+Rozzureny pirat Renfer // 0
+Kdo jsi? // 1
+Muzu pomoci? // 2
+Obchodovat? // 3
+Hledam praci // 4
+Nesu ti // 5
+Prohlednout // 6
+Jmenuji se Renfer. Co tu tak okounis, pripada ti, ze mam casu na povidani? // 7
+Mne uz neni pomoci, barka se potapi, lod jde ke dnu! //8
+Posila me Ignac. Pry pro nej mas nejaka lana do plachtovi //9
+Delas si srandu? Podivej se kolem! At uz te tu nevidim! //10
+Haha, tak ted jsi me rozesmal! Prej praci! U me! //1
+Co pro me mas? //12
+Vlastne nic... //13
+Vidis cloveka, ktery evidentne nema zrovna cas a naladu klabosit. //14
+Tak Ignac te taky chytnul do svych siti, jo? No, ta lana pro nej mam, ale nic nebude zadarmo. Jak vidis, mam tu svych problemu az nad hlavu. Ale budu stedry - kdyz se ti podari najit maga Hirgu, toho slizkyho hada, ktery mi kdysi zpusobil tolik problemu... ale to uz je ted jedno... proste ho najdi a dostan z nej at uz po dobrem nebo po zlem svitek recallu... neni to jen tak obycejny svitek, nasli jsme ho kdysi pri jednom loupeni... Jeho cena je tezko odhadnutelna, ale mne uz je ted vsechno fuk. Chci se mu pomstit, ze me tu takhle nechal a se svitkem utekl. Nehnu se odsud, dokud nebudu moct k uteku z lodi pouzit tenhle jeho konkretni svitek! Pak ti dam lana na plachty pro Ignace. //15
+Dobra. Vidim, ze tady budou muset rukavicky stranou. Jdu za Hirgou! //16
+Uz jsi nasel Hirgu? //17
+Jeste ne... //18
+Nesu ti ten recall! //19
+Diky za vse, vezmu uz jen to nejpotrebnejsi a tady to balim... //20
+Stastnou cestu! //21
+
+[dialog d_q033_piratrenfer button]
+on=1
+if (0<src.qtag(q033)> ==1)
+  src.qtag(q033,2,33)
+  say("Hirga se bude urcite schovavat v nejake kobce v pousti...")
+endif
+on=2
+if( (0<src.qtag(q033)> ==2) && (<src.rescount i_q033_podivny_recall> >= 1))
+  src.qtag(q033,3,33)
+  say("Svuj slib jsi splnil, tady mas ta lana...")
+  src.newitem(i_q033_piratovo_lano).bounce
+  src.consume(i_q033_podivny_recall)
+  src.addexp(150)
+else
+  say("Vzdyt ho nemas!")
+endif
+
+
+////////////////////////////////////////////////
+//Rybar Volek
+////////////////////////////////////////////////
+[function f_q033_rybarvolek]
+  if (src.qtag(q033) < 1)
+    src.qtag(q033,0)
+  endif
+dialog(d_q033_rybarvolek)
+
+[speech spk_q033_rybarvolek]
+on = *ahoj*
+on = *hi*
+
+if (<distance>>3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q033_rybarvolek
+endif
+
+[dialog d_q033_rybarvolek]
+5,5
+page 0
+
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod xicht  
+gumppic 40 215 03122 // obrazek xichtu   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+if (src.qtag(q033) == 4)
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0
+  argo.text 60 395 152 10  
+elseif (src.qtag(q033) == 5)
+  argo.HTMLGUMP(170,230,440,100,18,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 17  
+else
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 9
+endif
+
+page 3
+HTMLGUMP(170,230,440,100,11,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 5
+if (src.qtag(q033) == 6)
+  argo.HTMLGUMP(170,230,440,100,18,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 2
+  argo.text 60 395 152 19
+else
+  argo.HTMLGUMP(170,230,440,100,13,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 14
+endif
+
+page 6
+argo.HTMLGUMP(170,230,440,100,15,0,36)
+
+page 7
+argo.HTMLGUMP(170,230,440,100,16,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 1  //      
+argo.text 60 395 152 17
+
+
+[dialog d_q033_rybarvolek text]
+Tichy blazen Volek // 0
+Kdo jsi? // 1
+Muzu pomoci? // 2
+Obchodovat? // 3
+Hledam praci // 4
+Nesu ti // 5
+Prohlednout // 6
+Rikaji mi Volek, co bys rad? Nemyslim, ze bych mel neco, co by te mohlo zajimat. A mluv potichu, at neplasis ryby! // 7
+Zmiz mi z oci a moc nedupej, snazim se tu lovit! //8
+Uz jdu, promin! //9
+Pockej! Posila me Ignac! Pry mu mas dat nejakou latku na plachty! //10
+Promin, asi nemas nic, co by me zajimalo... //11
+Vypadam snad jako nekdo, kdo nejakou nabizi? //12
+Tak co mi neses? //13
+Vlastne nic... //14
+Vidis statneho muze s prutem v ruce. Vypada to, ze neberou. //15
+Ignac, jo? Ten starej pacholek jeste porad handluje ty svoje cetky? A po mne ted chces prvotridni latku na nejaky jeho morsky pletichy? Hehe, nechtej me rozesmat. Snad nedoufas, ze mu to dam bez mrknuti oka zadarmo! Jen se hezky vrat za Ignacem a rekni, at za svoje plachty vysoli pytlik s magickym predmetem! Vim, ze jich ma par nasysleno... Potom bude latka tva... //16
+Jdu na to! //17
+Mas uz ten magicky predmet? //18
+Jiste, tady je! //19
+
+
+
+[dialog d_q033_rybarvolek button]
+on=1
+if (0<src.qtag(q033)> ==4)
+  src.qtag(q033,5,33)
+  say("Hodne stesti u Ignace...")
+endif
+on=2
+if( (0<src.qtag(q033)> ==6) && (<src.rescount i_mi_bag> == 1))
+  src.qtag(q033,7,33)
+  say("Diky, tady mas tu latku...")
+  src.newitem(i_q033_plachtova_latka).bounce
+  src.consume(i_mi_bag)
+  src.addexp(300)
+else
+  say("Vzdyt ho nemas!")
+endif
+

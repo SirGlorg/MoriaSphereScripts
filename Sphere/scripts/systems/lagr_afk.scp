@@ -1,0 +1,160 @@
+
+
+////////////////////////////////// system lagru //////////////////////////////////
+//tag.trestanec: kolikrat byl clovek trestan
+//tag.lagrlogu /100 :kolik musi mit propoustecich zlataku aby byl propusten 
+[function setlagry]//argv0 - kolik, argv1 - account
+arg(accnt,<accountmgr.findname(<argv(1)>)>)
+if(accnt)
+else
+ src.sysmessage(Account <argv(1)> nenalezen)
+ return 1
+endif
+accnt.tag(afklagr,<argv(0)>)
+src.sysmessage(Account <argv(1)> nastaven)
+
+[function prevestlagry]//argv0 - kolik, argv1 - account
+arg(accnt,<accountmgr.findname(<argv(1)>)>)
+if (accnt)
+else
+ src.sysmessage(Account <argv(1)> nenalezen)
+ return 1
+endif
+if (accnt.tag(lagr))
+ if (<eval accnt.tag(lagr)> > 0)
+  accnt.tag(lagr,<eval <accnt.tag(lagr)>-<argv(0)>>)
+  if (<eval accnt.tag(lagr)> <= 0)
+   accnt.tag.remove(lagr)
+  endif
+  accnt.tag(afklagr,<argv(0)>)
+ endif
+ src.sysmessage(Account <argv(1)> nastaven)
+endif
+
+[defnames afklagrinfo]
+//afk lagry
+afk_trest_1		2500
+afk_lumber_1		50
+afk_trest_2 		6000
+afk_lumber_2 		50
+afk_trest_3		12000
+afk_lumber_3		50
+afk_trest_4		18000
+afk_lumber_4		50
+afk_trest_5		25000
+afk_lumber_5		50
+afk_trest_6		75000
+afk_lumber_6		50
+afk_trest_7		150000
+afk_lumber_7		50
+afk_trestu		7
+
+[function afklagrodvolat]
+if (src==uid)&&(isgm)
+  sysmessage("Tenhle prikaz se pouziva jako .x afklagrodvolat")
+  return 0
+endif
+if(isdefined(account.tag(vlagru)))
+ afklagrpustit
+endif
+src.accmsg("Odvolal jeden stupen afklagru na <uid> <name>")
+kermel.delayedmessage("Cas: <servertime> gm <src> <src.name>(<src.account.name>):<src.account.lastip> propustil hrace <uid> <name>(<account.name>) z lagru") 
+eufegenie.delayedmessage("Cas: <servertime> gm <src> <src.name>(<src.account.name>):<src.account.lastip> propustil hrace <uid> <name>(<account.name>) z lagru") 
+account.tag(afklagr,<eval <account.tag(afklagr)>-1>)
+if(<account.tag(afklagr)> <=0)
+ account.tag.remove(afklagr)
+endif
+tag(nachytanafk,<eval <tag(nachytanafk)>-1>)
+tag(numberAFKsInMonth,<eval <tag(numberAFKsInMonth)>-1>) 
+if(<tag(nachytanafk)> <=0)
+ tag.remove(nachytanafk)
+endif
+if(<tag(numberAFKsInMonth)> <=0)
+ tag.remove(numberAFKsInMonth)
+ tag.remove(firstsuccesslesscontrol)
+endif
+
+[function nastavPromeskani]
+tag(numberAFKsInMonth,2)
+tag(firstsuccesslesscontrol,<MonthLater>)
+
+[function odectiDny] //argv0 - kolik dni zbyva do konce mesice pro numberAFKsInMonth
+if (src==uid)&&(isgm)
+  sysmessage("Tenhle prikaz se pouziva jako .x odectiDny(pocet_dni_do_konce_mesice_co_nesmi_promeskat_afk)")
+  return 0
+endif
+tag(firstsuccesslesscontrol,<XDaysLater(<argv(0)>)>)
+kermel.delayedmesasge("Cas: <servertime> gm <src> <src.name>(<src.account.name>):<src.account.lastip> nastavil hraci <uid> <name>(<account.name>) <argv(0)> dni do konce mesice") 
+eufegenie.delayedmesasge("Cas: <servertime> gm <src> <src.name>(<src.account.name>):<src.account.lastip> nastavil hraci <uid> <name>(<account.name>) <argv(0)> dni do konce mesice") 
+
+[function afklagrpustit]
+consume i_hatchet
+consume i_armor_female_skirt
+account.tag.remove(vlagru)
+kills=<tag(lagrkills)>
+name=<tag(lagrname)>
+lumberjacking=<tag(lumberpits)>
+tag(trestanec,"")
+tag(lagrlogu,"")
+tag(lagrskill,"")
+tag(lagrkills,"")
+tag(lagrname,"")
+tag(lumberpits,"")
+removeLagrGold
+forgive
+sysmessage Jsi propusten
+gohome
+
+[function afklagr]
+if (src==uid)&&(isgm)
+  sysmessage("Tenhle prikaz se pouziva jako .x afklagr")
+  return 0
+endif
+forgive
+if !(tag(trestanec))
+  if (findID(i_teleport_delay))
+    consume(i_teleport_delay)
+  endif
+  account.tag(vlagru,1)
+  tag(lagrname,<name>)
+  tag(lagrkills,<kills>)
+  tag(trestanec,1)
+  kills=0
+  karma=0
+  name=Trestanec <name>
+  if (strcmpi("<region.name>","tutorial"))	// ak nieje v tutorialy
+    if (findid(t_eq_horse))
+      dismount
+      f_shrink(<lastnewchar>,<uid>)
+    endif
+    findlayer(21).contents(inventobank)
+    safe(findlayer(31).inventobank)
+    eqlayers(inventobank)
+  else	// je v tutorialy
+    findlayer(21).remove	//zmaz inventar, no zmaze vsetko vratane krystalu a runy, krystal sa mu vrati, runa po vojdeni do normal sveta takze snad ok
+    eqlayers(remove) //smazeme samozrejme i to, co ma na sobe... v lagru zadny brneni netolerovat
+    newitem(i_potion_nightsight).bounce //aby sa mu vytvoril bagl ak nevie sam ako na to:)
+  endif
+  newequip=tmp_lagrpacket
+endif
+
+account.tag(afklagr,<account.tag(afklagr)>+1)
+arg(kamtrestanec_x,<eval {356 505}>)
+arg(kamtrestanec_y,<eval {1177 1270}>)
+p=<arg(kamtrestanec_x)>,<arg(kamtrestanec_y)>,0,1
+//p=420,1213,0,1
+update
+tag(lumberpits,<lumberjacking>)
+if (<account.tag(afklagr)> <= <afk_trestu>)
+ lumberjacking=<afk_lumber_<account.tag(afklagr)>>
+ tag(lagrlogu,<eval (<afk_trest_<account.tag(afklagr)>>)>)
+ delayedmessage(Musis ziskat <eval <tag(lagrlogu)>/100> propoustecich zlataku.)
+else 
+ tag(lagrlogu,0)
+ tag(lagrskill,0)
+ lumberjacking=0
+ delayedmessage(Kontatuj GM pres page jsi recidivista a podle toho s tebou bude nalozeno)
+endif
+
+[EoF]
+

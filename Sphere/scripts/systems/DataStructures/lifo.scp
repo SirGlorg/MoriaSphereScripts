@@ -1,0 +1,94 @@
+///////////////////////////////////
+//           the QUEUE           //
+//      (c) GM Yavanna 2012      //
+///////////////////////////////////
+
+// uses tags as a data holders
+// all the functions should be triggered upon an object
+// the representation of a queue is done as a CYCLIC QUEUE of the maximum size of 10 000 elements
+
+
+//MANIPULATE QUEUE FUNCTIONS:
+//the queue interface functions
+
+//removes all the lifo tags for the given name
+//argv(0) lifo name
+[function lifo_remove]
+f_lifo_beginWork(<argv(0)>)
+arg(i,0)
+while (arg(i) < <f_lifo_size>)
+  arg(element,<eval (<f_lifo_head>+<arg(i)>)%10000>)
+  tag.remove(<lifo_name>[<arg(element)>])
+  arg(i,#+1)
+endwhile
+f_lifo_clearTags
+f_lifo_endWork
+
+//argv(0) lifo name
+//argv(1) the string to be stored
+[function lifo_push]
+f_lifo_beginWork(<argv(0)>)
+arg(size,<f_lifo_size>)
+if (size < 10000)
+  tag(<lifo_name>[<f_lifo_tail>],<argv(1)>)
+  f_lifo_inc
+else
+  src.accmsg("CRITICAL: the lifo_push function called upon an element that is full! Value not saved!")
+endif
+f_lifo_endWork
+
+//argv(0) lifo name
+[function lifo_pop]
+f_lifo_beginWork(<argv(0)>)
+arg(size,<f_lifo_size>)
+if (size > 0)
+  arg(result,<tag(<lifo_name>[<f_lifo_head>])>)
+  tag.remove(<lifo_name>[<f_lifo_head>])
+  f_lifo_dec
+else
+  f_lifo_clearTags
+endif
+f_lifo_endWork
+return<arg(result)>
+
+
+//SUPPORT FUNCTIONS : 
+//approach these as PRIVATE in OOP object
+
+//initialises global variables
+//argv(0) lifo name
+[function f_lifo_beginWork]
+var(lifo_name,lifo_<argv(0)>)
+
+//removes all the global variables
+[function f_lifo_endWork]
+var(lifo_name,)
+
+//returns the pointer to the Head element (leftmost)
+[function f_lifo_head]
+return <eval (tag(<lifo_name>Head))>
+
+//returns the pointer behind the last element (rightmost)
+[function f_lifo_tail]
+return <eval (tag(<lifo_name>Tail))>
+
+//works only after calling beginWork
+[function f_lifo_size]
+return <eval tag(<lifo_name>Size)>
+
+//increases the size counter
+//works only after calling beginWork
+[function f_lifo_inc]
+tag(<lifo_name>Size,<eval (<f_lifo_size>+1)>)
+tag(<lifo_name>Tail,<eval (<tag(<lifo_name>Tail)>+1)%10000>)
+
+//decreases the size counter
+//works only after calling beginWork
+[function f_lifo_dec]
+tag(<lifo_name>Size,<eval (<f_lifo_size>-1)>)
+tag(<lifo_name>Head,<eval (<tag(<lifo_name>Head)>+1)%10000>)
+
+[function f_lifo_clearTags]
+tag.remove(<lifo_name>Size)
+tag.remove(<lifo_name>Head)
+tag.remove(<lifo_name>Tail)

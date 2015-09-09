@@ -1,0 +1,461 @@
+/////////////////////////////////////
+
+[CHARDEF c_crunch_thoragala]
+NAME=Thoragala
+ID=c_harpy
+SOUND=snd_MONSTER_HARPY1
+ICON=i_pet_HARPY
+CAN=MT_FLY|MT_WALK|MT_FEMALE
+attack=70
+ARMOR=120
+RESOURCES=3 i_ribs_raw, 50 i_feather, 3 tm_rocks
+FOODTYPE=5 t_meat_raw, 5 t_arock
+//=i_gold, t_arock, c_harpy
+//=r_forests,r_mountains
+//=r_water,r_civilization
+TEVENTS=e_monster
+TEVENTS=e_character
+
+ON=@Create
+NPC=brain_monster
+
+COLOR=color_rock
+STR=500
+DEX=120
+INT=51
+
+on=@death
+IF (<act.tag(crunch_informace_008)>==8)
+  act.addexp(2000)
+  act.tag.remove(crunch_informace_008)
+  act.tag(splnenkvest_008,1)
+  SAY Budete toho litovat, verte mi.. nic neni jak si myslite!!!
+  newloot(i_crunch_indicie4)
+  newloot(i_gold 50000)
+endIF 
+
+//ALIGNMENT=EVIL
+FAME=1
+KARMA={-4000 -4999}
+tag.experience=<eval {20.0 23.0}>
+PARRYING={75.0 90.0}
+TACTICS={70.0 100.0}
+WRESTLING={60.0 90.0}
+resist=80.0
+//ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_HARPY
+ITEM=i_gold,{0 100}
+
+CATEGORY=Kvesty
+SUBSECTION=Knihy pravdy neutral
+DESCRIPTION=Thoragala - Stone Harpy
+
+
+
+/////////////////////sneznej minotaur, dava tag potrebnej k dokonceni questu
+
+[CHARDEF c_crunch_snowminotaur]
+ID=0311
+NAME=Snow Minotaur
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+attack=100
+ARMOR=150
+CAN=MT_WALK|mt_run
+RESOURCES=9 i_ore_copper 
+FOODTYPE=15 t_arock,t_coin,t_ore,t_ingot
+//=r_mountains,r_caves,r_dungeon
+//=r_caves
+TEVENTS=e_monster
+TEVENTS=e_character
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=Snow Minotaur - nepouzivat!!
+
+tag.resist_poison=65.0
+
+ON=@Create
+color=color_snow
+NPC=brain_monster
+FAME=0
+KARMA={-1000 -2500}
+STR=5800
+DEX=180
+INT=90
+tag.experience=<eval {100.0 200.0}>
+WRESTLING=150.0
+Parrying=150.0
+tactics=150.0
+ITEMnewbie=i_monster_create
+
+tag.resist_poison=600
+tag.resist_bleed=600
+tag.resist_para=1000
+tag.resist_pierce=600
+tag.resist_summon=800
+tag.resist_fire=<eval {200 450}>
+tag.resist_elect=<eval {400 550}>
+tag.resist_cold=<eval {900 999}>
+
+ON=@NPCRestock
+item=i_gold
+
+ON=@hit
+if (<src.findlayer.1.isweapon>)
+  finduid(src.findlayer(1)).bounce  
+  src.sysmessage dostal jsi strasnou ranu pri ktere ti vypadla zbran z ruky
+elseif (<src.findlayer.2.isweapon>)
+  finduid(src.findlayer(2)).bounce
+  src.sysmessage dostal jsi strasnou ranu pri ktere ti vypadla zbran z ruky
+endif
+
+on=@death 
+if (<eval act.tag(crunch_informace_008)>==6)
+ act.tag(crunch_informace_008,7) 
+endif
+SAY Vsichni zemreteeee!
+
+
+//1. indicie se slovy na web
+
+[ITEMDEF i_crunch_indicie1]
+ID=01bf5
+NAME=pribeh
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=Indicie1
+
+ON=@Create
+COLOR=color_o_valorite
+
+ON=@userDCLICK
+src.SAY Precetl jsem prvni indicii - Pribeh.
+
+//2. indicie se slovy na web
+
+[ITEMDEF i_crunch_indicie2]
+ID=01bf5
+NAME=pravy pribeh
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=Indicie2
+
+ON=@Create
+COLOR=color_o_valorite
+
+ON=@userDCLICK
+src.SAY Precetl jsem druhou indicii - pravy pribeh.
+
+//3. indicie se slovy na web
+
+[ITEMDEF i_crunch_indicie3]
+ID=01bf5
+NAME=orci pribeh
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=Indicie3
+
+ON=@Create
+COLOR=color_o_valorite
+
+ON=@userDCLICK
+src.SAY Precetl jsem treti indicii - orci pribeh.
+
+//4. indicie se slovy na web
+
+[ITEMDEF i_crunch_indicie4]
+ID=01bf5
+NAME=konec pribehu
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=Indicie4
+
+ON=@Create
+COLOR=color_o_valorite
+
+ON=@userDCLICK
+src.SAY Precetl jsem ctvrtou, posledni indicii - konec pribehu.
+
+////////// Karenus, vyhnanej knihovnik
+
+[CHARDEF c_crunch_Karenus]  
+NAME=Karenus, byvaly knihovnik 
+ID=c_man 
+//BODY=c_man //tohle musis mit az v @create ! - je to zmena jeho tela (totez muzes jako GM udelat ve hre, proto se to nedava do definice charu)
+DESIRES=i_gold,t_wand,t_reagent,t_bone 
+AVERSIONS=t_TRAP,t_eerie_stuff 
+attack=60 
+ARMOR=80 
+CAN=MT_WALK|mt_run//|MT_poison_immune 
+TSPEECH=crunch_Karenus 
+ 
+TEVENTS=e_character 
+ 
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=Vyhnanec Karenus
+ 
+ 
+ON=@Create 
+STR=600 
+DEX=200 
+INT=100 
+NPC=brain_human 
+tag.experience=<eval {30.0 35.0}>  
+tag.poison_resist(1000)
+COLOR=colors_skin 
+ITEMNEWBIE=0efa
+ITEMNEWBIE=i_surcoat 
+COLOR=029c 
+ITEMNEWBIE=i_sandals 
+COLOR=01b6 
+ITEMNEWBIE=i_pants_long 
+COLOR=08f  
+ON=@NPCRestock 
+
+ON=@npcseenewplayer 
+  SAY(Jdete pryc! Nemam zajem se do konce sveho bidneho zivota s nekym o necem bavit...) 
+      
+[SPEECH crunch_Karenus] 
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+IF (<?src.tag(splnenkvest_008)?>==1)
+  SAY Dekuju ti, ale ted vypadni a nech me samotneho!  
+  return 1
+endif
+IF(<?src.tag(crunch_informace_008)?>==1)
+   SAY Nechcete se jit zeptat radsi toho Bvutanna jak jsem vam rekl?
+   return 1
+endif
+IF(<?src.tag(crunch_informace_008)?>==2)
+  SAY COZE??? Tak tohle vam napovidal? Reknu vam, jak to opravdu bylo, poslouchejte pozorne...
+  src.newitemsafe=i_crunch_indicie2
+  lastnew.bounce
+  SRC.TAG(crunch_informace_008,3)
+  SAY A ted me prosim nechte chvili premyslet a prijdte za maly moment. Vymyslim, co dal.
+  return 1
+endif
+IF(<?src.tag(crunch_informace_008)?>==3)
+  SAY Vyhledejte orka Gurmuga. On tenkrat v knihovne velel skretum, co spalovali nase knihy a ostatni dokumenty. Zkuste se ho otazat, jak to vlastne opravdu bylo...
+  SRC.TAG(crunch_informace_008,4)
+  return 1
+endif
+if(<?src.tag(crunch_informace_008)?>==4)
+  say Uz jste mluvili s Gurmugem? Bezte za nim, snad vam rekne vice.
+  return 1
+endif
+if(<?src.tag(crunch_informace_008)?>==5)
+  SAY Takze to byl Bvutannus, kdo me omracil? Hmm, je to parchant... Najdete maga Hurtana, on bude znat jeho slabinu...
+  SRC.TAG(crunch_informace_008,6)
+  return 1
+endif
+IF(<?src.tag(crunch_informace_008)?>==6)
+  SAY Hurtan vam poradi!
+  return 1
+endif
+if((<?src.tag(crunch_informace_008)?>==7)||(<?src.tag(crunch_informace_008)?>==8))
+  say Nech me ted byt, musim premyslet!
+  return 1
+else 
+  SAY Zajima vas, proc uz nejsem knihovnikem v Minas Tirith? jdete se zeptat Bvutanna a pak mi prijde rict co vam napovidal, at se taky zasmeju... 
+  SRC.TAG(crunch_informace_008,1)
+endif
+
+ON=*ok*
+SAY Tak sup sup, at uz mam klid...
+
+//Bvutannus, Minas Tirithsky soucasny knihovnik
+
+[CHARDEF c_crunch_Bvutannus]
+NAME=Bvutannus, mestsky knihovnik
+ID=C_MAN
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=crunch_Bvutannus
+TEVENTS=e_character
+
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=knihovnik Bvutannus
+
+ON=@Create
+NPC=brain_human
+STR=1000
+DEX=1000
+INT=1000
+
+MEDITATION=100
+INSCRIPTION=100
+MAGERY=700
+WRESTLING=100
+Resist=500
+TACTICS=500
+
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_hat_wizards
+color=001
+ITEMnewbie=i_sandals
+color=001
+ITEMnewbie=i_robe
+color=001
+
+[SPEECH crunch_Bvutannus]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+IF (<src.tag(splnenkvest_008)>==1)
+  SAY Tahni, nechci te ani videt!
+  elseIF (<src.tag(crunch_informace_008)>==1)
+    SAY Hmm vy jste s nim mluvili? Zajimalo by me, co vam napovidal... nuze poslouchejte jak se to stalo...
+    src.newitemsafe=i_crunch_indicie1
+    lastnew.bounce
+    SRC.TAG(crunch_informace_008,2)
+else
+SAY Co na me tak civis? Padej nebo te pretahnu knizkou pres papulu!
+endif
+
+// Gurmùg, skret, jeden z najezdniku na Minas Tirith
+[CHARDEF c_crunch_Gurmug]
+NAME=Gurmug, orci vudce
+ID=c_man
+attack=25
+armor=58
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=crunch_Gurmug
+TEVENTS=e_character
+
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=skret Gurmug
+
+ON=@Create
+NPC=brain_human
+STR=1000
+DEX=1000
+INT=1000
+
+ON=@NPCRestock
+ITEM=i_crunch_gurmug_telo
+
+[itemdef i_crunch_gurmug_telo]
+id=i_memory
+name=gurmugo menic
+type=t_eq_script
+
+on=@equip
+cont.name=Gurmug, orci vudce
+cont.speech=crunch_gurmug
+cont.body=c_orc
+cont.color=colors_yellow
+remove
+
+[SPEECH crunch_Gurmug]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj* 
+IF (<src.tag(splnenkvest_008)>==1)
+  SAY Nazdar kamo, tak co, podarilo se ti to vyresit? No to jsem rad, tak se zas nekdy stav!
+  return 1
+endif
+IF(<src.tag(crunch_informace_008)>==4)
+  SAY Hmm... na ten najezd si vzpominam... ale nez vam reknu, jak to opravdu bylo, musite mi prinest 20K gp, ano?
+else
+  SAY Mas nejakej problem? Jestli jo, moje sekera v tvy hlave ho kvapne vyresi!!!
+endif
+ON=*ano*
+ON=*penize*
+ON=*prachy*
+ON=*20k*
+ON=*20000*
+IF (<SRC.RESTEST 20000 i_gold>)
+  src.consume=20000 i_gold
+  SAY Hmm.. mas ty penize.. tak dobre poslouchej, reknu ti, jak to tenkrat bylo...
+  src.newitemsafe=i_crunch_indicie3
+  lastnew.bounce
+  SRC.TAG(crunch_informace_008,5)
+ else 
+  SAY Myslis si ze jsem uplne tupej? Nemas ty prachy. Ja chci 20k, je to jasny?!?
+endif
+
+//mág Hurtan
+[CHARDEF c_crunch_Hurtan]
+NAME=Hurtan, stary mag
+ID=C_MAN
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=crunch_Hurtan
+TEVENTS=e_character
+
+CATEGORY=Kvesty 
+SUBSECTION=Neutral quest 008 - knihy pravdy
+DESCRIPTION=mag Hurtan
+
+ON=@Create
+NPC=brain_human
+STR=1000
+DEX=1000
+INT=1000
+
+MEDITATION=10
+INSCRIPTION=10
+MAGERY=70
+WRESTLING=10
+Resist=50
+TACTICS=50
+
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_hat_wizards
+color=color_o_obsidian
+ITEMnewbie=i_sandals
+color=001
+ITEMnewbie=i_robe
+color=color_o_obsidian
+
+
+[SPEECH crunch_Hurtan]
+ON=*hi*
+ON=*ahoj*
+ON=*cus*
+ON=*hoj*
+ON=*nazdar*
+ON=*Dobry den*
+ON=*huja*
+ON=*zdar*
+IF(<src.tag(splnenkvest_008)>==1)
+  SAY Uz nemam co bych vam rekl, nechte starce taky chvili na pokoji!
+  return 1
+endif
+IF(<src.tag(crunch_informace_008)>==6)
+  SAY Zdravim.. chcete znat slabinu Bvutanna? Reknu vam to, ale nejdriv musite zabit snezneho Minotaura, zijiciho v jeskyni na ledovych planich...
+  return 1
+endif
+IF(<src.tag(crunch_informace_008)>==7)
+  SAY Hmm, je mrtvy.. Tak tedy poslouchejte. Bvutannus ma sestru, muzete ji zabit... chcete vedet kde ji najdete?
+  return 1
+endif
+SAY Nazdarek, dneska se nam den ale vydaril, ze? 
+ON=*ano*
+  src.sysmessage() //to tu bejt musi jinak to proste nefunguje, SUX :-/ !!!!
+  if(<src.tag(crunch_informace_008)>==7)  
+    SAY Prozradim vam jen, ze se jmenuje Thoragala. Jo a az ji zabijete, rozrezejte ji... ma tendenci vstavat z mrtvych hehe
+    SRC.TAG(crunch_informace_008,8)
+    return 1  
+  else //odpoved na ten "hezky den"...
+    SAY Tak na mne uz konecne prestan cumet a dej si vodchod!!!
+    return 1
+  endif
+[eof]

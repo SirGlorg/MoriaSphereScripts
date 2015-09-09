@@ -1,0 +1,1728 @@
+[function maxhp]
+maxhits=stats_MAXIMUM
+hits=stats_MAXIMUM
+
+[function podpora]
+if (<args> > 9)
+  classmessage("Zadavej ve formatu '.podpora=cislo>',0 znamena bez podpory, 9 maximalni podpora.")
+else 
+  classmessage(Kdo te ma podporovat?)
+  newitem i_podpora
+  act.equip
+  act.more1=<args>
+  act.more2=1
+endif
+
+[function summoner]
+if (<args> > 9)
+  classmessage("Zadavej ve formatu '.summoner=<cislo>',0 znamena bez summonu, 9 maximalni mnozstvi summonu.")
+else
+  classmessage(Kdo ma pro tebe summonovat?)
+  newitem i_podpora
+  act.equip
+  act.more1=<args>
+  act.more2=10
+endif
+
+[ITEMDEF i_podpora]
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@Equip
+timer 20
+Target
+
+on=@timer
+remove
+return 0
+
+ON=@targon_char
+if (src.targ.isplayer)
+  src.classmessage(Neni mozno pouzivat na hrace.)
+elseif !(src.targ.ismypet)
+  src.classmessage(<src.targ.name> neni pod tvoji kontrolou)
+elseif !(src.targ.magery)
+  src.classmessage(<src.targ.name> neumi kouzlit)
+else
+  src.targ.events +e_npc_mag
+  if <more2>==1
+    src.targ.tag(lecitel,<more1>)
+  elseif <more2>==10
+    src.targ.tag(summoner,<more1>)
+  endif
+  src.targ.freetag(lecitel)
+  src.targ.freetag(summoner) 
+endif
+remove
+return 1
+
+ON=@targon_item
+if (src.targ.type!=t_spawn_char)
+  target
+elseif <more2>==1
+  src.targ.tag(lecitel,<more1>)
+elseif <more2>==10
+  src.targ.tag(summoner,<more1>)
+endif
+return 1
+
+[itemdef i_npcspell_timer]
+id=i_gold
+type=t_eq_script
+name=npcspelltimer
+
+on=@timer
+src=<link>
+if !(link.iscasting)
+  link.mana=0ff
+  link.skill(magery)
+endif
+remove 
+return 1
+
+[function npccustomspellcast]
+newitemsafe(i_customspell_rune)
+lastnew.attr=attr_decay
+lastnew.name=<a_name[<args>]>
+lastnew.tag(spellnumb,<args>)
+lastnew.tag(flags,<eval a_flags[<args>]>)
+lastnew.tag(resources,"")
+lastnew.tag(wop,<a_wop[<args>]>)
+lastnew.tag(manause,0)
+lastnew.tag(staminause,0)
+lastnew.tag(casttime,<a_CASTTIME[<args>]>)
+lastnew.tag(skill,<a_SKILL[<args>]>)
+lastnew.tag(req,0)
+lastnew.tag(difficulty,<a_difficulty[<args>]>)
+lastnew.cont=<uid>//nesmi se jeste vyvolat @equip
+if (<lastnew.tag.flags>&csflag_notarg)
+  act=<uid>
+endif
+//timer=100
+lastnew.tag(act,<act>)
+lastnew.f_customspell_targetted
+events +e_npccustomcasting
+
+[events e_npccustomcasting]
+on=@skillstart
+if (isfighting)||(action==skill_magery)
+  return 1
+endif
+
+on=@skillsuccess
+if (isfighting)||(action==skill_magery)
+  return 1
+endif
+
+[EVENTS e_npc_mag]
+on=@hittry
+events(+e_npc_mag_skillstart)
+return 0
+
+on=@gethit
+events(+e_npc_mag_skillstart)
+return 0
+
+on=@spellcast
+arg(myspell,<ai_returnspell>)
+if (arg(myspell))
+  actarg1=<arg(myspell)>
+endif
+events(+e_npc_mag_skillstart)
+return 0
+
+[EVENTS e_npc_mag_skillstart]
+on=@skillstart
+if !(iscasting)
+  if !(memoryfindtype(0209c))
+    removememories
+    events -e_npc_mag_skillstart
+  elseif !(act)
+  elseif (flag_invul)
+  //elseif (isfighting)
+  elseif !(actarg1)
+  else
+    //findlayer.21.more2=1
+    //findlayer.21.timer
+    newitemsafe(i_npcspell_timer)
+    lastnew.attr=attr_invis
+    lastnew.removefromview
+    lastnew.p=<p>
+    lastnew.link=<uid>
+    lastnew.timer=4
+    //tag.aicast=1
+    //var(storetspeech,<tspeech>)
+    //typedef.tspeech -spk_human_prime
+    //typedef.tspeech -spk_human_default
+    //skill magery
+    //typedef.tspeech=<var.storetspeech>
+    return 0
+  endif
+endif
+return 0
+
+
+[function ai_returnspell]//vrati kouzlo ktery by mel kouzlit - unused
+if (act)//nepodporuje pokud neni act
+else
+  return 0
+endif
+if !(act.ischar)//nepodporuje pokud neni act char
+  return 0
+endif
+if !(<eval memoryfind(<act>).color>&0209c)//kdyz muj cil neni muj nepritel
+  if (memoryfindtype(0209c))
+    act=<memoryfindtype(0209c).link>
+  endif
+endif
+
+if (<act>==<uid>)||(!act.ischar)
+  if (memoryfindtype(0209c))
+    act=<memoryfindtype(0209c).link>
+  endif
+  if (!act.srccombatLOS)||(!act.ischar)
+    act=<uid>
+  endif
+endif
+var(castfast,"")
+if (act.act)
+  if (<act.act>==<uid>)
+    if (<act>!=<uid>)
+      var(castfast,1)
+    endif
+  endif
+endif
+
+if (!act.srccombatLOS)||(<act>==<uid>)
+  say 1
+  return <ai_cast_lecitel>
+endif
+
+if (<poisonManager.f_pm_isPoisoned>)//kdyz sem otraven, cure.(poison fizluje...)
+  act=<uid>
+  say 2
+  return 11
+elseif (act.isconjured)||(act.findid(i_rune_polymorph))
+  if ((<safe.tag.summon>)&&(!isconjured))||(<safe.castfast>)
+    say 3
+    return 41//dispel
+  else
+    say 4
+    return 54
+  endif
+elseif (<act.flags>&04)&&(!act.hasreflex)//kdyz je nepritel v pare, utok.
+  say 5
+  return <ai_cast_attack>
+elseif (ai_cast_lecitel_check)
+  say 6
+  return <spellnumber>
+elseif ((<act.flags>&04)==0)&&({0 2}==0)
+  say 7
+  return 38//para
+elseif (<act.hits>>=<act.maxhits>)&&(act.findid(i_rune_CURSE)==0)&&(!act.findid(i_rune_MASS_CURSE)==0)//na zacatku, curse
+  if (<safe.castfast>)
+    say 8
+    return 27
+  else
+    say 9
+    return 46
+  endif
+elseif (act.hasreflex)
+  say 10
+  return 12 //harm
+elseif (!<safe.castfast>)||({0 4} == 0)//kdyz se zabejva nekym jinym (a tu a tam i jinak), muzu v klidu kouzlit
+  say 11
+  return <ai_cast_attack>
+else//pouze rychla kouzla sou potreba
+  say 12
+  return 12 //harm
+endif
+
+[function animatecorpse]
+if (link.isitem)
+  if (link.type==t_corpse)
+    if !(link.link.ischar)//pouze npc corpse
+      var(corpsetoanimate,<link>)
+      return 0
+    endif
+  endif
+endif
+remove
+
+[function ai_cast_attack]
+if (tag(summoner) > {0 8}) 
+ //if (<safe.findlayer(81).rescount>)
+ // var.corpsetoanimate=
+ // findlayer(81).contents(animatecorpse)
+ // if (<safe.corpsetoanimate>)
+ //  act=<corpsetoanimate>
+ //  return 40
+ // endif
+ //endif
+ if (necromancy)&&({0 1})
+  findid(i_npcspell_timer).timer=4
+  return 65
+ else
+  findid(i_npcspell_timer).timer=4
+  return <eval {60 64}>//summon
+ endif
+elseif !(<act.flags>&statf_poisoned)&&(!{0 3})
+ return 20 //poison
+else
+ return <eval {51 3 {42 1 30 1 69 1 } 1}>//kvf, ostatni...
+endif
+
+[function ai_cast_lecitel_check]
+if (<eval tag.lecitel> < {1 9})
+ return 0
+endif
+var(spellnumber,<ai_cast_lecitel>)
+return <spellnumber>
+
+[function ai_cast_lecitel]
+if !(<safe.findlayer(80).rescount>)
+ if !(findlayer(80))
+  newequip i_friendslayer
+ endif
+ sector.allchars(f_fillfriends)
+endif
+arg(storelecitelact,<act>)
+arg(u,<eval findlayer(80).rescount>)
+while (<arg(u)>>0)
+ arg(randnumber,<eval {0 <eval findlayer(80).rescount-1>}>)
+ act=<findlayer(80).findcont(<arg(randnumber)>).link>
+ if (act.srccombatLOS)
+  if (act.ischar)
+   var(spellnumber,<act.f_lecitel>)
+   if (<spellnumber>)
+    return <spellnumber>
+   endif
+  else
+   findlayer(80).findcont(<arg(randnumber)>).remove
+  endif
+ endif
+ arg(u,<arg(u)>-1)
+endwhile
+act=<arg(storelecitelact)>
+return 0
+
+[function f_fillfriends]
+if (ismyfriend)
+ src.newitemsafe(i_relating_crystal)//z housemenu...
+ lastnew.cont=<src.findlayer(80)>
+ lastnew.dispid=<def.icon>
+ lastnew.link=<uid>
+ lastnew.name=<name>
+endif
+
+[function f_lecitel]
+if (<flags>&04)&&(!isconjured)
+ //dispel pary 
+ return 41
+elseif (ISPOISONED)||(findid(i_krvaceni))
+ if (<safe.castfast>)
+  return 11
+ else
+  return 25
+ endif
+elseif !(hasreflex)
+ return 36
+elseif !(findlayer(LAYER_SPELL_Protection))
+ //if (<safe.castfast>)
+  return 15
+ //else
+  //return 26
+ //endif
+elseif !(<flags>&statf_reactive)
+ return 7
+elseif (<hits><<maxhits>)
+ if (<safe.castfast>)
+  return 4
+ else
+  return 29
+ endif
+elseif !(findid(i_a_BLESS))
+ if (<safe.castfast>)
+   return 17
+ else
+  return 102
+ endif
+else
+ return 0
+endif
+
+[itemdef i_friendslayer]
+id=i_box_brass
+name=npcfriendsbox
+layer=80
+
+[itemdef i_corpselayer]
+id=i_corpse
+type=t_container
+name=npccorpsebox
+layer=81
+
+[EVENTS e_tele_to_target]
+//on=@skillstart
+on=@skillstroke
+if(!strcmpi(<name>,Roth))
+ //kermel.sysmessage(Teleskill, act: <act>, jeho name: <act.name>, fighting: <isfighting>)
+endif
+if (act)
+ if (act < 040000000) //itemy jsou od te ctyrky vyse
+  if (act.npc) 
+  else //na hrace
+  //if (isfighting)||(iscasting)
+   if !(<flags>&(statf_freeze|statf_invul|statf_invisible|statf_hidden))
+    if !(findid(i_attack_guard))
+     newitemsafe(i_attack_guard)
+     equip(<lastnew>)
+    endif
+    return 0
+   endif
+  endif
+ endif
+else
+ if (memoryfindtype(MEMORY_fight))
+ else
+  findid(i_attack_guard).remove
+  removememories
+  events(-e_tele_to_target)
+ endif
+endif
+//return 0
+
+[EVENTS e_iron_eye]
+ON=@NPCSeeNewPlayer
+if (src.flag_invul)
+ return 1
+endif
+attack(<src>)
+events(+e_NPC_teleToTarget)	//alternative event - less expensive & without handling guards
+//events(+e_tele_to_target)
+
+on=@skillstroke
+if (act)
+  if (isfighting)
+    if (act.ischar)
+      if (act.issumon) //act is a summon, so the eye is going to attack at its owner
+        if (!act.memoryfindtype(MEMORY_IPET).link.isinvis)
+          if (!act.memoryfindtype(MEMORY_IPET).link.isdead) && (distancefrom(<act.memoryfindtype(MEMORY_IPET).link>)<4)
+            p = <act.memoryfindtype(MEMORY_IPET).link.p>
+            update
+            attack(act.memoryfindtype(MEMORY_IPET).link)     
+          endif
+        endif
+      endif
+      if (act.npc) && (!act.issumon) //ostatni NPCcka = smazat targety 
+        removememories
+      endif  
+    endif
+  endif
+endif
+
+on=@hittry
+events(+e_NPC_teleToTarget)
+//events(+e_tele_to_target)
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (var(dodged) == 0)
+  if !(act.tag(energyofshield))
+    if (act.stamina > 7)
+      act.stamina=<eval (<act.stamina>-{1 5})>
+    else
+      act.stamina=0
+    endif
+    if ( (act.mana>4) && (<hits> < <num_range(<maxhits>*3,<maxhits>,stats_MAXIMUM)>) ) // HP leech -> to the maximum of 3times of maxHP but keep track on the number overflow while multiplying hits
+      if !(act.isplayer) && (act.mana > 200)
+        //hits=(<hits>+(<var(ubrano)>*2))
+        act.mana=<act.mana>-35
+      elseif (act.isplayer)
+        hits=(<hits>+(<var(ubrano)>*2))
+        act.mana=<act.mana>-4
+      endif
+    elseif (act.mana<4)
+      act.mana=0
+    endif
+  endif
+endif
+
+//if ( (<eval {1 100}> > 80) && !(var(dodged)==1) )
+// var(ubrano,#*2)
+// act.sysmessage("<name> ti zasadilo kriticky uder.")
+//endif
+
+on=@beforedoeffect 
+on=@beforegeteffect
+
+on=@beforegetswing
+on=@aftergetswing
+if ( (<eval {1 100}> > 85) && (is_physical) )
+ var(ubrano,0)
+ src.sysmessage("Tva rana se od <name> odrazila!")
+endif
+
+[events e_item_refuser]
+on=@ReceiveItem
+say Hmm, <argo.name> nepotrebuju. To si racej strcit za klobouk, vasnosto.
+return 1
+
+[function issumon]
+if (npc)
+  if (flag_conjured)
+    return 1
+  endif
+endif
+return 0
+
+[function removeAgressiveSummon]
+if (issumon)
+  if (obody==mage_horse_brown) || (obody==necro_horse_undead)
+  else
+    if (<strlen(<tag(isAnimated)>)>)// chyba(animate) -> savovanie
+      findid(i_summonremove).timer=0
+    else
+      remove
+    endif
+  endif
+endif
+
+[function hasreflex]
+if(flag_reflection)
+return 1
+else 
+return 0
+endif
+
+[speech spk_guard]
+on=*guard*
+on=*straz*
+//finduid(021eb9e).sysmessage(Reaguji na pokyn straz)
+//kermel.sysmessage(Reaguji na pokyn straz)
+src=<src.memoryfindtype(MEMORY_fight).link>
+newitemsafe(i_memory_cleaner)
+lastnew.tag(hiskarma,<karma>)
+equip(<lastnew>)
+guardkarma_<typedef.tag(guard)>
+if !(src.isplayer)||(src.flag_invul)
+ return 1
+endif
+//if (region!=src.region)	// wtf ? pozn. yavanna
+ //return 1
+//endif
+if (<src.tag(hypno_mystik)>)
+ if (<src.karma> > -10000)
+  return 1
+ endif
+endif
+var(ban_out,0)
+if (!(ismyguard))||(isbannedplayer)  //bannedplayer take overi jestli hrac nahodou neni obcanem mesta
+ if(<var(ban_out)>) //banned ale stoji mimo
+  var(ban_out,"")
+  say(Zmizni od mesta!)
+ endif
+ dorand 2
+  say("<src.name>, odejdi nebo zemri!")
+  say("<src.name>, v <memoryfindtype(MEMORY_ISPAWNED).link.region.name> nemas co pohledavat!")
+ enddo
+ //writelog("guard utoci kvuli spk na <src>")
+ attack(<src>)  
+ if(!isevent(e_guard_nonport))  
+  events(+e_tele_to_target)
+ endif  
+endif
+var(ban_out,"")
+//return 0
+
+
+
+
+[function removememories]
+
+while (memoryfindtype(MEMORY_SPEAK))
+ memoryfindtype(MEMORY_SPEAK).remove
+endwhile
+safe findlayer(80).emptycont
+
+[function guardkarma_1]
+karma=10000
+
+[function guardkarma_2]
+greykarma
+
+[EVENTS e_guard_nonport]  
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+guardkarma_<typedef.tag(guard)>
+return 0
+
+ON=@aftergetswing
+writelog("guard noport utoci kvuli aftergetswing na <src>")
+attack(<src>)
+if (src.isconjured)
+ src.hits=0
+ return 1
+endif
+return 0
+
+ON=@NPCSeeNewPlayer
+//newitemsafe(i_memory_cleaner)
+//lastnew.tag(hiskarma,<karma>)
+//lastnew.cont=<uid>
+guardkarma_<typedef.tag(guard)>
+if (src.flag_invul)
+  return 1
+endif
+if (<src.tag(hypno_mystik)>)
+  if (<src.karma> > -10000)
+    return 1
+  endif
+endif 
+var(ban_out,0)
+if (!(ismyguard))||(isbannedplayer) //bannedplayer take overi jestli hrac nahodou neni obcanem mesta
+  if (<var(ban_out)>) //banned ale stoji mimo mesto
+    var(ban_out,"")
+    say(Zmizni od mesta!)
+  endif
+  writelog("guard noport utoci kvuli seenewplayer na <src>")
+  attack(<src>)  
+endif
+var(ban_out,"")
+//return 0
+
+on=@skillstroke //provadeni akce - simulujeme navrat domu pri spatreni hrace, guardi maj tendenci se courat
+if (isfighting)||(iscasting)
+  if (act)
+    if (act.ischar)
+      if (act.npc) //bojuje s npcckem
+        //je to npc spawnute ve meste - zrejme se mydlej guardi navzajem
+        if (strlen(<act.memoryfindtype(MEMORY_ISPAWNED).link.region.tag(jmeno_mesta)>))
+          memoryfindtype(MEMORY_FIGHT).remove
+          removememories
+          go(<home>)
+        endif
+      endif
+    endif
+  endif
+endif
+if (action==06d)&&(distancefrom(<memoryfindtype(MEMORY_ISPAWNED).link>) > 7) //going home 
+  go(<home>)  
+endif
+
+on=@beforegetswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+[function isfrommytown]
+src.newitemsafe(i_pouch)
+arg(frommytownpouch,<lastnew>)
+frommytownpouch.p=<home> //guardi mohou byt doma jen ve meste
+frommytownpouch.name="frommytownpouch"
+//kermel.smsg(vytvoril jsem townpouch)
+if (strlen(<var(townstone_<frommytownpouch.region.tag(jmeno_mesta)>)>))
+  arg(guards_town,<frommytownpouch.region.tag(jmeno_mesta)>) 
+  if (strlen(<src.tag(mesto)>))
+    arg(hracs_town,<src.tag(mesto)>)
+  else
+    arg(hracs_town,"nesmysl")
+  endif
+endif
+if (!strcmpi(<arg(guards_town)>,<arg(hracs_town)>))
+  //kermel.smsg(odstranuji townpouch ano)
+  frommytownpouch.remove
+  return 1
+else
+  //kermel.smsg(odstranuji townpouch ne)
+  frommytownpouch.remove
+  return 0
+endif
+
+
+[function isbannedplayer]
+src.newitemsafe(i_pouch) //zjisteni guardova mesta
+arg(bplpouch,<lastnew>)
+bplpouch.p=<home> //guardi mohou byt doma jen ve meste
+bplpouch.name="bannedplayerpouch"
+//kermel.smsg(vytvoril jsem bplpouch- <bplpouch>)
+if(strlen(<var(townstone_<bplpouch.region.tag(jmeno_mesta)>)>))
+ arg(guards_town,<bplpouch.region.tag(jmeno_mesta)>)
+ arg(guards_town_uid,<finduid(<bplpouch.region>)>)
+ if(strlen(<src.tag(bl_town_<arg(guards_town)>)>))
+  arg(hracs_town,<finduid(<src.tag(bl_town_<arg(guards_town)>)>).tag(jmeno_mesta)>)
+ else
+  arg(hracs_town,"nesmysl")
+ endif
+endif 
+//kermel.smsg(odstranuji bplpouch <bplpouch>)
+bplpouch.remove  
+arg(ci_guard,<typedef.tag(guard)>)
+arg(gdrealm,<qval(<eval (<arg(ci_guard)>-1)>,Mordor,Gondor)>) //2-1 resp 1-1 
+if(<src.tag(obcan)>)&&(!strcmpi(<src.tag(mesto)>,<arg(guards_town)>)) //zjisteni zda hrac nepochazi z naseho mesta !
+ return 0 //nebude utocit na hrace sveho mesta (i kdyby byli crim atd.)
+endif
+if(<src.tag(blacklisted_<arg(guards_town)>)>)||(<src.tag(realmbanned_<arg(gdrealm)>)>)    
+ if(<src.tag(realmbanned_<arg(gdrealm)>)>)
+  var(je_to_on,0) 
+  if(<arg(ci_guard)>==1) //Gondor
+   finduid(<var(realmbancont)>).contents(je_to_on(<src.name>))
+  else
+   finduid(<var(mordorrealmbancont)>).contents(je_to_on(<src.name>))
+  endif
+  if(<var(je_to_on)>)
+   var(je_to_on,"")
+   if(strcmpi(<src.region>,<arg(guards_town_uid)>)) //nenula - nestoji ve meste    
+    say(Aaaa <src.name>, mame prikaz nevpustit te do <arg(gdrealm)>skych mest, strez se vstoupit!) 
+    var(ban_out,1)
+    return 1  
+   else //stoji ve meste (0)
+    return 1
+   endif 
+  else //neni na seznamu s timto jmenem
+   var(je_to_on,"")
+   return 0
+  endif
+ endif
+ if(!strcmpi(<arg(guards_town)>,<arg(hracs_town)>)) //nenula pokud stejne 
+  var(je_to_on,0)
+  finduid(<finduid(<src.tag(bl_town_<arg(guards_town)>)>).tag(enemyscont)>).contents(je_to_on(<src.name>))  
+  if(<var(je_to_on)>)
+   var(je_to_on,"")
+   if(strcmpi(<src.region>,<arg(guards_town_uid)>)) //nenula - nestoji ve meste    
+    say(Aaaa <src.name>, mame prikaz nevpustit te do mesta, strez se prekrocit jeho hranici!) 
+    var(ban_out,1)
+    return 1  
+   else //stoji ve meste (0)
+    return 1
+   endif 
+  else //neni na seznamu mesta s timto jmenem
+   var(je_to_on,"")
+   return 0
+  endif    
+ else
+  return 0 //ale to se ted uz nestane
+ endif
+endif
+src.newitemsafe(i_pouch) //zjisteni guardova mesta
+arg(grdtownpouch,<lastnew>)
+grdtownpouch.p=<home> //guardi mohou byt doma jen ve meste
+grdtownpouch.name="guardstownpouch"
+//kermel.smsg(vytvoril jsem guardstownpouch <grdtownpouch>)
+if(strlen(<var(keep_<grdtownpouch.getNearestKeepName(<region.tag(realm)>)>)>))
+ arg(guards_town,<grdtownpouch.region.tag(jmeno_mesta)>)
+ arg(guards_town_uid,<grdtownpouch.region>)
+ if(strlen(<src.tag(bl_keep_<arg(guards_town)>)>)) 
+  arg(hracs_town,<finduid(<src.tag(bl_keep_<arg(guards_town)>)>).tag(jmeno_mesta)>)
+ else
+  arg(hracs_town,"nesmysl")
+ endif
+endif
+//kermel.smsg(jdeme odstanit guardstownpouch <grdtownpouch>)
+grdtownpouch.remove 
+if(<src.tag(keepbanned_<arg(hracs_town)>)>)  
+ if(!strcmpi(<arg(guards_town)>,<arg(hracs_town)>)) //0 pokud stejne, znegovano  - nenula
+  var(je_to_on,0)
+  finduid(<finduid(<src.tag(bl_keep_<arg(guards_town)>)>).tag(enemyscont)>).contents(je_to_on(<src.name>))  
+  if(<var(je_to_on)>)
+   var(je_to_on,"")
+   if(strcmpi(<src.region>,<arg(guards_town_uid)>)) //nenula - nestoji ve meste    
+    say(Aaaa <src.name>, mame prikaz nevpustit te do pevnosti, strez se vstoupit!) 
+    var(ban_out,1)
+    return 1  
+   else //stoji ve meste (0)
+    return 1
+   endif 
+  else //neni na seznamu mesta s timto jmenem
+   var(je_to_on,"")
+   return 0
+  endif
+ else 
+  return 0
+ endif
+else
+ return 0
+endif
+
+[function je_to_on] //overeni jmena blacklistovaneho (muze to byt maska)
+if(<var(je_to_on)>) //uz ho nasel, dal nekontroluje
+ return 1
+endif
+if(strcmpi(<name>,<args>))
+ var(je_to_on,0)
+ return 0
+else //stejna jmena
+ var(je_to_on,1)
+ return 1
+endif
+
+[EVENTS e_guard_blood]    
+ON=@aftergetswing
+events(+e_tele_to_target)
+writelog("guard blood utoci kvuli aftergetswing na <src>")
+attack
+if (src.isconjured)
+ src.hits=0
+ return 1
+endif
+return 0
+
+ON=@NPCSeeNewPlayer
+//typearmor(70)
+if (src.uid==(024B9F2))||(src.uid==(0228696))
+return 1
+endif
+if (src.flag_invul)
+ return 1
+endif
+if (<src.tag(hypno_mystik)>)
+ if (<src.karma> > -10000)
+  return 1
+ endif
+endif
+ dorand 2
+  say("<src.name>, odejdi nebo zemri!")
+  say("<src.name>, v <memoryfindtype(MEMORY_ISPAWNED).link.region.name> nemas co pohledavat!")
+ enddo
+ writelog("guard blood utoci kvuli NPCSeeNewPlayer na <src>")
+ attack(<src>)
+ events(+e_tele_to_target)
+//return 0
+
+on=@skillstroke //provadeni akce - simulujeme navrat domu pri spatreni hrace, guardi maj tendenci se courat
+if(isfighting)||(iscasting)
+ if(act.ischar)
+  if(act.npc) //bojuje s npcckem
+   //je to npc spawnute ve meste - zrejme se mydlej guardi navzajem
+   if(strlen(<act.memoryfindtype(MEMORY_ISPAWNED).link.region.tag(jmeno_mesta)>))
+    while(memoryfindtype(MEMORY_FIGHT))
+     memoryfindtype(MEMORY_FIGHT).remove
+    endwhile
+    removememories
+    go(<home>)
+   endif
+  endif
+ endif
+endif
+if(action==06d)&&(distancefrom(<memoryfindtype(MEMORY_ISPAWNED).link>) > 7) //going home 
+ if(!isevent(e_tele_to_target)) //ma-li tenhle event, uz se nebude portovat nikam domu
+  go(<home>)  
+ endif
+endif
+
+on=@beforegeteffect
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+//Kopie bez picovin okolo - jen utocit na opacny realm
+[events e_guard_2]
+on=@hittry
+guardkarma_<typedef.tag(guard)>
+events(+e_tele_to_target)
+return 0
+
+ON=@aftergetswing
+events(+e_tele_to_target)
+writelog("guard2 utoci kvuli aftergetswing na buhvico")
+attack
+if (src.isconjured)
+ src.hits=0
+ return 1
+endif
+return 0
+
+ON=@NPCSeeNewPlayer
+//typearmor(70)
+newitemsafe(i_memory_cleaner)
+lastnew.tag(hiskarma,<karma>)
+equip(<lastnew>)
+guardkarma_<typedef.tag(guard)>
+if (src.flag_invul)
+ return 1
+endif
+if (<src.tag(hypno_mystik)>)
+ if (<src.karma> > -10000)
+  return 1
+ endif
+endif
+if (!(ismyguard))
+ //finduid(021eb9e).sysmessage(Vidim <src.name>, nejsem jeho guard a neni z meho mesta)
+ //kermel.sysmessage(Vidim <src.name>, nejsem jeho guard a neni z meho mesta)
+ dorand 2
+  say("<src.name>, odejdi nebo zemri!")
+  say("<src.name>, v <memoryfindtype(MEMORY_ISPAWNED).link.region.name> nemas co pohledavat!")
+ enddo
+ writelog("guard2 utoci kvuli npcseenewplayer na <src>")
+ attack(<src>)
+ events(+e_tele_to_target)  
+endif
+return 0
+
+on=@skillstroke //provadeni akce - simulujeme navrat domu pri spatreni hrace, guardi maj tendenci se courat
+if(isfighting)||(iscasting)
+ if(act.ischar)
+  if(act.npc) //bojuje s npcckem
+   //je to npc spawnute ve meste - zrejme se mydlej guardi navzajem
+   if(strlen(<act.memoryfindtype(MEMORY_ISPAWNED).link.region.tag(jmeno_mesta)>))
+    while(memoryfindtype(MEMORY_FIGHT))
+     memoryfindtype(MEMORY_FIGHT).remove
+    endwhile
+    removememories
+    go(<home>)
+   endif
+  endif
+ endif
+endif
+if(action==06d)&&(distancefrom(<memoryfindtype(MEMORY_ISPAWNED).link>) > 7) //going home 
+ if(!isevent(e_tele_to_target)) //ma-li tenhle event, uz se nebude portovat nikam domu
+  go(<home>)  
+ endif
+endif
+
+on=@beforegeteffect
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+[EVENTS e_guard]    
+//test enrico
+on=@NPCSeeWantItem
+return 1
+
+//on=@userclick
+//if (<safe.tag.guard>)
+// if (<tag.guard>==2)
+//  greykarma
+//  messagecol(<name>,020)
+//  return 1
+// endif
+//endif
+//return 0
+
+on=@hittry
+guardkarma_<typedef.tag(guard)>
+events(+e_tele_to_target)
+return 0
+
+on=@beforegetswing
+ON=@aftergetswing
+events(+e_tele_to_target)
+attack
+if (src.isconjured)
+ src.hits=0
+ return 1
+endif
+return 0
+
+ON=@NPCSeeNewPlayer
+newitemsafe(i_memory_cleaner)
+lastnew.tag(hiskarma,<karma>)
+equip(<lastnew>)
+guardkarma_<typedef.tag(guard)>
+if (src.flag_invul)
+ return 1
+endif
+if (<src.tag(hypno_mystik)>)
+ if (<src.karma> > -10000)
+  return 1
+ endif
+endif
+var(ban_out,0)
+if (!(ismyguard))||(isbannedplayer)  //bannedplayer take overi jestli hrac nahodou neni obcanem mesta
+ if(<var(ban_out)>) //banned ale stoji mimo
+  var(ban_out,"")
+  say(Zmizni od mesta!)
+ endif
+ dorand 2
+  say("<src.name>, odejdi nebo zemri!")
+  say("<src.name>, v <memoryfindtype(MEMORY_ISPAWNED).link.region.name> nemas co pohledavat!")
+ enddo
+ attack(<src>)
+ events(+e_tele_to_target)  
+endif
+var(ban_out,"")
+
+on=@skillstroke //provadeni akce - simulujeme navrat domu pri spatreni hrace, guardi maj tendenci se courat
+if(isfighting)||(iscasting)
+ if(act.ischar)
+  if(act.npc) //bojuje s npcckem
+   //je to npc spawnute ve meste - zrejme se mydlej guardi navzajem
+   if(strlen(<act.memoryfindtype(MEMORY_ISPAWNED).link.region.tag(jmeno_mesta)>))
+    memoryfindtype(MEMORY_FIGHT).remove
+    removememories
+    go(<home>)
+   endif
+  endif
+ endif
+endif
+if(action==06d)&&(distancefrom(<memoryfindtype(MEMORY_ISPAWNED).link>) > 7) //going home 
+ if(!isevent(e_tele_to_target)) //ma-li tenhle event, uz se nebude portovat nikam domu
+  go(<home>)
+ endif
+endif
+
+on=@beforegeteffect
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+[EVENTS e_guard_ent]    
+//on=@userclick
+//if (<safe.tag.guard>)
+// if (<tag.guard>==2)
+//  greykarma
+//  messagecol(<name>,020)
+//  return 1
+// endif
+//endif
+//return 0
+
+on=@hittry
+guardkarma_<typedef.tag(guard)>
+events(+e_tele_to_target)
+return 0
+
+ON=@aftergetswing
+events(+e_tele_to_target)
+writelog("guard ent utoci kvuli aftergetswing na <src>")
+attack(<src>)
+if (src.isconjured)
+ src.hits=0
+ return 1
+endif
+return 0
+
+ON=@NPCSeeNewPlayer
+//typearmor(70)
+//newitemsafe(i_memory_cleaner)
+//lastnew.tag(hiskarma,<karma>)
+//lastnew.cont=<uid>
+guardkarma_<typedef.tag(guard)>
+if (src.flag_invul)
+ return 1
+endif
+if (<src.tag(hypno_mystik)>)
+ if (<src.karma> > -10000)
+  return 1
+ endif
+endif
+var(ban_out,0)
+
+if (src.findtype(t_weapon_sword))
+ say(Klid se z lesa Fangornu !!!)  
+ events(+e_tele_to_target) 
+ writelog("guard ent utoci kvuli sekere na <src>")
+ attack(<src>) 
+endif
+
+if (!(ismyguard))||(isbannedplayer)
+ if(<var(ban_out)>) //banned ale stoji mimo
+  var(ban_out,"")
+  say(Zmizni odsud!)
+ endif
+ dorand 2
+  say("<src.name>, odejdi nebo zemri!")
+  say("<src.name>, v <memoryfindtype(MEMORY_ISPAWNED).link.region.name> nemas co pohledavat!")
+ enddo  
+ writelog("guard ent utoci kvuli npcseenewplayer na <src>")
+ attack(<src>)
+ events(+e_tele_to_target)   
+endif
+var(ban_out,"")
+//return 0
+
+on=@skillstroke //provadeni akce - simulujeme navrat domu pri spatreni hrace, guardi maj tendenci se courat
+if(isfighting)||(iscasting)
+ if(act.ischar)
+  if(act.npc) //bojuje s npcckem
+   //je to npc spawnute ve meste - zrejme se mydlej guardi navzajem
+   if(strlen(<act.memoryfindtype(MEMORY_ISPAWNED).link.region.tag(jmeno_mesta)>))
+    while(memoryfindtype(MEMORY_FIGHT))
+     memoryfindtype(MEMORY_FIGHT).remove
+    endwhile
+    removememories
+    go(<home>)
+   endif
+  endif
+ endif
+endif
+if(action==06d)&&(distancefrom(<memoryfindtype(MEMORY_ISPAWNED).link>) > 10) //going home
+ go(<home>)  
+endif
+
+on=@beforegetswing
+on=@beforegeteffect
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+
+[events e_guard_ranged]
+on=@NPCSeeWantItem
+return 1
+
+on=@hittry
+guardkarma_<typedef.tag(guard)>
+return 0
+
+ON=@aftergetswing
+//events(+e_tele_to_target)
+//writelog("guard utoci kvuli aftergetswing na buhvico")
+attack
+if (src.isconjured)
+ src.hits=0
+ return 1
+endif
+return 0
+
+ON=@NPCSeeNewPlayer
+//typearmor(70)
+newitemsafe(i_memory_cleaner)
+lastnew.tag(hiskarma,<karma>)
+equip(<lastnew>)
+guardkarma_<typedef.tag(guard)>
+if (src.flag_invul)
+ return 1
+endif
+if (<src.tag(hypno_mystik)>)
+ if (<src.karma> > -10000)
+  return 1
+ endif
+endif
+var(ban_out,0)
+if (!(ismyguard))||(isbannedplayer)  //bannedplayer take overi jestli hrac nahodou neni obcanem mesta
+ //finduid(021eb9e).sysmessage(Vidim <src.name>, nejsem jeho guard a neni z meho mesta)
+ //kermel.sysmessage(Vidim <src.name>, nejsem jeho guard a neni z meho mesta)
+ if(<var(ban_out)>) //banned ale stoji mimo
+  var(ban_out,"")
+  say(Zmizni od mesta!)
+ endif
+ dorand 2
+  say("<src.name>, odejdi nebo zemri!")
+  say("<src.name>, v <memoryfindtype(MEMORY_ISPAWNED).link.region.name> nemas co pohledavat!")
+ enddo
+ //writelog("guard utoci kvuli npcseenewplayer na <src>")
+ attack(<src>)
+endif
+var(ban_out,"")
+//return 0
+
+on=@skillstroke //provadeni akce - simulujeme navrat domu pri spatreni hrace, guardi maj tendenci se courat
+if(isfighting)||(iscasting)
+ if(act.ischar)
+  if(act.npc) //bojuje s npcckem
+   //je to npc spawnute ve meste - zrejme se mydlej guardi navzajem
+   if(strlen(<act.memoryfindtype(MEMORY_ISPAWNED).link.region.tag(jmeno_mesta)>))
+    memoryfindtype(MEMORY_FIGHT).remove
+    removememories
+    go(<home>)
+   endif
+  endif
+ endif
+endif
+if(action==06d)&&(distancefrom(<memoryfindtype(MEMORY_ISPAWNED).link>) > 8) //going home 
+ if!(act.isplayer) //neboujuje s hracem
+  go(<home>)
+ endif
+endif
+
+on=@beforegeteffect
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+
+[itemdef i_memory_cleaner]
+id=i_memory
+type=t_eq_script
+name=Cistic pameti
+
+on=@create
+timer=15
+
+on=@timer
+if(cont.act)
+ if(cont.act.ischar)
+  if(cont.act.npc)
+  else //ma za acta hrace nebo co
+   if(cont.isfighting)||(cont.iscasting)
+   else //nebojuje, muzem mu vycistit pameti
+    cont.removememories
+    cont.karma=<tag(hiskarma)>
+   endif
+  endif
+ endif
+endif
+remove
+
+[itemdef i_attack_guard]
+NAME=guard portuje
+ID=i_memory 
+TYPE=T_EQ_SCRIPT 
+LAYER=30 
+
+on=@unequip
+return 0
+
+on=@equip
+timer=0
+return 0
+
+on=@timer
+timer=1
+//if (cont.isfighting)||(cont.iscasting)
+if(<cont.memoryfindtype(MEMORY_FIGHT)>)
+ arg(victim,<cont.memoryfindtype(MEMORY_FIGHT).link>)
+else
+ //nemame bojove info - neni s kym bojovat
+ return 1
+endif
+if(victim) //mam vubec nejaky bojovy cil
+ if(victim.ischar) //je to char
+  if(victim.npc) 
+  else //vidim neco co neni NPC - zrejme hrac :)
+   if(victim.isplayer)//pouze kdyz je to player - zrejme je to linkovalo na fish steaky! 
+    if(link)
+    else  
+     link=<victim>
+    endif
+   endif  
+  endif
+ endif
+else
+//cont.action=-1
+//remove
+ //kermel.sysmessage(Attacking item nebojuji ani nekouzlim)
+ return 1
+endif
+name=porting:<link.name>
+if (<safe.cont.tag.guard>)
+ if !(<link.region.flags>&region_flag_insta_logout)
+  return 1
+ endif
+endif
+if (cont.action==skill_magery)
+ //kermel.sysmessage(Akce magery, davam guardranged 1)
+ arg(guardranged,1)//mag - teleportuje se na guardranged vzdalonost
+else
+ if (cont.action==skill_archery)
+  //kermel.sysmessage(Akce nez arch, davam guardranged 1)
+  arg(guardranged,1)
+ else
+  //kermel.sysmessage(Jina akce nez arch a magery, davam guardranged 0)
+  arg(guardranged,0)
+ endif
+endif
+//cont.cslos <link>
+arg(dist,<cont.distancefrom(<link>)>)
+if !(cont.f_canseelos(<link>))
+ return 1
+endif
+if (<arg(dist)>>20)
+ return 1
+endif
+arg(dist,<eval (<eval(<arg(dist)>-(<arg(guardranged)>*2))>-1)>)
+//kermel.sysmessage(Vyslednej dist je <dist>)
+if (<arg(dist)><0)
+ return 1
+endif
+if (arg(dist)>8) // port at most 8 positions towards the player
+  if (cont.flag_spawned)
+    arg(spwnID,<cont.memoryfindtype(MEMORY_ISPAWNED).link>)
+    if (spwnID.region!=cont.region) && (cont.distancefrom(<arg(spwnID)>) > 70)
+      arg(dist,5)
+    else
+      arg(dist,8)
+    endif
+  endif
+endif
+if(<cont.distancefrom(<cont.memoryfindtype(MEMORY_ISPAWNED).link>)> > 70) //ak je daleko, ideme domov
+  //cont.removememories
+  cont.go(<cont.home>) 
+else
+  cont.runxtimes(<arg(dist)>,runtovictim(<victim>))
+  cont.attack(<victim>)
+endif
+return 1
+
+[function runtoact]
+if (distancefrom(<Act>)>1)
+ face(<act>)
+ run(<dir_inttochar(<dir>)>)
+endif
+
+[function runtovictim] //arg - victim
+if (distancefrom(<argv(0)>) > 1)
+  face(<argv(0)>)
+  run(<dir_inttochar(<dir>)>)
+endif
+
+[events e_getwpn]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (action==skill_magery)
+ return 0
+endif
+if !(<eval act.tag(hypno_mystik)>)	//mystikum v hypno nebudeme shazovat zbran -> zustava pak v baglu nevermove
+  if (act.findlayer(1))&&(act.findlayer(21))
+    if(act.findlayer(1).isweapon)&&(<rand(3)>==2)
+      act.findlayer(1).cont=<act.findlayer(21)>
+      act.sysmessage(Dostal jsi strasnou ranu pri ktere ti vypadla zbran z ruky)
+    endif
+  else
+    if (act.findlayer(2))&&(act.findlayer(21))
+      if(act.findlayer(2).isweapon)&&(<rand(3)>==2)
+        act.findlayer(2).cont=<act.findlayer(21)>
+        act.sysmessage(Dostal jsi strasnou ranu pri ktere ti vypadla zbran z ruky)
+      endif
+    endif
+  endif
+endif
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+//[EVENTS e_hodici_bombak]//kdokoli tohle stvoril, opravit nez to znova bude vypusteno.
+//
+//ON=@NPCSeeNewPlayer
+//if (src.flag_invul)
+//  return 1
+//elseif !(<act.int>) //if (act.int<src.int)
+//  events(+e_tele_to_target)
+//  attack
+//elseif (act.int<src.int)
+//  events(+e_tele_to_target)
+//  attack
+//endif
+//
+//on=@GetHit  // nekdo me zasahl
+//     src.newitem=i_fx_explode
+//     lastnew.type=t_explosion
+//     lastnew.attr=attr_move_never|attr_decay
+//     lastnew.link=<uid>
+//     lastnew.morex=10 
+//     lastnew.morey=090
+//     lastnew.morez=2
+//     lastnew.p=<p> //zde se to zaseklo a vytvorilo 30k itemu, dekuji nechci.
+//     lastnew.timerd=1
+//
+//
+//
+//on=@death
+//     src.newitem=i_fx_explode
+//     lastnew.type=t_explosion
+//     lastnew.attr=attr_move_never|attr_decay
+//     lastnew.link=<uid>
+//     lastnew.morex=10 
+//     lastnew.morey=090
+//     lastnew.morez=2
+//     lastnew.p=<p>
+//     lastnew.timerd=1
+//
+//
+//on=@SpellEffect
+//     src.newitem=i_fx_explode
+//     lastnew.type=t_explosion
+//     lastnew.attr=attr_move_never|attr_decay
+//     lastnew.link=<uid>
+//     lastnew.morex=10 
+//     lastnew.morey=090
+//     lastnew.morez=2
+//     lastnew.p=<p>
+//     lastnew.timerd=1
+
+[EVENTS e_sumoner_bombaku]
+
+ON=@NPCSeeNewPlayer //Co to je za silenost? poreste si ty elseify to byla hruza co tam bylo !!! - Dinivan
+if (src.flag_invul)
+ return 1
+elseif (src.profession==class_necro)
+ say("Ucen strazcu temnoty muze projit v pokoji")
+ return 1
+elseif (src.profession==class_priest)
+ say("Ha Prosebnicek Valar prisel rusit klid pravych synu Numeronu..  Manwe te mel varovat ze sem namas chodit.. ted zemres")
+ NEWNPC c_Bombak
+ NEWNPC c_Bombak
+ attack
+elseif !(<act.int>) //if (act.int<src.int)
+ attack
+ act.anim 10
+ act.NEWNPC c_Bombak
+elseif (act.str<src.str)
+ attack
+ act.anim 10
+ act.NEWNPC c_Bombak_maniak
+endif 
+
+
+on=@aftergetswing  // nekdo me zasahl
+if (src.profession!=class_war)  
+    say  Valecniku  blaznivej...   takovych jako ty jsem uz v mladi skolil desitky..
+endif
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegeteffect
+
+
+on=@death     //  pri smrti
+        remove
+ return 1
+
+on=@SpellEffect   //  pri trefeni kouzlem
+     act.spelleffect 29 1000 //great heal   
+
+on=@FearOfDeath  //  brzo mohu umrit  nejsem  zdravej..
+     act.spelleffect 29 1000 //great heal
+     act.spelleffect 29 1000 //great heal
+     
+ON=@hit                  //   monstrum  zasazeno
+if {<src.findlayer.1.isweapon>}
+  src.findlayer.1.bounce
+  src.vit=<src.vit>-10
+  src.sysmessage zjistujes ze zasah do nepritele z tebe vysava energii i chut bojovat dal
+elseif {<src.findlayer.2.isweapon>}
+  src.findlayer.2.bounce
+  src.vit=<src.vit>-10
+  src.sysmessage zjistujes ze zasah do nepritele z tebe vysava energii i chut bojovat dal
+endif
+
+/////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////
+
+
+[EVENTS e_sumoner_Strazce_spicich]
+
+ON=@NPCSeeNewPlayer
+if (src.flag_invul)
+  return 1
+elseif (src.profession==class_necro)
+say Ucen strascu temnoty muze projit v pokoji
+  return 1
+elseif (src.profession==class_priest)
+say Ha Prosebnicek Valar prisel rusit klid pravich synu Numeronu..  Manwe te mel varovat ze sem namas chodit.. ted zemres  
+  attack
+
+else
+anim 10
+NEWNPC c_pisecny_sumon_golem
+
+//elseif (act.str<src.str)
+//act.anim 10
+//act.NEWNPC c_pisecny_sumon_golem
+//  attack
+return
+
+on=@aftergetswing  // nekdo me zasahl
+if (src.profession!=class_war)  
+    say  Valecniku  blaznivej...   takovich jako ty jsem uz v mladi skolil desitky..  
+
+
+
+on=@death     //  pri smrti
+     src.newitem=i_fx_explode
+     lastnew.type=t_explosion
+     lastnew.attr=attr_move_never|attr_decay
+     lastnew.link=<uid>
+     lastnew.morex=10 
+     lastnew.morey=090
+     lastnew.morez=2
+     lastnew.p=<p>
+     lastnew.timerd=1
+    remove
+ return 1
+
+on=@beforegeteffect  //  pri trefeni kouzlem
+     act.spelleffect 29 1000 //great heal   
+
+on=@FearOfDeath  //  brzo mohu umrit  nejsem  zdravej..
+     act.spelleffect 29 1000 //great heal
+     act.spelleffect 29 1000 //great heal
+     
+on=@Created
+on=@DrinkingPotion
+on=@afterswing                 //   monstrum  zasazeno
+     act.spelleffect 29 1000 //great heal
+
+
+
+[EVENTS e_wormDrop]
+ON=@NPCSeeNewPlayer
+if (src.flag_invul)
+  return 1
+else
+  NEWNPC c_Cerv
+  NEWNPC c_Cerv
+  NEWNPC c_Cerv
+  attack
+endif
+
+on=@death     //  pri smrti
+NEWNPC c_Cerv
+NEWNPC c_Cerv
+NEWNPC c_Cerv
+NEWNPC c_Cerv
+NEWNPC c_Cerv
+NEWNPC c_Cerv
+
+on=@SpellEffect   //  pri trefeni kouzlem
+if (<?argn?>==20)||(<?argn?>==39) 
+  emote "resist a poison attack"
+  return 1
+endif
+NEWNPC c_Cerv
+NEWNPC c_Cerv
+
+
+[events e_npc_knockback]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (action==skill_magery) || (var(dodged)==1)
+ return 0
+endif
+if (tag(neknockuj)==1) || (act.tag(energyofshield))
+ return 0
+endif
+if (tag.npc_knockback)
+ if ({0 100} < <tag(npc_knockback)>)
+  act.dir=<dir_revert(<dir>)>
+  act.knockbackhim
+ endif
+else
+ if ({1 3}==2)
+  act.dir=<dir_revert(<dir>)>
+  act.knockbackhim
+ endif
+endif
+
+on=@beforegeteffect
+on=@beforedoeffect
+on=@beforegetswing
+on=@aftergetswing
+on=@stopguarding
+
+[events e_npc_warcry]
+on=@beforegeteffect
+if(tag(nextcry) < <serv.time>)
+  tag(nextcry,<eval serv.time+(nastaveni_warcry_delay*10)>)
+  emote(crying)
+  sound(1098)
+  newitemsafe(i_warcry_srcChanger)
+  lastnew.p=<src.p>
+  lastnew.z=-100
+  lastnew.link=<uid>
+  lastnew.timerd=1
+endif
+
+return 0
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+
+[events e_npc_flee]
+on=@aftergetswing
+if (<eval (<maxhits>*100) - <maxhits>*<tag(npc_flee)>> > <hits>)
+  flee
+endif
+
+on=@beforegeteffect
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+[events e_issumon]
+on=@step
+if (issumon)
+ events=-e_issumon
+else
+ remove
+endif
+
+[events e_npc_infiniteMana]
+on=@beforegetswing
+on=@aftergetswing
+mana=<maxMana>
+
+on=@beforegeteffect
+mana=<maxMana>
+
+on=@beforedoeffect
+mana=<maxMana>
+
+on=@afterswing
+mana=<maxMana>
+
+//[function godistance]
+//if (<more2h>)
+// more2h=<more2h>-1
+// //gorelative <eval {2 6}><more2l>
+// var(distancgo,<eval {2 6}>)//1.cislo
+// var(directgo,<more2l>)//2.cislo
+// DOSWITCH (<var.directgo>)
+//  cont.p=<link.p.x>,<eval <link.p.y>-<var.distancgo>>
+//  cont.p=<eval <link.p.x>+<var.distancgo>>,<eval <link.p.y>-<var.distancgo>>
+//  cont.p=<eval <link.p.x>+<var.distancgo>>,<link.p.y>
+//  cont.p=<eval <link.p.x>+<var.distancgo>>,<eval <link.p.y>+<var.distancgo>>
+//  cont.p=<link.p.x> <eval <link.p.y>+<var.distancgo>>
+//  cont.p=<eval <link.p.x>-<var.distancgo>>,<eval <link.p.y>+<var.distancgo>>
+//  cont.p=<eval <link.p.x>-<var.distancgo>>,<link.p.y>
+//  cont.p=<eval <link.p.x>-<var.distancgo>>,<eval <link.p.y>-<var.distancgo>>
+// enddo
+// cont.mapplane=<link.mapplane>
+// if (cont.f_canseelos(<link>))
+//  cont.fix
+// else
+//  more2l=<more2l>+1
+//  if (<more2l> > 7)
+//   more2l=0
+//  endif
+//  godistance
+// endif
+//endif
+
+[EVENTS e_NPC_Leaper]
+ON=@NPCSeeNewPlayer
+if (src.flag_invul)
+  return 1
+elseif (isPet)
+  return 1
+endif
+attack(<src>)
+events(+e_NPC_teleToTarget)
+
+on=@hittry
+events(+e_NPC_teleToTarget)
+
+[EVENTS e_NPC_teleToTarget]
+on=@skillstroke
+if (act)
+  if (act < 040000000) //itemy jsou od te ctyrky vyse
+    if (act.isplayer)
+      if !(<flags>&(statf_freeze|statf_invul|statf_invisible|statf_hidden))
+        if (action != 064) && (action != 065) //064 - come, 065 - stay, 
+          if !(findid(i_attack_port_npc))
+            newitemsafe(i_attack_port_npc)
+            equip(<lastnew>)
+          endif
+          return 0
+        endif
+      endif
+    endif
+  endif
+else
+  if (memoryfindtype(MEMORY_fight))
+  else
+    findid(i_attack_port_npc).remove
+    if !(isPet)
+      removememories
+    endif
+    events(-e_NPC_teleToTarget)
+  endif
+endif
+
+[itemdef i_attack_port_npc]
+NAME=npc portuje
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+on=@unequip
+return 0
+
+on=@equip
+timer=0
+return 0
+
+on=@timer
+f_npc_portTimer
+
+[function f_npc_portTimer]
+timer=1
+if (<cont.memoryfindtype(MEMORY_FIGHT)>)
+  arg(victim,<cont.memoryfindtype(MEMORY_FIGHT).link>)
+else
+  //nemame bojove info - neni s kym bojovat
+  return 1
+endif
+if (cont.isPet)
+  if (victim.isPlayer) // jsem mazel a utocim na hrace -> ee, neportovat
+    remove
+    return 1
+  endif
+endif
+if (victim) //mam vubec nejaky bojovy cil
+  if (victim.ischar) //je to char
+    link=<victim>
+  endif
+else
+  return 1
+endif
+name=Porting:<link.name>
+arg(dist,<cont.distancefrom(<link>)>)
+if !(cont.f_canseelos(<link>))
+  return 1
+endif
+if (<arg(dist)> > 20)
+  return 1
+endif
+arg(dist,<eval (<arg(dist)>-1)>) //the npc will run arg(dist) times to the victim (just NEXT TO it, not AT it)
+if (<arg(dist)> < 0) // no need for further leap
+  return 1
+endif
+if (<strlen(<cont.tag(npc_port_distance)>)>)
+  arg(dist,<cont.tag(npc_port_distance)>)
+else (arg(dist)>3)
+  arg(dist,3)
+endif
+if (<strlen(<cont.tag(npc_port_timer)>)>)//moze portovat len 1x za tento cas
+  if (<strlen(<cont.tag(npc_port_nextport)>)>)
+    if (<cont.tag(npc_port_nextport)><=<serv.time>)
+      cont.tag(npc_port_nextport,<eval(<serv.time>+(<cont.tag(npc_port_timer)>*10))>)
+    else
+      return 1
+    endif
+  else
+    cont.tag(npc_port_nextport,<eval(<serv.time>+(<cont.tag(npc_port_timer)>*10))>)
+  endif
+endif
+cont.runxtimes(<arg(dist)>,runtovictim(<victim>))
+//writelog("Npc utoci kvuli i_attack_port_npc na <victim>")
+cont.attack(<victim>)
+cont.update
+return 1
+
+// promazany eventy 
+[events e_snowmonster]
+[events e_undead]
+[events e_fire]
+[events e_air]
+[events e_water]
+[events e_earth]
+[events e_blood]
+[events e_daemon]
+[events e_reaper]
+[events e_golem]
+[events e_spirit]
+[events e_humanoid]
+[events e_spider]
+[events e_serpent]
+[events e_scorpion]
+[events e_ooze]
+
+[eof]

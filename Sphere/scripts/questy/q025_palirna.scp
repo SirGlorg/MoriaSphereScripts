@@ -1,0 +1,765 @@
+////////////////////////////////////////////
+//                                        //
+//                Palirna                 //
+//                                        //
+//  Namet Sir Glorg, naskriptoval Lu Tze  //
+//                                        //
+////////////////////////////////////////////
+
+
+////////////////////////////////////
+//                                //
+//  Urceni nazvu bitu qtagu q025  //
+//                                //
+////////////////////////////////////
+
+[defNames q025_palirna_bity]
+q025_hosp_utok     000000001 // napadl hospodskou
+q025_hosp_zna_ukol 000000002 // vi, ze ta chce sabotovat palirnu
+q025_hosp_prijal   000000004 // prijal tento ukol
+q025_hosp_odmena_a 000000008 // odmenen za splneni ukolu
+q025_hosp_odmena_b 000000010 // rozbil kotel, ale nemel to zadane
+q025_pal_utok      000000020 // napadl nebo nastval palice
+q025_pal_zabil     000000040 // zabil palice
+q025_pal_vyzradil  000000080 // prozradil palicovi, co chce hospodska
+q025_pal_slib_opr  000000100 // slibil, ze zkusi opravit trubku
+q025_pal_opravil   000000200 // skutecne ji opravil
+q025_pal_odmena_a  000000400 // dostal odmenu za opraveni trubky
+q025_pal_odmena_b  000000800 // vzdal opravu, ale i tak odmenen
+q025_pal_dvere     000001000 // ma pravo otevrit dvere
+q025_pal_kotel     000002000 // rozbil kotel
+
+
+///////////////////////
+//                   //
+//  Dvere v palirne  //
+//                   //
+///////////////////////
+
+[typedef t_q025_dvere]
+on=@userdclick
+if (<timer>==-1) // jsou-li dvere zavrene, ulozi se jejich pozice a dispid pred otevrenim pro spravne chovani po timeru
+  more2=<dispid>
+  morep=<p>
+endif
+if (src.isgm)
+  target("Zamer spawn Miruvila.")
+elseif (dispid!=<more2>) // dvere jsou otevrene - zavrit
+  type=t_door
+  dclick
+  type=t_q025_dvere
+elseif (!(<hval(src.qtag(q025))>&<q025_pal_dvere>)) // hrac jeste neotevrel
+  dialog(d_q025_dvere)
+else // otevrit dvere
+  type=t_door
+  dclick
+  type=t_q025_dvere
+endif
+return 1
+
+on=@targon_char
+src.redmessage("Zamerit lze pouze spawn palice Miruvila!")
+return 1
+
+on=@targon_item
+if ((src.targ.type==t_spawn_char) && (src.targ.more1==c_q025_palic))
+  tag(spawn_palice,<src.targ>)
+  src.sysmessage("Objekty byly propojeny.")
+else
+  src.redmessage("Zamerit lze pouze spawn palice Miruvila!")
+endif
+return 1
+
+on=@timer
+dispid=<more2>
+p=<morep>
+update
+return 1
+
+
+[dialog d_q025_dvere]
+300,235
+
+page 0
+
+page 1
+argo.resizepic(0,0,0a3c,200,130)
+argo.text(32,14,52,0)
+if (<src.rescount(i_lockpick)> >= 1) // pro odemykani jsou treba lockpicky
+  argo.button(14,40,0fa5,0fa7,1,0,1)
+else
+  argo.button(14,40,0fa5,0fa7,0,2,0)
+endif
+argo.text(50,40,1152,1)
+argo.button(14,65,0fa5,0fa7,1,0,2)
+argo.text(50,65,1152,4)
+argo.button(14,90,0fa5,0fa7,1,0,0)
+argo.text(50,90,1152,5)
+
+page 2
+argo.resizepic(40,25,0a3c,120,80)
+argo.text(53,38,52,2)
+argo.button(54,65,0fa5,0fa7,0,1,0)
+argo.text(90,65,1152,3)
+
+[dialog d_q025_dvere text]
+Dvere jsou zamcene. //0
+Zkusit odemknout //1
+Nemas paklic. //2
+Zpet //3
+Vyrazit //4
+Odejit //5
+
+
+[dialog d_q025_dvere button]
+on=0
+
+on=1
+src.emote("odemyka")
+sound(578)
+if (<src.lockpicking> >= 450)
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_dvere>,35) // priste uz to pujde hned
+  dclick
+  if (src.profession==class_thief) // vyhodne je to jen pro zlodeje, pro remeslnika tolik ne
+    src.addexp(100+<eval(<src.tag(level)>*5)>)
+  endif
+else
+  src.consume(i_lockpick)
+  src.sysmessage("Odemykani se nezdarilo.")
+endif
+if (<finduid(tag(spawn_palice)).more2> != 0) // kontrola, je-li nazivu
+  if (<finduid(finduid(tag(spawn_palice)).tag(lastspawned)).dir> >= 5) // viden
+    src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_utok>,35) // palic si to bude pamatovat
+    finduid(finduid(tag(spawn_palice)).tag(lastspawned)).say("Hej, co to delas?")
+    finduid(finduid(tag(spawn_palice)).tag(lastspawned)).attack
+  endif
+endif
+
+on=2
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_utok>,35) // palic si to bude pamatovat
+src.emote("mlati do dveri")
+if (<src.str> >= 80)
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_dvere>,35)
+  dclick
+else
+  src.say("Jau, moje ruka...")
+  src.sysmessage("Dvere pevne drzi.")
+endif
+if (<finduid(tag(spawn_palice)).more2> != 0) // kontrola, je-li Miruvil nazivu
+  finduid(finduid(tag(spawn_palice)).tag(lastspawned)).say("Hej, co to delas?")
+  finduid(finduid(tag(spawn_palice)).tag(lastspawned)).attack
+endif
+
+
+//////////////////////////////////////////
+//                                      //
+//  Dlazdice hlidajici vstup ke kotlum  //
+//                                      //
+//////////////////////////////////////////
+
+[itemdef i_q025_hlidac_dveri]
+id=0ac6
+type=t_normal
+name=hlidac pruchodu dvermi
+
+on=@create
+attr=090
+color=0981
+timer=-1
+
+on=@step
+if ((src.isgm) || (src.npc) || (<src.flags>&statf_dead))
+  return 1
+elseif ((!(<hval(src.qtag(q025))>&<q025_pal_slib_opr>)) && (<timer>==-1)) // Miruvil hraci nepovolil vstoupit a uz ubehl timer
+  if (<finduid(tag(spawn_palice)).more2> != 0) // kontrola, je-li Miruvil nazivu
+    if (<finduid(finduid(tag(spawn_palice)).tag(lastspawned)).dir> >= 5) // Miruvil na hrace vidi
+      finduid(finduid(tag(spawn_palice)).tag(lastspawned)).say("Hej, kam to jdes?")
+      finduid(finduid(tag(spawn_palice)).tag(lastspawned)).attack
+      timer=5 // tj. petivterinova prodleva opetovneho pouziti
+    endif
+  endif
+endif
+return 1
+
+on=@userdclick
+if (src.isgm)
+  target("Zamer spawn Miruvila (palice).")
+endif
+return 1
+
+on=@targon_char
+src.redmessage("Zamerit lze pouze spawn palice Miruvila!")
+return 1
+
+on=@targon_item
+if (src.targ.type==t_spawn_char) && (src.targ.more1==c_q025_palic)
+  tag(spawn_palice,<src.targ>)
+  src.sysmessage("Objekty byly propojeny.")
+else
+  src.redmessage("Zamerit lze pouze spawn palice Miruvila!")
+endif
+return 1
+
+on=@timer
+return 1
+
+
+////////////////////////
+//                    //
+//  Poskozena trubka  //
+//                    //
+////////////////////////
+
+[itemdef i_q025_trubka]
+id=02f8e
+type=00
+name=trubka
+
+on=@create
+color=090b
+attr=attr_static
+return 1
+
+on=@userdclick
+if (<distance> > 1)
+  src.sysmessage("Jsi prilis daleko.")
+elseif (<hval(src.qtag(q025))>&<q025_pal_opravil>)
+  src.sysmessage("Trubka uz tesni dobre.")
+elseif (<hval(src.qtag(q025))>&<q025_pal_slib_opr>)
+  if (<src.tinkering> >= 350)
+    src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_opravil>,35)
+    src.say("Opraveno!")
+    if (src.profession==class_craft) // pro pripad, ze to jednou bude moct opravit i nekdo jiny nez remeslnik
+      src.addexp(100+<eval(<src.tag(level)>*5)>)
+    endif
+  else
+    src.sysmessage("Na opravu nejsi dost <? src.sex(zrucny,zrucna) ?>.")
+  endif
+else
+  src.sysmessage("Medeny valecek, podle vsech znaku trubka.")
+endif
+return 1
+
+
+////////////////////////
+//                    //
+//  Destilacni kotel  //
+//                    //
+////////////////////////
+
+[itemdef i_q025_kotel]
+id=02c73
+type=00
+name=destilacni kotel
+
+on=@create
+color=090b
+attr=attr_static
+return 1
+
+on=@userdclick
+if (<distance> > 1)
+  src.sysmessage("Jsi prilis daleko.")
+elseif (<hval(src.qtag(q025))>&<q025_pal_kotel>)
+  src.sysmessage("Kotel je zniceny.")
+elseif (<hval(src.qtag(q025))>&<q025_hosp_zna_ukol>)
+  dialog(d_q025_kotel)
+endif
+return 1
+
+
+[dialog d_q025_kotel]
+310,248
+
+page 0
+argo.resizepic(0,0,0a3c,180,105)
+argo.text(16,14,52,0)
+argo.button(14,40,0fa5,0fa7,1,0,1)
+argo.text(50,40,1152,1)
+argo.button(14,65,0fa5,0fa7,1,0,0)
+argo.text(50,65,1152,2)
+
+
+[dialog d_q025_kotel text]
+Chces kotel poskodit? //0
+Ano //1
+Ne //2
+
+
+[dialog d_q025_kotel button]
+on=0
+
+on=1
+if (<distance> > 3)
+  src.sysmessage("Jsi prilis daleko.")
+else
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_kotel>,35)
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_utok>,35) // Miruvil se s nim nebude bavit
+  emote("hrouti se")
+endif
+
+
+///////////////////////////
+//                       //
+//  Hospodska (Eraveth)  //
+//                       //
+///////////////////////////
+
+[speech spk_q025_hospodska] 
+on=*dobry*
+on=*dobre*
+on=*den*
+on=*rano*
+on=*dopoledne*
+on=*odpoledne*
+on=*vecer*
+on=*ahoj*
+on=*zdar*
+on=*zdravi*
+if (<distance> > 3)
+  say("Coze? Pojdte bliz!")
+else
+  f_q025_osloveni_hospodske
+endif
+
+
+[function f_q025_osloveni_hospodske]
+if (src.targ.distance > 3)
+  src.sysmessage("Na takovou vzdalenost s tebou jednat nebude.")
+elseif (<src.tag.realm>==2)
+  say("Tahni odtud!")
+else
+  face
+  if (<hval(src.qtag(q025))>&<q025_hosp_utok>) // hrac na hospodskou utocil
+    say("Pomoc!")
+  elseif ((<hval(src.qtag(q025))>&<q025_pal_zabil>)&&((<hval(src.qtag(q025))>&<q025_pal_odmena_b>)||(!(<hval(src.qtag(q025))>&<q025_hosp_prijal>))))
+    // zabil Miruvila a nema dostat odmenu
+    if (<hval(src.qtag(q025))>&<q025_pal_odmena_b>) // odmenu uz dostal
+      say("My dva se nezname.")
+    else
+      say("To je on! To je ten vrah! Pomoc!")
+    endif
+  elseif ((<hval(src.qtag(q025))>&<q025_pal_odmena_a>)||(<hval(src.qtag(q025))>&<q025_pal_odmena_b>)) // hrac pomohl majiteli palirny
+    say("Vy mi ani nechodte na oci...")
+  else
+    dialog(d_q025_hospodska)
+  endif
+endif
+
+
+[function f_q025_utok_na_hospodskou]
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_hosp_utok>,35)
+say("Pomoc! Straze!")
+
+
+[dialog d_q025_hospodska]
+70,125
+
+page 0
+argo.resizepic(0,0,0a3c,660,350)
+argo.gumppic(11,15,03182)
+argo.gumppic(21,22,03015)
+argo.text(340,13,52,0)
+
+if (!(<hval(src.qtag(q025))>&<q025_pal_zabil>)) // hrac nezabil Miruvila - vidi tlacitka
+  argo.button(148,145,0988,0988,0,2,0)
+  argo.text(198,147,1152,5)
+  if (((!(<hval(src.qtag(q025))>&<q025_hosp_prijal>))&&(!(<hval(src.qtag(q025))>&<q025_pal_kotel>)))||(!(<hval(src.qtag(q025))>&<q025_hosp_prijal>)))
+    argo.button(315,145,0988,0988,0,3,0) // Muzu pomoci?
+    argo.text(326,147,1152,7)
+  else
+    argo.button(315,145,0988,0988,0,4,0) // Ukol
+    argo.text(378,147,1152,11)
+  endif
+  argo.button(482,145,0988,0988,0,10,0)
+  argo.text(518,147,142,24)
+endif
+
+page 1 // uvodni pozdrav
+if (!(<hval(src.qtag(q025))>&<q025_pal_zabil>))
+  argo.htmlgump(155,35,485,100,1,0,36)
+else // hrac zabil Miruvila
+  argo.htmlgump(155,35,485,100,3,0,36)
+  argo.button(14,205,0fa5,0fa7,1,6,5)
+  argo.text(50,205,52,4)
+endif
+
+page 2 // Kdo jste?
+argo.htmlgump(155,35,485,100,6,0,36)
+
+page 3 // Muzu pomoci?
+if (!(<hval(src.qtag(q025))>&<q025_pal_kotel>)) // neznicil kotel
+  argo.htmlgump(155,35,485,100,8,0,36)
+  argo.button(14,205,0fa5,0fa7,1,0,1)
+  argo.text(50,205,1152,9)
+  argo.button(14,230,0fa5,0fa7,1,0,2)
+  argo.text(50,230,1152,10)
+else
+  argo.htmlgump(155,35,485,100,19,0,36)
+endif
+
+page 4 // Ukol
+if (<hval(src.qtag(q025))>&<q025_pal_kotel>) // hrac znicil kotel
+  if (<hval(src.qtag(q025))>&<q025_hosp_odmena_a>) // hrac uz byl odmenen
+    argo.htmlgump(155,35,485,100,18,0,36)
+  elseif (<hval(src.qtag(q025))>&<q025_hosp_odmena_b>) // hraci byla odmena odmitnuta
+    argo.htmlgump(155,35,485,100,23,0,36)
+  elseif (!(<hval(src.qtag(q025))>&<q025_hosp_prijal>)) // nemel ukol zadany
+    argo.htmlgump(155,35,485,100,19,0,36)
+    argo.button(14,205,0fa5,0fa7,0,7,0)
+    argo.text(50,205,1152,20)
+  else
+    argo.htmlgump(155,35,485,100,12,0,36)
+    argo.button(14,205,0fa5,0fa7,0,6,0)
+    argo.text(50,205,1152,15)
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_hosp_prijal>) // ukol zatim nesplnen: jeste jsem nepokrocil
+  argo.htmlgump(155,35,485,100,12,0,36)
+  argo.button(14,205,0fa5,0fa7,0,5,0)
+  argo.text(50,205,1152,13)
+endif
+
+page 5 // hrac ohlasil, ze jeste nepokrocil
+argo.htmlgump(155,35,485,100,14,0,36)
+
+page 6 // hrac ohlasil, ze splnil ukol
+argo.htmlgump(155,35,485,100,16,0,36)
+argo.button(14,205,0fa5,0fa7,1,0,3)
+argo.text(50,205,52,17)
+
+page 7 // hrac ohlasil, ze splnil ukol, ale nemel ho zadany
+argo.htmlgump(155,35,485,100,21,0,36)
+argo.button(14,205,0fa5,0fa7,1,0,4)
+argo.text(50,205,52,22)
+
+page 10
+argo.htmlgump(155,35,485,100,25,0,36)
+
+
+[dialog d_q025_hospodska text]
+Eraveth Ufaile //0
+Vitejte v moji hospode... Date si neco? //1
+A, <src.name>. No? //2
+<? src.sex(Nemel,Nemela) ?> jste na nej tak surove utocit! Tak daleko jsem nikdy zajit nechtela. Ted si o tom vyklada cele mesto... Vemte si to a ztratte se, nezname se, jasne? //3
+*prevzit penize a odejit* //4
+Kdo jste? //5
+Jmenuju se Eraveth a patri mi tahle hospoda. //6
+Muzu nejak pomoci? //7
+Ano, pomoct byste mi <? src.sex(mohl,mohla) ?>. Vite... uz dlouho je mi trnem v oku palirna, co stoji u severniho konce hradeb. Bere mi trzby. Lidi si radsi nechaji levne vypalit koralku u toho dobraka Miruvila, nez by mi tady museli platit. A tak bych ocenila, kdyby se nasel nekdo, kdo by ten podnik vyradil z provozu. Nebylo by to zadarmo. Pet tisic zlatych, co rikate? //8
+Jdu do toho. //9
+Delate si legraci? Nikdy! //10
+Ukol //11
+Tak jak jste <? src.sex(pokrocil,pokrocila) ?> v nasi male zalezitosti? //12
+Jeste nijak... //13
+Tak na co cekate? Bezte to vyridit. //14
+Vyrizeno. Palirna hned tak v provozu nebude. //15
+Opravdu? Vyborne. Jsem vam zavazana. Tady mate penize, jak jsme se domluvili. //16
+*prevzit penize* //17
+Dekuji za pomoc. //18
+Ne, dekuji, nepotrebuji s nicim pomoct. //19
+Ale vy jste prece chtela znicit palirnu... a to jsem <? src.sex(udelal,udelala) ?>! //20
+Ja ze chtela nicit palirnu? No dovolte! To bych si nikdy nedovolila. //21
+*odejit* //22
+Ukol? Jaky ukol? Nevim, o cem to mluvite. //23
+*prohlednout* //24
+Eraveth je plavovlasa tricatnice. Byla by celkem hezka, kdyby se na vsechny nedivala tak povysene. //25
+
+
+[dialog d_q025_hospodska button]
+on=0
+say("Nashledanou.")
+
+on=1 // hrac prijal ukol
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_hosp_zna_ukol>,35)
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_hosp_prijal>,35)
+say("Vyborne. Budu tu cekat.")
+
+on=2 // hrac ukol odmitl - ale vi o nem
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_hosp_zna_ukol>,35)
+say("No, kdybyste si to <? src.sex(rozmyslel,rozmyslela) ?>... jsem tu.")
+
+on=3 // ukol splnen
+if (<hval(src.qtag(q025))>&<q025_pal_kotel>)
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_hosp_odmena_a>,35)
+  f_quest_complete(35,0)
+  say("Tady je vase odmena.")
+  src.givegold(5000)
+  src.addexp(100+<eval(<src.tag(level)>*5)>)
+else
+  src.go(klec) // bugger
+endif
+
+on=4 // ukol splnen, jenze si ho hrac nevzal
+if (<hval(src.qtag(q025))>&<q025_pal_kotel>)
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_hosp_odmena_b>,35)
+  f_quest_complete(35,0)
+  say("Laskave me tu krive neobvinujte.")
+  src.sysmessage("Chybami se clovek uci.")
+  src.addexp(250+<eval(<src.tag(level)>*12)>)
+else
+  src.go(klec) // bugger
+endif
+
+on=5 // hrac Miruvila zabil
+if (<hval(src.qtag(q025))>&<q025_pal_utok>)
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_hosp_odmena_b>,35)
+  say("Vemte si to a bezte.")
+  src.givegold(5000)
+else
+  src.go(klec) // bugger
+endif
+
+
+///////////////////////
+//                   //
+//  Palic (Murivil)  //
+//                   //
+///////////////////////
+
+[speech spk_q025_palic] 
+on=*dobry*
+on=*dobre*
+on=*den*
+on=*rano*
+on=*dopoledne*
+on=*odpoledne*
+on=*vecer*
+on=*ahoj*
+on=*zdar*
+on=*zdravi*
+if (<distance> > 3)
+  say("Coze? Pojdte bliz!")
+else
+  f_q025_osloveni_palice
+endif
+
+
+[function f_q025_osloveni_palice]
+if (src.targ.distance > 3)
+  src.sysmessage("Na takovou vzdalenost s tebou jednat nebude.")
+elseif (<src.tag.realm>==2)
+  say("Zhyn, bidniku!")
+  attack
+elseif (<hval(src.qtag(q025))>&<q025_pal_utok>) 
+  say("Vy se jeste opovazujete sem chodit?!")
+  attack
+elseif (<eval(tag(jde_odemknout))>==0)
+  face
+  // hostinsky se obrati ke dverim osm vterin po osloveni
+  findid(i_q025_ovladani).timer=8
+  dialog(d_q025_palic)
+else
+  say("Moment, nestiham...")
+endif
+
+
+[function f_q025_utok_na_palice]
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_utok>,35)
+attack
+say("Pomoc! Straze!")
+src.criminal
+
+
+[function f_q025_zabiti_palice]
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_zabil>,35)
+say("Ohh")
+act.criminal
+
+
+[itemdef i_q025_ovladani]
+id=i_memory
+type=t_eq_script
+name=ovladac pohybu
+
+on=@create
+timer=1
+
+on=@timer
+if (<hval(topobj.tag(jde_odemknout))>==0) // stoji na miste
+  topobj.flag_immobile=1
+  if (<topobj.dir>!=6)
+    topobj.dir=6
+    topobj.update
+    // topobj.emote("ohledl se")
+  endif
+elseif (topobj.p==topobj.home)
+  if (topobj.tag(jde_odemknout)==1) // dosel ke dverim
+    topobj.emote("odemyka")
+    sound(578)
+    topobj.say("Prosim.")
+    topobj.tag(jde_odemknout,2)
+    topobj.memoryfindtype(memory_ispawned).link.move(4,0)
+    topobj.memoryfindtype(memory_ispawned).link.update
+    topobj.home=<topobj.memoryfindtype(memory_ispawned).link.p>
+    topobj.walk(<topobj.home>)
+    timer=2
+  elseif (topobj.tag(jde_odemknout)==2) // vratil se ode dveri
+    topobj.tag(jde_odemknout,0)
+    topobj.flag_immobile=1
+    topobj.dir=6
+    topobj.update
+  endif
+else // prave pochoduje, proto se pravidelne kontroluje pozice
+  topobj.walk(<topobj.home>) // pojistka, kdyby zmenil smer
+  timer=2
+endif
+return 1 // neni-li nastaveno jinak, zmeni se timer na -1
+
+
+[dialog d_q025_palic]
+70,125
+
+page 0
+argo.resizepic(0,0,0a3c,660,350)
+argo.gumppic(11,15,03182)
+argo.gumppic(21,22,03115)
+argo.text(345,13,52,0)
+
+argo.button(148,145,0988,0988,0,2,0) // Kdo jste?
+argo.text(198,147,1152,2)
+if (!(<hval(src.qtag(q025))>&<q025_pal_slib_opr>)) // Muzu pomoci?/Ukol
+  argo.button(315,145,0988,0988,0,3,0)
+  argo.text(326,147,1152,4)
+else
+  argo.button(315,145,0988,0988,0,3,0)
+  argo.text(376,147,1152,10)
+endif
+argo.button(482,145,0988,0988,0,6,0) // *prohlednout*
+argo.text(518,147,142,20)
+if (<hval(src.qtag(q025))>&<q025_hosp_zna_ukol>) // Hospodska
+  argo.button(148,173,0988,0988,0,5,0)
+  argo.text(195,175,1152,22)
+endif
+
+page 1 // pozdrav
+argo.htmlgump(155,35,485,100,1,0,36)
+
+page 2 // Kdo jste?
+argo.htmlgump(155,35,485,100,3,0,36)
+
+page 3 // Muzu pomoci?/Ukol
+if (<hval(src.qtag(q025))>&<q025_pal_odmena_a>) // hrac uz dostal odmenu za opravu
+  argo.htmlgump(155,35,485,100,13,0,36)
+elseif (<hval(src.qtag(q025))>&<q025_pal_odmena_b>) // hrac opravu vzdal
+  argo.htmlgump(155,35,485,100,19,0,36)
+elseif (<hval(src.qtag(q025))>&<q025_pal_slib_opr>) // ukol prijat
+  argo.htmlgump(155,35,485,100,11,0,36)
+  if (!(<hval(src.qtag(q025))>&<q025_pal_opravil>))
+    argo.button(14,205,0fa5,0fa7,0,4,0) // jeste neopraveno
+    argo.text(50,205,1152,14)
+    argo.button(14,230,0fa5,0fa7,1,4,3) // vzdat
+    argo.text(50,230,1152,16)
+  else
+    argo.button(14,205,0fa5,0fa7,1,0,4) // opraveno
+    argo.text(50,205,1152,12)
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_pal_vyzradil>) // umysl prozrazen, mozno prijmout ukol
+  argo.htmlgump(155,35,485,100,6,0,36)
+  argo.button(14,205,0fa5,0fa7,1,0,2)
+  argo.text(50,205,1152,7)
+  argo.button(14,230,0fa5,0fa7,0,4,0)
+  argo.text(50,230,1152,8)
+else // hrac jeste neprozradil umysl hospodske
+  argo.htmlgump(155,35,485,100,5,0,36)
+endif
+
+page 4 // hrac si netroufl na opravu trubky
+argo.htmlgump(155,35,485,100,15,0,36)
+
+page 5 // Hospodska
+if (!(<hval(src.qtag(q025))>&<q025_pal_vyzradil>))
+  argo.htmlgump(155,35,485,100,23,0,36)
+  argo.button(14,205,0fa5,0fa7,1,0,1)
+  argo.text(50,205,1152,24)
+else
+  argo.htmlgump(155,35,485,100,25,0,36)
+endif
+
+page 6 // *prohlednout*
+argo.htmlgump(155,35,485,100,21,0,36)
+
+
+[dialog d_q025_palic text]
+Miruvil //0
+Zdravim. Co pro vas mohu udelat? //1
+Kdo jste? //2
+Jmenuju se Miruvil a patri mi tahle palirna. //3
+Muzu nejak pomoci? //4
+Ne, dekuju, vystacim si sam, moc prace tu neni. //5
+Vidim, ze vam muzu verit... Tedy popravde, mala pomoc by se mi hodila. Nejak spatne mi totiz tesni jedna trubka u kotle. <? src.sex(Troufl,Troufla) ?> byste si na to? //6
+Ano, to zvladnu. //7
+Radeji ne. //8
+Skoda. Ale chapu, je lepsi se do niceho nepoustet, pokud si clovek neni jisty. //9
+Ukol //10
+Tak jak to vypada? Povedlo se vam utesnit tu trubku? //11
+Hotovo, uz tesni dobre. //12
+Jsem vam zavazan, jeste jednou dekuji. //13
+Jeste se mi to nepodarilo opravit. //14
+Budu vam drzet palce. //15
+Na to nestacim. Vzdavam to. //16
+No, co se da delat. Ale dekuju, <? src.sex(pomohl,pomohla) ?> jste mi i tak. Vite co? Tady mate neco za odmenu. //17
+*prevzit penize* //18
+To je vporadku. Najdu si na tu opravu nekoho jineho. //19
+*prohlednout* //20
+Vidis zarostleho muze stredniho veku s trochu podmracenym vyrazem, ktery se neustale neduverive rozhlizi. //21
+Hospodska //22
+Eraveth? Ano, znam ji, ma hospodu kousek od banky. //23
+Zkusila me najmout, abych znicil tvoji palirnu. Davej si na ni pozor. //24
+Nikdy bych neveril, ze se pokusi o neco takoveho. Jeste ze jste mi o tom <? src.sex(rekl,rekla) ?>. Mockrat dekuju. //25
+
+
+[dialog d_q025_palic button]
+on=0
+say("Nashledanou.")
+
+on=1 // hrac prozradil umysly hospodske
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_vyzradil>,35)
+say("No tohle! Mockrat dekuju.")
+
+on=2 // hrac prijal ukol opravit trubku
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_slib_opr>,35)
+src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_dvere>,35) // muze otevirat dvere
+say("Dobra, pojdte za mnou...")
+tag(jde_odemknout,1)
+findid(i_q025_ovladani).timer=1
+memoryfindtype(memory_ispawned).link.move(-4,0) // presun spawnu
+memoryfindtype(memory_ispawned).link.update
+home=<memoryfindtype(memory_ispawned).link.p>
+flag_immobile=0
+walk(<home>) // a hura ke dverim
+
+on=3 // hrac opravu vzdal
+if (<hval(src.qtag(q025))>&<q025_pal_slib_opr>)
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_odmena_b>,35)
+  f_quest_complete(35,1)
+  say("I tak dekuju. Za vsechno.")
+  src.sysmessage("Umet priznat vlastni nedokonalost je take dulezite.")
+  src.addexp(200+<eval(<src.tag(level)>*10)>)
+  src.givegold(1000)
+else
+  src.go(klec) // bugger
+endif
+
+on=4 // oprava uspesne dokoncena
+if (<hval(src.qtag(q025))>&<q025_pal_opravil>)
+  src.qtag(q025,<hval(src.qtag(q025))>|<q025_pal_odmena_a>,35)
+  f_quest_complete(35,1)
+  say("Mnohokrat dekuju.")
+  src.addexp(500+<eval(<src.tag(level)>*25)>)
+  src.givegold(5000)
+else
+  src.go(klec) // bugger
+endif
+
+
+// Text: x, y, barva (1152=bila, 52=zluta, 142=oranzova), cislo textu
+// argo.text(320,210,52,0)
+
+// Tlacitko: x, y, grafika, grafika stiskleho, konec gumpu ano/ne, volana page, efekt
+// argo.button(160,330,0988,0988,0,2,0)
+
+// Pozadi: x, y, grafika, sirka, vyska
+// argo.resizepic(20,200,2620,640,350)
+
+// Iframe: x, y, sirka, vyska, cislo textu, pozadi ano/ne, scrollbar - nefunguje
+// argo.htmlgump(220,155,485,100,20,0,36)

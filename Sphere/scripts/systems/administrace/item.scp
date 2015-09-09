@@ -1,0 +1,144 @@
+[function iteminfo]
+DIALOG d_ITEMPROP1
+
+[defnames iteminfo]	
+iteminfo_1_rows		36
+iteminfo_1_row[0]	iflag_string			,Name,			,
+iteminfo_1_row[1]	iflag_nowrite			,UID,			,
+iteminfo_1_row[2]	iflag_rename|iflag_button	,cont,cont UID		,cont.tweak
+iteminfo_1_row[3]	iflag_rename|iflag_nowrite	,cont.name,cont Name		,
+iteminfo_1_row[4]	iflag_rename|iflag_button	,TOPOBJ,topobj UID		,topobj.tweak
+iteminfo_1_row[5]	iflag_rename|iflag_nowrite	,topobj.name,topobj Name		,
+iteminfo_1_row[6]	iflag_nowrite			,Instances,			,
+iteminfo_1_row[7]	iflag_nowrite			,BaseID,			,
+iteminfo_1_row[8]	iflag_rename|iflag_nowrite	,ID,ID (parent def)	,
+iteminfo_1_row[9]	0				,DispID,			,
+iteminfo_1_row[10]	iflag_string			,P,			,
+iteminfo_1_row[11]	iflag_button|iflag_string	,MoreP,			,mark
+iteminfo_1_row[12]	0				,Type,			,
+iteminfo_1_row[13]	iflag_nowrite			,More1,			,
+iteminfo_1_row[14]	0				,More1L,			,
+iteminfo_1_row[15]	0				,More1H,			,
+iteminfo_1_row[16]	0				,More2,			,
+iteminfo_1_row[17]	iflag_nowrite			,More2L,			,
+iteminfo_1_row[18]	iflag_nowrite			,More2H,			,
+iteminfo_1_row[19]	iflag_rename			,typedef.Tdata1,Tdata 1		,
+iteminfo_1_row[20]	iflag_rename			,typedef.Tdata2,Tdata 2		,
+iteminfo_1_row[21]	iflag_rename			,typedef.Tdata3,Tdata 3		,
+iteminfo_1_row[22]	iflag_rename			,typedef.Tdata4,Tdata 4		,
+iteminfo_1_row[23]	iflag_rename			,typedef.dam,Ar/Att			,
+iteminfo_1_row[24]	iflag_rename			,typedef.Layer,default layer		,
+iteminfo_1_row[25]	iflag_rename			,layer,moment. layer		,
+iteminfo_1_row[26]	iflag_nowrite			,Value,			,
+iteminfo_1_row[27]	iflag_nowrite			,Weight,			,
+iteminfo_1_row[28]	0				,Color,			,
+iteminfo_1_row[29]	0				,Amount,			,
+iteminfo_1_row[30]	0				,Timer,			,
+iteminfo_1_row[31]	iflag_nowrite			,events,			,
+iteminfo_1_row[32]	iflag_button|iflag_button	,Attr,			,dialog d_flags
+iteminfo_1_row[33]	iflag_rename|iflag_button	,typedef.can,CAN			,dialog d_canflags
+iteminfo_1_row[34]	iflag_rename|iflag_button	,Link,Link UID		,link.tweak
+iteminfo_1_row[35]	iflag_rename			,link.name,Link Name		,
+
+iteminfocom_1_rows	8
+iteminfocom_1_row[0]	iflag_button|iflag_rename|iflag_notext		,blank	,Edit,Edit()                        
+iteminfocom_1_row[1]	iflag_button|iflag_rename|iflag_notext		,blank	,remove,remove    
+iteminfocom_1_row[2]	iflag_button|iflag_rename|iflag_notext		,blank	,taglist,tag(dump) 
+iteminfocom_1_row[3]	iflag_button|iflag_rename|iflag_notext		,blank	,bounce,bounce
+iteminfocom_1_row[4]	iflag_button|iflag_rename|iflag_notext		,blank	,open,open
+iteminfocom_1_row[5]	iflag_button|iflag_rename|iflag_notext		,blank	,Na pozici,srccome      
+iteminfocom_1_row[6]	iflag_button|iflag_rename|iflag_notext		,blank	,dvojklikni,useitem  
+iteminfocom_1_row[7]	iflag_button|iflag_rename|iflag_notext		,blank	,reference,ref  
+
+[DIALOG d_ITEMPROP1]
+argo.tag(sirka,<d_def_charinfo_sirka>)
+argo.tag(vyska,<d_def_iteminfo_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+23+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29,90,110,29,180,110,29)
+
+argo.dialog_zpruhledni
+
+argo.tag(from,<uid>)
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,item INFO)
+
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (index<iteminfocom_1_rows)
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[1])>,<argo.tag(sloupec_x[0])>,<argo.tag(sloupec_x[1])>,<iteminfocom_1_row[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+//arg(ypos,<argo.tag(obj_y[1])>)
+//arg(index,0)
+//while (index<argo.tag(radku))
+// argo.f_inforow(<ypos>,<argo.tag(sloupec_x[2])>,<argo.tag(sloupec_x[3])>,<argo.tag(sloupec_x[4])>,<iteminfo_1_row[index]>)
+// arg(ypos,#+<d_def_radek_vyska>) 
+// arg(index,#+1) 
+//endwhile
+//
+//arg(ypos,<argo.tag(obj_y[1])>)
+//while (index<iteminfo_1_rows)
+// argo.f_inforow(<ypos>,<argo.tag(sloupec_x[5])>,<argo.tag(sloupec_x[6])>,<argo.tag(sloupec_x[7])>,<iteminfo_1_row[index]>)
+// arg(ypos,#+<d_def_radek_vyska>) 
+// arg(index,#+1) 
+//endwhile
+
+arg(index,0)
+arg(ipage,0)
+while (index<iteminfo_1_rows)//argo.tag(radku)
+ if !(index%argo.tag(radku))
+  if (index==(2*argo.tag(radku)*arg(ipage)))//na zacatku stranky
+   arg(ipage,#+1)
+   argo.page(<ipage>)
+   arg(ypos,<argo.tag(obj_y[1])>)
+   if (index)
+    argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,0,<ipage>-1) // prev
+   endif
+   if (iteminfo_1_rows>(index+(2*argo.tag(radku))))
+    argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,0,<ipage>+1) // next
+   endif
+   arg(popisx,2)
+   arg(buttx,3)
+   arg(valuex,4)                 
+  else
+   arg(ypos,<argo.tag(obj_y[1])>)
+   arg(popisx,5)
+   arg(buttx,6)
+   arg(valuex,7)
+  endif
+ endif
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[popisx])>,<argo.tag(sloupec_x[buttx])>,<argo.tag(sloupec_x[valuex])>,<iteminfo_1_row[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+[DIALOG d_ITEMPROP1 BUTTON]
+on=0
+on=1
+arg(index,100)
+while (index<=argo.tag(rowcount))
+ argo.f_inforow_apply(<index>,"<eval argchk(index)>","<safe argtxt(index)>",<argo.tag(row_ret[index])>)
+ arg(index,#+1)
+endwhile
+
+on=@anybutton
+if (argn>=100)
+ argo.f_inforow_button(<argn>,<argo.tag(row_ret[argn])>)
+endif
+
+[eof]
+
+
+
+
+
+
+

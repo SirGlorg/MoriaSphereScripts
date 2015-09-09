@@ -1,0 +1,110 @@
+//dlazdice do etherky, davajici tag hodnoty 1, potrebnej k dostani se do dalsiho lvlu dungu
+
+[ITEMDEF i_etherka_dlazdice1]
+ID=i_floor_stone_red
+NAME=tajemna dlazdice
+CATEGORY=Dungy	
+SUBSECTION=Etherka
+DESCRIPTION=dlazka 1
+
+ON=@Create
+attr=attr_newbie
+COLOR=028
+
+ON=@userDCLICK
+src.sysmessage("dlazdice s tajemnymi ornamenty")
+
+
+ON=@step
+src.sysmessage("Dlazdice zapadla do podlahy - cosi se spustilo...")
+act.tag(etherka_dlazka, 1)
+
+//dlazdice do etherky, davajici tag hodnoty 2, potrebnej k dostani se do dalsiho lvlu dungu
+
+[ITEMDEF i_etherka_dlazdice2]
+ID=i_floor_stone_red
+NAME=tajemna dlazdice
+CATEGORY=Dungy	
+SUBSECTION=Etherka
+DESCRIPTION=dlazka 2
+
+ON=@Create
+attr=attr_newbie
+COLOR=028
+
+ON=@userDCLICK
+src.sysmessage("dlazdice s tajemnymi ornamenty")
+
+
+ON=@step
+src.sysmessage("Dlazdice zapadla do podlahy - cosi se spustilo...")
+act.tag(etherka_dlazka, 2)
+
+//dlazdice do etherky, davajici tag hodnoty 3, potrebnej k dostani se do dalsiho lvlu dungu
+
+[ITEMDEF i_etherka_dlazdice3]
+ID=i_floor_stone_red
+NAME=tajemna dlazdice
+CATEGORY=Dungy	
+SUBSECTION=Etherka
+DESCRIPTION=dlazka 3
+
+ON=@Create
+attr=attr_newbie
+COLOR=028
+
+ON=@userDCLICK
+src.sysmessage("dlazdice s tajemnymi ornamenty")
+
+
+ON=@step
+src.sysmessage("Dlazdice zapadla do podlahy - cosi se spustilo...")
+act.tag(etherka_dlazka, 3)
+¨
+//dlazdice do etherky, davajici tag hodnoty 4, potrebnej k dostani se do dalsiho lvlu dungu
+
+[ITEMDEF i_etherka_dlazdice4]
+ID=i_floor_stone_red
+NAME=tajemna dlazdice
+CATEGORY=Dungy	
+SUBSECTION=Etherka
+DESCRIPTION=dlazka 4
+
+ON=@Create
+attr=attr_newbie
+COLOR=028
+
+ON=@userDCLICK
+src.sysmessage("dlazdice s tajemnymi ornamenty")
+
+
+ON=@step
+src.sysmessage("Dlazdice zapadla do podlahy - cosi se spustilo...")
+act.tag(etherka_dlazka, 4)
+
+
+/// gata do dalsiho lvl, overujici tagy z dlazdic
+
+[ITEMDEF i_etherka_gate]
+ID=04f3
+TYPE=t_normal
+CATEGORY=Dungy	
+SUBSECTION=Etherka
+DESCRIPTION=gate do 4lvl
+
+ON=@Create
+attr_newbie=1
+attr_decaly=1
+timer= 30
+
+
+ON=@STEP
+IF (src.tag(etherka_dlazka)==1) && (src.tag(etherka_dlazka)==2) && (src.tag(etherka_dlazka)==3) && (src.tag(etherka_dlazka)==4)
+  src.go 5282,1756,-18
+  src.addexp(2000)
+else
+  src.sysmessage("Nemuzes projit. <src.sex(Neaktivoval,Neaktivovala)> jsi vsechny klice na otevreni brany...")
+endif
+
+
+[EOF]

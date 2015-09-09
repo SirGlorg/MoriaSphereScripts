@@ -1,0 +1,43 @@
+[chardef c_quest_expert]
+NAME=Mistr
+ID=C_MAN
+
+TSPEECH=spk_quest_expert
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+CATEGORY=Moria Questy
+SUBSECTION=M1 - Expert quest
+DESCRIPTION=Chlapek na Experta
+
+ON=@UserDClick
+if (<src.targ.distance> > 3)
+ src.sysMessage("Rvat na sebe nebudete. Musis prijit bliz.")
+else
+ f_expertMistrDClick
+endif
+
+ON=@Create
+NPC=brain_vendor
+COLOR=color_clovek
+STR=150
+DEX=150
+INT=100
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+[eof]

@@ -1,0 +1,122 @@
+[chardef c_q010_mastickar_mastickar]
+id=c_man
+name=Mastickar Gregoriel
+
+TEVENTS=e_healer
+TEVENTS=e_item_refuser
+TSPEECH=spk_q010_mastickar
+TSPEECH=spk_healer
+
+CATEGORY=Moria Questy
+SUBSECTION=q010_mastickar
+DESCRIPTION=Mastickar Gregoriel
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+STR=1000
+DEX=1000
+INT=1000
+
+ANATOMY={55.0 78.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+RESIST={30.0 40.0}
+
+tag(noanimate,1)
+
+maxhits=1500
+maxstam={100 150}
+maxmana=40
+
+tag.resist_para=550
+tag.resist_poison=1000
+
+ITEMNEWBIE=i_hair_long
+COLOR=colors_hair
+ITEMNEWBIE=i_beard_long
+COLOR=05a8
+
+ITEMnewbie=i_sandals
+COLOR=016c
+ITEMnewbie=i_pants_long
+COLOR=016c
+ITEMnewbie=i_jester_suit
+COLOR=00
+ITEMnewbie=i_hat_cape_2
+COLOR=016c
+ITEMnewbie=i_cape
+COLOR=016c
+
+SELL=VENDOR_S_HEALER
+
+ON=@userDClick
+f_qDClick(f_q010_mastickar)
+
+
+[CHARDEF c_q010_mastickar_medved]
+NAME=Medved Zabijak
+ID= c_bear_grizzly
+ICON=i_pet_Grizzly
+ANIM=01fff
+attack=28
+ARMOR=24
+moverate=5
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_npc_stun
+
+CATEGORY=Moria Questy
+SUBSECTION=q010_mastickar
+DESCRIPTION=Medved
+
+ON=@Create
+NPC=brain_animal
+Color=026
+
+tag.experience=<eval {20.0 25.0}>
+tag.npc_bleed=300 //30.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+STR=200
+DEX={90 105}
+INT={40 60}
+maxhits={330 380}
+maxstam={81 105}
+maxmana=0
+
+
+tag(resist_poison,900)
+tag(resist_para,360) 
+tag(resist_summon,350)
+tag(resist_bleed,200)
+
+tag(resist_sharp,00)
+tag(resist_slash,150)
+tag(resist_pierce,350)
+tag(resist_blunt,00)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,500)
+
+PARRYING={85.0 90.0}
+Resist={40.0 55.0}
+TACTICS={90.0 100.0}
+WRESTLING={40.0 60.0}
+
+TAMING=200.0
+PEACEMAKING=50.0
+
+KARMA={-700 -1000}
+
+itemnewbie=i_monster_create

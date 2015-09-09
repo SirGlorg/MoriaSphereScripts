@@ -1,0 +1,257 @@
+[function f_tamingstart]
+action -1
+stopscriptedskills
+skill -1
+reveal
+hungryhurts
+if (findid(i_taming))
+ findid(i_taming).morex=0
+ sysmessage("You must wait to perform another action.")
+ if (findid(i_taming).timer<0)
+  findid(i_taming).timer=1
+ endif
+ return 1
+endif
+if (nolightfizz(1))
+ return 1
+endif
+Taming_TAME
+return 1
+
+[FUNCTION taming_TAME]
+if (act.isitem)
+elseif !(act.srccanseelos)
+ sysmessage("Nevidis na cil")
+//elseif (act.NPC!=brain_animal)||(act.taming==0)||(<act.flags>&statf_conjured)
+elseif !(f_crook_test)
+ if (safe.findlayer(2).iscrook)
+  sysmessage("Na ochoceni potrebujes lepsi pasteveckou hul.")
+ else
+  sysmessage("Na ochocovani zvere potrebujes pasteveckou hul.")
+ endif
+elseif (act.taming==0)||(<act.flags>&statf_conjured)||(act.isplayer)
+ sysmessage("Tohle nemuzes ochocit.")
+elseif (taming<act.taming)
+ sysmessage("Zvire je prilis divoke.")
+elseif (AnimalLore<act.AnimalLore)
+ sysmessage("Nemas nejmensi poneti, jak toto zvire ochocit.")
+elseif (act.memoryfindtype(memory_ipet))
+ sysmessage("Zvire je jiz ochocene.")
+//elseif (<act.memoryfindtype.memory_fight>)
+// sysmessage("Nemuzes ochocit bojujici zvire.")
+elseif (act.rescount(i_rune_summon_creature))	// osetreni proti tamovani jezditek z npc
+  sysmessage("Tohle zvire je oddane nekomu jinemu a nelze jej ochocit.")
+elseif (act.distance>5)
+ sysmessage("Jsi prilis daleko.")
+elseif (act.food == 0)
+ sysmessage("Zvire zemrelo hlady.")
+ act.emote(umira hlady)
+ act.hits=0
+else
+ if (<tag(realm)> == 1) && (!(strcmpi(<tag(race)>,"Elf")) || (<taming> > 95.0))
+  taming_randomsayElf
+ else
+  taming_randomsay(<act.name>)
+ endif
+ //taming_randomsay(<act.name>)
+ newitem(i_taming)
+ lastnew.link=<TARG>
+ lastnew.cont=<UID>
+ lastnew.timer=2
+endif
+
+[ITEMDEF i_taming]
+ID=i_memory
+TYPE=t_eq_script
+NAME=taming
+
+ON=@Create
+ATTR attr_decay
+more1={3 7}
+morex=0
+
+ON=@timer
+if (cont.ISGM)//&&(link.memoryfindtype.memory_ipet)
+ taming_success
+ return 0
+endif
+if (link.restest(i_poresu))	// pokud je jezditko ressnuty a uz bylo tamly, tak pujde tamnout na prvni pokus po 2 s
+  link.findid(i_poresu).remove
+  taming_success
+  return 0
+endif 
+if(link.flag_spawned) //zviratko je ze spawnu
+ if(link.taming > 300)//aby jim to nelezlo na srackach
+  cont.SKILLGAIN(skill_taming)//2x rychlejsi gain pokud je na spawnu
+ endif
+ arg(carka1,<StrIndexOf("<link.home>","*,*")>)
+ arg(homex,<StrLeft("<link.home>",<arg(carka1)>)>)
+ arg(zbytek, <StrMid("<link.home>",<arg(carka1)>+1,<StrLen("<link.home>")>)>)
+ arg(carka2,<StrIndexOf("<arg(zbytek)>","*,*")>)
+ if (arg(carka2) < 0 )
+  arg(homey, <arg(zbytek)>)
+ else
+  arg(homey,<StrLeft("<arg(zbytek)>",<arg(carka2)>)>)
+ endif
+ arg(distx, <link.p_x> - <arg(homex)>)
+ arg(disty, <link.p_y> - <arg(homey)>)
+ if (arg(distx) < 0)
+  arg(distx, <arg(distx)>*(-1))
+ endif
+ if (arg(disty) < 0)
+  arg(disty, <arg(disty)>*(-1))
+ endif
+ if (arg(distx) > 70)||(arg(disty) > 70) //jak daleko od spawnu se pri pokusu o taming portne zpet
+  link.go <link.home>
+  link.action=067
+ endif
+endif
+
+if !(link)
+ remove
+elseif !(cont.f_canseelos(<link>))
+ cont.sysmessage("<cont.sex Ztratil Ztratila> jsi svuj cil z dohledu.")
+ remove
+elseif (morex)
+ cont.sysmessage("Ochocovani bylo preruseno.")
+ remove
+elseif (link.memoryfindtype(memory_ipet))
+ cont.sysmessage("Zvire je jiz ochocene.")
+ remove
+//elseif (<link.memoryfindtype.memory_fight>)
+ //cont.sysmessage("Nemuzes ochocit bojujici zvire.")
+ //remove 
+ //return 1 
+elseif (cont.distancefrom(<link>)>5)
+ cont.sysmessage("<link.NAME> je prilis daleko.")
+ remove
+elseif (more1)
+ if ({0 2}==0)
+  if (<cont.tag(realm)> == 1) && (!(strcmpi(<cont.tag(race)>,"Elf")) || (<cont.taming> > 95.0))
+   cont.taming_randomsayElf
+  else
+   cont.taming_randomsay(<link.name>)
+  endif
+ endif
+ more1=<more1> - 1
+ timer 2
+ return 1
+else
+ IF ({0 1000}<<eval <cont.TAMING>-<link.TAMING>> )||(<link.tag(tamed)>)
+  taming_success
+ else
+  taming_failure
+ endif
+ remove 
+endif
+return 1
+
+[function taming_randomsay]
+DORAND 24
+ say("Hodny <argv(0)>.")
+ say("Budes muj mazlicek.")
+ say("Pojd sem <argv(0)>.")
+ say("Budu te krmit <argv(0)>.")
+ say("Nikdy nebudes hladovet.")
+ say("Budu se o tebe pekne starat.")
+ say("Neublizim ti <argv(0)>.")
+ say("Budu na tebe hodny.")
+ say("Malej, hodnej, pojd ke mne.")
+ say("Tak je hodny.")
+ say("<argv(0)> pojd ke mne.")
+ say("No ty jsi ale krasne zvire!")
+ say("Mas hlad? Pojd sem pojd...")
+ say("Pojd bliz! Neboj se...")
+ say("<argv(0)> stuuuj !")
+ say("Klid, klid, taaak!")
+ say("U mne ti bude dobre.")
+ say("Pobez ke mne, nemas se ceho bat.")
+ say("Neboj se me, tak je hodny.")
+ say("Ty jsi ale krasavec.")
+ say("Hoou pojd bliz krasavce.")
+ say("No pojd sem <argv(0)>.")
+ say("Mam pro tebe krasne misto.")
+ say("Nemej strach, pojd bliz.")
+endDO
+
+[function taming_randomsayElf]
+dorand 15
+ say("Daro !")
+ say("Avon mathea le !")
+ say("Orenya linda cenwelyo.")
+ say("Nanye alassea omentielvanen.")
+ say("Nalye taura ohtar.")
+ say("Nalye vanima.")
+ say("Indolya na ve rava.")
+ say("Vanesselye sile calimave.")
+ say("Merelye apsa?")
+ say("Hauta!")
+ say("Tula sinome.")
+ say("Ava aista.")
+ say("Hilya inye.")
+ say("Sintanye tuolya mahtesse.")
+ say("Tula yo ni vantien ar eleninnar tirien.")
+enddo
+
+[FUNCTION taming_success]
+if (link.findid(i_nores))
+ link.findid(i_nores).remove
+endif
+link.newmemory(<cont>)
+link.act.COLOR=<link.act.COLOR>|memory_ipet
+link.act.more1=04
+link.act.MORE2=<SERV.TIME>
+link.act.MOREP=<link.P>
+link.FOOD=<link.food>-1
+link.KARMA=0
+link.act=<var(newmemoryact)>
+//link.findlayer(21).remove
+safe link.memoryfindtype(MEMORY_ISPAWNED).remove
+link.skill -1
+cont.sysmessage("Zda se, ze te zvire prijalo za sveho pana.")
+cont.SKILLGAIN(skill_taming)
+
+[FUNCTION taming_failure]
+cont.sysmessage("Nepovedlo se ti zvire ochocit.")
+cont.SKILLGAIN(skill_taming)
+
+[FUNCTION f_crook_test]
+if (act.taming > 1200)
+ if (hascrook(eben))
+  return 1
+ else
+  return 0
+ endif
+elseif (act.taming > 1000)
+ if (hascrook(mahagon))
+  return 1
+ else
+  return 0
+ endif
+elseif (act.taming > 800)
+ if (hascrook(teak))
+  return 1
+ else
+  return 0
+ endif
+elseif (act.taming > 600)
+ if (hascrook(oak))
+  return 1
+ else
+  return 0
+ endif
+elseif (act.taming > 400)
+ if (hascrook(chestnut))
+  return 1
+ else
+  return 0
+ endif
+elseif (act.taming > 0)
+ if (hascrook(spruce))
+  return 1
+ else
+  return 0
+ endif
+endif
+return 1
+[eof]

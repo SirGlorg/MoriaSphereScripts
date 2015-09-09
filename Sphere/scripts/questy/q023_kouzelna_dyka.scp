@@ -1,0 +1,296 @@
+//////////////////////////////////////////////////
+//////////////Shaman Qworet///////////////////////
+//////////////////////////////////////////////////
+[function f_q023_ShamanQworet]
+if (src.qtag(q023) < 1)
+  src.qtag(q023, 0,17)
+endif
+dialog(d_q023_ShamanQworet)
+
+
+[dialog d_q023_ShamanQworet]
+5,5
+page 0
+argo.resizepic(20, 200, 2620, 640, 350)
+argo.gumppic(30, 210, 03182)
+argo.gumppic(40, 215, 03088)
+
+argo.text(220, 210, 52, 0)
+
+argo.button(160, 330, 0988, 0988, 0, 2, 0)
+argo.text(200, 332, 1152, 1)
+
+if ((src.qtag(q023)==3)||(src.qtag(q023)==7))
+  argo.button(325,330,0988,0988,0,3,0)
+  argo.text(350,330,1152,10)
+else
+  argo.button(325,330,0988,0988,0,3,0)
+  argo.text(350,330,1152,3)
+endif
+
+argo.button(490,330,0988,0988,0,4,0)
+argo.text(527,331,142,5)
+
+page 1
+argo.HTMLGUMP(170,230,440,100,24,0,36)
+if (src.qtag(q006)==11)
+  argo.button(25,395,0fa5,0fa7,0,6,0)
+  argo.text(60,395,152,25)
+endif
+
+
+page 2
+argo.HTMLGUMP(170,230,440,100,2,0,36)
+
+page 3
+if (src.qtag(q023)==0)
+  argo.HTMLGUMP(170,230,440,100,4,0,36)
+  argo.button(25,395,0fa5,0fa7,0,5,0)
+  argo.text(60,395,152,7)
+  argo.button(25,415,0fa5,0fa7,1,0,2)
+  argo.text(60,415,152,8)
+elseif (src.qtag(q023)==3)
+  argo.HTMLGUMP(170,230,440,100,12,0,36)
+  argo.button(25,395,0fa5,0fa7,0,5,0)
+  argo.text(60,395,152,13)
+elseif (src.qtag(q023)==7)
+  argo.HTMLGUMP(170,230,440,100,16,0,36)
+  argo.button(25,395,0fa5,0fa7,0,5,0)
+  argo.text(60,395,152,17)
+
+elseif (src.qtag(q023) == 1)
+  argo.HTMLGUMP(170, 230, 440, 100, 20, 0, 36)
+elseif (src.qtag(q023) == 4)
+  argo.HTMLGUMP(170, 230, 440, 100, 21, 0, 36)
+elseif (src.qtag(q023) == 8)
+  argo.HTMLGUMP(170, 230, 440, 100, 22, 0, 36)
+else
+  argo.HTMLGUMP(170, 230, 440, 100, 11, 0, 36)
+endif
+
+page 4
+HTMLGUMP(170, 230, 440, 100, 6, 0, 36)
+
+page 5
+if (src.qtag(q023) == 0)
+  argo.HTMLGUMP(170, 230, 440, 100, 23, 0, 36)
+  argo.button 25 395 0fa5 0fa7 1 0 1
+  argo.text(60, 395, 152, 9)
+elseif (src.qtag(q023) == 3)
+  argo.HTMLGUMP(170, 230, 440, 100, 14, 0, 36)
+  argo.button 25 395 0fa5 0fa7 1 0 3
+  argo.text(60, 395, 152, 15)
+elseif (src.qtag(q023) == 7)
+  argo.HTMLGUMP(170, 230, 440, 100, 18, 0, 36)
+  argo.button 25 395 0fa5 0fa7 1 0 4
+  argo.text(60, 395, 152, 19)
+endif
+
+page 6
+argo.HTMLGUMP(170,230,440,100,26,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,5)
+argo.text(60,395,152,27)
+
+[dialog d_q023_ShamanQworet text]
+Shaman Qworet //0
+Kdo jsi? //1
+Jmenuji se Qworet. //2
+Muzu pomoct?  //3
+Vlastne muzes, potrebuji zpet svou kouzelnou dyku. Mas zajem mi pomoci?  //4
+-Prohlednout-  //5
+Vidis Shamana Qworeta....  //6
+Ano, mam zajem.  //7
+Ne, nemam zajem.  //8
+*vzit list*  -  Jdu na to.  //9
+Nesu ti...  //10
+Doufam, ze se ti s mym ukolem dari.  //11
+Mas moji dyku?  //12
+Ano mam ji  //13
+*Prohlizi si dyku*. Je zmrzla! *Proklina*. Musela v tom tele zustat moc dlouho a tim naveky zmrznout. Musis jit znovu za Unasem a pozadat ho o pomoc. Doufam, ze bude vedet, co delat. //14
+Dobre, jdu za nim.  //15
+Tak, uz mas tu mou dyku?  //16
+Ano, mam ji.  //17
+*usmiva se*, dekuji ti moc!  Tady je tva odmena...  //18
+<?src.sex(Rad, Rada)?> jsem <?src.sex(poslouzil, poslouzila)?>.  //19
+Uz jsi <?src.sex(byl, byla)?> s listem za Unasem?//20
+Uz jsi <?src.sex(odnesl, odnesla)?> tu zmrzlou dyku Unasovi?  //21
+Zatim pro tebe nemam nic dalsiho.//22
+Pred par tydny jsem ztratil svou kouzelnou dyku v Severni Spousti. Bojoval jsem s Ledovym Elementalem a z poslednich sil jsem po nem hodil svou dyku, abych si zachranil zivot. Nez jsem pak stihl dyku z jeho tela vyndat, prisli tam dalsi nepratele a ja jsem musel pryc, abych se zachranil. Bez sve dyky slabnu kazdym dnem a sam ji zpet ziskat nedokazu. Bylo to v nejzapadnejsi casti Severni Spouste. Dej si ale pozor, kdyz se te dyky pokusi dotknout nekdo jiny nez ja, bude ho to pravdepodobne stat zivot! Proto musis nejdrive jit za Carodejom Unasem. Toho najdes v okoli velkeho mocalu, severne od Rhunu. Dluzi mi to. Pomuze ti. Ukaz mu tenhle list... Prosim prines mi mou dyku!//23
+Zdravim. //24
+*rict o Eriolovom vnukovy a prizracich*  //25 - odtialto q006_erioluv_vnuk
+Pozdravuj ode mne Eriola, ale prilis te nepotesim, o prizracich v podstate nic nevim, na to jsou lepsi magove nez samani. Oni zkoumaji etericke bytosti velice radi. Ja uz musim jit, mej se.  //26
+*odejit*  //27
+
+[dialog d_q023_ShamanQworet button]
+ON = 1
+say("Dekuji! Doufam, ze se brzy vratis.")
+src.qtag(q023, 1,17)
+src.newitem(i_q023_List).bounce
+
+ON = 2
+say("Tak tady neplytvej mym casem!")
+
+ON = 3
+src.QTag(q023, 4,17)
+
+ON = 4
+src.consume.(i_q023_kouzelna_dyka)
+src.qtag(q023, 8,17)
+src.givegold(10000)
+src.addexp(800)
+say("Dekuji ti za tvou pomoc, budu si to pamatovat!")
+f_quest_complete(17)  // splnenie questu "Kouzelna Dyka"
+
+ON=5
+src.addexp(50)
+src.qtag(q006,12,22)
+
+[speech spk_q023_ShamanQworet]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q023_ShamanQworet
+endif
+
+//////////////////////////////////////////////////
+//////////////Carodej Unas///////////////////////
+//////////////////////////////////////////////////
+[function f_q023_CarodejUnas]
+dialog(d_q023_CarodejUnas)
+
+
+[dialog d_q023_CarodejUnas]
+argo.questDialog_create(03129,"Carodej Unas")
+argo.dialog_newPage("Pozdrav")
+argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Bud <src.sex("zdrav","zdrava")>!")
+  argo.questDialog_HTMLGUMP
+  argo.f_q006_Unas_Request_Greeting
+  
+
+argo.dialog_page("Kdo jsi?")
+  argo.setText(<argo.newTextLine>,"Jmenuji se Unas. Jsem kouzelnik.")
+  argo.questDialog_HTMLGUMP
+  argo.f_q026_hcnPoison_Unas_Request
+  argo.f_q000_shouldBePromoted_Request
+
+argo.dialog_page("Mohu pomoci?")
+  if (src.qtag(q023) == 2)
+    argo.setText(<argo.newTextLine>,"Kouzlo pusobi, muzes jit pro dyku. Ja nic nepotrebuji...")
+  elseif (src.qtag(q023) == 5)
+    argo.setText(<argo.newTextLine>,"Co ten ulomek? Uz ho mas?")
+  else
+    argo.setText(<argo.newTextLine>,"Nepotrebuji pomoc.")
+  endif
+  argo.questDialog_HTMLGUMP
+
+
+argo.dialog_page("Obchodovat")
+  argo.setText(<argo.newTextLine>,"Nemam nic na prodej...")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci") // Hledam praci
+  if (<f_q006_Unas_isEssentionPhase>) // resim ukoly questu erioluv vnuk
+    argo.setText(<argo.newTextLine>,"Praci uz jsi dostal, tak ji udelej!")
+  else
+    argo.setText(<argo.newTextLine>,"Ted pro tebe nemam zadnou praci.")
+  endif
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(<argo.newTextLine>,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+  if (<eval src.qtag(q023)> == 1)
+    argo.setText(<argo.newTextLine>,"*ukazat list*")
+    argo.questDialog_addResponse(0,0,1,"q023_showList",1) // short text & page button & new button & emote
+  elseif (<eval src.qtag(q023)> == 4)
+    argo.setText(<argo.newTextLine>,"Tuto dyku. Qworet rika, ze si s tim poradis.") // short text & page button & new button
+    argo.questDialog_addResponse(0,0,1,"q023_showDagger")
+  elseif (<eval src.qtag(q023)> == 6)
+    argo.setText(<argo.newTextLine>,"Mam ten ulomek.") // short text & page button & new button
+    argo.questDialog_addResponse(0,0,1,"q024_showSplinter")
+  endif
+  argo.f_q006_Unas_Request_Bring
+
+argo.dialog_page("Prohlednout")
+  argo.setText(<argo.newTextLine>,"Vidis Carodeja Unase... Nicim zvlastnime nevynika.")
+  argo.questDialog_HTMLGUMP
+
+if (src.qtag(q023) == 1)
+  argo.dialog_page("q023_showList")
+    argo.setText(<argo.newTextLine>,"Hmm. Zajimave, nevedel jsem, ze jeste zije. Natoz bez sve dyky! Nelhal, dluzim mu to... Pomuzu ti. Priprav se, musim na tebe seslat ochranne kouzlo.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(<argo.newTextLine>,"Jsem <?src.sex(pripraven,pripravena)?>")
+    argo.questDialog_addResponse(0,1,1,"q023_protectingSpell") // short text & exit button & new button & emote
+elseif (src.qtag(q023) == 4)
+  argo.dialog_page("q023_showDagger")
+    argo.setText(<argo.newTextLine>,"Hmm, muzu to zkusit, ale tentokrat to nebude zdarma! Prines mi kus z pozustatku toho Ledoveho Elementala a ja se pak podivam na tu dyku.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(<argo.newTextLine>,"Dobre, prinesu to.")
+    argo.questDialog_addResponse(0,1,1,"q023_bringIceElm") // short text & exit button & new button & emote
+elseif (src.qtag(q023) == 6)
+  argo.dialog_page("q024_showSplinter")
+    argo.setText(<argo.newTextLine>,"Vynikajici! Dekuji ti. Tak a ted mi ukaz tu dyku...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(<argo.newTextLine>,"Rado se stalo  - *ukazat dyku*")
+    argo.questDialog_addResponse(0,1,1,"q023_giveDagger") // short text & exit button & new button & emote
+endif
+argo.f_q000_shouldBePromoted_Answer
+argo.f_q006_Unas_Answer
+argo.f_q026_hcnPoison_Unas_Answer
+
+[dialog d_q023_CarodejUnas button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("q023_protectingSpell"))
+  say("Anna Beleg Tir")
+  src.effect(3,i_fx_curse,6,15,1)
+  sound(550)
+  say("Ted se muzes bezpecne dotknout Qworetovy dyky.")
+  src.qtag(q023,2,17)
+  src.consume(i_q023_List)
+  return
+elseif (<argn> == argo.dialog_linkButton("q023_bringIceElm"))
+  src.qtag(q023,5,17)
+  return
+elseif (<argn> == argo.dialog_linkButton("q023_giveDagger"))
+  src.qtag(q023,7,17)
+  src.consume(i_q023_Pozustatky_Kus)
+  src.consume(i_q023_kouzelna_dyka_z)
+  src.newitem(i_q023_kouzelna_dyka).bounce
+  src.givegold(5000)
+  src.addexp(400)
+  say("Diky a tady mas zpet Qworetovu dyku.")
+  return
+elseif (<argo.f_q006_Unas_Button(<argn>)>)
+  return
+elseif (<argo.f_q026_hcnPoison_Unas_Button(<argn>)>)
+  return
+elseif (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+endif
+
+[speech spk_q023_CarodejUnas]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q023_CarodejUnas
+endif

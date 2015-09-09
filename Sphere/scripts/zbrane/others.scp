@@ -1,0 +1,304 @@
+[ITEMDEF 0f51]
+DEFNAME=i_dagger
+RESOURCES=3 i_ingot_iron
+TYPE=T_WEAPON_FENCE
+FLIP=1
+DAM=3
+//SPEED=80
+SKILL=fencing
+REQSTR=1
+TWOHANDS=0
+LAYER=1
+//MATERIAL=20
+WEIGHT=30
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Dagger
+SKILLMAKE=BLACKSMITHING 26.7
+DUPELIST=0f52
+
+ON=@Create
+HITPOINTS={31 40}
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+return"<bowcrafting_targon_item>"
+
+[ITEMDEF 0f52]
+//dagger
+DUPEITEM=0f51
+
+[ITEMDEF 010e4]
+DEFNAME=i_knife_draw
+RESOURCES=2 i_ingot_iron
+WEIGHT=30
+TYPE=T_WEAPON_FENCE
+FLIP=1
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Draw Knife
+
+ON=@Create
+HITPOINTS={31 40}
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+return"<bowcrafting_targon_item>"
+
+[ITEMDEF 013f6]
+DEFNAME=i_knife_butcher
+RESOURCES=1 i_BOARD, 1 i_ingot_iron
+WEIGHT=30
+TYPE=T_WEAPON_SWORD
+FLIP=1
+DAM=5
+//SPEED=80
+SKILL=Fencing
+REQSTR=5
+TWOHANDS=N
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Butchers Knife
+DUPELIST=013f7
+
+ON=@Create
+HITPOINTS={31 40}
+
+[ITEMDEF 013f7]
+//butcher knife
+DUPEITEM=013f6
+
+[ITEMDEF 0ec2]
+//Cleaver
+//Used for fighting?
+//Shouldn't this be also a non-fighting action type?
+DEFNAME=i_cleaver_meat
+TYPE=T_WEAPON_SWORD
+FLIP=1
+RESOURCES=3 i_ingot_iron
+DAM=5
+//SPEED=70
+SKILL=fencing
+REQSTR=10
+TWOHANDS=N
+WEIGHT=30
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Cleaver
+DUPELIST=0ec3
+
+ON=@Create
+HITPOINTS={31 50}
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF 0ec3]
+//cleaver
+DUPEITEM=0ec2
+
+[ITEMDEF 0ec4]
+//Used for Fencing?
+// Skinning Knife
+//Shouldn't this be also a non-fighting action type?
+DEFNAME=i_knife_skinning
+TYPE=T_WEAPON_FENCE
+FLIP=1
+RESOURCES=2 i_ingot_iron
+SKILLMAKE=BLACKSMITHING 15.0
+DAM=5
+//SPEED=80
+SKILL=fencing
+REQSTR=5
+TWOHANDS=N
+WEIGHT=30
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Skinning Knife
+DUPELIST=0ec5
+
+ON=@Create
+HITPOINTS={31 40}
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+return"<bowcrafting_targon_item>"
+
+[ITEMDEF 0ec5]
+//Skinning Knife
+DUPEITEM=0ec4
+
+[ITEMDEF 0f43]
+//Hatchet
+DEFNAME=i_hatchet
+RESOURCES=4 i_ingot_iron
+TYPE=T_WEAPON_SWORD
+FLIP=1
+DAM=2,10
+//SPEED=55
+SKILL=fencing
+REQSTR=15
+TWOHANDS=N
+WEIGHT=40
+CATEGORY=Provisions - Weapons
+SUBSECTION=Axes
+DESCRIPTION=Hatchet
+SKILLMAKE=TINKERING 33.9,t_tinker_tools
+DUPELIST=0f44
+
+ON=@Create
+HITPOINTS={31 80}
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+on=@targon_ground
+if !(src.f_canReachG(<src.targp>))
+  return 1
+endif
+
+[ITEMDEF 0f44]
+//hatchet
+DUPEITEM=0f43
+
+[ITEMDEF 013b7]
+//long sword NOT THE SAME AS 0f60
+DEFNAME=i_sword_long_b
+RESOURCES=10 i_ingot_iron
+WEIGHT=80
+TYPE=T_WEAPON_SWORD
+FLIP=1
+DAM=4,32
+//SPEED=35
+SKILL=fencing
+REQSTR=40
+TWOHANDS=N
+CATEGORY=Provisions - Weapons
+SUBSECTION=Swords
+DESCRIPTION=Long Sword B
+SKILLMAKE=BLACKSMITHING 50.2
+DUPELIST=013b8
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF 013b8]
+//long sword
+DUPEITEM=013b7
+
+
+[ITEMDEF 0fb4]
+//Sledge Hammer
+DEFNAME=i_hammer_sledge
+TYPE=T_WEAPON_MACE_SMITH
+FLIP=1
+RESOURCES=4 i_ingot_iron
+SKILLMAKE=TINKERING 54.1,t_tinker_tools
+WEIGHT=90
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Sledge Hammer
+DUPELIST=0fb5
+
+on=@targon_item
+return(<blacksmithing_targon_item>)
+
+[ITEMDEF 0fb5]
+//sledge hammer
+DUPEITEM=0fb4
+
+[ITEMDEF 0102a]
+//Hammer
+DEFNAME=i_hammer
+RESOURCES=4 i_ingot_iron
+WEIGHT=40
+TYPE=T_WEAPON_MACE_SMITH
+FLIP=1
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Hammer
+DUPELIST=0102b
+
+on=@targon_item
+return(<blacksmithing_targon_item>)
+
+[ITEMDEF 0102b]
+//hammer
+DUPEITEM=0102a
+
+[ITEMDEF 013e3]
+DEFNAME=i_hammer_smith
+WEIGHT=40
+TYPE=T_WEAPON_MACE_SMITH
+FLIP=1
+RESOURCES=6 i_ingot_iron
+RESOURCES2=3 i_ingot_iron,1 i_log
+SKILLMAKE=BLACKSMITHING 10.0
+DAM=4,6
+//SPEED=60
+SKILL=Mace Fighting
+REQSTR=30
+TWOHANDS=N
+CATEGORY=Provisions - Weapons
+SUBSECTION=Maces & Hammers
+DESCRIPTION=Smith's Hammer
+DUPELIST=013e4
+
+on=@create
+HITPOINTS={31 60}
+
+on=@targon_item
+return(<blacksmithing_targon_item>)
+
+[ITEMDEF 013e4]
+//smith's hammer
+DUPEITEM=013e3
+
+[ITEMDEF 0de1]
+//Kindling
+DEFNAME=i_kindling
+TYPE=T_KINDLING
+RESOURCES=1 I_LOG
+SKILLMAKE=BOWCRAFT 0.0
+REPLICATE=1
+WEIGHT=10
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Campfires
+DESCRIPTION=Kindling
+DUPELIST=0de2
+
+[ITEMDEF 0de2]
+//kindling
+DUPEITEM=0de1
+
+[ITEMDEF 0f64]
+DEFNAME=i_torch
+TYPE=T_LIGHT_OUT
+TDATA3=i_torch_lit
+RESOURCES=1 i_LOG
+WEIGHT=10
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Torches
+DESCRIPTION=Torch (Unlit)
+DUPELIST=0f6b
+
+ON=@Create
+MOREZ=1
+
+[ITEMDEF 0f6b]
+//torch
+DUPEITEM=0f64
+
+[EOF]

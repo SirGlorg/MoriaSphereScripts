@@ -1,0 +1,191 @@
+[SPEECH qv1_kovar] 
+
+on=*ahoj*
+on=*Ahoj*
+on=*hi*
+on=*dobry*
+on=*zdravim*
+
+say ("I ja preju dobry den.")
+
+
+
+[SPEECH qv1_pendergast1] 
+
+on=*Hi*
+on=*hi*
+on=*dobry*
+on=*zdravim*
+on=*den*
+say ("Nerus, musim se soustredit. Co vlastne chces?")
+
+on=*balzam*
+on=*balzamovat*
+
+if (<src.tag.qv1_balzam>==2)
+  SAY ("Uz jsi tu zase? To nemyslis vazne, uz ti pomahat nebudu, jdi pryc!")
+elseif (<src.tag.qv1_balzam>==1)
+  SAY= "Zdravim, jak jsi byl minule spokojen s mou praci? Jo aha, ty mi neses dalsi?" 
+  SAY= "Druha sluzba bude drazsi, pomaham rad ale nenecham se zneuzivat"
+elseif (<src.tag.qv1_balzam>==0) 
+  SAY= "Ale jiste, rad ti pomohu. Ukaz mi co mas..."
+  if (<src.rescount i_qv1_pr_ajdy> >= 1) && (<src.rescount i_qv1_balzam> >= 10) && (<src.rescount i_bandage> >= 250) && (<src.rescount i_coin_gold> >= 10000)
+    SAY= "Vypada to, ze mas vsechno, chvilinku pockej..." 
+    src.consume i_qv1_pr_ajdy
+    src.consume 10 i_qv1_balzam
+    src.consume 250 i_bandage
+    src.consume 10000 i_coin_gold
+    EMOTE= opatrne bali hnilobne maso do bandazi
+    src.giveitem(i_qv1_pr_ajda)
+    SAY= "Tady prosim, je jako nova ..." 
+    src.tag.qv1_balzam=1
+    SAY= "Odnesu si penize do banky, preji ti krasny den ..." 
+    newitemsafe(i_timer_before_npc_recall)
+    lastnew.equip
+  else
+    SAY= "No, je mi lito, ale nemas u sebe vsechno potrebne"
+    SAY= "Potrebuji:"
+    SAY= "100 bandazi, 10 olejovych potionu, uchac mlika, pecen chleba a 10 tisic zlatych za praci."
+    SAY= "Prijd az budes mit vsechno pak ti rad pomohu"
+  endif 
+endif
+
+[SPEECH qv1_ajda] 
+
+on=*Hi*
+on=*hi*
+on=*dobry*
+on=*zdravim*
+on=*den*
+SAY(I ja preju dobry den)
+
+
+[SPEECH qv1_ajda_1] 
+
+on=*Hi*
+on=*hi*
+on=*dobry*
+on=*zdravim*
+on=*den*
+
+if (<src.rescount i_qv1_ajda_satecky> >= 1)
+  SAY= "Nasel si me saty...." 
+  src.consume i_qv1_ajda_satecky
+  newequip(i_qv1_ajda_satecky1)
+else
+  SAY= "Moc neokounejte"
+endif 
+
+
+[SPEECH qv1_miracle] 
+
+on=*Hi*
+on=*hi*
+on=*dobry*
+on=*zdravim*
+on=*den*
+SAY(I ja preju dobry den)
+
+[SPEECH snow_poustevnik] 
+
+on=*Hi*
+on=*hi*
+on=*dobry*
+on=*zdravim*
+on=*den*
+SAY(Zdravicko, dobri lide, spechate zbytecne! Kus dal je zavaleny tunel a ten stary hlidac vas zkratkou nepusti. Radeji se vratte nebo dopadnete jak ja ...)
+
+on=*ukol*
+on=*prace*
+f_qSpeech(f_q037_zarik_george)
+
+
+[SPEECH strazce_studny] 
+
+on=*Hi*
+on=*hi*
+on=*dobry*
+on=*zdravim*
+on=*den*
+SAY(Hej! <src.name>, kdyz mi prineses zmrzlou zivou vodu, pomohu ti dostat se pres zavaleny tunel. Sezen mi 3 lahvicky a dohodneme se, jo?)
+
+on=*jo*
+on=*ano*
+on=*jj*
+if (<src.rescount i_zmrzlavoda> >= 3)
+ SAY(No vyborne <src.name>! S tvoji pomoci se snad studnu podari zachranit!)
+ src.consume 3 i_zmrzlavoda
+ src.wait_then_port(5,5947,3429,20,0)
+else
+ SAY(Nejsprv sezen tu vodu, az pak se dohodneme)
+endif
+
+//NPC na vymenu magickych predmetu
+[speech magic_item_exchanger_gondor]
+ON=*dobry*
+ON=*dobre*
+ON=*zdravim*
+ON=*ahoj*
+ON=*zdar*
+ON=*cus*
+if (<distance>>3)
+  src.sysmessage("Na takovou vzdalenost s tebou jednat nebude.")
+else
+  dialog(d_magic_item_exchanger,0)
+endif
+
+//say(Bud zdrav. Vykupuji vsechny magicke predmety. Ale protoze jiz nemam penez, udelame to jinak.)
+//say(Dej mi pet magickych predmetu libovolne kvality a ja ti za ne dam jeden novy.)
+//say(Zvaz dobre, co u sebe mas a budes-li si jist, ze jsou to ty spravne pro vymenu, oslov mne "Vymena".)
+//say(Pokud budes chtit identifikovat magicky predmet, oslov mne "identifikace".)
+
+ON=*vymena*
+ON=*menit*
+say(Dobra, podivame se, co pro mne mas.)
+if(hasfivemagicals) 
+  src.giveitem(i_mi_bag)
+  say (Dekuji ti, zajimave predmety. Snad o ne nekdo bude mit zajem.)
+  say (A zde je neco pro tebe, snad ti to bude k uzitku.)
+else
+  say (Je mi lito, nemas dost predmetu k vymene.)  
+endif
+
+ON=*identifikace*
+ON=*identifikuj*
+//src.identification_i_mi_magic(<UID>)
+src.identification_i_mi_magic(<UID>,<tag.price>)
+say ("Tak copak chces identifikovat?")
+
+[speech magic_item_exchanger_mordor]
+ON=*dobry*
+ON=*dobre*
+ON=*zdravim*
+ON=*ahoj*
+ON=*zdar*
+ON=*cus*
+if (<distance>>3)
+  src.sysmessage ("Na takovou vzdalenost s tebou jednat nebude.")
+else
+  dialog(d_magic_item_exchanger,1)
+endif
+
+//say (Dej mi pet magickych predmetu libovolne kvality a ja ti dam jeden novy.)
+//say (Zvaz dobre, co u sebe mas a budes-li si jist, ze jsou to ty spravne pro vymenu, oslov mne "Vymena".)
+//say (Pokud budes chtit identifikovat magicky predmet, oslov mne "identifikace".)
+
+ON=*vymena*
+ON=*menit*
+say (Dost bylo okouneni, ukaz, co mas!)
+if (hasfivemagicals) 
+  src.giveitem(i_mi_bag)
+  say (Hmm, nas pan nebude prilis potesen, ale svoji povinnost jsi splnil.)
+  say (A zde je neco pro tebe.)
+else
+  say (Neopovazuj se mne podvest! Nemas dost predmetu!)  
+endif
+
+on=*identifikace*
+on=*identifikuj*
+//src.identification_i_mi_magic(<UID>)
+src.identification_i_mi_magic(<UID>,<tag.price>)
+say ("Tak copak chces identifikovat?")

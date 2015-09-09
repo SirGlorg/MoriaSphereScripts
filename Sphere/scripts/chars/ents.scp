@@ -1,0 +1,217 @@
+[NAMES NAMES_ENT]
+53
+Stromovous
+Listek
+Listovlas
+Korkoz
+Bukovous
+Bukovec
+Listous
+Kmenac
+Kmenir
+Orech
+Jehlicka
+Smrknous
+Korinek
+Modrin
+Brizka
+Halouzek
+Jehlicka
+Jedlicka
+Macounek
+Hromovous
+Houbek
+Korinek
+Kybac
+Dubec
+Jasanac
+Lipous
+Hrusak
+Jablonak
+Svestik
+Borovous
+Morous
+Tresnicka
+Borouc
+Morous
+Lipovec
+Topol
+Vrbovec
+Lipous
+Modrin
+Modrousek
+Zelenacek
+Zelenovous
+Hnedovous
+Belovous
+Modrovous
+Cervenovous
+Liskacek
+Zelenokmen
+Hnedokmen
+Entik
+Enmoar
+Enttir
+Lipovec
+Brizovec
+
+[CHARDEF C_m_GUARD_ent1]
+//enti straz lorienu
+ID=C_reaper
+NAME=Ent
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+attack=55
+ARMOR=20
+//=i_gold
+//=r_civilization,r_GUARDPOST
+////=ANYONE WITH NEGATIVITY {SHOWS AGGRESION}
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+tag.guard=1
+tag.guardopposite=c_m_guard_red
+tag.guardhire=500000
+
+TSPEECH=spk_guard
+TEVENTS=e_guard_ent
+TEVENTS=e_character
+
+CATEGORY=Civilized
+SUBSECTION=Guards & Law
+DESCRIPTION=Lorien Ent1
+
+ON=@Create
+NAME=#NAMES_ENT
+Title=Ent
+
+tag(resist_para,{800 850})
+tag(resist_poison,1000)
+
+karma=1000
+brain=6//vendor - teleportuje se domu
+//ALIGNMENT=GOOD
+COLOR=colors_green
+
+STR=1000
+DEX=500
+INT=222
+
+MAXHITS=1000
+MAXSTAM=600
+MAXMANA=2000
+
+DETECTINGHIDDEN={90.0 100.0}
+FORENSICS={90.0 100.0}
+FENCING={100.0 110.0}
+PARRYING={100.0 110.0}
+SWORDSMANSHIP={100.0 110.0}
+WRESTLING={100.0 110.0}
+MACEFIGHTING={100.0 110.0}
+TACTICS={90.0 100.0}
+SpiritSpeak=80.00
+peacemaking=100.0
+provocation=100.0
+
+tag(noanimate,1)
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+tag(monstertype,reaper)
+tag(monstertype2,undead,80)
+
+ON=@NPCRestock
+
+ON=@NPCRefuseItem
+	SAY("Mne nemuzes podplatit. Bez!")
+	return 1
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF C_f_GUARD_ent2]
+//Female GUARD of Gondor - mage
+NAME=Ent
+ID=C_reaper
+
+attack=55
+ARMOR=20
+
+//=i_gold
+//=r_civilization,r_GUARDPOST
+////=ANYONE WITH NEGATIVITY {SHOWS AGGRESION}
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+tag.guard=1
+tag.guardopposite=c_m_guard_red
+tag.guardhire=500000
+
+TSPEECH=spk_guard
+TEVENTS=e_guard_ent
+TEVENTS=e_character
+
+CATEGORY=Civilized
+SUBSECTION=Guards & Law
+DESCRIPTION=Lorien Ent1
+
+ON=@Create
+NAME=#NAMES_ENT
+Title=Ent
+
+tag(resist_para,{800 850})
+tag(resist_poison,1000)
+
+karma=1000
+brain=6//vendor - teleportuje se domu
+//ALIGNMENT=GOOD
+COLOR=colors_green
+STR=1000
+DEX=1000
+INT=222
+
+MAXHITS=1000
+MAXSTAM=600
+MAXMANA=2000
+
+DETECTINGHIDDEN={90.0 100.0}
+FORENSICS={90.0 100.0}
+Resist={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+Tactics={90.0 100.0}
+magery=120.0
+EI={90.0 100.0}
+SpiritSpeak=75.0
+FENCING={100.0 110.0}
+PARRYING={100.0 110.0}
+SWORDSMANSHIP={100.0 110.0}
+WRESTLING={100.0 110.0}
+SpiritSpeak=80.00
+peacemaking=100.0
+provocation=100.0
+
+tag(poisoning_dmg,30) // affects spell_poison
+tag(poisoning_MvM_dmg,60) // affects spell_poison
+
+tag(noanimate,1)
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+tag(monstertype,reaper)
+tag(monstertype2,undead,80)
+
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_poison
+addspell=s_lightning
+addspell=s_mind_blast
+addspell=s_magic_reflection
+addspell=s_flamestrike
+
+ON=@NPCRestock
+ITEMNEWBIE=i_sandals
+
+ON=@NPCRefuseItem
+	SAY("Mne nemuzes podplatit.")
+	return 1
+
+[eof]

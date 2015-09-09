@@ -1,0 +1,202 @@
+[itemdef i_stone_region_additional]
+id=i_floor_marble
+type=t_region_additional
+name=Additional region stone
+
+on=@create
+attr=attr_invis|attr_move_never
+
+
+[typedef t_region_additional]
+on=@dropon_ground
+array_add(var.region_addit,<uid>)
+
+on=@pickup_ground
+array_findremove(var.region_addit,<uid>)
+
+on=@destroy
+array_findremove(var.region_addit,<uid>)
+
+
+[function kde]//plevel 1
+arg(repreguid,<myrepregion>)
+if (repreguid)
+src.message("Jsem v <arg(repreguid).name>, <region.name> (<p>)")
+else
+src.message("Jsem v <region.name> (<p>)")
+endif
+//arg(nearestaddit,<nearest_regionadditional(<src>)>)
+//src.smsg Nejblizsi addit regionstone:<arg(nearestuid).name>: <arg(nearestuid).tag.dynamregion>
+
+//src.smsg Nejblizsi replace regionstone:<arg(nearestaddit).name>: <arg(nearestaddit).tag.dynamregion>
+
+[function nearest_regionadditional]//vrati uid nejblizsiho od <args>
+var(neareststone,0)
+var(nearestdist,9999)
+array_foreachuid(var.region_addit,isnear(<uid>))
+return <eval neareststone>
+
+[function isnear]//uid od nehoz se meri
+if (<distancefrom(<args>)><<nearestdist>)
+ var(neareststone,<uid>)
+ var(nearestdist,<distancefrom(<args>)>)
+endif
+
+//region replacement stone
+//max distance:0ff
+[function srcissameregion]
+return <issameregion(<src>)>
+
+[function issameregion]//testovane uid
+arg(tested,<finduid(<args>)>)
+arg(myrepreguid,<myrepregion>)
+if (myrepreguid)
+ if (<arg(tested).myrepregion>==<myrepreguid>)
+  var(samereg,1)
+  return 1
+ endif
+elseif (<region>==<arg(tested).region>)
+ if !(arg(tested).myrepregion)
+  var(samereg,1)
+  return 1
+ endif
+endif
+var(samereg,0)
+return 0
+
+[function myrepregion]//vrati uid zdejsiho regrepu
+if (isneartype(t_region_replace,0ff))
+ var(neareststone,0)
+ var(nearestdist,9999)
+ array_foreachuid(var.region_replace,isnear(<uid>))
+ if (neareststone)
+  if (nearestdist<=var(neareststone).tag(rdistance))
+   var(lastrepregion,<neareststone>)
+   return <neareststone>
+  endif
+ endif 
+endif
+var(lastrepregion,0)
+return 0
+
+
+[itemdef i_stone_region_replace]
+id=i_floor_marble
+type=t_region_replace
+Name=Region replacement stone
+can_platform=1
+
+on=@create
+attr=attr_invis|attr_move_never
+tag(rflags,0)
+tag(rdistance,5)
+
+[typedef t_region_replace]
+on=@dropon_ground
+array_add(var.region_replace,<uid>)
+
+on=@pickup_ground
+array_findremove(var.region_replace,<uid>)
+
+on=@destroy
+array_findremove(var.region_replace,<uid>)
+
+on=@userdclick
+//array_dump(var.region_replace)
+dialog d_region_replace
+
+[dialog d_region_replace]
+100,100
+argo.tag(sirka,300)
+argo.tag(vyska,<eval 23+((1+repreginfo_rows)*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+//argo.tag(vyska,<eval (3*<d_def_radek_vyska>)+((<argo.tag(radku)>)*<d_def_cm_vyska>)+(5*<d_def_skvira>)+(2*<d_def_okraj>)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+//argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<repreginfo_rows>,200)
+
+//argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+//argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+texta(<argo.dialog_textpos(0,0)>,2301,<name>)
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+argo.tag(from,<uid>)
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (index < <repreginfo_rows>)
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[0])>,<argo.tag(sloupec_x[0])>,<argo.tag(sloupec_x[1])>,<repreginfo_row[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+[dialog d_region_replace button]
+on=1
+arg(index,100)
+while (index<=argo.tag(rowcount))
+ argo.f_inforow_apply(<index>,"<eval argchk(index)>","<safe argtxt(index)>",<argo.tag(row_ret[index])>)
+ arg(index,#+1)
+endwhile
+
+
+[defnames region_replace]
+rflag_noselfres		01
+rflag_noselfbank	02
+rflag_norecall_in	04
+rflag_norecall_out	08
+//rflag_
+//rflag_
+//rflag_
+//rflag_
+//rflag_
+//rflag_
+//rflag_
+//rflag_
+repreginfo_rows		5
+repreginfo_row[0]	iflag_rename|iflag_check|iflag_bitmask			,tag.rflags   	,no selfres, 	,rflag_noselfres		
+repreginfo_row[1]	iflag_rename|iflag_check|iflag_bitmask			,tag.rflags	,no selfbank,	,rflag_noselfbank		        
+repreginfo_row[2]	iflag_rename|iflag_check|iflag_bitmask			,tag.rflags   	,no recall in, 	,rflag_norecall_in		
+repreginfo_row[3]	iflag_rename|iflag_check|iflag_bitmask			,tag.rflags	,no recall out,	,rflag_norecall_out
+repreginfo_row[4]	iflag_rename						,tag.rdistance	,Velikost,	,
+
+
+
+
+//kraviny
+//[function makeborder]
+//tile 0 i_bag
+//arg(storepos,<p>)
+//p=<eval p_x-5>,<eval p_y-5>,0,<mapplane>
+//self
+//p=<eval p_x+10>,<eval p_y+10>,0,<mapplane>
+//self
+//p=<arg(storepos)>
+//resync
+//nukeall(isborder)
+//go 11 11
+//go <arg(storepos)>
+//
+//
+//[function isborder]
+//if (baseid!=i_stone_region_additship)
+// var.samedist=0
+// var.nearestdist=9999
+// array_foreachuid(var.region_addit,issamedist(<uid>))
+// if !(<samedist>)
+//  remove
+// endif
+// return <samedist>
+//endif
+//
+//[function issamedist]//uid od nehoz se meri
+//if (<distancefrom(<args>)><<nearestdist>)
+// var.nearestdist=<distancefrom(<args>)>
+// var.samedist=0
+//elseif (<distancefrom(<args>)>==<nearestdist>)
+// var.samedist=1
+//endif
+
+[eof]

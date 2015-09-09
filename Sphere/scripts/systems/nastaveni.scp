@@ -1,0 +1,431 @@
+[function f_nastav_text]
+var(nastaveni_textnumb,<nastaveni_textnumb>+1)
+if (((<nastaveni_textnumb>/2)*2)==<nastaveni_textnumb>)//hodnota
+  arg(number,(<nastaveni_textnumb>/2)-1)
+  arg(dynamtext,<safe.<tag.nastaveni_prefvaluetype><arg(number)><tag.nastaveni_sufvaluetype>>)
+  //logmsg(1:<arg(dynamtext)>)
+  if (strcmpi(,<arg(dynamtext)>))
+    //arg(dynamtext,<?<arg(dynamtext)>?>)
+    arg(vysledtext,<tag.nastaveni_prefvalue><arg(dynamtext)><tag.nastaveni_sufvalue>)
+    //logmsg(<safe.<arg(vysledtext)>>)
+    if (strcmpi(,<safe.<arg(vysledtext)>>))
+      return"<?<arg(vysledtext)>?>"
+    elseif (strcmpi(,<?safe <tag.nastaveni_prefdefaulttype><arg(number)><tag.nastaveni_sufdefaulttype>?>))
+      arg(dynamvaluetext,<?<tag.nastaveni_prefdefaulttype><arg(number)><tag.nastaveni_sufdefaulttype>?>)
+      arg(vysledvaluetext,<tag.nastaveni_prefdefault><arg(dynamvaluetext)><tag.nastaveni_sufdefault>)
+      return"<?<arg(vysledvaluetext)>?>"
+    endif
+  else
+    return
+  endif
+else//jmeno
+  arg(number,(<nastaveni_textnumb>/2))
+  arg(dynamtext,<?safe.<tag.nastaveni_prefnametype><arg(number)><tag.nastaveni_sufnametype>?>)
+  if (strcmpi(,<arg(dynamtext)>))
+    arg(vysledtext,<tag.nastaveni_prefname><arg(dynamtext)><tag.nastaveni_sufname>)
+    if (strcmpi(,<safe.<arg(vysledtext)>>))
+      return"<?<arg(vysledtext)>?>"
+    endif
+  else
+    return
+  endif
+endif
+return
+
+[function nastaveni_dialog]
+var(nastaveni_textnumb,0)
+DIALOG d_nastaveni
+
+[DIALOG d_nastaveni]//d_nastaveni
+0,0
+resizepic 0 0 5054 1240 470 
+resizepic 10 10 3000 1220 450 
+//resizepic 0 0 2620 640 480
+
+button 25 430 2124 2123 1 0 1 // Apply
+button 85 430 2121 2120 1 0 0 // Cancel
+//button 145 430 2125 2126 1 0 2 // Deufalt
+//text   180 430 995 101
+//HTMLGUMP 220 420 600 200 101 0 0
+
+text 		0 40 995 0
+gumppic 	195 30 93
+textentry 	195 40 <var(nastaveni_entrylength)> 20 995 0 1
+text 		0 55 995 2
+gumppic 	195 45 93
+textentry 	195 55 <var(nastaveni_entrylength)> 20 995 1 3
+text 		0 70 995 4
+gumppic 	195 60 93
+textentry 	195 70 <var(nastaveni_entrylength)> 20 995 2 5
+text 		0 85 995 6
+gumppic 	195 75 93
+textentry 	195 85 <var(nastaveni_entrylength)> 20 995 3 7
+text 		0 100 995 8
+gumppic 	195 90 93
+textentry 	195 100 <var(nastaveni_entrylength)> 20 995 4 9
+text 		0 115 995 10
+gumppic 	195 105 93
+textentry 	195 115 <var(nastaveni_entrylength)> 20 995 5 11
+text 		0 130 995 12
+gumppic 	195 120 93
+textentry 	195 130 <var(nastaveni_entrylength)> 20 995 6 13
+text 		0 145 995 14
+gumppic 	195 135 93
+textentry 	195 145 <var(nastaveni_entrylength)> 20 995 7 15
+text 		0 160 995 16
+gumppic 	195 150 93
+textentry 	195 160 <var(nastaveni_entrylength)> 20 995 8 17
+text 		0 175 995 18
+gumppic 	195 165 93
+textentry 	195 175 <var(nastaveni_entrylength)> 20 995 9 19
+text 		0 190 995 20
+gumppic 	195 180 93
+textentry 	195 190 <var(nastaveni_entrylength)> 20 995 10 21
+text 		0 205 995 22
+gumppic 	195 195 93
+textentry 	195 205 <var(nastaveni_entrylength)> 20 995 11 23
+text 		0 220 995 24
+gumppic 	195 210 93
+textentry 	195 220 <var(nastaveni_entrylength)> 20 995 12 25
+text 		0 235 995 26
+gumppic 	195 225 93
+textentry 	195 235 <var(nastaveni_entrylength)> 20 995 13 27
+text 		0 250 995 28
+gumppic 	195 240 93
+textentry 	195 250 <var(nastaveni_entrylength)> 20 995 14 29
+text 		0 265 995 30
+gumppic 	195 255 93
+textentry 	195 265 <var(nastaveni_entrylength)> 20 995 15 31
+text 		0 280 995 32
+gumppic 	195 270 93
+textentry 	195 280 <var(nastaveni_entrylength)> 20 995 16 33
+text 		0 295 995 34
+gumppic 	195 285 93
+textentry 	195 295 <var(nastaveni_entrylength)> 20 995 17 35
+text 		0 310 995 36
+gumppic 	195 300 93
+textentry 	195 310 <var(nastaveni_entrylength)> 20 995 18 37
+text 		0 325 995 38
+gumppic 	195 315 93
+textentry 	195 325 <var(nastaveni_entrylength)> 20 995 19 39
+text 		0 340 995 40
+gumppic 	195 330 93
+textentry 	195 340 <var(nastaveni_entrylength)> 20 995 20 41
+text 		0 355 995 42
+gumppic 	195 345 93
+textentry 	195 355 <var(nastaveni_entrylength)> 20 995 21 43
+text 		0 370 995 44
+gumppic 	195 360 93
+textentry 	195 370 <var(nastaveni_entrylength)> 20 995 22 45
+text 		0 385 995 46
+gumppic 	195 375 93
+textentry 	195 385 <var(nastaveni_entrylength)> 20 995 23 47
+text 		0 400 995 48
+gumppic 	195 390 93
+textentry 	195 400 <var(nastaveni_entrylength)> 20 995 24 49
+
+text 		300 40 995 50
+gumppic 	505 30 93
+textentry 	505 40 <var(nastaveni_entrylength)> 20 995 25 51
+text 		300 55 995 52
+gumppic 	505 45 93
+textentry 	505 55 <var(nastaveni_entrylength)> 20 995 26 53
+text 		300 70 995 54
+gumppic 	505 60 93
+textentry 	505 70 <var(nastaveni_entrylength)> 20 995 27 55
+text 		300 85 995 56
+gumppic 	505 75 93
+textentry 	505 85 <var(nastaveni_entrylength)> 20 995 28 57
+text 		300 100 995 58
+gumppic 	505 90 93
+textentry 	505 100 <var(nastaveni_entrylength)> 20 995 29 59
+text 		300 115 995 60
+gumppic 	505 105 93
+textentry 	505 115 <var(nastaveni_entrylength)> 20 995 30 61
+text 		300 130 995 62
+gumppic 	505 120 93
+textentry 	505 130 <var(nastaveni_entrylength)> 20 995 31 63
+text 		300 145 995 64
+gumppic 	505 135 93
+textentry 	505 145 <var(nastaveni_entrylength)> 20 995 32 65
+text 		300 160 995 66
+gumppic 	505 150 93
+textentry 	505 160 <var(nastaveni_entrylength)> 20 995 33 67
+text 		300 175 995 68
+gumppic 	505 165 93
+textentry 	505 175 <var(nastaveni_entrylength)> 20 995 34 69
+text 		300 190 995 70
+gumppic 	505 180 93
+textentry 	505 190 <var(nastaveni_entrylength)> 20 995 35 71
+text 		300 205 995 72
+gumppic 	505 195 93
+textentry 	505 205 <var(nastaveni_entrylength)> 20 995 36 73
+text 		300 220 995 74
+gumppic 	505 210 93
+textentry 	505 220 <var(nastaveni_entrylength)> 20 995 37 75
+text 		300 235 995 76
+gumppic 	505 225 93
+textentry 	505 235 <var(nastaveni_entrylength)> 20 995 38 77
+text 		300 250 995 78
+gumppic 	505 240 93
+textentry 	505 250 <var(nastaveni_entrylength)> 20 995 39 79
+text 		300 265 995 80
+gumppic 	505 255 93
+textentry 	505 265 <var(nastaveni_entrylength)> 20 995 40 81
+text 		300 280 995 82
+gumppic 	505 270 93
+textentry 	505 280 <var(nastaveni_entrylength)> 20 995 41 83
+text 		300 295 995 84
+gumppic 	505 285 93
+textentry 	505 295 <var(nastaveni_entrylength)> 20 995 42 85
+text 		300 310 995 86
+gumppic 	505 300 93
+textentry 	505 310 <var(nastaveni_entrylength)> 20 995 43 87
+text 		300 325 995 88
+gumppic 	505 315 93
+textentry 	505 325 <var(nastaveni_entrylength)> 20 995 44 89
+text 		300 340 995 90
+gumppic 	505 330 93
+textentry 	505 340 <var(nastaveni_entrylength)> 20 995 45 91
+text 		300 355 995 92
+gumppic 	505 345 93
+textentry 	505 355 <var(nastaveni_entrylength)> 20 995 46 93
+text 		300 370 995 94
+gumppic 	505 360 93
+textentry 	505 370 <var(nastaveni_entrylength)> 20 995 47 95
+text 		300 385 995 96
+gumppic 	505 375 93
+textentry 	505 385 <var(nastaveni_entrylength)> 20 995 48 97
+text 		300 400 995 98
+gumppic 	505 390 93
+textentry 	505 400 <var(nastaveni_entrylength)> 20 995 49 99
+text 		20 20 995 100
+
+[DIALOG d_nastaveni TEXT]
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?f_nastav_text?>
+<?tag.nastaveni_nadpis?>
+<BASEFONT SIZE="-5" COLOR="#000080">[DEFAULT] - Vycisti vsechny ulozene hodnoty - <br>	jen kdyz vis ze nejsou vyzadovany!!!!</BASEFONT> 
+
+[DIALOG d_nastaveni BUTTON]
+ON=0 // Cancel
+SYSMESSAGE Zmeny stornovany
+nastaveni_cleartag
+
+ON=1 // Apply
+arg(number,0)
+while (arg(number)<50)
+ arg(dynamtext,<?safe <tag.nastaveni_prefvaluetype><arg(number)><tag.nastaveni_sufvaluetype>?>)
+ arg(vysledtext,<tag.nastaveni_prefvalue><arg(dynamtext)><tag.nastaveni_sufvalue>)
+ if (strcmpi(,<argtxt(arg(number))>))
+  arg(origvalue,<safe.<arg(vysledtext)>>)
+  if (strcmpi("<onestring(<arg(origvalue)>)>","<onestring(<argtxt(arg(number))>)>"))
+   smsg ulozena hodnota: <arg(vysledtext)>=<argtxt(arg(number))>
+   accmsg(nove nastaveni:var.<arg(vysledtext)>=<argtxt(arg(number))>)
+   var(<arg(vysledtext)>,<argtxt(arg(number))>)
+  endif
+ else
+  arg(dynamvaluetext,<safe.<tag.nastaveni_prefdefaulttype><arg(number)><tag.nastaveni_sufdefaulttype>>)
+  if (strcmpi(,<safe.<arg(dynamvaluetext)>>))
+   arg(vysledvaluetext,<tag.nastaveni_prefdefault><arg(dynamvaluetext)><tag.nastaveni_sufdefault>)
+   if (strcmpi(,<safe.<arg(vysledvaluetext)>>))
+    smsg default: zdroj <arg(vysledvaluetext)> hodnota: <arg(vysledtext)>=<?<arg(vysledvaluetext)>?>
+    accmsg(default:var.<arg(vysledtext)>=<?<arg(vysledvaluetext)>?>)
+    var(<arg(vysledtext)>,<?<arg(vysledvaluetext)>?>)
+   endif
+  endif
+ endif 
+ arg(number,<arg(number)>+1)
+endwhile
+safe(<tag.nastaveni_finishfunkce>)
+nastaveni_cleartag
+SRC.SYSMESSAGE Zmeny aplikovany
+
+//on=2//clear
+//arg(number,0)
+//while (arg(number)<50)
+// arg(dynamtext,<safe <tag.nastaveni_prefvaluetype><arg(number)><tag.nastaveni_sufvaluetype>>)
+// if (strcmpi(,<arg(dynamtext)>))
+//  arg(vysledtext,<tag.nastaveni_prefvalue><arg(dynamtext)><tag.nastaveni_sufvalue>)
+//  if (strcmpi(,<safe.<arg(vysledtext)>>))
+//  smsg Vymazana hodnota:<arg(vysledtext)>
+//   accmsg(Clearing:var.<arg(vysledtext)>=)
+//   var(<arg(vysledtext)>,"")
+//  endif
+// endif
+// arg(number,<arg(number)>+1)
+// endwhile
+
+
+[function nastaveni_cleartag]
+tag(nastaveni_valuetype,"")
+tag(nastaveni_nadpis,"")
+
+tag(nastaveni_prefvalue,"")
+tag(nastaveni_prefvaluetype,"")
+tag(nastaveni_sufvaluetype,"")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"")
+tag(nastaveni_sufnametype,"")
+tag(nastaveni_sufname,"")
+
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_prefdefaulttype,"")
+tag(nastaveni_sufdefaulttype,"")
+tag(nastaveni_sufdefault,"")
+
+tag(nastaveni_finishfunkce,"")
+var(nastaveni_textnumb,"")
+
+[chardef c_nastaveni_guardian]
+id=c_man
+name=Hlidac Nastaveni NEMAZAT!!
+can=0
+
+on=@create
+item=i_nastaveni_guardian_timer
+kermel.delayedmessage("Cas: <servertime> hlidac nastaveni <uid> vytvoren - tvurce <src>-<src.name>(<src.account.name>)")
+
+on=@userclick
+removefromview
+
+on=@hit
+return 1
+
+on=@gethit
+return 1
+
+on=@death
+hits=<maxhits>
+return 1
+
+[itemdef i_nastaveni_guardian_timer]
+id=i_memory
+name=Nastaveni_guardian_timer
+type=t_eq_script
+
+on=@create
+attr=attr_move_never
+timer=1
+
+on=@timer
+var(nastaveni_guardian_uid,<cont>)
+var(afk_trigger_uid,<cont.findid(i_afk_trigger)>)
+cont.FLAG_insubstantial=1
+cont.nastaveni_check
+if(cont.findid(i_afk_trigger))
+ //alles gutte
+else
+ cont.newitemsafe(i_afk_trigger)
+ cont.equip(<lastnew>)
+ var(afk_trigger_uid,<lastnew>)
+endif
+timer=10
+return 1
+
+on=@unequip
+cont.newitemsafe(i_nastaveni_guardian_timer)
+cont.equip(<lastnew>)
+remove
+
+[eof]

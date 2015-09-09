@@ -1,0 +1,62 @@
+[events e_assasin]
+on=@hittry
+events +e_assasin_skillstart
+
+on=@gethit
+events +e_assasin_skillstart
+//
+[events e_assasin_skillstart]
+on=@skillstart
+if !(act)
+ if (memoryfindtype(0209c))
+  act=<memoryfindtype(0209c).link>
+ endif
+endif
+if !(isfighting)
+ if !(memoryfindtype(0209c))
+  removememories
+  events -e_assasin_skillstart
+  skill hiding
+ elseif (act.flag_invul)
+ else
+   attack(<act>)
+   return 0
+ endif
+endif
+return 0
+
+[events e_assasin_shadow]
+on=@npcseenewplayer
+
+[events e_assasin_rose]
+
+
+[defnames assasin_defs]
+color_as_rose_hair	1
+color_as_rose_cloth	0e9
+color_as_rose_arms	1
+
+color_as_shadow_hair	1
+color_as_shadow_cloth	2
+color_as_shadow_arms	3
+
+[itemdef i_stone_assasin]
+id=i_gravestone_17
+
+on=@create
+color=021
+
+on=@userdclick
+
+return 1
+
+[dialog d_assasin]
+
+
+[dialog d_assasin button]
+
+
+
+
+
+[eof]

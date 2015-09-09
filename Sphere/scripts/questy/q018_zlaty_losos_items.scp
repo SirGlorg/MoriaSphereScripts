@@ -1,0 +1,50 @@
+// zlata snura z kouzelnyho kola
+[ITEMDEF i_q018_zlata_snura]
+ID=i_yarn_ball 
+NAME=Zlata nit                                                                 
+type=t_normal
+ON=@Create
+color=0986 
+on=@userdclick                                                             
+message("Tato krasna snura nemuze pochazet odjinud nez z kouzelneho zlateho kola.") 
+
+//predacky kolo se zlatou niti
+[ITEMDEF i_q018_zlate_kolo]
+ID=01015
+NAME=Kouzelne predacke kolo  
+type=t_normal                                                               
+ON=@Create
+color=0986 
+
+on=@userdclick                                                             
+message("Sotva jsi se kola <src.sex(dotkl,dotkla)>, zlata nit se objevila...")
+message("Zda se, ze se tve znalosti siti rozsirily!!!")
+src.qtag(q018,5,31)
+src.newitemsafe=i_q018_zlata_snura
+lastnew.bounce
+src.addexp(1500)
+src.tailoring=<eval (<src.tailoring>+3.0)>
+src.go(6008,3860,-80)
+   
+// runa portujici ke zlatymu kolu
+[ITEMDEF i_q018_portujici_runa]
+ID=i_rune_marker
+NAME=tajemna zlata runa
+ON=@Create
+color=0986
+on=@userdclick
+if (<src.qtag(q018)>==4)
+ src.say Wow, trochu se mi zveda zaludek!
+ src.go(5390,35)
+else
+ src.sysMessage("Nevis, jak bys tuto zvlastni runu <src.sex(pouzil, pouzila)>. Asi nejsi <src.sex("ten pravy","ta prava")> k jejimu upotrebeni.")
+endif
+
+// odvar od elnassira pro Mirranu
+[ITEMDEF i_q018_mirranin_odvar]
+ID=i_bottle_empty
+NAME=Odvar proti zanetum                                                                 
+ON=@Create
+color=0658
+on=@userdclick                                                             
+message("Tento lektvar by mel vylecit i velke zanicene rany.")   

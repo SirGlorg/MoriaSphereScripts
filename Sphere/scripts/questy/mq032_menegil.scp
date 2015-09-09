@@ -1,0 +1,1617 @@
+/////////////////////////////////////////
+//// QUEST UMBARSKY PREDAJCA MENEGIL ////
+//// BY Enzo                         ////
+/////////////////////////////////////////
+
+//////////////////////
+/// TAGY KU QUESTU ///
+//////////////////////
+// (src.qtag(mq032_menegil,0)  - hrac nema nic spolocne s questom
+// (src.qtag(mq032_menegil,1)  - hrac prijal quest od predajcu
+// (src.qtag(mq032_menegil,2)  - hrac prijal ukolu od kapitana lode
+// (src.qtag(mq032_menegil,3)  - hrac splnil ulohu od kapitana lode - priniesol sud
+// (src.qtag(mq032_menegil,4)  - hrac povedal o kapitanovi
+// (src.qtag(mq032_menegil,5)  - prijal ulohu s rybami
+// (src.qtag(mq032_menegil,6)  - hrac pokecal s rybarom 1. krat
+// (src.qtag(mq032_menegil,7)  - hrac pokecal s predajcom o rybarovi
+// (src.qtag(mq032_menegil,8)  - hrac splnil ukol s rybami
+// (src.qtag(mq032_menegil,9)  - hrac pokecal o rybarovi, 
+// (src.qtag(mq032_menegil,10) - prijal ulohu s latkou
+// (src.qtag(mq032_menegil,11) - hrac pokecal s latkarkou
+// (src.qtag(mq032_menegil,12) - hrac ziskal nit od pomocnika latkarky
+// (src.qtag(mq032_menegil,13) - hrac odniesol nit
+// (src.qtag(mq032_menegil,14) - hrac zaplatil prevozdovi za odnesenie latky
+// (src.qtag(mq032_menegil,15) - hrac pokecal o latke, 
+// (src.qtag(mq032_menegil,16) - prijal ulohu s bananmi
+// (src.qtag(mq032_menegil,17) - hrac pokecal so skladnikom
+// (src.qtag(mq032_menegil,18) - hrac pokecal s predajcom o skladnikovi
+// (src.qtag(mq032_menegil,19) - hrac pokecal so skladnikovou zenou
+// (src.qtag(mq032_menegil,20) - zaplatil za sklad
+// (src.qtag(mq032_menegil,21) - hrac pokecal so skladnikom
+// (src.qtag(mq032_menegil,22) - hrac pokecal s predajcom o bananoch
+// (src.qtag(mq032_menegil,23) - hrac povedal, ze pojde zistit kde je latka
+// (src.qtag(mq032_menegil,24) - hrac pokecal s prevoznikom
+// (src.qtag(mq032_menegil,25) - hrac pokecal s pomocnikom prevoznika
+// (src.qtag(mq032_menegil,26) - hrac pokecal s prevoznikom, ziskal od neho odmenu
+// (src.qtag(mq032_menegil,27) - hrac pokecal s latkarkou
+// (src.qtag(mq032_menegil,28) - hrac pokecal s predajcom, quest splneny!
+//
+//
+// (src.qtag(mq032_menegil_prevozca,0) - hrac nepouziva prevozcu na prevezenie latky
+// (src.qtag(mq032_menegil_prevozca,1) - hrac zaplatil prevoznikovi za prevezenie latky
+//
+//////////////////////
+//      ITEMY       //
+//////////////////////
+// i_mq032_menegil_sud
+//////////////////////
+
+//SPEECH//
+
+[speech spk_mq032_menegil]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_menegil
+endif
+
+[function f_mq032_menegil]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_menegil)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_kapitan]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_kapitan
+endif
+
+[function f_mq032_kapitan]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_kapitan)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_hospodsky]
+
+on = *nakup*
+on = *kup*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_hospodsky
+endif
+
+[function f_mq032_hospodsky]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_hospodsky)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_rybar]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_rybar
+endif
+
+[function f_mq032_rybar]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_rybar)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_latkarka]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_latkarka
+endif
+
+[function f_mq032_latkarka]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_latkarka)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_latkarka_pomocnik]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_latkarka_pomocnik
+endif
+
+[function f_mq032_latkarka_pomocnik]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_latkarka_pomocnik)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_prevozca]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_prevozca
+endif
+
+[function f_mq032_prevozca]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_prevozca)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_prevozca_pomocnik]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_prevozca_pomocnik
+endif
+
+[function f_mq032_prevozca_pomocnik]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+ if (<eval src.qtag(mq032_menegil_prevozca)> == 0)
+    say "Nemam si s tebou co rict!"
+ elseif (<eval src.qtag(mq032_menegil_prevozca)> == 1)
+  dialog(d_mq032_prevozca_pomocnik)
+ endif
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_skladnik]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_skladnik
+endif
+
+[function f_mq032_skladnik]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_skladnik)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+[speech spk_mq032_skladnik_manzelka]
+
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq032_skladnik_manzelka
+endif
+
+[function f_mq032_skladnik_manzelka]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (0<src.tag.realm>==2)
+  dialog(d_mq032_skladnik_manzelka)
+else 
+  say "Vyhni se mi obloukem, ty prasivy Gondore!"
+  return 1
+endif
+
+///////////////////////
+
+//DIALOG//
+
+[dialog d_mq032_menegil]
+argo.questDialog_create(03142,"Umbarsky Prodejce Menegil")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+if ((<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 17))
+  argo.questDialog_baseButt(2,21,"Mam problem...")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  if (<arg(mq032_menegil)> == 0)
+    argo.setText(argo.newTextLine,"Jeste ti nemam co nabidnout k prodeji, ale brzo bys mi s necim mohol pomoct ty, mel bys zajem?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Nemam zajem ti s nicim pomahat, udelej si to sam!")
+    argo.questDialog_addResponse(0,1,1,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"A co bych pre tebe <?src.sex(mohl,mohla)?> udelat?")
+    argo.questDialog_addResponse(0,0,1,"mq032_info") 
+    argo.setText(argo.newTextLine,"Ja chci jen neco koupit, nechci pro tebe nic delat.")
+    argo.questDialog_addResponse(0,0,1,"have_no_time") 
+  elseif ((<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27))
+    argo.setText(argo.newTextLine,"Ale vsak ja jsem ti uz dal praci, tak se ji snaz udelat, do te doby ti nic neprodam.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(mq032_menegil)> == 28)
+    argo.setText(argo.newTextLine,"Muj obchod jeste nieje otevreny, ale diky tobe uz mam vsechny veci potrebne nato, takze uz brzo to bude. Jeste jednou ti dakuju za tvoji pomoc.")
+    argo.questDialog_HTMLGUMP
+  endif
+if (<arg(mq032_menegil)> == 0)  
+  argo.dialog_page("have_no_time")  
+    argo.setText(argo.newTextLine,"Aha, tak to te potom nebudu zdrzovat mojimi problemy.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+endif
+     
+argo.dialog_page("Pozdrav")
+  if (<arg(mq032_menegil)> == 0)
+    argo.setText(<argo.newTextLine>,"Bud pozdraven.")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3))
+    argo.setText(<argo.newTextLine>,"Zdravim te priteli muj! Jak pokracujes? Podarilo se ti neco zjistit od kapitana lode?")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 4))
+    argo.setText(<argo.newTextLine>,"Ahoj! Jsem velmi stastny, ze si mi pomohl s tim kapitanem, ted bych tu mel pro tebe dalsi ulohu, kdyby si mel zajem")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"A co by jsi tentokrat potreboval?")
+    argo.questDialog_addResponse(0,0,1,"mq032_info") 
+  elseif ((<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8))
+    argo.setText(<argo.newTextLine>,"Zdravim te priteli muj! Tak kdy mi prineses ty ryby?")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 9))
+    argo.setText(<argo.newTextLine>,"Vitej! Dakuju ti za pomoc s rybami, ted bych pro tebe mel dalsi ukol, tedy samozrejme jestli se ti znova chce")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"A co by jsi tentokrat potreboval?")
+    argo.questDialog_addResponse(0,0,1,"mq032_info") 
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+  elseif ((<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27))
+    argo.setText(<argo.newTextLine>,"Zdravim te priteli muj! Jak to vypada s tou latkou pro me?")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 15))
+    argo.setText(<argo.newTextLine>,"Bud zdrav! Dakuji ti zatim za tu latku, dokoncis to tedy pozdeji, udelal bys ted pro me neco dalsiho?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"A co bys tentokrat potreboval?")
+    argo.questDialog_addResponse(0,0,1,"mq032_info") 
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+  elseif ((<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21))
+    argo.setText(<argo.newTextLine>,"Zdravim te priteli muj! Objednal si mi ty banany ze skladu?")
+    argo.questDialog_HTMLGUMP    
+  elseif ((<arg(mq032_menegil)> == 22))
+    argo.setText(<argo.newTextLine>,"Vitej! Dekuju ti za ty banany, jeste tu mam jednu vec pro tebe, mohol bys to udelat?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"Jasne, co to bude tentokrat??")
+    argo.questDialog_addResponse(0,0,1,"mq032_info") 
+  elseif (<arg(mq032_menegil)> == 28)
+    argo.setText(<argo.newTextLine>,"Ahoj! Dekuju ti za tvoji pomoc, bez tebe bych to urcite nezvladl!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  endif
+
+if (<arg(mq032_menegil)> == 0)
+   argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Ahoj! Jmenuju se Menegil a snazim se tu rozbehnut svuj novy obchod, no jeste s tim je moc problemu, ale mozna bys mi mohl trochu pomoct, co ty nato? ")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Take te zdravim, jmenuji se <?src.name?> a <?src.sex(myslel,myslela)?> jsem si, ze neco prodavas.")
+    argo.questDialog_addResponse(0,0,1,"JenProchazim") 
+    argo.setText(argo.newTextLine,"A jak bych ti <?src.sex(mohl,mohla)?> pomoct? Ja <?src.sex(rad,rada)?> pomuzu.")
+    argo.questDialog_addResponse(0,0,1,"chce_pomoct") 
+  
+  argo.dialog_page("JenProchazim")
+    argo.setText(argo.newTextLine,"Ahaa... no ja ti jeste nemam co nabidnout...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+
+  argo.dialog_page("chce_pomoct")
+    argo.setText(argo.newTextLine,"To je skvele! Hned ti povim, co by si mohl udelat, velmi by jsi mi tim pomohl s mojim obchodom!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Promin, ja jsem si to <?src.sex(rozmyslel,rozmyslela)?>...")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"Takze co bych pro tebe <?src.sex(mohl,mohla)?> udelat??")
+    argo.questDialog_addResponse(0,0,1,"mq032_info") 
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Prodejce vypada jako prijemny chlap, v jeho prodejnim stanku je poradek, je videt, ze se snazi vydelat nejake penize.*")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Hmm?")
+  argo.questDialog_HTMLGUMP
+  if ((<arg(mq032_menegil)> == 8))
+    argo.setText(argo.newTextLine,"Mam pro tebe ty ryby jak si chtel.")
+    argo.questDialog_addResponse(0,1,1,"ukol_ryby_complete") 
+  elseif ((<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27))
+    argo.setText(argo.newTextLine,"<?src.sex(Prinesl,Prinesla)?> jsem ti tu latku.")
+    argo.questDialog_addResponse(0,1,1,"ukol_latka2_complete") 
+  endif
+  argo.setText(argo.newTextLine,"Vlastne nic, promin.")
+  argo.questDialog_addResponse(0,1,0,"Goodbye",1) 
+
+argo.dialog_page("Hledam praci")
+  if (<arg(mq032_menegil)> == 0)
+    argo.setText(<argo.newTextLine>,"Ja se tu snazim nejdriv rozbehnut obchod, nepotrebuju pomocnika.")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3))
+    argo.setText(<argo.newTextLine>,"Ale ja uz jsem ti ulohu dal! Tak bys mel nejdriv splnit tu a az potom me prosit o neco dalsiho...")
+    argo.questDialog_HTMLGUMP
+    if (<arg(mq032_menegil)> == 3)
+     argo.setText(argo.newTextLine,"Uz jsem to <?src.sex(udelal,udelala)?>! Tvoja zasilka prijde presne za 3 dni!")
+     argo.questDialog_addResponse(0,1,1,"ukol_kapitan_complete") 
+    endif
+  elseif ((<arg(mq032_menegil)> == 4))
+    argo.setText(<argo.newTextLine>,"Svoji ulohu si <?src.sex(vykonal,vykonala)?> bravurne, mel bych tu pro tebe neco dalsiho")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"A co bys tentokrat potreboval?")
+    argo.questDialog_addResponse(0,0,0,"mq032_info") 
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+  elseif ((<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8))
+    argo.setText(<argo.newTextLine>,"Uz mas svoji ulohu! tak ji rychle spln!")
+    argo.questDialog_HTMLGUMP
+    if (<arg(mq032_menegil)> == 8)
+     argo.setText(argo.newTextLine,"Uz to mam hotove! Tu mas ty tvoje ryby!")
+     argo.questDialog_addResponse(0,1,0,"ukol_ryby_complete")
+    endif
+  elseif ((<arg(mq032_menegil)> == 9))
+    argo.setText(<argo.newTextLine>,"Znovu jsi to zvladl vyborne! Mam pro tebe neco dalsiho.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"A co bys tentokrat potreboval?")
+    argo.questDialog_addResponse(0,0,0,"mq032_info") 
+  elseif ((<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27))
+    argo.setText(<argo.newTextLine>,"Ja jsem ti uz praci dal! Tak ji spln a az potom ti dam neco dalsiho.")
+    argo.questDialog_HTMLGUMP
+    if (<eval src.qtag(mq032_menegil_prevozca)> == 1)
+      if (<arg(mq032_menegil)> == 14)
+        argo.setText(argo.newTextLine,"<?src.sex(Vyresil,Vyresila)?> jsem problem, latku ti prinese prevoznik z Tharbadu!")
+        argo.questDialog_addResponse(0,1,1,"ukol_latka1_complete") 
+      elseif (<arg(mq032_menegil)> == 26)
+        argo.setText(argo.newTextLine,"Uz mam tu latku, tady ji mas!")
+        argo.questDialog_addResponse(0,1,0,"ukol_latka2_complete") 
+      endif
+    elseif (<eval src.qtag(mq032_menegil_prevozca)> == 0)
+      if (<arg(mq032_menegil)> == 13)
+        argo.setText(argo.newTextLine,"<?src.sex(Vyresil,Vyresila)?> jsem problem, latka bude hotova co nevidet!")
+        argo.questDialog_addResponse(0,1,1,"ukol_latka1_complete") 
+      elseif (<arg(mq032_menegil)> == 27)
+        argo.setText(argo.newTextLine,"Uz mam tu latku, tady ji mas!")
+        argo.questDialog_addResponse(0,1,1,"ukol_latka2_complete") 
+      endif
+    endif
+  elseif ((<arg(mq032_menegil)> == 15))
+    argo.setText(<argo.newTextLine>,"No, nez to dokoncis tak bych mezitim od tebe potreboval neco jineho...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"A co bys tentokrat potreboval?")
+    argo.questDialog_addResponse(0,0,0,"mq032_info") 
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+  elseif ((<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21))
+    argo.setText(<argo.newTextLine>,"Praci uz mas, tak sa snaz ji dokoncit...")
+    argo.questDialog_HTMLGUMP    
+    if (<arg(mq032_menegil)> == 21)
+     argo.setText(argo.newTextLine,"<?src.sex(Vyresil,Vyresila)?> jsem to, ve sklade prijali tvoji objednavku.")
+     argo.questDialog_addResponse(0,1,1,"ukol_banany_complete") 
+    endif 
+  elseif ((<arg(mq032_menegil)> == 22))
+    argo.setText(<argo.newTextLine>,"Opet jsi to <?src.sex(zvladl,zvladla)?> vyborne! Tak uz jen posledni vec, dokazes to?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Jasne, co to bude tentokrat??")
+    argo.questDialog_addResponse(0,0,0,"mq032_info") 
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+  elseif (<arg(mq032_menegil)> == 28)
+    argo.setText(<argo.newTextLine>,"Ahoj! Uz si <?src.sex(splnil,splnila)?> vsechno co jsem potreboval, jsi velmi dobry clovek, Dekuji!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,0,"Goodbye",1) 
+  endif
+
+if ((<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 17))
+argo.dialog_page("Mam problem...")
+  argo.setText(<argo.newTextLine>,"Jaky mas problem?")
+  argo.questDialog_HTMLGUMP
+  if (<arg(mq032_menegil)> == 6)
+    argo.setText(argo.newTextLine,"Rybar ode me chce nejake penize.")
+    argo.questDialog_addResponse(0,0,1,"rybar_chce_peniaze") 
+  elseif (<arg(mq032_menegil)> == 17)
+    argo.setText(argo.newTextLine,"Skladnik rika, ze maji na vsechny banany uz objednvku")
+    argo.questDialog_addResponse(0,0,1,"skladnik_objednavky") 
+  endif
+  argo.setText(argo.newTextLine,"Vlastne zadny...")
+  argo.questDialog_addResponse(0,1,0,"nema_problem") 
+endif
+
+if (<arg(mq032_menegil)> == 6)
+  argo.dialog_page("rybar_chce_peniaze")
+    argo.setText(<argo.newTextLine>,"Ale vsak ja uz jsem mu zaplatil, kdyz jsem mu daval objednavku, tak at si nevymysli a radsi mi posle ty ryby.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobre, povim mu to.")
+      argo.questDialog_addResponse(0,1,1,"vybavi_rybar") 
+endif
+
+if (<arg(mq032_menegil)> == 17)
+argo.dialog_page("skladnik_objednavky")
+  argo.setText(<argo.newTextLine>,"Hmmm, nenapada me jak to vyresit, zkus to ty, mozna bys mohl zkusit vyhrozovat jeho manzelce, anebo to zkus jeste dohodnout s nim...")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"Dobre, skusim to nejak vyresit")
+  argo.questDialog_addResponse(0,1,1,"vybavi_skladnik") 
+endif
+
+if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 22))
+argo.dialog_page("mq032_info")
+  if (<arg(mq032_menegil)> == 0)
+    argo.setText(argo.newTextLine,"No, mozna by se mi sikla tvoje pomoc, potreboval bych, abys zasel za kapitanem lode a zjistil od neho, kdy mi prijde zasilka, kterou ocekavam spoza more. Kdybys tedy byl ochotny to pro me udelat, velmi bys mi pomohl")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, kde najdu toho kapitana?")
+    argo.questDialog_addResponse(0,0,1,"info_kapitan") 
+    argo.setText(argo.newTextLine,"Ja pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+  elseif (<arg(mq032_menegil)> == 4)
+    argo.setText(<argo.newTextLine>,"Ted bych potreboval, abys zasel za jednim rybarem, ktery ma pro me lovit ryby, a zatim mi jeste zadne neposlal a ja uz je fakt potrebuju.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Hned jdu za nim, muzes mi jeste rict, kde by jsem ho <?src.sex(mohl,mohla)?> najit? ")
+    argo.questDialog_addResponse(0,0,1,"info_rybar") 
+    argo.setText(argo.newTextLine,"Ja uz pro tebe neudelam nic, uz se mi nic delat nechce.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+  elseif (<arg(mq032_menegil)> == 9)
+    argo.setText(<argo.newTextLine>,"Hmmm, ted by bylo asi nejlepsi, kdyby jsi <?src.sex(zasel,zasla)?> za prodejkyni latky do Tahabaru, muzes to pro me udelat?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ne, me se uz nechce pro tebe nic delat...")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"Dobre a co od ni potrebujes?")
+    argo.questDialog_addResponse(0,0,1,"info_latka1") 
+  elseif (<arg(mq032_menegil)> == 15)
+    argo.setText(<argo.newTextLine>,"Fajn, ted bys mohl pro me vyridit objednavku bananu ze skladu, bez prosim te za skladnikem, mel by se nachazet v Harade.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Promin, ale tak daleko se mi jit nechce...")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"Dobre, pokusim se to vybavit.")
+    argo.questDialog_addResponse(0,1,1,"ukol_banany_accept") 
+  elseif (<arg(mq032_menegil)> == 22)
+    argo.setText(<argo.newTextLine>,"Prosim te, jeste se postarej o tu latku, protoze jeste stale ji nemam.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Me uz nebavi delat pro tebe poskoka...")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"Dobre, zjistim co je s tou latkou.")
+    argo.questDialog_addResponse(0,1,1,"ukol_latka2_accept") 
+  endif
+endif
+
+if (<arg(mq032_menegil)> == 0)
+argo.dialog_page("info_kapitan")
+  if (<arg(mq032_menegil)> == 0)
+    argo.setText(argo.newTextLine,"Kapitan by se mel nachazet nekde na svoji lodi tady v umbaru, urcite nebudes mit problem ho najit.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Mne se nechce nikoho hledat...")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"Dobre, pustim se do toho")
+    argo.questDialog_addResponse(0,1,1,"ukol_kapitan_accept") 
+  endif
+endif
+
+if (<arg(mq032_menegil)> == 4)  
+argo.dialog_page("info_rybar")
+  if (<arg(mq032_menegil)> == 4)
+    argo.setText(argo.newTextLine,"Hm, vetsinou ho muzes potkat tady nedaleko, nad Umbarem. Tam by se mel zdrzovat, teda pokud neni na mori, ale nemyslim si, ze by tam byl ted.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Mne se nechce nikoho hledat...")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+    argo.setText(argo.newTextLine,"Fajn, jdu hned za nim")
+    argo.questDialog_addResponse(0,1,1,"ukol_rybar_accept") 
+  endif
+endif
+
+if (<arg(mq032_menegil)> == 9)
+argo.dialog_page("info_latka1")
+  if (<arg(mq032_menegil)> == 9)
+    argo.setText(<argo.newTextLine>,"Potrebuju, aby jsi <?src.sex(zjistil,zjistila)?>, jak pokracuje s vyrobou latky pro me, uz davno mi to mela poslat ale stale se neozvala, nevim co se deje a ja uz tu latku fakt potrebuju pro muj obchod.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, pustim se do toho, kdyz neco zjistim, dam ti vedet.")
+    argo.questDialog_addResponse(0,1,1,"ukol_latka1_accept") 
+    argo.setText(argo.newTextLine,"Ne, toto se mi nechce delat, vyres si to sam.")
+    argo.questDialog_addResponse(0,1,0,"Odmietnutie") 
+  endif
+endif
+
+[dialog d_mq032_menegil button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Odmietnutie"))
+  say("No, tak potom me radsi ani nezdrzuj a bez pryc!")
+elseif (<argn> == argo.dialog_linkButton("Ukol_banany_accept"))
+  say("Vyborne! Doufam, ze se ti to podari rychle vybavit!")
+  src.qtag(mq032_menegil,16,40)
+elseif (<argn> == argo.dialog_linkButton("Ukol_latka1_accept"))
+  say("Vyborne! Snad zjistis, proc mi to jeste neposlala!")
+  src.qtag(mq032_menegil,10,40)
+elseif (<argn> == argo.dialog_linkButton("Ukol_latka2_accept"))
+  say("Vyborne! Tak se snaz at uz mam tu latku!")
+  src.qtag(mq032_menegil,23,40)
+elseif (<argn> == argo.dialog_linkButton("Ukol_rybar_accept"))
+  say("Vyborne! Doufam, ze ty ryby rychle sezenes!")
+  src.qtag(mq032_menegil,5,40)
+elseif (<argn> == argo.dialog_linkButton("Ukol_kapitan_accept"))
+  say("Vyborne! Snad zjistis kdy prijde ta zasilka!")
+  src.qtag(mq032_menegil,1,40)
+elseif (<argn> == argo.dialog_linkButton("vybavi_rybar"))
+  say("Domluv to, ja uz jsem mu zaplatil, tak at si nevymysli...")
+  src.qtag(mq032_menegil,7,40)
+elseif (<argn> == argo.dialog_linkButton("vybavi_skladnik"))
+  say("A neboj se na neho trochu pritlacit, urcite to pomuze!")
+  src.qtag(mq032_menegil,18,40)
+elseif (<argn> == argo.dialog_linkButton("ukol_kapitan_complete"))
+  say("Och! Vyborne! Necekal jsem, ze to zvladnes, jsi opravdu sikovny!")
+  src.qtag(mq032_menegil,4,40)
+  src.addexp(200)
+  src.givegold(1000)
+elseif (<argn> == argo.dialog_linkButton("ukol_ryby_complete"))
+  say("Och! Vyborne! Necekal jsem, ze to zvladnes, dekuji!")
+  src.qtag(mq032_menegil,9,40)
+  src.addexp(250)
+  src.givegold(1500)
+elseif (<argn> == argo.dialog_linkButton("ukol_latka1_complete"))
+  say("Och! Vyborne! Necekal jsem, ze to zvladnes, dekuji!")
+  src.qtag(mq032_menegil,15,40)
+  src.addexp(200)
+  src.givegold(1000)
+elseif (<argn> == argo.dialog_linkButton("ukol_latka2_complete"))
+  say("Och! Vyborne! Necekal jsem, ze to zvladnes, dekuji!")
+  src.qtag(mq032_menegil,28,40)
+    src.addexp(400)
+    src.givegold(5000)
+    f_quest_complete(40)  // splnenie questu "Umbarsky Predajca Menegil"
+elseif (<argn> == argo.dialog_linkButton("ukol_banany_complete"))
+  say("Och! Vyborne! Necekal jsem, ze to zvladnes, dekuji!")
+  src.qtag(mq032_menegil,22,40)
+  src.addexp(300)
+  src.givegold(1500)
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Tobe take hodne stesi priteli...")
+endif
+
+////////////////////////////////////
+
+[dialog d_mq032_kapitan]
+argo.questDialog_create(03014,"Kapitan lode")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 1)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Potrebuju")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Ja jsem kapitan lode! Nic neprodavam.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Hmm?")
+  argo.questDialog_HTMLGUMP
+  
+  if (<arg(mq032_menegil)> == 2)
+    if (<SRC.RESTEST i_mq032_menegil_sud>)
+      argo.setText(argo.newTextLine,"Mam pro tebe ten sud alkoholu od hospodskeho.")
+      argo.questDialog_addResponse(0,1,1,"mq032_complete") 
+    endif
+    argo.setText(argo.newTextLine,"Ne zatim se mi to nepodarilo sehnat.")
+    argo.questDialog_addResponse(0,1,1,"mq032_not_complete") 
+  endif
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Fousaty, neoholeny chlapik, jeho kajuta smrdi alkoholom, proste vypada jako kazdy kapitna lode, ktery stravil velmi mnoho casu na mori spolu s kopou chlapu.*")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1))
+    argo.setText(<argo.newTextLine>,"Zdravim te.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(mq032_menegil)> == 2)
+    argo.setText(<argo.newTextLine>,"Bud zdrav, jsem rad ze te vidim. Mas uz ten sud s alkoholom pro me?")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(<argo.newTextLine>,"Zdravim te. Dekuju ti za ten <def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal> sud! Je velmi <def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal> dobry!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  endif
+  
+argo.dialog_page("Hledam praci")
+  if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1))   
+      argo.setText(argo.newTextLine,"Moja posadka je plna, nepotrebujem takove babovky jako si ty!.")
+      argo.questDialog_HTMLGUMP
+  elseif (<arg(mq032_menegil)> == 2)
+    argo.setText(argo.newTextLine,"Ale ja uz jsem ti praci dal! tak ji dokonci!")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(argo.newTextLine,"Tedka me nenapada, jak by jsi mi <?src.sex(mohl,mohla)?> pomoct.")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+if (<arg(mq032_menegil)> == 1)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Vitej, ja jsem Kapitan Eloen, jsem kapitanem teto lodi a vim vsechno o planovanych prichodech lodi do tohoto pristavu.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Take te zdravim, jmenuji se <?src.name?> a jen prochazim kolem.")
+    argo.questDialog_addResponse(0,0,1,"JenProchazim") 
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Tak to je vyborne! Presne tebe jsem <?src.sex(hledal,hledala)?>, mohl by jsi mi s necim pomoct? <?src.sex(Potreboval,Potrebovala)?> by sem vedet, kdy pride lod s nakladem pro Prodejce Menegila.")
+    argo.questDialog_addResponse(1,0,1,"mq032_ship_come") 
+
+
+  argo.dialog_page("JenProchazim")
+    argo.setText(argo.newTextLine,"Tak potom me ani neotravuj, mam dulezitejse veci na praci, jako ztracet cas rozhovorem s tebou.")
+    argo.questDialog_HTMLGUMP   
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+    
+  argo.dialog_page("Potrebuju") 
+    argo.setText(argo.newTextLine,"A co bys potreboval ode me?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vlastne nic, promin.")
+    argo.questDialog_addResponse(0,1,1,"odmietnutie") 
+    argo.setText(argo.newTextLine,"Potreboval bych vedet, kdy prijede lod s tovarem pro Menegila.")
+    argo.questDialog_addResponse(0,0,0,"mq032_ship_come") 
+  
+  argo.dialog_page("mq032_ship_come") 
+    argo.setText(argo.newTextLine,"Hmmmm, tak to nahodou vim presne kdy prijde! Ale doufam, ze si nemyslis, ze ti to povim jen tak, zadarmo.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Tak nato zapomen, neni to pro me tak dulezite aby jsem zato neco pro teba <?src.sex(delal,delala)?>.")
+    argo.questDialog_addResponse(0,1,1,"odmietnutie") 
+    argo.setText(argo.newTextLine,"Dobre a co bys potreboval?")
+    argo.questDialog_addResponse(0,0,1,"mq032_he_needs") 
+
+  argo.dialog_page("mq032_he_needs")
+    argo.setText(argo.newTextLine,"Doslechl jsem se, ze mistni hospodsky prodava najlepsi alkohol v celem mordoru, tak od tebe chci, aby si mi donesl sud kvalitniho alkoholu od neho a ja ti potom povim, kdy prijde lod s tou zasilkou.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, prinesu ti ho.")
+    argo.questDialog_addResponse(0,1,1,"mq032_accept") 
+    argo.setText(argo.newTextLine,"To neudelam. Nestoji mi to zato...")
+    argo.questDialog_addResponse(0,1,0,"odmietnutie") 
+endif
+
+[dialog d_mq032_kapitan button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Odmietnutie"))
+  say("Hm, tak potom okamzite vypadni z moji lode!")
+elseif (<argn> == argo.dialog_linkButton("mq032_accept"))
+  say("Tak si rychle pospes, nemam moc casu, chystame se vyplavat na more!")
+  src.qtag(mq032_menegil,2,40)
+elseif (<argn> == argo.dialog_linkButton("mq032_not_complete"))
+  say("Rychle rychle, za chvili odplujeme na more!")
+elseif (<argn> == argo.dialog_linkButton("mq032_complete"))
+ if (<SRC.RESTEST i_mq032_menegil_sud>)
+  say("Dekuji! Lod s nakladem do pristavu dorazi za 3 dni, co nevidet bude tu.")
+  src.consume(i_mq032_menegil_sud)
+  src.qtag(mq032_menegil,3,40)
+ else
+  say("Ale vzdyt ty to nemas!")
+ endif
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Tobe take hodne stesi priteli...")
+endif
+
+//////////////////////////////////
+
+[dialog d_mq032_hospodsky]
+argo.questDialog_create(03104,"Hospodsky")
+
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Mohl bych ti prodat sud meho kvalitniho alkoholu, sud jen za 3000 zlatych, mas zajem ? ")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"Ano! Presne to bych <?src.sex(chtel,chtela)?>!")
+  argo.questDialog_addResponse(0,1,1,"Kupit_sud") 
+  argo.setText(argo.newTextLine,"Ne, o nic takoveho nestojim...")
+  argo.questDialog_addResponse(0,1,0,"Nekupi") 
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Hospodsky vypada dost nesympaticky. No vlastne vypada jako vetsina hospodskych. Uz od pohledu je videt,ze to nebude dobry clovek. Lidi okolo vypadaji spokojene, asi poskytuje kvalitni alkohol.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Vitej v moji hospode,jak ti muzu poslouzit?")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Tak to u me asi nepochodis, nikoho nepotrebuji, vystacim si sam a nevim kdo schani pracanta.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Kdo jsi?") // kdo jsi
+  argo.setText(argo.newTextLine,"Ahoj, ja jsem hospodsky a patri mi tato hospoda.")
+  argo.questDialog_HTMLGUMP
+  
+
+[dialog d_mq032_hospodsky button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Kupit_sud"))
+  IF (<SRC.RESTEST 3000 i_gold>)
+  say("Tak tady to mas.")
+  src.giveitem(i_mq032_menegil_sud)
+  src.consume(3000 i_gold)
+  ELSE
+  say("Vzdyt ty nemas dost penez!")
+  ENDIF
+elseif (<argn> == argo.dialog_linkButton("Nekupi"))
+  say("Tak pak vypadni z me hospody!")
+endif
+
+///////////////////////////////////////////
+
+[dialog d_mq032_rybar]
+argo.questDialog_create(03030,"Umbarsky Rybar")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 5)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Ryby?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Hmmm, mozna by jsem ti mohl prodat nejake ryby.")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"*Nakoupit*")
+  argo.questDialog_addResponse(0,1,1,"Nakoupit",1) 
+
+argo.dialog_page("Nesu ti")
+  if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5))
+    argo.setText(<argo.newTextLine>,"Hmmm?")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7))
+    argo.setText(<argo.newTextLine>,"Neses mi ty penize za ryby?")
+    argo.questDialog_HTMLGUMP 
+    argo.setText(argo.newTextLine,"Ne, vlastne jeste jsem <?src.sex(nebyl,nebyla)?> u prodejce...")
+    argo.questDialog_addResponse(0,1,1,"odmietnutie")
+    if (<arg(mq032_menegil)> == 7)
+      argo.setText(argo.newTextLine,"Prodejce rikal, ze ti uz zaplatil!")
+      argo.questDialog_addResponse(0,1,1,"mq032_have_paid") 
+    endif
+  elseif ((<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(<argo.newTextLine>,"Hmmm?")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Neprijemne vyhlizejici chlap, od neho by radsi clovek nemel nic chtit...*")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5))
+    argo.setText(<argo.newTextLine>,"Zdravim te.")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7))
+    argo.setText(<argo.newTextLine>,"Bud zdrav, jsem rad, ze te vidim, mas pro me ty penize?")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(<argo.newTextLine>,"Zdravim te. Ryby si uz dostal, chces po mne jeste neco?!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  endif
+  
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Ja pro teba zadnou praci nemam, ja mam svoje rybare, mozna jestli nekdo z nich odejde, ale do te doby urcite ne...")
+  argo.questDialog_HTMLGUMP
+
+if (<arg(mq032_menegil)> == 5)
+argo.dialog_page("Ryby?")
+  argo.setText(argo.newTextLine,"Proc se ptas na ryby? Ja se zivim jejich prodejem, jestli te to zajima.")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vlastne, ja nemam cas na rozhovor s tebou...")
+    argo.questDialog_addResponse(0,0,1,"have_no_time") 
+    argo.setText(argo.newTextLine,"Posila me za tebou umbarsky prodejce Menegil, ze pry si u teba objednal ryby.")
+    argo.questDialog_addResponse(0,0,1,"posiela_predajca") 
+
+argo.dialog_page("have_no_time")  
+  argo.setText(argo.newTextLine,"Aha, tak to ta potom nezdrzuj ani me, ja ho taky nemam moc.")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  
+    
+argo.dialog_page("Kdo jsi?") // kdo jsi
+  argo.setText(argo.newTextLine,"Ahoj! Jmenuju se Darthan, jsem velitel posadky na jedne obrovske rybarske lode.")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Take te zdravim, jmenuji se <?src.name?> a jen prochazim kolem.")
+    argo.questDialog_addResponse(0,0,1,"JenProchazim") 
+    argo.setText(argo.newTextLine,"Jmenuji se <?src.name?> a posila me za tebou prodejce Menegil.")
+    argo.questDialog_addResponse(0,0,0,"posiela_predajca") 
+
+  argo.dialog_page("JenProchazim")
+    argo.setText(argo.newTextLine,"Tak potom me ani neotravuj, mam dulezitejsi veci na praci jako ztracet cas rozhovorem s tebou.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+
+argo.dialog_page("posiela_predajca")  
+  argo.setText(argo.newTextLine,"Hmm, ano vim o tom, ale on mi stale nezaplatil, takze ti nic nedam, dokud neuvidim penize...")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"O tom mi nic nerekl, pujdu si s nim popovidat...")
+    argo.questDialog_addResponse(0,1,1,"mq032_talk_with_menegil") 
+    argo.setText(argo.newTextLine,"Tak nato ja kaslu, ja ti nic nedam!")
+    argo.questDialog_addResponse(0,1,1,"Odmietnutie") 
+endif
+
+[dialog d_mq032_rybar button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Odmietnutie"))
+  say("Tak me potom ani neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("mq032_talk_with_menegil"))
+  say("No ale pohni si, bez toho mu ty ryby neposlu...")
+  src.qtag(mq032_menegil,6,40)
+elseif (<argn> == argo.dialog_linkButton("mq032_have_paid"))
+  say("Vlastne ano, mas pravdu uz si vzpominam, tak tady mas ty ryby pro neho.")
+  src.qtag(mq032_menegil,8,40)
+  src.SysMessage("<?src.sex(Prijal,Prijala)?> si ryby od Rybara.")
+elseif (<argn> == argo.dialog_linkButton("Nakoupit"))
+  say("Rozne ryby na predaj u mne, za velmi vyhodne ceny")
+  buy
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Tobe take hodne stesi priteli...")
+endif
+
+///////////////////////////////////////////
+
+
+[dialog d_mq032_latkarka]
+argo.questDialog_create(03015,"Predajkyna latky")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 10)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif 
+if ((<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 23))
+  argo.questDialog_baseButt(2,21,"Latka?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(<argo.newTextLine>,"Zivim sa vyrobou a prodejem latky, ale ted toho mam velmi moc, promin.")
+  argo.questDialog_HTMLGUMP
+ 
+argo.dialog_page("Nesu ti")
+  argo.setText(<argo.newTextLine>,"Hmmm?")
+  argo.questDialog_HTMLGUMP
+  if (<arg(mq032_menegil)> == 12)
+    argo.setText(argo.newTextLine,"Nesu ti ty nite od tvojeho pomocnika.")
+    argo.questDialog_addResponse(0,1,1,"mq032_give_strings") 
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Prijemna starsi zena, velmi pekne oblecena, vsechno jeji obleceni je peclive upravene, jde videt, ze ve svem remesle je fakt sikovna.*")
+  argo.questDialog_HTMLGUMP  
+    
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Promin, ja uz pomocnika mam, prestoze nevim kde sa ted toula, ale nepotrebuju dalsiho. ")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10))
+    argo.setText(<argo.newTextLine>,"Vitej.")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12))
+    argo.setText(<argo.newTextLine>,"Ahoj, mas pro me ty nite?")
+    argo.questDialog_HTMLGUMP
+    if (<arg(mq032_menegil)> == 12)
+      argo.setText(argo.newTextLine,"Ano ano, tady je mas.")
+      argo.questDialog_addResponse(0,1,0,"mq032_give_strings") 
+    endif
+  elseif ((<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22))
+    argo.setText(<argo.newTextLine>,"Ahoj, ta latka bude pripravena brzy.")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(mq032_menegil_prevozca)> == 0)
+    if (<arg(mq032_menegil)> == 23)
+      argo.setText(<argo.newTextLine>,"Ahoj, mam pro tebe pripavenou tu latku!")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Och vyborne, presne proto jsem se u tebe <?src.sex(zastavil,zastavila)?>, jsem neco <?src.sex(dluzny,dluzna)?>?")
+        argo.questDialog_addResponse(0,0,1,"nieco_dlzny") 
+    elseif ((<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26))
+      argo.setText(<argo.newTextLine>,"Ahoj, dala jsem tu latku prevoznikovi. Doufam, ze je v poradku.")
+      argo.questDialog_HTMLGUMP
+    elseif ((<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+      argo.setText(<argo.newTextLine>,"Ahoj, doufam, ze je ta latka v poradku.")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"*Rozloucit se*")
+        argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+    endif
+  elseif (<eval src.qtag(mq032_menegil_prevozca)> == 1)
+    if ((<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+      argo.setText(<argo.newTextLine>,"Ahoj, dala jsem tu latku prevoznikovi. Doufam, ze je v poradku.")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"*Rozloucit se*")
+        argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+    endif
+  endif
+  
+if (<arg(mq032_menegil)> == 10)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(<argo.newTextLine>,"Ahoj, jmenuju se Rhalla, zivim se vyrobou a prodejem latky.")
+    argo.questDialog_HTMLGUMP
+endif
+
+if ((<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 23))
+  argo.dialog_page("Latka?")
+    if (<arg(mq032_menegil)> == 10)
+      argo.setText(<argo.newTextLine>,"Zivim se vyrobou a prodejem latky, proc se na to ptas?")
+      argo.questDialog_HTMLGUMP 
+        argo.setText(argo.newTextLine,"Posila me prodejce Menegil, ze si objednal u tebe latku")
+        argo.questDialog_addResponse(0,0,1,"posiela_predajca") 
+        argo.setText(argo.newTextLine,"Vlastne nic, promin")
+        argo.questDialog_addResponse(0,1,1,"odmietnutie") 
+    elseif (<arg(mq032_menegil)> == 23)
+      if (<eval src.qtag(mq032_menegil_prevozca)> == 0)
+        argo.setText(<argo.newTextLine>,"Ahoj, mam pro tebe pripavenou tu latku!")
+        argo.questDialog_HTMLGUMP
+          argo.setText(argo.newTextLine,"Och vyborne, presne proto jsem se u tebe <?src.sex(zastavil,zastavila)?>, jsem neco <?src.sex(dluzny,dluzna)?>?")
+          argo.questDialog_addResponse(0,0,0,"nieco_dlzny") 
+      elseif (<eval src.qtag(mq032_menegil_prevozca)> == 1)
+        argo.setText(<argo.newTextLine>,"Ahoj, pro latku si prisel prevoznik, povidal, ze si mu <?src.sex(zaplatil,zaplatila)?>, aby ji odnesl, tak jsem mu ji dala.")
+        argo.questDialog_HTMLGUMP      
+          argo.setText(argo.newTextLine,"Ano ano, dekuji velmi pekne.")
+          argo.questDialog_addResponse(0,1,0,"Goodbye") 
+      endif
+    endif
+endif
+if (<arg(mq032_menegil)> == 10)    
+  argo.dialog_page("posiela_predajca")
+    argo.setText(<argo.newTextLine>,"Ach ano, bohuzel latku pro neho jeste nemam, protoze muj pomocnik Siran mi mel donest nite a nejak se s nimi jeste neukazal a bez toho to nemuzu udelat. Kdybys mi od neho prinesl ty nite tak by jsem to vyrobila driv.")
+    argo.questDialog_HTMLGUMP 
+      argo.setText(argo.newTextLine,"Promin, na toto nemam cas.")
+      argo.questDialog_addResponse(0,1,0,"odmietnutie") 
+      argo.setText(argo.newTextLine,"Dobre, kde ho najdu?")
+      argo.questDialog_addResponse(0,1,1,"mq032_accept") 
+endif
+
+if (<eval src.qtag(mq032_menegil_prevozca)> == 0) && (<arg(mq032_menegil)> == 23)
+  argo.dialog_page("nieco_dlzny")
+    argo.setText(<argo.newTextLine>,"Ne ne, tu mas ty latky jak prodejce chtel, omlouvam se za to spozdeni.")
+    argo.questDialog_HTMLGUMP 
+      argo.setText(argo.newTextLine,"Dekuji.")
+      argo.questDialog_addResponse(0,1,1,"mq032_complete") 
+endif
+
+[dialog d_mq032_latkarka button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Odmietnutie"))
+  say("Aha, tak se teda mej.")
+elseif (<argn> == argo.dialog_linkButton("mq032_complete"))
+  say("Neni zac")
+  src.SysMessage("<?src.sex(Prijal,Prijala)?> si latky od svadleny.")
+  src.qtag(mq032_menegil,27,40)
+elseif (<argn> == argo.dialog_linkButton("mq032_accept"))
+  say("Vyborne, on byl pro ty nite v harade, takze by mel byt nekde na ceste...")
+  src.qtag(mq032_menegil,11,40)
+elseif (<argn> == argo.dialog_linkButton("mq032_give_strings"))
+  say("Dakujem! Hned se pustim do prace, pro latku se zastav brzo.")
+  src.SysMessage("<?src.sex(Podal,Podala)?> si nite svadlene.")
+  src.qtag(mq032_menegil,13,40)
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+////////////////////////////////////////
+
+[dialog d_mq032_latkarka_pomocnik]
+argo.questDialog_create(03102,"Pomocnik latkarky")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 11)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Nite?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(<argo.newTextLine>,"Promin, ja jsem jen pomocnik, neprodavam nic.")
+  argo.questDialog_HTMLGUMP
+ 
+argo.dialog_page("Nesu ti")
+  argo.setText(<argo.newTextLine>,"Hmmm?")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Skaredy, zanedbany chlap, oci podlite alkoholem. Trochu tim alkoholem i pachne. Rozhodne by ho clovek nechtel za sveho pomocnika.*")
+  argo.questDialog_HTMLGUMP  
+    
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Promin, ja te fakt nemam jak zamestnat.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Vitej.")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(mq032_menegil)> == 11)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(<argo.newTextLine>,"Ahoj, jmenuju se Siran, jsem pomocnik tahabarske svadleny Rhalli.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Nite?")
+      argo.setText(<argo.newTextLine>,"Jake nite? O cem to mluvis?")
+      argo.questDialog_HTMLGUMP 
+        argo.setText(argo.newTextLine,"Posila me Rhalla, ze pry si ji mel donest nejake nite ale zatoulal si se.")
+        argo.questDialog_addResponse(0,0,1,"posiela_latkarka") 
+        argo.setText(argo.newTextLine,"Vlastne nic, promin")
+        argo.questDialog_addResponse(0,1,1,"odmietnutie") 
+  
+    
+  argo.dialog_page("posiela_latkarka")
+    argo.setText(<argo.newTextLine>,"Ach ano, vlastne mas pravdu. Ja jsem se jen zastavil na chvilku tady v hospode a uplne jsem ztratil pojem o case, dam ti ty nite a ty ji to odnes, dekuju.")
+    argo.questDialog_HTMLGUMP 
+      argo.setText(argo.newTextLine,"Promin, tohle neni moje prace.")
+      argo.questDialog_addResponse(0,1,0,"odmietnutie") 
+      argo.setText(argo.newTextLine,"Dobre, odnesu ji to.")
+      argo.questDialog_addResponse(0,1,1,"mq032_accept_strings") 
+endif
+
+[dialog d_mq032_latkarka_pomocnik button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Odmietnutie"))
+  say("Aha, tak se teda mej.")
+elseif (<argn> == argo.dialog_linkButton("mq032_accept_strings"))
+  say("Prosim.")
+  src.SysMessage("<?src.sex(Prijal,Prijala)?> si nite od pomocnika.")
+  src.qtag(mq032_menegil,12,40)
+endif
+
+/////////////////////////////////////
+
+[dialog d_mq032_prevozca]
+argo.questDialog_create(03150,"Prevoznik tovaru")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 13)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif 
+if (<arg(mq032_menegil)> == 23)
+  argo.questDialog_baseButt(2,21,"Latka?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+   argo.setText(argo.newTextLine,"Zivim se prevozem veci, potrebujes neco prevezt?")
+   argo.questDialog_HTMLGUMP
+    if (<arg(mq032_menegil)> == 13)
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Ano, <?src.sex(potreboval,potrebovala)?> bych, aby si sel za svadlenou Rhallou, vyzvedl od ni latku, a kdyz ji bude mit hotovu, odnesl ji prodajcovi Menegilovi v umbaru.")
+      argo.questDialog_addResponse(1,0,1,"zadava_pracu") 
+    endif
+      argo.setText(argo.newTextLine,"Hm, dekuji za nabidku, nepotrebuju nic takoveho.")
+      argo.questDialog_addResponse(0,1,1,"odmietnutie") 
+      
+if (<arg(mq032_menegil)> == 13) 
+  argo.dialog_page("zadava_pracu")
+    argo.setText(argo.newTextLine,"Hmmm, to by jsem mohl udelat, ale zadarmo to urcite nebude, takovych 3000 zlatych bych zato chtel.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobre, to beru.")
+      argo.questDialog_addResponse(0,1,1,"mq032_pay_money")
+      argo.setText(argo.newTextLine,"To je moc, o to nemam zajem, promin.")
+      argo.questDialog_addResponse(0,1,0,"odmietnutie")
+endif  
+   
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Promin, ja pro tebe zadnu praci nemam.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(<argo.newTextLine>,"Hmmm?")
+  argo.questDialog_HTMLGUMP
+  if (<arg(mq032_menegil)> == 25)
+    argo.setText(argo.newTextLine,"Mam tu latku od tvojeho pomocnika, vrat mi penize ktere jsem ti dal!")
+    argo.questDialog_addResponse(0,1,1,"mq032_give_money_back") 
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Sympaticky, docela urostly chlap. Ramena ma siroka, pravepodobne nosenim veci, boty opotrebovane castym chozenim. Svoji praci asi plni poctive.*")
+  argo.questDialog_HTMLGUMP  
+  
+argo.dialog_page("Pozdrav")
+ if (<eval src.qtag(mq032_menegil_prevozca)> == 0)
+    argo.setText(<argo.newTextLine>,"Vitej.")
+    argo.questDialog_HTMLGUMP
+ elseif (<eval src.qtag(mq032_menegil_prevozca)> == 1)
+  if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13))
+    argo.setText(<argo.newTextLine>,"Vitej.")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22))
+    argo.setText(<argo.newTextLine>,"Vitej, Rhalla jeste stale nema hotovou latku, ale hned jak ji bude mit pujdu pro to a odnesu to Menegilovi.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(mq032_menegil)> == 23)
+    argo.setText(<argo.newTextLine>,"Ahoj, latku jsem dal mojemu pomocnikovi aby ji odnesl Menegilovi.")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25))
+    argo.setText(<argo.newTextLine>,"Ahoj, doufam, ze se ti podari ziskat tu latku.")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(<argo.newTextLine>,"Ahoj, muzu pro tebe jeste neco udelat?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ne ne, ale dakuji za zeptani.")
+      argo.questDialog_addResponse(0,1,1,"Goodbye") 
+  endif
+ endif
+    
+if (<arg(mq032_menegil)> == 23)
+  argo.dialog_page("Latka?")
+  if (<eval src.qtag(mq032_menegil_prevozca)> == 0)
+    argo.setText(<argo.newTextLine>,"O jake latce mluvis? Ja nevim o nicem.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Vlastne nic, promin.")
+      argo.questDialog_addResponse(0,1,0,"odmietnutie") // short text & exit button & new button
+  elseif (<eval src.qtag(mq032_menegil_prevozca)> == 1)
+    argo.setText(<argo.newTextLine>,"Dal jsem latku mojemu pomocnikovi Tomaldovi, aby ji odnesl Menegilovi.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"No latku jeste nedostal, co mam delat? Potrebuje ji.")
+      argo.questDialog_addResponse(0,0,1,"info_latka") 
+  endif
+  
+  argo.dialog_page("info_latka")
+    argo.setText(<argo.newTextLine>,"Hmmm, zkus najit Tomalda, ale nevim kde by se mel vyskytovat, jak ho najdes zastav se potom jeste u mne prosim.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"A proc bych ho <?src.sex(mel,mela)?> hledat? Mne se to nechce!")
+      argo.questDialog_addResponse(0,1,0,"odmietnutie") 
+      argo.setText(argo.newTextLine,"Dobre, zkusim ho najit.")
+      argo.questDialog_addResponse(0,1,1,"mq032_find_tomald") 
+endif
+
+if (<arg(mq032_menegil)> == 13)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(<argo.newTextLine>,"Ahoj, jmenuju se Herrar, moji praci je prevoz ruznych veci o ktere me lidi pozadaji.")
+    argo.questDialog_HTMLGUMP
+endif
+
+[dialog d_mq032_prevozca button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Odmietnutie"))
+  say("Aha, tak me nevyrusuj.")
+elseif (<argn> == argo.dialog_linkButton("mq032_find_tomald"))
+  say("Vyborne, bohuzel nevim kde by mohl byt ale potom se ti odmenim.")
+  src.qtag(mq032_menegil,24,40)
+elseif (<argn> == argo.dialog_linkButton("mq032_pay_money"))
+  IF (<SRC.RESTEST 3000 i_gold>)
+    say("Dekuji, postaram se o to.")
+    src.qtag(mq032_menegil,14,40)
+    src.qtag(mq032_menegil_prevozca,1,40)
+    src.consume(3000 i_gold)
+  ELSE
+    say("Vzdyt ty nemas dost penez!")
+  ENDIF
+elseif (<argn> == argo.dialog_linkButton("mq032_give_money_back"))
+  say("Dobra, tak tady mas spatky tvoje penize.")
+  src.qtag(mq032_menegil,26,40)
+  src.givegold(3000)
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+////////////////////////////////////
+
+[dialog d_mq032_prevozca_pomocnik]
+argo.questDialog_create(03019,"Prevoznikov pomocnik")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 24)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Latka?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+   argo.setText(argo.newTextLine,"Promin, ja jsem jen pomocnik.")
+   argo.questDialog_HTMLGUMP
+    if ((<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+    endif
+    
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Promin, ja pre tebe zadnu praci nemam.")
+  argo.questDialog_HTMLGUMP
+    if ((<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+    endif
+    
+argo.dialog_page("Nesu ti")
+  argo.setText(<argo.newTextLine>,"Hmmm?")
+  argo.questDialog_HTMLGUMP
+   if ((<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(argo.newTextLine,"Vlastne nic, mej se.")
+    argo.questDialog_addResponse(0,1,1,"Goodbye") 
+   endif
+   
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Nizky mlady hoch, od pohledu nepusobi velmi duverihodne...*")
+  argo.questDialog_HTMLGUMP  
+  
+argo.dialog_page("Pozdrav")
+    argo.setText(<argo.newTextLine>,"Vitej.")
+    argo.questDialog_HTMLGUMP
+
+    
+if (<arg(mq032_menegil)> == 24)
+  argo.dialog_page("Latka?")
+    argo.setText(<argo.newTextLine>,"Mel jsem odnest latku prodejcovi Menegilovi do Umbaru, no popravde, trochu jsem se zpozdil, ale uz se chystam mu to odnest...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"No ale ja tu latku potrebuju, tak mi ji okamzite dej!")
+      argo.questDialog_addResponse(0,1,1,"mq032_accept_sheet") 
+  
+
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(<argo.newTextLine>,"Ahoj, jmenuju se Tomald, jsem pomocnik Tahabarskeho prevoznika Herrara.")
+    argo.questDialog_HTMLGUMP
+endif
+
+[dialog d_mq032_prevozca_pomocnik button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("mq032_accept_sheet"))
+  say("Tak tady ji teda mas, neni zac.")
+  src.qtag(mq032_menegil,25,40)  
+  src.SysMessage("<?src.sex(Prijal,Prijala)?> si latku od pomocnika.")
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+//////////////////////////////////
+
+[dialog d_mq032_skladnik]
+argo.questDialog_create(03100,"Spravca skladu")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 16)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif 
+if (<arg(mq032_menegil)> == 19)
+  argo.questDialog_baseButt(2,21,"Manzelka?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+ if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16))
+  argo.setText(argo.newTextLine,"Jem spravce tohoto skladu, ale takto nic neprodavam, my jrn prijimame objednavky, muzes si ale u nas udelat objednavku.")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"O to nemam zajem, ale dekuju za nabidku.")
+    argo.questDialog_addResponse(0,1,1,"odmietnutie") 
+  if (<arg(mq032_menegil)> == 16)
+    argo.setText(argo.newTextLine,"Presne proto me za tebou posila prodejce Menegil, chtel by si objednat banany.")
+    argo.questDialog_addResponse(0,0,1,"posiela_predajca_1") 
+  endif
+ elseif ((<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18))
+    argo.setText(argo.newTextLine,"Uz jsem ti rikal, mame moc objednavek, takze neprijimame dalsi, rekni prodejci, ze se s tim neda nic delat.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Hm, tak to povidej nikomu jinemu, ja o takovou odpoved nemam zajem!")
+      argo.questDialog_addResponse(0,1,1,"odmietnutie") 
+    if (<arg(mq032_menegil)> == 18)
+     argo.setText(argo.newTextLine,"A nedalo by se to nijak jinak zaridit? Nejaky mensi uplatek?")
+     argo.questDialog_addResponse(0,0,1,"uplatok_info") 
+    endif
+ elseif (<arg(mq032_menegil)> == 19)
+    argo.setText(argo.newTextLine,"Ty si se <?src.sex(opovazil,opovazila)?> vyhrozovat moji manzelce?! Jak si to predstavujes?!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"No to aby si vedel, ze se ti moze neco stat kdyz to pro me neudelas...")
+      argo.questDialog_addResponse(0,0,1,"vyhrazal_sa") 
+      argo.setText(argo.newTextLine,"Nic takoveho jsem <?src.sex(neudelal,neudelala)?>! O nicem nevim!")
+      argo.questDialog_addResponse(0,1,0,"mq032_did_not") 
+ elseif (<arg(mq032_menegil)> == 20)
+    argo.setText(argo.newTextLine,"Hmmm, no dobre, pripisu Menegila na seznam objednavek...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dakuji, hned mu to jdu rict...")
+      argo.questDialog_addResponse(0,1,1,"banany_vybavene") 
+ elseif ((<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(argo.newTextLine,"Uz minule jsemm ti rikal, ze te tu uz nechci nikdy videt...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+ endif
+ 
+if (<arg(mq032_menegil)> == 16) 
+  argo.dialog_page("posiela_predajca_1")
+    argo.setText(<argo.newTextLine>,"Bohuzel, nas sklad ma velmi mnoho objednavek, neprijimame uz zadne dalsi...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Hmmm, tak ja si pujdu jeste povykladat s Menegilom")
+      argo.questDialog_addResponse(0,1,1,"mq032_talk_to_menegil")
+endif   
+
+if (<arg(mq032_menegil)> == 18)
+argo.dialog_page("uplatok_info")
+  argo.setText(<argo.newTextLine>,"No vis, mozna par zlataku by dokazalo uvolnit misto na seznamu...")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Tak nato zapomen, nedam ti ani zlatak...")
+    argo.questDialog_addResponse(0,1,1,"mq032_refuse_to_pay") 
+    argo.setText(argo.newTextLine,"Hmm a kolik by sis tak predstavoval?")
+    argo.questDialog_addResponse(0,0,1,"uplatok_info2") 
+endif
+
+if (<arg(mq032_menegil)> == 18)    
+argo.dialog_page("uplatok_info2")
+  argo.setText(<argo.newTextLine>,"Takovych 5000 zlatych by melo byt dost...")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Tak dobre, tady to mas.")
+    argo.questDialog_addResponse(0,1,1,"mq032_pay") 
+    argo.setText(argo.newTextLine,"Tak na to zapomen, to ti nedam!")
+    argo.questDialog_addResponse(0,1,0,"mq032_refuse_to_pay") 
+endif
+    
+if (<arg(mq032_menegil)> == 19)    
+  argo.dialog_page("vyhrazal_sa")
+    argo.setText(<argo.newTextLine>,"Hmmm, napisu prodejce na ten seznam, ale uz nikdy v zivote te nechci videt a nepriblizis se k moji manzelce, slibujes?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobre, uz nikdy se k ni nepriblizim, slibuju.")
+      argo.questDialog_addResponse(0,1,1,"mq032_promise") 
+endif
+
+argo.dialog_page("Nesu ti")
+  argo.setText(<argo.newTextLine>,"Hmmm?")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Pekne vyhlizejici chlap, no na pohlad prisny clovek, ale nevypada, ze by se ho nedalo nejak rozumne presvedcit.*")
+  argo.questDialog_HTMLGUMP  
+    
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Nenabizim zadnu praci.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18)||(<arg(mq032_menegil)> == 19)||(<arg(mq032_menegil)> == 20))
+    argo.setText(<argo.newTextLine>,"Vitej v mojem sklade.")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(<argo.newTextLine>,"Uz jsem ti rikal, aby si za mnou uz <?src.sex(nechodil,nechodila)?>!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1)
+  endif
+  
+if (<arg(mq032_menegil)> == 16)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(<argo.newTextLine>,"Ahoj, ja jsem spravce tohoto skladu, skladujeme tu hlavne banany, sem tam se tu najde aj neco jine, ale hlavne ty banany.")
+    argo.questDialog_HTMLGUMP
+endif
+
+if (<arg(mq032_menegil)> == 19)
+  argo.dialog_page("Manzelka?")
+    argo.setText(<argo.newTextLine>,"Takze to jsi <?src.sex(byl,byla)?> ty, kdo vyhrozoval moji manzelce! A ted si ke me klidne dojdes!")
+    argo.questDialog_HTMLGUMP 
+      argo.setText(argo.newTextLine,"Nic takoveho jsemm <?src.sex(neudelal,neudelala)?>! O nicem nevim!")
+      argo.questDialog_addResponse(0,1,0,"mq032_did_not") 
+      argo.setText(argo.newTextLine,"Ano, <?src.sex(byl,byla)?> jsem to ja, to aby si prehodnotil ten seznam objednavek...")
+      argo.questDialog_addResponse(0,0,0,"vyhrazal_sa") 
+endif
+
+[dialog d_mq032_skladnik button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Odmietnutie"))
+  say("Tak me potom ani neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("mq032_did_not"))
+  say("Aj tak ti neverim! Vypadni odsud!")
+elseif (<argn> == argo.dialog_linkButton("mq032_talk_to_menegil"))
+  say("Delej jak myslis...")
+  src.qtag(mq032_menegil,17,40)
+elseif (<argn> == argo.dialog_linkButton("mq032_promise"))
+  say("Dobre, napisu tu objednavku, ale at te tu uz nevidim!")
+  src.qtag(mq032_menegil,21,40)
+elseif (<argn> == argo.dialog_linkButton("mq032_refuse_to_pay"))
+  say("Jak chces, tak az se rozmyslis, budu tady.")
+elseif (<argn> == argo.dialog_linkButton("mq032_pay"))
+  IF (<SRC.RESTEST 5000 i_gold>)
+  say("Dakuji, pripisem to na seznam objednavek, ale uz te tu nikdy nechci videt")
+  src.qtag(mq032_menegil,21,40)
+  src.consume(5000 i_gold)
+  ELSE
+  say("Vzdyt ty nemas dost penez!")
+  ENDIF
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej sa...")
+endif
+
+////////////////////////////////////////
+
+[dialog d_mq032_skladnik_manzelka]
+argo.questDialog_create(03011,"Manzelka Skladnika")
+
+argo.dialog_newPage("Pozdrav")
+arg(mq032_menegil,<eval src.qtag(mq032_menegil)>)
+
+if (<arg(mq032_menegil)> == 18)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Skladnik?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Ja nic neprodavam, to musis jit za mojim manzelem.")
+  argo.questDialog_HTMLGUMP
+ 
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Ja jsem jen zena v domacnosti, nemam te jak zamestnat.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co to pro me mas?")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Pekna zena, podle jejich rukou jde videt, ze vetsinu svojeho casu travi doma malovanim se a staranim se o chod domacnosti.*")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if ((<arg(mq032_menegil)> == 0)||(<arg(mq032_menegil)> == 1)||(<arg(mq032_menegil)> == 2)||(<arg(mq032_menegil)> == 3)||(<arg(mq032_menegil)> == 4)||(<arg(mq032_menegil)> == 5)||(<arg(mq032_menegil)> == 6)||(<arg(mq032_menegil)> == 7)||(<arg(mq032_menegil)> == 8)||(<arg(mq032_menegil)> == 9)||(<arg(mq032_menegil)> == 10)||(<arg(mq032_menegil)> == 11)||(<arg(mq032_menegil)> == 12)||(<arg(mq032_menegil)> == 13)||(<arg(mq032_menegil)> == 14)||(<arg(mq032_menegil)> == 15)||(<arg(mq032_menegil)> == 16)||(<arg(mq032_menegil)> == 17)||(<arg(mq032_menegil)> == 18))
+    argo.setText(<argo.newTextLine>,"Zdravim te.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(mq032_menegil)> == 19)
+    argo.setText(<argo.newTextLine>,"Uz me nechej na pokoji!")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(mq032_menegil)> == 20)||(<arg(mq032_menegil)> == 21)||(<arg(mq032_menegil)> == 22)||(<arg(mq032_menegil)> == 23)||(<arg(mq032_menegil)> == 24)||(<arg(mq032_menegil)> == 25)||(<arg(mq032_menegil)> == 26)||(<arg(mq032_menegil)> == 27)||(<arg(mq032_menegil)> == 28))
+    argo.setText(<argo.newTextLine>,"Prosim, neotravuj me.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  endif
+  
+if (<arg(mq032_menegil)> == 18)
+  argo.dialog_page("Skladnik?")
+    argo.setText(<argo.newTextLine>,"To je muj manzel, co od neho potrebujes?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"No vis, on nechce prijmout moji objednavku.")
+      argo.questDialog_addResponse(0,0,1,"objednavka") 
+      argo.setText(argo.newTextLine,"Vlastne nic, promin. Sbohem")
+      argo.questDialog_addResponse(0,1,1,"Goodbye") 
+      
+  argo.dialog_page("objednavka")
+    argo.setText(<argo.newTextLine>,"A proc to rikas mne? Vsak ja s tim nic nemam!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ja ani nevim, promin. Mej se")
+      argo.questDialog_addResponse(0,1,0,"Goodbye") 
+      argo.setText(argo.newTextLine,"Protoze jak ji neprijme, mohla by se stat nejaka nehoda, rozumis mi?")
+      argo.questDialog_addResponse(0,1,1,"mq032_warning") 
+      
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Ahoj! Ja jsem Elurien, muj manzel pracuje jako spravca Haradskeho skladu.")
+    argo.questDialog_HTMLGUMP
+endif
+
+[dialog d_mq032_skladnik_manzelka button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("mq032_warning"))
+  say("Rozumim ti, ja to s nim vybavim, jen nam uz dej pokoj!") 
+  src.qtag(mq032_menegil,19,40)
+  src.addexp(150)
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+///////////////////////////////

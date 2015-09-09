@@ -1,0 +1,276 @@
+/////////////////////////////////////////////
+//
+//     **   Gondorské Kvesty  **
+//
+//
+//
+//   Ucelove Gondorske Postavy
+//
+//   Kvest Gondor-001 Problemy v Minas Tirith
+//
+//   Kvest Gondor-002 Gondorske Problemy 
+//
+//   Kvest Gondor-003 Rohanske Problemy     
+//
+//   Kvest Gondor-004 Krajske Problemy 
+//
+//   Kvest Gondor-005 Elfove
+//
+//
+/////////////////////////////////////////////
+  
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                         Ucelove Gondorske Postavy                                //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_h_quest_postava_0007]
+
+//   umístìní: Bard recnik a pohodar  Kdekoliv v Minas Tirith
+
+
+NAME=Bard Kardusaj 
+ID=c_man
+attack=90
+ARMOR=60
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+tag.guard=1
+tag.guardopposite=c_m_guard_red_pesak
+tag.guardhire=500000
+TSPEECH=spk_vypravec_vtipy
+TSPEECH=spk_kecy_a_drby
+TSPEECH=spk_krvave_prizraky
+TSPEECH=spk_q020_bard
+TEVENTS=e_guard 
+TEVENTS=e_character
+TEVENTS=e_monster
+
+
+CATEGORY=Kvesty
+SUBSECTION=Ucelove Gondorske Postavy
+DESCRIPTION=Bard Kardusaj
+
+ON=@CREATE 
+brain=6
+COLOR=color_elf
+STR={400 500} 
+INT={80 90} 
+DEX={200 300} 
+KARMA=1000
+MAGERY={90.0 100.0} 
+WRESTLING={70.0 80.0} 
+TACTICS{40.0 60.0} 
+tag.experience=<eval {40.0 60.0}>
+DETECTINGHIDDEN={90.0 100.0}
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+MACEFIGHTING={150.0 200.0}
+Resist={120.0 150.0}
+
+tag(noanimate,1)
+
+ON=@NPCRESTOCK 
+itemnewbie=random_male_hair
+     color=colors_hair
+     itemnewbie=random_facial_hair
+     color=match_hair
+     item=i_shirt_fancy
+     color=colors_blue
+     item=i_pants_long
+     color=colors_green
+     item=i_hat_feather
+     color=colors_green
+     item=random_boots
+     item=random_coin_purse
+     itemnewbie=i_spellbook
+     addspell=s_flamestrike
+      color=0036
+
+
+ON=@npcseenewplayer
+ 
+DORAND 9
+sfx 744
+sfx 745
+sfx 746
+sfx 68
+sfx 1048
+      SAY= "Panove a damy vitam vas v <REGION.NAME> pristupte blize !!"   
+      SAY= "Pristupte a veseltese !!"
+      SAY= "Znam tisice povidek...  chces li si nejakou poslechnout"
+          enddo
+
+
+
+
+
+
+[CHARDEF C_m_vypravec_0001]
+
+//   umístìní: dva pøed bránou do královských zahrad a citadeli..   5840 3874 20
+
+
+NAME=straz citadely
+ID=C_MAN
+attack=90
+ARMOR=60
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+tag.guard=1
+tag.guardopposite=c_m_guard_red_pesak
+tag.guardhire=500000
+
+TSPEECH=spk_guard
+TSPEECH=spk_vypravec_straze_0001
+TEVENTS=e_guard 
+TEVENTS=e_character
+TEVENTS=e_monster
+
+CATEGORY=Kvesty
+SUBSECTION=Ucelove Gondorske Postavy
+DESCRIPTION=Straz citadeli (minas tirith)
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+brain=6//teleportuje se domu
+tag.mountcolor=0482
+//ALIGNMENT=GOOD
+COLOR=colors_skin
+karma=1000
+STR=1000
+DEX=1000
+INT=2000
+tag.experience=<eval {40.0 60.0}>
+DETECTINGHIDDEN={90.0 100.0}
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+WRESTLING={150.0 200.0}
+MACEFIGHTING={150.0 200.0}
+Resist={120.0 150.0}
+TACTICS={150.0 200.0}
+
+tag(noanimate,1)
+
+ITEMnewbie=i_monster_create
+//ITEMNEWBIE=i_lantern
+ITEMNEWBIE=random_male_hair
+COLOR=0481
+ITEMNEWBIE=i_platemail_chest
+COLOR=0482
+ITEMNEWBIE=i_platemail_gloves
+COLOR=0482
+ITEMNEWBIE=i_platemail_gorget
+COLOR=0482
+ITEMNEWBIE=i_platemail_leggings
+COLOR=0482
+ITEMNEWBIE=i_platemail_arms
+COLOR=0482
+//ITEMNEWBIE=i_sash
+//COLOR=0482
+ITEMNEWBIE=i_cape
+COLOR=0481
+ITEMNEWBIE=i_halberd
+COLOR=0481
+
+
+ON=@npcseenewplayer
+DORAND 9
+     say " uaaaaa to je dlouha sichta"
+     say *protahl se*      
+     say "Jeste 2 hodky a stridani.. "   
+     say "Joo  ta mela zadek.. "  
+     say "Hej ty..  pokud nemas propustku tak se ani nepriblizuj !!! "  
+     say * ziva *   
+     say " hep cik " 
+     say * rozhlizi se *  
+     say * pozoruje nove prichoziho *    
+   enddo
+
+ON=@NPCRestock
+ITEM=i_gold,{0 100}
+
+ON=@NPCRefuseItem
+	SAY Jsem verny krali !!!
+	return 1
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Gondor-001 Problemy v Minas Tirith                         //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Gondor-002 Gondorske Problemy                              //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Gondor-003 Rohanske Problemy                               //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Gondor-004 Krajske Problemy                                //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                             Kvest Gondor-005 Elfove                              //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+//  1.  Bard Kardusaj
+//  2.  Strazny do Minas Tirith bile veze -      
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+//////////////////  cestna straz MT citadela  ///////////////////////
+
+//   umístìní: dva pøed bránou do královských zahrad a citadeli..   5840 3874 20
+
+
+
+
+
+
+
+
+
+
+
+[eof]

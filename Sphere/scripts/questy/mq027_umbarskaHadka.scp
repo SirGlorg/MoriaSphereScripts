@@ -1,0 +1,611 @@
+/////////////////////////
+//    A n t o n i o    //
+/////////////////////////
+
+[dialog d_mq027_Antonio]
+argo.questDialog_create(03000,"<name>")
+argo.dialog_newPage("Pozdrav") // this is a comment as you can see ...
+
+if (<eval src.qtag(mq027_umbarskaHadka)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+else
+  argo.questDialog_basebutt(1,30,"Promluvit si")
+endif
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  if (<eval src.qtag(mq027_umbarskaHadka)> > 0) //quest initialized
+    argo.setText(argo.newTextLine,"Bud <src.sex("zdrav","zdrava")>.")
+    argo.questDialog_HTMLGUMP
+  else // quest has not even started
+    argo.setText(argo.newTextLine,"Zdravim te <src.sex("cizince","cizinko")>. Co te ke mne privadi?")
+    argo.questDialog_HTMLGUMP
+  endif
+
+if (<eval src.qtag(mq027_umbarskaHadka)> == 0)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(argo.newTextLine,"Jmenuju se Antonio. Jsem obycenjny zemedelec.")
+    argo.questDialog_HTMLGUMP
+else
+  argo.dialog_page("Promluvit si")
+    argo.setText(argo.newTextLine,"Co potrebujes?")
+    argo.questDialog_HTMLGUMP
+    if (<eval src.qtag(mq027_umbarskaHadka)> == 2) // Vincent refused to give back the shovel
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><src.sex("Mluvil","Mluvila")> jsem s Vincentem a tvrdi, ze ti nikdy zadnou lopatu nedluzil. Jsi pry lhar a karbanik. Co je na tom pravdy?")
+      argo.questDialog_addResponse(1,0,1,"mq027_AIsALiar") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 4) // Vincent refused to apologize & reciprocally asks for apology from Antonio
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><src.sex("Mluvil","Mluvila")> jsem s Vincentem a ten trva na tom, ze se mu mas za vsechny krivdy omluvit ty.")
+      argo.questDialog_addResponse(1,0,1,"mq027_apologizeToV") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 6) // Vincent insulted Antonio
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><src.sex("Byl","Byla")> jsem u Vincenta a vzkazuje ti, ze strazi se pry neboji. Navic dodal, ze jsi stara baba a tva zena je osklivejsi jak psi rozkrok napadeny hemeroidy.")
+      argo.questDialog_addResponse(1,0,1,"mq027_Insult") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 8) // Vincent asks for apology from Antonio (again...)
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><src.sex("Byl","Byla")> jsem u Vincenta a ten te zada, aby jsi odvolal svou posledni urazku. Zminil take neco o vidlich, ktere bys mohl najit ve svem brise v pripade, ze se mu neomluvis.")
+      argo.questDialog_addResponse(1,0,1,"mq027_apologizeToV") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 10) // The insult attacks also mother of A
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Vincent ti vzkazuje, ze tva urazka se tyka i tve matky. Jinak si to moc k srdci nevzal.")
+      argo.questDialog_addResponse(1,0,1,"mq027_wrongInsult") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 12) // Vincent denies brothership
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Vincent ztratil nervy a vyhnal me s tim, ze ti nic neda a navic se nemas dal nazyvat jeho bratrem.")
+      argo.questDialog_addResponse(1,0,1,"mq027_denyBrothership") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 14) // Vincent refuses to cooperate & won't accept me again
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Vincent se semnou odmitl nadale bavit. Chces-li po nem neco, mas za nim zajit sam.")
+      argo.questDialog_addResponse(1,0,1,"mq027_noCooperation") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 16) // Vincent has lost the shovel in a dice game
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Vincent tvou lopatu prohral v kostkach.")
+      argo.questDialog_addResponse(1,0,1,"mq027_lostShovel") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 18) // Vincent asks for 1k gp to have a chance for regaining lost money
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Vincent tvrdi, ze nema zadne penize. Muze pry tvou lopatu ziskat zpet, pokud mu pujcis tisic zlatych.")
+      argo.questDialog_addResponse(1,0,1,"mq027_askFor1Kgp") // long text & page button & new button
+    endif
+endif
+
+argo.dialog_page("Mohu pomoci?")
+  if (<eval src.qtag(mq027_umbarskaHadka)> == 0)
+    argo.setText(argo.newTextLine,"No poslys, <src.sex("mohl","mohla")> bys zajit za Vincentem. Je to povalec a buran, co se porad pokousi vymyslet nejake hlouposti, aby si vydelal tech par zlatych. Ja s nim uz nechci promluvit ani slovo. Nemam na to nervy. Dluzi mi lopatu. Pujcil jsem mu ji uz pred mesicem a jeste se neobtezoval mi ji donest zpet. Zajdes mi pro ni? Porad se flaka v hospode v pristavu a hraje kostky, temer jiste ho tam najdes.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, <src.sex("rad","rada")> to pro tebe udelam.")
+    argo.questDialog_addResponse(0,1,1,"mq027_assignQuest") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Ne ne, tohle po mne nechtej!")
+    argo.questDialog_addResponse(0,0,1,"mq027_assignQuestReject") // short text & page button & new button
+  else
+    argo.setText(argo.newTextLine,"Nic nepotrebuji.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Nemam, co bych ti nabidl.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Ja ti praci bohuzel nenabidnu. Jsem rad, ze uzivim sam sebe...")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Copak pro me mas?")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<?def_questDialog_colorTextEmote?>Antonio je chlapik vzhledu venkovskeho intelektuala. Jeho prazdne vsudypritomne oci preletaji po vsem, co je v okoli zaujme, a kdyz se na tebe diva mas pocit, ze jeho zrak tebou bezdecne prochazi. Jeho osoupane hadry svedci o zivotu v chudobe a drobne ruce o podvyzive a spise kuchynske ci pisatelske praci.<?def_questDialog_colorTextNormal?>")
+  argo.questDialog_HTMLGUMP
+
+if (<eval src.qtag(mq027_umbarskaHadka)> == 0)
+  argo.dialog_page("mq027_assignQuestReject")
+    argo.setText(argo.newTextLine,"No jak myslis, najdu si nekoho jineho.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Nojo, tak ja tam jdu...")
+    argo.questDialog_addResponse(0,1,0,"mq027_assignQuest") // short text & exit button & existing button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 2)
+  argo.dialog_page("mq027_AIsALiar")
+    argo.setText(argo.newTextLine,"Tohle ti o mne rekl?! <?def_questDialog_colorTextEmote?>*Antoniovy oci zajiskrily a vstek z nich zacal salat jako dym z hory Osudu*<?def_questDialog_colorTextNormal?> To se mi zda! Ten clovek nema nikdy dost! Jdi za nim a rekni mu, at se mi okamzite omluvi!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Marghulovy rany... No tak ja jdu zase za nim.")
+    argo.questDialog_addResponse(0,1,1,"mq027_seekApology") // short text & exit button & new button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 4)
+  argo.dialog_page("mq027_apologizeToV")
+    argo.setText(argo.newTextLine,"To uz ale neni mozne! Ta proradna krysa umbarska! Tohle teda prehnal! Vyrid mu, ze jestli neprestane s touhle komedii a neomluvi se mi, nahlasim ho strazim za kradez, aby mu usekly obe ty jeho prasivy hnaty!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No jak myslis, vyridim mu to...")
+    argo.questDialog_addResponse(0,1,1,"mq027_guardsThread") // short text & exit button & new button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 6) // Vincent insulted Antonio
+  argo.dialog_page("mq027_Insult")
+    argo.setText(argo.newTextLine,"Tohle ti rekl? Ten ma nervy! Kdyby umel hnojit rukama tak jako pusou, nemusel by krast cizi lopaty. A jeste k tomu sam ani zenu nema! Co mu je potom, jak vypada ta moje!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No... A ja mam nejspis jit a pretlumocit mu to, co?")
+    argo.questDialog_addResponse(0,0,1,"mq027_Insult_2") // short text & page button & new button
+
+  argo.dialog_page("mq027_Insult_2")
+    argo.setText(argo.newTextLine,"Jo, to bys <src.sex("byl hodny","byla hodna")>.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No slava, tak ja jdu...")
+    argo.questDialog_addResponse(0,1,1,"mq027_replyInsult") // short text & exit button & new button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 8) // Vincent asks for apology from Antonio (again...)
+  argo.dialog_page("mq027_apologizeToV")
+    argo.setText(argo.newTextLine,"More mi je svedkem, ze toho cloveka zardousim, nez skonci tenhle den! Vyrid mu, at se prestane chovat jako bastard a radsi mi vrati, co je me!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><src.sex("Rad","Rada")> to pro tebe udelam. Je to krasna prochazka plna slunce a ja uz se nemohu dockat chvile, kdy vyrazim. Jeden se nikdy nepresyti tech krasnych prasnych cest vedoucich k pristavni hospudce provonene vnitrnostmi ryb a neplaticich hostu.")
+    argo.questDialog_addResponse(1,0,1,"mq027_apologizeToV_2") // long text & page button & new button
+    argo.setText(argo.newTextLine,"Jdu tam.")
+    argo.questDialog_addResponse(0,1,1,"mq027_callBastard") // short text & exit button & new button
+
+  argo.dialog_page("mq027_apologizeToV_2")
+    argo.setText(argo.newTextLine,"Vtipky? <?def_questDialog_colorTextEmote?>*Antonio zatnul pest, ustrnul, tvare mu zrudly a bez mrknuti oka na tobe zustal viset jeho pohled*<?def_questDialog_colorTextNormal?> ")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Uz jdu, uz jdu...")
+    argo.questDialog_addResponse(0,1,0,"mq027_callBastard") // short text & exit button & existing button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 10) // The insult attacks also mother of A
+  argo.dialog_page("mq027_wrongInsult")
+    argo.setText(argo.newTextLine,"Jen mu hezky vyrid, at do toho vseho prestane tahat pribuzenske vztahy a soustredi se radsi na podstatne veci. Napriklad mi dluzi mou lopatu! Ja ji potrebuji a to ted!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Hned to bude...")
+    argo.questDialog_addResponse(0,1,1,"mq027_wantShovel") // short text & exit button & new button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 12) // The insult attacks also mother of A
+  argo.dialog_page("mq027_denyBrothership")
+    argo.setText(argo.newTextLine,"Ale prosim te! Tohle tvrdil uz minule, jen at se na to nevymlouva. Navic kdo by se k nemu hlasil! Mel by moc dobre vedet, ze ja sam uz dlouho nepovazuji nase bratrstvi za platne a vyhybam se mu, jak je to jen mozne. Mnohokrat mi dokazal, ze neni hoden me pozornosti a kdykoliv prisel s prosbou o pomoc a ja se blahove slitoval v nadeji, ze uz vyrostl ze sve nezrale roztrzitosti, znovu a znovu mi dokazal ze jsem hlupak, kdyz mu duveruji.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja mu to povim...")
+    argo.questDialog_addResponse(0,1,1,"mq027_noExcuses") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Neprijde ti uz ten vas spor ponekud jednotvarny a malicherny?")
+    argo.questDialog_addResponse(0,0,1,"mq027_ridiculousArgue") // short text & page button & new button
+
+  argo.dialog_page("mq027_ridiculousArgue")
+    argo.setText(argo.newTextLine,"Myslis?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ano.")
+    argo.questDialog_addResponse(1,0,1,"mq027_ridiculousArgue_2") // long text & page button & new button
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>No asi ne, zapomen na to. Jdu mu to hned vsechno rict.")
+    argo.questDialog_addResponse(0,1,0,"mq027_noExcuses") // short text & exit button & existing button
+
+  argo.dialog_page("mq027_ridiculousArgue_2")
+    argo.setText(argo.newTextLine,"Ja ne.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Aha. No dobra, tak ja mu to vyridim.")
+    argo.questDialog_addResponse(0,1,0,"mq027_noExcuses") // short text & exit button & existing button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 14) // Vincent won't cooperate
+  argo.dialog_page("mq027_noCooperation")
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Antoniovy oci se zaleskly a zvlhly. Tvare se mu zalily krvi a koutky ust poklesly. Odvratil se od tebe na chvili a jen stezi ze sebe shazoval posledni znamky zoufalstvi. Pote zatnul pest, zvedl k tobe planouci pohled a pokynul hlavou ke dverim.*<def_questDialog_colorTextNormal> Dostan tu lopatu za kazdou cenu...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Odejit*")
+    argo.questDialog_addResponse(0,1,1,"mq027_agressiveApproach",1) // short text & exit button & new button & emote
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 16) // Vincent lost the shovel in a dice game
+  argo.dialog_page("mq027_lostShovel")
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Antoniuv oblicej opet zcela zrudl a jeho oci zacaly vystupovat z jiz tak nedusledne vyvinutych dulku. Na tento vyjiev si pomalu zacinas zvykat.*<def_questDialog_colorTextNormal> Tak at mi koupi lopatu novou! Vzdyt je to cele absurdni!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Smirene prikyvnout a odejit*")
+    argo.questDialog_addResponse(0,1,1,"mq027_askForNewShovel",1) // short text & exit button & new button & emote
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 18) // Vincent asks for 1k gp to have a chance for regaining lost money
+  argo.dialog_page("mq027_askFor1Kgp")
+    argo.setText(argo.newTextLine,"Co je to za nesmysl! Kdybych mel tolik penez, tak si tu lopatu koupim sam! Minuly tyden jsem prohral posledni uspory. A na co vubec potrebuje tolik penez?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Jit se doptat*")
+    argo.questDialog_addResponse(0,1,1,"mq027_findoutDetails",1) // short text & exit button & new button & emote
+    argo.setText(argo.newTextLine,"A zeptat se ho na to mam jit ja?")
+    argo.questDialog_addResponse(0,0,1,"mq027_askFor1Kgp_2")
+    
+  argo.dialog_page("mq027_askFor1Kgp_2")
+    argo.setText(argo.newTextLine,"No samozrejme ! Ja se s Vincentem nebavim...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Jit se doptat*")
+    argo.questDialog_addResponse(0,1,0,"mq027_findoutDetails",1) // short text & exit button & existing button & emote
+endif
+
+[dialog d_mq027_Antonio button]
+on=@anyButton
+if (<eval src.qtag(mq027_umbarskaHadka)> == 0)
+  if (<argn> == argo.dialog_linkButton("mq027_assignQuest"))
+    say("Diky.")
+    src.qtag(mq027_umbarskaHadka,1,37)
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 2)
+  if (<argn> == argo.dialog_linkButton("mq027_seekApology"))
+    src.qtag(mq027_umbarskaHadka,3,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 4)
+  if (<argn> == argo.dialog_linkButton("mq027_guardsThread"))
+    src.qtag(mq027_umbarskaHadka,5,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 6) // Antonio insults Vincent
+  if (<argn> == argo.dialog_linkButton("mq027_replyInsult"))
+    src.qtag(mq027_umbarskaHadka,7,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 8) // Antonio calls Vincent a bastard and asks for shovel again
+  if (<argn> == argo.dialog_linkButton("mq027_callBastard"))
+    src.qtag(mq027_umbarskaHadka,9,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 10) // Antonio wants the shovel, nothing else matters 2 him
+  if (<argn> == argo.dialog_linkButton("mq027_wantShovel"))
+    src.qtag(mq027_umbarskaHadka,11,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 12) // Antonio wants the shovel, Vincent should not make stupid excuses
+  if (<argn> == argo.dialog_linkButton("mq027_noExcuses"))
+    src.qtag(mq027_umbarskaHadka,13,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 14) // Antonio wants the shovel whatever it will take
+  if (<argn> == argo.dialog_linkButton("mq027_agressiveApproach"))
+    src.qtag(mq027_umbarskaHadka,15,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 16) //
+  if (<argn> == argo.dialog_linkButton("mq027_askForNewShovel"))
+    src.qtag(mq027_umbarskaHadka,17,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 18) //
+  if (<argn> == argo.dialog_linkButton("mq027_findoutDetails"))
+    src.qtag(mq027_umbarskaHadka,19,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+endif
+
+
+//////////////////////////////////////////////////////
+// Speech Antonio
+//////////////////////////////////////////////////////
+
+[speech spk_mq027_Antonio]
+on = zdravim
+on = *ahoj*
+on = *ukol*
+on = *prace*
+on = *pozdrav*
+on = *Antonio*
+on = *Vincent*
+
+f_qSpeech(f_mq027_Antonio_DClick)
+
+//////////////////////////////////////////////////////
+// DClick Antonio
+//////////////////////////////////////////////////////
+
+[function f_mq027_Antonio_DClick]
+if (<src.flags>&statf_dead)
+  return 1
+else
+  dialog(d_mq027_Antonio)
+endif
+
+
+/////////////////////////
+//    V i n c e n t    //
+/////////////////////////
+
+[dialog d_mq027_Vincent]
+argo.questDialog_create(03000,"<name>")
+
+argo.dialog_newPage("Pozdrav")
+
+if (<eval src.qtag(mq027_umbarskaHadka)> < 2)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+else
+  argo.questDialog_basebutt(1,30,"Promluvit si")
+endif
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  if (<eval src.qtag(mq027_umbarskaHadka)> > 1) //have been to this npc in the quest mq027
+    argo.setText(argo.newTextLine,"Ah, zase ty...")
+  else
+    argo.setText(argo.newTextLine,"Zdravim te <src.sex("cizince","cizinko")>. Co te ke mne privadi?")
+  endif
+  argo.questDialog_HTMLGUMP
+
+if (<eval src.qtag(mq027_umbarskaHadka)> < 2)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(argo.newTextLine,"Jmenuju se Vincent. Nevim, co bych ti mohl rict vic...")
+    argo.questDialog_HTMLGUMP
+    if (<eval src.qtag(mq027_umbarskaHadka)> == 1)
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Ah, ty jsi Vincent. Posila me za tebou Antonio, ze pry mu dluzis lopatu. Chce ji zpet.")
+      argo.questDialog_addResponse(1,0,1,"mq027_wantShovel") // long text & page button & new button
+    endif
+else
+  argo.dialog_page("Promluvit si")
+    argo.setText(argo.newTextLine,"Co potrebujes?")
+    argo.questDialog_HTMLGUMP
+    if (<eval src.qtag(mq027_umbarskaHadka)> == 3) // Antonio is offended - seeking for apology
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><src.sex("Mluvil","Mluvila")> jsem s Antoniem a ten se citi byt tvym postojem velmi urazen a zada si tvou omluvu.")
+      argo.questDialog_addResponse(1,0,1,"mq027_askForApology") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 5) // Antonio is offended again - seeking for apology and threatening with guards
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Antonio je pobouren tvym pristupem a vzkazuje ti, ze pokud se mu neomluvis, nahlasi te strazim za kradez. A asi bude rovnou chtit i tu lopatu...")
+      argo.questDialog_addResponse(1,0,1,"mq027_guardThreat") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 7) // Antonio insults Vincent
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><src.sex("Mluvil","Mluvila")> jsem s Antoniem a mam ti vyridit, ze kdyby jsi pry hnojil rukama tak jako pusou, nemusel bys krast lopaty. Navic jeste zminil, ze jsi sam bez zeny a nemel bys tedy urazet ty, kteri ji maji.")
+      argo.questDialog_addResponse(1,0,1,"mq027_replyInsult") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 9) // Antonio insults Vincent
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Antonio ti vzkazuje, ze se nemas chovat jako takovy bastard a mas mu vratit tu lopatu.")
+      argo.questDialog_addResponse(1,0,1,"mq027_callBastard") // long text & page button & new button
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>A ze neuhodnes, proc tu jsem?")
+      argo.questDialog_addResponse(0,0,1,"mq027_teaseVincent") // short text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 11) // Antonio just wants shovel
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Antonio te zada, abys prestal do vaseho sporu tahat pribuzenske vztahy a radsi uz mu vratil tu lopatu.")
+      argo.questDialog_addResponse(1,0,1,"mq027_askForShovel") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 13) // Antonio accepts no excuses
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Antonio se pry snazi vase bratrstvi poprit uz dlouhou dobu a navic jsi pry toto tvrdil jiz minule, a nemas se na to tedy vymlouvat.")
+      argo.questDialog_addResponse(1,0,1,"mq027_noExcuses") // long text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 15) // Antonio wants the shovel whatever it will cost
+      if (<src.isArmed>) //have weapon -> can threat Vincent
+        argo.setText(argo.newTextLine,"<def_questDialog_colorTextRespEmote>*Pevne jsi <src.sex("uchopil","uchopila")> svou zbran a prisne jsi <src.sex("pohledl","pohledla")> na Vincenta.*<def_questDialog_colorTextResponse> Tvuj bratr s tebou ztratil trpelivost. Nejsem tu, abych <src.sex("vyjednaval","vyjednavala")>, ale abych si <src.sex("vzal","vzala")>, co Antoniovi patri.")
+        argo.questDialog_addResponse(1,0,1,"mq027_agressiveApproach") // long text & page button & new button
+      endif
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 17) // Antonio wants a new shovel
+      argo.setText(argo.newTextLine,"Ohledne te lopaty...")
+      argo.questDialog_addResponse(0,0,1,"mq027_wantNewShovel") // short text & page button & new button
+    elseif (<eval src.qtag(mq027_umbarskaHadka)> == 19) // Antonio wants to know the details about the loan.
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Antonio pry nema tolik penez, kolik po nem chces. Navic se o to nechce zajimat, pokud mu nereknes, na co potrebujes tolik penez.")
+      argo.questDialog_addResponse(1,0,1,"mq027_findoutDetails") // long text & page button & new button
+    endif
+endif
+
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Nic nepotrebuji.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Nemam, co bych ti nabidl.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Ja ti praci bohuzel nenabidnu. Jsem rad, ze uzivim sam sebe...")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Copak pro me mas?")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<?def_questDialog_colorTextEmote?>Vincent je typicky venkovan se vsi hrubosti, ktera se k tomu poji. Je neupraveny, spinavy a otrhany. Je plny sebevedomi, ale pri sve jednoduchosti se diky tomu snadno dopusti unahlenych rozhodnuti.<?def_questDialog_colorTextNormal?>")
+  argo.questDialog_HTMLGUMP
+
+if (<eval src.qtag(mq027_umbarskaHadka)> == 1)
+  argo.dialog_page("mq027_wantShovel")
+    argo.setText(argo.newTextLine,"To je neslychany. Ja ze mu dluzim lopatu? To je nebetycna lez! Nic mu nedluzim a odmitam mu cokoliv davat. Natoz pak tobe! Je to stary karbanik, beztak ji nekde prohral v kartach a posle tebe, abys ji ze me dostal. Nebudu o tom s tebou ani mluvit, jdi pryc!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Prijmout Vincentovo tvrzeni a odejit*")
+    argo.questDialog_addResponse(0,1,1,"mq027_allIsALie",1) // short text & exit button & new button & emote button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 3) // Antonio is offended - seeking for apology
+  argo.dialog_page("mq027_askForApology")
+    argo.setText(argo.newTextLine,"Omluvit se? No to ani nahodou...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Mozna bys mel svuj postoj prehodnotit. Antonio vypadal velmi rozhodnute a musis uznat, ze tve vyjadreni bylo velmi ostre.")
+    argo.questDialog_addResponse(1,0,1,"mq027_askForApology_2") // long text & page button & new button
+    
+  argo.dialog_page("mq027_askForApology_2")
+    argo.setText(argo.newTextLine,"Ne, to rozhodne odmitam! A vis ty co? Jen mu pekne vyrid, at se mi omluvi on! Posila zamnou nejake cizince, sam neprijde, a jeste me zada o veci, ktere nemam! Co ja jsem toho pro nej uz udelal, to pro nej nic neznamena...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextRespEmote>*Ten nepolevi. Omluva nebude, je tedy prava chvile vyrazit vesele oblibenou cestou zpet k Antoniovi.*")
+    argo.questDialog_addResponse(1,1,1,"mq027_askForApology_2") // long text & exit button & new button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 5) // Antonio is offended again - seeking for apology and threatening with guards
+  argo.dialog_page("mq027_guardThreat")
+    argo.setText(argo.newTextLine,"Ha ha ha ha ha! To je zabavne! Tak hele, ja nevim, na co si ten clovek hraje, ale ja mu nic vracet nebudu! A at si strazim vyklada co chce, nic na me nema. Co mi udelaji? Prijdou sem, zeptaji se a odejdou jako spraskani psi zase pryc, stejne jako ted ty! Vis co? Jestli za nim pujdes, tak mu rovnou rekni, ze je stara baba, kdyz se sem ani neodvazi dojit sam. Mozna se stydi chodit mezi lidi, protoze jeho zena je osklivejsi jak psi rozkrok napadeny hemeroidy.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No jak tedy myslis. Jdu mu to vyridit.")
+    argo.questDialog_addResponse(0,1,1,"mq027_noShovelAndInsult") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Podivej, neni to trochu prehnane jednani? Preci jenom jste dva dospeli lide a tohle vsechno mi prijde zbytecne.")
+    argo.questDialog_addResponse(1,0,1,"mq027_guardThreat_2") // long text & page button & new button
+
+  argo.dialog_page("mq027_guardThreat_2")
+    argo.setText(argo.newTextLine,"Ne, to neni vubec prehnane jednani! Ten clovek mi pije krev cely zivot! Jdi uz, nehodlam s tim ztracet cas.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Jit vyridit Antoniovi Vincentuv postoj.*")
+    argo.questDialog_addResponse(0,1,0,"mq027_noShovelAndInsult",1) // short text & exit button & existing button & emote
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 7) // Antonio insults Vincent
+  argo.dialog_page("mq027_replyInsult")
+    argo.setText(argo.newTextLine,"Co si to zase dovoluje! Jestli semnou chce jednat jako buran, tak mu to jako buranovi oplatim! Pokud se mi okamzite neomluvi, tak mu misto lopaty vratim vidle a bude si je moct vyzvednout ve vlastnim brise!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Otocit se na patach a jit tlumocit Antoniovi*")
+    argo.questDialog_addResponse(0,1,1,"mq027_requireApology",1) // short text & exit button & new button & emotes
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 9) // Antonio calls Vincent a bastard
+  argo.dialog_page("mq027_callBastard")
+    argo.setText(argo.newTextLine,"Hah tak to je ta nejhloupejsi vec, co jsem od nej slysel. Jen mu hezky povez, at si ty svoje nadavky strci nekam a navic by me nemel nadavat do bastardu, prtoze tim v prvni rade urazi svou vlastni matku!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No tak dobre, ja mu to povim, az ho uvidim.")
+    argo.questDialog_addResponse(0,1,1,"mq027_brothers") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Pockej moment, vy jste bratri?")
+    argo.questDialog_addResponse(0,0,1,"mq027_brothersQ") // short text & page button & new button
+
+  argo.dialog_page("mq027_teaseVincent")
+    argo.setText(argo.newTextLine,"<?def_questDialog_colorTextEmote?>*Vincent se nachvili zatvaril trochu zoufale, pak se mu znovu prokrvil oblicej a prisne se na tebe podival*<?def_questDialog_colorTextNormal?>Nerikej mi, ze te znovu poslal Antonio? Me uz to nezajima a vazne me to uz nebavi.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<?def_questDialog_colorTextResponse?>Tohle te mozna bude zajimat.Antonio ti vzkazuje, ze se nemas chovat jako takovy bastard a mas mu vratit tu lopatu.")
+    argo.questDialog_addResponse(1,0,0,"mq027_callBastard") // long text & page button & existing button
+    argo.setText(argo.newTextLine,"*No tak to jsme dva*")
+    argo.questDialog_addResponse(0,0,1,"mq027_teaseVincent_2",1) // short text & page button & new button & emote
+  argo.dialog_page("mq027_teaseVincent_2")
+    argo.setText(argo.newTextLine,"Co rikas ?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<?def_questDialog_colorTextResponse?>Ale nic, jenom ze tohle te mozna bude zajimat. Antonio ti vzkazuje, ze se nemas chovat jako takovy bastard a mas mu vratit tu lopatu.")
+    argo.questDialog_addResponse(1,0,0,"mq027_callBastard") // long text & page button & existing button
+  
+  argo.dialog_page("mq027_brothersQ")
+    argo.setText(argo.newTextLine,"Pha! Bratri! Matku mame stejnou, dejz ji ohen dobrou vysku, ale k bratrstvi je treba vic. Tady ten barman je pro me vic bratr, nez ten tvuj pritelicek, co pro me ma jenom same urazky a pouceni.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dejz ji ohen... Coze ?")
+    argo.questDialog_addResponse(0,0,1,"mq027_deadMother") // short text & page button & new button
+    argo.setText(argo.newTextLine,"No tak dobre, ja mu to povim, az ho uvidim.")
+    argo.questDialog_addResponse(0,1,0,"mq027_brothers") // short text & exit button & existing button
+  
+  argo.dialog_page("mq027_deadMother")
+    argo.setText(argo.newTextLine,"Cemu nerozumis? Spalili jsme ji, kdyz prestala byt plodna a zacala mit pocit, ze vsemu rozumi. Dle tradice ji ohen oprostil od dusevniho kolapsu a mela-li stesti a jeji popel dobre vystoupal, vitr ve vyskach ji zaval na druhy kontinent, kde se ji dostane dobreho posmrtneho zivota. Byl to dobry den. Vychodni vitr byl opravdu silny. Svou vlastni zenu bych jednou rad upalil ve stejny den.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"To mi ted asi staci. Ja Antoniovi vse vyridim.")
+    argo.questDialog_addResponse(0,1,0,"mq027_brothers") // short text & exit button & existing button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 11) // Antonio just wants shovel
+  argo.dialog_page("mq027_askForShovel")
+    argo.setText(argo.newTextLine,"Uz toho mam prave dost! Tento spor me nebavi! Jdete se oba vycpat a Antoniovi rekni, at se dal nepokousi nazyvat mym bratrem! Od ted uz nemam bratra.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Odejit*")
+    argo.questDialog_addResponse(0,1,1,"mq027_denyBrothership",1) // short text & exit button & new button & emote
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 13) // Antonio accepts no excuses
+  argo.dialog_page("mq027_noExcuses")
+    argo.setText(argo.newTextLine,"Podivej ja jsem ti to snad minule rekl jasne. Nemam zapotrebi se s vami dal dohadovat. Jestli mi Antonio neco chce, at zamnou prijde sam. At uz te zamnou neposila!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No jak myslis.")
+    argo.questDialog_addResponse(0,1,1,"mq027_noCooperation") // short text & exit button & new button
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 15) // Antonio wants the shovel whatever it will cost
+  if (<src.isArmed>) //have weapon -> can threat Vincent
+    argo.dialog_page("mq027_agressiveApproach")
+      argo.setText(argo.newTextLine,"<?def_questDialog_colorTextEmote?>*Vincent se zrejme zdesil, protoze se zornice jeho oci prudce rozestoupily a prava nohavice jeho kalhot napadne ztmavla.*<?def_questDialog_colorTextNormal?>Prosim, ne! Neublizuj mi! Ja preci nic neprovedl!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Vymluvy ti nepomohou!")
+      argo.questDialog_addResponse(0,0,1,"mq027_agressiveApproach_2") // short text & page button & new button
+      
+    argo.dialog_page("mq027_agressiveApproach_2")
+      argo.setText(argo.newTextLine,"Ty nic nechapes! Ja tu lopatu opravdu nemam! Prohral jsem ji v kostkach. Ten nicema me podvedl. Ma vic stesti, nez je zdravo. Jiste hazi zatizenymi kostkami. Znam tyhle triky. Je ale jedno, co mi ted udelas, tu lopatu stejne neziskas! Prosim, nech me byt. Straze se budou vyptavat, proc jsi zabil mistniho obcana. Jiste ti za to ty problemy nestoji!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Uvidim, co na tohle rekne Antonio...")
+      argo.questDialog_addResponse(0,1,1,"mq027_lostShovel") // short text & exit button & new button
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 17) // Antonio wants a new shovel
+  if (<src.isArmed>) //have weapon -> can threat Vincent
+    argo.dialog_page("mq027_wantNewShovel")
+      argo.setText(argo.newTextLine,"No co zase ?")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Antonio chce lopatu novou. Co jsi udelal s tou puvodni ho nezajima. Mas vuci nemu dluh a ten musis vyrovnat.")
+      argo.questDialog_addResponse(0,0,1,"mq027_wantNewShovel_2") // short text & page button & new button
+      
+    argo.dialog_page("mq027_wantNewShovel_2")
+      argo.setText(argo.newTextLine,"Ja ale nemam penize na novou lopatu. Sotva dam dohromady par zlatych na chleba a vodu. Pujcuju si kde muzu, abych zaplatil jine dluhy a takovehle dalsi vydaje si dovolit nemuzu!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ja tu nebudu mezi vami behat do smrti! Sezen nekde ty penize, nebo je ziskam za prodej tvych jater!")
+      argo.questDialog_addResponse(1,0,1,"mq027_wantNewShovel_3") // long text & page button & new button
+      
+    argo.dialog_page("mq027_wantNewShovel_3")
+      argo.setText(argo.newTextLine,"Podivej se na me. Tady si nic nevezmes. Chudoba mi vzala i zdravi. Moji posledni nadeji bylo vsadit vsechno co jsem mohl. Pokud ale Antonio opravdu chce svou lopatu zpatky, pak bych to mohl zaridit. Musi mi ale nejprve pujcit tisic zlatych. Ty mu pak samozrejme vratim.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ten bude mit radost..")
+      argo.questDialog_addResponse(0,1,1,"mq027_askFor1Kgp") // short text & exit button & new button
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 19) // Antonio wants to know the details about the loan.
+  argo.dialog_page("mq027_wantNewShovel")
+    argo.setText(argo.newTextLine,"Nalezl jsem zpusob, jak vyhrat nad tim mistnim sejdirem, ale je pro to potreba mit vysoky penezni vklad. Riskoval jsem s malym mnozstvim a prohral vsechno, vcetne Antoniovy lopaty. Pokud by mi ale pujcil tisic zlatych, mel bych dost penez na to, abych toho podvodnika obral o posledni pivni tacek, co v tehle hospode ma!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No dobre, ja to Antoniovi reknu.")
+    argo.questDialog_addResponse(0,1,1,"mq027_gotLoanDetails") // short text & exit button & new button
+  
+  
+endif
+
+[dialog d_mq027_Vincent button]
+on=@anyButton
+if (<eval src.qtag(mq027_umbarskaHadka)> == 1)
+  if (<argn> == argo.dialog_linkButton("mq027_allIsALie"))
+    src.qtag(mq027_umbarskaHadka,2,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 3)
+  if (<argn> == argo.dialog_linkButton("mq027_askForApology_2"))
+    src.qtag(mq027_umbarskaHadka,4,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 5) // Vincent insults Antonio
+  if (<argn> == argo.dialog_linkButton("mq027_noShovelAndInsult"))
+    src.qtag(mq027_umbarskaHadka,6,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 7) // Vincent requests an appology from Antonio
+  if (<argn> == argo.dialog_linkButton("mq027_requireApology"))
+    src.qtag(mq027_umbarskaHadka,8,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 9) // Vincent suggests, that Antonio should not insult their mother
+  if (<argn> == argo.dialog_linkButton("mq027_brothers"))
+    src.qtag(mq027_umbarskaHadka,10,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 11) // Vincent proclaims that he is no longer the brother of Antonio.
+  if (<argn> == argo.dialog_linkButton("mq027_denyBrothership"))
+    src.qtag(mq027_umbarskaHadka,12,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 13) // Vincent refuses to cooperate
+  if (<argn> == argo.dialog_linkButton("mq027_noCooperation"))
+    src.qtag(mq027_umbarskaHadka,14,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 15) // Vincent doesn't have the shovel anymore
+  if (<argn> == argo.dialog_linkButton("mq027_lostShovel"))
+    src.qtag(mq027_umbarskaHadka,16,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 17) // Vincent can pay back if Antonio lends him 1k gp
+  if (<argn> == argo.dialog_linkButton("mq027_askFor1Kgp"))
+    src.qtag(mq027_umbarskaHadka,18,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 18) // Vincent described, what are the money he wants for
+  if (<argn> == argo.dialog_linkButton("mq027_askFor1Kgp"))
+    src.qtag(mq027_umbarskaHadka,18,37)
+    src.f_mq027_stepExperience //adds experience based on the character level
+    return
+  endif
+endif
+
+//////////////////////////////////////////////////////
+// Speech Vincent
+//////////////////////////////////////////////////////
+
+[speech spk_mq027_Vincent]
+on = zdravim
+on = *ahoj*
+on = *ukol*
+on = *prace*
+on = *pozdrav*
+on = *Antonio*
+on = *Vincent*
+
+f_qSpeech(f_mq027_Vincent_DClick)
+
+//////////////////////////////////////////////////////
+// DClick Vincent
+//////////////////////////////////////////////////////
+
+[function f_mq027_Vincent_DClick]
+if (<src.flags>&statf_dead)
+  return 1
+else
+  dialog(d_mq027_Vincent)
+endif
+
+
+
+///////////////////////
+// F U N C T I O N S //
+///////////////////////
+
+[function f_mq027_stepExperience]
+arg(calcExp,<eval (<eval tag(level)>/6)+3>)
+addexp(<arg(calcExp)>)
+
+[eof]

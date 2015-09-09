@@ -1,0 +1,198 @@
+//////////////////////////////////////////////////
+///// NPC NA ODSTRANENIE VYVRHELA
+[SPEECH spk_q099_vyvrhel] 
+
+on=*Hi*
+on=*hi*
+on=*dobry*
+on=*zdravi*
+on=*den*
+if (<distance>>3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q099_vyvrhel
+endif
+
+[function f_q099_vyvrhel)
+if ((<src.tag(realm)><=-1)&&!(src.qtag(q099)))
+  src.qtag(q099,1,30)
+endif
+dialog(d_q099_vyvrhel)
+
+[dialog d_q099_vyvrhel]
+argo.setlocation=5,5
+
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03030)
+
+argo.settext(0,"Podivin")
+argo.text(220,210,52,0)
+
+if (src.qtag(q099)>0)&&(src.tag(vykoupeni))&&(<src.tag(realm)><0)
+  argo.button(160,330,0988,0988,0,2,0)
+  argo.settext(1,"Ukol")
+  argo.text(225,332,1152,1)
+endif
+
+argo.page(1)
+if (<src.tag(realm)>>=0)
+  argo.settext(11,"Di pryc! Nic nemam a nic nechci!")
+elseif !(src.tag(vykoupeni))
+  argo.settext(11,"Di pryc! Nic nemam a nic nechci!")
+else
+  if (src.qtag(q099)==1)
+    argo.settext(11,"Bud zdrav, vyvrheli! <basefont color="#ffff88">*smeje se*<basefont color="#ffffff"> Urcite si me vyhledal, aby ses zbavil sveho vyhnanstvi! Je to tak? <basefont color="#ffff88">*smeje se*<basefont color="#ffffff"> Jesli ano, nejdriv musis splnit nekolik mych ukolu!")
+  elseif ((src.qtag(q099)==2)&&(src.findid(i_q099_vyvrhel_1)))
+    if (<src.findid(i_q099_vyvrhel_1).tag.contentscount>>=100))
+      argo.settext(11,"Vyborne! Podej mi ten vacek!")
+      argo.button(25,395,0fa5,0fa7,1,0,2)
+      argo.settext(45,"Podat vacek")
+      argo.text(60,395,152,45)
+    endif
+  elseif ((src.qtag(q099)==3)||(src.qtag(q099)==5)||(src.qtag(q099)==7)||(src.qtag(q099)==9))
+    argo.settext(11,"Mam pro tebe dalsi ukol!")
+  elseif ((src.qtag(q099)==4)&&(src.findid(i_q099_vyvrhel_2)))
+    if (<src.findid(i_q099_vyvrhel_2).tag.contentscount>>=80)
+      argo.settext(11,"Vyborne! Podej mi ten vacek!")
+      argo.button(25,395,0fa5,0fa7,1,0,4)
+      argo.settext(45,"Podat vacek")
+      argo.text(60,395,152,45)
+    else
+      argo.settext(11,"Hm, jeste toho nemas dost!")
+    endif
+  elseif ((src.qtag(q099)==6)&&(src.findid(i_q099_vyvrhel_3)))
+    if (<src.findid(i_q099_vyvrhel_3).tag.contentscount>>=50)
+      argo.settext(11,"Vyborne! Podej mi ten vacek!")
+      argo.button(25,395,0fa5,0fa7,1,0,6)
+      argo.settext(45,"Podat vacek")
+      argo.text(60,395,152,45)
+    else
+      argo.settext(11,"Hm, jeste toho nemas dost!")
+    endif    
+  elseif ((src.qtag(q099)==8)&&(src.findid(i_q099_vyvrhel_4)))
+    if (<src.findid(i_q099_vyvrhel_4).tag.contentscount>>=5)
+      argo.settext(11,"Vyborne! Podej mi ten vacek!")
+      argo.button(25,395,0fa5,0fa7,1,0,8)
+      argo.settext(45,"Podat vacek")
+      argo.text(60,395,152,45)
+    else
+      argo.settext(11,"Hm, jeste toho nemas dost!")
+    endif    
+  else
+    argo.settext(11,"Co chces?")
+  endif
+endif
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+
+argo.page(2)
+if (src.qtag(q099)==1)&&(src.tag(vykoupeni))
+  argo.settext(22,"Tvym prvnim ukolem je nasbirat mi 100 kusu ocasku medveda grizliho do batohu, ktery ti dam!")
+  argo.button(25,395,0fa5,0fa7,1,0,1)
+  argo.settext(45,"Prinesu to")
+  argo.text(60,395,152,45)
+  argo.button(25,415,0fa5,0fa7,1,0,0)
+  argo.settext(46,"Nemam zajem")
+  argo.text(60,415,152,46)
+elseif (src.qtag(q099)==3)
+  argo.settext(22,"Nyni mi prines 80 kusu usi elementala zeme!")
+  argo.button(25,395,0fa5,0fa7,1,0,3)
+  argo.settext(45,"Prinesu to")
+  argo.text(60,395,152,45)
+  argo.button(25,415,0fa5,0fa7,1,0,0)
+  argo.settext(46,"Nemam zajem")
+  argo.text(60,415,152,46)
+elseif (src.qtag(q099)==5)
+  argo.settext(22,"Nyni mi prines 50 kusu esenci z monstier zvanych oci (Eye)!")
+  argo.button(25,395,0fa5,0fa7,1,0,5)
+  argo.settext(45,"Prinesu to")
+  argo.text(60,395,152,45)
+  argo.button(25,415,0fa5,0fa7,1,0,0)
+  argo.settext(46,"Nemam zajem")
+  argo.text(60,415,152,46)
+elseif (src.qtag(q099)==7)
+  argo.settext(22,"Nyni mi prines 5 pirek z jedoveho fenixe!")
+  argo.button(25,395,0fa5,0fa7,1,0,7)
+  argo.settext(45,"Prinesu to")
+  argo.text(60,395,152,45)
+  argo.button(25,415,0fa5,0fa7,1,0,0)
+  argo.settext(46,"Nemam zajem")
+  argo.text(60,415,152,46)
+elseif (src.qtag(q099)==9)
+  if (<src.mining><40.0)
+    argo.settext(22,"Tenhle ukol neni ani tak pro me, ale pro tebe. Nato abys <?src.sex(prezil,prezila)?> transformaci musis byt silnejsi! Bez kopat! Az budes <?src.sex(schopnej,schopna)?> kopat zeleznou rudu tak se vrat.")
+  else
+    argo.settext(22,"Vyborne, si dostatecne <?src.sex(silny,silna)?> a <?src.sex(pripraven,pripravena)?>. Ted mi prines 250 000 v seku a muzme se do toho pustit! Ale bude te to stat 15 urovni.")
+    argo.button(25,395,0fa5,0fa7,1,0,9)
+    argo.settext(45,"Podat sek")
+    argo.text(60,395,152,45)
+  endif
+else
+  argo.settext(22,"Az splnis to co sem ti zadal dostanes dalsi ukol!")
+endif
+argo.HTMLGUMP(170,230,440,100,22,0,36)
+
+[dialog d_q099_vyvrhel text]
+
+[dialog d_q099_vyvrhel button]
+on=0
+
+on=1
+src.giveitem(i_q099_vyvrhel_1)
+src.qtag(q099,2,30)
+
+on=2
+if (<src.findid(i_q099_vyvrhel_1).tag.contentscount>>=100)
+  src.consume(i_q099_vyvrhel_1)
+  src.qtag(q099,3,30)
+endif
+
+on=3
+src.giveitem(i_q099_vyvrhel_2)
+src.qtag(q099,4,30)
+
+on=4
+if (<src.findid(i_q099_vyvrhel_2).tag.contentscount>>=80)
+  src.consume(i_q099_vyvrhel_2)
+  src.qtag(q099,5,30)
+endif
+
+on=5
+src.giveitem(i_q099_vyvrhel_3)
+src.qtag(q099,6,30)
+
+on=6
+if (<src.findid(i_q099_vyvrhel_3).tag.contentscount>>=50)
+  src.consume(i_q099_vyvrhel_3)
+  src.qtag(q099,7,30)
+endif
+
+on=7
+src.giveitem(i_q099_vyvrhel_4)
+src.qtag(q099,8,30)
+
+on=8
+if (<src.findid(i_q099_vyvrhel_4).tag.contentscount>>=5)
+  src.consume(i_q099_vyvrhel_4)
+  src.qtag(q099,9,30)
+endif
+
+on=9
+if (src.findid(i_cashiers_check))
+  //<eval(src.findid(i_cashiers_check).more1)>
+  if (<eval(src.findid(i_cashiers_check).more1)>==250000)
+    src.vyvrhel
+    src.consume(i_cashiers_check)
+    src.srazitlevely(15)
+    src.qtagremove(q099)
+    src.tag.remove(vykoupeni)
+    src.effect(3,i_fx_curse,6,15,1)
+    sound(550)
+    f_quest_complete(30)  // splnenie questu "Vyvrhel"
+  else
+    say("To je malo!")
+  endif
+else
+  say("A kde je ten sek? Nepokousej se me okrast!")
+endif

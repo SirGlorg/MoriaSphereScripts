@@ -1,0 +1,548 @@
+///////////////////////////////////////////////
+////  MALICA
+/////////////////////////////////////////////
+
+[speech spk_hm_malica]
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+f_hm_malica
+
+[function f_hm_malica]
+if(<distance> > 3)
+  src.sysmessage("Na takovou vzdalenost s tebou komunikovat nebude.")
+  return 1
+endif
+if (<src.flags>&statf_dead)
+  return 1
+else
+  DIALOG(d_hm_malica)
+  scylla.delayedmessage("HM: Malica: Dialog open. <src.name>")
+endif
+
+[dialog d_hm_malica]
+argo.questDialog_create(03147,<name>)
+
+argo.dialog_newPage("Pozdrav")
+argo.questDialog_baseButt(1,40,"Kdo jsi?") // Kdo jsi?
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"*<src.sex(Zahledl,Zahledla)> si lezici zenu, ktera se po tobe letmo ohledla.*")
+  argo.questDialog_HTMLGUMP
+    
+  argo.setText(argo.newTextLine,"Jste volna, muzete odejit")
+  argo.questDialog_addResponse(0,0,1,"hm_ne")
+  
+  if (<src.restest 1 i_hm_jidlo_bonus>)
+    argo.setText(argo.newTextLine,"Odevzdat zene jidlo.")
+    argo.questDialog_addResponse(0,1,1,"hm_odevzdat_jidlo")
+  endif
+  if (<src.restest 1 i_hm_prisada_1> && <src.restest 1 i_hm_prisada_2> && <src.restest 1 i_hm_prisada_3> && <src.restest 20 i_hm_prisada_4> && <src.restest 5 i_hm_prisada_5>) 
+    argo.setText(argo.newTextLine,"Mam ty suroviny.")
+    argo.questDialog_addResponse(0,0,1,"hm_doit")
+  endif
+
+argo.dialog_page("Kdo jsi?")
+  argo.setText(<argo.newTextLine>,"Jsem Malica, carodejka, ale uz dlouho ne...")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_Page("hm_ne")
+  argo.setText(<argo.newTextLine>,"Nema smysl abych odchazela, umiram. Leda ze byste mi pripravili specialni pokrm, ktery by mi mohl pomoci. Jenze na to byste museli mit specialni suroviny, daji se tu ziskat, ale pokud je jiz nemate s sebou, nestihnete mi je donest vcas. Jsou to: 20x kulicka ruliku, 5x turin, kura lekorice, lisejnik a cast maraliho korene. A to vsechno byste museli uvarit tam v tom kotliku. Ja uz to sama nezvladnu.")
+  argo.questDialog_HTMLGUMP
+  
+  if (<src.restest 1 i_hm_jidlo_bonus>)
+    argo.setText(argo.newTextLine,"Odevzdat zene jidlo.")
+    argo.questDialog_addResponse(0,1,1,"hm_odevzdat_jidlo")
+  endif
+  if (<src.restest 1 i_hm_prisada_1> && <src.restest 1 i_hm_prisada_2> && <src.restest 1 i_hm_prisada_3> && <src.restest 20 i_hm_prisada_4> && <src.restest 5 i_hm_prisada_5>) 
+    argo.setText(argo.newTextLine,"Mam ty suroviny.")
+    argo.questDialog_addResponse(0,0,1,"hm_doit")
+  endif
+
+if (<src.restest 1 i_hm_prisada_1> && <src.restest 1 i_hm_prisada_2> && <src.restest 1 i_hm_prisada_3> && <src.restest 20 i_hm_prisada_4> && <src.restest 5 i_hm_prisada_5>) 
+  argo.dialog_Page("hm_doit")
+    argo.setText(<argo.newTextLine>,"Tak na co cekas? Priprav ten pokrm.")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Carodejka ma na tvari smutny vyraz.")
+  argo.questDialog_HTMLGUMP
+
+[dialog d_hm_malica button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("hm_odevzdat_jidlo"))
+  scylla.delayedmessage("HM: Malica: Vytvari gatu do bonusu. <src.name>")
+  src.consume(i_hm_jidlo_bonus)
+  
+  newitemsafe(i_hm_bow_malica)
+  equip(<lastnew>)
+  arg(bowItem,<lastnew>)
+  
+  newitem(i_vargate)
+  bowItem.link = <lastnew>
+  lastnew.p = <tag(gate_position)>
+  lastnew.morep = <tag(bonus_position)>
+  lastnew.timer = <tag(gate_time)>
+  
+  say("Jako podekovani vam otevru cestu dal, ale pospeste, dlouho ji neudrzim.")
+endif
+
+[EVENTS e_malica_help]
+ON=@NPCSeeNewPlayer
+  dorand 2
+    say("Ahhhh...")
+    say("Ehh..")
+  enddo
+  
+///////////////////////////////////////////////
+////  KALOC  ////////////////////////////////
+/////////////////////////////////////////////
+
+[speech spk_hm_kaloc]
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+f_hm_kaloc
+
+[function f_hm_kaloc]
+if(<distance> > 2)
+  src.sysmessage("Na takovou vzdalenost s tebou komunikovat nebude.")
+  return 1
+endif
+if (<src.flags>&statf_dead)
+  return 1
+else
+  DIALOG(d_hm_kaloc)
+  scylla.delayedmessage("HM: Kaloc: Dialog open. <src.name>")
+endif
+
+[EVENTS e_kaloc_help]
+ON=@NPCSeeNewPlayer
+  dorand 3
+    say("Hallo, Hallo! Pomoc!")
+    say("Prosim Pomoc! Odmenim se vam kdyz mi pomuzete!")
+    say("Pomozte mi! Prosim! Odmenim se vam!")
+  enddo
+
+[dialog d_hm_kaloc]
+argo.questDialog_create(03136,<name>)
+
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1,40,"Kdo jste?") 
+argo.questDialog_baseButt(2,35,"Co tu delate?") 
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"*Muz vstal ze zeme a prisel ke mrizim.*")
+  argo.questDialog_HTMLGUMP
+  
+  if(<finduid(tag(hm_boss_spawn)).more2> < 1)
+    argo.setText(argo.newTextLine,"Bezejmeny byl zabit, muzes odejit.")
+    argo.questDialog_addResponse(0,1,1,"hm_odmena")
+  endif
+  
+argo.dialog_page("Kdo jste?")
+  argo.setText(<argo.newTextLine>,"Jmenuji se Kaloc a jsem kovar. Kdyz zrovna necestuji.")
+  argo.questDialog_HTMLGUMP
+  
+  if(<finduid(tag(hm_boss_spawn)).more2> < 1)
+    argo.setText(argo.newTextLine,"Bezejmeny byl zabit, muzes odejit.")
+    argo.questDialog_addResponse(0,1,1,"hm_odmena")
+  endif
+
+argo.dialog_Page("Co tu delate?")
+  argo.setText(<argo.newTextLine>,"Vydali jsme se sem se zenou najit nejake vzacne prisady, ale potkali jsme nekoho, koho jsme necekali. Ani nevim, jestli je jeste nazivu.... Dejte si pozor at neskoncite jako my, ale kdyz me vysvobodite odmenim se vam. Jeste nechci umrit. Prosim, pomozte mi! *rozbrecel se*")
+  argo.questDialog_HTMLGUMP
+  
+  if(<finduid(tag(hm_boss_spawn)).more2> < 1)
+    argo.setText(argo.newTextLine,"Bezejmeny byl zabit, muzes odejit.")
+    argo.questDialog_addResponse(0,1,1,"hm_odmena")
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Vidis zkrouseneho starsiho muze, spinaveho, ale jinak vypada v poradku.")
+  argo.questDialog_HTMLGUMP
+
+[dialog d_hm_kaloc button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("hm_odmena"))
+  if(<eval src.qtag(hm_last_reward)> < <serv.time>)
+    src.newitem = i_mi_bag
+    lastnew.bounce
+    src.qtag(hm_last_reward,<serv.time>+432000)
+    message("Tady mam pro tebe malou odmenu.")
+  else
+    src.message("*Vypadato ze uz jsem svoji odmenu dostal.*")
+  endif
+  src.go 6096,2555,17,10
+endif
+
+
+///////////////////////////////////////////////
+////  ABILITA ROZDELENI//////////////////////
+/////////////////////////////////////////////
+
+[EVENTS e_rozdeleni]
+ON=@Created
+tag(spawn,<memoryfindtype(memory_ispawned).link>)
+tag(guard,0)
+
+on=@death
+if (<strlen(<tag(guardNpc)>)>)
+  if (<finduid(tag(guardNpc)).ischar>)
+    finduid(tag(guardNpc)).tag(guard,0)
+  endif
+endif
+
+on=@Kill
+message("Chacha!")
+
+ON=@NPCSeeNewPlayer
+on=@skillstroke
+on=@hittry
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect 
+on=@beforegeteffect
+if(tag(guard) > 0)
+  src.redmessage("Monstrum ti odolava.")
+  f_guardBossSystem_setResists
+else
+  f_guardBossSystem_resetResists
+endif
+
+on=@beforegetswing
+if(tag(guard) > 0)
+  src.redmessage("Monstrum ti odolava.")
+  f_guardBossSystem_setResists
+else
+  f_guardBossSystem_resetResists
+endif
+
+on=@aftergetswing
+if(tag(guard) == 0)
+  arg(temp,(<hits>*100)/<maxhits>)
+  if (<temp> > 14) // Pokud uz ma mene jak 15% zivotu, nedelat kopii.
+    if (chance(<tag(e_copy_chance)>,3))
+      hits = (<hits>*90)/100
+    
+      newnpcTime(<baseid>,43200) // 12 hodin
+      lastnewchar.hits = (<hits>*90)/100
+    
+      tag(guard,1)
+      lastnewchar.tag(guardNpc,<uid>)
+      lastnewchar.home = <home>
+      lastnewchar.homedist = <homedist>
+      lastnewchar.tag(experience,<tag(experience)>/3)
+       
+      src.sysmessage("Mostrum se rozdelilo.")
+      scylla.delayedmessage("HM: Boss: boss se rozdelil.")
+    endif
+  endif
+endif
+
+///////////////////////////////////////////////
+////  FROST WAVE //////////////////////
+/////////////////////////////////////////////
+
+[EVENTS e_frosty_wave]
+ON=@Created
+
+ON=@NPCSeeNewPlayer
+hm_frost_wave
+
+on=@skillstroke
+on=@hittry
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect 
+on=@beforegeteffect
+on=@beforegetswing
+
+on=@aftergetswing
+hm_frost_wave
+
+[function hm_frost_wave]
+if (chance(<tag(e_frosty_wave_chance)>,3)))
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move -1,0
+  lastnew.tag(move,-2,0)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>)
+  lastnew.link = <uid>
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move -2,0
+  lastnew.tag(move,-2,0)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>)
+  lastnew.link = <uid>
+  
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 0,1
+  lastnew.tag(move,0,2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>)
+  lastnew.link = <uid>
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 0,2
+  lastnew.tag(move,0,2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>)
+  lastnew.link = <uid>
+  
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 0,-1
+  lastnew.tag(move,0,-2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>)
+  lastnew.link = <uid>
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 0,-2
+  lastnew.tag(move,0,-2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>)
+  lastnew.link = <uid>
+  
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 1,0
+  lastnew.tag(move,2,0)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 2,0
+  lastnew.tag(move,2,0)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 1,1
+  lastnew.tag(move,2,2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 2,2
+  lastnew.tag(move,2,2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move -1,-1
+  lastnew.tag(move,-2,-2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move -2,-2
+  lastnew.tag(move,-2,-2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move -1,1
+  lastnew.tag(move,-2,2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move -2,2
+  lastnew.tag(move,-2,2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 1,-1
+  lastnew.tag(move,2,-2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+  newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.move 2,-2
+  lastnew.tag(move,2,-2)
+  lastnew.tag(sila,<tag(e_frosty_wave_strong)>) 
+  lastnew.link = <uid>
+endif
+
+[itemdef i_frosty_wave]
+id=i_fx_explode
+name=Cold
+
+ON=@Create
+color=00984
+timer=1
+
+ON=@Step
+if (src.isgm)
+  return 1
+endif
+if (src.isPlayer)
+  src.sysMessage("Byl si zmrazen.")
+  src.hits = <src.hits>-59
+  src.paralyze(60)
+endif
+
+ON=@Timer
+if (<eval tag(sila)> > 0)
+  link.newitem(i_frosty_wave)
+  lastnew.p = <p>
+  lastnew.link = <link>  // link on monstrum
+  lastnew.move(<tag(move)>)
+  lastnew.tag(sila,<eval tag(sila)>-1)
+  lastnew.tag(move,<tag(move)>)
+  lastnew.timer = 1
+else
+  remove 
+endif
+
+///////////////////////////////////////////////
+////  ABILITA VUDCE     //////////////////////
+/////////////////////////////////////////////
+
+// Nastavime na leader spawnu tyto tagy
+// - tag(e_leader_hits_bost,%) 
+
+// na spawn monster pod vedenim vudce nastavime spawnevent e_leader_ability
+// + tag(leader_spawn)
+
+[EVENTS e_leader_ability]
+on=@Created
+tag(spawn,<memoryfindtype(memory_ispawned).link>)
+e_leader_check_boost
+
+ON=@NPCSeeNewPlayer
+on=@skillstroke
+on=@hittry
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect 
+on=@beforegeteffect
+on=@beforegetswing
+e_leader_check_boost
+
+on=@aftergetswing
+
+[function e_leader_check_boost]
+if(finduid(tag(spawn)).tag(leader_spawn).isItem)
+  arg(leader,<finduid(tag(spawn)).tag(leader_spawn)>)
+  if(<eval(leader.more2)> > 0)
+    if(!<eval tag(boosted)>)
+      arg(hits_difference,<maxhits>-<hits>)   
+      tag(deufalt_maxhits,<maxhits>)
+      
+      maxhits = <maxhits>*<leader.tag(e_leader_hits_bost)>/100
+      hits = <maxhits>-<arg(hits_difference)>
+      tag(boosted,1)
+    endif
+  else
+    if(<eval tag(boosted)>)
+      arg(hits_procento,<eval <hits>*100>/<maxhits>)
+      maxhits = <tag(deufalt_maxhits)>
+      hits = <arg(hits_procento)>*<maxhits>/100
+      tag.remove(deufalt_maxhits)
+      tag.remove(boosted)  
+    endif  
+  endif
+else
+  scylla.delayedmessage("HM: Abilita vudce - neexistuje vudci spawn! <uid> (<p>)")
+endif
+
+///////////////////////////////////////////////
+////  VEJCOKLAD     //////////////////////
+/////////////////////////////////////////////
+
+[EVENTS e_drop_egg]
+on=@Created
+ON=@NPCSeeNewPlayer
+if (chance(500,3)))
+  hm_newEgg
+endif
+
+on=@skillstroke
+on=@hittry
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect 
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[function hm_newEgg]
+newitemsafe(01ea7)
+lastnew.attr = 0b0
+lastnew.p = <p>
+lastnew.type = t_negated_spawn_char
+lastnew.amount = 1
+lastnew.more1 = c_hm_warniak_<tag(warniak_type)>
+lastnew.morex = 300
+lastnew.morey = 300
+lastnew.morez = 1
+arg(spawnUid,<lastnew>)
+
+newitemsafe(i_hm_warniak_egg)
+lastnew.p = <p>
+lastnew.tag(warniak_type,<tag(warniak_type)>)
+lastnew.link = <spawnUid>
+
+newitemsafe(i_hm_spawn_remove)
+lastnew.attr = 090
+lastnew.p = <p>
+lastnew.link = <spawnUid>
+
+//////////////////////////////////////
+/// PRUVODCE
+//////////////////////////////////////
+
+[EVENTS e_hm_pruvodce]
+ON=@NPCSeeNewPlayer
+if (<eval src.qtag(dungeon_hm_pruvodce)> > 0)
+  say("Kde si se mi ztratil?! Pojd!")
+else
+  src.qtag("dungeon_hm_pruvodce",1,52)
+endif
+
+ON=@UserDclick
+if (<eval tag(goWander)>)
+  action=0
+  dorand 3
+    say("Chces tam dovest nebo si povidat?!")
+    say("Jdeme!")
+    say("Neni cas na povidani!")
+  enddo
+endif  
+
+[ITEMDEF i_hm_pruvodce]
+ID=i_memory
+NAME=Speak
+TYPE=T_EQ_SCRIPT
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+
+ON=@EQUIP
+timer=10
+
+ON=@TIMER
+dorand 4
+  cont.say("Tak ted kudy..")
+  cont.say("Aaa, uz vim..")
+  cont.say("Pojdte zamnou, a nikoho necekam!")
+  cont.say("Pomalu se blizime.")
+enddo 
+timer={5 10}
+return 1
+
+
+[eof]

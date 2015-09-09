@@ -1,0 +1,73 @@
+[CHARDEF c_pig_silvester]
+ID=c_pig
+NAME=Silvestrovske prasatko
+SOUND=snd_ANIMALS_PIG1
+ICON=i_pet_PIG
+CAN=MT_WALK|MT_RUN
+attack=2
+ARMOR=12
+moverate=3
+RESOURCES=12 i_ribs_raw
+FOODTYPE=55 t_fruit, 55 t_crops, 55 t_grain, 55 t_garbage
+
+ANIM=01fff
+DESCRIPTION=Pig
+SUBSECTION=Land {Domestic}
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+ON=@Create
+NPC=brain_animal
+FAME=10
+KARMA={-1 -99}
+//ALIGNMENT=NEUTRAL
+COLOR=0981
+
+str=200
+dex=200
+int=100
+
+maxhits=32000
+maxstam=1000
+maxmana=1
+    
+parrying=5.0
+resist=5.0
+tactics=5.0
+wrestling=6.9
+SpiritSpeak=10.0
+taming=500.0
+peacemaking=0.1
+animallore=550.1
+
+tag.experience=<eval {1.0 2.0}>
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[1]>
+itemnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_pig_silvester
+
+[template loot_pig_silvester]
+item=i_sausages,{8 10}
+item=i_ale_amber,{0 1}
+item=i_ale_spiced,{0 1}
+item=i_ale_oktoberfest,{0 1}
+item=i_ale_stout,{0 1}
+item=i_bottle_wine,{0 1}
+
+[itemdef i_opilcova_kosile]
+id=i_jester_suit
+name=Opilcova kosile
+category=Silvester Quest
+
+ON=@Create
+HITPOINTS={11 40}
+COLOR=021
+tag(imi_value[29],10)  //Skill_Musicianship, +10
+mif_finishitem
+name=Opilcova kosile

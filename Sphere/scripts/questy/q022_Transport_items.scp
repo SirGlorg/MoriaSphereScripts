@@ -1,0 +1,216 @@
+//////////////////////////////////////////////////
+//////Questovni predmety - Hromada ingotu
+
+[ITEMDEF i_q022_hromada]
+ID=01bf1
+NAME=Hromada zeleznych ingotu
+TYPE=t_normal
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Hromada ingotu
+
+on=@create 
+attr=attr_move_never
+
+on=@userdclick 
+if (<src.tag.realm> == 1)
+ src.sysmessage Prece bys nechtel krast?! Fuj!
+elseif (<src.tag.q022> == 2)&& (<src.rescount i_q022_ingoty> < 1)
+ src.sysmessage Drze jsi sebral ingoty primo z hromady.
+ src.giveitem(i_q022_ingoty)
+else
+ src.sysmessage Tohle je ti k nicemu.
+endif
+return 1
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Zelezne ingoty
+
+[ITEMDEF i_q022_ingoty]
+ID=01bf4
+TYPE=t_normal
+NAME=Balik zeleznych ingotu
+WEIGHT=10.0
+ON=@Create
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage Neprilis kvalitni zelezne ingoty
+ON=@userDCLICK
+src.sysmessage Z tohole by sis zbrane vyrabet netroufnul
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Zelezne ingoty
+
+
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Drevena ratiste
+
+[ITEMDEF i_q022_ratiste]
+ID=01bd6
+TYPE=t_normal
+NAME=Balik nasad k halapartnam
+WEIGHT=10.0
+ON=@Create
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage Balik dvoumetrovych drevenych tyci
+ON=@userDCLICK
+src.sysmessage Zda se ti to nejake krehke
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Zelezne ingoty
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Vceli ul
+
+[ITEMDEF i_q022_vcely]
+ID=091a
+NAME=Ul lesnich vcel
+TYPE=t_normal
+// pridat vcely: i_bee_swarm
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Vceli ul
+on=@create 
+attr=attr_move_never
+more1=1 //pocet kolik sklenic medu bude v ulu
+
+on=@userdclick 
+if(<more1> > 0) 
+//snizit citac 
+more1 =<eval <more1>-1> 
+tag(timer,<eval serv.time+60*180>) 
+src.giveitem(i_q022_med) 
+//snizil-li se citac uz na 0 
+else 
+src.sysmessage(Vsechen med je vybrany) 
+endif 
+if (tag(timer)< serv.time) 
+more1=2
+endif
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Vceli ul
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Med
+
+[ITEMDEF i_q022_med]
+ID=09c8
+NAME=Sklenice medu
+TYPE=t_normal
+
+ON=@userCLICK
+src.sysmessage Med lesnich vcel
+ON=@userDCLICK
+src.sysmessage Nadherne voni a je tak sladky. *mnam*
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Med
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Koreni
+
+[ITEMDEF i_q022_koreni]
+ID=0e76
+NAME=Pytlik koreni
+TYPE=t_normal
+
+ON=@Create
+color=0852
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage Smes nejruznejsiho koreni
+ON=@userDCLICK
+src.sysmessage Koreni vydava omamnou vuni, az se ti z toho zatocila hlava
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Koreni
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Soudek s medovinou
+
+[ITEMDEF i_q022_medovina]
+ID=i_keg_wood
+NAME=Soudek Hurecke medoviny
+TYPE=t_normal
+
+ON=@Create
+color=044c
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage Nejlepsi medovina jakou lze v Stredozemi sehnat
+ON=@userDCLICK
+src.sysmessage Hmmm. Ta barva, ta vune, ta chut! Uzasne.. *skyt*
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Medovina
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Uhli
+
+[ITEMDEF i_q022_uhli]
+ID=019b9
+TYPE=t_normal
+NAME=Cerne uhli
+WEIGHT=15.0
+ON=@Create
+attr=attr_move_never
+color=076b
+
+ON=@userCLICK
+src.sysmessage Hromada prvotridniho cerneho uhli
+ON=@userDCLICK
+src.sysmessage Chutna to divne. Mozna se na prujem pouziva trochu jine uhli...?
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Transport
+DESCRIPTION=Uhli
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Bedna se zbranemi
+
+[ITEMDEF i_q022_bedna]
+ID=i_crate_lg
+TYPE=t_normal
+NAME=Bedna se zbranemi
+WEIGHT=20.0
+ON=@Create
+color=071d
+attr=attr_move_never
+
+
+ON=@userCLICK
+src.sysmessage Tezka okovana bedna se zvlastnim zamkem
+ON=@userDCLICK
+src.sysmessage Na to tve schopnosti nestaci
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=transport
+DESCRIPTION=Bedna se zbranemi
+
+
+
+
+[eof]

@@ -1,0 +1,2381 @@
+/////////////////////////////////////
+//                                 //
+//  Quest menu vytvorene Darkenem  //
+//                                 //
+/////////////////////////////////////
+
+[function questy]
+if (src.isgm)
+  if (isqueststone)
+    // dialog menu pro GM je v souboru quest_system.scp
+    finduid(<return_nth(1,<questMenu_questStone>)>).dialog(d_quest_stone)
+  else
+    src.redmessage("Chyba - nespravny item")
+    return(1)
+  endif
+  return(1)
+endif
+f_questy_checkFunctions	// Kontroluje stare tagy u neopravenych questu. Proste v minulosti nekdo napsal quest a nastavil stupidni, blbe hledatelne tagy, tak se po predelani toho questu do gump podoby rovnou ty tagy prepocitavaj na nove a testuje se to pomoci tech funkci v f_questy_checkFunctions o par radku niz
+src.redmessage(Seznam plnenych a splnenych questu)
+DIALOG(d_questy)
+return 1
+
+[function f_questy_checkFunctions]
+//f_gq002_checkOldTags // this should be already repaired everywhere
+//f_mq002_checkOldTags
+f_q007_checkOldTags
+f_q010_checkOldTags
+f_q013_checkOldTags
+f_q016_checkOldTags
+f_q017_checkOldTags
+f_q018_checkOldTags
+f_q020_checkOldTags
+f_q021_checkOldTags
+f_q000_checkOldTags
+f_q030_checkOldTags
+
+[defnames questy_seznam]
+questMenu_questStone  0400006F8
+questMenu_rows	53
+//          |     Nazev questu     |           dialogName           |  1=qtag, 0=tag  |  relevantni tagy
+questMenu[0]  Zemedelec Borek           ,d_questy_borek                     ,1         ,gq002, mq002
+questMenu[1]  Alchymistka Mikkena       ,d_questy_mikena                    ,0         ,gq001
+questMenu[2]  Zmocnenec Gondoru         ,d_questy_zmocnenecg                ,1         ,gq030_zmocnenec
+questMenu[3]  Zmocnenec Mordoru         ,d_questy_zmocnenecm                ,1         ,mq030_zmocnenec
+questMenu[4]  Kuchar Mrkvicka           ,d_questy_kuchar                    ,0         ,q31_kuchar, q31_neuspel
+questMenu[5]  Lecitel Ceren             ,d_questy_lavovyjester              ,0         ,q1_lavovyjester, q1_neuspel
+questMenu[6]  Haradirovo selatko        ,d_questy_Haradirovo_selatko        ,1         ,q007_haradirovo_selatko
+questMenu[7]  Kniha inskripce           ,d_questy_kniha_inscripce           ,1         ,q007_stary_inscripter
+questMenu[8]  Adamant. kladivko         ,d_questy_adamantinove_kladivko     ,1         ,q007_prastary_kovar
+questMenu[9]  Mastickar Gregoriel       ,d_questy_mastickar                 ,1         ,q010_mastickar
+questMenu[10] Prekupnik Hruon           ,d_questy_prekupnik                 ,0         ,gq011_prekupnik, gq011_neuspel
+questMenu[11] Prekupnik Akranon         ,d_questy_prekupnik                 ,0         ,mq011_prekupnik, mq011_neuspel
+questMenu[12] Experimentator            ,d_questy_experimentator            ,1         ,gq013_experimentator, mq013_experimentator
+questMenu[13] Paradnice Minny           ,d_questy_paradnice                 ,0         ,q015_paradnice, q015_neuspel
+questMenu[14] Prastary poklad           ,d_questy_prastary_poklad           ,1         ,q016_prastary_poklad
+questMenu[15] Hobitin                   ,d_questy_hobitin                   ,0         ,q100_hobitin_ambra, q100_hobitin_ambra_neuspel
+questMenu[16] Kovar Gorug               ,d_questy_gorug                     ,1         ,gq002_kovar, mq002_kovar
+questMenu[17] Kouzelna dyka             ,d_questy_kouzelnadyka              ,1         ,q023
+questMenu[18] Alchymista Terlak         ,d_alchymista_terlak                ,1         ,q017_terlak_ochrana, q017_terlak
+questMenu[19] Carodejka                 ,d_questy_carodejka                 ,1         ,q020
+questMenu[20] Remeslnik Navin           ,d_questy_remeslnik_navin           ,1         ,q021
+questMenu[21] Transport                 ,d_questy_transport                 ,1         ,q022
+questMenu[22] Erioluv vnuk              ,d_questy_erioluv_vnuk              ,1         ,q006
+questMenu[23] Lovec Odlier              ,d_questy_lovec_odlier              ,1         ,nb001
+questMenu[24] Akolytka Mirana           ,d_questy_akolytka_mirana           ,1         ,nb002
+questMenu[25] Hornik Beorgrad           ,d_questy_hornik_beorgrad           ,1         ,nb003
+questMenu[26] Lesnik Grarad             ,d_questy_lesnik_grarad             ,1         ,nb004
+questMenu[27] Rybar Broket              ,d_questy_rybar_broket              ,1         ,nb005
+questMenu[28] Nekromant                 ,d_questy_necromancer               ,1         ,nb006
+questMenu[29] Remeslnik Imro            ,d_questy_remeslnik_imro            ,1         ,nb007
+questMenu[30] Vyvrhel                   ,d_questy_vyvrhel                   ,1         ,q099
+questMenu[31] Zlaty losos               ,d_questy_zlaty_losos               ,1         ,q018
+questMenu[32] Potulny pocestny          ,d_questy_pocestny                  ,1         ,q019_pocestny
+questMenu[33] Volani more               ,d_questy_volani_more               ,1         ,q033
+questMenu[34] Zasnubni prsten           ,d_questy_zasnubni_prsten           ,1         ,q024
+questMenu[35] Palirna                   ,d_questy_palirna                   ,1         ,q025
+questMenu[36] Otrava z hrobek           ,d_questy_HCNPoison                 ,1         ,q026_hcnPoison,q026_hcnPoison_givenResources
+questMenu[37] Umbarska hadka            ,d_questy_umbarskaHadka             ,1         ,mq027_umbarskaHadka
+questMenu[38] Ztracene Dcery            ,d_questy_velmistr                  ,1         ,q000_velmistr
+questMenu[39] Murlay Namornik           ,d_questy_murlay_namornik           ,1         ,q029_murlay_namornik
+questMenu[40] Predajca Menegil          ,d_questy_menegil                   ,1         ,mq032_menegil, mq032_menegil_prevozca
+questMenu[41] Herman                    ,d_questy_herman                    ,1         ,q035_herman
+questMenu[42] Uhrovity Jonas            ,d_questy_jonas                     ,1         ,q036_jonas
+questMenu[43] Opily Zarik               ,d_questy_zarik                     ,1         ,q037_zarik
+questMenu[44] Oblast cerne smrti        ,d_ocs                              ,1         ,q038_ocs
+questMenu[45] Shadow weapons            ,d_shadow_weapon                    ,1         ,q039_shadow_weapon
+questMenu[46] Spolecenstvi drakobijcu   ,d_dragons                          ,1         ,q040_dragons
+questMenu[47] Drakobijec Alechymista    ,d_dragons_alchymista               ,1         ,q040_dragons_alchymista
+questMenu[48] Drakobijec Rakchin        ,d_dragons_rakchin                  ,1         ,q040_dragons_rakchin
+questMenu[49] Blaznivy Drakobijec       ,d_dragons_blazen                   ,1         ,q040_dragons_blazen
+questMenu[50] Drakobijci - brneni       ,d_dragons_kovar                    ,1         ,q040_dragons_kovar
+questMenu[51] Prestupny quest           ,d_prestupak                        ,1         ,q041_paserak
+questMenu[52] Halda Molle Hatlend       ,d_hm_hatlend               	    ,1         ,q042_hatlend_rulik
+
+[dialog d_questy]
+5,5
+page 0
+argo.resizepic(20,20,2620,200,400)
+argo.settext(0,"Seznam questu")
+argo.text(60,40,43,0)		// Nazev gumpu
+argo.gumppic(183,35,028C9)	//dracek
+
+arg(souradniceY,72)
+arg(row,0)
+arg(buttonNumbers,0)
+arg(pageNumber,1)
+argo.page(1)
+while (<row> < <questMenu_rows>)
+  if (<buttonNumbers> > 11)
+    argo.button(173,385,2224,2224,0,<pageNumber>+1,0)	//  next page
+    arg(buttonNumbers,0)
+    arg(pageNumber,#+1)
+    arg(souradniceY,72)
+    argo.page(<pageNumber>)
+    argo.button(35,385,2223,2223,0,<pageNumber>-1,0)	//  prev.page
+  endif
+  if (<f_questMenu_hasRelevantTag(<questMenu[<row>]>)>)
+    argo.button(30,<arg(souradniceY)>,0988,0988,1,0,<eval <row>+1>)
+    argo.settext(<row>+1,<f_questMenu_getName(<questMenu[<row>]>)>)
+    argo.text(37,<arg(souradniceY)>+1,1152,<row>+1)
+    arg(souradniceY,#+25)
+    arg(buttonNumbers,#+1)
+  endif
+  arg(row,#+1)
+endwhile
+
+[dialog d_questy button]
+on=0
+return 1
+
+on=@anyButton
+dialog(<f_questMenu_getDialog(<questMenu[<eval <argn>-1>]>)>)
+
+
+/////////////////////
+//                 //
+//  D I A L O G Y  //
+//                 //
+/////////////////////
+
+
+///////////////////////
+//                   //
+//  Borek zemedelec  //
+//                   //
+///////////////////////
+
+[dialog d_questy_borek]
+argo.f_qDialogInstructions(03118)
+
+if ( (<eval src.qtag(mq002)> == 6) || (<eval src.qtag(gq002)> == 6) )
+  argo.setText(1,"Zijes s vedomim, ze pro Borka jsi <?src.sex(udelal,udelala)?> vse, co jsi <?src.sex(mohl a ulehcil,mohla a ulehcila)?> jsi mu jeho tezky zivot.")
+elseif (<eval src.qtag(gq002)> > 0) // gondorska cast
+  if (<eval src.qtag(gq002)> == 1)
+    argo.setText(1,"Borek te pozadal, aby jsi <?src.sex("odmontoval","odmontovala")?> radlici z pluhu a <?src.sex("donesl","donesla")?> ji opravit.")
+  elseif (<eval src.qtag(gq002)> == 2)
+    argo.setText(1,"Uz vis, jak vybabrat radlici z Borkova pluhu. Je na case to udelat.")
+  elseif (<eval src.qtag(gq002)> == 3)
+    argo.setText(1,"Borek te pozadal, aby jsi <?src.sex("donesl","donesla")?> radlici z pluhu k oprave kovari, ktery ma svou dilnu jizne od Hurky.")
+  elseif (<eval src.qtag(gq002)> == 4)
+    argo.setText(1,"Kovar ti opravil Borkovu radlici. Je cas vratit se s ni zpet.")
+  elseif (<eval src.qtag(gq002)> == 5)
+    argo.setText(1,"Vasnive jsi <?src.sex("vsunul","vsunula")?> opravenou radlici zpet do Borkova pluhu. Snad bude mit radost.")
+  endif
+else // mordorska cast
+  if (<eval src.qtag(mq002)> == 1)
+    argo.setText(1,"Borek te pozadal, aby jsi <?src.sex("odmontoval","odmontovala")?> radlici z pluhu a <?src.sex("donesl","donesla")?> ji opravit.")
+  elseif (<eval src.qtag(mq002)> == 2)
+    argo.setText(1,"Uz vis, jak vybabrat radlici z Borkova pluhu. Je na case to udelat.")
+  elseif (<eval src.qtag(mq002)> == 3)
+    argo.setText(1,"Borek te pozadal, aby jsi <?src.sex("donesl","donesla")?> radlici z pluhu k oprave kovari na namesti.")
+  elseif (<eval src.qtag(mq002)> == 4)
+    argo.setText(1,"Kovar ti opravil Borkovu radlici. Je cas vratit se s ni zpet.")
+  elseif (<eval src.qtag(mq002)> == 5)
+    argo.setText(1,"Vasnive jsi <?src.sex("vsunul","vsunula")?> opravenou radlici zpet do Borkova pluhu. Snad bude mit radost.")
+  endif
+endif
+
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_borek text]
+Zemedelec Borek
+
+
+[dialog d_questy_borek button]
+on=1
+DIALOG(d_questy)
+
+
+
+///////////////////
+//               //
+//  Kovar Gorug  //
+//               //
+///////////////////
+
+[dialog d_questy_gorug]
+argo.f_qDialogInstructions(03022)
+if ( (0<src.qtag(gq002_kovar)> == 1) || (0<src.qtag(mq002_kovar)> ==1) )
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif ( (0<src.qtag(gq002_kovar)> ==2) || (0<src.qtag(mq002_kovar)> ==2) )
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+else
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+endif
+
+[dialog d_questy_gorug text]
+Kovar Gorug
+<?src.sex(Slibil,Slibila)?> jsi kovari, ze mu prineses kladivo, ktere mu sebrali trolove.
+Podarilo se ti ziskat od trolu Gorugovo kladivo. Ted uz mu ho jenom odnest, urcite bude stestim bez sebe.
+Kovar je ti vdecny za navraceni sveho kladiva.
+
+[dialog d_questy_gorug button]
+on=1
+DIALOG(d_questy)
+
+
+
+///////////////
+//           //
+//  Mikkena  //
+//           //
+///////////////
+
+[dialog d_questy_mikena]
+argo.f_qDialogInstructions(03139)
+
+if (<eval src.tag(gq001) == 1) // prvni ukol - mord i gond totozne
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (<eval src.tag(gq001) == 2) && (<eval src.tag(realm)> == 1)
+  argo.HTMLGUMP(160,80,242,100,3,0,36) // druhy ukol, gondor
+elseif (<eval src.tag(gq001) == 2) && (<eval src.tag(realm)> == 2)
+  argo.HTMLGUMP(160,80,242,100,4,0,36) // druhy ukol, mordor
+elseif (0<src.tag(gq001)> == 3)
+  argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (0<src.tag(gq001)> > 0)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+endif
+
+[dialog d_questy_mikena text]
+Alchymistka Mikkena
+<?src.sex(Slibil,Slibila)?> jsi Mikkene, ze ji pomuzes, ale nejak se ti to nepodarilo.
+<?src.sex(Slibil,Slibila)?> jsi Mikkene, ze ji doneses deset kousku kury z mrtveho stromu z Temneho hvozdu.
+<?src.sex(Slibil,Slibila)?> jsi Mikkene, ze doneses balicek hospodskemu Edwinovi do Hurky.
+<?src.sex(Slibil,Slibila)?> jsi Mikkene, ze doneses balicek hospodskemu Chartonovi do Nurnu
+<?src.sex(Pomohl,Pomohla)?> jsi Mikkene se vsim, co potrebovala. Patri ti vdek slavne alchymistky...
+
+[dialog d_questy_mikena button]
+on=1
+DIALOG(d_questy)
+
+
+
+/////////////////
+//             //
+//  Zmocnenec  //
+//             //
+/////////////////
+
+// Gondor
+
+[dialog d_questy_zmocnenecg]
+argo.setText(0,"Zmocnenec Gondoru")
+argo.f_qDialogInstructions(03002)
+
+if (<eval src.qtag(gq030_zmocnenec)> == 1)
+  argo.setText(1,"Zmocnenec po tobe chce 20 zubu velkych potkanu.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 3)
+  argo.setText(1,"Zmocnenec po tobe chce 9 kosti kostlivcu sekerniku.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 5)
+  argo.setText(1,"Zmocnenec po tobe chce 8 oci lichu.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 7)
+  argo.setText(1,"Zmocnenec po tobe chce 10 drapu infikovanych krys.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 9)
+  argo.setText(1,"Zmocnenec po tobe chce 7 vajicek cernych vdov.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 11)
+  argo.setText(1,"Zmocnenec po tobe chce 7 nehtu titanu.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 13)
+  argo.setText(1,"Zmocnenec po tobe chce 6 nehtu panu titanu.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 15)
+  argo.setText(1,"Zmocnenec po tobe chce 10 pirek jedoveho fenixe.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 17)
+  argo.setText(1,"Zmocnenec po tobe chce 5 vlasu strazcu ohne.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 19)
+  argo.setText(1,"Zmocnenec po tobe chce 8 prstu gladiator lorda.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 21)
+  argo.setText(1,"Zmocnenec po tobe chce 3 srdce evila.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 23)
+  argo.setText(1,"Zmocnenec po tobe chce 3 vetvicky z tela excelenta.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 25)
+  argo.setText(1,"Zmocnenec po tobe chce 5 usi obru z jeskyne.")
+elseif (<eval src.qtag(gq030_zmocnenec)> == 27)
+  if (<eval src.qtag(q030_finished) > )
+    arg(dracichSrdc,<eval((<src.qtag(q030_finished)>+1)*4)>)
+    argo.setText(1,"Zmocnenec po tobe chce <?arg(dracichSrdc)?> draci srdce. Jen by te zajimalo, kde dnes potkas draka ... Tento ukol je snad naprosto neresitelny.")
+  else
+    argo.setText(1,"Zmocnenec po tobe chce 4 draci srdce. Jen by te zajimalo, kde dnes potkas draka ... Tento ukol je snad naprosto neresitelny.")
+  endif
+elseif (<eval src.qtag(gq030_zmocnenec)> == 28)
+  argo.setText(1,"<?src.sex(Splnil,Splnila)?> jsi uspesne vsechny zmocnencovy zkousky a <?src.sex(stal jsi se uznavanym hrdinou Gondoru,stala jsi se uznavanou hrdinkou Gondoru)?>.")
+elseif (<eval src.qtag(gq030_zmocnenec)> != 0)
+  argo.setText(1,"Plnis zmocnencovy ukoly a postupujes v armadni hierarichii stale vyse. Zatim je stale kam stoupat. Az budes <?src.sex(pripraven,pripravena)?> zajdi za Zmocnencem a pozadej ho o dalsi ukol.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_zmocnenecg text]
+
+[dialog d_questy_zmocnenecg button]
+on=1
+DIALOG(d_questy)
+
+// Mordor
+[dialog d_questy_zmocnenecm]
+argo.setText(0,"Zmocnenec Mordoru")
+argo.f_qDialogInstructions(03111)
+
+if (<eval src.qtag(mq030_zmocnenec)> == 1)
+  argo.setText(1,"Zmocnenec po tobe chce 20 zubu litych vlku.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 3)
+  argo.setText(1,"Zmocnenec po tobe chce 7 prstu trollu.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 5)
+  argo.setText(1,"Zmocnenec po tobe chce 15 klepet velkych skorpionu.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 7)
+  argo.setText(1,"Zmocnenec po tobe chce 10 klepet kralu skorpionu.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 9)
+  argo.setText(1,"Zmocnenec po tobe chce 5 prstu kralu lichu.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 11)
+  argo.setText(1,"Zmocnenec po tobe chce 7 oci kyklopu.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 13)
+  argo.setText(1,"Zmocnenec po tobe chce 12 nehtu kralu kyklopu.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 15)
+  argo.setText(1,"Zmocnenec po tobe chce 10 pirek jedoveho fenixe.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 17)
+  argo.setText(1,"Zmocnenec po tobe chce 5 kuzi z minotaura.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 19)
+  argo.setText(1,"Zmocnenec po tobe chce 8 prstu gladiator lorda.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 21)
+  argo.setText(1,"Zmocnenec po tobe chce 4 srdce prastarych pavouku.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 23)
+  argo.setText(1,"Zmocnenec po tobe chce 3 vetvicky z tela Excelenta.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 25)
+  argo.setText(1,"Zmocnenec po tobe chce 4 usi obru z jeskyne.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 27)
+  argo.setText(1,"Plnis zmocnencovy ukoly a postupujes v armadni hierarichii stale vyse. Zatim je stale kam stoupat. Az budes <?src.sex(pripraven,pripravena)?>, zajdi za zmocnencem a pozadej ho o dalsi ukol.")
+elseif (<eval src.qtag(mq030_zmocnenec)> == 28)
+  argo.setText(1,"Zmocnenec po tobe chce 4 draci srdce. Jen by te zajimalo, kde dnes potkas draka ... Tento ukol je snad naprosto neresitelny.")
+elseif (<eval src.qtag(mq030_zmocnenec)> != 0)
+  argo.setText(1,"<?src.sex(Splnil,Splnila)?> jsi uspesne vsechny zmocnencovy zkousky a <? src.sex(stal jsi se uznavanym hrdinou Mordoru,stala jsi se uznavanou hrdinkou Mordoru) ?>.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+
+[dialog d_questy_zmocnenecm text]
+
+[dialog d_questy_zmocnenecm button]
+on=1
+DIALOG(d_questy)
+
+
+
+///////////////////////
+//                   //
+//  Kuchar Mrkvicka  //
+//                   //
+///////////////////////
+
+[dialog d_questy_kuchar]
+argo.f_qDialogInstructions(03001)
+
+if (0<src.tag(q31_kuchar)> == 1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.tag(q31_kuchar)> == 2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (0<src.tag(q31_neuspel)> == 1)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+endif
+
+[dialog d_questy_kuchar text]
+Kuchar Mrkvicka
+<?src.sex(Slibil,Slibila)?> jsi pomoci Kuchari, ktery stale ceka na dodavku ptacku.
+<?src.sex(Pomohl,Pomohla)?> jsi kuchari a ten ted opet muze varit sve speciality.
+<?src.sex(Rozzlobil,Rozzlobila)?> jsi kuchare tak, ze se s tebou odmita bavit. Ten uz s tebou do konce zivota nepromluvi...
+
+[dialog d_questy_kuchar button]
+on=1
+DIALOG(d_questy)
+
+
+
+/////////////////////
+//                 //
+//  Lavovy jester  //
+//                 //
+/////////////////////
+
+[dialog d_questy_lavovyjester]
+argo.f_qDialogInstructions(03036)
+
+if (0<src.tag(q1_lavovyjester)> == 1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.tag(q1_lavovyjester)> == 2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (0<src.tag(q1_neuspel)> == 1)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+endif
+
+[dialog d_questy_lavovyjester text]
+Lecitel Ceren
+<?src.sex(Slibil,Slibila)?> jsi najit Arda Nare a prinest krev lavoveho jestera, ale zatim jsi to jeste <?src.sex(nezvladl,nezvladla)?>. Ceren stale ceka.
+Na srdci te hreje vedomi ze jsi <?src.sex(zachranil,zachranila)?> jednu velkou lasku a navic <?src.sex(ziskal,ziskala)?> pritele. Ceren ti bude do smrti vdecny.
+<?src.sex(Urazil jsi a rozlobil,Urazila jsi a rozlobila)?> nestastneho lecitele tak, ze uz s tebou do konce zivota nepromluvi.
+
+[dialog d_questy_lavovyjester button]
+on=1
+DIALOG(d_questy)
+
+
+
+//////////////////////////
+//                      //
+//  Haradirovo selatko  //
+//                      //
+//////////////////////////
+
+[dialog d_questy_Haradirovo_selatko]
+argo.f_qDialogInstructions(03106)
+
+if (0<src.qtag(q007_haradirovo_selatko)> == 1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 3)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 4)
+  argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 5)
+  argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 6)
+  argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 7)
+  argo.HTMLGUMP(160,80,242,100,7,0,36)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 8)
+  argo.HTMLGUMP(160,80,242,100,8,0,36)
+endif
+
+[dialog d_questy_Haradirovo_selatko text]
+Haradir
+<?src.sex(Rekl,Rekla)?> jsi haradirovi, ze mu prineses od hospodskeho selatko, ktere mu ten mizera slibil.
+Hospodsky odmita priznat, ze kdy Haradirovi nejake sele slibil a nenecha se presvedcit. Pokud Haradir nevi, jak hospodskeho presvedcit, aby slib dodrzel, nema nejmensi smysl zkouset sele vymahat.
+Haradir je presvedcen, ze hospodsky je zavazan zene jmenem Rachel. Mozna by stalo za to zkusit ji presvedcit, aby tomu lakomci domluvila.
+Rachel ti prislibila pomoc s hospodskym, pokud ji prineses jeden tisic netopyrich kridel (batwings).
+Rachel domluvila hospodskemu. Je cas zjistit, jestli to melo vliv.
+Ukazalo se, ze lakota hospodskeho je zpusobena strachem o holy zivot. Vsechny jeho zasoby jsou odvadeny prisluhovacum zle Dryady, ktera se na ostrove usidlila. Hospodsky ti nemuze sele predat, dokud ho Dryady nezbavis. Jako dukaz jeji smrti chce prinest jeji luk.
+<?src.sex(Zbavil,Zbavila)?> jsi hospodskeho nebezpeci a on ti za odmenu dal pro Haradira selatko, ktere slibil.
+Haradir od tebe velmi vdecne selatko prijal. Jedine, co ti mohl nabidnout vymenou je par zajimavych pribehu.
+
+[dialog d_questy_Haradirovo_selatko button]
+on=1
+DIALOG(d_questy)
+
+
+[dialog d_questy_kniha_inscripce]
+argo.f_qDialogInstructions(03053)
+
+if (0<src.qtag(q007_stary_inscripter)> == 1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.qtag(q007_stary_inscripter)> == 2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (0<src.qtag(q007_stary_inscripter)> == 3)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+[dialog d_questy_kniha_inscripce text]
+Stary inskripter
+Tento mocny carodej ti napise Knihu Inskripce, pokud mu doneses tri kameny:<br><br> Krvavy kamen, Mesicni kamen a Meteorit.
+<?src.sex(Obstaral,Obstarala)?> jsi suroviny pro aktivaci knihy a <?src.sex(odnesl,odnesla)?> jsi si od stareho kouzelnika cenny predmet a spoustu dulezitych zkusenosti.
+<?src.sex(Uzavrel,Uzavrela)?> jsi s muzem jmenem Rodrigo dohodu a <?src.sex(vymenil,vymenila)?> jsi knihu Inskripce za magicke pero.
+
+[dialog d_questy_kniha_inscripce button]
+on=1
+DIALOG(d_questy)
+
+
+[dialog d_questy_adamantinove_kladivko]
+argo.f_qDialogInstructions(03059)
+
+if (0<src.qtag(q007_prastary_kovar)> == 1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.qtag(q007_prastary_kovar)> == 2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+
+[dialog d_questy_adamantinove_kladivko text]
+Prastary Kovar
+Nejzrucnejsi kovar, jakeho jsi kdy <?src.sex(potkal,potkala)?> slibil, ze ti vytvori nastroj tvych kvalit, pokud mu prineses vsechny tyto kameny:<br><br> Krvavy kamen, Mesicni kamen a Meteorit.
+<?src.sex(Obstaral,Obstarala)?> jsi kovari suroviny pro vyrobu adamantinoveho kladivka, ktere ti slibil, a <?src.sex(stal jsi se jeho hrdym vlastnikem,stala jsi se jeho hrdou vlastnici)?>.
+
+[dialog d_questy_adamantinove_kladivko button]
+on=1
+DIALOG(d_questy)
+
+
+
+/////////////////
+//             //
+//  Mastickar  //
+//             //
+/////////////////
+
+[dialog d_questy_mastickar]
+argo.f_qDialogInstructions(03008)
+
+if (0<src.qtag(q010_mastickar)> ==1)
+ argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.qtag(q010_mastickar)> ==2)
+ argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+[dialog d_questy_mastickar text]
+Mastickar Gregoriel
+<?src.sex(Slibil,Slibila)?> jsi Gregorielovi prinest vzacnou prisadu do jeho noveho receptu. Zatim jsi to ale <?src.sex(nezvladl,nezvladla)?>. Mastickar ceka...
+Gregoriel ma diky tobe moznost otestovat svuj vytouzeny recept. Muzes na sebe byt <?src.sex(pysny,pysna)?>!
+
+[dialog d_questy_mastickar button]
+on=1
+DIALOG(d_questy)
+
+
+
+/////////////////
+//             //
+//  Prekupnik  //
+//             //
+/////////////////
+
+[dialog d_questy_prekupnik]
+if ( (0<src.tag(gq011_neuspel)> !=0) || (0<src.tag.gq011_prekupnik> !=0) ) // gondorsky prekupnik
+  argo.f_qDialogInstructions(03025)
+  if (0<src.tag.gq011_prekupnik> ==1)
+    argo.HTMLGUMP(160,80,242,100,1,0,36)
+  elseif (0<src.tag.gq011_prekupnik> ==2)
+    argo.HTMLGUMP(160,80,242,100,2,0,36)
+  elseif (0<src.tag.gq011_prekupnik> ==3)
+    argo.HTMLGUMP(160,80,242,100,3,0,36)
+  elseif (0<src.tag.gq011_prekupnik> ==4)
+    argo.HTMLGUMP(160,80,242,100,4,0,36)
+  elseif (0<src.tag.gq011_prekupnik> ==5)
+    argo.HTMLGUMP(160,80,242,100,5,0,36)
+  elseif (0<src.tag.gq011_prekupnik> ==6)
+    argo.HTMLGUMP(160,80,242,100,6,0,36)
+  elseif (0<src.tag.gq011_prekupnik> ==7)
+    argo.HTMLGUMP(160,80,242,100,7,0,36)
+  elseif (0<src.tag(gq011_neuspel)> !=0)
+    argo.HTMLGUMP(160,80,242,100,7,0,36)
+  endif
+else // mordorsky prekupnik
+  argo.f_qDialogInstructions(03025,8)
+  if (0<src.tag.mq011_prekupnik> ==1)
+    argo.HTMLGUMP(160,80,242,100,9,0,36)
+  elseif (0<src.tag.mq011_prekupnik> ==2)
+    argo.HTMLGUMP(160,80,242,100,10,0,36)
+  elseif (0<src.tag.mq011_prekupnik> ==3)
+    argo.HTMLGUMP(160,80,242,100,11,0,36)
+  elseif (0<src.tag.mq011_prekupnik> ==4)
+    argo.HTMLGUMP(160,80,242,100,12,0,36)
+  elseif (0<src.tag.mq011_prekupnik> ==5)
+    argo.HTMLGUMP(160,80,242,100,13,0,36)
+  elseif (0<src.tag.mq011_prekupnik> ==6)
+    argo.HTMLGUMP(160,80,242,100,14,0,36)
+  elseif (0<src.tag.mq011_prekupnik> ==7)
+    argo.HTMLGUMP(160,80,242,100,15,0,36)
+  elseif (0<src.tag(mq011_neuspel)> !=0)
+    argo.HTMLGUMP(160,80,242,100,15,0,36)
+  endif
+endif
+
+[dialog d_questy_prekupnik text]
+// gondorska cast
+Prekupnik Hruon
+<?src.sex(Slibil,Slibila)?> jsi prekupnikovi, ze mu prineses 12 lebek obycejnych kostlivcu. Zatim jsi to <?src.sex(nesplnil,nesplnila)?>.			// 1 - q011_prekupnik=1 tag
+Jiz jsi <?src.sex(splnil,splnila)?> svuj prvni ukol pro prekupnika Hruona, ale zda se, ze jeste neco potrebuje. Nekdy se mas zastavit.				// 2 - q011_prekupnik=2 tag
+<?src.sex(Slibil,Slibila)?> jsi prekupniku Hruonovi, ze mu prineses 10 ohonu Litych vlku, zatim jsi to <?src.sex(nesplnil,nesplnila)?>.			// 3 - q011_prekupnik=3 tag
+<?src.sex(Splnil,Splnila)?> jsi svuj slib prekupniku Hruonovi a <?src.sex(donesl,donesla)?> jsi mu 10 ohonu Litych vlku. Avsak jeste nejaky ukol pro tebe ma. 	// 4 - q011_prekupnik=4 tag
+<?src.sex(Slibil,Slibila)?> jsi prekupniku Hruonovi, ze mu prineses 8 kusadel Terathan Avengeru. Zatim jsi to <?src.sex(nesplnil,nesplnila)?>.						// 5 - q011_prekupnik=5 tag
+<?src.sex(Splnil,Splnila)?> jsi vsechny ukoly, ktere pro tebe prekupnik mel a <?src.sex(byl,byla)?> jsi za to nalezite <?src.sex(odmenen,odmenena)?>.			// 6 - q011_prekupnik=6 tag
+<?src.sex(Nastval,Nastvala)?> jsi prekupnika Hruona tim, ze jsi pro nej <?src.sex(odmitl,odmitla)?> udelat nejakou praci. Je to nadutec. 				// 7 - neuspel tag.
+// mordorska cast
+Prekupnik Arkanon
+<?src.sex(Slibil,Slibila)?> jsi prekupnikovi, ze mu prineses 12 lebek obycejnych kostlivcu. Zatim jsi to <?src.sex(nesplnil,nesplnila)?>.			// 1 - q011_prekupnik=1 tag
+Jiz jsi <?src.sex(splnil,splnila)?> svuj prvni ukol pro prekupnika Arkanona, ale zda se, ze jeste neco potrebuje. Nekdy se mas zastavit.				// 2 - q011_prekupnik=2 tag
+<?src.sex(Slibil,Slibila)?> jsi prekupniku Arkanonovi, ze mu prineses 10 ohonu Litych vlku, zatim jsi to <?src.sex(nesplnil,nesplnila)?>.			// 3 - q011_prekupnik=3 tag
+<?src.sex(Splnil,Splnila)?> jsi svuj slib prekupniku Arkanonovi a <?src.sex(donesl,donesla)?> jsi mu 10 ohonu Litych vlku. Avsak jeste nejaky ukol pro tebe ma.	// 4 - q011_prekupnik=4 tag
+<?src.sex(Slibil,Slibila)?> jsi prekupniku Arkanonovi, ze mu prineses 8 kusadel Skorpion Princu. Zatim jsi to <?src.sex(nesplnil,nesplnila)?>.						// 5 - q011_prekupnik=5 tag
+<?src.sex(Splnil,Splnila)?> jsi vsechny ukoly, ktere pro tebe prekupnik mel a <?src.sex(byl,byla)?> jsi za to nalezite <?src.sex(odmenen,odmenena)?>.			// 6 - q011_prekupnik=6 tag
+<?src.sex(Nastval,Nastvala)?> jsi prekupnika Arkanona tim, ze jsi pro nej <?src.sex(odmitl,odmitla)?> udelat nejakou praci. Je to nadutec.				// 7 - neuspel tag.
+
+
+[dialog d_questy_prekupnik button]
+on=1
+dialog(d_questy)
+
+
+
+//////////////////////
+//                  //
+//  Experimentator  //
+//                  //
+//////////////////////
+
+[dialog d_questy_experimentator]
+if (0<src.qtag(gq013_experimentator)>!=0)
+  argo.f_qDialogInstructions(03030)
+  if (<eval src.qtag(gq013_experimentator)>==1)
+    argo.HTMLGUMP(160,80,242,100,1,0,36)
+  elseif (<eval src.qtag(gq013_experimentator)>==2)
+    argo.HTMLGUMP(160,80,242,100,2,0,36)
+  elseif (<eval src.qtag(gq013_experimentator)>==3)
+    argo.HTMLGUMP(160,80,242,100,3,0,36)
+  endif
+else
+  argo.f_qDialogInstructions(03030,4)
+  if (<eval src.qtag(mq013_experimentator)>==1)
+    argo.HTMLGUMP(160,80,242,100,5,0,36)
+  elseif (<eval src.qtag(mq013_experimentator)>==2)
+    argo.HTMLGUMP(160,80,242,100,6,0,36)
+  elseif (<eval src.qtag(mq013_experimentator)>==3)
+    argo.HTMLGUMP(160,80,242,100,7,0,36)
+  endif
+endif
+
+[dialog d_questy_experimentator Text]
+//gondorska cast
+Experimentator Theorius
+<?src.sex(Slibil,Slibila)?> jsi Theoriusovi, ze mu prineses 10 mozku Obru Valecniku. Zatim jsi to <?src.sex(nesplnil,nesplnila)?>. Na co je asi ma?  // 1 tag
+<?src.sex(Splnil,Splnila)?> jsi, co po tobe tento muz chtel. Je vazne velmi zvlastni. Je to takovy genius nebo jen vysinuty silenec? Kdo vi...
+Nechapes, jakeho vysinuteho dedka jsi to <?src.sex(potkal,potkala)?>. Kazdopadne jak ty, tak i on jiz nechcete pokracovat v dalsi konverzaci. // neuspel tag
+//mordorska cast
+Experimentator Theorianulus
+<?src.sex(Slibil,Slibila)?> jsi Theorianulusovi, ze mu prineses 10 mozku Obru Valecniku. Zatim jsi to <?src.sex(nesplnil,nesplnila)?>. Na co je asi ma?  // 1 tag
+<?src.sex(Splnil,Splnila)?> jsi, co po tobe tento muz chtel. Je vazne velmi zvlastni. Je to takovy genius nebo jen vysinuty silenec? Kdo vi...
+Nechapes, jakeho vysinuteho dedka jsi to <?src.sex(potkal,potkala)?>. Kazdopadne jak ty, tak i on jiz nechcete pokracovat v dalsi konverzaci. // neuspel tag
+
+
+[dialog d_questy_experimentator Button]
+on=1
+ DIALOG(d_questy)
+
+///////////////////////
+//                   //
+//  Paradnice Minny  //
+//                   //
+///////////////////////
+
+[dialog d_questy_paradnice]
+argo.f_qDialogInstructions(03023)
+
+if (0<src.tag(q015_neuspel)> !=0)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (0<src.tag.q015_paradnice> ==1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.tag.q015_paradnice> ==2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+
+[dialog d_questy_paradnice text]
+Paradnice Minny
+<?src.sex(Slibil,Slibila)?> jsi Minny, ze ji prineses 12 per z Poison Phoenixe, aby si z nich mohla udelat koralky a byt jeste hezci, nez je ted.
+<?src.sex(Donesl,Donesla)?> jsi Minny to, co po tobe chtela. Ted vypada jeste lepe nez predtim, ale protivna je porad stejne...
+Uz tu nemoznou fiflenu nemuzes ani citit. Je tak priserne zaslepena do sve vlastni krasy, ze si nevidi ani na spicku vlastniho nosu.
+
+[dialog d_questy_paradnice button]
+on=1
+DIALOG(d_questy)
+
+
+
+///////////////////////
+//                   //
+//  Prastary poklad  //
+//                   //
+///////////////////////
+
+[dialog d_questy_prastary_poklad]
+argo.f_qDialogInstructions(03001)
+
+if (0<src.qtag(q016_prastary_poklad)> ==01)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==02)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==03)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==04)
+  argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==05)
+  argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==06)
+  argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==07)
+  argo.HTMLGUMP(160,80,242,100,7,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==08)
+  argo.HTMLGUMP(160,80,242,100,8,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==09)
+  argo.HTMLGUMP(160,80,242,100,9,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==010)
+  argo.HTMLGUMP(160,80,242,100,10,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==011)
+  argo.HTMLGUMP(160,80,242,100,11,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==012)
+  argo.HTMLGUMP(160,80,242,100,12,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==013)
+  argo.HTMLGUMP(160,80,242,100,13,0,36)
+elseif (0<src.qtag(q016_prastary_poklad)> ==014)
+  argo.HTMLGUMP(160,80,242,100,14,0,36)
+endif
+
+[dialog d_questy_prastary_poklad text]
+Prastary poklad				//0
+<?src.sex(Slibil,Slibila)?> jsi staremu nekromantovi, ze se podivas po davnem pokladu. Pomoci by ti mel mag Orillus zijici v mordorske tvrzi na jihovychod od mesta Barad-dur.	//1
+Mag Orillus ti neprozradi, kde se kobka s pokladem skryva, dokud mu v lahvi neprineses lecivou vodu z jezirka, ktere by jsi <?src.sex(mel,mela)?> najit, vydas-li se po proudu reky tekouci nad Haradem, <?src.sex(mel,mela)?> by jsi se dostat az k vodopadu na jehoz vrchu je ono jezero.		//2
+V jezere jsi <?src.sex(nabral,nabrala)?> vodu. Ted uz ji jen odnest zpet Orillusovi.				//3
+<?src.sex(Predal,Predala)?> jsi lahvicku Orillusovi. Ted by ti mel rict, kde najit vstup do kobky.		//4
+Podle Orilluse je vstup do jeskyne kdesi v Nurnskych lesich. Mela by tam vest stara cesta primo k prurve do jeskyne. Brana by vsak mohla byt stale chranena starou magii, ktera ti nedovoli projit. Pokud te brana nepusti, vyhledej klerika Andora a pozadej ho o pozehnani.	//5
+Podle Orilluse je vstup do jeskyne kdesi v Nurnskych lesich. Mela by tam vest stara cesta primo k prurve do jeskyne. Aby jsi <?src.sex(prosel,prosla)?> branou, potrebujes pozehnani od Andora, ktery si za sve sluzby zada, aby jsi mu <?src.sex(donesl,donesla)?> obsah nejake cervene truhly, ukryte kdesi v podzemi Osgiliathu. Bohuzel kvuli Andorove opilosti nedovedes zjistit presnejsi polohu.	//6
+Podle Orilluse je vstup do jeskyne kdesi v Nurnskych lesich. Mela by tam vest stara cesta primo k prurve do jeskyne. Aby jsi <?src.sex(prosel,prosla)?> branou, potrebujes pozehnani od Andora, ktery si za sve sluzby zada, aby jsi mu <?src.sex(donesl,donesla)?> driak, ktery jsi <?src.sex(nasel,nasla)?> v truhle ve sklepeni jedne z Osgiliathskych budov.	//7
+Podle Orilluse je vstup do jeskyne kdesi v Nurnskych lesich. Mela by tam vest stara cesta primo k prurve do jeskyne.	//8
+Podarilo se ti dostat do jeskyne.	//9
+<?src.sex(Vybral,Vybrala)?> jsi obsah hrobky, kterou jsi <?src.sex(nasel,nasla)?> ve stare kobce. Obsah se ale ani zdaleka nepriblizil predstavam, ktere ti stary nekromant popsal.	//10
+Pribeh stareho nekromanta skoncil. Jeho telo lezi v pokoji na dne jeskyne a na tvari mu stale visi spokojeny vyraz pote, co jsi mu <?src.sex(vybarvil,vybarvila)?> stary poklad jako horu drahych kamenu a sperku, coz se s 50K, ktere jsi si skutecne <?src.sex(odnesl,odnesla)?> neda moc srovnavat.	//11
+Pribeh stareho nekromanta skoncil. Jeho bezvladne telo lezi v bolestne kreci se zlomenym vyrazem. Umirel v soku a velmi nestastny pote, co jsi mu <?src.sex(podal,podala)?> pravdivou zpravu o nevelkem obsahu kobky, ktera mela pretekat sperky a drahym kamenim.	//12
+Sve hledani po starem pokladu jsi <?src.sex(zakoncil,zakoncila)?> hned pote, co jsi se <?src.sex(rozhodl,rozhodla)?> nebrat starikuv pribeh vazne. Mozna, ze na tom neco bylo, nebot sila s jakou na mne tesne pred svou smrti uderil byla na jeho vek nevidana a podavala zajimavy obraz o zasle velikosti toho muze. Vic uz se bohuzel nedozvim a nezbyva, nez si najit neco zajimavejsiho.		//13
+Sve hledani po starem pokladu jsi <?src.sex(zakoncil,zakoncila)?> hned pote, co se te stary mag pokusil vyhnat na druhou stranu zeme pro jednu lahev vody. Vyjednavat se s nim neda a tak nezbyva, nez zahnat vidinu pokladu a pustit se do neceho zajimavejsiho.	//14
+
+[dialog d_questy_prastary_poklad button]
+on=1
+DIALOG(d_questy)
+
+
+
+/////////////////////////
+//                     //
+//  Alchymista Terlak  //
+//                     //
+/////////////////////////
+
+[dialog d_alchymista_terlak]
+argo.f_qDialogInstructions(03000)
+
+if (0<src.qtag(q017_terlak_ochrana)> ==1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.qtag(q017_terlak_ochrana)> ==2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (0<src.qtag(q017_terlak)> !=0)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+endif
+
+[dialog d_alchymista_terlak text]
+Alchymista Terlak
+Hospodsky ti vypravel pribeh o davnem priteli, Terlakovi. Drive spolu pripravili lektvar, ktery te muze ochranit proti urcitemu druhu magie. Tentokrat chce za sve sluzby zaplatit 10 000 gp a navic mu musis donest 200 srncich oci.
+Hospodsky ti uvaril ochranny lektvar a ty jsi jej <?src.sex(vypil,vypila)?>... Ted jiz jenom zjistit, kde takovou ochranu upotrebit. Jedinym voditkem je ti Terlak, ktery takove ochranne kouzlo jiste znal. Hospodsky tvrdi, ze opilec mel schuzku s terlakem kdesi ve skalach severne od Belfalske zatoky.
+<?src.sex(Nasel,Nasla)?> jsi misto, kde Gargamel - lovec lebek - brutalne zavrazdil opilce a drzel ve sve moci dusi Alchymisty Terlaka. Po vysvobozeni duse jsi <?src.sex("byl obdarovan","byla obdarovana")?> magickym predmetem. Zrejme se Terlakovi precijen podarilo najit spravne prisady pro svuj lektvar... Hospodsky by byl asi velmi prekvapeny, kdyby se to dozvedel...
+
+[dialog d_alchymista_terlak button]
+on=1
+DIALOG(d_questy)
+
+
+//////////////////////////////////
+//                              //
+//  Hobitin (zahradnice Ambra)  //
+//                              //
+//////////////////////////////////
+
+[dialog d_questy_hobitin]
+argo.f_qDialogInstructions(03000)
+argo.text 160 60 32 4      // Zahradnice Ambra
+
+if (0<src.tag(q100_hobitin_ambra_neuspel)> !=0)
+  argo.text 160 80 1152 3     // text
+elseif (0<src.tag.q100_hobitin_ambra> ==1)
+  argo.text 160 80 1152 1     // text
+elseif (0<src.tag.q100_hobitin_ambra> ==2)
+  argo.text 160 80 1152 2      // text
+endif
+
+[dialog d_questy_hobitin text]
+Hobitin
+<?src.sex(Slibil,Slibila)?> jsi donest hnuj zahradnici.
+<?src.sex(Donesl,Donesla)?> jsi hnuj zahradnici.
+Zahradnice uz s tebou nemluvi...
+Zahradnice Ambra
+
+[dialog d_questy_hobitin button]
+on=1
+DIALOG(d_questy)
+
+
+
+/////////////////////
+//                 //
+//  Kouzelna dyka  //
+//                 //
+/////////////////////
+
+[dialog d_questy_kouzelnadyka]
+if ((0<src.qtag(q023)> == 1) || (0<src.qtag(q023)> == 4) || (0<src.qtag(q023)> == 8))
+  argo.f_qDialogInstructions(03088)
+elseif ((0<src.qtag(q023)> == 2) || (0<src.qtag(q023)> == 5) || (0<src.qtag(q023)> == 7))
+  argo.f_qDialogInstructions(03129)
+else
+  argo.f_qDialogInstructions(03001)
+endif
+
+if (0<src.qtag(q023)> == 1) 
+  argo.HTMLGUMP(160, 80, 242, 100, 1, 0, 36)
+elseif (0<src.qtag(q023)> == 2)
+  argo.HTMLGUMP(160, 80, 242, 100, 2, 0, 36)
+elseif (0<src.qtag(q023)> == 3)
+  argo.HTMLGUMP(160, 80, 242, 100, 3, 0, 36)
+elseif (0<src.qtag(q023)> == 4)
+  argo.HTMLGUMP(160, 80, 242, 100, 4, 0, 36)
+elseif (0<src.qtag(q023)> == 5)
+  argo.HTMLGUMP(160, 80, 242, 100, 5, 0, 36)
+elseif (0<src.qtag(q023)> == 6)
+  argo.HTMLGUMP(160, 80, 242, 100, 6, 0, 36)
+elseif (0<src.qtag(q023)> == 7)
+  argo.HTMLGUMP(160, 80, 242, 100, 7, 0, 36)
+elseif (0<src.qtag(q023)> == 8)
+  argo.HTMLGUMP(160, 80, 242, 100, 8, 0, 36)
+endif
+
+[dialog d_questy_kouzelnadyka text]
+Kouzelna dyka
+<?src.sex(Obrdzel,Obdrzela)?> jsi list od samana Qworeta, ktery mas prinest carodeji Unasovi. Unase najdes nekde v okoli velkeho mocalu severne od Rhunu.
+Carodej Unas na tebe seslal kouzlo, ktere te ma ochranit pred smrticimi ucinky kouzelne dyky. Od Qworeta vis, ze svou dyku ztratil, dle jeho slov, v nejzapadnejsi casti Severni Spouste.
+<?src.sex(Ziskal,Ziskala)?> jsi zmrzlou kouzelnou dyku. Prines ji Qworetovy.
+Qworet te znovu poslal za Unasem, aby ti pomohl rozmrazit jeho dyku.
+Unas ti tentokrat nepomuze bez protisluzby. Za pomoc si zada kus z pozustatku ledoveho elementala, ve kterem jsi <?src.sex(nasel,nasla)?> Qworetovu dyku.
+<?src.sex(Ziskal,Ziskala)?> jsi kus z pozustatku ledoveho elementala. Prines jej Unasovi.
+<?src.sex(Prinesl,Prinesla)?> jsi Unasovi kus z pozustatku ledoveho elementala, za coz ti pomohl rozmrazit zmrzlou kouzelnou dyku a obdaroval te peknou snuzkou zlatych. Dyku odnes zpet Qworetovi, jiste na ni dychtive ceka.
+<?src.sex(Pomohl,Pomohla)?> jsi Qworetovi najit jeho ztracenou dyku. Qworet se ti stedre odmenil a je ti vdecny.
+
+[dialog d_questy_kouzelnadyka button]
+on=1
+dialog(d_questy)
+
+
+
+/////////////////
+//             //
+//  Carodejka  //
+//             //
+/////////////////
+
+[dialog d_questy_carodejka]
+argo.f_qDialogInstructions(03121)
+
+if (src.qtag(q020)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(q020)==2) 
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(q020)==3) 
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(q020)==4) 
+  argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (src.qtag(q020)==5) 
+  argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (src.qtag(q020)==6) 
+  argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (src.qtag(q020)==7) 
+  argo.HTMLGUMP(160,80,242,100,7,0,36)
+elseif (src.qtag(q020)==8) 
+  argo.HTMLGUMP(160,80,242,100,8,0,36)
+elseif (src.qtag(q020)==9) 
+  argo.HTMLGUMP(160,80,242,100,9,0,36)
+elseif (src.qtag(q020)==10) 
+  argo.HTMLGUMP(160,80,242,100,10,0,36)
+elseif (src.qtag(q020)==11) 
+  argo.HTMLGUMP(160,80,242,100,11,0,36)
+endif
+
+[dialog d_questy_carodejka text]
+Carodejka
+Bardovo vypraveni o carodejce te zaujalo. Mozna se pujdes podivat do Temneho Hvozdu jestli tam jeste porad nezije.
+Tvym ukolem je prinest:<BR>100ks pecenych stejku<BR>100ks pecenych ryb<BR>30ks pecenych kurat<BR>50ks mrkve<BR>50ks cibule
+Tvym ukolem je prinest:<BR>100 spruce logu<BR>500 pirek<BR>10 kozesin (fur) z hnedeho medveda
+Carodejka ti dala par dnu volna, kdyz se budes citit na dalsi praci prijd za ni.
+Tvym ukolem je prinest:<BR>100ks Mandragory<BR>100ks Garlicu<BR>50ks Ginsengu<BR>25ks Serpent Scale (Nox Crystal)<BR>25ks Dead Wood
+<?src.sex(Slibil,Slibila)?> jsi carodejnici novy hmozdir. Vyrobit ho umi stary remeselnik zijici nedaleko Ereboru, v Trpaslicich horach.
+Carodejka ceka na novej hmozdir. Remeslnik te poslal pro potrebnou rudu na jeho vyrobu. Zilu, z ktere se da ruda vytazit, najdes severozapadne od Ereboru v Sedych Horach. Ak se remeslnik nemyly melo by to byt v sachte cislo 3.
+Nyni muzes novej hmozdir odnist carodejce.
+Carodejka se ti odmenila. No ty citis ze pro tebe ma dalsi ukol.
+Carodejka po tobe chce srdce Nemrtvyho Kouzelnika. Mel by prebyvat nekde v Stezkach Mrtvych.
+Carodejka se ti bohate odmenila za sluzby ktere jsi ji <?src.sex(prokazal,prokazala)?>. Je ti vdecna i kdyz to na ni neni videt.
+
+[dialog d_questy_carodejka button]
+on=1
+DIALOG(d_questy)
+
+
+
+///////////////////////////////
+//                           //
+//  Remeslnik (Bolava zada)  //
+//                           //
+///////////////////////////////
+
+[dialog d_questy_remeslnik_navin]
+argo.f_qDialogInstructions(03140)
+
+if (src.qtag(q021)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(q021)==2) 
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+[dialog d_questy_remeslnik_navin text]
+Remeslnik Navin
+<?src.sex(Slibil,Slibila)?> jsi remeslnikovi ze mu prineses mast od lecitele, ktery se obvykle zdrzuje nekde pobliz Ereboru. Na mast potrebujes 10 lecivych bylinek, ktere rostou na zelenych planich, a kozi sadlo. Kozu se sadlem najdes nekde v okoli remeslnikova domu.
+<?src.sex(Prinesl,Prinesla)?> jsi remeslnikovi lecivou mast, za co ti je velmi vdecny.
+
+[dialog d_questy_remeslnik_navin button]
+on=1
+DIALOG(d_questy)
+
+
+
+/////////////////
+//             //
+//  Transport  //
+//             //
+/////////////////
+
+[dialog d_questy_transport]
+argo.f_qDialogInstructions(03029)
+
+if (src.qtag(q022)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(q022)==2) 
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(q022)==3) 
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(q022)==4) 
+  argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (src.qtag(q022)==5) 
+  argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (src.qtag(q022)==6) 
+  argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (src.qtag(q022)==7) 
+  argo.HTMLGUMP(160,80,242,100,7,0,36)
+elseif (src.qtag(q022)==8) 
+  argo.HTMLGUMP(160,80,242,100,8,0,36)
+elseif (src.qtag(q022)==9) 
+  argo.HTMLGUMP(160,80,242,100,9,0,36)
+elseif (src.qtag(q022)==10) 
+  argo.HTMLGUMP(160,80,242,100,10,0,36)
+elseif (src.qtag(q022)==11) 
+  argo.HTMLGUMP(160,80,242,100,11,0,36)
+elseif (src.qtag(q022)==12) 
+  argo.HTMLGUMP(160,80,242,100,12,0,36)
+elseif (src.qtag(q022)==13) 
+  argo.HTMLGUMP(160,80,242,100,13,0,36)
+
+endif
+
+[dialog d_questy_transport text]
+Transport
+<?src.sex(Slibil,Slibila)?> jsi velitelovy strazi ze mu prineses zbrane od stareho remeslnika Navina zijiciho nedaleko Ereboru.
+Remeslnik potrebuje ingoty od trpaslika Goruga. Remeslnik taky rikal ze Gorug odjel nekam na venkov a rikal taky neco o hobitech.
+Vzit ingoty od Goruga bylo velmi snadne, az tomu nechces verit. Prines ingoty zpet Navinovi.
+Navin te poslal k truhlarovy pro ratiste. Truhlare, jmenem Miro, by jsi <?src.sex(mel,mela)?> najit nedaleko Edorasu, presneji na zapad od pevnosti vo Vychodni Marce.
+Truhlar potrebuje aspon 100 kusu kastanovyho dreva na vyrobu ratiste.
+Prines ratiste spatky Navinovy...
+Navin te poslal po uhli od Valduka. Valduka najdes pravdepodobne v nekterem z dolu...
+Hornik Valduk bez zdarma nedela, poslal te po medovinu. Z nazvu "Jindrova Hurecka medovina" jsi si <?src.sex(domyslel,domyslela)?> ze Jindru najdes nekde pobliz Hurky.
+Kuchar Jindra Jecminek by pro tebe velmi rad, za maly priplatek, uvaril medovinu no nema ingredience. Potrebuje 3 sklenice medu lesnich vcel, nejake vcely uly najdes v lese pri Radovsku. Dale potrebuje koreni od carodejnice Roxany u ktere ho ma objednany, Roxanu najdes v Temnem Hvozde a nakonec potrebuje prazdnej soudek na napoje.
+Valduk uz netrpezlive ceka na svuji medovinu.
+Konecne mas uhli ktere po tobe chtel Navin.
+Navin mohl konecne dokoncit svoji praci. Ted muzes odnist bednu so zbranami spatky veliteli strazi.
+Velitel strazi ti je vdecny za tvoji pomoc.
+
+[dialog d_questy_transport button]
+on=1
+dialog(d_questy)
+
+
+
+////////////////////
+//                //
+//  Erioluv vnuk  //
+//                //
+////////////////////
+
+[dialog d_questy_erioluv_vnuk]
+argo.f_qDialogInstructions(03070)
+
+if (src.qtag(q006)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(q006)==2) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(q006)==3) 
+	argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(q006)==4) 
+	argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (src.qtag(q006)==5) 
+	argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (src.qtag(q006)==6) 
+	argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (src.qtag(q006)==7) 
+	argo.HTMLGUMP(160,80,242,100,7,0,36)
+elseif (src.qtag(q006)==8) 
+	argo.HTMLGUMP(160,80,242,100,8,0,36)
+elseif (src.qtag(q006)==9) 
+	argo.HTMLGUMP(160,80,242,100,9,0,36)
+elseif (src.qtag(q006)==10) 
+	argo.HTMLGUMP(160,80,242,100,10,0,36)
+elseif (src.qtag(q006)==11) 
+	argo.HTMLGUMP(160,80,242,100,11,0,36)
+elseif (src.qtag(q006)==12) 
+	argo.HTMLGUMP(160,80,242,100,12,0,36)
+elseif (src.qtag(q006)==13) 
+	argo.HTMLGUMP(160,80,242,100,13,0,36)
+elseif (src.qtag(q006)==14) 
+	argo.HTMLGUMP(160,80,242,100,14,0,36)
+elseif (src.qtag(q006)==15) 
+	argo.HTMLGUMP(160,80,242,100,15,0,36)
+elseif (src.qtag(q006)==16) 
+	argo.HTMLGUMP(160,80,242,100,16,0,36)
+elseif (src.qtag(q006)==17) 
+	argo.HTMLGUMP(160,80,242,100,17,0,36)
+elseif (src.qtag(q006)==18) 
+	argo.HTMLGUMP(160,80,242,100,18,0,36)
+elseif (src.qtag(q006)==19) 
+	argo.HTMLGUMP(160,80,242,100,19,0,36)
+elseif (src.qtag(q006)==20) 
+	argo.HTMLGUMP(160,80,242,100,20,0,36)
+elseif (src.qtag(q006)==21) 
+	argo.HTMLGUMP(160,80,242,100,21,0,36)
+elseif (src.qtag(q006)==22) 
+	argo.HTMLGUMP(160,80,242,100,22,0,36)
+elseif (src.qtag(q006)==23) 
+	argo.HTMLGUMP(160,80,242,100,23,0,36)
+elseif (src.qtag(q006)==24) 
+	argo.HTMLGUMP(160,80,242,100,24,0,36)
+
+endif
+
+[dialog d_questy_erioluv_vnuk text]
+Erioluv Vnuk
+<?src.sex(Slibil,Slibila)?> jsi Eriolovi deset pochodni.
+<?src.sex(Prinesl,Prinesla)?> jsi Eriolovi deset pochodni.
+<?src.sex(Slibil,Slibila)?> jsi Eriolovi vycviceneho a zmenseneho psa.
+<?src.sex(Prinesl,Prinesla)?> jsi Eriolovi psa.
+<?src.sex(Slibil,Slibila)?> jsi Eriolovi tri slabsi protijedy.
+<?src.sex(Prinesl,Prinesla)?> jsi Eriolovi tri slabsi protijedy.
+<?src.sex(Slibil,Slibila)?> jsi Eriolovi deset nejsilnejsich protijedu.
+<?src.sex(Prinesl,Prinesla)?> jsi Eriolovi deset nejsilnejsich protijedu.
+<?src.sex(Slibil,Slibila)?> jsi Eriolovi tri silne lektvary osvezeni a deset stehen medveda grizzlyho.
+<?src.sex(Prinesl,Prinesla)?> jsi Eriolovi tri silne lektvary osvezeni a deset stehen medveda grizzlyho.
+<?src.sex(Slibil,Slibila)?> jsi Eriolovi, ze si promluvis se samanem Qworetem, ktery prebyva nekde pobliz Dolu a Osamele Hory.
+<?src.sex(Mluvil,Mluvila)?> jsi se samanem Qworetem, ale nic jsi se <?src.sex(nedozvedel,nedozvedela)?>, jdi tedy zpet k Eriolovi.
+Eriol te poslal za carodejem Unasem, ktery mu mozna bude umet poradit. Carodej Unas prebyva nekde blizko Rhunskych mocalu.
+<?src.sex(Slibil,Slibila)?> jsi Unasovi dvacet kusu esence z ledoveho elementala.
+<?src.sex(Prinesl,Prinesla)?> jsi Unasovi dvacet kusu esence z ledoveho elementala. Ted po tobe chce dvacet kusu esence z kamenneho elementala.
+<?src.sex(Prinesl,Prinesla)?> jsi Unasovi dvacet kusu esence z kamenneho elementala. Ted po tobe chce dvacet kusu esence z elementala zeme.
+<?src.sex(Prinesl,Prinesla)?> jsi Unasovi dvacet kusu esence z elementala zeme. Ted po tobe chce dvacet kusu esence ze snezneho elementala.
+<?src.sex(Ziskal,Ziskala)?> jsi od Unase pergamen pro Eriola.
+Eriol te s pergamenem poslal pro radu za hospodskym, pritelem alchymisty Terlaka.
+Hospodsky ti rekl o Lektvaru Ocisteni, ktery by mohl pomoci. K jeho priprave jsou potreba dve srdce ptaka krvavce, tri nejsilnejsi protijedy a vzacna bylina. Musis to rict Eriolovi.
+Musis Eriolovi prinest dve srdce ptaka krvavce, tri nejsilnejsi protijedy a vzacnou bylinu.
+<?src.sex(Prinesl,Prinesla)?> jsi Eriolovi vsechny prisady na Lektvar Ocisteni, za coz ti je velmi vdecny. Eriol ale stale jeste hleda nekoho, kdo by mu tento lektvar namichal.
+Eriol ceka, az mu dorucis hotovy Lektvar Ocisteni.
+<?src.sex(Pomohl,Pomohla)?> jsi Eriolovi vylecit jeho vnuka, za coz je ti velmi vdecny a bohate se ti odvdecil kouzelnou robou.
+
+[dialog d_questy_erioluv_vnuk button]
+on=1
+dialog(d_questy)
+
+
+
+/////////////////////////
+//                     //
+//  N B   Q U E S T Y  ////////////////////////////////////////////////////
+//                     //
+/////////////////////////
+
+
+
+//////////////////////////////
+//                          //
+//  NB quest Lesnik Odlier  //
+//                          //
+//////////////////////////////
+
+[dialog d_questy_lovec_odlier]
+argo.f_qDialogInstructions(03123)
+
+if (src.qtag(nb001)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(nb001)==2) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb001)==3) 
+	argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(nb001)==4) 
+	argo.HTMLGUMP(160,80,242,100,4,0,36)
+endif
+
+[dialog d_questy_lovec_odlier text]
+Lovek Odlier 
+Odlier po tobe chce 50 kusu zpracovane kuze. 
+<?src.sex(Odevzdal,Odevzdala)?> jsi Odlierovi kuzi. Mozna ma pro tebe dalsi ukol. 
+Odlier po tobe chce 20 kusu stavnatych steaku z divoke zvere. 
+Odlier ti je vdecny za tvou pomoc s kuzi a masem.
+
+[dialog d_questy_lovec_odlier button]
+on=1
+dialog(d_questy)
+
+
+
+////////////////////////////////
+//                            //
+//  NB quest Akolytka Mirana  //
+//                            //
+////////////////////////////////
+
+[dialog d_questy_akolytka_mirana]
+argo.f_qDialogInstructions(03135)
+
+if (src.qtag(nb002)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(nb002)==2) 
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+[dialog d_questy_akolytka_mirana text]
+Akolytka Mirana
+Mirana po tobe zada 200 obvazu.
+Mirana ti je vdecna za tvou pomoc.
+
+[dialog d_questy_akolytka_mirana button]
+on=1
+dialog(d_questy)
+
+
+
+////////////////////////////////
+//                            //
+//  NB quest Hornik Beorgrad  //
+//                            //
+////////////////////////////////
+
+[dialog d_questy_hornik_beorgrad]
+argo.f_qDialogInstructions(03045)
+
+if(src.qtag(nb003)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(nb003)==2) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb003)==3) 
+	argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(nb003)==4) 
+	argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (src.qtag(nb003)==5) 
+	argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (src.qtag(nb003)==6) 
+	argo.HTMLGUMP(160,80,242,100,6,0,36)
+endif
+
+[dialog d_questy_hornik_beorgrad text]
+Hornik Beorgrad 
+Beorgrad od tebe potrebuje 30 kusu medene rudy. 
+<?src.sex(Odevzdal,Odevzdala)?> jsi Beorgradovi medenou rudu. Mozna ma pro tebe dalsi ukol. 
+Beorgrad od tebe potrebuje 15 kusu zelezne rudy. 
+<?src.sex(Odevzdal,Odevzdala)?> jsi Beorgradovi zeleznou rudu. Mozna ma pro tebe dalsi ukol. 
+Beorgrad od tebe potrebuje 10 kusu kremiciteho pisku. 
+Beorgrad ti je vdecny za vsechnu tvou pomoc.
+
+[dialog d_questy_hornik_beorgrad button]
+on=1
+dialog(d_questy)
+
+
+
+//////////////////////////////
+//                          //
+//  NB quest Lesnik Grarad  //
+//                          //
+//////////////////////////////
+
+[dialog d_questy_lesnik_grarad]
+argo.f_qDialogInstructions(03022)
+
+if (src.qtag(nb004)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(nb004)==2) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb004)==3) 
+	argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(nb004)==4) 
+	argo.HTMLGUMP(160,80,242,100,4,0,36)
+endif
+
+[dialog d_questy_lesnik_grarad text]
+Lesnik Grarad 
+Grarad po tobe chce 30 kusu smrkoveho dreva. 
+<?src.sex(Odevzdal,Odevzdala)?> jsi Graradovi drevo. Mozna ma pro tebe dalsi ukol. 
+Grarad po tobe chce 15 kusu kastanoveho dreva. 
+Grarad ti je vdecny za tvou pomoc s drevom.
+
+[dialog d_questy_lesnik_grarad button]
+on=1
+dialog(d_questy)
+
+
+
+/////////////////////////////
+//                         //
+//  NB quest Rybar Broket  //
+//                         //
+/////////////////////////////
+
+[dialog d_questy_rybar_broket]
+argo.f_qDialogInstructions(03099)
+
+if (src.qtag(nb005)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(nb005)==2) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb005)==3) 
+	argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(nb005)==4) 
+	argo.HTMLGUMP(160,80,242,100,4,0,36)
+endif
+
+[dialog d_questy_rybar_broket text]
+Rybar Broket 
+Broket te pozadal o 10 kusu od kazdeho druhu ryby. To je doromady 40 kusu ryb. 
+<?src.sex(Odevzdal,Odevzdala)?> jsi Broketovi ryby. Mozna ma pro tebe dalsi ukol. 
+Broket te pozadal o 100 kusu upecenych rybich steaku. 
+Broket ti je vdecny za tvou pomoc.
+
+[dialog d_questy_rybar_broket button]
+on=1
+dialog(d_questy)
+
+
+
+//////////////////////////
+//                      //
+//  NB quest Nekromant  //
+//                      //
+//////////////////////////
+
+[dialog d_questy_necromancer]
+argo.f_qDialogInstructions(03088)
+
+if (src.qtag(nb006)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(nb006)==2) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+[dialog d_questy_necromancer text]
+Nekromant
+Nekromant te pozadal, abys mu prinesl popel z liche lorda ve vacku, ktery ti dal. 
+<?src.sex(Odevzdal,Odevzdala)?> jsi nekromantovi popel liche lorda, za coz ti je vdecny.
+
+[dialog d_questy_necromancer button]
+on=1
+DIALOG(d_questy)
+
+
+
+///////////////////////////////
+//                           //
+//  NB quest Remeslnik Imro  //
+//                           //
+///////////////////////////////
+
+[dialog d_questy_remeslnik_imro]
+argo.f_qDialogInstructions(03042)
+
+if (src.qtag(nb007)==1) 
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(nb007)==2) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb007)==3) 
+	argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(nb007)==4) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb007)==5) 
+	argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (src.qtag(nb007)==6) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb007)==7) 
+	argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (src.qtag(nb007)==8) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb007)==9) 
+	argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (src.qtag(nb007)==10) 
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(nb007)==11) 
+	argo.HTMLGUMP(160,80,242,100,7,0,36)
+elseif (src.qtag(nb007)==12) 
+	argo.HTMLGUMP(160,80,242,100,8,0,36)
+endif
+
+[dialog d_questy_remeslnik_imro text]
+Remeslnik Imro
+Prvnim ukolem je vyroba 50 medennych dratu.
+Imro je vdecny za tvou pomoc, urcite ma pro tebe jeste dalsi ukol.
+Druhym ukolem je vyroba jedne tezke kuse ze smrkoveho dreva.
+Tretim ukolem je vyroba dvou tech nejlepsich smrkovych holi.
+Ctvrtym ukolem je usiti 10x kilt.
+Patym ukolem je ukovat 10x medenny vikingsky mec.
+Poslednim ukolem je ukovat 5x zeleznou helmu s uzavrenym hledim (Iron closed helm).
+Imro je ti velmi vdecny za vsechnu tvou pomoc.
+
+[dialog d_questy_remeslnik_imro button]
+on=1
+DIALOG(d_questy)
+
+///////////////////////
+//                   //
+//  KONEC NB QUESTU  //////////////////////////////////////////////////////////
+//                   //
+///////////////////////
+
+[dialog d_questy_vyvrhel]
+argo.f_qDialogInstructions(03030)
+
+if (src.qtag(q099)==1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(q099)==2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(q099)==3)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(q099)==4)
+  argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (src.qtag(q099)==5)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(q099)==6)
+  argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (src.qtag(q099)==7)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(q099)==8)
+  argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (src.qtag(q099)==9)
+  argo.HTMLGUMP(160,80,242,100,7,0,36)
+endif
+
+[dialog d_questy_vyvrhel text]
+Podivin
+<?src.sex(Potkal,Potkala)?> jsi podivneho cloveka ktery by ti snad mohl pomoci zbavit se vyhanstvi!
+Podivin po tobe chce 100 ocasku medvedu grizli do batohu ktery ti dal.
+Podivin ma pro tebe jiste dalsi ukol.
+Podivin po tobe chce 80 usi elementala zeme do batohu ktery ti dal.
+Podivin po tobe chce 50 esenci z monstra zvaneho oko (Eye).
+Podivin po tobe chce 5 pirek jedoveho fenixe.
+Jestli jsi <?src.sex(pripraven,pripravena)?> Podivin je pripraven zbavit te vyhnanstvi!
+
+[dialog d_questy_zlaty_losos]
+argo.f_qDialogInstructions(03122)
+
+if (src.qtag(q018)==1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (src.qtag(q018)==2)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+elseif (src.qtag(q018)==3)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (src.qtag(q018)==4)
+  argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (src.qtag(q018)==5)
+  argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (src.qtag(q018)==6)
+  argo.HTMLGUMP(160,80,242,100,6,0,36)
+endif
+
+[dialog d_questy_zlaty_losos text]
+Zlaty losos
+Rybar podivin po tobe chce zlatou nit! Mas zajit za Mirranou kterou najdes cestou od mostu mezi Minasy smerem k poustnimu mestu Rhunu.
+Mirrana te poslala za Elnassirem mastickarem na Ebenove ostrovy pro mast na jeji nohu, pak ti prozradi kde najdes hledane kolo.
+Elnassir za lektvar chce 20 pavucin, 80 nightshade, 150 kosti a 10 tisic zlataku.
+Mirrana ti prozradila, ze na mordorske strane Osgiliathu naleznes schovanou runu. Kdyz ji zatlacis do zdi, kouzlo timto vyvolane te prenese az na misto, kde by melo byt zlate kolo schovane.
+Zlatou nit prines spatky k rybarovi.
+Rybar te odmenil za tvoji pomoc.
+
+[dialog d_questy_zlaty_losos button]
+on=1
+DIALOG(d_questy)
+
+
+
+////////////////////////
+//                    //
+//  Potulny pocestny  //
+//                    //
+////////////////////////
+
+[dialog d_questy_pocestny]
+argo.f_qDialogInstructions(03053)
+
+if (0<src.qtag(q019_pocestny)> ==1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+endif
+
+[dialog d_questy_pocestny text]
+Potulny pocestny
+<?src.sex(Obdaroval,Obdarovala)?> jsi neboheho tulaka recall svitkem. Odmenou ti je vedomi, ze se stary dobrak dostal stastne domu k zene po letech poustevniciny.
+
+[dialog d_questy_pocestny button]
+on=1
+DIALOG(d_questy)
+
+
+
+///////////////////
+//               //
+//  Volani more  //
+//               //
+///////////////////
+
+[dialog d_questy_volani_more]
+argo.f_qDialogInstructions(03102)
+
+if (0<src.qtag(q033)> ==1)
+	argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.qtag(q033)> ==2)
+	argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (0<src.qtag(q033)> ==3)
+	argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (0<src.qtag(q033)> ==4)
+	argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (0<src.qtag(q033)> ==5)
+	argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (0<src.qtag(q033)> ==6)
+	argo.HTMLGUMP(160,80,242,100,7,0,36)
+elseif (0<src.qtag(q033)> ==7)
+	argo.HTMLGUMP(160,80,242,100,8,0,36)
+elseif (0<src.qtag(q033)> ==8)
+	argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+[dialog d_questy_volani_more text]
+Volani more
+<?src.sex(Slibil,Slibila)?> jsi podivnemu vetesnikovi Ignacovi sehnat veci potrebne pro dostaveni lodi k odpluti na more za obchodem. Jeste stale nema vse potrebne. Musis najit pirata Renfera kvuli lanum. //1
+Vetesnik Ignac je ti vdecny za pomoc se ziskanim veci pro dostaveni sve lodi. //2
+Pro ziskani lan od pirata Renfera musis od zleho cernokneznika Hirgy vymamit jakysi svitek recallu. Hirga by se mel schovavat kdesi v nejakej kobce uprostred pouste. //3
+<?src.sex(Ziskal,ziskala)?> jsi od Renfera lana na plachtovi pro Ignace. Snad uz tedy bude mit vse, co je potrebne k dostaveni lode. //4
+Ignac te posila najit rybare Volka. Ten jediny by mel mit tu spravnou latku pro plachty. //5
+Rybar Volek chce na oplatku za latku na plachty pytlik s magickym predmetem. A Ignac, jako spravny vetesnik a sberatel, takovy jiste bude mit. //6
+Ignac se ukazal byt spravne lakomym sberatelem! Ted abys pytlik s nejakym magickym predmetem nekde <?src.sex(Ziskal,ziskala)?> <?src.sex(sam,sama)?>! Snad se ti pak za plachty od Volka alespon dobre odmeni. //7
+Mas od Volka plachty, ktere po tobe Ignac chtel. Ted honem za nim, snad te odmena nemine! //8
+
+
+[dialog d_questy_volani_more button]
+on=1
+dialog(d_questy)
+
+
+
+///////////////////////
+//                   //
+//  Zasnubni prsten  //
+//                   //
+///////////////////////
+
+[dialog d_questy_zasnubni_prsten]
+argo.f_qDialogInstructions(03029)
+
+if (0<src.qtag(q024)> ==1)
+  argo.HTMLGUMP(160,80,242,100,1,0,36)
+elseif (0<src.qtag(q024)> ==2)
+  argo.HTMLGUMP(160,80,242,100,3,0,36)
+elseif (0<src.qtag(q024)> ==3)
+  argo.HTMLGUMP(160,80,242,100,4,0,36)
+elseif (0<src.qtag(q024)> ==4)
+  argo.HTMLGUMP(160,80,242,100,5,0,36)
+elseif (0<src.qtag(q024)> ==5)
+  argo.HTMLGUMP(160,80,242,100,6,0,36)
+elseif (0<src.qtag(q024)> ==6)
+  argo.HTMLGUMP(160,80,242,100,7,0,36)
+elseif (0<src.qtag(q024)> ==7)
+  argo.HTMLGUMP(160,80,242,100,8,0,36)
+elseif (0<src.qtag(q024)> ==8)
+  argo.HTMLGUMP(160,80,242,100,9,0,36)
+elseif (0<src.qtag(q024)> ==9)
+  argo.HTMLGUMP(160,80,242,100,10,0,36)
+elseif (<src.qtag(q024)> ==10)
+  argo.HTMLGUMP(160,80,242,100,11,0,36)
+elseif (<src.qtag(q024)> ==11)
+  argo.HTMLGUMP(160,80,242,100,12,0,36)
+elseif (<src.qtag(q024)> ==12)
+  argo.HTMLGUMP(160,80,242,100,2,0,36)
+endif
+
+[dialog d_questy_zasnubni_prsten text]
+Zasnubni prsten
+<?src.sex(Slibil,Slibila)?> jsi valecnikovi Gregorovi pomoc s nalezenim truhly s pokladem kdesi uvnitr nexmiriaskych podzemnich komplexu. //1
+Valecnik Gregor je ti vdecny za pomoc s namluvami slicne Fifleny. //2
+Gregor ceka na prineseni obsahu truhly... //3
+Gregor te poslal nalezt zlodeje Borise, treba bude vedet, jak otevrit truhlicku... //4
+Boris te poslal ulovit dva spary obavanych strazcu. Potom ti snad na oplatku pomuze s otevrenim truhlicky //5
+Prinesl jsi Borisovi trofeje Strazcu, ted jen sehnat 120 lockpicku a on ti konecne otevre truhlicku... //6
+Boris ti otevrel truhlicku a dal krasny rubin. Ten bude urcite postradat Gregor... //7
+Gregor te posila za klenotnikem hugem na ostrov imperatoru. Ten bude umet zhotovit z rubinu snubni prsten... //8
+klenotnik Hugo ti za 50 tisic slibil zhotovit snubni prsten pro Gregora //9
+Hugo ti zhotovil krasny zasnubni prsten pro Fiflenu. Ted jej jen predat Gregorovi... //10
+Gregor te i s prstenem posila na rhunsky ostrov vyhledat Fiflenu a presvedcit ji, aby si Gregora vzala //11
+Fiflena souhlasila se snatkem. Ted to jen sdelit Gregorovi! //12
+
+
+[dialog d_questy_zasnubni_prsten button]
+on=1
+dialog(d_questy)
+
+
+
+///////////////
+//           //
+//  Palirna  //
+//           //
+///////////////
+
+[dialog d_questy_palirna]
+argo.f_qDialogInstructions(03115)
+
+if (!(<hval(src.qtag(q025))>&<q025_hosp_zna_ukol>)) // vubec o ukolu nevedel
+  if (<hval(src.qtag(q025))>&<q025_pal_zabil>) // zabil palice
+    argo.htmlgump(160,80,242,100,21,0,36)
+  elseif (<hval(src.qtag(q025))>&<q025_pal_utok>) // nepohodl se s palicem
+    if (<hval(src.qtag(q025))>&<q025_hosp_utok>) // ani s hodpodskou
+      argo.htmlgump(160,80,242,100,26,0,36)
+    elseif (<hval(src.qtag(q025))>&<q025_pal_kotel>) // rozbil kotel
+      argo.htmlgump(160,80,242,100,23,0,36)
+    elseif (<hval(src.qtag(q025))>&<q025_pal_dvere>) // bez dovoleni otevrel dvere
+      argo.htmlgump(160,80,242,100,24,0,36)
+    else // jiny duvod
+      argo.htmlgump(160,80,242,100,25,0,36)
+    endif
+  elseif (<hval(src.qtag(q025))>&<q025_hosp_utok>) // nepohodl se (pouze) s hospodskou
+    argo.htmlgump(160,80,242,100,27,0,36)
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_hosp_odmena_a>) // dostal odmenu
+  argo.htmlgump(160,80,242,100,1,0,36)
+elseif (<hval(src.qtag(q025))>&<q025_hosp_odmena_b>) // dostal odmenu
+  if (!(<hval(src.qtag(q025))>&<q025_pal_zabil>))
+    argo.htmlgump(160,80,242,100,3,0,36)
+  else
+    argo.htmlgump(160,80,242,100,2,0,36) // zabil palice
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_pal_odmena_a>) // dostal odmenu (za opravu)
+  argo.htmlgump(160,80,242,100,4,0,36)
+elseif (<hval(src.qtag(q025))>&<q025_pal_odmena_b>) // dostal odmenu (vzdal opravu)
+  argo.htmlgump(160,80,242,100,5,0,36)
+elseif ((<hval(src.qtag(q025))>&<q025_hosp_utok>)&&(<hval(src.qtag(q025))>&<q025_pal_utok>)) // nemuze s nikym mluvit
+  argo.htmlgump(160,80,242,100,6,0,36)
+elseif (<hval(src.qtag(q025))>&<q025_pal_zabil>) // zabil palice
+  if (<hval(src.qtag(q025))>&<q025_hosp_prijal>)
+    argo.htmlgump(160,80,242,100,7,0,36) // mel ukol zadany
+  else
+    argo.htmlgump(160,80,242,100,8,0,36) // nemel
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_pal_kotel>) // rozbil kotel
+  argo.htmlgump(160,80,242,100,9,0,36) // hospodskou nezabil, to je osetrene vyse
+elseif (<hval(src.qtag(q025))>&<q025_pal_opravil>) // opravil trubku, odmenu jeste nema
+  if (<hval(src.qtag(q025))>&<q025_pal_utok>) // zautocil na palice
+    argo.htmlgump(160,80,242,100,10,0,36)
+  else
+    argo.htmlgump(160,80,242,100,11,0,36)
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_pal_slib_opr>) // slibil opravit trubku
+  if (<hval(src.qtag(q025))>&<q025_pal_utok>) // zautocil na palice
+    argo.htmlgump(160,80,242,100,12,0,36)
+  elseif (<hval(src.qtag(q025))>&<q025_hosp_utok>) // zautocil na hospodskou
+    argo.htmlgump(160,80,242,100,13,0,36)
+  else
+    argo.htmlgump(160,80,242,100,14,0,36)
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_pal_vyzradil>) // vyzdradil plany hospodske
+  if (<hval(src.qtag(q025))>&<q025_pal_utok>) // zautocil na palice
+    argo.htmlgump(160,80,242,100,15,0,36)
+  else
+    argo.htmlgump(160,80,242,100,16,0,36)
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_pal_kotel>) // dvere otevreny
+  if (<eval src.qtag(q025_hospodska)> == 1) // zautocil na hospodskou
+    argo.htmlgump(160,80,242,100,17,0,36)
+  else
+    argo.htmlgump(160,80,242,100,18,0,36)
+  endif
+elseif (<hval(src.qtag(q025))>&<q025_hosp_prijal>) // ukol od hospodske prijat
+  argo.htmlgump(160,80,242,100,19,0,36)
+elseif (<hval(src.qtag(q025))>&<q025_hosp_zna_ukol>)
+  argo.htmlgump(160,80,242,100,20,0,36)
+endif
+
+[dialog d_questy_palirna text]
+Palirna //0
+<? src.sex(Vyradil,Vyradila) ?> jsem palirnu z provozu, jak si hostinska prala, a <? src.sex(byl jsem za to odmenen,byla jsem za to odmenena) ?>, jak jsme se domluvili.  //1
+Hospodska chtela vyradit palirnu z provozu, tak jsem rovnou <? src.sex(zabil,zabila) ?> majitele. Vubec z toho nebyla nadsena. Odmenu mi ale dala, i kdyz nejspis jen proto, abych co nejdriv <? src.sex(zmizel,zmizela) ?>. //2
+Hostinska mi odmitla dat odmenu, ac jsem vyradil palirnu z provozu, jak chtela. No, pravda je, ze jsme se na nicem konkretnim nedomluvili, ale neco mi dat prece jenom mohla. //3
+<? src.sex(Opravil,Opravila) ?> jsem spatne tesnici trubku u Miruvilova kotle a on mi za to dal slusnou odmenu. //4
+<? src.sex(Slibil,Slibil) ?> jsem Miruvilovi, ze zkusim opravit spatne tesnici trubku u jeho kotle, ale nakonec jsem to <? src.sex(musel,musela) ?> vzdat. Palic mi ale i tak dal odmenu, pry za snahu a za uprimnost. Je to sympaticky clovek. //5
+<? src.sex(Zautocil,Zautocila) ?> jsem na palice i na hospodskou. To jsem tomu <? src.sex(dal,dala) ?>. Ted se se mnou ani jeden nebavi. //6
+Hospodska chtela vyradit palirnu z provozu, tak jsem rovnou <? src.sex(zabil,zabila) ?> majitele. Verim, ze to oceni. //7
+<? src.sex(Zabil,Zabila) ?> jsem palice v domeni, ze bude hospodska rada. To jsem tomu <? src.sex(dal,dala) ?>! Ted se tvari, ze me nezna. //8
+<? src.sex(Znicil,Znicila) ?> jsem kotel v palirne, jak si hostinska prala. Ted uz ji to jen rict. //9
+<? src.sex(Napadl,Napadla) ?> jsem palice a ten se se mnou ted odmita bavit, i kdyz jsem <? src.sex(opravil,opravila) ?> tu jeho trubku. Ani hostinska uz se mnou nemluvi, protoze jsem palicovi <? src.sex(pomohl,pomohla) ?>. Ach jo. //10
+<? src.sex(Opravil,Opravila) ?> jsem spatne tesnici trubku u Miruvilova kotle. Urcite bude rad, az mu to reknu. //11
+Kdyz mi Miruvil otevrel dvere k destilacnim kotlum, <? src.sex(napadl,napadla) ?> jsem ho. Ted se se mnou nebavi, ale to nevadi, ke kotlum uz se dostanu. //12
+<? src.sex(Slibil,Slibila) ?> jsem Miruvilovi, ze opravim spatne tesnici trubku u jeho kotle. Doufam, ze to zvladnu. //13
+<? src.sex(Slibil,Slibila) ?> jsem Miruvilovi, ze opravim spatne tesnici trubku u jeho kotle, a on mi otevrel dvere ke kotlum. Ted se musim rozmyslet, jestli mu opravdu pomuzu, nebo kotle rozbiju, jak chce hospodska. //14
+<? src.sex(Napadl,Napadla) ?> jsem palice a ten se se mnou ted odmita bavit. Ve splneni ukolu mi to ale nijak vadit nemusi, ze? //15
+<? src.sex(Rekl,Rekla) ?> jsem palicovi, co na nej hospodska chysta. Jak ten se divil! Ale byl rad. //16
+Podarilo se mi otevrit dvere ke kotlum. Akorat nevim, k cemu mi to je, protoze hospodska se se mnou nebavi. Asi jsem na ni <? src.sex(nemel,nemela) ?> utocit. //17
+Podarilo se mi otevrit dvere ke kotlum. Ted uz mi nic nebrani v tom, abych je <? src.sex(znicil,znicila) ?>. //18
+<? src.sex(Prijal,Prijala) ?> jsem nabidku hospodske, ze mi da pet tisic zlatych, kdyz vyradim z provozu blizkou palirnu. //19
+Hospodska Eraveth z Minas Tirith po mne chtela, abych sabotoval blizkou palirnu. Ze se nestydi! Razne jsem to <? src.sex(odmitl,odmitla) ?>. Mozna bych <? src.sex(mel,mela) ?> varovat majitele. //20
+Nejak jsme se nepohodli s majitelem palirny v Minas Tirith a, hm, neprezil to. //21
+Nejak jsme se nepohodli s jednou hospodskou v Minas Tirith... a taky s majitelem nedaleke palirny, a ten to uz nerozdychal. //22
+Nahodou jsem se <? src.sex(dostal,dostala) ?> do minasske palirny a <? src.sex(rozbil,rozbila) ?> tam jeden kotel. Uz ani nevim, proc jsem to vlastne <? src.sex(delal,delala) ?>... Kazdopadne by me ted asi Miruvil mezi svych deset nejlepsich kamaradu nezaradil. //23
+Nahodou jsem se <? src.sex(dostal,dostala) ?> do minasske palirny a zaujaly me tam jedny zamcene dvere. <? src.sex(Chtel,Chtela) ?> jsem se podivat, co je za nimi, ale majiteli se to jaksi nelibilo. //24
+Nepohodli jsme se s jednim palicem z Minas Tirith. Chova ke mne se ted nejak agresivne. //25
+Ja si s temi lidmi z Minas Tirith proste nerozumim. Moje rozhovory s hospodskou Eraveth vzdycky skonci hadkou, a to ani nemluvim o tom majiteli palirny. //26
+Asi jsem neco <? src.sex(udelal,udelala) ?> spatne, kdyz jsem se <? src.sex(bavil,bavila) ?> s hospodskou Eraveth z Minas Tirith. Odmita se mnou mluvit. //27
+
+
+[dialog d_questy_palirna button]
+on=1
+dialog(d_questy)
+
+
+///////////////////////
+//                   //
+//  Otrava z hrobek  //
+//                   //
+///////////////////////
+
+[dialog d_questy_HCNPoison]
+argo.setText(0,"Otrava z hrobek")
+argo.f_qDialogInstructions(01b6b,0,57,83)
+
+if (0<src.qtag(q026_hcnPoison)> ==1)
+  argo.setText(1,"<?src.sex("Byl jsi otraven","Byla jsi otravena")?> v hrobkach cernych Numenorejcu.")
+elseif (<eval src.qtag(q026_hcnPoison)> == 2)
+  argo.setText(1,"Zda se, ze na tvou otravu nezabiraji bezne protileky. Nejspis bude vhodne vyhledat zkuseneho lecitele.")
+elseif (<eval src.qtag(q026_hcnPoison)> ==3)
+  argo.setText(1,"Bezni lecitele si s tvou otravou nevedeji rady. Tvou posledni nadeji se zda byt nejaky klerik znaly jedu.")
+elseif (<eval src.qtag(q026_hcnPoison)> ==4)
+  argo.setText(1,"<?src.sex("Promluvil","Promluvila")?> jsi si s klerikem Andorem o sve otrave. Rozpoznal v tve chorobe priznaky cerne magie a poslal te zkusit stesti u nejakeho kouzelnika. Ti snad budou vedet vice.")
+elseif (<eval src.qtag(q026_hcnPoison)> ==5)
+  argo.setText(1,"Zda se, ze o davnych metodach starych numenorejcu vi vice carodej Unas. Dlouhy cas pry putuje po Bystre Rece.")
+elseif (<eval src.qtag(q026_hcnPoison)> ==6)
+  argo.setText(1,"Carodej Unas ma podezreni, ze tva otrava je zapricinena davnym prokletim mocnych nekromantu. Jde o velmi stare umeni, ktere je jiz davno zapomenuto. V bazinach severozapadne od Rhunskeho jezera je davny chram vedeni. Jdi tam a porozhledni se po odkazech starych Numenorejskych nekromantu.") // 3769,1490
+elseif (<eval src.qtag(q026_hcnPoison)> ==7)
+  argo.setText(1,"Na zdi jedne z budov chramu v Rhunskych bazinach jsi <?src.sex("nasel","nasla")?> napisy Numenorejcu. Textu prilis nerozumis, ale mnohe ikony poukazuji na Dol Guldurske podzemi. Dvere budovy byly peclive zamcene a nejspise je chrani mocne kouzlo. Bez vhodneho klice se dovnitr nedostanes.") // 3941 1503 5
+elseif (<eval src.qtag(q026_hcnPoison)> ==8)
+  argo.setText(1,"Jedna stena teto mistnosti vypada velice podezrele. Tapiserie na jedne ze zdi ti napadne pripomina tu z cernokneznikova chramu v Rhunskych bazinach.") // 5396 3384
+elseif (<eval src.qtag(q026_hcnPoison)> ==9)
+  argo.setText(1,"Ve skryte mistnosti Dol Gulduru jsi <?src.sex("nasel","nasla")?> napisy lemovany klic od dveri. Mohl by pasovat do zamku dveri cernokneznikovy knihovny v Rhunskych bazinach.") // 5396 3384
+elseif (<eval src.qtag(q026_hcnPoison)> ==10)
+  argo.setText(1,"<?src.sex("Pouzil","Pouzila")?> jsi klic z Dol Guldurske skryte mistnosti do zamku dveri v Rhunskych bazinach a <?src.sex("otevrel","otevrela")?> jsi cernokneznikovu knihovnu. Podle carodeje Unase by tu mohl byt lek nebo alespon kniha pojednavajici o temnych praktikach Cernych Numenorejcu.")
+elseif (<eval src.qtag(q026_hcnPoison)> ==11)
+  argo.setText(1,"<?src.sex("Nasel","Nasla")?> jsi knihu s nazvem Lektvary a Masti Cernych Numenorejcu. Vlastni obsah se zda byt sifrovany a <?src.sex("sam","sama")?> jej nedokazes rozlustit. Unas ti rekl, ze studuje tuto oblast, treba bude vedet vice i o teto knize.")
+elseif (<eval src.qtag(q026_hcnPoison)> ==12)
+  argo.setText(1,"<?src.sex("Ukazal","Ukazala")?> jsi knihu z Rhunskych bazin carodeji Unasovi. Ten skutecne rozlustil cernokneznikovu sifru a z alchymistickych symbolu v knize a popisu tvych priznaku sepsal recept k vyhotoveni protileku pro tvou otravu. Bohuzel Unas sam neni schopen tento lektvar umichat. Poslal te za Roxanou, ktera snad bude schopna lektvar zhotovit. Carodejka pry po leta zije na jihu Temneho Hvozdu.") // 3769,1490
+elseif (<eval src.qtag(q026_hcnPoison)> ==13)
+  argo.setText(1,"Carodejka Roxana zijici na jihu Temneho Hvozdu po tobe jeste potrebuje:<br> <?src.f_q026_hcnPoison_ResourceRemain(1)?> netopyrich kridel (batwings)<br> <?src.f_q026_hcnPoison_ResourceRemain(2)?> kosti (bones)<br> <?src.f_q026_hcnPoison_ResourceRemain(3)?> hrutek drceneho obsidianu (obsidian)<br> <?src.f_q026_hcnPoison_ResourceRemain(4)?> hrutek sirneho popele (Sulfurous Ash)<br> <?src.f_q026_hcnPoison_ResourceRemain(5)?>x obsidianovy ingot<br> <?src.f_q026_hcnPoison_ResourceRemain(6)?> smrkovych polen (spruce)<br> <?src.f_q026_hcnPoison_ResourceRemain(7)?> kastanovych (chestnut) polen<br> Za pripravu protijedu pak sama bude chtit 20 tisic zlatych.")
+elseif (<eval src.qtag(q026_hcnPoison)> ==14)
+  argo.setText(1,"Carodejka Roxana ti predala hotovy protijed.")
+elseif (<eval src.qtag(q026_hcnPoison)> ==15)
+  argo.setText(1,"Zda se, ze priznaky tve otravy pominuly a byl-li Unasuv vyklad ucinku tohoto jedu spravny, pak jsi k nemu diky lektvaru od carodejky Roxany <?src.sex("ziskal","ziskala")?> trvalou imunitu.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_HCNPoison button]
+on=1
+dialog(d_questy)
+
+
+//////////////////////
+//                  //
+//  Umbarska hadka  //
+//                  //
+//////////////////////
+
+[dialog d_questy_umbarskaHadka]
+argo.setText(0,"Umbarska hadka")
+argo.f_qDialogInstructions(03000)
+
+if (0<src.qtag(mq027_umbarskaHadka)> == 1)
+  argo.setText(1,"Antonio tvrdi, ze mu Vincent ukradl lopatu, ale nemluvi s nim, a chce po tobe, aby jsi ji od Vincenta ziskal. Vincent by mel byt v hospode Umbarskeho pristavu.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 2)
+  argo.setText(1,"Vincent rika, ze Antonio je lhar a karbanik.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 3)
+  argo.setText(1,"Antonio se citi byt urazen. Mas presvedcit Vincenta, aby se omluvil.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 4)
+  argo.setText(1,"Vincent se neciti byt povinen omlouvat se Antoniovi a nedari se ti ho premluvit, aby tak ucinil. Naopak mas pozadat Antonia, aby se mu on omluvil za vsechny krivdy.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 5)
+  argo.setText(1,"Antonio se take nechce omluvit a trva na omluve od Vincenta. Hrozi, ze pokud se Vincent neomluvi, necha ho zavrit za kradez.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 6)
+  argo.setText(1,"Vincent tvrdi, ze nebude nic vracet a strazi se pry neboji. Vzkazuje Antoniovi, ze je stara baba a jeho zena je osklivejsi nez psi rozkrok napadeny hemeroidy.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 7)
+  argo.setText(1,"Antonio je popuzen Vincentovymi urazkami a vzkazuje po tobe, ze kdyby Vincent umel hnojit rukama tak jako pusou, nemusel by krast cizi lopaty. Navic pry je sam bez zeny a nema se v tomto smeru cemu vysmivat.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 8)
+  argo.setText(1,"Vincent chce po Antoniovi, aby svou posledni krivdu odvolal, jinak mu namisto lopaty navrati vidle a zabodne mu je pri te prilezitosti do bricha.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 9)
+  argo.setText(1,"Antonio vzkazuje Vincentovi, aby se prestal chovat jako bastard a radsi se postaral o to, aby co nejdrive vratil tu lopatu.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 10)
+  argo.setText(1,"Vincent vzkazuje Antoniovi, ze by ho nemel nazyvat bastardem, nebot tim urazi i svou matku.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 11)
+  argo.setText(1,"Antonio zada Vincenta, aby do jejich sporu prestal michat pribuzenske vstahy a soustredil se radsi na to, co je podstatne. Opet zada lopatu.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 12)
+  argo.setText(1,"Vincent ztraci nervy a vzkazuje Antoniovi, ze je hlupak a nema se nadale zvat Vincentovym bratrem.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 13)
+  argo.setText(1,"Antonio vzkazuje Vincentovi, ze se snazi svoje bratrstvi poprit uz dlouhou dobu a navic, ze pry toto tvrdil jiz minule a nema se na to vymlouvat.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 14)
+  argo.setText(1,"Vincent vzkazuje Antoniovi, ze nema za potrebi se s nim dale dohadovat a nema te uz pry za nim posilat, a pokud neco chce, ma prijit sam.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 15)
+  argo.setText(1,"Antonio ti rekl, ze mas z Vincenta ziskat tu lopatu za kazdou cenu.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 16)
+  argo.setText(1,"Vincent se ti po tvrdem natlaku priznal, ze lopatu prohral.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 17)
+  argo.setText(1,"Antonio se rozzuril a pozaduje po Vincentovi lopatu zcela novou.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 18)
+  argo.setText(1,"Vincent pry nema penize na novou lopatu, ale pokud mu Antonio pujci tisic zlatych, ziska ji zpet.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 19)
+  argo.setText(1,"Antonio se osocil, ze vsechny sve penize prohral a kdyby nejake mel, tak uz si tu lopatu davno poridil sam. Navic nechape, proc po nem chce Vincent tolik penez za obycejnou lopatu.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 20)
+  argo.setText(1,"Vincent ti rekl, ze dluzi obrovske penize jednomu mistnimu karbanikovi a musi je co nejdrive splatit. Tvrdi, ze ma novy system, diky kteremu nemuze prohrat.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 21)
+  argo.setText(1,"Antonio se pro vidinu zisku nadchl a vskazal Vincentovi, ze mu penize pujci, ale pouze tehdy, pokud mu Vincent slibi, ze navrati dvojnasobek zapujcene castky.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 22)
+  argo.setText(1,"Vincent souhlasil s Antoniovou nabidkou a slibil, ze castku vrati i s uroky.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 23)
+  argo.setText(1,"Antonio ti dal 1 tisic zlatych, abys je <src.sex("donesl","donesla")> Vincentovi.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 24)
+  argo.setText(1,"<src.sex("Dal","Dala")> jsi Vincentovi 1000 zlatych, aby je mohl vsaidit a diky svemu systemu vyhrat penize pro zlpaceni dluhu Antoniovi. Mas mu dat jeden den.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 25)
+  argo.setText(1,"Vincent ti rekl, ze darovanych 1000 zlatych prohral a vymlouval se na podvodne jednani sazkare. Sve penize pry muze chtit Antonio primo po sazkari.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 26)
+  argo.setText(1,"Antonio je vzteky bez sebe a zada te, abys Vincentovi zabavil vsechno, co najdes v jeho dome a donesl mu to.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 27)
+  argo.setText(1,"<src.sex("sdelil","sdelila")> jsi Vincentovi Antoniuv umysl zabavit mu vsechny veci v dome, aby se jejich dluh vyrovnal. Vincent to ostre odmitl s tim, ze mu to Antonio beztak dluzi za to, ze ho Vincent cele detstvi branil.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 28)
+  argo.setText(1,"Antonio tvrdi, ze vuci Vincentovi z mladi zadne dluhy nema, nebot za nej delal vsechny 4 tridy zakladni skoly domaci ukoly a opet trva na vyklizeni Vincentova domu kvuli uhrazeni dluhu.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 29)
+  argo.setText(1,"Vincent se Antoniovu argumentu vysmal. Ukoly mu pry tenkrat Antonio delal za to, ze o nem bude Vincent sirit lzive historky, vypovidajico o Antoniove chrabrosti, nebot byl zamilovan do divky z krouzku zavislych na adrenalinu, do ktereho Vincent tenkrat chodil.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 30)
+  argo.setText(1,"Antonio se osocil proti Vincentovu postoji a vzkazuje, ze nehodla podlehnout jeho odpornym vymluvam. Okamzite mas jit a ukoncit spor jednou pro vzdy silou! Nabizi ti za to odmenu 1 tisic zlatych.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 31)
+  argo.setText(1,"Vincent ti nabidl 1500 zlatych za to, ze ho nechas byt a odstranis z cesty Antonia.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 32)
+  argo.setText(1,"Antonio se zalekl Vincentovych hrozeb a nabidl ti 2 tisice zlatych za zabiti Vincenta.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 33)
+  argo.setText(1,"Vincent ti nabidl 2500 zlatych a prislibil, ze mezi mistnimi <src.sex("zenami","muzi")> rozsiri spostu bachorek o tve <src.sex("udatnosti","milostne zdatnosti")>.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 34)
+  argo.setText(1,"Antonio ti pry nemuze nabidnout vice nez 2 tisice zlatych, ale vstepil ti do hlavy, ze nemas jednat unahlene a vzhledem k Vincentove minulosti by bylo rozumne pozadovat odmenu predem")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 35)
+  argo.setText(1,"Vincent se vykrucoval a odmitl ti predat zalohu na zabiti sveho bratra. Varoval te ale, ze by nebylo uplne rozumne ho zabijet. Ma pry spoustu znamych, kteri by se po nem ptali a u kterych by se za tebe mohl primluvit. Navic neveri, ze by jeho bratr Antonio mel tolik penez, kolik ti nabizi pote, co mu pujcil tisic zlatych na sazky.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 36)
+  argo.setText(1,"Antonio se rozzuril a vykazal te ze sveho domu. Prestal ti duverovat a rekl, ze si svuj spor vyresi s nekym jinym a ze uz ho zadna lopata ani nezajima a radsi si poridi novou za sve.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 37)
+  argo.setText(1,"Vincent je ti vdecny za to, ze ho jeho bratr Antonio prestal pronasledovat kvuli stare lopate a nevede s nim dalsi spory. Slibil ti navic, ze ti po meste udela dobre jmeno.")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 38)
+  argo.setText(1,"")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 39)
+  argo.setText(1,"")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 40)
+  argo.setText(1,"")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 41)
+  argo.setText(1,"")
+elseif (<eval src.qtag(mq027_umbarskaHadka)> == 42)
+  argo.setText(1,"")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_umbarskaHadka button]
+on=1
+dialog(d_questy)
+
+
+//////////////////////
+//                  //
+//  Ztracene Dcery  //
+//  Velmistr quest  //
+//                  //
+//////////////////////
+
+[dialog d_questy_velmistr]
+argo.setText(0,"Ztracene Dcery")
+argo.f_qDialogInstructions(03000)
+arg(tagValue,<eval src.qtag(q000_velmistr)>)
+if (<arg(tagValue)> == 1)
+  argo.setText(1,"Elvira a Elmira, dcery Elqiry, se sve matce jiz dlouhe mesice neozvaly. Pry se vydaly na vychod Ledovych plani poznat tamni krajinu. Jsou na pobyt v prirode zvykle a matka je presvedcena, ze se jim muselo neco stat..")
+elseif (<arg(tagValue)> == 2)
+  argo.setText(1,"<src.sex("Nasel","Nasla")> jsi Elviru v lese na vychode Ledovych plani. Ta je zcela nepricetna a na tve pokusy o osloveni vubec nereaguje. Kde muze byt jeji sestra Elmira?")
+elseif (<arg(tagValue)> == 3)
+  argo.setText(1,"<src.sex("Nasel","Nasla")> jsi Elmiru uzamcenou v kleci u skaly na vychode Ledovych plani. Prosi te, abys <src.sex("pomohl","pomohla")> alespon jeji sestre, Elvire, ktera je na uteku pred tim samym muzem, ktery Elmiru vezni. Elvira pry vbehla do snehove boure a nemohla se dostat daleko. Navic by sestru nikdy neopustila. Musi tu nekde byt!")
+elseif (<arg(tagValue)> == 4)
+  argo.setText(1,"<src.sex("Nasel","Nasla")> jsi Elviru v lese na vychode Ledovych plani, kus od jeskyne, kde je uveznena jeji sestra. Elmira je zcela nepricetna a na tve pokusy o osloveni vubec nereaguje. Elmiru bude jiste osud jeji sestry zajimat.")
+elseif (<arg(tagValue)> == 5)
+  argo.setText(1,"<src.sex("Rekl","Rekla")> jsi Elmire, jak je na tom jeji sestra. Ta si vybavila povest o lecive byline, korenu Este, jejiz posledni sazenice by mohly byt na ostrovech Titanu. Varuje te vsak pred sverenim ukolu nekomu jinemu, zaroven vsak takovou vypravu nemas podnikat <src.sex("sam","sama")>! Na tuto cestu bude nutne sehnat nekolik silnejsich a zkusenejsich bojovniku.")
+elseif (<arg(tagValue)> == 6)
+  argo.setText(1,"Na ostrove Titanu jsi <src.sex("utrhl","utrhla")> sazenici, ktera odpovida popisu Elmiry. Podle ni by koren teto vzcne byliny mohl vylecit Elviru z podivne nemoci. Elviru jsi naposledy <src.sex("videl","videla")> v lese na vychode Ledovych plani.")
+elseif (<arg(tagValue)> == 7)
+  argo.setText(1,"<src.sex("Podal","Podala")> jsi Elvire koren Este, vzacnou bylinu z ostrova Titanu. Elvira se velmi rychle zacala zotavovat ze sveho poblouzneni.")
+elseif (<arg(tagValue)> == 8)
+  argo.setText(1,"Elvira ti prozradila cely pribeh o jejim a sestrinym prichodu do Ledovych plani a o Rinaldovi. Znalost jeho jmena ti dava silu jej zranit. Elvira te o to primo zada v prosbe o zachranu sve sestry.")
+elseif (<arg(tagValue)> == 9)
+  argo.setText(1,"<src.sex("Zabil","Zabila")> jsi Rinalda, tyrana z Ledovych plani. <src.sex("Nalezl","Nalezla")> jsi u nej i nejaky klic.")
+elseif (<arg(tagValue)> == 10)
+  argo.setText(1,"<src.sex("Vysvobodil","Vysvobodila")> jsi Elmiru ze zajeti a uzdravila jeji sestru Elviru. Matka Elqira bude z techto novin jiste nadsena.")
+elseif (<arg(tagValue)> == 11)
+  argo.setText(1,"<src.sex("Popsal","Popsala")> jsi Elqire pribeh jejich dcer a <src.sex("utesil","utesila")> ji, ze jsou obe v poradku. Matka byla z teto noviny cela bez sebe a slibila, ze se o tvych zasluhach sveri vsem svym znamym.")
+elseif (<arg(tagValue)> == 12)
+  argo.setText(1,"<src.sex("Doslechl","Doslechla")> jsi se, ze te shani Zmocnenec <src.splitRealm("Gondoru","Mordoru")>, pro tve zasluhy pote, co jsi <src.sex("popsal","popsala")> Elqire pribeh jejich dcer a <src.sex("utesil","utesila")> ji, ze jsou po tvem zasahu obe v poradku.")
+elseif (<arg(tagValue)> == 13)
+  argo.setText(1,"Zmocnenec <src.splitRealm("Gondoru","Mordoru")> te pasoval na Velmistra pro tve zasluhy pote, co jsi <src.sex("zachranil","zachranila")> dcery stare Elqiry. Tvuj pribeh o osudu jejich dcer ji upokojil a ta z radosti, ze jsou po tvem zasahu obe v poradku, vypravi o tvych zasluhach kudy chodi.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_velmistr button]
+on=1
+dialog(d_questy)
+
+
+///////////////////////
+//                   //
+//  Murlay Namornik  //
+//                   //
+///////////////////////
+
+[dialog d_questy_murlay_namornik]
+argo.setText(0,"Namornik Murlay")
+argo.f_qDialogInstructions(03104)
+
+if (0<src.qtag(q029_murlay_namornik)> ==1)
+  argo.setText(1,"<?src.sex(Slibil,Slibila)?> jsi, ze Murlayovi doneses novou plachtu pro jeho lod. Murlay a jeho posadka cekaji...")
+elseif (0<src.qtag(q029_murlay_namornik)> ==2)
+  argo.setText(1,"Murlay, namornik ztroskotany na utesech u ledoveho ostrova, te poslal na vetrne ostrovy za zenou, ktera mu usije plachty na lod. Tam jsi vsak <?src.sex("nasel","nasla")?> jen Etirase, muze zminovane zeny. Ten ti prozradi, kde se nachazi, pokud mu prineses prach z 8 zeleznich spiritu.")
+elseif (0<src.qtag(q029_murlay_namornik)> ==3)
+  argo.setText(1,"Murlay, namornik ztroskotany na utesech u ledoveho ostrova, te poslal na vetrne ostrovy za zenou, ktera mu usije plachty na lod. <src.sex("Nasel","Nasla")> jsi tam vsak jen jejiho muze Etirase, ktery se domniva, ze jeho manzelka Sevedia utekla na ostrov piratu.")
+elseif (0<src.qtag(q029_murlay_namornik)> ==4)
+  argo.setText(1,"Murlay, namornik ztroskotany na utesech u ledoveho ostrova, te poslal na vetrne ostrovy za krejci Sevedii, ktera mu usije plachty na lod. <src.sex("Nasel","Nasla")> jsi ji az na ostrove piratu. Nez ti pomuze, zada od tebe 3 ocni bulvy adamantiovych oci, aby si mohla pripravit elixir krasy.")
+elseif (0<src.qtag(q029_murlay_namornik)> ==5)
+  argo.setText(1,"<?src.sex(Prinesl,Prinesla)?> jsi Sevedii bulvy a ona ti za odmenu dala kvalitni plachtu pro namornika Murlaye, ztroskotaneho na utesech u ledoveho ostrova.")
+elseif (0<src.qtag(q029_murlay_namornik)> ==6)
+  argo.setText(1,"Murlay diky tobe muze natahnout plachty a doplout na ostrov za hospodskym. Mozna zachrani i Eriolova vnuka. Muzes na sebe byt <?src.sex(pysny,pysna)?>!")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_murlay_namornik button]
+on=1
+DIALOG(d_questy)
+
+//////////////////////
+//                  //
+//  prodejce Umbar  //
+//                  //
+//////////////////////
+ 
+[dialog d_questy_menegil]
+argo.setText(0,"Prodejce Menegil")
+argo.f_qDialogInstructions(03142)
+
+if (<src.qtag(mq032_menegil)> == 1)
+ argo.setText(1,"<?src.sex(Slibil,Slibila)?> si Menegilovi, ze pujdes zjistit kdy prijede lod se zbozim.")
+elseif (<src.qtag(mq032_menegil)> == 2)
+ argo.setText(1,"<?src.sex(Slibil,Slibila)?> si kapitanove lode, ze mu prineses sud s alkoholem od hospodskeho.")
+elseif (<src.qtag(mq032_menegil)> == 3)
+ argo.setText(1,"<?src.sex(Prinesl,Prinesla)?> si kapitanovi sud s alkoholem a on ti prozradil, kdy prijede lod.")
+elseif (<src.qtag(mq032_menegil)> == 4)
+ argo.setText(1,"<?src.sex(Rekl,Relka)?> jsi Menegilovi, ze lod prijede za 3 dni.")
+elseif (<src.qtag(mq032_menegil)> == 5)
+ argo.setText(1,"<?src.sex(Slibil,Slibila)?> si kapitanovi, ze mu prineses ryby od prodejce ryb, ktery by mel byt nekde nad Umbarem.")
+elseif (<src.qtag(mq032_menegil)> == 6)
+ argo.setText(1,"Rybar od tebe zada penize za ryby, jdes si povykladat s prodejcem, co mas delat ted.")
+elseif (<src.qtag(mq032_menegil)> == 7)
+ argo.setText(1,"Prodejce ti rekl, ze on uz za ryby zaplatil, tak to mas jen pripomenut rybarovi.")
+elseif (<src.qtag(mq032_menegil)> == 8)
+ argo.setText(1,"Rybar ti dal ryby pro prodejce, ted mu je muzes jit odnest.")
+elseif (<src.qtag(mq032_menegil)> == 9)
+ argo.setText(1,"<?src.sex(Odnesl,Odnesla)?> si ryby prodejcovi, ten ti je za ne vdecny.")
+elseif (<src.qtag(mq032_menegil)> == 10)
+ argo.setText(1,"<?src.sex(Slibil,Slibila)?> si Menegilovi, ze zjistis v jakem stavu je vyroba latky, kterou si objednal.")
+elseif (<src.qtag(mq032_menegil)> == 11)
+ argo.setText(1,"Svadlena Rhalla te poprosila, aby si sel najit jejiho pomocnika, ktery ji mel prinest nite na vyrobu latky pro Menegila.")
+elseif (<src.qtag(mq032_menegil)> == 12)
+ argo.setText(1,"Opily pomocnik svadleny ti dal nite, ty je ted muzes jit odnest.")
+elseif (<src.qtag(mq032_menegil)> == 13)
+ argo.setText(1,"Rhalla ti Slibila, ze latku pro Menegila vyrobi co najdriv, ted to muzes oznamit prodejcovi. Jestli chces, muzes vyuzit sluzeb prevoznika v tahabare, aby pak latku odnesl sam.")
+elseif (<src.qtag(mq032_menegil)> == 14)
+ argo.setText(1,"<?src.sex(Zaplatil,Zaplatila)?> jsi prevoznikovi za preneseni latky od Rhalli k Menegilovi.")
+elseif (<src.qtag(mq032_menegil)> == 15)
+ argo.setText(1,"<?src.sex(Rekl,Rekla)?> jsi Menegilovi o latky, sice neni nadseny ale nemuze s tim nic udelat.")
+elseif (<src.qtag(mq032_menegil)> == 16)
+ argo.setText(1,"<?src.sex(Slibil,Slibila)?> si prodejci, ze pro neho zaridis objednavku bananov z Haradskeho skladu.")
+elseif (<src.qtag(mq032_menegil)> == 17)
+ argo.setText(1,"Skladnik ti rekl, ze neprijimaji zadne dalsi objednavky, jdi si promluvit s Menegilom, co delat ted.")
+elseif (<src.qtag(mq032_menegil)> == 18)
+ argo.setText(1,"Menegil ti rekl, ze to mas nejak vymyslet, protoze on ty banany fakt moc potrebuje, mozna muzes zkusit vyhrozovat jeho manzelce, ktera zije v harade, nebo to s nim nejak jinak vyresit.")
+elseif (<src.qtag(mq032_menegil)> == 19) 
+ argo.setText(1,"<?src.sex(Vyhrozoval,Vyhrozovala)?> jsi manzelce skladnika, rikala, ze ona to s nim vybavi.")
+elseif (<src.qtag(mq032_menegil)> == 20)
+ argo.setText(1,"Skladnik prijal tvuj uplatek a rikal, ze prijme objednavku pro prodejce Menegila.")
+elseif (<src.qtag(mq032_menegil)> == 21)
+ argo.setText(1,"<?src.sex(Zaridil,Zaridila)?> jsi objednavku pro Menegila.")
+elseif (<src.qtag(mq032_menegil)> == 22)
+ argo.setText(1,"<?src.sex(Rekl,Rekla)?> jsi prodejcovi o bananech.")
+elseif (<src.qtag(mq032_menegil)> == 23)
+ argo.setText(1,"<?src.sex(Slibil,Slibila)?> jsi, ze pujdes zjistit kde je latka.")
+elseif (<src.qtag(mq032_menegil)> == 24)
+ argo.setText(1,"Prevoznik ti rekl, ze latku dal svemu pomocnikovi a ten ji mel odnest Menegilovi, budes muset najist toho pomocnika.")
+elseif (<src.qtag(mq032_menegil)> == 25)
+ argo.setText(1,"Pomocnik Tomald ti dal tu latku, ted jeste pujdes za prevoznikem Herrarem pro svoji odmenu.")
+elseif (<src.qtag(mq032_menegil)> == 26)
+ argo.setText(1,"Herrar ti dal tvoji odmenu a muzes jit odnest latku Menegilovi do Umbaru.")
+elseif (<src.qtag(mq032_menegil)> == 27)
+ argo.setText(1,"Rhalla ti dala latku pro Menegila, tu mu ted muzes jit odnest")
+elseif (<src.qtag(mq032_menegil)> == 28)
+ argo.setText(1,"Prodejce Menegil ti je vdecny, ze si mu pomohl s otevrenim jeho obchodu, diky tobe to bude moci co najdriv otevrit.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_menegil button]
+on=1
+DIALOG(d_questy)
+
+//////////////////////
+//                  //
+//  herman  //
+//                  //
+//////////////////////
+
+[dialog d_questy_herman]
+argo.setText(0,"Herman")
+argo.f_qDialogInstructions(03115)
+
+if (<src.qtag(q035_herman)> == 1)
+ argo.setText(1,"Herman chce, aby jsi mu <sex(donesl,donesla)> 20 hlav obycejnych brouku.")
+elseif (<src.qtag(q035_herman)> == 2)
+ argo.setText(1,"<sex(Donesl, Donesla)> jsi hlavy obycejnych brouku Hermanovi.")
+elseif (<src.qtag(q035_herman)> == 3)
+  argo.setText(1,"<sex(Slibil,Slibila)> jsi ze doneses 20 hlav brouku delniku.")
+elseif (<src.qtag(q035_herman)> == 4)
+  argo.setText(1,"<sex(Predal,Predala)> jsi 20 hlav brouku delniku Hermanovi.")
+elseif (<src.qtag(q035_herman)> == 5)
+  argo.setText(1,"Dalsi ukol kterym te Herman poveril je at doneses 15 hlav brouku trubcu.")
+elseif (<src.qtag(q035_herman)> == 6)
+  argo.setText(1,"<sex(Odevzdal,Odevzdala)> jsi 15 hlav brouku trubcu.")
+elseif (<src.qtag(q035_herman)> == 7)
+  argo.setText(1,"Mas donest 12 hlav od brouku strazcu.")
+elseif (<src.qtag(q035_herman)> == 8)
+  argo.setText(1,"<sex(Donesl, Donesla)> jsi Hermanovi 12 hlav od broku strazcu.")
+elseif (<src.qtag(q035_herman)> == 9)
+  argo.setText(1,"<sex(Slibi,Slibila)> jsi ze doneses 10 hlav od brouku magu.")
+elseif (<src.qtag(q035_herman)> == 10)
+  argo.setText(1,"<sex(Odevzdal,Odevzdala)> jsi 10 hlav od brouku magu.")
+elseif (<src.qtag(q035_herman)> == 11)
+  argo.setText(1,"Nyni mas ziskat 8 hlav od brouku bojovniku.")
+elseif (<src.qtag(q035_herman)> == 12)
+  argo.setText(1,"<sex(Donesl,Donesla)> jsi 8 hlav od brouku bojovniku presne jak chtel Herman.")
+elseif (<src.qtag(q035_herman)> == 13)
+  argo.setText(1,"<sex(Slibil,Slibila)> jsi ze doneses 5 hlav od neviditelnych brouku.")  
+elseif (<src.qtag(q035_herman)> == 14)
+  argo.setText(1,"<sex(Predal,Predala)> jsi 5 hlav od neviditelnych brouku Hermanovi.")  
+elseif (<src.qtag(q035_herman)> == 15)
+  argo.setText(1,"Herman po tobe chce aby jsi <sex(donesl,donesla)> 3 hlavy od elitnich brouku.")  
+elseif (<src.qtag(q035_herman)> == 16)
+  argo.setText(1,"<sex(Donesl,Donesla)> jsi hlavy od elitnich brouku Hermanovi.")  
+elseif (<src.qtag(q035_herman)> == 17)
+  argo.setText(1,"Mas donest posledni hlavu od brouka matky.")  
+elseif (<src.qtag(q035_herman)> == 18)
+  argo.setText(1,"<sex(Odevzdal,Odevzdala)> jsi Hermanovi hlavu od brouka matky.")  
+elseif (<src.qtag(q035_herman)> == 19)
+  argo.setText(1,"Herman te poslal do brouciho doupete pro jejich vejce. Doporucuje ti aby sis <sex(vzal,vzala)> sebou jeste dva spolubojovniky.")
+elseif (<src.qtag(q035_herman)> == 20)
+  argo.setText(1,"<sex(Vesel,Vesla)> jsi do brouciho doupete.")
+elseif (<src.qtag(q035_herman)> == 21)
+  argo.setText(1,"<sex(Ziskal,Ziskala)> si brouci vejce.")
+elseif (<src.qtag(q035_herman)> == 22)
+  argo.setText(1,"<sex(Splnil,Splnila)> jsi presne to co Herman chtel. Dalsi ukol uz pro tebe nema.")
+elseif (<src.qtag(q035_herman)> == 23)
+  argo.setText(1,"<sex(Odrekl,Odrekla)> jsi dalsi sanci. Herman uz po tobe nic nechce.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_herman button]
+on=1
+DIALOG(d_questy)
+
+//////////////////////
+//                  //
+//  uhrovity jonas  //
+//                  //
+//////////////////////
+
+[dialog d_questy_jonas]
+argo.setText(0,"Uhrovity Jonas")
+argo.f_qDialogInstructions(03082)
+
+if (<src.qtag(q036_jonas)> == 1)
+  argo.setText(1,"Jonas te pozadal, abys <sex(zjistil,zjistila)>, proc mu jeho otec nechce predat rodinny mec. Evzena, Jonasova otce, pry naposledy spatrili kdesi v pousti u bran ztraceneho mesta.")
+elseif (<src.qtag(q036_jonas)> == 2)
+  argo.setText(1,"Evzen, Jonasuv otec, si mysli, ze Jonas jeste neni pripraven pro to, aby mu mec mohl sverit. Musi si ho pry nejdrive zaslouzit. Co na to asi rekne Jonas?")
+elseif (<src.qtag(q036_jonas)> == 3)
+  argo.setText(1,"<sex(Slibil,Slibila)> jsi Jonasovi, ze doneses 4 hlavy titan lorda Evzenovi jako dukaz, ze je jeho syn zkuseny bojovnik a mec si rozhodne zaslouzi.")
+elseif (<src.qtag(q036_jonas)> == 4)
+  argo.setText(1,"Prestoze Evzen hlavy prijal, nepovazuje je za dostacujici dukaz toho, ze si jeho syn mec zaslouzi. Asi s Jonasem budete muset vymyslet neco jineho.")
+elseif (<src.qtag(q036_jonas)> == 5)
+  argo.setText(1,"Jonas te posila za podivinskym Hubertem do cervi jeskyne nad Oazou Hagir - je pry dostatecne mazany na to, aby vymyslel, co by Evzena k darovani mece mohlo presvedcit.")
+elseif (<src.qtag(q036_jonas)> == 6)
+  argo.setText(1,"Hubert Jonasovi navrhuje zkusit to na Evzena pres zenske - zabijeni monster na nej pry vliv rozhodne neudela. Je na case o tom Jonase zpravit.")
+elseif (<src.qtag(q036_jonas)> == 7)
+  argo.setText(1,"Jonas te posila na rhunsky ostrov pro vskutku delikatni trofej - ziskat kalhotky od Fifleny, udajne nejnedostupnejsi zeny na svete.")
+elseif (<src.qtag(q036_jonas)> == 8)
+  argo.setText(1,"Fiflena od tebe za sve tyden nosene kalhotky zada <sex("30000 zlatych","zenskou valoritovou platemail hrud")>.")
+elseif (<src.qtag(q036_jonas)> == 9)
+  argo.setText(1,"Fiflena po vymene souhlasila s tim, ze si smis odnest jeji kalhotky. Ty mimochodem opravdu stoji za to. Snad jejich kvality oceni i Jonasuv otec Evzen.")
+elseif (<src.qtag(q036_jonas)> == 10)
+  argo.setText(1,"Evzen uznale pokyval hlavou, privonel ke kalhotkam, uklidil je do kapsy u kalhot a vymenou ti predal mec, aby jsi jej <sex(odnesl,odnesla)> Jonasovi.")
+elseif (<src.qtag(q036_jonas)> == 11)
+  argo.setText(1,"<sex(Dal,Dala)> jsi uhrovitemu Jonasovi mec jeho otce. Stastny vyrostek ti predal odmenu a utekl mec prodat na nejblizsi trziste. Inu, deti jsou preci nase zariva budoucnost...")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_jonas button]
+on=1
+DIALOG(d_questy)
+
+///////////////////
+//               //
+//  opily zarik  //
+//               //
+///////////////////
+
+[dialog d_questy_zarik]
+argo.setText(0,"Opily Zarik")
+argo.f_qDialogInstructions(03164)
+
+if (<src.qtag(q037_zarik)> == 1)
+ argo.setText(1,"Zarik resi zapeklity problem... zkratka a dobre se ozral jako dobytek a ted ma okno a za zadnou cenu si nemuze vzpomenout, co se vcera delo a kam se podely vsechny jeho veci. Je na tobe, abys to <sex(zjistil,zjistila)> - snad bude vedet hospodsky na ledovem ostrove, kde probihala ona osudna pitka.")
+elseif (<src.qtag(q037_zarik)> == 2)
+ argo.setText(1,"Hospodskeho mlady pomocnik ti poradil, ze se Bert vydal kamsi k ostrovu piratu, tam je ho nejspis treba zkusit hledat. Rovnez bys od nej <sex(mel,mela)> ziskat nazpet 57000 zlatych za nezaplacenou utratu, ktere Bert v hospode dluzi.")
+elseif (<src.qtag(q037_zarik)> == 3)
+  argo.setText(1,"<sex(Nasel,Nasla)> jsi Bertovo mrtve a zcela vybrane telo - nastesti az na Zarikovy kalhoty. Jen nevis, kdo ted hospodskemu zaplati Bertovu utratu za koralku, aby ti hospodsky rekl nejake dalsi informace...")
+elseif (<src.qtag(q037_zarik)> == 4)
+  argo.setText(1,"Svet je nespravedlivy a proto jsi i pres veskere pokusy o smlouvani a vykrucovani <sex(musel,musela)> zaplatit Bertuv dluh - diky tomu ti ale pomocnik hospodskeho prozradil, kde hledat dalsiho z Zarikovych kumpanu - Sabrina by se mela toulat kdesi u zapadniho okraje temneho lesa...")
+elseif (<src.qtag(q037_zarik)> == 5)
+  argo.setText(1,"Sabrina ti za pomoc Jonasovi dala Zarikovo tricko a trochu rumu na ochutnavku pro hospodskeho.")
+elseif (<src.qtag(q037_zarik)> == 6)
+  argo.setText(1,"<sex(Odevzdal,Odevzdala)> jsi rum pomocnikovi hospodskeho a ten ti vymenou za to poradil, ze dalsiho pijana, ktery toho vecera se Zarikem radil v hospode na ledovem ostrove, skreta Urmughorga, najdes kdesi v Haradske pousti. Od hospodskeho mas za ukol ziskat od skreta vzacne drevo na opravu stolu, ktery rozbil, kdyz do nej opily prastil.")
+elseif (<src.qtag(q037_zarik)> == 7)
+  argo.setText(1,"Urmughorg od tebe chce vybit jeskyni plnou krvelacnych monster, coz se jemu nepodarilo. Az tak ucinis, mas vsude prohlasovat, ze to byla jeho prace. Kdesi v utrobach jeskyne by mel byt i Zarikuv satek.")
+elseif (<src.qtag(q037_zarik)> == 8)
+  argo.setText(1,"<sex(Nasel,Nasla)> jsi Zarikuv satek - ted je ta spravna chvile rict si Urmughorgovi o vzacne drevo na opravu stolu, ktery v hospode rozbil.")
+elseif (<src.qtag(q037_zarik)> == 9)
+  argo.setText(1,"Urmughorg se zachoval jako typicky skret - drevo nema, ale aspon ti poradil, at vyhledas drevorubce Wohyho v Magickem Lese, kam se pry dostanes s pomoci podivina Georga v Ledove Jeskyni.")
+elseif (<src.qtag(q037_zarik)> == 10)
+  argo.setText(1,"Wohy ti dal drevo, ktere ti slubil Urmughorg. Ted uz se muzes vratit za pomocnikem hospodskeho na ledovy ostrov - snad ti vymenou za drevo na opravu stolu rekne neco vic o dalsich clenech Zarikovy party.")
+elseif (<src.qtag(q037_zarik)> == 11)
+  argo.setText(1,"Hospodskeho pomocnik je spokojeny, ze jsi mu <sex(prinesl,prinesla)> vzacne drevo na opravu stolu. Dokonce ti poradil, kde najdes posledniho clena Zarikovy party, ktera tu pred par hodinami pila se Zarikem - Varjusa se schovava nekde na ostrove ne daleko od hospody.")
+elseif (<src.qtag(q037_zarik)> == 12)
+  argo.setText(1,"Varjusa sice priznal, ze Zarikovi v opilem stavu ukradl vacek s penezi, vrati ho vsak pouze vymenou za zpocene chlupy z podpazdi nejmene ctyr strazcu. To tedy bude neco, takovahle prace...")
+elseif (<src.qtag(q037_zarik)> == 13)
+  argo.setText(1,"Varjusa ti dal mesec s penezi pro Zarika. To byl posledni dil skladanky, konecne mas vsechny Zarikovy veci!")  
+elseif (<src.qtag(q037_zarik)> == 14)
+  argo.setText(1,"Zarik si tise vyslechl tve vypraveni toho, co vsechno se vlastne te noci stalo. Pak mlcky prijal vsechny sve veci a nahlas a slavnostne prohlasil, ze uz nikdy nebude pit. Clovek by asi nemel davat sliby, ktere nemuze splnit...")  
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[dialog d_questy_zarik button]
+on=1
+DIALOG(d_questy)
+
+//////////////////////////
+//                      //
+//  OBLAST CERNE SMRTI  //
+//                      //
+//////////////////////////
+
+[dialog d_ocs]
+argo.setText(0,"Oblast cerne smrti")
+argo.f_qDialogInstructions(03164)
+
+//////////////////////
+//                  //
+//  Shadow weapons  //
+//                  //
+//////////////////////
+
+[dialog d_shadow_weapon]
+argo.setText(0,"Kovar")
+argo.f_qDialogInstructions(03101)
+
+if (<src.qtag(q039_shadow_weapon)> == 1)
+ argo.setText(1,"Cas pro dukazy - Prinest kovari pet lebek bossu. Jde o tato podzemi - Mahat, Carn Dumm, Mount Dorlas a Tuma Osto. Pak mi jeste prines lebku Paladina ze Ztraceneho mesta.")
+elseif (<src.qtag(q039_shadow_weapon)> == 2)
+ argo.setText(1,"Cas pro pomstu - Prines kovari ctyri hlavy zlosynu.")
+elseif (<src.qtag(q039_shadow_weapon)> == 3)
+  argo.setText(1,"Cas pro ingredience - Prines kovari - 5x Rudu z Shadow golemu, 10x Kameny ohne, 1x Vysoce horlavy olej, 1x Krev Hrdiny, 4x Ohnivzdorna kuze a 1x Drahokam jmenem Slza hor.")
+elseif (<src.qtag(q039_shadow_weapon)> == 4)
+  argo.setText(1,"Cas pro vyrobu - Pockej nez kovar vyrobi zbran.")
+elseif (<src.qtag(q039_shadow_weapon)> == 5)
+  argo.setText(1,"Cas pro boj - Uzij si zbran, ale zbytecne neumirej!")
+elseif (<src.qtag(q039_shadow_weapon)> == 6)
+  argo.setText(1,"Cas pro smutek - Prilis casto jsi umiral a o zbran prisel")
+elseif (<src.qtag(q039_shadow_weapon)> == 7)
+  argo.setText(1,"Cas slibu - Dones kovari dukaz o svem odhodlani.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+
+///////////////////////////////
+//                           //
+//  Spolecenstvi drakobijcu  //
+//                           //
+///////////////////////////////
+
+[dialog d_dragons]
+argo.setText(0,"Spolecenstvi drakobijcu")
+argo.f_qDialogInstructions(03001)
+
+if (<src.qtag(q040_dragons)> == 1)
+  argo.setText(1,"Dokaz drakobijci, ze si jeho pozornost zaslouzis a dones mu hlavu Gloaty.")
+elseif (<src.qtag(q040_dragons)> == 2)
+  argo.setText(1,"Donesl jsi drakobijci hlavu Bakchora.")
+elseif (<src.qtag(q040_dragons)> == 3)
+  argo.setText(1,"Je treba porazit prvniho draka a donest drakobijci jeho jedovy vacek jako dukaz.")
+elseif (<src.qtag(q040_dragons)> == 4)
+  argo.setText(1,"Donesl jsi drakobijci jedovy vacek. Nyni mas otevrenou cestu do pevnosti.")
+elseif (<src.qtag(q040_dragons)> == 5)
+  argo.setText(1,"Zabij hnedeho draka a jako dukaz dones jeho supinu.")  
+elseif (<src.qtag(q040_dragons)> == 6)
+  argo.setText(1,"Zabil jsi hnedeho draka. Promluv si s Vartianem.")
+elseif (<src.qtag(q040_dragons)> == 7)
+  argo.setText(1,"Zabij zeleneho draka a jako dukaz dones jeho supinu.")
+elseif (<src.qtag(q040_dragons)> == 8)
+  argo.setText(1,"Zabil jsi hnedeho a zeleneho draka. Promluv si s Vartianem.")
+elseif (<src.qtag(q040_dragons)> == 9)
+  argo.setText(1,"Zabij ohniveho draka a jako dukaz dones jeho supinu.")
+elseif (<src.qtag(q040_dragons)> == 10)
+  argo.setText(1,"Zabil jsi hnedeho, zeleneho a ohniveho draka. Promluv si s Vartianem.")
+elseif (<src.qtag(q040_dragons)> == 11)
+  argo.setText(1,"Zabij ledoveho draka a jako dukaz dones jeho supinu.")
+elseif (<src.qtag(q040_dragons)> == 12)
+  argo.setText(1,"Zabil jsi hnedeho, zeleneho, ohniveho a ledoveho draka. Promluv si s Vartianem.")  
+elseif (<src.qtag(q040_dragons)> == 13)
+  argo.setText(1,"Zabij cerneho draka a jako dukaz dones jeho supinu.")   
+elseif (<src.qtag(q040_dragons)> == 14)
+  argo.setText(1,"Zabil jsi jiz pet draku vcetne cerneho. Promluv si s Vartianem.")  
+elseif (<src.qtag(q040_dragons)> == 15)
+  argo.setText(1,"Zabij bileho draka a jako dukaz dones jeho supinu.")  
+elseif (<src.qtag(q040_dragons)> == 16)
+  argo.setText(1,"Zabil jsi všech šest zakladnich druhu draku. Promluv si s Vartianem.")  
+elseif (<src.qtag(q040_dragons)> == 17)
+  argo.setText(1,"Zabij zleteho draka a jako dukaz dones jeho supinu.")  
+elseif (<src.qtag(q040_dragons)> == 18)
+  argo.setText(1,"Zabil jsi i zlateho draka – nyní jsi pravym drakobijcem. Promluv si s Vartianem.")  
+elseif (<src.qtag(q040_dragons)> == 19)
+  argo.setText(1,"Nyní te ceka nejtezsi zkouska – zabit Margutha Zapomenuteho. Nez se za nim vydas, mel by jsi mit kompletni drakobijeckou zbroj.")  
+elseif (<src.qtag(q040_dragons)> == 20)
+  argo.setText(1,"Vratil jsi drakobijcum jejich cest – zabil jsi Margutha Zapomenuteho.")  
+elseif (<src.qtag(q040_dragons)> == 50)
+  argo.setText(1,"Odmitnul jsi rict drakobijci sve jmeno. Zkus jej presvedcit...")  
+elseif (<src.qtag(q040_dragons)> == 51)
+  argo.setText(1,"Drakobijce chce, abys mu prinesl pekne propecene prasatko a <eval 2+<eval <src.tag(dragons_doorman_refuse)>>> ingoty adamantia na opravu zbrane.")  
+elseif (<src.qtag(q040_dragons)> == 100)
+  argo.setText(1,"Precetl jsi si pergamen, vzhuru za Drakobijci.")  
+elseif (<src.qtag(q040_dragons)> == 101)
+  argo.setText(1,"Splnil jsi prvni zkouzku. Promluv si s drakobijcem.")  
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+////////////////////////////////////////////
+//                                        //
+//  Spolecenstvi drakobijcu - alchymista  //
+//                                        //
+////////////////////////////////////////////
+
+[dialog d_dragons_alchymista]
+argo.setText(0,"Drakobijec Alchymista")
+argo.f_qDialogInstructions(03159)
+
+if (<src.qtag(q040_dragons_alchymista)> == 1)
+  argo.setText(1,"Alchymista ti zadal ukol – dones mu 30x Elixir leceni a osvezeni, dale 10x kazdy dalsi elixir.")
+elseif (<src.qtag(q040_dragons_alchymista)> == 2)
+  argo.setText(1,"Splnil jsi alchymistyuv ukol, nyni s nim muzes obchodovat.")
+elseif (<src.qtag(q040_dragons_alchymista)> == 100)
+  argo.setText(1,"Odmitnul jsi alchymistovi pomoci. Zkus jej presvedcit...")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+  
+/////////////////////////////////////////
+//                                     //
+//  Spolecenstvi drakobijcu - rakchin  //
+//                                     //
+/////////////////////////////////////////
+
+[dialog d_dragons_rakchin]
+argo.setText(0,"Drakobijec Rakchin")
+argo.f_qDialogInstructions(03159)
+
+if (<src.qtag(q040_dragons_rakchin)> == 1)
+  argo.setText(1,"Zabij zlateho draka a dones Rakchinovi jeho supinu.")
+elseif (<src.qtag(q040_dragons_rakchin)> == 2)
+  argo.setText(1,"Donesl jsi Rakchinovi zlatou supinu. Je ti vdecny.")
+elseif (<src.qtag(q040_dragons_alchymista)> == 5)
+  argo.setText(1,"Odmitl jsi Rakchinovi pomoci. Nechce se s tebou vice bavit.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+  
+////////////////////////////////////////
+//                                    //
+//  Spolecenstvi drakobijcu - blazen  //
+//                                    //
+////////////////////////////////////////
+
+[dialog d_dragons_blazen]
+argo.setText(0,"Blaznivy Drakobijec")
+argo.f_qDialogInstructions(03159)
+
+if (<src.qtag(q040_dragons_blazen)> == 1)
+  argo.setText(1,"Slibil jsi zmatenemu drakobijci, ze mu prineses vzorek krve Zapomenuteho, pry ma lecivou moc!")
+elseif (<src.qtag(q040_dragons_blazen)> == 2)
+  argo.setText(1,"Donesl jsi drakobijci krev Zapomenuteho. Je ti vdecny a obdrzel jsi odmenu")
+elseif (<src.qtag(q040_dragons_blazen)> == 5)
+  argo.setText(1,"Odmitl jsi blaznivemu drakobijci pomoci. Nechce se s tebou vice bavit.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+////////////////////////////////////////////////
+//                                            //
+//  Spolecenstvi drakobijcu - kovar/dratenik  //
+//                                            //
+////////////////////////////////////////////////
+
+[dialog d_dragons_kovar]
+argo.setText(0,"Drakobijci - brneni")
+argo.f_qDialogInstructions(03093)
+
+if (<src.qtag(q040_dragons_kovar)> == 1)
+  argo.setText(1,"Slibil jsi prinest hlavu Pana Strachu!")
+elseif (<src.qtag(q040_dragons_kovar)> == 2)
+  argo.setText(1,"Prinesl jsi hlavu, ted pro tebe uz neco vyrobi.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+///////////////////////////
+//                       //
+//  Prestupak - Paserak  //
+//                       //
+///////////////////////////
+
+[dialog d_prestupak]
+argo.setText(0,"Paserak")
+argo.f_qDialogInstructions(03093)
+
+if (<src.qtag(q041_paserak)> == 1)
+  argo.setText(1," Nyni musis paserakovi donest obnos 50.000 zlatych.")
+elseif (<src.qtag(q041_paserak)> == 2)
+  argo.setText(1,"Donesl jsi paserakovi 50.000. Promluv s nim.")
+elseif (<src.qtag(q041_paserak)> == 3)
+  argo.setText(1,"Rozhodl jsi se prestoupit k druhe strane. Opravdu to dukladne zvaz! Jiz nebude cesty zpet. Promluv si s paserakem.")
+elseif (<src.qtag(q041_paserak)> == 4)
+  argo.setText(1,"Paserak ti dal za ukol zabit nevinneho elfa. Najdes ho u roklinky. Zabij ho!")
+elseif (<src.qtag(q041_paserak)> == 5)
+  argo.setText(1,"Zabil jsi elfa. Vrat se za paserakem a sdel mu, ze jsi svuj ukol splnil.")
+elseif (<src.qtag(q041_paserak)> == 6)
+  argo.setText(1,"Kousek od Nurnu na poli tezce pracuje farmar Borek. Dones mu 40 mahagonovych polen a 5x elixir na osvezeni.")
+elseif (<src.qtag(q041_paserak)> == 7)
+  argo.setText(1,"Borek je ti vdecny. Prokazal jsi dobrou vuli. Nyni zajdi za paserakem.")
+elseif (<src.qtag(q041_paserak)> == 8)
+  argo.setText(1,"Prines paserakovi 100k zlatych, 10 ingotu adamantia, tezkou mahagonovou hul a jedno pecene prase")
+elseif (<src.qtag(q041_paserak)> == 9)
+  argo.setText(1,"Splnil jsi paserakovi podminky. Nyni muzes prestoupit.")
+elseif (<src.qtag(q041_paserak)> == 10)
+  argo.setText(1,"Presel jsi k druhe strane. Jiz neni cesty zpet.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+////////////////////////////
+//                        //
+//  Halda Molle Hatlend  //
+//                        //
+////////////////////////////
+
+[dialog d_hm_hatlend]
+argo.setText(0,"Hatlend")
+argo.f_qDialogInstructions(03086)
+
+if (<src.qtag(q042_hatlend_rulik)> == 1)
+ argo.setText(1,"<src.sex(Slibil,Slibila)> si, ze doneses Hatlendovi 150 kulicek ruliku.")
+elseif (<src.qtag(q042_hatlend_rulik)> == 2)
+ argo.setText(1,"<src.sex(Donesl,Donesla)> si Hatlendovi co po tobe chtel.")
+elseif (<src.qtag(q042_hatlend_rulik)> == 3)
+ argo.setText(1,"<src.sex(Odmitl,Odmitla)> si ukol od Hatlenda. Je na tebe nastvany.")
+elseif (<src.qtag(q042_hatlend_rulik)> == 4)
+ argo.setText(1,"Hatlend se zaprisahnul, ze te zabije kdyz se k nemu priblizis.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+
+///////////////////
+//               //
+//  F U N K C E  //
+//               //
+///////////////////
+
+[function f_qDialogInstructions]	//argv(0) -> ksichtik; argv(1) -> nazev gumpu; argv(2)&argv(3) -> x&y ksichtik position
+SetLocation(5,5)
+page 0
+resizepic(20,20,2620,400,202)
+if (argvcount > 1)
+  text(195,40,32,<eval argv(1)>)  // nazev gumpu
+else
+  text(195,40,32,0)  // nazev gumpu
+endif
+gumppic(25,30,03182)		// podklad pod ksichtiky	
+if (argvcount > 2)
+  gumppic(<argv(2)>,<argv(3)>,<argv(0)>)	// ksichtik (03000-03164)
+else
+  gumppic(36,37,<argv(0)>)	// ksichtik (03000-03164)
+endif
+button(384,187,9906,9908,1,0,1)	// vraci zpet do zakladni nabidky
+
+
+[function f_questMenu_getName]
+return<argv(0)?>
+
+[function f_questMenu_getDialog]
+return<argv(1)>
+
+[function f_questMenu_hasRelevantTag]
+arg(tagCount,<argvcount>-3)
+arg(tagNumber,3)
+arg(cycleArg,0)
+if (<argv(2)>)
+  while (<cycleArg> < <tagCount>)
+    if (0<src.qtag(<argv(<tagNumber>)>)> !=0)
+      return 1
+    else
+      arg(tagNumber,#+1)
+      arg(cycleArg,#+1)
+    endif
+  endwhile
+else
+  while (<cycleArg> < <tagCount>)
+    if (0<src.tag(<argv(<tagNumber>)>)> !=0)
+      return 1
+    else
+      arg(tagNumber,#+1)
+      arg(cycleArg,#+1)
+    endif
+  endwhile
+endif
+return 0
+
+[function f_questMenu_reportQuest]
+arg(relevantDialogName,<f_questMenu_getDialog(<questMenu[<argv(0)>]>)>)
+sfx(513)
+dialog(d_questMenu_reportDialog,<arg(relevantDialogName)>)
+
+[dialog d_questMenu_reportDialog]
+argo.NoMove=1
+argo.NoClose=1
+argo.SetLocation=5,30
+argo.tag(relevantQuestDialog,<argv(0)>)
+button(0,0,01e,01e,1,0,1) // otevre dialog prislusneho questu
+//argo.tilepichue(11,70,<hcn_clueIconA[<eval more2>]>)
+
+[dialog d_questMenu_reportDialog button]
+on=1 // open quest dialog
+dialog(<argo.tag(relevantQuestDialog)>)
+
+[eof]

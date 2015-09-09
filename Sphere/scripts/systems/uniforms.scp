@@ -1,0 +1,564 @@
+
+
+//uniformovaci event
+[itemdef i_uni_cloak]
+id=i_cape
+
+on=@create
+events +t_uniform
+tag(uni_layer[1],"13,isplate,2,Blue torso")
+tag(uni_layer[2],"24,isplate,2,Blue legs")
+tag(uni_needed,2)
+//		layernumber,podminka,barva,jmeno
+
+[itemdef i_uni_hat]
+id=i_hat_floppy
+
+on=@create
+events +t_uniform
+tag(uni_layer[1],"1,isweapon,1,Black Blade")
+tag(uni_layer[2],"2,isshield,1,Black Shield")
+tag(uni_layer[3],"24,isplate,1,Black legs")
+tag(uni_layer[4],"25,type==t_eq_horse,1,blank")
+tag(uni_needed,2)
+
+[typedef t_uniform]
+on=@equip
+cont.f_uniformRealm_ColorAllLayers(0)
+src.events +e_uniform
+if (f_uniform_mainequip)
+ src.tag.uniform=<eval src.tag.uniform+1>
+endif
+return 0
+
+on=@unequip
+cont.newitemsafe(i_uni_unequiptimer)
+lastnew.timerd=1
+lastnew.link=<cont>
+lastnew.attr=attr_invis
+lastnew.p=<cont.p>
+src.tag.uniform=<src.tag.uniform-1>
+if (<eval src.tag.uniform><1)
+ src.events -e_uniform
+ src.tag.uniform=""
+endif
+return 0
+
+[function f_uniform_mainequip]
+arg(checkeditems,0)
+arg(u,0)
+while (arg(u)<tag(getcount))
+ arg(tagname,<tag(enum,<arg(u)>)>)
+ if !(strcmpi(<strmid(<arg(tagname)>,0,10)>,uni_layer_))
+  if (f_uniform_check(<tag.<arg(tagname)>>))
+   arg(itemlayer[<arg(checkeditems)>],<?tag.<arg(tagname)>?>)
+   arg(checkeditems,#+1)
+  endif
+ endif 
+ arg(u,#+1)
+endwhile
+if (tag(uni_needed)>arg(checkeditems))
+ return 0
+else
+ src.tag(hasuniform,1)
+endif
+arg(u,0)
+while (arg(u)<arg(checkeditems))
+ src.findlayer(<eval arg(itemlayer[<arg(u)>])>).f_uniform_equip(<arg(itemlayer[<arg(u)>])>)
+ arg(u,#+1)
+endwhile
+return 1
+
+[events e_uniform]
+on=@itemequip
+if ((act.typedef.dispid == i_rune_poison)||(act.typedef.dispid == i_rune_poison_field)||(act.typedef.dispid == 020A6)) // dispid i_rune_poison_field is for dragon events, nemazat prosim :P
+elseif (act.typedef.layer<30)
+ newitemsafe(i_uni_unequiptimer)
+ lastnew.timerd=1
+ lastnew.link=<uid>
+ lastnew.attr=attr_invis
+ lastnew.p=<p>
+endif
+
+[function f_uniform_check]
+//<argv(0)>	layer
+//<argv(1)>	podminka
+//<argv(2)>	color
+//<argv(3)>	name
+//<argv(4)>	dispid
+//src.say 0:<argv(0)> 1:<argv(1)> 2:<argv(2)> 3:<argv(3)> 4:<argv(4)>
+if (src.findlayer(<argv(0)>))
+ if (src.findlayer(<argv(0)>).<argv(1)>)
+  return 1
+ endif
+endif
+return 0
+
+[typedef t_uniform_item]
+on=@unequip
+if (layer==25)
+ //src.say unequipping <name>
+else
+ f_uniform_restoreitem
+endif
+topobj.tag.remove(hasuniform)
+cont.newitemsafe(i_uni_unequiptimer)
+lastnew.timerd=1
+lastnew.link=<cont>
+lastnew.attr=attr_invis
+lastnew.p=<cont.p>
+return 0
+
+[itemdef i_uni_unequiptimer]
+id=i_memory
+type=t_eq_script
+name=uniunequip
+
+on=@timer
+src=<link>
+link.eqlayers(f_uniform_restoreitem)
+link.eqlayers(f_uniform_maincheck)
+remove
+return 1
+
+[function f_uniform_maincheck]
+if (isevent(t_uniform))
+ f_uniform_mainequip
+endif
+
+[function f_uniform_equip]
+//src.say 0:<argv(0)> 1:<argv(1)> 2:<argv(2)> 3:<argv(3)> 4:<argv(4)>
+if (<argv(2)>)
+ if !(strlen(<tag.uni_storecolor>))
+  tag.uni_storecolor=<color>
+ endif
+ color=<argv(2)>
+ events +t_uniform_item
+endif
+if (strcmpi("<argv(3)>",blank))&&(strlen(<argv(3)>))
+ if !(strlen(<tag.uni_storename>))
+  tag.uni_storename="<name>"
+ endif
+ name="<argv(3)>"
+ events +t_uniform_item 
+endif
+if (<argv(4)>)
+ if !(strlen(<tag.uni_storedispid>))
+  tag.uni_storedispid=<dispid>
+ endif
+ dispid=<argv(4)>
+ events +t_uniform_item
+endif
+updatex
+return 0
+
+[function f_uniform_restoreitem]
+if (isevent(t_uniform_item))
+ events -t_uniform_item
+ if (strlen(<tag.uni_storecolor>))
+  color=<tag.uni_storecolor>
+  tag.remove(uni_storecolor)
+ endif
+ if (strlen(<tag.uni_storename>))
+  name="<tag.uni_storename>"
+  tag.remove(uni_storename)
+ endif
+  if (strlen(<tag.uni_storedispid>))
+  dispid=<tag.uni_storedispid>
+  tag.remove(uni_storedispid)
+ endif
+ topobj.tag.remove(hasuniform)
+endif
+updatex
+return 0
+
+[function hasuniform]
+if(tag(hasuniform))
+ return 1
+else
+ return 0
+endif
+
+////////////////////////////////////////////////////////
+///////         R E A L M   U N I F O R M S      ///////
+///////              (c) Sir Glorg               ///////        
+////////////////////////////////////////////////////////
+
+[function uniform]
+if (isEvent(e_uniform_realm))
+  if (<eval uniformTag(nextUniformSwitch)> < <serv.time>)
+    if (<eval uniformTag(deniedUniform)>)
+      uniformTag(deniedUniform,0)
+      uniformTag(nextUniformSwitch,<serv.time>+10*60*5)
+      classMessage("Zobrazeni realmove uniformy bylo zapnuto.")f_uniformRealm_check
+      if (<uniformTag(hasAllRequirements)>)
+        f_uniformRealm_ColorAllLayers(1)	//adds colors to all equipped items
+      endif
+    else
+      uniformTag(deniedUniform,1)
+      uniformTag(nextUniformSwitch,<serv.time>+10*60*5)
+      classMessage("Zobrazeni realmove uniformy bylo vypnuto.")
+      f_uniformRealm_ColorAllLayers(0) //removes collors from all layers
+    endif
+  else
+    redMessage("Zobrazeni uniformy lze prepnout nejdrive po 5ti minutach!")
+  endif
+else
+  redMessage("Tato postava nema aktivovanou realmovou uniformu.")
+endif
+
+[function adminunif]
+f_uniformRealm_ensureStone
+var(uniformRealm_memoryStone).dialog(d_uniform_realm_info,0)
+
+[dialog d_uniform_realm_info]
+argo.setLocation=25,5
+
+arg(rows,15)
+argo.tag(sirka,735)
+argo.tag(vyska,90+(<arg(rows)>*<d_def_radek_vyska>))
+argo.tag(thisPage,<eval argv(0)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,45,180,130,175)
+argo.dialog_pozadi(<argo.tag(nexty)>,<arg(rows)>,45,180,130,175)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Seznam placenych uniforem")
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Num:")
+argo.texta(<argo.dialog_textpos(1,1)>,<d_def_writecolor>,"Postava:")
+argo.texta(<argo.dialog_textpos(1,2)>,<d_def_writecolor>,"Account:")
+argo.texta(<argo.dialog_textpos(1,3)>,<d_def_writecolor>,"Platnost do:")
+argo.texta(<argo.dialog_textpos(1,4)>,<d_def_writecolor>,"Editoval:")
+
+argo.dialog_textpos(2,0)
+arg(i,0)
+while (<eval tag(uniformedPlayers)> > <eval <arg(i)>+<eval argv(0)*<arg(rows)>>>) && (<arg(i)> < <arg(rows)>)
+  argo.texta(lastxpos,lastypos+(arg(i)*d_def_radek_vyska),<d_def_readcolor>,"<?eval ((argv(0)*<arg(rows)>)+arg(i))+1?>")
+  argo.texta(lastxpos+50,lastypos+(arg(i)*d_def_radek_vyska),<d_def_readcolor>,"<?tag(player[<eval (argv(0)*<arg(rows)>)+arg(i)>]).name?>")
+  argo.button(lastxpos+195,lastypos+(arg(i)*d_def_radek_vyska),0fa5,0fa7,1,0,100+<eval <arg(i)>+<eval argv(0)*<arg(rows)>>>)
+  argo.texta(lastxpos+234,lastypos+(arg(i)*d_def_radek_vyska),<d_def_readcolor>,"<?tag(player[<eval (argv(0)*<arg(rows)>)+arg(i)>]).account.name?>")
+  argo.texta(lastxpos+365,lastypos+(arg(i)*d_def_radek_vyska),<d_def_readcolor>,"<?timeMonthLater(<tag(player[<eval (argv(0)*<arg(rows)>)+arg(i)>]).uniformTag(expireDate)>)?>")
+  safe.argo.texta(lastxpos+542,lastypos+(arg(i)*d_def_radek_vyska),<d_def_readcolor>,"<?finduid(<tag(player[<eval (argv(0)*<arg(rows)>)+arg(i)>]).uniformTag(lastEditor)>).name?>")
+  arg(i,#+1)
+endwhile
+if (<argo.tag(thisPage)>)
+  argo.button(<argo.tag(sirka)>-30,39,0983,0984,1,0,1) //previous page
+endif
+if (<tag(uniformedPlayers)> > <eval <arg(i)>+<eval argv(0)*<arg(rows)>>>)
+  argo.button(<argo.tag(sirka)>-30,lastypos+((<arg(rows)>+1)*d_def_radek_vyska)-13,0985,0986,1,0,2)
+endif
+
+[dialog d_uniform_realm_info button]
+on=1 // previous page
+dialog(d_uniform_realm_info,<argo.tag(thisPage)>-1)
+
+on=2 // next page
+dialog(d_uniform_realm_info,<argo.tag(thisPage)>+1)
+
+on=@anybutton
+tag(player[<eval ((<argo.tag(thisPage)>*<arg(rows)>)+argn)-100>]).info
+
+[dialog d_uniform_realm]
+argo.SetLocation=225,5
+
+argo.tag(sirka,362)
+argo.tag(vyska,152)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,4,135,199)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Nastaveni placenych uniforem")
+
+argo.dialog_textpos(1,0)
+
+argo.texta(lastxpos,lastypos+(0*<d_def_radek_vyska>),<d_def_writecolor>,"Platnost do:")
+argo.texta(lastxpos,lastypos+(1*<d_def_radek_vyska>),<d_def_writecolor>,"Pridat mesice:")
+argo.texta(lastxpos,lastypos+(2*<d_def_radek_vyska>),<d_def_writecolor>,"Zrusit platnost:")
+argo.texta(lastxpos,lastypos+(3*<d_def_radek_vyska>),<d_def_writecolor>,"Kontrola tagu:")
+argo.dialog_textpos(1,1)
+if !(<f_uniformRealm_checkValidity>)
+  argo.texta(lastxpos,lastypos+(0*<d_def_radek_vyska>),<d_def_readcolor>,"- uniforma neni aktivni -")
+else
+  argo.texta(lastxpos,lastypos+(0*<d_def_radek_vyska>),<d_def_readcolor>,"<?timeMonthLater(<uniformTag(expireDate)>)?>")
+endif
+argo.settext(1001,"0")
+argo.textentry(lastxpos,lastypos+(1*<d_def_radek_vyska>),198,<d_def_radek_vyska>,52,1,1001)
+argo.button(lastxpos,lastypos+(2*<d_def_radek_vyska>),0fb4,0fb6,1,0,2)	// remove event
+argo.button(lastxpos,lastypos+(3*<d_def_radek_vyska>),0fb4,0fb6,1,0,3)	// show tags
+
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_uniform_realm button]
+on=0
+src.sysMessage("Nastaveni stornovano")
+
+on=1
+if (<eval <argTxt(1)>> != 0)
+  if (<f_uniformRealm_checkValidity>)
+    f_uniformRealm_updateDate(<argTxt(1)>,<src>)
+  else
+    f_uniformRealm_set(<argTxt(1)>,<src>)
+  endif
+  dialog(d_uniform_realm)
+endif
+
+on=2
+if (<findid(i_uniformTag_rune)>)
+  f_uniformRealm_removeEvent
+endif
+dialog(d_uniform_realm)
+
+on=3
+uniformTagShow
+dialog(d_uniform_realm)
+
+
+[events e_uniform_realm]
+on=@itemEquip
+if (isevent(e_uniform))
+  return 0
+endif
+if (<eval tag.skillrank> < 3) //player has to be at least VM
+  return 0
+endif
+if (f_player_canEquip(<act>)) //if player can not equip this item, it should not be processed
+  arg(itemLayer,<act.typedef.layer>)
+  if (<f_uniformIsRelevantLayer(<arg(itemLayer)>)>)	//this item should be considered as a part of an uniform
+    if !(<f_uniformRealm_checkValidity>)
+      return 0
+    endif
+    if (<act.typedef.tdata1> > 4) || (<act.dispid> == i_cape) || (<act.dispID> == 01530) || (<act.dispID> == i_sash) || (<act.dispID> == 01542)	// verite+, cape or sash
+      uniformTag(equipedItem[<eval arg(itemLayer)>],<act>)
+      if (<uniformTag(hasAllRequirements)>)
+        if !(<eval uniformTag(deniedUniform)>) //uniform will be colored only if the uniformDenied tag is not set so players can control wheather they will wear their uniform or not
+          act.f_uniformRealm_giveColor(<tag(realm)>)
+        endif
+      else
+        f_uniformRealm_check
+        if (<uniformTag(hasAllRequirements)>)
+          f_uniformRealm_ColorAllLayers(1)	//adds colors to all equipped items
+        endif
+      endif
+    endif
+  endif
+endif
+
+on=@itemUnequip
+arg(itemLayer,<act.typedef.layer>)
+if (<f_uniformIsRelevantLayer(<arg(itemLayer)>)>)
+  act.f_uniformRealm_removeColor(<tag(realm)>)
+  uniformTagRemove(equipedItem[<eval arg(itemLayer)>])
+  f_uniformRealm_check
+  if !(<uniformTag(hasAllRequirements)>)
+    f_uniformRealm_ColorAllLayers(0)	//removes colors from all equipped items
+  endif
+endif
+
+[function f_uniformIsRelevantLayer]
+if (<argv(0)> == 4)
+elseif (<argv(0)> == 6)
+elseif (<argv(0)> == 7)
+elseif (<argv(0)> == 10)
+elseif (<argv(0)> == 13)
+elseif (<argv(0)> == 17)
+elseif (<argv(0)> == 19)
+elseif (<argv(0)> == 20)
+else
+  return 0
+endif
+return 1
+
+[function f_uniformRealm_set]	//argv(0) - months
+events=+e_uniform_realm
+uniformTag(expireDate,"<XMonthsLater(<argv(0)>)>")
+uniformTag(lastEditor,<argv(1)>)
+f_uniformRealm_ensureStone
+uniformTag(uniformNumber,<var(uniformRealm_memoryStone).tag(uniformedPlayers)>)
+var(uniformRealm_memoryStone).tag(player[<eval var(uniformRealm_memoryStone).tag(uniformedPlayers)>],<uid>)
+var(uniformRealm_memoryStone).tag(uniformedPlayers,#+1)
+
+[function f_uniformRealm_ensureStone]
+if !(<strlen(<var(uniformRealm_memoryStone)>)>)
+  newitem(i_grave_stone_5)
+  lastnew.type=t_normal
+  lastnew.p(5918,109,10)
+  lastnew.tag(uniformedPlayers,0)
+  var(uniformRealm_memoryStone,<lastnew>)
+endif
+
+[function f_uniformRealm_updateDate]
+uniformTag(expireDate,"<XMonthsLaterFrom(<argv(0)>,<uniformTag(expireDate)>)>")
+uniformTag(lastEditor,<argv(1)>)
+
+[function f_uniformRealm_check]
+//layers:
+//legs 4	//gloves 7	//chest 13	//arms 19	//cape 20
+//optional parts: -> these can be switched to hats or necklaces
+//helm 6	//gorget 10	//sash 17
+if (<uniformTag(equipedItem[4])>) && (<uniformTag(equipedItem[7])>) && (<uniformTag(equipedItem[13])>) && (<uniformTag(equipedItem[19])>) && (<uniformTag(equipedItem[20])>)
+  uniformTag(hasAllRequirements,1)
+else
+  uniformTag(hasAllRequirements,0)
+endif
+
+[function f_uniformRealm_checkValidity]
+if !(<findID(i_uniformTag_rune)>)
+  return 0
+elseif !(strlen(<uniformTag(expireDate)>)) || (<isMonthLater(<uniformTag(expireDate)>)>)
+  f_uniformRealm_removeEvent
+  return 0
+else
+  return 1
+endif
+
+[function f_uniformRealm_removeEvent]
+f_uniformRealm_ColorAllLayers(0)   //removes colors from all equipped items
+f_uniformRealm_ensureStone
+var(uniformRealm_memoryStone).tag.remove(player[<eval uniformTag(uniformNumber)>])
+arg(i,<uniformTag(uniformNumber)>+1)
+while (<arg(i)> < <var(uniformRealm_memoryStone).tag(uniformedPlayers)>)
+  var(uniformRealm_memoryStone).tag(player[<eval arg(i)>]).uniformTag(uniformNumber,<var(uniformRealm_memoryStone).tag(player[<eval arg(i)>]).uniformTag(uniformNumber)>-1)
+  var(uniformRealm_memoryStone).tag(player[<eval arg(i)-1>],<var(uniformRealm_memoryStone).tag(player[<eval arg(i)>])>)
+  arg(i,#+1)
+endwhile
+var(uniformRealm_memoryStone).tag.remove(player[<eval arg(i)-1>])
+var(uniformRealm_memoryStone).tag(uniformedPlayers,#-1)
+findid(i_uniformTag_rune).remove
+events=-e_uniform_realm
+
+[function f_uniformRealm_ColorAllLayers]
+arg(myItem[0],<uniformTag(equipedItem[4])>)    //legs
+arg(myItem[1],<uniformTag(equipedItem[6])>)    //helm
+arg(myItem[2],<uniformTag(equipedItem[7])>)    //gloves
+arg(myItem[3],<uniformTag(equipedItem[10])>)   //gorget
+arg(myItem[4],<uniformTag(equipedItem[13])>)   //chest
+arg(myItem[5],<uniformTag(equipedItem[17])>)   //sash
+arg(myItem[6],<uniformTag(equipedItem[19])>)   //arms
+arg(myItem[7],<uniformTag(equipedItem[20])>)   //cape
+arg(i,0)
+if (<argv(0)>)
+  if !(<eval uniformTag(deniedUniform)>) //uniform will be colored only if the uniformDenied tag is not set so players can control wheather they will wear their uniform or not
+	  while (arg(i) < 8)
+	    if (<strlen(<arg(myItem[<eval arg(i)>])>)>)
+        arg(myItem[<eval arg(i)>]).f_uniformRealm_giveColor(<tag(realm)>)
+      endif
+      arg(i,#+1)
+    endwhile
+  endif
+else
+	while (arg(i) < 8)
+	  if (<strlen(<arg(myItem[<eval arg(i)>])>)>)
+      arg(myItem[<eval arg(i)>]).f_uniformRealm_removeColor
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+[function f_uniformRealm_giveColor]
+if (<argv(0)> > 0)
+  if !(<strlen(<tag(uniformRealm_origColor)>)>)
+    tag(uniformRealm_origColor,<color>)
+  endif
+  if !(<strlen(<tag(uniformRealm_origName)>)>)
+    tag(uniformRealm_origName,<name>)
+  endif
+  name=<qval(argv(0)==1,"Gondorska Uniforma","Mordorska Uniforma")>
+  if (typedef.layer == 20) || (typedef.layer == 17) //cape and sash has different color
+    color=d_uniformRealm_clothes[<argv(0)>]
+    tag(denyScissoring,1)
+    tag(denyDye,1)
+  else
+    color=d_uniformRealm_armor[<argv(0)>]
+  endif
+  update
+  return 1
+endif
+return 0
+
+[function f_uniformRealm_removeColor]
+if (<strlen(<tag(uniformRealm_origColor)>)>)
+  color=<tag(uniformRealm_origColor)>
+  tag.remove(uniformRealm_origColor)
+endif
+if (<strlen(<tag(uniformRealm_origName)>)>)
+  name=<tag(uniformRealm_origName)>
+  tag.remove(uniformRealm_origName)
+endif
+tag.remove(denyScissoring)
+tag.remove(denyDye)
+update
+
+[defnames d_uniformRealm_colors]
+//gondor
+d_uniformRealm_armor[1]    057C
+d_uniformRealm_clothes[1]  098F
+//mordor
+d_uniformRealm_armor[2]    05EB
+d_uniformRealm_clothes[2]  0993
+
+
+
+/////// U N I F O R M   T A G S ///////
+
+[function uniformTag]
+arg(MyUniformRune,<findid(i_uniformTag_rune)>)
+if !(ischar)
+  return""
+endif
+if (<argvcount> == 2)
+  if !(<strlen(<arg(MyUniformRune)>)>) // postava jeste nema uniformTag runu
+    newequip(i_uniformTag_rune)
+    arg(MyUniformRune,<lastnew>)
+  endif
+  MyUniformRune.tag(<argv(0)>,"<argv(1)>")
+  return""
+elseif (<argvcount> == 1)
+  if !(<findid(i_uniformTag_rune)>)
+    return""
+  endif
+  if (strlen(<MyUniformRune.tag(<argv(0)>)>))
+    return<MyUniformRune.tag(<argv(0)>)>
+  else
+    return""
+  endif
+endif
+RedMessage("spatny pocet argumentu")
+Return""
+
+[function uniformTagRemove]
+arg(MyUniformRune,<findid(i_uniformTag_rune)>)
+if (<strlen(<arg(MyUniformRune)>)>)
+  MyUniformRune.tag.remove.(<argv(0)>)
+  return 1
+endif
+return 0
+
+[function uniformTagShow]
+if (<argvcount> == 0)
+  findid(i_uniformTag_rune).tag(dump)
+else
+  Src.SysMessage("Hodnota uniform tagu -<argv(0)>- :")
+  arg(tag_value,"<qtag(<argv(0)>)>")
+  if !(strcmpi(<tag_value>,00))
+    Src.RedMessage("Tag je nulovy.")
+  else
+    Src.RedMessage("<tag_value>")
+  endif
+endif
+
+[itemdef i_uniformTag_rune]
+id=i_rune_marker
+name=Runa na uniform tagy
+type=t_eq_script
+
+on=@create
+attr=094 // invis, nb, nevermove
+color=0989
+[eof]

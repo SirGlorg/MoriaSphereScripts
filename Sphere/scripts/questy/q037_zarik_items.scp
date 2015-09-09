@@ -1,0 +1,73 @@
+//////////
+// mrtvola Berta
+/////
+
+[ITEMDEF i_q037_zarik_bert]
+ID=03D67
+NAME=Mrtvy Bert
+TYPE=t_normal
+
+on=@create
+attr=attr_move_never
+color=00
+
+on=@userdclick
+if (<src.qtag(q037_zarik)> == 2)
+  src.qtag(q037_zarik,3,43)
+  src.sysmessage("Bert si Zarikovych kalhot prilis neuzil. Snad te s nimi nepotka stejny osud. ")
+  src.sysmessage("Sebral jsi podivne zapachajici a na urcitych mistech mokre kalhoty.")
+else 
+  src.sysmessage("Uplne obrana mrtvola nejakeho chlapa. Tady uz nic uzitecneho nenajdes. Nevyplati se zahravat si s piraty...")
+endif
+return 1
+
+//////////
+// truhla so satkom
+/////
+
+[ITEMDEF i_q037_zarik_satek]
+ID=0E7C
+NAME=Zakrvavena Truhla
+TYPE=t_normal
+
+on=@create
+attr=attr_move_never
+color=098C
+
+on=@userdclick
+if (<src.qtag(q037_zarik)> == 7)
+  src.qtag(q037_zarik,8,43)
+  src.newitem(i_mi_bag).bounce
+  src.sysmessage("Sebral jsi zakrvavenej satek z truhlice, s nim z nej vypadlo este nieco dalsie.")
+else 
+  src.sysmessage("Hm, tuto truhlicu uz niekto pred tebou vybral")
+endif
+return 1
+
+//////////
+// collector na podpazusne chlpy strazce - skleena je magor...
+/////
+
+[ITEMDEF i_q037_zarik_collector_strazce]
+ID=i_bag
+NAME=Vacek na chlupy z podpazdi Strazcu
+TYPE=t_collector
+WEIGHT=4
+
+on=@create
+color=025
+attr=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="chlupu Strazcu"
+tag.contentsamount=0
+tag.maxcontents=4
+tag.target_remove=1
+tag.target_desc="Kteremu strazci vytrhnes chlupy? "
+tag.target_id="Body of Strazce"
+tag.absolute_success=100
+tag.value_to_check=60
+tag.color=098C
+tag.contentscount=0
+tag.fail_msg="Tento si ich asi holil alebo co..."
+
+ON=@CollectorCheck

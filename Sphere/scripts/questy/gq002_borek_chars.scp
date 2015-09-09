@@ -1,0 +1,90 @@
+/////NPC Borek Gondor
+
+[chardef c_gq002_borek]
+id=c_man
+name=Borek
+
+TEVENTS=e_character
+TSPEECH=spk_gq002_borek
+
+CATEGORY=Moria Questy
+SUBSECTION=gq002 - Borek
+DESCRIPTION=Borek
+
+on=@UserDclick
+f_qDClick(f_gq002_Borek_DClick)
+
+on=@create
+NPC=brain_human
+COLOR=color_clovek
+STR=1000
+DEX=1000
+INT=1000
+Title=Chudy zemedelec
+
+tag(noanimate,1)
+
+ITEMnewbie=i_hair_afro
+color=047d
+ITEMnewbie=i_beard_mustache
+color=073e
+ITEMnewbie=i_shirt_plain
+color=05df
+ITEMnewbie=i_pants_short
+color=05f5
+
+
+
+///// NPC kovar Gondor
+
+[CHARDEF c_gq002_kovar]
+NAME=Kovar Gorug
+ID=C_MAN
+
+TSPEECH=spk_gq002_kovar//,spk_q1_kovar
+// Pro kvest transport prodat dalsi speech
+//TSPEECH=spk_q22_kovar,spk_gq002_kovar 
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+TITLE=Kovar
+
+COOKING={55.0 78.0}
+TasteID={50.0 70.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@UserDClick
+f_qDClick(f_gq002_Kovar_DClick)
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=i_apron_half
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+////BUY=VENDOR_B_FARMER
+
+
+CATEGORY=Moria Questy
+SUBSECTION=gq002 - Borek
+DESCRIPTION=Kovar
+
+[eof]

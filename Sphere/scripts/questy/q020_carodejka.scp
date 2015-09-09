@@ -1,0 +1,388 @@
+[function f_q020_checkOldTags]
+if (src.tag(q20)==1)
+  src.tag.remove(q20)
+  src.qtag(q020,1)
+elseif (src.tag(q20)==2)
+  src.tag.remove(q20)
+  src.qtag(q020,2)
+elseif (src.tag(q20)==3)
+  src.tag.remove(q20)
+  src.qtag(q020,3)
+elseif (src.tag(q20)==4)
+  src.tag.remove(q20)
+  src.qtag(q020,4)
+elseif (src.tag(q20)==5)
+  src.tag.remove(q20)
+  src.qtag(q020,5)
+elseif (src.tag(q20)==6)
+  src.tag.remove(q20)
+  src.qtag(q020,6)
+elseif (src.tag(q20)==7)
+  src.tag.remove(q20)
+  src.qtag(q020,7)
+elseif (src.tag(q20)==8)
+  src.tag.remove(q20)
+  src.qtag(q020,8)
+elseif (src.tag(q20)==9)
+  src.tag.remove(q20)
+  src.qtag(q020,9)
+elseif (src.tag(q20)==10)
+  src.tag.remove(q20)
+  src.qtag(q020,10)
+elseif (src.tag(q20)==11)
+  src.tag.remove(q20)
+  src.qtag(q020,11)
+endif
+
+
+//////////////////////////////////////////////////
+/////Dialog bard
+[speech spk_q020_bard]
+on=*carodejka*
+on=*carodejce*
+if (src.targ.distance > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou bard jednat nebude")
+else
+  f_q020_Bard
+endif
+
+[function f_q020_Bard]
+f_q020_checkOldTags
+Dialog(d_q020_Bard)
+
+[dialog d_q020_Bard]
+argo.questDialog_create(03102,<?name?>)
+
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1)
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,Copak te privadi? Chces si poslechnout nejake pribehy? O kom chces vypravet?)
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"O Carodejce.")
+  argo.questDialog_addResponse(0,0,1,"O Carodejce.",0)
+  argo.f_q000_shouldBePromoted_Request
+    
+argo.dialog_page("Kdo jsi?")
+  argo.setText(argo.newTextLine,"Jsem <?name?>")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("O Carodejce.")
+  if (src.qtag(q020)>=1)
+    argo.setText(argo.newTextLine,"Jiste znal jsem jednu velice mocnou carodejku. Ale jeji pribeh jsem ti jiz preci vypravel.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Prosim, rekni mi ho znovu.")
+    argo.questDialog_addResponse(0,0,1,"Pokracuj1",0)
+  else
+    argo.setText(argo.newTextLine,"Jiste znal jsem jednu velice mocnou carodejku. Reknu ti jeji pribeh. Ale pohodlne se usad, bude to na dlouhe vypraveni...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Jiste pokracuj, <?src.sex(rad,rada)?> si to poslechnu.")
+    argo.questDialog_addResponse(0,0,1,"Pokracuj1",0)
+  endif
+  
+argo.dialog_page("Pokracuj1")
+  argo.setText(argo.newTextLine,"*Bard se na tebe zahledel a pak se usmal* Reknu ti co mi kdysi, kdyz jsem byl jeste maly chlapec vypravela moje babicka. Byla pry tehdy jeste male devcatko, ale ty udalosti se ji vryly hluboko do pameti. Ve vsi zila mlada zena, jmenem Roxana, byla to mila zena, pomahala s lecenim. Jenze byla posedla touhou po moci. Stale michala vselijake lektvary, delala pokusy, pri kterych tuhla krev v zilach. Mela sestru, krasnou Kiaru. I ona se zajimala o magii, ale ne tak vasnive jako Roxana. Pri jednom nepovedenem pokusu Kiara zemrela. Roxana se ji snazila ze vsech sil privest k zivotu, zkousela vse co znala a nakonec, kdyz nic z toho nezabralo, i stare napul zapomenute postupy ktere vycetla z knih po svem otci. Avsak udelala chybu. Nashromazdena energie ktera mela Kiaru privest k zivotu se vymkla kontrole a promenila jejich dum v ohnive peklo. Roxana se stihla kryt ochrannym zaklinadlem a prave v okamziku kdy vyklopytala z horiciho domu otrasla Dollinorem exploze ...")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"Neprestavej...")
+  argo.questDialog_addResponse(0,0,1,"Pokracuj2",0)
+
+argo.dialog_page("Pokracuj2")
+  argo.setText(argo.newTextLine,"*odkaslal si*...exploze ktera rozmetala dum carodejek na kusy. Roxanu se podarilo z trosek domu zachranit, mela vsak do masa spalenou pulku obliceje a obe ruce. Mnoho tydnu se zotavovala ze zraneni a tezkeho soku. Jiz nevychazela ven, odmitala pomahat lidem... Mozna proto, ze ohen znetvoil jeji oblicej, nebo uz nevidela smysl sve pomoci. Mestem se postupne zacinaly sirit klepy. Kdyz se Roxana dozvedela, ze si lide, kterym pomahala mysli, ze umyslne zabila svoji sestru vse se zmenilo. Sbalila si veci a bez jedineho slova odesla na zapad. Ve meste se jiz nikdy neukazala. Obcas ji zahledli lovci pred Temnym Hvozdem, jak sbira byliny, ale vzdy nez se k ni stihli priblizit, zmizela jim mezi stromy a do Lesa se nikdo z nich neodvazil. *Bard se na chvili odmlcel s pohledem uprenym do prachu cesty*...")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"Eeehm...")
+  argo.questDialog_addResponse(0,0,1,"Pokracuj3",0)
+  
+argo.dialog_page("Pokracuj3")
+  argo.setText(argo.newTextLine,"*Kdyz ses netrpelive pohnul, zvedl zrak a usmal se*... Pokud Roxana jeste porad zije, bude jiz velmi, velmi stara. I na carodejku. Muze tak stara zena prezit v tak nehostinnem miste, jako je Temny Hvozd? Kdo vi? To uz se asi nedozvime. *Podival se na tebe Bard smutne*")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"*Rozloucit se a odejit*")
+  argo.questDialog_addResponse(0,1,1,"Konec",0)
+
+argo.f_q000_shouldBePromoted_Answer
+
+[dialog d_q020_Bard button]
+on=@AnyButton
+if(<argn> == argo.dialog_linkButton("Konec"))
+  if (src.qtag(q020)<=1)
+    src.qtag(q020,1,19)
+  endif
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+
+//////////////////////////////////////////////////
+/////Dialog Roxana
+
+[function f_q020_roxana]
+f_q020_checkOldTags
+Dialog(d_q020_roxana)
+
+[speech spk_q020_roxana]
+on=*zdravim*
+on=*hi*
+on=*dobry*
+on=*den*
+on=*ahoj*
+if (src.targ.distance>3)
+  src.sysMessage("Na takovou vzdalenost s tebou carodejnice jednat nebude")
+else
+  f_q020_roxana
+endif
+
+[dialog d_q020_roxana]
+argo.questDialog_create(03121,"Carodejnice Roxana")
+
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+argo.setText(argo.newTextLine,"Co chces?! Proc lezes do meho lesa?")
+argo.questDialog_HTMLGUMP
+
+if (<eval src.qtag(q020)>==1)
+  argo.setText(argo.newTextLine,"Bard mi o vas vypravel. A ja hledam nejakou praci.")
+  argo.questDialog_addResponse(0,0,1,"Q020_Zadani")
+endif
+
+if ((<eval src.qtag(q022)>==9)&&(!(src.findid.i_q022_koreni)))
+  argo.setText(argo.newTextLine,"Jindra Jecminek me posila pro koreni, ktere ma objednane.")
+  argo.questDialog_addResponse(0,0,1,"Q022_Koreni")
+endif
+
+argo.dialog_page("Kdo jsi?")
+  argo.setText(argo.newTextLine,"Me jmeno je Roxana. Jsem carodejnice.")
+  argo.questDialog_HTMLGUMP
+  argo.f_q026_hcnPoison_Roxana_Request
+  argo.f_q000_shouldBePromoted_Request
+
+argo.dialog_page("Mohu pomoci?")
+  if ((<eval src.qtag(q020)>==2)||(<eval src.qtag(q020)>==3)||(<eval src.qtag(q020)>==5))
+    argo.setText(argo.newTextLine,"Muzes, kdyz mi prineses to co sem chtela!")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q020)>==4)
+    argo.setText(argo.newTextLine,"Muzes pomoct jestli jsi <?src.sex(pripraven,pripravena)?> na dalsi ukol?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ano, sem <?src.sex(pripraven,pripravena)?>.")
+    argo.questDialog_addResponse(0,0,1,"Q020_Zadani",0)
+  elseif ((<eval src.qtag(q020)>>5)&&(<eval src.qtag(q020)><=8))
+    argo.setText(argo.newTextLine,"Coze? Mas mi prines Hmozdir! Bez nej dalsi praci nedostanes.")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q020)>==9)
+    if (src.tag(level)<6)
+      argo.setText(argo.newTextLine,"Mam pro tebe ukol. Ale nejdriv musis trochu zesilit.")
+      argo.questDialog_HTMLGUMP
+    else
+      argo.setText(argo.newTextLine,"To jsi ty? Jdes jako na zavolanou! <def_questDialog_colorTextEmote>*Zasklebila se*<def_questDialog_colorTextNormal> Dlouho jsme se nevideli. Vidim ze jsi od posledne zesilil a poridil sis peknou vybavu. To uz bys mohl zvladnout i narocnejsi ukol, co myslis? Ano? Tak to rada slysim. Provadim ted velice narocny experiment k jehoz dokonceni potrebuju velice vzacne suroviny. Jednou z nich je srdce obavaneho Nemrtveho kouzelnika ktery strezi Stezky Mrtvych. Musis ho zabit a jeho srdce z tela vyriznout a prinest sem at muzu svou praci dokoncit.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jdu na to!")
+      argo.questDialog_addResponse(0,1,1,"Ukol_Q020_Zadani_5",0)
+    endif
+  elseif (<eval src.qtag(q020)>==10)
+    argo.setText(argo.newTextLine,"A uz mas to srdce?")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q020)>10)
+    argo.setText(argo.newTextLine,"Uz jsi mi pomohl dost, nic vic nepotrebuji.")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"Nepotrebuji od tebe zadnou pomoc.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Nic neprodavam ani nekupuji.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Pro tebe nemam zadnou praci!")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+  if (<eval src.qtag(q020)>==2)||(<eval src.qtag(q020)>==3)||(<eval src.qtag(q020)>==5)
+    argo.setText(argo.newTextLine,"Mam pro vas ty veci.")
+    argo.questDialog_addResponse(0,0,1,"Q020_Zadani",0)
+  elseif (<eval src.qtag(q020)>==8)
+    argo.setText(argo.newTextLine,"Mam ten hmozdir.")
+    argo.questDialog_addResponse(0,0,1,"Q020_Zadani",0)
+  elseif (<eval src.qtag(q020)>==10)
+    argo.setText(argo.newTextLine,"Mam to srdce!")
+    argo.questDialog_addResponse(0,0,1,"Q020_Zadani",0)
+  endif
+  argo.f_q026_hcnPoison_Roxana_Bring
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis velmi starou carodejnici, z ktere i prez jeji vek vyzaruje autorita*<def_questDialog_colorTextNormal>")
+  argo.questDialog_HTMLGUMP
+
+if (<eval src.qtag(q020)>==1)
+  argo.dialog_page("Q020_Zadani")
+    argo.setText(argo.newTextLine,"Bard ze o mne vypravi? <def_questDialog_colorTextEmote>*Uchechtla se pobavene*<def_questDialog_colorTextNormal> A ty ze chces nejakou praci? Nevypadas na to, ze vubec neco zvladnes. Podivej se na sebe, jak ses zridil jenom cestou sem. <def_questDialog_colorTextEmote>*Smeje se*<def_questDialog_colorTextNormal> No dobra... Netvar se hned jako by ti uletely vcely. Mozna bych pro tebe neco opravdu mela. Jsem uz Stara a zdravi mi neslouzi jako driv. Blizi se zima a az napadne snih tak uz se nikam nedostanu. Potrebuju nejake zasoby. Prines mi 100 kusu pecenych ryb, stejku a nejaka kurata. A nejakou zeleninu. Az to doneses uvidime jestli pro tebe budu mit nejakou dalsi Praci.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Prijmout*")
+    argo.questDialog_addResponse(0,1,1,"Ukol_Q020_Zadani_1",1)
+elseif (<eval src.qtag(q020)>==2)
+  argo.dialog_page("Q020_Zadani")
+    if ((src.rescount(i_bird_cooked)>=30)&&(src.rescount(i_fish_cut_cooked)>=100)&&(src.rescount(i_ribs_cooked)>=100)&&(src.rescount(i_fruit_onion)>=50)&&(src.rescount(i_fruit_carrot)>=50))
+      argo.setText(argo.newTextLine,"Ano, ano. Vsechno jak jsem ti rekla. Tady mas malou odmenu. A hned ti dam dalsi praci... Zatim si vedes dobre, ale jidlo neni vsechno co potrebuju. V zime je zima a je potreba poradne topit. Stara zenska jako ja muze leda tak sbirat klesti, ale tim chajdu nevytopis. Chce to poradna polena. Z Periny se mi sype peri a v noci mi tahne na zada, potrebovala by dovycpat. A taky se mi bude hodit novy kozich. Jinak tady urcite umrznu. Takze pokud ti zbyvaji jeste nejake sily a chces si vydelat par zlataku nasekej drevo a polena naskladej za chajdu az po strechu. A prines mi pytel pirek na vycpani Periny.. A 10 vydelanych kuzi z hnedeho medveda na novy kozich. Z hnedeho, povidam, rozumis? Grizzlimu se vyhni, je nebezpecny a navic strasne smrdi. Pokud to vsechno zvladnes odmena te nemine.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Odevzdat a prijmout novy ukol*")
+      argo.questDialog_addResponse(0,1,1,"Ukol_Q020_Zadani_2",1)
+    else 
+      argo.setText(argo.newTextLine,"Tak se na to podivame. Hmm... Vypada to ze ti jeste neco chybi. Prijd az budes mit vsechno.")
+      argo.questDialog_HTMLGUMP
+    endif
+elseif (<eval src.qtag(q020)>==3)
+  argo.dialog_page("Q020_Zadani")
+    if ((src.rescount(i_log_copper)>=100)&&(src.rescount(i_feather)>=500)&&(src.rescount(i_fur_dark)>=10))
+      argo.setText(argo.newTextLine,"Ano, ano. Vsechno jak jsem ti rekla. Vidim ze se snazis. Tady mas malou odmenu. Ted si par dni odpocin a az si budes myslet ze jsi pripraveny na skutecny ukol tak prijd.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Odevzdat a prijmout odmenu*")
+      argo.questDialog_addResponse(0,1,1,"Ukol_Q020_Zadani_2_Odevzdat",1)
+    else 
+      argo.setText(argo.newTextLine,"Tak se na to podivame. Hmm... Vypada to ze ti jeste neco chybi. Prijd az budes mit vsechno.")
+      argo.questDialog_HTMLGUMP
+    endif
+elseif (<eval src.qtag(q020)>==4)
+  argo.dialog_page("Q020_Zadani")
+    if (<src.tag(level)><=4)
+      argo.setText(argo.newTextLine,"Mam pro tebe ukol. Ale nejdriv musis trochu zesilit.")
+      argo.questDialog_HTMLGUMP
+    else
+      argo.setText(argo.newTextLine,"Mam pro tebe ukol. Udelal jsi mi radost uz se nemusim bat zimy a muzu se pustit do prace. Ale nemam dostatek surovin na vyrobu lektvaru. Vsechno jsem uz spotrebovala a ted na podzim uz jich roste jen malo. Bez bylinek je vsak tezke prezit a tak je sbira temer kazdy tvor zijici v tomto svete. Temer kazdy, at uz jsou to orci samane, gargoyly, harpie nebo jine polomagicke Stvury.. Nejlip si prisady opatris kdyz par techhle stvur pobijes a vezmes si to co maji u sebe. Aby mi to vydrzelo na celou zimu budu tech bylinek potrebovat hodne. Tady mas seznam. To uz nebude tak snadne, ted se ukaze jestli za neco stojis . <def_questDialog_colorTextEmote>*Zasklebila se a zmizela v chajde*<def_questDialog_colorTextNormal>")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Prijmout*")
+      argo.questDialog_addResponse(0,1,1,"Ukol_Q020_Zadani_3",1)
+    endif  
+elseif (<eval src.qtag(q020)>==5)
+  argo.dialog_page("Q020_Zadani")
+    if (src.rescount(i_reag_mandrake_root)>=100)&&(src.rescount(i_reag_garlic)>=100)&&(src.rescount(i_reag_ginseng)>=50)&&(src.rescount(i_reag_dead_wood)>=25)&&(src.rescount(i_reag_serpent_scale)>=25)
+      argo.setText(argo.newTextLine,"Tak se na to podivame. Ihmmm, tohle je plevel, to je k nicmeu... tohle taky... Ale tohle vypada Dobre.. Jo, tohle taky. A vyborne, mandragora. Tady mas svoji odmenu <def_questDialog_colorTextEmote>*podava ti vacek s penezi*<def_questDialog_colorTextNormal> a pridam ti k tomu par velice uzitecnych lahvicek. <def_questDialog_colorTextEmote>Mrkla a z velke kovane bedny u postele vytahla jakysi balik a vyndala z nej veliky hmozdir z podivneho zluto oranzoveho kovu*<def_questDialog_colorTextNormal>. Tak se do toho dame. <def_questDialog_colorTextEmote>*dava postupne do hmozdire ruzne prisady a drti je palickou a neco si pro sebe tajemne mumla ... najednou se ozvalo hlasite prasknuti, carodejce se z pod rukou vyvalil oblak svetle zeleneho koure a na zemi se vali hmozdir pukly na dve casti*<def_questDialog_colorTextNormal> Aaaaaa! To je nestesti! Rozbil se mi hmozdir. Co ja si ted pocnu? Bez nej nemuzu nic namichat. Jsem nadobro ztracena. Leda ze bys mi pomohl i s timhle. <def_questDialog_colorTextEmote>*upira na tebe zoufaly pohled*<def_questDialog_colorTextNormal>")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Nabidnout pomoc*")
+      argo.questDialog_addResponse(0,1,1,"Ukol_Q020_Zadani_4",1)
+    else 
+      argo.setText(argo.newTextLine,"Tak se na to podivame. Hmm... Vypada to ze ti jeste neco chybi. Prijd az budes mit vsechno.")
+      argo.questDialog_HTMLGUMP
+    endif
+elseif (<eval src.qtag(q020)>==8)
+  argo.dialog_page("Q020_Zadani")
+    if (src.findid.i_q020_hmozdir)
+      argo.setText(argo.newTextLine,"Mas ho? Vyborne! To je skvele! To je nadhera! <def_questDialog_colorTextEmote>*zaradovala se pri spatreni noveho hmozdire*<def_questDialog_colorTextNormal> Ta barva, a ten lesk! Vypada dokonce daleko lip nez ten stary. Dekuji ti, jsem ti opravdu vdecna za tvou pomoc. Hned se dam do michani tvoji odmeny.  A tady mas navic par zlataku, zaslouzis si je za skvele odvedenou praci.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Vzit odmenu a odejit*")
+      argo.questDialog_addResponse(0,1,1,"Ukol_Q020_Zadani_4_Odevzdat",1)
+    else
+      argo.setText(argo.newTextLine,"A kde ho mas?")
+      argo.questDialog_HTMLGUMP
+    endif
+elseif (<eval src.qtag(q020)>==10)
+  argo.dialog_page("Q020_Zadani")
+    if (src.findid.i_q020_srdce)
+      argo.setText(argo.newTextLine,"Konecne jsi tady! Uz na tebe cekam. Tady mas svou zaslouzenou odmenu. A ted uz jdi, mam jeste moc prace.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Vzit odmenu a odejit*")
+      argo.questDialog_addResponse(0,1,1,"Ukol_Q020_Zadani_5_Odevzdat",1)
+    else
+      argo.setText(argo.newTextLine,"A kde ho mas?")
+      argo.questDialog_HTMLGUMP
+    endif
+endif
+
+if ((<eval src.qtag(q022)>==9)&&(!(src.findid.i_q022_koreni)))
+  argo.dialog_page("Q022_Koreni")
+    argo.setText(argo.newTextLine,"Hmm, Jindra rikas... Cekala jsem ze si pro to prijde sam, ale dobra tedy... Tady to je, a ze ho pozdravuji.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Vzit koreni*")
+    argo.questDialog_addResponse(0,1,1,"Ukol_Q022_Koreni",1)
+endif
+argo.f_q026_hcnPoison_Roxana_Answer
+argo.f_q000_shouldBePromoted_Answer
+
+[dialog d_q020_roxana button]
+on=@AnyButton
+if (src.targ.distance>5)
+  src.sysmessage("Na takovou vzdalenost to nepujde")
+else
+  if (<argn> == argo.dialog_linkButton("Ukol_Q020_Zadani_1"))
+    src.qtag(q020,2,19)
+  elseif (<argn> == argo.dialog_linkButton("Ukol_Q020_Zadani_2"))
+    if ((src.qtag(q020)==2)&&(src.rescount(i_bird_cooked)>=30)&&(src.rescount(i_fish_cut_cooked)>=100)&&(src.rescount(i_ribs_cooked)>=100)&&(src.rescount(i_fruit_onion)>=50)&&(src.rescount(i_fruit_carrot)>=50))
+      src.consume(100,i_ribs_cooked)
+      src.consume(100,i_fish_cut_cooked)
+      src.consume(30,i_bird_cooked)
+      src.consume(50,i_fruit_onion)
+      src.consume(50,i_fruit_carrot)
+      src.givegold(1500) 
+      src.addexp(75)
+      src.qtag(q020,3,19)
+    endif
+  elseif (<argn> == argo.dialog_linkButton("Ukol_Q020_Zadani_2_Odevzdat"))
+    if ((src.qtag(q020)==3)&&(src.rescount(i_log_copper)>=100)&&(src.rescount(i_feather)>=500)&&(src.rescount(i_fur_dark)>=10))
+      src.consume(100,i_log_copper)
+      src.consume(500,i_feather)
+      src.consume(10,i_fur_dark)
+      src.givegold(2000) 
+      src.addexp(100)
+      src.qtag(q020,4,19)
+    endif
+  elseif (<argn> == argo.dialog_linkButton("Ukol_Q020_Zadani_3"))
+    if (src.targ.distance>5)
+      src.sysmessage("Na takovou vzdalenost to nepujde")
+    else
+      src.giveitem(i_q020_seznam)
+      src.qtag(q020,5,19)
+    endif
+  elseif (<argn> == argo.dialog_linkButton("Ukol_Q020_Zadani_4"))
+    if ((src.qtag(q020)==5)&&(src.rescount(i_reag_mandrake_root)>=100)&&(src.rescount(i_reag_garlic)>=100)&&(src.rescount(i_reag_ginseng)>=50)&&(src.rescount(i_reag_dead_wood)>=25)&&(src.rescount(i_reag_serpent_scale)>=25))
+      src.consume(100,i_reag_mandrake_root)
+      src.consume(100,i_reag_garlic)
+      src.consume(50,i_reag_ginseng)
+      src.consume(25,i_reag_dead_wood)
+      src.consume(25,i_reag_serpent_scale)
+      src.consume(i_q020_seznam)
+      src.givegold(4000) 
+      src.addexp(150)
+      src.qtag(q020,6,19)
+    endif
+  elseif (<argn> == argo.dialog_linkButton("Ukol_Q020_Zadani_4_Odevzdat"))
+    if ((src.qtag(q020)==8)&&(src.findid.i_q020_hmozdir))
+      src.consume(i_q020_hmozdir)
+      src.giveitem(tmp_q020_odmena)
+      src.givegold(6000) 
+      src.addexp(350)
+      src.qtag(q020,9,19)
+    endif
+  elseif (<argn> == argo.dialog_linkButton("Ukol_Q020_Zadani_5"))
+    src.qtag(q020,10,19)
+  elseif (<argn> == argo.dialog_linkButton("Ukol_Q020_Zadani_5_Odevzdat"))
+    if ((src.qtag(q020)==10)&&(src.findid.i_q020_srdce))
+      src.consume(i_q020_srdce)
+      src.giveitem(i_q020_lahvicka)
+      src.givegold(7500) 
+      src.addexp(450)
+      src.qtag(q020,11,19)
+      f_quest_complete(19)  // splnenie questu "Carodejka"
+    endif
+  elseif (<argn> == argo.dialog_linkButton("Ukol_Q022_Koreni"))
+    src.giveitem(i_q022_koreni)
+  elseif (argo.f_q026_hcnPoison_Roxana_Button(<argn>,<uid>))
+    return 1
+  endif
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+
+
+[eof]

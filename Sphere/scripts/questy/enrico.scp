@@ -1,0 +1,5588 @@
+
+////////////////////////////////////////////////////////////////////--
+
+
+////////////////////////////////////////////////////////////////////--
+[FUNCTION testfollow]//peknej binec
+tag(t_follow,0)
+events=+e_testfollow
+
+[function no_testfollow]
+events=-e_test_follw
+
+[EVENTS e_testfollow]//nepridavat podminky bez konzultace s mandosem - naopak je treba pak zeditovat speheremap aby to bylo jednodussi
+on=@Step
+if (isGM)
+  events=-e_testfollow
+  return 0
+endif
+if (region.tag(kick))
+elseif (region.flags==01192)
+elseif (region.flags==00812)
+else
+ newitemsafe(i_testfollow)
+ lastnew.tag(t_follow,<tag(t_follow)>)
+ lastnew.tag(realm,<tag(realm)>)
+ lastnew.tag(username,<name>)
+ lastnew.p=<p>
+ tag(t_follow,#+1)
+ if (tag(t_follow) > 100)
+  tag(t_follow,1)
+ endif
+endif
+
+[ITEMDEF i_testfollow]
+ID=01e03
+Name=follow 
+
+
+CATEGORY=testy
+SUBSECTION=Enrico
+DESCRIPTION=Dlazdice na test followscriptu
+
+ON=@create
+attr=090
+timerd=5
+
+ON=@Step
+if (tag(realm)==<src.tag(realm)>)
+ return 1
+endif
+if (src.tag(followscript))
+ if (src.tag(warn_follow))
+ else
+  src.tag(warn_follow,1)
+ endif
+ if (src.tag(followscript) == <tag(t_follow)>-1)
+  src.tag(warn_follow,#+1)
+  if (src.tag(warn_follow) == 10)
+   src.accmsg("follow script 10 policek za sebou po stopach <tag(username)>")
+   src.tag(warn_follow,0)
+  endif
+ endif
+ src.tag(followscript,<tag(t_follow)>)
+else
+ src.tag(followscript,1)
+endif
+
+[ITEMDEF I_stone_start]
+NAME=Stone of the Beginning
+ID=i_grave_stone_4
+type=t_script
+
+on=@create
+color=0481
+
+on=@userdclick
+src.DIALOG D_RACEclass_background
+src.DIALOG D_RACEclass_classes_tutor
+return 1
+
+
+[DIALOG D_RACEclass_classes_tutor]
+gumppic 140 200 2200
+button(170,210,2151,2152,1,0,1)
+button(170,246,2151,2152,1,0,2)
+button(170,282,2151,2152,1,0,3)
+button(170,318,2151,2152,1,0,4)
+button(170,354,2151,2152,1,0,5)
+
+button(325,210,2151,2152,1,0,6)
+button(325,246,2151,2152,1,0,7)//shaman
+button(325,282,2151,2152,1,0,8)
+button(325,318,2151,2152,1,0,9)
+//button(325,354,2151,2152,1,0,10)
+argo.HTMLGUMPa(210,215,110,160,<?safe?><BASEFONT SIZE="+5" COLOR="#000080"><?seznamclass[0]?></BASEFONT> ,0,0)
+argo.HTMLGUMPa(365,215,110,160,<?safe?><BASEFONT SIZE="+5" COLOR="#000080"><?seznamclass[1]?></BASEFONT> ,0,0)
+//BUTTON 170 380 4016 4016 1 0 8
+//BUTTON 435 380 4024 4024 1 0 9
+
+[DIALOG D_RACEclass_classes_tutor Button]
+on=0
+dialogclose(D_RACEclass_background, 0)
+
+on=@anybutton
+if (!strlen(<def_class[argn]>))
+  src.sysMessage("Chyba")
+  return 1
+endif
+TAG(class,<def_class[argn]>)
+if (strlen(<?classinfo_<TAG(class)>[0]?>)>5)
+  tag(startdialog,"classinfo_<TAG(class)>")
+  dialog(D_RACEclass_info,"dialog(D_RACEclass_classes)","dialog(D_RACEclass_races)")
+else
+  dialog(D_RACEclass_stats_tutor)
+endif
+
+[DIALOG D_RACEclass_stats_tutor]
+gumppic 140 200 2200
+
+//argo.BUTTON(170,380,4016,4016,1,0,1)
+argo.BUTTON(435,380,4024,4024,1,0,2)
+
+argo.HTMLGUMPa(210,215,110,160,<?safe?><BASEFONT SIZE="+5" COLOR="#000080"><?choosestats[0]?></BASEFONT>,0,0)
+argo.HTMLGUMPa(335,215,110,20,<?safe?><BASEFONT SIZE="+5" COLOR="#000080"><?choosestats[1]?></BASEFONT>,0,0)
+
+argo.texta(180,233,1000,"(<?basestats_<tag.class>_str_min?> - <?basestats_<tag.class>_str_max?>)")
+argo.texta(180,269,1000,"(<?basestats_<tag.class>_dex_min?> - <?basestats_<tag.class>_dex_max?>)")
+argo.texta(180,305,1000,"(<?basestats_<tag.class>_int_min?> - <?basestats_<tag.class>_int_max?>)")
+argo.texta(180,341,1000,"(<?basestats_<tag.class>_vit_min?> - <?basestats_<tag.class>_vit_max?>)")
+
+argo.gumppic(330,231,2445)
+argo.gumppic(330,267,2445)
+argo.gumppic(330,303,2445)
+argo.gumppic(330,339,2445)
+
+argo.settext(10,<?eval tag(basestr)?>)
+argo.settext(11,<?eval tag(basedex)?>)
+argo.settext(12,<?eval tag(baseintel)?>)
+argo.settext(13,<?eval tag(basevit)?>)
+
+argo.textentry(340,233,300,30,1000,100,10)
+argo.textentry(340,269,300,30,1000,101,11)
+argo.textentry(340,305,300,30,1000,102,12)
+argo.textentry(340,341,300,30,1000,103,13)
+
+
+[DIALOG D_RACEclass_stats_tutor Button]
+on=0
+dialogclose(D_RACEclass_background, 0)
+
+on=2
+tag(basestr,<fixNumber(<argtxt(100)>)>)
+tag(basedex,<fixNumber(<argtxt(101)>)>)
+tag(baseintel,<fixNumber(<argtxt(102)>)>)
+tag(basevit,<fixNumber(<argtxt(103)>)>)
+if (<eval tag.basestr>><basestats_<tag.class>_str_max>)||(<eval tag.basestr><<basestats_<tag.class>_str_min>)
+  redmessage("Sila neni v danem rozsahu!")
+  DIALOG D_RACEclass_stats_tutor
+  return 0
+elseif (<eval tag.basedex>><basestats_<tag.class>_dex_max>)||(<eval tag.basedex><<basestats_<tag.class>_dex_min>)
+  redmessage("Obratnost neni v danem rozsahu!")
+  DIALOG D_RACEclass_stats_tutor
+  return 0
+elseif (<eval tag.baseintel>><basestats_<tag.class>_int_max>)||(<eval tag.baseintel><<basestats_<tag.class>_int_min>)
+  redmessage("Inteligence neni v danem rozsahu!")
+  DIALOG D_RACEclass_stats_tutor
+  return 0
+elseif (<eval tag.basevit>><basestats_<tag.class>_vit_max>)||(<eval tag.basevit><<basestats_<tag.class>_vit_min>)
+  redmessage("Vitalita neni v danem rozsahu!")
+  DIALOG D_RACEclass_stats_tutor
+  return 0
+elseif (<eval tag(basevit)+tag(baseintel)+tag(basedex)+tag(basestr)>!=300)
+  redmessage("Soucet statu musi byt 300, je ale <eval tag(basevit)+tag(baseintel)+tag(basedex)+tag(basestr)>.")
+  DIALOG D_RACEclass_stats_tutor
+  return 0
+endif
+class(<tag.class>)
+tag.remove(resetting)
+//startrace	//je potreba tag race - nastavime az po tutorialu
+//startnation // pokud se nepletu, v tutorialu nam je nation nanic ?
+setplayer
+zakladstats
+zakladabilities
+tag.remove(startdialogpage)
+tag.remove(startdialog)
+tag.remove(resetting)
+accmsg(Chose profession #<tag(class)># and nation #<tag(nation)>#)
+dialogclose(D_RACEclass_background, 0)
+classmessage("Nyni projdi branou do tutorialu.")
+//novy postavy pote projdou startovni branou i_port_start do tutorialu
+
+[itemdef i_port_start]
+name=Portal do tutorialu
+id=i_moongate_blue
+
+on=@Step
+//src.tag.remove(prevest)
+if (strlen(<src.tag(class)>))
+  if (strlen(<src.tag(basestr)>))
+    src.startclass
+    src.go(tutorial)
+    src.home=5412,2555,13,35 //tutorial
+    src.events +e_noport // pridame mu noport
+    return 1
+  endif
+endif
+src.sysMessage("Pred odchodem musis mit nastavenou postavu pomoci startovniho kamene.")
+return 1
+
+[ITEMDEF I_stone_start2]
+NAME=Stone of the Beginning
+ID=i_grave_stone_4
+type=t_script
+
+on=@create
+color=0481
+
+on=@userdclick
+src.DIALOG D_RACEclass_background
+src.DIALOG D_RACEclass_races
+return 1
+
+
+[itemdef i_port_start2]
+name=Portal do sveta
+id=i_moongate_blue
+
+on=@Step
+if (strlen(<src.tag(nation)>))
+  if (strlen(<src.tag(race)>))
+    if (strlen(<src.tag(realm)>))
+      src.tag.remove(prevest)
+      src.startfinal
+      src.gohome
+      src.events -e_noport
+      return 1
+    endif
+  endif
+endif
+src.sysMessage("Pred odchodem musis mit nastavenou postavu pomoci startovniho kamene.")
+return 1
+
+[function startfinal]
+//if (canbeclass(<?races_<args>?>))
+eqlayers(remove)
+findlayer(21).remove
+findlayer(31).remove
+givegold(15000)
+giveitem(i_rune_base)
+giveitem(i_crystal_<tag.class>)
+newloot(tm_<tag.class>newbie)
+findlayer(1).bounce
+findlayer(2).bounce
+findlayer(2).bounce
+eqlayers(color=color_<tag.class>)
+arg(kolik_bodu,<eval <tag(level)>*5>)
+while(findlayer(21).findid(i_dovedbod))
+   findlayer(21).findid(i_dovedbod).remove
+endwhile
+if(<arg(kolik_bodu)>) //pokud to neni nula, jinak nedostane nic!
+  bouncepoint(<arg(kolik_bodu)>)
+endif
+zakladstats
+zakladabilities
+zakladskills
+nbOffTtQTags_remove
+
+[itemdef i_daylight]
+id=01174
+name=STROJ CASU
+
+on=@create
+tag(pm,1)
+var(lightlevel,0)
+color=099d
+
+on=@userclick
+src.sysMessage("NESAHAT A HLAVNE NEMAZAT!")
+
+on=@timer
+if(tag(pm)==1)
+ var(lightlevel,#+1)
+else
+ var(lightlevel,#-1)
+endif
+if(var(lightlevel)==30)
+ tag(pm,0)
+endif
+if(var(lightlevel)==0)
+ tag(pm,1)
+endif
+timer=360
+return 1
+
+[function testclient]
+say("<tag(clienttype)>")
+if !(strcmpi(<tag(clienttype)>,"new"))
+ say("new")
+else
+ say("old")
+endif
+
+[function showargs]
+
+finduid(01e).sysMessage("<argn0>,<argn1>,<argn2>,<argn3>")
+
+[function massdclick]
+if(type==t_spawn_char)
+ dclick
+ timer=120
+endif
+
+[function massmove]
+//say <argv(0)>,<argv(1)>
+arg(my_x,<p_x>)
+arg(my_y,<p_y>)
+arg(my_x,#-<argv(0)>)
+arg(my_y,#-<argv(1)>)
+arg(my_z,<z>)
+arg(my_m,<mapplane>)
+p=<arg(my_x)>,<arg(my_y)>,<arg(my_z)>,<arg(my_m)>
+if(ischar)
+ resync
+else
+ if(type==t_telepad)||(type==t_telepad2)
+  if (morex>5286)
+   arg(my_x,<morex>)
+   arg(my_y,<morey>)
+   arg(my_x,#-<argv(0)>)
+   arg(my_y,#-<argv(1)>)
+   arg(my_z,<morez>)
+   arg(my_m,<morem>)
+   morep=<arg(my_x)>,<arg(my_y)>,<arg(my_z)>,<arg(my_m)> 
+  endif
+ endif
+ if(type==t_spawn_char)
+  src.p=<p>
+  dclick
+  timer=1
+ endif
+endif
+
+
+[function f_aura_effect]
+if (distancefrom(var(aura_src))<5)
+ argv(0)
+endif
+
+
+[function f_aura]
+newitemsafe(i_aura_srcChanger)
+lastnew.tag(aura,<argv(0)>)
+lastnew.p=<src.p>
+lastnew.z=-100
+lastnew.link=<uid>
+lastnew.timerd=1
+
+[itemdef i_aura_srcChanger]
+id=i_memory
+layer=77
+type=t_src_changer
+name=aura srcChanger
+
+on=@timer
+var(aura_src,<link>)
+sector.allchars(f_aura_effect(<tag(aura)>))
+remove 
+return 1
+
+
+[itemdef i_mem_aura]
+id=i_memory
+type=t_eq_script
+
+
+on=@timer
+cont.f_aura(<tag(aura)>)
+timer=4
+return 1
+
+on=@equip
+timer 4
+
+[function shadow]
+
+if ((profession==class_mystik) || (isGM))
+ newnpc(<body>)
+ tag(moje_alter_ego,<lastnewchar>) //pro sichr ulozit si
+ tag(moje_alter_ego).name=<name>
+ tag(moje_alter_ego).title=<title>
+ tag(moje_alter_ego).body=<body>
+ tag(moje_alter_ego).obody=<obody>
+ tag(moje_alter_ego).color=<color>
+ tag(moje_alter_ego).oskin=<oskin>
+ if(<kills> > 15) //cervenej
+  tag(moje_alter_ego).karma= -10000
+ else
+  if(<karma> < -2000) //sedej
+   tag(moje_alter_ego).karma= -5000
+  else //modrej 
+   tag(moje_alter_ego).karma= 8000 
+  endif
+ endif
+ tag(moje_alter_ego).newitemsafe(i_backpack) //vyrobit backpack
+ lastnew.layer=21
+ lastnew.attr=014 //newbie, movenever
+ lastnew.cont=<tag(moje_alter_ego)>
+ lastnew.update
+ newitemsafe(safe <findlayer(11).dispid>) //vlasy
+ lastnew.layer=11
+ lastnew.color=<findlayer(11).color>
+ lastnew.cont=<tag(moje_alter_ego)>
+ lastnew.update
+
+events=+e_shadow
+else
+ sysMessage("Jako <profession.name> tohle nemuzes pouzivat.")
+ return 1
+endif
+
+
+[function sneakattack]
+p=<act.p>
+dir=<act.dir>
+vzadsafe
+resync
+
+
+
+[events e_shadow]
+on=@Step
+finduid(<tag(moje_alter_ego)>).run(<dir_inttochar(<dir>)>)
+finduid(<tag(moje_alter_ego)>).action=065
+
+
+[ITEMDEF i_nowalk_pad]
+ID=0AEC
+Name=ZAMEZENI VSTUPU
+
+
+CATEGORY=Dungy
+SUBSECTION=Enrico
+DESCRIPTION=Dlazdice zabranujici vstupu
+
+ON=@Create
+color=05
+attr_movenever(1)
+attr_invis(1)
+
+ON=@Step
+if (src.isGM)
+  return 1
+endif
+src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+src.sysMessage("Nechod, kam nemas!")
+
+
+[ITEMDEF i_delete_npc]
+ID=0AEC
+Name=mazatko NPC
+
+
+CATEGORY=Other
+SUBSECTION=Enrico
+DESCRIPTION=maze vsechna NPC
+
+ON=@Create
+color=05
+attr_movenever(1)
+attr_invis(1)
+
+ON=@Step
+if (src.npc)
+  src.remove
+endif
+
+
+[ITEMDEF i_bugpad]
+ID=0AEC
+Name=bug zone
+
+
+CATEGORY=Dungy
+SUBSECTION=Enrico
+DESCRIPTION=Dlazdice na vyhozeni z mist kde nemaj co delat
+
+ON=@Create
+color=05
+attr_movenever(1)
+attr_invis(1)
+
+ON=@Step
+if (src.isGM)
+  return 1
+elseif (src.isplayer)
+  src.go bug
+  src.sysMessage("Nechod, kam nemas!")
+else
+  src.gohome
+endif
+
+[itemdef i_chair_ucho]
+id=i_chair_stone
+
+on=@Step
+if (src.findlayer(layer_horse))||(src.tag(realm)!=1)
+  return 1
+endif
+src.tag(realm,2)
+src.events=+e_ucho
+
+[events e_ucho]
+on=@Step
+tag(realm,1)
+events=-e_ucho
+
+[itemdef i_chair_oko]
+id=i_chair_stone
+
+on=@Step
+if (tag(time)><serv.time>)||(src.findlayer(layer_horse))
+ return 1
+endif
+tag(time,<serv.time>+1200)
+src.newitem(i_oko_mem)
+src.act.equip
+
+[itemdef i_oko_mem]
+id=i_memory
+type=t_eq_script
+
+on=@equip
+cont.flag_stone=1
+cont.invis=1
+tag(myp,<cont.p>)
+tag(hop,1)
+timer=5
+
+on=@timer
+timer=5
+if (tag(hop)==1)
+ cont.go minas morgul
+elseif (tag(hop)==2)
+ cont.go barad-dur
+elseif (tag(hop)==3)
+ cont.go harad
+elseif (tag(hop)==4)
+ cont.go bagronk
+elseif (tag(hop)==5)
+ cont.go oaza hagir
+elseif (tag(hop)==6)
+ cont.go rhun
+elseif (tag(hop)==7)
+ cont.go umbar
+elseif (tag(hop)==8)
+ cont.go nurn
+elseif (tag(hop)==9)
+ cont.go tahabar
+else
+ cont.go(<tag(myp)>)
+ cont.flag_stone=0
+ cont.invis=0
+ remove
+endif
+tag(hop,#+1)
+return 1
+
+
+[events e_testdeath]
+on=@death
+tag(lastmurderbyf,<act>)
+say("<act.name> act")
+say("<tag(lastmurderbyf).name> death")
+on=@deathcorpse
+say("<src.name> src")
+say("<name> uid")
+say("<argo.name> argo")
+say("<tag(lastmurderbyf).name> corpse")
+say("<act.name> act")
+
+
+[function masktrap]
+newitemsafe(i_masktraptarget]
+lastnew.equip
+
+[function zamaskuj]
+
+
+[itemdef i_masktraptarget]
+id=i_memory
+type=t_eq_script
+
+
+on=@timer
+remove
+return 0
+
+on=@equip
+timer 10
+target("Zamer past.")
+
+on=@targon_item
+if (src.targ==i_past) 
+ src.targ.zamaskuj
+else
+ src.sysMessage("Toto neni past.")
+endif
+remove 
+return 1
+
+
+[itemdef i_gate_guldur_vstup]
+ID=i_moongate_blue
+TYPE=t_normal
+CATEGORY=Dungy
+SUBSECTION=brany
+DESCRIPTION=vstup do gulduru
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+tag(mytimer,0)
+tag(spawndaemon,0)
+
+on=@Step
+if !(src.isplayer)||(<src.flags>&statf_dead)||(src.isGM)||(tag(mytimer) > <serv.time>)
+ srs.sysMessage("Brany Dol Gulduru jsou uzavreny.")
+ return 1
+else
+src.go 5220,649,50
+tag(mytimer,<eval <serv.time>+288000>)
+finduid(tag(spawndaemon)).timer=1
+
+[ITEMDEF i_gate_chartimer]
+name=brana
+ID=i_moongate_blue
+TYPE=t_script
+CATEGORY=Dungy
+SUBSECTION=brany
+DESCRIPTION=pusti konkretniho hrace jen jednou za x
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+tag.mytimer=172800
+
+on=@userdclick
+if (src.isGM)
+ src.sysMessage("tag.mytimer je pocet sekund, ktere musi uplynout, nez to pusti znovu stejneho hrace")
+ src.sysMessage("morep=souradnice, kam ho ma portnout")
+endif
+
+on=@Step
+if (src.isGM)
+  src.go(<morep>)
+  return 1
+endif
+if (src.isplayer)
+else
+ return 1
+endif
+if (tag(hrac[<src>])>serv.time)  
+ src.sysMessage("Jeste nemuzes projit.")
+else
+ tag(hrac[<src>],<eval serv.time+<tag(mytimer)>>)
+ src.go(<morep>)
+endif 
+
+[ITEMDEF i_gate_spawn]
+ID=i_moongate_blue
+TYPE=t_normal
+CATEGORY=Dungy
+SUBSECTION=brany
+DESCRIPTION=spawne na souradnicich npc
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+tag.npc=c_beridor_necro
+tag.p=5616,801,0,100
+tag.mytimer=36000
+tag.time=0
+
+on=@userdclick
+if (src.isGM)
+ src.sysMessage("tag.npc=id npc, ktere ma spawnout")
+ src.sysMessage("tag.p=souradnice, kam ho ma spawnout")
+endif
+
+ON=@Step
+if (<moreX>==0) || (<moreY> ==0) //nenastavena souradnice portu
+ return 0
+endif
+if (tag(timer))
+ tag(mytimer,<tag(timer)>)
+ tag.remove(timer)
+endif
+if (src.isplayer)
+ if (<src.flags>&statf_dead)||(src.isGM) //ne duch ni GM ! 
+   return 0
+ elseif (<tag.time> < <serv.time>)
+  tag(time,(<serv.time>+<tag(mytimer)>))
+  src.newnpc(<tag(npc)>)
+  src.act.p=<tag.p>
+  src.act.newitem i_zmizni
+  src.act.act.timer 3600
+  src.act.equip <src.act.act>
+ endif
+ src.go <morep>
+endif
+
+
+[ITEMDEF i_gate_prof]
+ID=i_moongate_blue
+TYPE=t_normal
+CATEGORY=Dungy
+SUBSECTION=brany
+DESCRIPTION=pusti povolalni a uzavre se
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+tag.mytimer=45
+tag.time=0
+tag.prof=class_mage
+
+on=@userdclick
+if (src.isGM)
+ src.sysMessage("tag.prof=class_nazevpovolani")
+ src.sysMessage("tag.mytimer=minuty_na_jak_dlouho_ma_byt_zavrena")
+endif
+
+ON=@Step
+if (src.isGM)
+  src.go(<morep>)
+  return 1
+endif
+if (tag(timer))
+ tag(mytimer,<tag(timer)>)
+ tag.remove(timer)
+endif
+if (src.profession==<tag(prof)>)
+ if (<tag.time> > <serv.time>)
+  src.go(<morep>)
+  tag(time,(<serv.time>+<tag(mytimer)>))
+ else
+  src.sysMessage("Brana je uzavrena.")
+ endif
+endif
+
+
+
+
+
+[itemdef i_krvapnik]
+ID=08e0
+Name=ledovy stalagmit
+ON=@CREATE
+color=0481
+
+ON=@userdclick
+if (<dispid>==#08e0)
+  src.newitem=i_krvampouch
+  src.act.tag(origin,<uid>)
+  dispid=08e4
+  src.act.bounce
+  src.resync
+ else
+endif
+
+[itemdef i_krvampouch]
+id=i_club
+name=rampouch
+
+ON=@CREATE
+timer=3600
+color=0480
+type=t_rock
+
+
+on=@userdclick
+src.sysMessage("Tajici rampouch.")
+tag(jouda,<src>)
+
+
+ON=@TIMER
+finduid(tag(origin)).dispid=08e0
+finduid(tag(jouda)).sysMessage("Rampouch se rozpustil.")
+remove
+
+
+
+[ITEMDEF i_srdiczko]
+ID=i_flesh_heart
+Name=Srdce krvavce
+Weight=50
+ON=@Create
+
+
+ON=@userDCLICK
+src.sysMessage("Podivne to pachne a neustale z toho kape krev...")
+
+[ITEMDEF i_srdce_obra]
+ID=i_flesh_heart
+Name=Srdce jeskynniho obra
+ON=@Create
+color=color_gray_lt
+
+ON=@userDCLICK
+src.sysMessage("Tvrde jako obr sam...")
+
+[itemdef i_bloodstep_trigger]
+id=i_water_bloody
+type=t_bloodstep_trigger
+Name=Aktivator krvaceni
+
+ON=@CREATE
+attr_newbie=1
+
+[typedef t_bloodstep_trigger]
+on=@userdclick
+if (src.isevent(t_bloodstep))
+	src.events(-t_bloodstep)
+	src.tag.remove(bloodstepcounter)
+	src.sysMessage("Krvaceni zastaveno.")
+else
+	src.events(+t_bloodstep)
+	src.tag(bloodstepcounter,0)
+	src.sysMessage("Krvaceni aktivovano.")
+endif
+return 1
+
+[events t_bloodstep]
+on=@Step
+if (!tag(bloodstepcounter))
+	arg(deftocreate, <hval({0122a 1 0122b 1 0122c 1 0122d 1 0122e 1})>)
+	newitemsafe(<findres(itemdef,<arg(deftocreate)>)>)
+	lastnew.p=<p>
+	lastnew.timer=5*60
+elseif (tag(bloodstepcounter) == 15)
+	tag(bloodstepcounter, 0)
+	return 0
+endif
+tag(bloodstepcounter, <eval tag(bloodstepcounter)+1>)
+return 0
+
+//prevoznik
+
+[SPEECH spk_go_imp]
+
+
+ON=*Dobry*
+ON=*den*
+ON=*zdravim* 
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+say("Za maly poplatek te prevezu na tajemny ostrov se zvlastnim hradem.")
+
+ON=*ostrov*
+ON=*hrad*
+say("Obyvatele hradu jsou kapku podivinsti, hehe.")
+
+if (src.pay({10 30}))
+  src.NEWITEM i_delay_imp
+  src.ACT.EQUIP
+else 
+  say("Zadarmo te tam ale nesvezu!")
+endif
+
+[ITEMDEF i_delay_imp]
+ID=i_memory
+Name=Teleport Delay Timer imp
+TYPE=T_EQ_SCRIPT
+
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+MORE1=15
+MOREP=1150,3880,-5
+
+ON=@EQUIP
+TIMER=1
+
+ON=@Timer
+if (more1)
+  cont.sysMessage("Cas do nalodeni: <eval <more1>> s")
+  more1=<eval <more1>-1>
+  TIMER=1
+  return 1
+else
+  cont.go <MOREP>
+  remove
+  return 1
+endif
+
+[speech spk_erebor_opilec]
+ON= *Dobry*
+ON = *den*
+ON = *nazdar*
+ON = *hi*
+if (<tag(kure)>==1)//test zda mu uz nerekl o hladu
+  SAY("Tak kde jsi s tim kuretem?")
+elseif (<tag(kuretime)> > <serv.time>)//test zda uz upynul pozadovany cas od posledniho zezrani kurete
+  SAY("Konecne mam plny brich.")
+  emote("grg")
+else
+  SAY("Nazdar! *hic* Hele, mam hlad jako vlk! *hic* Kdyz mi prineses od hostinskeho *hic* kousek kurete, neco bych tu pro tebe mel! *hic*")
+  tag(kure,1) // rekl o hladu, tag ulozim na NPC
+endif
+
+ON = *kure*
+ON = *jidlo*
+ON = *tady*
+if (<tag(kure)>==1)&&(<src.rescount i_chicken_leg> >= 1)//rek mu o hladu a ma pro nej kure
+  SAY("Aaa, diky! Na, vem si tohle.")
+  EMOTE("hic")
+  SAY("Sutrak, muze se ti hodit.")
+  EMOTE("hic")
+  SAY("A ted me nerus, musim to snist!")
+  EMOTE("hic")
+  src.consume(i_chicken_leg)
+  src.NEWITEM i_dagger_verite // tady bych dal saphire nebo emerald t
+  // treba takhle
+  dorand 4
+    src.newitem i_gem_emerald
+    src.newitem i_gem_sapphire
+    src.newitem i_gem_diamond
+    src.newitem i_gem_ruby
+  enddo
+  src.ACT.BOUNCE
+  src.addexp(50)
+  tag(kure,0) // vynuluje tag na postave
+  tag(kuretime,<eval <serv.time>+10*60*60*2>)//dalsich 2 hodin nebude chtit papat 
+else
+  EMOTE("hic")
+endif 
+
+
+[speech spk_harad_opilec] 
+ON= *Dobry* 
+ON = *den* 
+ON = *nazdar* 
+ON = *hi* 
+if (<tag(syr)>==1) 
+  SAY("Tak kde jsi s tim syrem?")
+elseif (<tag(syrtime)> > <serv.time>) 
+  SAY("Joo to bylo dobry! Uz mam dost.")
+else 
+  SAY("Nazdar! *hic* Hele, mam chut na poradny kus *hic* syra, rozumis? Když mi ho sezenes, neco ti dam! *hic*")
+  tag(syr,1) 
+endif 
+
+ON = *syr* 
+ON = *jidlo* 
+ON = *tady* 
+if (<tag(syr)>==1)&&(<src.rescount i_cheese_wheel> >= 1) 
+  SAY("Aaa, diky! Na, vem si tohle."
+  emote("hic")
+  SAY("Mozna to uzijes.") 
+  emote("hic")
+  SAY("A ted me nerus, musim to snist!")
+  emote("hic")
+  src.consume(i_cheese_wheel) 
+  dorand 3 
+    src.newitem i_dagger_verite 
+    src.newitem i_dagger_iron 
+    src.newitem i_gem_ruby 
+  enddo 
+  src.ACT.BOUNCE 
+  src.addexp(50) 
+  tag(syr,0)//vynuluje tag na postave 
+  tag(syrtime,<eval <servtime>+10*60*60)
+else 
+  emote("hic")
+endif
+
+
+[ITEMDEF i_gate_timer_marek1]
+ID=i_moongate_blue
+TYPE=t_normal
+CATEGORY=Dungy
+SUBSECTION=brany
+DESCRIPTION=pusti pocet lidi nebo timer
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+tag.mytimer=10
+tag.players=5
+tag.Step=0
+tag.timeblock=600
+
+ON=@UserDClick
+if (src.isGM)
+  dialog(d_guarditAdv)
+endif
+
+ON=@Step
+if (src.NPC)
+  return 1
+endif
+if (src.isGM)
+  src.go(<morep>)
+  return 1
+endif
+if (f_guarditAdv_CheckSpawns)	// 1 == guard is alive
+  src.sysMessage("Neprojdes, dokud je strazce pruchodu na zivu.")
+  return 1
+endif
+
+arg(timeStart,<eval (<serv.time>+(<tag.mytimer>*10))>) // sets the timeStart arg to the value of the current serv.time plus the myTimer, which sets the time hole for all the friendly players to enter the gate (to the maximum of tag.players players)
+tag(Step,<tag(Step)>+1) //increases number of players stepped on the gate since last opening.
+
+if (<tag.Step> == 1) //first player to open the gate entering sets the tag.time to the timerStart value.
+  tag.time=<arg(timestart)> 
+endif
+
+if ((<tag.time> > <serv.time>)&&(<tag.Step> < <tag.players>)) //if the time is in the gap between first player enter time and tag.mytimer seconds after, than player is allowed in the gate (the maximum number of players is also checked)
+  src.go <morep>
+else
+  src.sysMessage("Pruchod je uzavren.")
+endif
+
+if ((<tag.time> + (<tag.timeblock>*10)) < <serv.time>) // if the time is over the time gap plus the tag.timeblock seconds, than the stepping player resets the gate properties and allows himself in the gate in the next @step trigger round.
+  tag.time=0
+  tag.Step=0
+endif
+return 1
+
+
+
+[ITEMDEF i_gate_timer_marek2]
+ID=i_moongate_blue
+TYPE=t_normal
+CATEGORY=Dungy
+SUBSECTION=brany
+DESCRIPTION=pusti pocet lidi ktery po timeru hodi na tag.morep
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+tag.mytimer=20
+tag.playertimer=20*60
+tag.players=5
+tag.Step=0
+tag.morep=<p>
+
+ON=@Step
+if (src.isGM)
+  src.go(<morep>)
+  return 1
+endif
+if (tag(timer))
+ tag(mytimer,<tag(timer)>)
+ tag.remove(timer)
+endif
+tag.timestart=<serv.time>+(<tag.mytimer>*10)
+tag(Step,<tag(Step)>+1)
+
+if (<tag.Step> == 1)
+ tag.time=<tag.timestart>
+endif
+
+
+if ((<tag.time> > <serv.time>)&&(<tag.Step> < <tag.players>))
+ src.go(<morep>)
+ src.NEWITEM i_delay_marek
+ src.ACT.morep=<tag(mymorep)>
+ src.ACT.more1=<tag(playertimer)>
+ src.ACT.EQUIP
+else 
+src.sysMessage("Brana je uzavrena.")
+endif
+
+if ((<tag.time>+60*20)< <serv.time>)
+ tag.time=0
+ tag.Step=0
+endif
+return 1
+
+
+[ITEMDEF i_delay_marek]
+ID=i_memory
+Name=Teleport Delay Timer Marek
+TYPE=T_EQ_SCRIPT
+
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+
+
+ON=@EQUIP
+TIMER=1
+
+on=@unequip
+if (link.isitem)
+ link.link=-1
+endif
+
+ON=@Timer
+if (more1)
+ cont.sysMessage("Cas do presunu: <eval <more1>> s")
+ more1=<eval <more1>-1>
+ TIMER=1
+ return 1
+else
+  cont.go <MOREP>
+ remove
+ return 1
+endif
+
+[ITEMDEF i_gate_random_only_3]
+ID=i_moongate_blue
+TYPE=t_normal
+CATEGORY=Dungy
+SUBSECTION=brany
+DESCRIPTION=pusti 3 a hotovo na zvolenou dobu
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+tag(mytimer,15)
+tag(Step,0)
+
+ON=@Step
+if (src.isGM)
+  src.go(<morep>)
+  return 1
+endif
+if (tag(timer))
+  tag(mytimer,<tag(timer)>)
+  tag.remove(timer)
+endif
+if (tag(next) < <serv.time>)
+  tag(Step,<tag(Step)>+1)
+  IF (tag(Step)==1)
+    src.go <MOREP>
+  elseIF (tag(Step)==2)
+    src.go <tag(mymorep)>
+  elseIF (tag(Step)==3)
+    src.go <tag(mymorep1)>
+  elseif (tag(Step)>3)
+    tag(next,<serv.time>+(<tag(mytimer)>*10*60))
+    tag(Step,0)
+  endif
+else
+  src.sysMessage("Brana je blokovana na neco malo pres <eval((<eval <tag(next)>>-<serv.time>)/600)> minut.")
+  src.move s
+endif
+
+
+[ITEMDEF i_gate_random_3]
+ID=i_moongate_blue
+TYPE=t_normal
+CATEGORY=Dungy
+SUBSECTION=brany
+DESCRIPTION=brana delici skupinu na 3
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+
+ON=@Step
+tag(Step,<tag(Step)>+1)
+IF (tag(Step)<4)
+  src.go <MOREP>
+  RETURN 0
+ENDIF
+IF (tag(Step)<7)
+  src.go <tag(mymorep)>
+  RETURN 0
+ENDIF
+src.go <tag(mymorep1)>
+if (tag(Step)>8)
+  tag(Step,0)
+endif
+
+
+[typedef t_hitszero]
+ON=@PICKUP_PACK
+src.hits=0
+tag(death,<tag(death)>+1)
+ON=@equip
+src.hits=0
+tag(death,<tag(death)>+1)
+ON=@dropon_obj
+src.hits=0
+tag(death,<tag(death)>+1)
+
+// equipnuti
+
+[function heal0]
+f_heal_value(0)
+
+[function heal1]
+f_heal_value(1)
+
+[function heal2]
+f_heal_value(2)
+
+[function heal3]
+f_heal_value(3)
+
+[function heal4]
+f_heal_value(4)
+
+[function heal5]
+f_heal_value(5)
+
+[function heal6]
+f_heal_value(6)
+
+[function heal7]
+f_heal_value(7)
+
+[function heal8]
+f_heal_value(8)
+
+[function heal9]
+f_heal_value(9)
+
+[function heal10]
+f_heal_value(10)
+
+[function heal11]
+f_heal_value(11)
+
+[function heal12]
+f_heal_value(12)
+
+[function heal13]
+f_heal_value(13)
+
+[function heal14]
+f_heal_value(14)
+
+[function heal15]
+f_heal_value(15)
+
+[function f_heal_value]
+if (<strlen(<equiptag(equip<eval argv(0)>)>)>)
+  if (findUID(<equiptag(equip<eval argv(0)>)>).isChar)
+    findid(i_bandage).bandaonchar(<equiptag(equip<eval argv(0)>)>)
+    healdisarm
+    stopmagery
+    src.dclickMe
+  else
+    src.redMessage("Cil ulozeny jako equip<eval argv(0)> je predmet!")
+  endif
+else
+  src.redMessage("Nemas nastaveny equip<eval argv(0)>.")
+endif
+
+
+[function equiptag]
+arg(MyEquipRune,<findid(i_playerEquip_rune)>)
+if !(ischar)
+  return""
+endif
+if (<argvcount> == 2)
+  if !(<findid(i_playerEquip_rune)>) // postava jeste nema quest runu
+    newequip(i_playerEquip_rune)
+    arg(MyEquipRune,<lastnew>)
+  endif
+  MyEquipRune.tag(<argv(0)>,"<argv(1)>")
+  return""
+elseif (<argvcount> == 1)
+  if !(<findid(i_playerEquip_rune)>)
+    return""
+  endif
+  if (strlen(<MyEquipRune.tag(<argv(0)>)>))
+    return<MyEquipRune.tag(<argv(0)>)>
+  else
+    return""
+  endif
+endif
+RedMessage("Spatny pocet argumentu.")
+Return""
+
+[function equiptagremove]
+arg(MyEquipRune,<findid(i_playerEquip_rune)>)
+MyEquipRune.tag.remove.(<argv(0)>)
+return 1
+
+[function equiptagshow]
+if (<argvcount> == 0)
+  findid(i_playerEquip_rune).tag(dump)
+else
+  src.sysMessage("Hodnota equip tagu -<argv(0)>- :")
+  arg(tag_value,"<equiptag(<argv(0)>)>")
+  if !(strcmpi(<tag_value>,00))
+    src.RedMessage("Tag je nulovy.")
+  else
+    src.RedMessage("<tag_value>")
+  endif
+endif
+
+[itemdef i_playerEquip_rune]
+id=i_rune_marker
+name=Runa na hracske equipTagy
+type=t_eq_script
+
+on=@create
+attr=094 // invis, nb, nevermove
+color=0989
+
+[function equip0]
+f_equipForPlayer(<equiptag(equip0)>)
+
+[function equip1]
+f_equipForPlayer(<equiptag(equip1)>)
+
+[function equip2]
+f_equipForPlayer(<equiptag(equip2)>)
+
+[function equip3]
+f_equipForPlayer(<equiptag(equip3)>)
+
+[function equip4]
+f_equipForPlayer(<equiptag(equip4)>)
+
+[function equip5]
+f_equipForPlayer(<equiptag(equip5)>)
+
+[function equip6]
+f_equipForPlayer(<equiptag(equip6)>)
+
+[function equip7]
+f_equipForPlayer(<equiptag(equip7)>)
+
+[function equip8]
+f_equipForPlayer(<equiptag(equip8)>)
+
+[function equip9]
+f_equipForPlayer(<equiptag(equip9)>)
+
+[function equip10]
+f_equipForPlayer(<equiptag(equip10)>)
+
+[function equip11]
+f_equipForPlayer(<equiptag(equip11)>)
+
+[function equip12]
+f_equipForPlayer(<equiptag(equip12)>)
+
+[function equip13]
+f_equipForPlayer(<equiptag(equip13)>)
+
+[function equip14]
+f_equipForPlayer(<equiptag(equip14)>)
+
+[function equip15]
+f_equipForPlayer(<equiptag(equip15)>)
+
+[function setequip0]
+f_setEquip_value(0)
+
+[function setequip1]
+f_setEquip_value(1)
+
+[function setequip2]
+f_setEquip_value(2)
+
+[function setequip3]
+f_setEquip_value(3)
+
+[function setequip4]
+f_setEquip_value(4)
+
+[function setequip5]
+f_setEquip_value(5)
+
+[function setequip6]
+f_setEquip_value(6)
+
+[function setequip7]
+f_setEquip_value(7)
+
+[function setequip8]
+f_setEquip_value(8)
+
+[function setequip9]
+f_setEquip_value(9)
+
+[function setequip10]
+f_setEquip_value(10)
+
+[function setequip11]
+f_setEquip_value(11)
+
+[function setequip12]
+f_setEquip_value(12)
+
+[function setequip13]
+f_setEquip_value(13)
+
+[function setequip14]
+f_setEquip_value(14)
+
+[function setequip15]
+f_setEquip_value(15)
+
+[function f_setEquip_value]
+f_equip_clearOldEquipTags
+src.targetObj(f_setEquip_add(equip<eval argv(0)>),"Zamer vec nebo tvora.")
+
+[function f_equip_clearOldEquipTags]
+arg(i,0)
+while (i < 10)
+  tag.remove(equip<eval arg(i)>)
+  arg(i,#+1)
+endwhile
+
+//argv(0) - the name of an equipTag
+[function f_setEquip_add] // return 0 stops targetting, return 1 retriggers targetting
+src.equiptag(<argv(0)>,<uid>)
+if (isChar)
+  src.classMessage("Charakter byl uspesne zaznamenan.")
+elseif (isItem)
+  src.classMessage("Predmet byl uspesne zaznamenan.")
+endif
+return 0
+
+[function f_equipForPlayer]
+if (<strlen(<argv(0)>)>)
+  if (finduid(<argv(0)>))
+    if (finduid(<argv(0)>).topobj==<uid>)
+      finduid(<argv(0)>).dclick
+    elseif (<finduid(<argv(0)>).isItem>)
+      if (finduid(<argv(0)>).type==t_housemenu) || (finduid(<argv(0)>).type==t_vendormenu)
+        finduid(<argv(0)>).trigger(userdclick)
+      endif
+    endif
+  endif
+endif
+
+//vychytavky
+[ITEMDEF i_rankgate]
+ID=0AEC
+TYPE=t_normal
+CATEGORY=enrico	
+SUBSECTION=questy
+DESCRIPTION=pusti jen rank vetsi nez...
+
+ON=@Create
+attr_newbie=1
+attr_movenever=1
+attr_invis=1
+
+ON=@Step
+if (src.isGM)
+  return 1
+endif
+if !(strlen(<tag.maxLevel>))
+  tag.maxLevel=0
+endif
+if (src.tag(skillrank) > <tag.skillrank>)
+    src.sysMessage("<tag.message>")
+    src.go <MOREP>
+else
+  if (<tag.maxLevel>!=0)&&(<tag.maxLevel><=<src.tag.level>)
+    src.sysMessage("<tag.message>")
+    src.go <MOREP>
+  else
+    src.sysMessage("<tag.message2>")
+  endif
+endif
+
+[ITEMDEF i_rankgate2]
+ID=0AEC
+TYPE=t_normal
+CATEGORY=enrico	
+SUBSECTION=questy
+DESCRIPTION=pusti jen rank mensi nez...
+
+ON=@Create
+attr_newbie=1
+attr_movenever=1
+attr_invis=1
+
+ON=@Step
+if (src.isGM)
+  src.go(<morep>)
+  return 1
+endif
+IF (src.tag(skillrank) < <tag.skillrank>)
+  src.sysMessage("<tag.message>")
+  src.go(<MOREP>)
+else
+  src.sysMessage("<tag.message2>")
+endif
+
+
+[ITEMDEF i_frozenpad]
+ID=0AEC
+Name=Frozen Pad
+
+
+CATEGORY=Dungy
+SUBSECTION=Enrico
+DESCRIPTION=Dlazdice s parou
+
+ON=@Create
+color=062
+attr_movenever(1)
+attr_invis(1)
+tag.thief=100.0
+more1=0
+
+//moje verze - z principu lepsi :) (doufam ze bez bugu a funguje jak ma - odzkouset). Dinivan
+ON=@Step
+if (<src.flags>&statf_dead) || (src.isGM) // nor ghosts nor GM can activate the pad
+  return 0
+endif
+if (src.isPlayer)
+  f_trap_removeTrap_clearDepricatedTags
+  if (<eval tag(fpDeactivatedTill)> < <serv.time>) // pad is innactive for some time after catching the player
+    if (f_removeTrap_tryActivateTrap) //checks wheather the player successfully removed the trap, the condition succeed if player doesnt
+      f_trap_moveTrap
+      tag(fpDeactivatedTill,<eval (<serv.time>+10*10)>) //deset sekund na utek
+      more1=1 //docasne odstranit
+      src.anim=20 //gethit :)
+      src.paralyze({200 300}) //20-30s
+      src.redmessage("Nohama ti projela silna bolest, citis, ze se nemuzes hybat.")
+    else
+      return 0
+    endif
+  endif
+endif
+
+on=@UserDClick
+if (src.isGM)
+  dialog(d_frozenpad,<tag.thief>,<MoreX>,<MoreY>)
+  return 1
+endif
+
+[dialog d_frozenpad]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,200)
+argo.tag(vyska,108)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,2,100,71)
+argo.dialog_zpruhledni
+
+argo.button(<argo.dialog_but_ru>,d_def_button_dialog1,d_def_button_dialog2,1,0,5)		//help
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Frozen Pad")
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"RemoveTrap:")
+argo.texta(lastxpos,lastypos+(d_def_radek_vyska),<d_def_writecolor>,"MoveTrap:")
+
+argo.dialog_textpos(1,1)
+argo.button(lastxpos,lastypos-3,0fab,0fad,1,0,3)		//RemoveTrap dialog
+argo.button(lastxpos,lastypos+<d_def_radek_vyska>-3,0fab,0fad,1,0,4)		//MoveTrap dialog
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+argo.button(<d_def_okraj>+<d_def_skvira>+147,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb4,0fb6,1,0,2)//pad goes home
+
+[dialog d_frozenpad button]
+on=0
+src.sysMessage("<src.sex(Stornoval,Stornovala)> jsi volbu. Nastaveni zustava nezmeneno.")
+
+on=1
+f_trap_moveTrap_clearDepricatedTags
+f_trap_removeTrap_clearDepricatedTags
+src.sysMessage("Nastavujes nove hodnoty dlazdice.")
+  
+on=2 // pad goes home
+if (strlen(<tag(moveTrap_basePosition)>))
+  p=<tag(moveTrap_basePosition)>
+  src.sysMessage("Naslapka byla umistena zpet na zakladni pozici.")
+else
+  src.redMessage("MoveTrap neni nastaven.")
+endif
+dialog(d_frozenpad)
+
+on=3 // removeTrap dialog
+f_trap_removeTrap_clearDepricatedTags
+dialog(d_trap_removeTrap,d_frozenpad)
+
+on=4 // moveTrap dialog
+f_trap_moveTrap_clearDepricatedTags
+dialog(d_trap_moveTrap,d_frozenpad)
+
+on=5 // help
+dialog(d_frozenpad)
+dialog(d_frozenpad_help)
+
+[dialog d_frozenpad_help]
+argo.setText(1," Frozen pad zmrazi kazdeho hrace, ktery na nej stoupne. Hrac musi byt zasazen, aby se na chvili mohl pohnout.<br> Remove Trap: otevre novy dialog s moznosti nastavit detekci pasti a pripadne jeji deaktivaci.<br> MoveTrap: otevre novy dialog s moznosti nastavit pohyb naslapky pri jejim seslapnuti. Je tak mozne nastavit past tak, aby nebylo mozne odhadnout jeji presnou polohu hraci.")
+argo.f_dialog_HelpCreator("HELP - Frozen Pad")
+
+[ITEMDEF i_spawnpad]
+ID=0AEC
+name=Spawn Pad
+
+CATEGORY=Dungy
+SUBSECTION=Enrico
+DESCRIPTION=Dlazdice s potvorou
+
+ON=@Create
+color=021
+attr_movenever(1)
+attr_invis(1)
+tag(resTime,600)
+tag(npcDisappearTime,900)
+tag(spActivateChance,300)
+tag(spawnID,c_iron_eye)
+//sem se da proste potvora co ma vylezt po dupnuti na dlazku
+
+ON=@Step
+if (<src.flags>&statf_dead) //ghosts can't activate the pad
+  return 0
+endif
+if (src.isPlayer) && !(src.isGM)
+  if (<eval tag(spDeactivatedTill)> < <serv.time>) // pad is innactive for some time after catching the player
+    f_trap_removeTrap_clearDepricatedTags
+    if (f_removeTrap_tryActivateTrap) //checks wheather the player successfully removed the trap, the condition succeed if player doesnt
+      if !(strlen(<tag(spActivateChance)>)) //
+        tag(spActivateChance,300)
+      endif
+      if !(<chance(<tag(spActivateChance)>,2)>)  //the bigger the tag spActivateChance is, the bigger the chance that the spawn remains active and that this condition doesn't succeed
+        return 1
+      endif
+      if (safe.tag(restime))
+        tag(spDeactivatedTill,<eval (<serv.time>+<tag(restime)>)>)
+      else
+        tag(restime,450)
+        tag(spDeactivatedTill,<eval (<serv.time>+<tag(restime)>)>)  //defaultni prodleva mezi spawny
+      endif
+      more1=1 //docasne deact.
+      src.newNPC(<TAG.spawnID>)
+      src.act.newitem(i_zmizni)
+      if !(strlen(<tag(npcDisappearTime)>))
+        tag(npcDisappearTime,900)
+      endif
+      src.act.act.timer=<tag(npcDisappearTime)>
+      src.act.equip <src.act.act>
+      f_trap_moveTrap
+    endif
+  endif
+endif
+
+on=@userclick
+if (src.isGM)
+  message("<findres(chardef,tag.spawnID).defname> (<findres(chardef,tag.spawnID).name>)")
+  message("Prodleva: <tag(restime)>")
+  message("<eval(((<tag.spDeactivatedTill>)-(<serv.time>))/10)>s do dalsi aktivace") // nevim, co s tim je, ale nejak to nechce pocitat, pokud tam nenarvu vsechny ty zavorky
+  return 1
+endif
+
+on=@userdclick
+if (src.isGM)
+  dialog(d_spawnpad)
+  return 1
+endif
+
+[dialog d_spawnpad]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,330)
+argo.tag(vyska,183)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,6,93,208)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Spawn dlazdice")
+argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,<lastypos>-3,0fab,0fad,1,0,5)		//help
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"ID monstra:")
+argo.texta(lastxpos,lastypos+(d_def_radek_vyska),<d_def_writecolor>,"Respawn/ds:")
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),<d_def_writecolor>,"Zmizeni/s:")
+  argo.texta(lastxpos,lastypos+(3*d_def_radek_vyska),<d_def_writecolor>,"Sance/%:")
+argo.texta(lastxpos,lastypos+(4*d_def_radek_vyska),<d_def_writecolor>,"RemoveTrap:")
+argo.texta(lastxpos,lastypos+(5*d_def_radek_vyska),<d_def_writecolor>,"MoveTrap:")
+
+argo.settext(11,"<?tag.spawnID?>") //spawnID
+argo.settext(12,"<?tag(restime)?>") //respawn time
+argo.settext(13,"<?eval tag(npcDisappearTime)?>") //npc Disappears after npcDisappearTime seconds
+argo.settext(14,"<?eval tag(spActivateChance)?>") //chance to activate this pad after stepping on it
+argo.textentry(<argo.dialog_textpos(1,1)>,198,<d_def_radek_vyska>,textcolor,1,11)  //Monster ID
+argo.textentry(lastxpos,lastypos+(d_def_radek_vyska),198,<d_def_radek_vyska>,textcolor,2,12)    //time to next pad activation
+argo.textentry(lastxpos,lastypos+(2*d_def_radek_vyska),198,<d_def_radek_vyska>,textcolor,3,13)  //npc disappear after this time
+argo.textentry(lastxpos,lastypos+(3*d_def_radek_vyska),198,<d_def_radek_vyska>,textcolor,4,14)  //chance in %
+argo.button(lastxpos,lastypos+(4*<d_def_radek_vyska>)-3,0fab,0fad,1,0,3)		//RemoveTrap dialog button
+argo.button(lastxpos,lastypos+(5*<d_def_radek_vyska>)-3,0fab,0fad,1,0,4)		//MoveTrap dialog button
+
+argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb4,0fb6,1,0,2)//pad goes home
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_spawnpad button]
+on=0
+src.sysMessage("<src.sex(Stornoval,Stornovala)> jsi volbu. Nastaveni zustava nezmeneno.")
+
+on=1
+f_pad_spawnPad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+src.sysMessage("Nastavujes nove hodnoty spawnu.")
+
+on=2 // pad goes home
+f_pad_spawnPad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+if (strlen(<tag(moveTrap_basePosition)>))
+  p=<tag(moveTrap_basePosition)>
+  src.sysMessage("Naslapka byla umistena zpet na zakladni pozici.")
+else
+  src.redMessage("Funkce MoveTrap neni nastavena.")
+endif
+dialog(d_spawnpad)
+
+on=3 // removeTrap dialog
+f_pad_spawnPad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+f_trap_removeTrap_clearDepricatedTags
+dialog(d_trap_removeTrap,d_spawnpad)
+
+on=4 // moveTrap dialog
+f_pad_spawnPad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+f_trap_moveTrap_clearDepricatedTags
+dialog(d_trap_moveTrap,d_spawnpad)
+
+on=5 //Help
+f_pad_spawnPad_setDialogValues(<argTxt(1)>,<argTxt(2)>,<argTxt(3)>,<argTxt(4)>)
+dialog(d_spawnpad)
+dialog(d_spawnpad_help)
+
+[dialog d_spawnpad_help]
+argo.settext(1," ID monstra: sem vepis ID mocnstra, ktere se ma po naslapnuti spawnout.<br><br> Respawn/ds: cas, po kterem lze naslapku znovu aktivovat po predchozim uspesnym vyslapnuti NPC definovaneho v radku ID monstra.<br><br> Zmizeni/s: Vyslapnuta NPC budou automaticky odstranena po ubehnuti tohoto timeru. Cas je nutne nastavit VZDY! Pokud tak neucinite, bude automaticky nastaven na hodnotu 900s, tedy 15 minut.<br><br> Sance/%: hodnota v % udavajici pravdepodobnost, s jakou hrac aktivuje spawn po uspesnem seslapnuti. Sance MUSI byt nastavena, v opacnem pripade ji bude prirazena defaultni hodnota 30%.<br><br> RemoveTrap & MoveTrap: univerzalni funkce. Popis v jejich dialogu po stistknuti prislusneho tlacitka.")
+argo.f_dialog_HelpCreator("HELP - SpawnPad nastaveni")
+
+[function f_pad_spawnPad_setDialogValues]
+tag(spawnID,<argv(0)>)
+if (<eval argv(1)> > 0)
+ tag(restime,<eval argv(1)>)
+else
+ tag(restime,450)
+ src.RedMessage("Pozor! <src.sex(Nenastavil,Nenastavila)> jsi cas pro respawn! Automaticky prirazeno 45s")
+endif
+if (<eval argv(2)> > 0)
+  tag(npcDisappearTime,<eval argv(2)>)
+else
+  tag(npcDisappearTime,900)
+  src.RedMessage("Pozor! <src.sex(Nenastavil,Nenastavila)> jsi cas pro respawn! Automaticky prirazeno 900s")
+endif
+if (<eval argv(3)> > 0)
+  tag(spActivateChance,<eval argv(3)>)
+else
+  tag(spActivateChance,300)
+  src.RedMessage("Pozor! <src.sex(Nenastavil,Nenastavila)> jsi sanci na aktivaci! Automaticky prirazeno 30%")
+endif
+
+[ITEMDEF i_zmizni]
+id=i_memory
+name=zmizni
+type=t_eq_script
+layer=30
+
+on=@timer
+cont.remove
+return 0
+
+
+//veci ke gulduru
+
+
+[ITEMDEF i_klic_guldur]
+ID=0100f
+NAME=Brinboruv klic
+
+CATEGORY=Dungy
+SUBSECTION=Guldur
+DESCRIPTION=Brinboruv klic
+
+ON=@Create
+COLOR=0481
+
+ON=@userCLICK
+src.sysMessage("Zvlastni klic... copak asi otevira?")
+
+[ITEMDEF i_door_guldur]
+ID=032c
+NAME=zed
+
+CATEGORY=Dungy
+SUBSECTION=Guldur
+DESCRIPTION=zamceny tajny dvere
+
+ON=@Create
+TYPE=t_door_locked
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysMessage("Na te zdi neni vsechno v poradku. Ma v sobe maly otvor.")
+
+if (<src.RESTEST 1 i_klic_guldur>)
+  src.consume=i_klic_guldur
+  TYPE=t_door
+  src.sysMessage("<src.sex(Vlozil,Vzlozila)> jsi klic do otvoru ve zdi.")
+endif
+
+
+[ITEMDEF i_pad_brinbor_1]
+ID=0AEC
+name=Brinbor 1
+
+
+CATEGORY=Dungy
+SUBSECTION=Guldur
+DESCRIPTION=brinbor 1
+
+ON=@Create
+color=021
+attr_movenever(1)
+attr_invis(1)
+
+ON=@Step
+if(src.isplayer)
+ if(<src.flags>&statf_dead)||(src.isGM) //ne duch ni GM ! 
+  return 0
+ endif
+ if (region.tag(brinbor) < <serv.time>-36000)
+  region.tag(brinbor,<servtime>)//ulozi se do regionu kdy se ukazal brinbor
+  src.newnpc c_brinbor
+  lastnewchar.p=//pozice kam se spawne brinbor
+  lastnewchar.invis
+  lastnewchar.invisg
+  tag(brinbor,<lastnewchar>)
+  src.newnpc //proti komu bude brinbor bojovat
+  lastnewchar.p=//pozice kam se spawne 
+  lastnewchar.attack(tag(brinbor))//tohle sem fakt zvedavej jestli bude chodit
+ endif
+endif
+
+[events e_brinbor]
+on=@npcseenewplayer
+tag(<act>,1)
+
+[SPEECH brinborkecy]
+
+ON=*Dobry*
+ON=*den*
+ON=*zdravim* 
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+Say("Dekuji Vam za zachranu. Jste statecni hrdinove. Ale dejte si pozor! Zde je to velmi nebezpecne. Dol Guldur je domovem mocneho nekromanta.")
+
+ON=*jakeho*
+ON=*nekromant*
+ON=*informace*
+ON=*pomoc*
+ON=*rad*
+Say("Ano. Jeho komnaty jsem nenasel, ale ziskal jsem klic, ktery by mohl vest k doupeti te nelidske bestie. Snad pro nej najdete uplatneni.")
+IF (<serv.time> > <tag.time>)
+src.newitem=i_klic_guldur
+src.act.bounce
+tag.time=<serv.time>+10*60*60
+endif           
+
+
+//beridor
+
+[ITEMDEF i_gate_random_beridor]
+ID=i_moongate_blue
+TYPE=t_script
+
+CATEGORY=Dungy
+SUBSECTION=Beridor
+DESCRIPTION=nahodna gate
+
+ON=@Create
+attr=attr_move_never
+tag(pozice1,5737 3186 -18)
+tag(pozice2,5737 3186 -18 5)
+
+
+ON=@Step
+if({0 1})
+  src.go(<tag(pozice1)>)
+else
+  src.go(<tag(pozice2)>)
+endif
+
+[function obnovdunas]
+Name=Dunas
+Color=0761
+Tag.resist_para=00
+Tag.class=mag
+Tag.realm=2
+Tag.fixnation=1
+Tag.experience=731
+Tag.firststroke=1
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_blunt
+Tag.hitspeed=00
+Tag.atskill=41
+Tag.UC=00
+Tag.SM=00
+Tag.Title="(Skurut_hai) Velmistr carodej"
+Tag.OM=00
+Tag.ammoid=00
+Tag.armordef=14500
+Tag.mistrquest=1
+Tag.magic=2
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.skillrank=3
+Tag.level=61
+Tag.mi_stamreg=00
+Tag.baseintel=140
+Tag.nation="Mordoran"
+Tag.stepcount=7
+Tag.race=Skurut_hai
+Tag.ability=95040
+Tag.basestr=50
+Tag.basedex=60
+Tag.basevit=50
+Tag.pergamen=00
+Tag.chaton=15
+Tag.splnen_kvest_011=1
+Tag.ra_hitsreg=20
+Tag.lastcm=alchemy
+Tag.playerkillstotal=642
+Tag.monsterkillstotal=18004
+Tag.dynamdialog=00
+Tag.intellev=214
+Tag.classcolor=color_mag
+Tag.strlev=50
+Tag.dexlev=60
+Tag.vitlev=96
+Tag.ra_stamreg=20
+Tag.splnen_kvest_010=1
+Tag.ra_weapdodge=30
+Tag.q010_mastickar=2
+Tag.ra_manareg=20
+Tag.q30_zmocnenecm=17
+Tag.q20=1
+Tag.mq011_prekupnik=6
+Tag.ra_speldodge=10
+Tag.ra_hitsleech=4
+Tag.ra_stamleech=18
+Tag.selatko=1
+Tag.lakomec=1
+Tag.q1_lavovyjester=1
+Tag.rachel=2
+Tag.CARODEJNICE=1
+Tag.splnenkvest_008=1
+Tag.mq013_experimentator=2
+Events=e_character
+Events=e_mag
+Events=class_mag
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Deaths=427
+Kills=29921
+Profession=class_mag
+Dir=2
+OSkin=0761
+Home=3610,2718,-50
+Str=50
+Int=214
+Dex=60
+Hits=96
+Mana=214
+Stam=96
+Food=14
+Fame=10000
+Karma=-9055
+MaxHits=96
+MaxMana=214
+MaxStam=96
+Alchemy=30.2
+Anatomy=75.0
+AnimalLore=25.0
+ItemID=25.0
+Begging=25.0
+Camping=25.0
+Cartography=30.0
+Cooking=0.6
+DetectingHidden=50.0
+EI=100.0
+Healing=50.0
+Forensics=75.0
+Herding=25.0
+Hiding=50.0
+Inscription=30.4
+Magery=100.0
+Resist=100.0
+Tactics=25.0
+Poisoning=25.0
+SpiritSpeak=100.0
+TasteID=25.0
+Tracking=25.0
+Veterinary=25.0
+Macefighting=25.0
+Wrestling=25.0
+Meditation=100.0
+Stealth=50.0
+RemoveTrap=25.0
+
+[function obnovclove]
+Name=Clove
+Color=0761
+Tag.ammoid=00
+Tag.atskill=31
+Tag.UC=00
+Tag.OM=00
+Tag.class=craft
+Tag.Title="(Skurut_hai) Velmistr remeslnik"
+Tag.SM=00
+Tag.hitspeed=00
+Tag.realm=1
+Tag.fixnation=1
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_piercing
+Tag.experience=116
+Tag.firststroke=1
+Tag.armordef=00
+Tag.fizzlechance=528
+Tag.piercing=00
+Tag.level=20
+Tag.skillrank=3
+Tag.classcolor=color_craft
+Tag.ability=52800
+Tag.nation="Mordoran"
+Tag.race=Skurut_hai
+Tag.numberAFKsInMonth="2,2"
+Tag.nachytanafk=1
+Tag.firstsuccesslesscontrol=2008,6,6,16,41
+Tag.dynamdialog=00
+Tag.playerkillstotal=2
+Tag.lastcm=tinkering
+Tag.randommrcha=54
+Tag.ra_stamreg=20
+Tag.basestr=130
+Tag.strlev=130
+Tag.dexlev=50
+Tag.basevit=100
+Tag.stepcount=13
+Tag.monsterkillstotal=774
+Tag.baseintel=20
+Tag.basedex=50
+Tag.vitlev=150
+Tag.intellev=40
+Tag.ra_manareg=8
+Tag.chaton=15
+Tag.ra_hitsreg=12
+Tag.mq011_prekupnik=1
+Tag.q30_zmocnenecm=3
+Tag.q010_mastickar=1
+Tag.splnen_kvest_010=1
+Tag.presel=1
+Events=e_character
+Events=e_spelleffect
+Events=e_craft
+Events=e_gethit
+Events=e_noclick
+Events=class_craft
+Deaths=90
+Profession=class_craft
+Dir=6
+OSkin=0761
+Flag_InDoors=1
+Home=5678,3871,-80
+Str=130
+Int=40
+Dex=50
+Hits=150
+Mana=40
+Stam=150
+Food=14
+Fame=43
+MaxHits=150
+MaxMana=40
+MaxStam=150
+ItemID=30.0
+ArmsLore=30.0
+Blacksmithing=73.7
+Bowcraft=73.6
+Carpentry=100.0
+Cooking=33.7
+Fishing=30.0
+Magery=25.0
+Tailoring=33.4
+Tinkering=94.3
+Lumberjacking=100.0
+Mining=79.4
+
+[function obnovrashard]
+Name=Rashard
+Color=0761
+Tag.resist_para=00
+Tag.class=war
+Tag.realm=2
+Tag.fixnation=1
+Tag.experience=17665
+Tag.firststroke=1
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_sharp|dam_slashing
+Tag.hitspeed=24
+Tag.atskill=40
+Tag.UC=66
+Tag.SM=00
+Tag.Title="(Skurut_hai) Velmistr valecnik"
+Tag.OM=00
+Tag.ammoid=00
+Tag.armordef=8580
+Tag.fizzlechance=1000
+Tag.piercing=200
+Tag.skillrank=3
+Tag.level=58
+Tag.mi_stamreg=00
+Tag.baseintel=20
+Tag.nation="Mordoran"
+Tag.stepcount=17
+Tag.race=Skurut_hai
+Tag.ability=94934
+Tag.basestr=120
+Tag.basedex=60
+Tag.basevit=100
+Tag.pergamen=00
+Tag.chaton=15
+Tag.ra_hitsreg=10
+Tag.lastcm=alchemy
+Tag.playerkillstotal=100
+Tag.monsterkillstotal=18972
+Tag.dynamdialog=00
+Tag.intellev=20
+Tag.classcolor=color_war
+Tag.strlev=180
+Tag.dexlev=60
+Tag.vitlev=160
+Tag.ra_stamreg=12
+Tag.randommrcha=49
+Tag.splnen_kvest_010=1
+Tag.ra_weapdodge=20
+Tag.q010_mastickar=2
+Tag.crunch_informace_011=7
+Tag.q30_zmocnenecm=16
+Tag.mq011_prekupnik=1
+Tag.ra_hitsleech=20
+Tag.ra_warcry=8
+Tag.ra_leap=10
+Tag.ra_stamleech=12
+Tag.ra_doubleswing=20
+Tag.mq013_experimentator=1
+Events=e_character
+Events=e_war
+Events=class_war
+Events=e_spelleffect
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_gethit
+Events=e_noclick
+Deaths=110
+Kills=29723
+Profession=class_war
+Dir=4
+OSkin=0761
+Flag_InDoors=1
+Home=3610,2718,-50
+Str=180
+Int=20
+Dex=60
+Hits=160
+Mana=20
+Stam=111
+Food=14
+Fame=9000
+Karma=10000
+MaxHits=160
+MaxMana=20
+MaxStam=160
+Anatomy=100.0
+AnimalLore=25.0
+ArmsLore=100.0
+Parrying=100.0
+DetectingHidden=25.0
+Healing=75.0
+Fishing=63.5
+Forensics=50.0
+Hiding=50.0
+Magery=25.0
+Resist=75.0
+Tactics=100.0
+Swordsmanship=100.0
+Macefighting=100.0
+Fencing=100.0
+Wrestling=30.0
+Lumberjacking=0.1
+Mining=37.9
+Meditation=25.0
+Stealth=25.0
+
+[function obnovmarenka]
+Name=Davial
+Color=064A
+Timer=0
+Tag.class=thief
+Tag.realm=1
+Tag.experience=00
+Tag.combattype="nonmystik"
+Tag.atskill=42
+Tag.weapflag=dam_physical|dam_sharp
+Tag.weaponuid=00
+Tag.hitspeed=00
+Tag.SM=00
+Tag.UC=00
+Tag.ammoid=00
+Tag.firststroke=1
+Tag.OM=00
+Tag.Title="(Trpaslik) Velmistr chmatak"
+Tag.followscript=98
+Tag.warn_follow=7
+Tag.armordef=00
+Tag.fizzlechance=1000
+Tag.piercing=220
+Tag.t_follow=00
+Tag.level=13
+Tag.skillrank=3
+Tag.dexlev=83
+Tag.baseintel=50
+Tag.race=Trpaslik
+Tag.hotovequesty_2=041
+Tag.classcolor=color_thief
+Tag.basestr=80
+Tag.nation="Ereboran"
+Tag.strlev=113
+Tag.intellev=50
+Tag.basedex=80
+Tag.monsterkillstotal=2048
+Tag.basevit=90
+Tag.chaton=15
+Tag.stepcount=9
+Tag.ability=36722
+Tag.randommrcha=111
+Tag.vitlev=103
+Tag.dynamdialog=23
+Tag.pergamen=00
+Tag.lastcm=alchemy
+Tag.ra_hitsleech=10
+Tag.firstsuccesslesscontrol=2009,2,16,15,36
+Tag.numberAFKsInMonth="1,4"
+Tag.guildMessage=00
+Tag.ra_stamreg=6
+Tag.playerkillstotal=20
+Tag.q31_kuchar=2
+Tag.gq011_prekupnik=6
+Tag.q100_hobitin_ambra=2
+Tag.q015_paradnice=1
+Tag.q30_zmocnenecg=5
+Tag.maskattribs="Marenka,10000,00,1"
+Tag.ra_backstab=10
+Tag.maskHome=3157,965,40
+Events=e_character
+Events=e_testfollow
+Events=e_thief
+Events=e_gethit
+Events=e_spelleffect
+Events=e_hitsleech
+Events=e_noclick
+Events=class_thief
+Deaths=49
+Profession=class_thief
+Dir=4
+OSkin=064A
+Home=3157,965,40
+Str=113
+Int=50
+Dex=83
+Hits=103
+Mana=50
+Stam=103
+Food=10
+Fame=319
+Karma=8535
+MaxHits=103
+MaxMana=50
+MaxStam=103
+Alchemy=30.0
+Anatomy=65.0
+Healing=50.0
+Fishing=32.7
+Hiding=55.0
+Provocation=60.0
+Magery=25.0
+Tactics=75.0
+Musicianship=55.0
+Archery=30.0
+Stealing=30.0
+Fencing=80.0
+Lumberjacking=1.6
+Mining=0.4
+Stealth=30.0
+
+[function obnovbloodymarry]
+Name="Trestanec Bloody Marry"
+Color=0998
+Timer=0
+Tag.undeadhandler=c_skeleton_mage_lvl_3
+Tag.class=shaman
+Tag.realm=2
+Tag.followscript=73
+Tag.firststroke=1
+Tag.atskill=40
+Tag.combattype="nonmystik"
+Tag.hitspeed=00
+Tag.weapflag=dam_physical|dam_slashing
+Tag.experience=00
+Tag.UC=00
+Tag.ammoid=00
+Tag.Title="(Skret) Velmistr kacir"
+Tag.OM=00
+Tag.SM=00
+Tag.armordef=00
+Tag.warn_follow=9
+Tag.t_follow=38
+Tag.level=39
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.mistrquest=1
+Tag.skillrank=3
+Tag.mi_stamreg=00
+Tag.basedex=60
+Tag.classcolor=color_shaman
+Tag.ra_manareg=1
+Tag.intellev=90
+Tag.lastcm=alchemy
+Tag.race=Skret
+Tag.vitlev=90
+Tag.monsterkillstotal=6274
+Tag.guildMessage=00
+Tag.dexlev=60
+Tag.ability=83397
+Tag.strlev=60
+Tag.nation="Mordoran"
+Tag.basevit=90
+Tag.dynamdialog=00
+Tag.chaton=31
+Tag.basestr=60
+Tag.stepcount=17
+Tag.baseintel=90
+Tag.playerkillstotal=133
+Tag.q30_zmocnenecm=16
+Tag.q007_hospodsky_vino=-260931884
+Tag.mq013_experimentator=2
+Tag.can_declare_war_on_Gondor=1
+Events=e_character
+Events=e_testfollow
+Events=e_bloodritual
+Events=e_gethit
+Events=e_shaman
+Events=e_spelleffect
+Events=e_noclick
+Events=class_shaman
+Deaths=75
+Profession=class_shaman
+Dir=1
+OSkin=0998
+Flag_InDoors=1
+Home=3610,2718,-50
+Str=60
+Int=90
+Dex=60
+Hits=90
+Mana=90
+Stam=90
+Food=15
+Fame=10000
+MaxHits=90
+MaxMana=90
+MaxStam=90
+Anatomy=30.0
+Cooking=59.9
+EI=30.0
+Healing=30.0
+Fishing=0.2
+Magery=30.0
+Lumberjacking=0.0
+Meditation=30.0
+
+
+[function obnovarchelon]
+Name=Archelon
+Color=0761
+Timer=0
+Tag.class=priest
+Tag.realm=2
+Tag.ammoid=00
+Tag.combattype="nonmystik"
+Tag.UC=4
+Tag.firststroke=1
+Tag.SM=127
+Tag.OM=69
+Tag.mistrquest=1
+Tag.hitspeed=6
+Tag.experience=00
+Tag.weaponuid=00
+Tag.Title="(Skurut_hai) Velmistr knez"
+Tag.armordef=330
+Tag.SUMMON_RETURNPOINT=4700,3826,1
+Tag.secondstroke=1
+Tag.level=44
+Tag.ability=88281
+Tag.atskill=43
+Tag.skillrank=3
+Tag.piercing=100
+Tag.vitlev=160
+Tag.intellev=80
+Tag.weapflag=dam_physical|dam_blunt
+Tag.fizzlechance=1000
+Tag.basedex=70
+Tag.classcolor=color_priest
+Tag.strlev=110
+Tag.basestr=70
+Tag.st_pointnumb_0=00
+Tag.ra_hitsreg=10
+Tag.basevit=80
+Tag.race=Skurut_hai
+Tag.dynamdialog=00
+Tag.baseintel=80
+Tag.ra_stamreg=10
+Tag.dexlev=70
+Tag.stepcount=9
+Tag.ra_manareg=10
+Tag.mi_stamreg=0F
+Tag.playerkillstotal=14
+Tag.chaton=15
+Tag.pergamen=00
+Tag.lastcm=alchemy
+Tag.nation="Mordoran"
+Tag.monsterkillstotal=1651
+Tag.ra_hitsleech=10
+Tag.karmapits=10000
+Tag.murderpits=29767
+Tag.ra_stamleech=4
+Tag.resetting=1
+Events=e_character
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_gethit
+Events=e_priest
+Events=e_spelleffect
+Events=e_noclick
+Events=class_priest
+Deaths=273
+Kills=29710
+Profession=class_priest
+Dir=0
+OSkin=0761
+Flag_InDoors=1
+Home=3610,2718,-50
+Str=110
+Int=80
+Dex=70
+Hits=160
+Mana=80
+Stam=160
+Food=14
+Fame=1089
+Karma=10000
+MaxHits=160
+MaxMana=80
+MaxStam=160
+Alchemy=52.3
+Anatomy=100.0
+AnimalLore=25.0
+ItemID=75.0
+ArmsLore=50.0
+Parrying=75.0
+Begging=25.0
+Peacemaking=100.0
+Camping=50.0
+Cooking=12.3
+DetectingHidden=50.0
+Enticement=25.0
+EI=100.0
+Healing=100.0
+Fishing=5.0
+Forensics=50.0
+Herding=50.0
+Hiding=50.0
+Inscription=30.0
+Magery=100.0
+Resist=75.0
+Tactics=75.0
+Musicianship=100.0
+SpiritSpeak=100.0
+TasteID=25.0
+Tracking=50.0
+Veterinary=25.0
+Macefighting=75.0
+Wrestling=75.0
+Lumberjacking=5.0
+Mining=30.4
+Meditation=75.0
+Stealth=25.0
+RemoveTrap=50.0
+
+[function obnovdark]
+Name=Dark
+Color=0909
+Timer=0
+Tag.magic=1
+Tag.class=mag
+Tag.realm=2
+Tag.ammoid=00
+Tag.combattype="nonmystik"
+Tag.UC=00
+Tag.firststroke=1
+Tag.SM=00
+Tag.OM=00
+Tag.mistrquest=1
+Tag.hitspeed=00
+Tag.experience=4661
+Tag.Title="(Clovek) Velmistr vyvolavac"
+Tag.armordef=5115
+Tag.secondstroke=1
+Tag.level=35
+Tag.ability=78540
+Tag.atskill=41
+Tag.skillrank=3
+Tag.piercing=00
+Tag.vitlev=100
+Tag.intellev=200
+Tag.weapflag=dam_physical|dam_blunt
+Tag.fizzlechance=1000
+Tag.basedex=60
+Tag.classcolor=color_mag
+Tag.strlev=50
+Tag.basestr=50
+Tag.st_pointnumb_0=00
+Tag.ra_hitsreg=10
+Tag.basevit=60
+Tag.race=Clovek
+Tag.dynamdialog=00
+Tag.baseintel=130
+Tag.ra_stamreg=10
+Tag.dexlev=60
+Tag.stepcount=00
+Tag.ra_manareg=10
+Tag.mi_stamreg=0F
+Tag.playerkillstotal=80
+Tag.clienttype="old"
+Tag.chaton=15
+Tag.lastcm=alchemy
+Tag.nation="Mordoran"
+Tag.monsterkillstotal=1910
+Tag.ra_hitsleech=5
+Tag.karmapits=8000
+Tag.murderpits=29893
+Events=e_character
+Events=e_hitsleech
+Events=e_gethit
+Events=e_mag
+Events=e_spelleffect
+Events=e_allplayers
+Events=spk_allplayers
+Events=class_mag
+Deaths=392
+Kills=29890
+Profession=class_mag
+Dir=0
+OSkin=0909
+Home=3610,2718,-50
+Str=50
+Int=200
+Dex=60
+Hits=100
+Mana=200
+Stam=100
+Food=14
+Fame=4274
+Karma=8150
+MaxHits=100
+MaxMana=200
+MaxStam=100
+Alchemy=60.9
+Anatomy=50.0
+AnimalLore=25.0
+ItemID=50.0
+Begging=50.0
+Camping=50.0
+Cartography=30.0
+Cooking=5.0
+DetectingHidden=50.0
+EI=100.0
+Healing=50.0
+Forensics=50.0
+Herding=25.0
+Hiding=50.0
+Inscription=30.0
+Magery=100.0
+Resist=100.0
+Tactics=50.0
+Poisoning=25.0
+SpiritSpeak=100.0
+TasteID=50.0
+Tracking=25.0
+Veterinary=25.0
+Macefighting=25.0
+Wrestling=50.0
+Meditation=100.0
+Stealth=25.0
+RemoveTrap=50.0
+
+[function obnovdarken]
+Name=Darken
+Color=0909
+Timer=0
+Tag.class=necro
+Tag.realm=2
+Tag.ammoid=00
+Tag.combattype="nonmystik"
+Tag.UC=22
+Tag.firststroke=1
+Tag.SM=251
+Tag.OM=90
+Tag.hitspeed=27
+Tag.experience=00
+Tag.weaponuid=#04010FA71
+Tag.Title="(Clovek) Velmistr vyvolavac"
+Tag.armordef=00
+Tag.secondstroke=1
+Tag.level=30
+Tag.ability=71280
+Tag.atskill=41
+Tag.skillrank=3
+Tag.piercing=00
+Tag.vitlev=110
+Tag.intellev=170
+Tag.weapflag=dam_physical|dam_blunt
+Tag.fizzlechance=1000
+Tag.basedex=60
+Tag.classcolor=color_necro
+Tag.strlev=60
+Tag.basestr=60
+Tag.st_pointnumb_0=00
+Tag.ra_hitsreg=10
+Tag.basevit=80
+Tag.race=Clovek
+Tag.dynamdialog=00
+Tag.baseintel=100
+Tag.ra_stamreg=10
+Tag.dexlev=60
+Tag.stepcount=11
+Tag.ra_manareg=10
+Tag.mi_stamreg=0F
+Tag.playerkillstotal=4
+Tag.chaton=2
+Tag.nation="Mordoran"
+Tag.monsterkillstotal=117
+Events=e_character
+Events=e_gethit
+Events=e_necro
+Events=e_spelleffect
+Events=e_noclick
+Events=class_necro
+Deaths=109
+Kills=29990
+Profession=class_necro
+Dir=7
+OSkin=0909
+Flag_InDoors=1
+Home=3610,2718,-50
+Str=60
+Int=170
+Dex=60
+Hits=110
+Mana=170
+Stam=110
+Food=8
+Fame=66
+Karma=10000
+MaxHits=110
+MaxMana=170
+MaxStam=110
+Alchemy=38.1
+Anatomy=50.0
+ItemID=10.0
+Begging=25.0
+Camping=25.0
+Cooking=5.0
+DetectingHidden=25.0
+Enticement=25.0
+EI=100.0
+Healing=50.0
+Forensics=25.0
+Hiding=50.0
+Provocation=50.0
+Inscription=30.0
+Magery=100.0
+Resist=100.0
+Tactics=50.0
+Musicianship=75.0
+Poisoning=50.0
+SpiritSpeak=100.0
+TasteID=25.0
+Tracking=25.0
+Veterinary=25.0
+Macefighting=5.0
+Wrestling=25.0
+Meditation=100.0
+Stealth=5.0
+Necromancy=30.0
+
+[function obnovmarenka]
+Name=Davial
+Color=064A
+Timer=0
+Tag.class=thief
+Tag.realm=1
+Tag.weapflag=dam_physical|dam_sharp
+Tag.atskill=42
+Tag.combattype="nonmystik"
+Tag.experience=2722
+Tag.SM=00
+Tag.ammoid=00
+Tag.hitspeed=00
+Tag.UC=00
+Tag.OM=00
+Tag.Title="(Trpaslik) Velmistr tichoslapek"
+Tag.followscript=44
+Tag.armordef=9000
+Tag.magic=1
+Tag.warn_follow=4
+Tag.level=24
+Tag.fizzlechance=1000
+Tag.piercing=220
+Tag.t_follow=28
+Tag.skillrank=3
+Tag.mi_stamreg=00
+Tag.chaton=31
+Tag.ability=60825
+Tag.classcolor=color_thief
+Tag.boostyxy=20,20,00,7843284
+Tag.lastcm=alchemy
+Tag.playerkillstotal=138
+Tag.monsterkillstotal=4305
+Tag.dynamdialog=00
+Tag.maskHome=3610,2718,-50
+Tag.pergamen=00
+Tag.stepcount=10
+Tag.maskattribs="Marenka,2537,30000,2"
+Tag.hotovequesty_2=041
+Tag.race=Trpaslik
+Tag.nation="Ereboran"
+Tag.strlev=120
+Tag.dexlev=80
+Tag.basevit=80
+Tag.intellev=50
+Tag.guildMessage=00
+Tag.basedex=80
+Tag.basestr=90
+Tag.baseintel=50
+Tag.vitlev=132
+Tag.q30_zmocnenecg=12
+Tag.ra_stamreg=20
+Tag.q100_hobitin_ambra=2
+Tag.gq011_prekupnik=6
+Tag.q31_kuchar=2
+Tag.presel=1
+Tag.q009_krejci=1
+Tag.q015_paradnice=2
+Tag.randommrcha=111
+Tag.ra_hitsleech=8
+Tag.ra_backstab=20
+Tag.numberAFKsInMonth="1,4"
+Tag.firstsuccesslesscontrol=2009,2,16,15,36
+Tag.U_follow=#+1
+Events=e_character
+Events=e_testfollow
+Events=e_thief
+Events=e_hitsleech
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_thief
+Deaths=113
+Kills=1
+Profession=class_thief
+OSkin=064A
+Home=3157,965,40
+Str=120
+Int=50
+Dex=80
+Hits=132
+Mana=36
+Stam=132
+Food=14
+Fame=10000
+Karma=10000
+MaxHits=132
+MaxMana=50
+MaxStam=132
+Alchemy=30.0
+Anatomy=100.0
+Healing=75.0
+Fishing=32.7
+Hiding=80.0
+Provocation=30.0
+Magery=30.0
+Tactics=100.0
+Archery=30.0
+Stealing=30.0
+Fencing=75.0
+Lumberjacking=1.6
+Mining=0.4
+Stealth=100.0
+
+[function obnovsubdolus]
+Name=Subdolus
+Color=0909
+Timer=0
+Tag.class=thief
+Tag.realm=2
+Tag.weapflag=dam_physical|dam_sharp
+Tag.atskill=42
+Tag.combattype="nonmystik"
+Tag.experience=2539
+Tag.SM=00
+Tag.ammoid=00
+Tag.hitspeed=00
+Tag.UC=00
+Tag.OM=00
+Tag.Title="(Clovek) Velmistr lapka"
+Tag.firststroke=1
+Tag.followscript=62
+Tag.armordef=2000
+Tag.warn_follow=5
+Tag.level=49
+Tag.fizzlechance=1000
+Tag.piercing=220
+Tag.t_follow=93
+Tag.skillrank=3
+Tag.loveckasoutez=429
+Tag.ra_hitsreg=8
+Tag.mi_stamreg=00
+Tag.chaton=31
+Tag.ability=91845
+Tag.classcolor=color_thief
+Tag.lastcm=alchemy
+Tag.playerkillstotal=31
+Tag.monsterkillstotal=20019
+Tag.dynamdialog=00
+Tag.maskHome=2344,2542
+Tag.stepcount=18
+Tag.maskattribs="Saevus,10000,00,1"
+Tag.hotovequesty_2=081
+Tag.race=Clovek
+Tag.nation="Rohir"
+Tag.strlev=120
+Tag.dexlev=110
+Tag.basevit=100
+Tag.intellev=50
+Tag.guildMessage=00
+Tag.basedex=80
+Tag.basestr=70
+Tag.baseintel=50
+Tag.vitlev=140
+Tag.q30_zmocnenecg=7
+Tag.ra_stamreg=20
+Tag.q31_kuchar=2
+Tag.ra_weapdodge=20
+Tag.presel=1
+Tag.ra_throwing=10
+Tag.ra_hitsleech=20
+Tag.ra_backstab=20
+Tag.mq011_prekupnik=2
+Events=e_character
+Events=e_testfollow
+Events=e_thief
+Events=e_gethit
+Events=e_hitsleech
+Events=e_spelleffect
+Events=e_noclick
+Events=class_thief
+Deaths=129
+Kills=29961
+Profession=class_thief
+OSkin=0909
+Flag_InDoors=1
+Home=3610,2718,-50
+Str=120
+Int=50
+Dex=110
+Hits=140
+Mana=34
+Stam=140
+Food=14
+Fame=2316
+Karma=10000
+MaxHits=140
+MaxMana=50
+MaxStam=140
+Alchemy=32.0
+Anatomy=100.0
+ArmsLore=75.0
+Parrying=5.0
+Cooking=7.1
+Healing=75.0
+Hiding=100.0
+Provocation=100.0
+Magery=50.0
+Resist=50.0
+Tactics=100.0
+Musicianship=80.0
+Poisoning=95.0
+Archery=30.0
+Stealing=30.0
+Fencing=100.0
+Meditation=30.0
+Stealth=100.0
+
+[function obnovmoulister]
+Name=Moulister
+Color=0903
+Tag.ammoid=00
+Tag.atskill=31
+Tag.UC=00
+Tag.undeadhandler=c_skeleton_mage
+Tag.OM=23
+Tag.class=craft
+Tag.Title="(Hobit) Mistr remeslnik"
+Tag.SM=10
+Tag.hitspeed=29
+Tag.realm=1
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_piercing
+Tag.experience=00
+Tag.firststroke=1
+Tag.followscript=3
+Tag.warn_follow=9
+Tag.fizzlechance=608
+Tag.piercing=00
+Tag.t_follow=8
+Tag.level=24
+Tag.skillrank=2
+Tag.classcolor=color_craft
+Tag.ability=60825
+Tag.nation="Pulcik"
+Tag.race=Hobit
+Tag.dynamdialog=23
+Tag.playerkillstotal=1
+Tag.lastcm=blacksmithing
+Tag.randommrcha=20
+Tag.ra_stamreg=6
+Tag.basestr=130
+Tag.strlev=180
+Tag.dexlev=50
+Tag.basevit=100
+Tag.stepcount=8
+Tag.monsterkillstotal=468
+Tag.baseintel=20
+Tag.basedex=50
+Tag.vitlev=132
+Tag.intellev=20
+Tag.chaton=15
+Tag.gq001=3
+Tag.hotovequesty_2=041
+Tag.q100_hobitin_ambra=2
+Tag.ra_archery=20
+Tag.ra_sharps=20
+Tag.PROFILE=Neprilis zrucny delnik
+Events=e_character
+Events=e_craft
+Events=e_testfollow
+Events=class_craft
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Deaths=98
+Profession=class_craft
+Dir=1
+OSkin=0903
+Home=1082,1335
+Str=180
+Int=20
+Dex=50
+Hits=92
+Mana=20
+Stam=132
+Food=14
+Fame=33
+Karma=6604
+MaxHits=132
+MaxMana=20
+MaxStam=132
+Anatomy=25.0
+ItemID=50.0
+ArmsLore=50.0
+Blacksmithing=86.3
+Bowcraft=60.2
+Camping=25.0
+Carpentry=53.0
+Cooking=30.0
+Fishing=44.0
+Hiding=25.0
+Magery=25.0
+Resist=25.0
+Tactics=50.0
+Archery=50.0
+Tailoring=30.5
+Tinkering=94.8
+Swordsmanship=25.0
+Fencing=25.0
+Lumberjacking=62.2
+Mining=100.0
+Meditation=25.0
+
+
+[function obnovtherion]
+Name=Therion
+Color=0909
+Tag.class=war
+Tag.resist_para=00
+Tag.realm=2
+Tag.fixnation=1
+Tag.firststroke=1
+Tag.atskill=41
+Tag.weaponuid=00
+Tag.experience=482
+Tag.hitspeed=00
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_blunt
+Tag.OM=00
+Tag.ammoid=00
+Tag.SM=00
+Tag.UC=00
+Tag.armordef=2000
+Tag.Title="(Clovek) Velmistr valecnik"
+Tag.fizzlechance=1000
+Tag.piercing=150
+Tag.mistrquest=1
+Tag.skillrank=3
+Tag.level=50
+Tag.baseintel=20
+Tag.basevit=100
+Tag.basedex=60
+Tag.ability=92400
+Tag.race=Clovek
+Tag.nation="Mordoran"
+Tag.basestr=120
+Tag.stepcount=20
+Tag.pergamen=00
+Tag.classcolor=color_war
+Tag.vitlev=160
+Tag.lastcm=alchemy
+Tag.strlev=180
+Tag.dynamdialog=00
+Tag.monsterkillstotal=5610
+Tag.dexlev=60
+Tag.intellev=20
+Tag.splnen_kvest_011=1
+Tag.ra_hitsreg=10
+Tag.playerkillstotal=104
+Tag.ra_stamreg=20
+Tag.ra_weapdodge=20
+Tag.q30_zmocnenecm=17
+Tag.mq002=7
+Tag.ra_hitsleech=20
+Tag.crunch_informace_010=2
+Tag.ra_doubleswing=20
+Tag.ra_leap=10
+Events=e_character
+Events=e_war
+Events=e_hitsleech
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_war
+Deaths=461
+Kills=30098
+Profession=class_war
+Dir=4
+OSkin=0909
+Flag_InDoors=1
+Home=4186,3960
+Str=180
+Int=20
+Dex=60
+Hits=160
+Mana=20
+Stam=160
+Food=14
+Fame=7362
+Karma=-2893
+MaxHits=160
+MaxMana=20
+MaxStam=160
+Anatomy=100.0
+ArmsLore=100.0
+Parrying=100.0
+DetectingHidden=25.0
+Healing=75.0
+Forensics=25.0
+Hiding=50.0
+Magery=25.0
+Resist=75.0
+Tactics=100.0
+Swordsmanship=100.0
+Macefighting=100.0
+Fencing=100.0
+Wrestling=50.0
+Lumberjacking=0.1
+Meditation=25.0
+Stealth=25.0
+
+[function obnovmantus]
+Name=Mantus
+Color=0761
+Timer=0
+Tag.class=necro
+Tag.realm=2
+Tag.weapflag=dam_physical|dam_blunt
+Tag.combattype="nonmystik"
+Tag.experience=16952
+Tag.Title="(Skurut_hai) Velmistr vyvolavac"
+Tag.atskill=41
+Tag.ammoid=00
+Tag.firststroke=1
+Tag.SM=00
+Tag.OM=00
+Tag.UC=00
+Tag.hitspeed=00
+Tag.followscript=34
+Tag.warn_follow=9
+Tag.armordef=8460
+Tag.KOTROLNIBOD2A=1
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.t_follow=00
+Tag.mistrquest=1
+Tag.level=60
+Tag.skillrank=3
+Tag.strlev=60
+Tag.race=Skurut_hai
+Tag.classcolor=color_necro
+Tag.basedex=60
+Tag.vitlev=110
+Tag.nation="Mordoran"
+Tag.monsterkillstotal=8343
+Tag.basestr=60
+Tag.baseintel=100
+Tag.stepcount=00
+Tag.basevit=80
+Tag.ability=95040
+Tag.intellev=190
+Tag.dexlev=60
+Tag.ra_manareg=20
+Tag.ra_hitsreg=20
+Tag.pergamen=00
+Tag.chaton=15
+Tag.dynamdialog=00
+Tag.ra_stamreg=20
+Tag.playerkillstotal=177
+Tag.lastcm=alchemy
+Tag.ra_weapdodge=20
+Tag.ra_speldodge=20
+Tag.q010_mastickar=2
+Tag.mi_stamreg=00
+Tag.q30_zmocnenecm=7
+Tag.mq002=7
+Tag.KOTROLNIBOD1A=1
+Tag.splnen_kvest_010=1
+Tag.KOTROLNIBOD1B=1
+Events=e_character
+Events=e_testfollow
+Events=e_necro
+Events=e_spelleffect
+Events=e_gethit
+Events=e_noclick
+Events=class_necro
+Deaths=228
+Kills=29804
+Profession=class_necro
+Dir=6
+OSkin=0761
+Flag_InDoors=1
+Home=3610,2718,-50
+Str=60
+Int=190
+Dex=60
+Hits=110
+Mana=190
+Stam=110
+Food=15
+Fame=7723
+Karma=7066
+MaxHits=110
+MaxMana=190
+MaxStam=110
+Alchemy=30.0
+Anatomy=75.0
+EI=100.0
+Healing=50.0
+Forensics=75.0
+Hiding=50.0
+Inscription=30.0
+Magery=100.0
+Resist=100.0
+SpiritSpeak=100.0
+Meditation=100.0
+Necromancy=30.0
+
+[function obnovonkyo]
+Name=Onkyo
+Color=0909
+Tag.hitspeed=00
+Tag.class=craft
+Tag.SM=00
+Tag.OM=00
+Tag.realm=1
+Tag.fixnation=1
+Tag.UC=00
+Tag.experience=432
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_piercing
+Tag.atskill=31
+Tag.ammoid=00
+Tag.firststroke=1
+Tag.Title="(Clovek) Velmistr cechmistr"
+Tag.armordef=2000
+Tag.mi_stamreg=00
+Tag.fizzlechance=00
+Tag.piercing=295
+Tag.level=41
+Tag.skillrank=3
+Tag.classcolor=color_craft
+Tag.stepcount=7
+Tag.randommrcha=62
+Tag.intellev=40
+Tag.race=Clovek
+Tag.vitlev=150
+Tag.baseintel=20
+Tag.basestr=130
+Tag.basedex=50
+Tag.dexlev=50
+Tag.dynamdialog=23
+Tag.nation="Rohir"
+Tag.ability=85509
+Tag.basevit=100
+Tag.chaton=8
+Tag.strlev=180
+Tag.lastcm=carpentry
+Tag.splnen_kvest_010=1
+Tag.nachytanafk=1
+Tag.monsterkillstotal=2776
+Tag.numberAFKsInMonth=1
+Tag.ra_stamreg=20
+Tag.ra_weapdodge=2
+Tag.playerkillstotal=1
+Tag.gq002=7
+Tag.startdialog="nationinfo_Rohir"
+Tag.quest_scout_terlak=2
+Tag.ra_bleed_bolt=20
+Tag.ra_crushing=20
+Tag.ra_archery=20
+Events=e_character
+Events=e_craft
+Events=class_craft
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Deaths=196
+Profession=class_craft
+Dir=0
+OSkin=0909
+Flag_InDoors=1
+Home=5678,3871,-80
+Str=180
+Int=40
+Dex=50
+Hits=150
+Mana=19
+Stam=150
+Food=13
+Fame=342
+Karma=796
+MaxHits=150
+MaxMana=40
+MaxStam=150
+Anatomy=50.0
+AnimalLore=25.0
+ItemID=50.0
+ArmsLore=100.0
+Parrying=25.0
+Begging=25.0
+Blacksmithing=63.5
+Bowcraft=100.0
+Carpentry=100.0
+Cooking=30.0
+DetectingHidden=25.0
+Healing=25.0
+Fishing=30.0
+Forensics=25.0
+Herding=25.0
+Hiding=25.0
+Magery=25.0
+Resist=25.0
+Tactics=50.0
+Archery=50.0
+Stealing=25.0
+Tailoring=33.0
+TasteID=25.0
+Tinkering=100.0
+Swordsmanship=25.0
+Macefighting=25.0
+Fencing=50.0
+Wrestling=25.0
+Lumberjacking=100.0
+Mining=68.0
+Meditation=50.0
+Stealth=50.0
+RemoveTrap=25.0
+
+[function obnocwatson]
+Name=Watson
+Color=03AD
+Tag.hitspeed=00
+Tag.class=shaman
+Tag.SM=00
+Tag.OM=00
+Tag.realm=1
+Tag.fixnation=1
+Tag.UC=00
+Tag.experience=00
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_blunt
+Tag.atskill=41
+Tag.ammoid=00
+Tag.firststroke=1
+Tag.Title="(Elf) Velmistr okultista"
+Tag.magic=9
+Tag.armordef=1600
+Tag.mi_stamreg=01
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.level=30
+Tag.mi_weapflags="|(04)"
+Tag.skillrank=3
+Tag.classcolor=color_shaman
+Tag.stepcount=00
+Tag.intellev=157
+Tag.race=Elf
+Tag.vitlev=120
+Tag.baseintel=90
+Tag.basestr=60
+Tag.basedex=60
+Tag.dexlev=60
+Tag.dynamdialog=00
+Tag.nation="Sedy"
+Tag.ability=71280
+Tag.basevit=90
+Tag.strlev=60
+Tag.lastcm=alchemy
+Tag.splnen_kvest_010=1
+Tag.ra_manareg=18
+Tag.monsterkillstotal=1979
+Tag.ra_stamreg=20
+Tag.ra_weapdodge=12
+Tag.playerkillstotal=2
+Tag.gq002=7
+Tag.pergamen=00
+Tag.startdialog="nationinfo_Sedy"
+Tag.eyebonus=18
+Tag.ra_woodoo=10
+Events=e_character
+Events=e_eyebonus
+Events=e_gethit
+Events=e_spelleffect
+Events=e_shaman
+Events=class_shaman
+Events=e_noclick
+Deaths=43
+Profession=class_shaman
+Dir=2
+OSkin=03AD
+Flag_InDoors=1
+Home=741,1360
+Str=60
+Int=157
+Dex=60
+Hits=120
+Mana=157
+Stam=120
+Food=15
+Fame=1373
+Karma=10000
+MaxHits=120
+MaxMana=157
+MaxStam=120
+Anatomy=100.0
+Cooking=30.0
+EI=50.0
+Healing=100.0
+Provocation=75.0
+Magery=90.0
+Resist=75.0
+Tactics=0.0
+Musicianship=60.0
+SpiritSpeak=100.0
+Fencing=0.0
+Meditation=30.0
+
+
+[function obnovdiabola]
+Name=Diabola
+Color=0761
+Timer=0
+Age=06594657
+Tag.class=necro
+Tag.realm=2
+Tag.fixnation=1
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_blunt
+Tag.experience=1118
+Tag.atskill=43
+Tag.Title="(Skurut_hai) Velmistr trapitel"
+Tag.hitspeed=00
+Tag.ammoid=00
+Tag.OM=00
+Tag.UC=00
+Tag.SM=00
+Tag.weaponuid=00
+Tag.firststroke=1
+Tag.armordef=00
+Tag.level=12
+Tag.fizzlechance=1000
+Tag.piercing=100
+Tag.t_follow=00
+Tag.skillrank=3
+Tag.ra_hitsreg=6
+Tag.nation="Mordoran"
+Tag.dexlev=60
+Tag.intellev=100
+Tag.basedex=60
+Tag.basestr=60
+Tag.classcolor=color_necro
+Tag.chaton=15
+Tag.basevit=80
+Tag.dynamdialog=00
+Tag.monsterkillstotal=204
+Tag.strlev=100
+Tag.stepcount=00
+Tag.race=Skurut_hai
+Tag.ability=34214
+Tag.ra_manareg=6
+Tag.vitlev=86
+Tag.baseintel=100
+Tag.lastcm=alchemy
+Tag.gq001=3
+Tag.q010_mastickar=2
+Tag.playerkillstotal=14
+Tag.mq011_prekupnik=6
+Tag.q30_zmocnenecm=6
+Tag.ra_stamreg=12
+Tag.mq002=7
+Events=e_character
+Events=e_necro
+Events=e_gethit
+Events=e_testfollow
+Events=e_spelleffect
+Events=e_noclick
+Events=class_necro
+Deaths=1
+Kills=29940
+Profession=class_necro
+Dir=6
+OSkin=0761
+Flag_InDoors=1
+Home=3610,2718,-50
+Str=100
+Int=100
+Dex=60
+Hits=86
+Mana=100
+Stam=86
+Food=14
+Fame=9023
+Karma=10000
+MaxHits=86
+MaxMana=100
+MaxStam=86
+Alchemy=95.6
+EI=70.0
+Inscription=30.1
+Magery=75.0
+Resist=55.0
+TasteID=100.0
+Meditation=50.0
+Necromancy=30.0
+
+[function obnovantigna]
+Name=Antigna
+Color=03AD
+Age=01D4554A
+Tag.class=priest
+Tag.realm=1
+Tag.weapflag=dam_physical|dam_blunt
+Tag.combattype="nonmystik"
+Tag.experience=14865
+Tag.Title="(Elf) Velmistr duchovni"
+Tag.atskill=41
+Tag.ammoid=00
+Tag.firststroke=1
+Tag.SM=00
+Tag.OM=00
+Tag.UC=00
+Tag.hitspeed=00
+Tag.followscript=37
+Tag.warn_follow=3
+Tag.armordef=9000
+Tag.KOTROLNIBOD2A=1
+Tag.magic=1
+Tag.fizzlechance=1000
+Tag.piercing=85
+Tag.t_follow=00
+Tag.level=47
+Tag.skillrank=3
+Tag.strlev=100
+Tag.race=Elf
+Tag.classcolor=color_priest
+Tag.basedex=70
+Tag.vitlev=160
+Tag.nation="Sedy"
+Tag.monsterkillstotal=7924
+Tag.basestr=60
+Tag.baseintel=70
+Tag.stepcount=20
+Tag.basevit=100
+Tag.ability=90578
+Tag.intellev=90
+Tag.dexlev=70
+Tag.ra_manareg=4
+Tag.ra_hitsreg=20
+Tag.pergamen=00
+Tag.q100_hobitin_ambra=2
+Tag.q31_kuchar=2
+Tag.dynamdialog=00
+Tag.ra_stamreg=20
+Tag.hotovequesty_2=041
+Tag.gq011_prekupnik=5
+Tag.playerkillstotal=84
+Tag.q30_zmocnenecg=17
+Tag.gq013_experimentator=2
+Tag.q015_paradnice=2
+Tag.lastcm=alchemy
+Tag.gq001=1
+Tag.q1_lavovyjester=1
+Tag.q007_hospodsky_vino=1566392023
+Tag.ra_weapdodge=20
+Tag.ra_speldodge=20
+Tag.KOTROLNIBOD1A=1
+Tag.otazka=2
+Tag.ra_selfres=10
+Tag.UNBLcount=#+1
+Events=e_character
+Events=e_priest
+Events=e_testfollow
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_priest
+Deaths=129
+Profession=class_priest
+OSkin=03AD
+Flag_InDoors=1
+Home=741,1360
+Str=100
+Int=90
+Dex=70
+Hits=1600
+Mana=90
+Stam=160
+Food=15
+Fame=10000
+Karma=10000
+MaxHits=160
+MaxMana=90
+MaxStam=160
+Alchemy=39.7
+Anatomy=100.0
+Parrying=75.0
+Peacemaking=100.0
+DetectingHidden=50.0
+EI=95.0
+Healing=100.0
+Fishing=1.6
+Hiding=50.0
+Inscription=30.0
+Magery=100.0
+Resist=75.0
+Tactics=75.0
+Musicianship=100.0
+Tracking=50.0
+Macefighting=75.0
+Meditation=50.0
+Stealth=3.0
+
+[function obnovvignic]
+Name=Vingic
+Color=0909
+Age=07BEE75C
+Tag.class=craft
+Tag.realm=1
+Tag.fixnation=1
+Tag.weapflag=dam_physical|dam_piercing
+Tag.combattype="nonmystik"
+Tag.experience=47
+Tag.Title="(Clovek) Velmistr hokynar"
+Tag.atskill=31
+Tag.ammoid=00
+Tag.firststroke=1
+Tag.SM=00
+Tag.OM=00
+Tag.UC=00
+Tag.hitspeed=00
+Tag.followscript=69
+Tag.warn_follow=5
+Tag.armordef=00
+Tag.fizzlechance=00
+Tag.piercing=295
+Tag.t_follow=00
+Tag.level=40
+Tag.skillrank=3
+Tag.strlev=180
+Tag.race=Clovek
+Tag.classcolor=color_craft
+Tag.basedex=50
+Tag.vitlev=150
+Tag.nation="Rohir"
+Tag.monsterkillstotal=1544
+Tag.basestr=130
+Tag.baseintel=20
+Tag.stepcount=8
+Tag.basevit=100
+Tag.ability=84480
+Tag.intellev=20
+Tag.dexlev=70
+Tag.ra_manareg=20
+Tag.ra_hitsreg=20
+Tag.randommrcha=47
+Tag.dynamdialog=00
+Tag.ra_stamreg=20
+Tag.hotovequesty_2=041
+Tag.q30_zmocnenecg=5
+Tag.lastcm=bowcrafting
+Tag.ra_bleed_bolt=20
+Tag.q010_mastickar=2
+Tag.mi_stamreg=00
+Tag.startdialog="nationinfo_Rohir"
+Tag.lagrkills=00
+Tag.lagrskill=100
+Tag.lagrlogu=3000
+Tag.lumberpits=82.5
+Tag.lagrname=Vingic
+Tag.q015_neuspel=1
+Events=e_character
+Events=e_craft
+Events=e_testfollow
+Events=e_spelleffect
+Events=e_gethit
+Events=e_noclick
+Events=class_craft
+Deaths=70
+Profession=class_craft
+OSkin=0909
+Flag_InDoors=1
+Home=5678,3871,-80
+Str=180
+Int=20
+Dex=70
+Hits=150
+Mana=20
+Stam=150
+Food=15
+Fame=43
+Karma=8603
+MaxHits=150
+MaxMana=20
+MaxStam=150
+Anatomy=50.0
+ItemID=100.0
+ArmsLore=100.0
+Parrying=25.0
+Begging=25.0
+Blacksmithing=42.9
+Bowcraft=93.9
+Camping=25.0
+Carpentry=51.1
+Cooking=33.8
+DetectingHidden=25.0
+Healing=25.0
+Fishing=32.5
+Forensics=25.0
+Hiding=25.0
+Magery=25.0
+Resist=25.0
+Tactics=50.0
+Archery=50.0
+Stealing=25.0
+Tailoring=30.3
+TasteID=25.0
+Tinkering=78.7
+Swordsmanship=50.0
+Fencing=50.0
+Lumberjacking=100.0
+Mining=63.3
+Meditation=25.0
+RemoveTrap=25.0
+
+[function obnovcerberes]
+Name=Cerberes
+Color=0903
+Age=0672C6D3
+Tag.class=mag
+Tag.realm=1
+Tag.fixnation=1
+Tag.weapflag=dam_physical|dam_blunt
+Tag.atskill=41
+Tag.combattype="nonmystik"
+Tag.experience=12264
+Tag.SM=346
+Tag.ammoid=00
+Tag.hitspeed=00
+Tag.UC=00
+Tag.OM=00
+Tag.Title="(Hobit) Velmistr sesilatel"
+Tag.firststroke=1
+Tag.followscript=13
+Tag.armordef=14500
+Tag.magic=2
+Tag.warn_follow=3
+Tag.pocet_regu=2
+Tag.reg_1=i_reag_blood_vial
+Tag.reg_2=i_reag_daemon_bone
+Tag.level=63
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.t_follow=89
+Tag.mistrquest=1
+Tag.skillrank=3
+Tag.ra_hitsreg=20
+Tag.mi_stamreg=00
+Tag.chaton=31
+Tag.ability=95040
+Tag.classcolor=color_mag
+Tag.lastcm=alchemy
+Tag.KOTROLNIBOD1A=1
+Tag.playerkillstotal=43
+Tag.monsterkillstotal=14237
+Tag.dynamdialog=00
+Tag.pergamen=00
+Tag.stepcount=2
+Tag.hotovequesty_2=041
+Tag.race=Hobit
+Tag.nation="Pulcik"
+Tag.strlev=50
+Tag.dexlev=60
+Tag.basevit=50
+Tag.intellev=210
+Tag.guildMessage=00
+Tag.basedex=60
+Tag.basestr=50
+Tag.baseintel=140
+Tag.vitlev=100
+Tag.q30_zmocnenecg=17
+Tag.ra_stamreg=20
+Tag.ra_manareg=20
+Tag.q100_hobitin_ambra=2
+Tag.q31_kuchar=2
+Tag.ra_weapdodge=20
+Tag.ra_speldodge=22
+Tag.ra_stamleech=6
+Tag.ra_hitsleech=14
+Tag.gq013_experimentator=2
+Tag.ra_manaleech=2
+Tag.ra_energyshield=2
+Tag.splnenkvest_008=1
+Tag.mi_hitsreg=2
+Tag.q007_hospodsky_vino=-344216112
+Events=e_character
+Events=e_testfollow
+Events=e_mag
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_manaleech
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_mag
+Deaths=240
+Profession=class_mag
+OSkin=0903
+Flag_InDoors=1
+Flag_War=1
+Home=3192,1064,1
+Str=50
+Int=210
+Dex=60
+Hits=100
+Mana=225
+Stam=100
+Food=15
+Fame=1299
+Karma=10000
+MaxHits=100
+MaxMana=210
+MaxStam=100
+Alchemy=81.6
+Anatomy=25.0
+AnimalLore=25.0
+ItemID=25.0
+Begging=50.0
+Camping=25.0
+Cartography=42.9
+DetectingHidden=25.0
+EI=100.0
+Healing=50.0
+Forensics=25.0
+Herding=25.0
+Hiding=50.0
+Inscription=33.8
+Magery=100.0
+Resist=100.0
+Tactics=25.0
+Poisoning=25.0
+SpiritSpeak=100.0
+TasteID=100.0
+Tracking=25.0
+Veterinary=25.0
+Macefighting=25.0
+Wrestling=25.0
+Meditation=100.0
+Stealth=25.0
+RemoveTrap=25.0
+
+[function obnovradimsentus]
+Name="Radim Sentus"
+Color=0761
+Tag.class=war
+Tag.realm=2
+Tag.weapflag=dam_physical|dam_slashing
+Tag.atskill=40
+Tag.combattype="nonmystik"
+Tag.experience=5640
+Tag.SM=00
+Tag.ammoid=00
+Tag.hitspeed=20
+Tag.UC=59
+Tag.OM=00
+Tag.Title="(Skurut_hai) Velmistr stitonos"
+Tag.firststroke=1
+Tag.followscript=9
+Tag.armordef=3470
+Tag.warn_follow=6
+Tag.level=21
+Tag.fizzlechance=1000
+Tag.piercing=150
+Tag.t_follow=83
+Tag.skillrank=3
+Tag.loveckasoutez=468
+Tag.ra_hitsreg=20
+Tag.mi_stamreg=00
+Tag.ability=54885
+Tag.classcolor=color_war
+Tag.lastcm=alchemy
+Tag.playerkillstotal=12
+Tag.monsterkillstotal=4755
+Tag.dynamdialog=00
+Tag.stepcount=3
+Tag.race=Skurut_hai
+Tag.nation="Mordoran"
+Tag.strlev=180
+Tag.dexlev=60
+Tag.basevit=100
+Tag.intellev=20
+Tag.guildMessage=00
+Tag.basedex=60
+Tag.basestr=120
+Tag.baseintel=20
+Tag.vitlev=113
+Tag.q30_zmocnenecm=10
+Tag.randommrcha=127
+Tag.ra_hitsleech=16
+Tag.q1_lavovyjester=1
+Tag.ra_leap=4
+Tag.ra_warcry=2
+Tag.zabilmnicha=1
+Tag.mq011_prekupnik=6
+Events=e_character
+Events=e_testfollow
+Events=e_war
+Events=e_hitsleech
+Events=e_spelleffect
+Events=e_gethit
+Events=e_noclick
+Events=class_war
+Deaths=42
+Kills=29876
+Profession=class_war
+OSkin=0761
+Home=3610,2718,-50
+Str=180
+Int=20
+Dex=60
+Hits=113
+Mana=20
+Stam=113
+Food=12
+Fame=652
+Karma=10000
+MaxHits=113
+MaxMana=20
+MaxStam=113
+Anatomy=100.0
+AnimalLore=5.0
+ArmsLore=50.0
+Parrying=30.0
+Cooking=0.5
+Healing=75.0
+Fishing=15.2
+Magery=25.0
+Tactics=100.0
+Swordsmanship=100.0
+Macefighting=60.0
+Fencing=30.0
+Wrestling=50.0
+Lumberjacking=1.7
+Mining=2.5
+
+
+[function obnovspirtycel]
+Name=Spirtycel
+Color=0903
+Tag.class=craft
+Tag.realm=1
+Tag.fixnation=1
+Tag.weapflag=dam_physical|dam_piercing
+Tag.atskill=31
+Tag.combattype="nonmystik"
+Tag.experience=32
+Tag.SM=00
+Tag.ammoid=00
+Tag.hitspeed=00
+Tag.UC=00
+Tag.OM=00
+Tag.Title="(Hobit) Velmistr remeslnik"
+Tag.firststroke=1
+Tag.level=23
+Tag.fizzlechance=589
+Tag.piercing=00
+Tag.t_follow=00
+Tag.skillrank=3
+Tag.ra_hitsreg=10
+Tag.chaton=31
+Tag.ability=58898
+Tag.classcolor=color_craft
+Tag.lastcm=tailoring
+Tag.playerkillstotal=2
+Tag.monsterkillstotal=572
+Tag.dynamdialog=16
+Tag.stepcount=9
+Tag.hotovequesty_2=01041
+Tag.race=Hobit
+Tag.nation="Pulcik"
+Tag.strlev=179
+Tag.dexlev=65
+Tag.basevit=100
+Tag.intellev=35
+Tag.guildMessage=00
+Tag.basedex=65
+Tag.basestr=100
+Tag.baseintel=35
+Tag.vitlev=100
+Tag.q30_zmocnenecg=2
+Tag.ra_stamreg=20
+Tag.ra_manareg=8
+Tag.nachytanafk=2
+Tag.randommrcha=38
+Tag.ra_twohand=8
+Tag.RP_Rank=1
+Events=e_character
+Events=e_testfollow
+Events=e_craft
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_craft
+Deaths=55
+Profession=class_craft
+Dir=2
+OSkin=0903
+Flag_InDoors=1
+Home=1082,1335
+Str=179
+Int=35
+Dex=65
+Hits=100
+Mana=35
+Stam=100
+Food=14
+Fame=117
+Karma=5227
+MaxHits=100
+MaxMana=35
+MaxStam=100
+Anatomy=25.0
+ItemID=50.0
+ArmsLore=50.0
+Parrying=25.0
+Blacksmithing=90.1
+Bowcraft=43.3
+Carpentry=100.0
+Cooking=38.3
+Healing=25.0
+Fishing=48.8
+Hiding=25.0
+Magery=25.0
+Resist=25.0
+Tactics=25.0
+Archery=50.0
+Tailoring=56.1
+Tinkering=100.0
+Swordsmanship=25.0
+Fencing=25.0
+Wrestling=25.0
+Lumberjacking=37.4
+Mining=96.3
+Meditation=25.0
+Stealth=25.0
+
+[function obnovnightstalker]
+Name=Nightstalker
+Color=03AD
+Tag.class=mag
+Tag.realm=1
+Tag.followscript=20
+Tag.firststroke=1
+Tag.atskill=41
+Tag.combattype="nonmystik"
+Tag.hitspeed=00
+Tag.weapflag=dam_physical|dam_blunt
+Tag.experience=4528
+Tag.UC=00
+Tag.ammoid=00
+Tag.Title="(Elf) Velmistr iluzionista"
+Tag.OM=00
+Tag.SM=00
+Tag.warn_follow=6
+Tag.t_follow=00
+Tag.level=31
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.skillrank=3
+Tag.ra_hitsreg=3
+Tag.basedex=60
+Tag.classcolor=color_mag
+Tag.ra_manareg=20
+Tag.intellev=200
+Tag.ra_stamreg=6
+Tag.lastcm=alchemy
+Tag.race=Elf
+Tag.vitlev=92
+Tag.monsterkillstotal=5726
+Tag.guildMessage=00
+Tag.q30_zmocnenecg=15
+Tag.hotovequesty_2=041
+Tag.dexlev=60
+Tag.ability=72837
+Tag.strlev=50
+Tag.nation="Lesni"
+Tag.basevit=80
+Tag.dynamdialog=23
+Tag.chaton=1
+Tag.gq013_experimentator=2
+Tag.basestr=50
+Tag.stepcount=16
+Tag.baseintel=110
+Tag.playerkillstotal=57
+Tag.q015_paradnice=2
+Tag.q100_hobitin_ambra=2
+Tag.ra_weapdodge=15
+Tag.q31_kuchar=2
+Tag.pergamen=00
+Tag.ra_speldodge=15
+Tag.ra_manaleech=1
+Tag.ra_stamleech=1
+Tag.gq001=3
+Tag.ra_hitsleech=1
+Tag.gq011_prekupnik=6
+Events=e_character
+Events=e_testfollow
+Events=e_mag
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_mag
+Deaths=154
+Profession=class_mag
+OSkin=03AD
+Flag_InDoors=1
+Home=2955,1232,45
+Str=50
+Int=200
+Dex=60
+Hits=39
+Mana=200
+Stam=92
+Food=14
+Fame=7987
+Karma=10000
+MaxHits=92
+MaxMana=200
+MaxStam=92
+Alchemy=30.0
+Anatomy=25.0
+AnimalLore=25.0
+Begging=25.0
+Cartography=30.0
+EI=100.0
+Healing=25.0
+Forensics=25.0
+Hiding=10.0
+Inscription=30.0
+Magery=100.0
+Resist=100.0
+SpiritSpeak=75.0
+TasteID=5.0
+Meditation=75.0
+
+
+
+[function obnovcharon]
+Name=Charon
+Color=0909
+Timer=0
+Tag.knockback=00
+Tag.hitspeed=24
+Tag.class=war
+Tag.SM=00
+Tag.OM=132
+Tag.realm=1
+Tag.fixnation=1
+Tag.UC=62
+Tag.experience=22018
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_sharp|dam_slashing
+Tag.atskill=40
+Tag.ammoid=00
+Tag.firststroke=1
+Tag.Title="(Clovek) Velmistr rytir"
+Tag.magic=1
+Tag.armordef=9000
+Tag.mi_stamreg=00
+Tag.fizzlechance=1000
+Tag.piercing=200
+Tag.level=127
+Tag.mistrquest=1
+Tag.skillrank=3
+Tag.classcolor=color_war
+Tag.stepcount=12
+Tag.randommrcha=00
+Tag.intellev=20
+Tag.race=Clovek
+Tag.vitlev=160
+Tag.baseintel=20
+Tag.basestr=120
+Tag.basedex=60
+Tag.dexlev=60
+Tag.dynamdialog=00
+Tag.nation="Gondoran"
+Tag.ability=95040
+Tag.basevit=100
+Tag.chaton=15
+Tag.strlev=180
+Tag.lastcm=inscription
+Tag.ra_manareg=20
+Tag.monsterkillstotal=55840
+Tag.ra_hitsreg=20
+Tag.ra_stamreg=20
+Tag.ra_weapdodge=30
+Tag.playerkillstotal=780
+Tag.gq011_prekupnik=3
+Tag.q100_hobitin_ambra=2
+Tag.hotovequesty_2=01041
+Tag.gq001=1
+Tag.q30_zmocnenecg=21
+Tag.ra_speldodge=30
+Tag.gq013_experimentator=2
+Tag.pergamen=00
+Tag.ra_doubleswing=20
+Tag.KOTROLNIBOD1A=1
+Tag.RP_Rank=2
+Tag.ra_stamleech=20
+Tag.ra_hitsleech=20
+Tag.q015_paradnice=2
+Tag.ra_throwing=4
+Tag.ra_rangearrow=10
+Tag.ra_manaleech=20
+Tag.ra_roundattack=10
+Tag.ra_stuntattack=10
+Tag.ra_leap=10
+Tag.ra_warcry=10
+Tag.q20=1
+Tag.PROFILE=...to ze jsem paranoidni jeste neznamena ze po me nejdou!
+Tag.st_pointnumb_0=00
+Tag.st_custpointdist=2313,2500
+Tag.q007_hospodsky_vino=1292969522
+Tag.q31_neuspel=1
+Tag.st_pointnumb_8=11
+Tag.st_pointnumb_14=23
+Tag.st_pointnumb_15=24
+Tag.st_pointnumb_7=9
+Tag.st_pointnumb_2=2
+Tag.st_pointnumb_4=4
+Tag.st_pointnumb_11=20
+Tag.st_pointnumb_3=3
+Tag.st_pointnumb_10=13
+Tag.st_pointnumb_12=21
+Tag.st_pointnumb_5=6
+Tag.st_pointnumb_6=8
+Tag.st_pointnumb_1=1
+Tag.st_pointnumb_9=12
+Tag.st_pointnumb_13=22
+Tag.rangearrowdst=00
+Tag.paralising=00
+Tag.lagrskill=00
+Tag.lagrlogu=00
+Tag.zavody_dlazka_0D=1
+Tag.zavody_dlazka_0C=1
+Events=e_character
+Events=e_stunattack
+Events=e_war
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_manaleech
+Events=e_spelleffect
+Events=e_gethit
+Events=e_noclick
+Events=class_war
+Deaths=606
+Profession=class_war
+OSkin=0909
+Home=2344,2542
+Str=180
+Int=20
+Dex=60
+Hits=160
+Mana=20
+Stam=160
+Food=14
+Fame=10000
+Karma=9091
+MaxHits=160
+MaxMana=20
+MaxStam=160
+Anatomy=100.0
+AnimalLore=25.0
+ItemID=25.0
+ArmsLore=100.0
+Parrying=100.0
+Begging=25.0
+Peacemaking=25.0
+Camping=25.0
+DetectingHidden=50.0
+EI=25.0
+Healing=75.0
+Fishing=55.5
+Forensics=50.0
+Herding=25.0
+Hiding=50.0
+Magery=25.0
+Resist=75.0
+Tactics=100.0
+Poisoning=25.0
+SpiritSpeak=25.0
+TasteID=25.0
+Tracking=25.0
+Veterinary=25.0
+Swordsmanship=100.0
+Macefighting=100.0
+Fencing=100.0
+Wrestling=75.0
+Lumberjacking=0.5
+Mining=5.0
+Meditation=25.0
+Stealth=50.0
+RemoveTrap=25.0
+
+[function obnovoligard]
+Name=Oligard
+Color=0998
+Tag.class=mag
+Tag.realm=2
+Tag.weapflag=dam_physical|dam_blunt
+Tag.atskill=41
+Tag.combattype="nonmystik"
+Tag.experience=1127
+Tag.SM=00
+Tag.ammoid=00
+Tag.hitspeed=00
+Tag.UC=00
+Tag.OM=00
+Tag.Title="(Skret) Velmistr badatel"
+Tag.firststroke=1
+Tag.armordef=1460
+Tag.level=28
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.t_follow=00
+Tag.skillrank=3
+Tag.ra_hitsreg=5
+Tag.chaton=3
+Tag.ability=68006
+Tag.classcolor=color_mag
+Tag.lastcm=alchemy
+Tag.KOTROLNIBOD1A=1
+Tag.playerkillstotal=26
+Tag.monsterkillstotal=3042
+Tag.dynamdialog=00
+Tag.pergamen=00
+Tag.stepcount=3
+Tag.race=Skret
+Tag.nation="Mordoran"
+Tag.strlev=50
+Tag.dexlev=60
+Tag.basevit=80
+Tag.intellev=184
+Tag.guildMessage=00
+Tag.basedex=60
+Tag.basestr=50
+Tag.baseintel=110
+Tag.vitlev=100
+Tag.ra_stamreg=20
+Tag.ra_manareg=20
+Tag.mq013_experimentator=2
+Tag.q30_zmocnenecm=13
+Tag.ra_stamleech=7
+Tag.ra_energyshield=4
+Events=e_character
+Events=e_mag
+Events=e_testfollow
+Events=e_gethit
+Events=e_spelleffect
+Events=e_stamleech
+Events=e_noclick
+Events=class_mag
+Deaths=52
+Kills=29962
+Profession=class_mag
+OSkin=0998
+Home=3610,2718,-50
+Str=50
+Int=184
+Dex=60
+Hits=100
+Mana=184
+Stam=100
+Food=8
+Fame=9073
+Karma=1940
+MaxHits=100
+MaxMana=184
+MaxStam=100
+Alchemy=30.0
+Anatomy=25.0
+Cartography=30.0
+EI=100.0
+Healing=50.0
+Fishing=1.6
+Hiding=25.0
+Inscription=30.0
+Magery=100.0
+Resist=100.0
+SpiritSpeak=100.0
+Lumberjacking=1.6
+Mining=1.8
+Meditation=50.0
+Stealth=25.0
+RemoveTrap=25.0
+
+[function obnovkruela]
+Name=Kruela
+Color=0761
+Tag.class=necro
+Tag.realm=2
+Tag.SM=328
+Tag.hitspeed=00
+Tag.OM=00
+Tag.UC=00
+Tag.followscript=12
+Tag.weapflag=dam_physical|dam_blunt
+Tag.combattype="nonmystik"
+Tag.atskill=43
+Tag.ammoid=00
+Tag.Title="(Skurut_hai) Velmistr tyran"
+Tag.experience=6230
+Tag.firststroke=1
+Tag.warn_follow=3
+Tag.armorCount=84
+Tag.armordef=13630
+Tag.magic=2
+Tag.level=40
+Tag.fizzlechance=1000
+Tag.piercing=100
+Tag.t_follow=89
+Tag.skillrank=3
+Tag.loveckasoutez=11600
+Tag.ra_hitsreg=20
+Tag.stepcount=7
+Tag.classcolor=color_necro
+Tag.mi_stamreg=00
+Tag.dexlev=60
+Tag.intellev=190
+Tag.ability=84480
+Tag.basevit=60
+Tag.guildMessage=00
+Tag.lastcm=bowcrafting
+Tag.monsterkillstotal=8410
+Tag.basestr=60
+Tag.basedex=60
+Tag.chaton=31
+Tag.dynamdialog=00
+Tag.baseintel=120
+Tag.race=Skurut_hai
+Tag.nation="Mordoran"
+Tag.strlev=60
+Tag.vitlev=110
+Tag.playerkillstotal=65
+Tag.pergamen=00
+Tag.ra_manareg=20
+Tag.ra_stamreg=20
+Tag.ra_stamleech=5
+Tag.q30_zmocnenecm=15
+Tag.ra_hitsleech=15
+Tag.RP_Rank=1
+Events=e_character
+Events=e_testfollow
+Events=e_necro
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_necro
+Deaths=165
+Kills=29898
+Profession=class_necro
+Dir=7
+OSkin=0761
+Flag_InDoors=1
+Flag_War=1
+Home=3610,2718,-50
+Str=60
+Int=190
+Dex=60
+Hits=128
+Mana=205
+Stam=128
+Food=11
+Fame=5628
+Karma=2443
+MaxHits=110
+MaxMana=190
+MaxStam=110
+Alchemy=30.0
+Anatomy=75.0
+EI=100.0
+Healing=50.0
+Hiding=50.0
+Inscription=30.0
+Magery=100.0
+Resist=100.0
+Poisoning=75.0
+SpiritSpeak=100.0
+Meditation=100.0
+Necromancy=30.0
+
+[function obnovceresna]
+Name=Ceresna
+Color=0998
+Timer=0
+Tag.undeadhandler=c_skeleton_knight_lvl_3
+Tag.class=thief
+Tag.realm=1
+Tag.weapflag=dam_physical|dam_sharp
+Tag.combattype="nonmystik"
+Tag.experience=167
+Tag.Title="(Skret) Velmistr zbojnik"
+Tag.atskill=42
+Tag.ammoid=00
+Tag.firststroke=1
+Tag.SM=00
+Tag.OM=00
+Tag.UC=00
+Tag.hitspeed=00
+Tag.followscript=76
+Tag.warn_follow=8
+Tag.armordef=00
+Tag.fizzlechance=1000
+Tag.piercing=200
+Tag.t_follow=00
+Tag.level=99
+Tag.skillrank=3
+Tag.strlev=120
+Tag.race=Skret
+Tag.classcolor=color_thief
+Tag.basedex=80
+Tag.vitlev=140
+Tag.nation="Divoky"
+Tag.monsterkillstotal=13348
+Tag.basestr=90
+Tag.baseintel=50
+Tag.stepcount=5
+Tag.basevit=80
+Tag.ability=95040
+Tag.intellev=50
+Tag.dexlev=110
+Tag.ra_hitsreg=20
+Tag.pergamen=00
+Tag.dynamdialog=00
+Tag.ra_hitsleech=20
+Tag.ra_stamreg=20
+Tag.hotovequesty_2=041
+Tag.playerkillstotal=487
+Tag.q1_lavovyjester=1
+Tag.presel=1
+Tag.ra_backstab=20
+Tag.maskHome=5678,3871,-80
+Tag.ra_throwing=10
+Tag.ra_vykryti=10
+Tag.ra_doubleswing=20
+Tag.q007_hospodsky_vino=1541814090
+Tag.ra_stamleech=16
+Tag.ra_bleed_bolt=10
+Tag.ra_weapdodge=32
+Tag.ra_speldodge=20
+Tag.mi_stamreg=00
+Tag.q30_zmocnenecm=7
+Tag.mq013_experimentator=1
+Tag.q14_2=1
+Tag.verb_q1_01=1
+Tag.crunch_informace_010=1
+Events=e_character
+Events=e_thief
+Events=e_testfollow
+Events=e_gethit
+Events=e_spelleffect
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_noclick
+Events=class_thief
+Deaths=382
+Profession=class_thief
+Dir=4
+OSkin=0998
+Flag_InDoors=1
+Home=5678,3871,-80
+Str=120
+Int=50
+Dex=110
+Hits=140
+Mana=41
+Stam=140
+Food=7
+Fame=4520
+Karma=10000
+MaxHits=140
+MaxMana=50
+MaxStam=140
+Alchemy=30.0
+Anatomy=100.0
+ArmsLore=75.0
+Parrying=75.0
+Camping=5.0
+DetectingHidden=100.0
+Enticement=100.0
+Healing=75.0
+Forensics=75.0
+Hiding=100.0
+Provocation=100.0
+LockPicking=95.3
+Magery=50.0
+Resist=50.0
+Tactics=100.0
+Snooping=100.0
+Musicianship=100.0
+Poisoning=100.0
+Archery=75.0
+Stealing=100.0
+Fencing=100.0
+Mining=1.5
+Meditation=25.0
+Stealth=100.0
+RemoveTrap=25.0
+
+[function obnovmocadajumuso]
+Name="Mocodaju Muso"
+Color=0903
+Tag.class=thief
+Tag.realm=1
+Tag.SM=00
+Tag.hitspeed=00
+Tag.OM=00
+Tag.UC=00
+Tag.followscript=60
+Tag.weapflag=dam_physical|dam_sharp
+Tag.combattype="nonmystik"
+Tag.atskill=42
+Tag.weaponuid=00
+Tag.ammoid=00
+Tag.Title="(Hobit) Velmistr kapsar"
+Tag.experience=4143
+Tag.firststroke=1
+Tag.warn_follow=8
+Tag.armorCount=55
+Tag.armordef=1860
+Tag.level=35
+Tag.fizzlechance=1000
+Tag.piercing=220
+Tag.t_follow=10
+Tag.skillrank=3
+Tag.stepcount=7
+Tag.classcolor=color_thief
+Tag.dexlev=100
+Tag.intellev=50
+Tag.ability=78540
+Tag.basevit=80
+Tag.guildMessage=1
+Tag.lastcm=alchemy
+Tag.monsterkillstotal=12931
+Tag.basestr=90
+Tag.basedex=80
+Tag.chaton=31
+Tag.dynamdialog=00
+Tag.baseintel=50
+Tag.race=Hobit
+Tag.nation="Pulcik"
+Tag.strlev=120
+Tag.vitlev=140
+Tag.gq013_experimentator=2
+Tag.q30_zmocnenecg=16
+Tag.playerkillstotal=72
+Tag.pergamen=00
+Tag.ra_stamreg=10
+Tag.ra_weapdodge=20
+Tag.hotovequesty_2=0101
+Tag.ra_hitsleech=10
+Tag.presel=1
+Tag.q31_kuchar=2
+Tag.maskHome=3610,2718,-50
+Tag.KOTROLNIBOD1A=1
+Tag.maskattribs="Bogart,6698,30007,2"
+Tag.q015_paradnice=2
+Tag.guildChatON=1
+Tag.ra_backstab=20
+Tag.ra_throwing=10
+Tag.argv=00
+Events=e_character
+Events=e_testfollow
+Events=e_thief
+Events=e_gethit
+Events=e_spelleffect
+Events=class_thief
+Events=e_hitsleech
+Events=e_noclick
+Deaths=301
+Profession=class_thief
+Dir=6
+OSkin=0903
+Flag_InDoors=1
+Home=1082,1335
+Str=120
+Int=50
+Dex=100
+Hits=140
+Mana=50
+Stam=140
+Food=11
+Fame=4483
+Karma=10000
+MaxHits=140
+MaxMana=50
+MaxStam=140
+Alchemy=30.0
+Anatomy=100.0
+Parrying=30.0
+Cooking=0.1
+Healing=75.0
+Hiding=100.0
+Provocation=35.0
+Magery=50.0
+Resist=50.0
+Tactics=100.0
+Poisoning=65.0
+Archery=30.0
+Stealing=30.0
+Fencing=100.0
+Stealth=100.0
+
+[function obnovrem]
+Name=Rem
+Color=0761
+Tag.hasuniform=1
+Tag.class=war
+Tag.resist_para=00
+Tag.realm=2
+Tag.fixnation=1
+Tag.firststroke=1
+Tag.atskill=42
+Tag.weaponuid=00
+Tag.experience=6321
+Tag.hitspeed=00
+Tag.combattype="nonmystik"
+Tag.weapflag=dam_physical|dam_sharp|dam_piercing
+Tag.OM=00
+Tag.ammoid=00
+Tag.SM=00
+Tag.UC=00
+Tag.Title="(Skurut_hai) Velmistr valecnik"
+Tag.fizzlechance=1000
+Tag.piercing=300
+Tag.mistrquest=1
+Tag.message="koupim nejaky jezditko za 190k"
+Tag.skillrank=3
+Tag.level=59
+Tag.KOTROLNIBOD1=1
+Tag.baseintel=20
+Tag.basevit=100
+Tag.basedex=60
+Tag.ability=95013
+Tag.race=Skurut_hai
+Tag.nation="Mordoran"
+Tag.chaton=2
+Tag.basestr=120
+Tag.stepcount=16
+Tag.pergamen=26
+Tag.classcolor=color_war
+Tag.vitlev=160
+Tag.lastcm=alchemy
+Tag.strlev=180
+Tag.dynamdialog=32
+Tag.monsterkillstotal=5720
+Tag.dexlev=60
+Tag.intellev=20
+Tag.ra_hitsreg=20
+Tag.playerkillstotal=216
+Tag.ra_stamreg=20
+Tag.ra_weapdodge=20
+Tag.resetting=1
+Tag.selatko=1
+Tag.ra_hitsleech=8
+Tag.lastheal=#029E45
+Tag.ra_speldodge=20
+Tag.ra_doubleswing=20
+Tag.ra_leap=10
+Events=e_character
+Events=e_war
+Events=e_hitsleech
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_war
+Deaths=490
+Kills=29730
+Profession=class_war
+Dir=1
+OSkin=0761
+Flag_InDoors=1
+Home=3610,2718,-50
+Str=180
+Int=20
+Dex=60
+Hits=149
+Mana=20
+Stam=160
+Food=15
+Fame=900
+Karma=-6052
+MaxHits=160
+MaxMana=20
+MaxStam=160
+Anatomy=100.0
+AnimalLore=25.0
+ItemID=50.0
+ArmsLore=100.0
+Parrying=100.0
+Begging=25.0
+Peacemaking=25.0
+Camping=50.0
+Cooking=60.2
+DetectingHidden=25.0
+EI=25.0
+Healing=75.0
+Fishing=9.8
+Forensics=25.0
+Herding=25.0
+Hiding=50.0
+Magery=25.0
+Resist=75.0
+Tactics=100.0
+Poisoning=25.0
+SpiritSpeak=25.0
+TasteID=25.0
+Tracking=50.0
+Veterinary=25.0
+Swordsmanship=100.0
+Macefighting=50.0
+Fencing=100.0
+Wrestling=100.0
+Lumberjacking=5.2
+Mining=5.2
+Meditation=25.0
+Stealth=25.0
+RemoveTrap=25.0
+
+[function obnovBloudilek]
+Name=Bloudilek
+Color=03AD
+Tag.knockback=00
+Tag.class=ranger
+Tag.realm=1
+Tag.ammoid=00
+Tag.OM=00
+Tag.SM=00
+Tag.atskill=41
+Tag.UC=00
+Tag.weapflag=dam_physical|dam_blunt
+Tag.hitspeed=00
+Tag.combattype="nonmystik"
+Tag.experience=2501
+Tag.firststroke=1
+Tag.followscript=49
+Tag.Title="(Elf) Velmistr stopar"
+Tag.armorCount=60
+Tag.armordef=2000
+Tag.warn_follow=3
+Tag.reg_1=i_reag_spider_silk
+Tag.pocet_regu=1
+Tag.level=25
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.t_follow=00
+Tag.loveckasoutez=390
+Tag.ra_hitsreg=14
+Tag.basestr=80
+Tag.randommrcha=110
+Tag.baseintel=60
+Tag.pergamen=00
+Tag.strlev=120
+Tag.vitlev=103
+Tag.gq001=3
+Tag.basevit=60
+Tag.race=Elf
+Tag.intellev=60
+Tag.lastcm=bowcrafting
+Tag.ability=62700
+Tag.guildMessage=00
+Tag.dynamdialog=00
+Tag.monsterkillstotal=4847
+Tag.skillrank=3
+Tag.stepcount=2
+Tag.basedex=100
+Tag.chaton=31
+Tag.nation="Lesni"
+Tag.classcolor=color_ranger
+Tag.dexlev=102
+Tag.ra_stamreg=20
+Tag.ra_manareg=8
+Tag.argv=00
+Tag.hotovequesty_2=041
+Tag.q31_kuchar=2
+Tag.gq011_prekupnik=6
+Tag.numberAFKsInMonth="1,0"
+Tag.firstsuccesslesscontrol=2011,10,4,14,26
+Tag.ra_knockback=8
+Tag.rangearrowdst=00
+Events=e_character
+Events=e_testfollow
+Events=e_ranger
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_ranger
+Deaths=64
+Profession=class_ranger
+Dir=0
+OSkin=03AD
+Home=2955,1232,45
+Str=120
+Int=60
+Dex=102
+Hits=103
+Mana=53
+Stam=25
+Food=7
+Fame=921
+Karma=10000
+MaxHits=103
+MaxMana=60
+MaxStam=103
+Anatomy=80.0
+AnimalLore=100.0
+Cartography=85.7
+Cooking=0.2
+Healing=55.0
+Fishing=1.7
+Herding=55.0
+Hiding=30.0
+Magery=55.0
+Tactics=90.0
+Archery=80.0
+Taming=81.6
+Tracking=45.0
+Veterinary=100.0
+Lumberjacking=1.6
+Mining=3.0
+Meditation=25.0
+
+
+[function obnovBrambork]
+Name=Brambork
+Color=0909
+Tag.standcast=1
+Tag.class=mag
+Tag.realm=1
+Tag.ammoid=00
+Tag.OM=00
+Tag.SM=00
+Tag.atskill=41
+Tag.UC=00
+Tag.hitspeed=00
+Tag.combattype="nonmystik"
+Tag.experience=5571
+Tag.firststroke=1
+Tag.followscript=13
+Tag.Title="(Clovek) Velmistr ucenec"
+Tag.armorCount=60
+Tag.armordef=2000
+Tag.warn_follow=1
+Tag.level=18
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.t_follow=00
+Tag.ra_hitsreg=16
+Tag.basestr=50
+Tag.baseintel=110
+Tag.strlev=50
+Tag.vitlev=100
+Tag.gq001=3
+Tag.basevit=80
+Tag.race=Clovek
+Tag.intellev=154
+Tag.lastcm=inscription
+Tag.ability=48470
+Tag.guildMessage=00
+Tag.monsterkillstotal=2813
+Tag.skillrank=3
+Tag.stepcount=6
+Tag.basedex=60
+Tag.chaton=31
+Tag.nation="Rohir"
+Tag.classcolor=color_mag
+Tag.dexlev=60
+Tag.ra_manareg=20
+Tag.argv=00
+Tag.hotovequesty_2=041
+Tag.q30_zmocnenecg=9
+Tag.q31_kuchar=2
+Tag.gq011_prekupnik=6
+Events=e_character
+Events=e_testfollow
+Events=e_mag
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_mag
+Deaths=33
+Profession=class_mag
+Dir=1
+OSkin=0909
+Home=2344,2542
+Str=50
+Int=154
+Dex=60
+Hits=100
+Mana=154
+Stam=100
+Food=15
+Fame=1001
+Karma=10000
+MaxHits=100
+MaxMana=154
+MaxStam=100
+Alchemy=69.7
+Cartography=30.0
+EI=100.0
+Inscription=70.1
+Magery=100.0
+Resist=100.0
+SpiritSpeak=65.0
+Meditation=55.0
+
+
+[function obnovVitriolka]
+Name=Vitriolka
+Color=064A
+Timer=0
+Tag.class=war
+Tag.realm=1
+Tag.ammoid=00
+Tag.OM=00
+Tag.SM=00
+Tag.atskill=42
+Tag.UC=00
+Tag.weapflag=dam_physical|dam_sharp
+Tag.hitspeed=00
+Tag.combattype="nonmystik"
+Tag.experience=1579
+Tag.weaponuid=#0401447DF
+Tag.firststroke=1
+Tag.followscript=36
+Tag.Title="(Trpaslik) Velmistr zapasnik"
+Tag.armorCount=65
+Tag.armordef=2000
+Tag.warn_follow=1
+Tag.level=12
+Tag.fizzlechance=1000
+Tag.piercing=300
+Tag.t_follow=00
+Tag.basestr=120
+Tag.baseintel=20
+Tag.pergamen=00
+Tag.strlev=166
+Tag.vitlev=100
+Tag.ra_hitsleech=20
+Tag.gq001=3
+Tag.basevit=100
+Tag.race=Trpaslik
+Tag.ra_stamleech=4
+Tag.intellev=20
+Tag.lastcm=alchemy
+Tag.ability=34214
+Tag.guildMessage=00
+Tag.dynamdialog=00
+Tag.monsterkillstotal=2263
+Tag.skillrank=3
+Tag.stepcount=00
+Tag.basedex=60
+Tag.chaton=31
+Tag.nation="Ereboran"
+Tag.classcolor=color_war
+Tag.dexlev=60
+Tag.hotovequesty_2=041
+Tag.mi_stamreg=00
+Tag.q30_zmocnenecg=5
+Tag.q31_kuchar=2
+Events=e_character
+Events=e_testfollow
+Events=e_war
+Events=e_spelleffect
+Events=e_gethit
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_noclick
+Events=class_war
+Deaths=8
+Profession=class_war
+Dir=6
+OSkin=064A
+Home=3157,965,40
+Str=166
+Int=20
+Dex=60
+Hits=56
+Mana=20
+Stam=20
+Food=13
+Fame=785
+Karma=10000
+MaxHits=100
+MaxMana=20
+MaxStam=100
+Anatomy=75.0
+ArmsLore=30.0
+Parrying=50.0
+Healing=55.0
+Magery=25.0
+Tactics=75.0
+Swordsmanship=75.0
+Macefighting=30.0
+Fencing=70.0
+Wrestling=30.0
+
+
+[function obnovjharod]]
+Name=Jharod
+Color=0903
+Timer=0
+Tag.class=priest
+Tag.realm=1
+Tag.ammoid=00
+Tag.OM=00
+Tag.SM=55
+Tag.atskill=42
+Tag.UC=1
+Tag.weapflag=dam_physical|dam_sharp
+Tag.hitspeed=9
+Tag.combattype="nonmystik"
+Tag.experience=24
+Tag.firststroke=1
+Tag.followscript=15
+Tag.Title="(Hobit) Novic verici"
+Tag.armorCount=00
+Tag.armordef=00
+Tag.warn_follow=3
+Tag.level=3
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.t_follow=00
+Tag.basestr=70
+Tag.baseintel=60
+Tag.strlev=70
+Tag.vitlev=100
+Tag.basevit=100
+Tag.race=Hobit
+Tag.intellev=70
+Tag.lastcm=alchemy
+Tag.ability=9266
+Tag.guildMessage=00
+Tag.monsterkillstotal=218
+Tag.stepcount=00
+Tag.basedex=70
+Tag.chaton=31
+Tag.nation="Pulcik"
+Tag.classcolor=color_priest
+Tag.dexlev=70
+Tag.mi_stamreg=00
+Events=e_character
+Events=e_testfollow
+Events=e_gethit
+Events=e_priest
+Events=e_spelleffect
+Events=e_noclick
+Events=class_priest
+Deaths=4
+Profession=class_priest
+Dir=5
+OSkin=0903
+Home=1082,1335
+Str=70
+Int=70
+Dex=70
+Hits=100
+Mana=70
+Stam=100
+Food=6
+Fame=490
+Karma=8006
+MaxHits=100
+MaxMana=70
+MaxStam=100
+Alchemy=69.6
+Anatomy=30.0
+Peacemaking=50.0
+EI=30.0
+Healing=30.0
+Inscription=30.0
+Magery=50.0
+Musicianship=50.0
+Macefighting=30.0
+Meditation=30.0
+
+[function obnovStrejda]
+Name=Strejda
+Color=0909
+Tag.class=thief
+Tag.realm=1
+Tag.ammoid=00
+Tag.OM=45
+Tag.SM=25
+Tag.atskill=43
+Tag.UC=6
+Tag.weapflag=dam_physical|dam_blunt
+Tag.hitspeed=5
+Tag.combattype="nonmystik"
+Tag.experience=20097
+Tag.weaponuid=00
+Tag.firststroke=1
+Tag.followscript=14
+Tag.Title="(Clovek) Velmistr zbojnik"
+Tag.armorCount=00
+Tag.armordef=00
+Tag.warn_follow=2
+Tag.level=76
+Tag.fizzlechance=1000
+Tag.piercing=100
+Tag.t_follow=00
+Tag.mistrquest=1
+Tag.KOTROLNIBOD1=1
+Tag.loveckasoutez=702
+Tag.ra_hitsreg=20
+Tag.basestr=60
+Tag.randommrcha=68
+Tag.ra_backstab=20
+Tag.ra_doubleswing=12
+Tag.baseintel=50
+Tag.pergamen=00
+Tag.ra_weapdodge=40
+Tag.strlev=120
+Tag.vitlev=140
+Tag.ra_hitsleech=20
+Tag.gq001=3
+Tag.playerkillstotal=12
+Tag.basevit=80
+Tag.race=Clovek
+Tag.ra_stamleech=20
+Tag.intellev=50
+Tag.lastcm=alchemy
+Tag.ability=95040
+Tag.guildMessage=00
+Tag.dynamdialog=00
+Tag.monsterkillstotal=43617
+Tag.skillrank=3
+Tag.stepcount=1
+Tag.basedex=110
+Tag.chaton=15
+Tag.nation="Gondoran"
+Tag.classcolor=color_thief
+Tag.dexlev=110
+Tag.ra_stamreg=20
+Tag.q1_lavovyjester=1
+Tag.argv=00
+Tag.hotovequesty_2=041
+Tag.q31_kuchar=2
+Tag.gq011_prekupnik=6
+Tag.presel=1
+Tag.q015_paradnice=2
+Tag.U_follow=#+1
+Tag.UNBpcount=#+1
+Events=e_character
+Events=e_testfollow
+Events=e_thief
+Events=e_gethit
+Events=e_hitsleech
+Events=e_stamleech
+Events=e_spelleffect
+Events=e_noclick
+Events=class_thief
+Deaths=519
+Profession=class_thief
+Dir=0
+OSkin=0909
+Home=5678,3871,-80
+Str=120
+Int=50
+Dex=110
+Hits=140
+Mana=50
+Stam=140
+Food=12
+Fame=763
+Karma=10000
+MaxHits=140
+MaxMana=50
+MaxStam=140
+Alchemy=96.9
+Anatomy=100.0
+ArmsLore=75.0
+Parrying=75.0
+Cooking=0.7
+Enticement=100.0
+Healing=75.0
+Fishing=55.5
+Forensics=75.0
+Hiding=100.0
+Provocation=100.0
+LockPicking=94.4
+Magery=50.0
+Resist=50.0
+Tactics=100.0
+Musicianship=100.0
+Poisoning=100.0
+Archery=30.0
+Stealing=30.0
+TasteID=80.0
+Fencing=100.0
+Lumberjacking=2.7
+Mining=15.2
+Meditation=50.0
+Stealth=114.0
+RemoveTrap=80.0
+
+
+[function obnovMydlifousek]
+Name=Mydlifousek
+Color=0903
+Tag.class=craft
+Tag.realm=1
+Tag.ammoid=00
+Tag.OM=45
+Tag.SM=20
+Tag.atskill=41
+Tag.UC=4
+Tag.hitspeed=29
+Tag.combattype="nonmystik"
+Tag.experience=11183
+Tag.firststroke=1
+Tag.followscript=36
+Tag.Title="(Hobit) Velmistr hokynar"
+Tag.armorCount=00
+Tag.armordef=00
+Tag.warn_follow=1
+Tag.level=40
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.t_follow=00
+Tag.altered_bs=1
+Tag.basestr=130
+Tag.randommrcha=47
+Tag.baseintel=20
+Tag.pergamen=00
+Tag.strlev=180
+Tag.vitlev=150
+Tag.gq001=3
+Tag.basevit=100
+Tag.race=Hobit
+Tag.intellev=40
+Tag.lastcm=blacksmithing
+Tag.ability=50688
+Tag.guildMessage=00
+Tag.monsterkillstotal=2073
+Tag.skillrank=3
+Tag.stepcount=9
+Tag.basedex=50
+Tag.chaton=31
+Tag.nation="Pulcik"
+Tag.classcolor=color_craft
+Tag.dexlev=50
+Tag.ra_stamreg=20
+Tag.argv=00
+Tag.hotovequesty_2=041
+Tag.q31_kuchar=2
+Tag.gq011_prekupnik=6
+Tag.q015_paradnice=1
+Tag.ra_sharps=20
+Tag.ra_twohand=20
+Tag.ra_crushing=20
+Tag.nachytanafk=2
+Tag.RP_Rank=1
+Events=e_character
+Events=e_testfollow
+Events=e_craft
+Events=e_spelleffect
+Events=e_gethit
+Events=e_noclick
+Events=class_craft
+Deaths=23
+Profession=class_craft
+StatLock=21
+OSkin=0903
+Flag_InDoors=1
+Home=1082,1335
+Str=180
+Int=40
+Dex=50
+Hits=150
+Mana=40
+Stam=150
+Food=12
+Fame=677
+Karma=10000
+MaxHits=150
+MaxMana=40
+MaxStam=150
+Anatomy=50.0
+ItemID=100.0
+ArmsLore=100.0
+Parrying=75.0
+Blacksmithing=100.0
+Bowcraft=100.0
+Carpentry=100.0
+Cooking=67.8
+Healing=50.0
+Fishing=32.0
+Hiding=50.0
+Magery=25.0
+Resist=50.0
+Tactics=50.0
+Archery=50.0
+Tailoring=100.0
+Tinkering=100.0
+Swordsmanship=50.0
+Macefighting=30.0
+Fencing=50.0
+Lumberjacking=76.9
+Mining=100.0
+Meditation=50.0
+
+
+[function obnovAnorexix]
+Name=Anorexix
+Color=0909
+Timer=0
+Tag.class=craft
+Tag.realm=1
+Tag.ammoid=00
+Tag.OM=00
+Tag.SM=00
+Tag.atskill=41
+Tag.UC=00
+Tag.weapflag=dam_physical|dam_blunt
+Tag.hitspeed=00
+Tag.combattype="nonmystik"
+Tag.experience=2564
+Tag.followscript=51
+Tag.Title="(Clovek) Expert remeslnik"
+Tag.armorCount=00
+Tag.armordef=00
+Tag.warn_follow=1
+Tag.level=20
+Tag.fizzlechance=1000
+Tag.piercing=00
+Tag.t_follow=00
+Tag.ra_hitsreg=15
+Tag.basestr=130
+Tag.randommrcha=19
+Tag.baseintel=20
+Tag.ra_weapdodge=10
+Tag.strlev=180
+Tag.vitlev=100
+Tag.basevit=100
+Tag.race=Clovek
+Tag.intellev=40
+Tag.lastcm=tinkering
+Tag.ability=31680
+Tag.guildMessage=00
+Tag.dynamdialog=00
+Tag.monsterkillstotal=876
+Tag.skillrank=1
+Tag.stepcount=00
+Tag.basedex=50
+Tag.chaton=31
+Tag.nation="Rohir"
+Tag.classcolor=color_craft
+Tag.dexlev=50
+Tag.ra_stamreg=15
+Tag.nachytanafk=1
+Tag.RP_Rank=1
+Events=e_character
+Events=e_testfollow
+Events=e_craft
+Events=e_gethit
+Events=e_spelleffect
+Events=e_noclick
+Events=class_craft
+Deaths=8
+Profession=class_craft
+Dir=0
+OSkin=0909
+Flag_InDoors=1
+Home=2344,2542
+Str=180
+Int=40
+Dex=50
+Hits=100
+Mana=40
+Stam=100
+Food=11
+Fame=714
+MaxHits=100
+MaxMana=40
+MaxStam=100
+Anatomy=50.0
+ItemID=30.0
+ArmsLore=50.0
+Blacksmithing=80.1
+Bowcraft=31.1
+Carpentry=100.0
+Cooking=39.4
+Healing=50.0
+Fishing=42.4
+Hiding=25.0
+Magery=25.0
+Tactics=50.0
+Archery=50.0
+Tailoring=49.0
+Tinkering=100.0
+Swordsmanship=25.0
+Lumberjacking=76.2
+Mining=49.4
+Meditation=50.0
+
+
+[function obnovKryseola]
+Name=Kryseola
+Color=0998
+Tag.class=Mystik
+Tag.realm=2
+Tag.ammoid=00
+Tag.OM=00
+Tag.SM=00
+Tag.atskill=43
+Tag.UC=00
+Tag.hitspeed=00
+Tag.combattype="mystik"
+Tag.experience=2113
+Tag.followscript=1
+Tag.Title="(Skret) Velmistr blouznivec"
+Tag.armorCount=60
+Tag.armordef=2000
+Tag.magic=1
+Tag.mi_weapflags="|(04)"
+Tag.level=13
+Tag.t_follow=00
+Tag.ra_hitsreg=6
+Tag.basestr=50
+Tag.mq011_prekupnik=1
+Tag.baseintel=140
+Tag.strlev=50
+Tag.vitlev=69
+Tag.gq001=1
+Tag.basevit=60
+Tag.race=Skret
+Tag.intellev=180
+Tag.lastcm=alchemy
+Tag.ability=36722
+Tag.guildMessage=00
+Tag.dynamdialog=00
+Tag.monsterkillstotal=1191
+Tag.skillrank=3
+Tag.stepcount=7
+Tag.basedex=50
+Tag.chaton=31
+Tag.nation="Mordoran"
+Tag.classcolor=color_Mystik
+Tag.dexlev=50
+Tag.q30_zmocnenecm=7
+Tag.ra_manareg=20
+Tag.attack_type=1
+Tag.mq013_experimentator=1
+Events=e_character
+Events=e_testfollow
+Events=e_mystik
+Events=e_spelleffect
+Events=e_gethit
+Events=e_noclick
+Events=class_Mystik
+Deaths=19
+Kills=29982
+Profession=class_Mystik
+Dir=0
+OSkin=0998
+Flag_InDoors=1
+Flag_War=1
+Home=3610,2718,-50
+Str=50
+Int=180
+Dex=50
+Hits=69
+Mana=180
+Stam=69
+Food=7
+Fame=1013
+Karma=10000
+MaxHits=69
+MaxMana=180
+MaxStam=69
+EI=75.0
+Magery=55.0
+SpiritSpeak=75.0
+Wrestling=75.0
+Lumberjacking=1.0
+Meditation=55.0
+
+
+[eof]

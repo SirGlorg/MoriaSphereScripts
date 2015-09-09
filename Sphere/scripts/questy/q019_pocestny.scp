@@ -1,0 +1,258 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                   Kvest Neutralni-019 Potulny Pocestny                           //
+//                              (c)-Sir Glorg-                                      //
+//                              namet: -LuTze-                                      //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+// UID spawnu na serveru: #0400021C4
+
+[speech spk_q019_pocestny]
+ON = *hi*
+ON = *dobry*
+ON = *ahoj*
+ON = *hospodsky*
+ON = *selatko*
+
+if (<distance>>3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q019_pocestny_DClick
+endif
+
+[function f_q019_pocestny_DClick]
+if (<src.flags>&statf_dead)
+  return 1
+elseif findID(i_q019_portMe)
+  emote("is mumbling angrily.")
+else
+  Dialog(d_q019_pocestny)
+endif
+
+[dialog d_q019_pocestny]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03053 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Neni to pocestny ?
+text 189 332 1152 1   // 
+//button 325 330 0988 0988 0 3 0  // Muzu pomoct ? 
+//text 350 332 1152 2    //
+//button 490 330 0988 0988 0 4 0  // Obchodovat ?  
+//text 520 332 1152 3   //
+//button 160 360 0988 0988 0 5 0  // Hledam praci  
+//text 190 362 1152 4   //
+//button 325 360 0988 0988 0 6 0  // Nesu ti ...   
+//text 365 362 1152 5   //
+button 490 360 0988 0988 0 7 0  // Prohlednout ...
+text 535 362 1152 6   //
+
+
+page 1		// prvni uvitani
+  argo.setText(7,<?safe?>"Graaaahhh... <basefont color=#ffff88>* sipe *<basefont color=#ffffff>")
+  argo.HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2		//neni to pocestny ?
+  argo.setText(8,<?safe?>"<basefont color=#ffff88>* Je to pocestny! *<basefont color=#ffffff>")
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+  argo.button(25,395,0fa5,0fa7,0,8,0)
+  argo.setText(9,"Hej hola clovece ! Co tu delas ?")
+  argo.text(60,395,152,9)
+
+page 3
+
+page 4		
+
+page 5		//hledam praci
+
+page 6		//nesu ti
+
+page 7		//prohlednout
+  argo.setText(10,"Vysoky muz chudeho vzezreni se stripky magicke sily v ocich a znicenym vyrazem ve tvari. Jeho pokroucena, vsemi elementy proverena hul drzi stare tulakovo telo na nohou bezesvalu.")
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+
+page 8
+dorand 3
+  argo.setText(11,"Cestuji. Prochazim od mladi cely svet! <src.sex("Dobra zeno, jak rad vidim tve plave vlasy a telo plne sily v techto Tulkasem zapomenutych koncinach!","Dobry priteli ani nevis, jak rad pred sebou vidim stat silneho muze s tak vypracovanym hrudnikem a zdravyma nohama!")> Jiste hodne cestujes a beh ti necini potize? Mohu k tobe mit neskromnou prosbu?")
+  argo.setText(11,"<src.sex("Ale devce, co te nema..","Ale chlapce, co te nema..")>. Proc bych s sebou tahal na dlouhe cesty kocku. To neni zadny zivot pro zvire. Ten nadherny vyhled na okoli nikdy nedoceni. Akorat by nervozne skrabala. Mohu-li byt tak skromny, smim te o neco pozadat?")
+  argo.setText(11,"<src.sex("Ach krasavice! Jake mas krasne oci! Ma zena mela stejne, nez se poprala s pritelkyni sveho syna. Ta divka byla bohuzel potlacena magyne a v onom zapalu boje prisla k sobe a spontannim kvf 8. kruhu za 90 hp me jemne zene s malymi resisty vypalila obe oci... pul zad a z prave ruky ji zbyl cerny pahyl. Ale s muzi to ta carodejka umela, to musim rict...","Podivejme se na tebe statny byku! Stepily muz sama slacha samy sval! Kdyby nas k sobe osud privedl u mne na statku, nestydel bych se te koupit na chov!")> Dovol mi vsak na chvili zapomenout na tve prednosti. Mohu te pozadat o laskavost?")
+enddo
+  argo.HTMLGUMP(170,230,440,100,11,0,36)
+  argo.setText(12,"Stary priteli, zrak ti jiz zrejme prilis neslouzi ?")
+  argo.setText(13,"Dedku to nevidis na krok ?")
+  argo.setText(14,"Drahy poutniku, klidne mi prednes svou zadost.")
+  argo.button(25,395+0*<d_def_radek_vyska>,0fa5,0fa7,0,9,0)
+  argo.button(25,395+1*<d_def_radek_vyska>,0fa5,0fa7,0,10,0)  
+  argo.button(25,395+2*<d_def_radek_vyska>,0fa5,0fa7,1,0,2)
+  argo.text(60,395+0*<d_def_radek_vyska>,152,12)
+  argo.text(60,395+1*<d_def_radek_vyska>,152,13)
+  argo.text(60,395+2*<d_def_radek_vyska>,152,14)
+  
+page 9
+  argo.setText(15,<?safe?>"Ale touzi netouzi... Nechal jsem ji doma. Ona nema rada dlouhe cesty a stejne uz s ni neni takova zabava, jako za mlada. <basefont color=#ffff88>* Starec se velmi vyznamne az chlipne zahledel asi metr dva za tebe do mist, kde velmi dobry pozorovatel v bledem svetle spatri cire prazdno... *<basefont color=#ffffff> Prosim te ale, vyslys mou prosbu. Jsem na cestach jiz dlouhy cas a moc neudrzim. Bez recall formule se nehnu z mista. <src.sex("Dobra zeno","Dobry muzi")>, pomoz starci v nouzi! Mas-li u sebe alespon jeden svitek navic, budu schopen vratit se domu! Do tepla k peci me zeny.")
+  argo.HTMLGUMP(170,230,440,100,15,0,36)
+  argo.setText(17,"Je mi lito, ale nemam s sebou prebytecny recall svitek.")
+  argo.button(25,395+0*<d_def_radek_vyska>,0fa5,0fa7,0,11,0)
+  argo.text(60,395+0*<d_def_radek_vyska>,152,17)
+  if (<src.restest 1 i_scroll_recall>)
+    argo.setText(18,"Bezevseho, jeden svitek ti mohu obetovat.")
+    argo.setText(19,"* predat svitek *")
+    argo.button(25,395+1*<d_def_radek_vyska>,0fa5,0fa7,1,0,1)	// predat svitek
+    argo.text(60,395+1*<d_def_radek_vyska>,152,18)
+    argo.text(350,395+1*<d_def_radek_vyska>,142,19)
+  endif
+  
+page 10
+  argo.setText(16,<?safe?>"Zvlastni ze se ptas! <basefont color=#ffff88>* Starec se senilne rozesmal. Tvar mu pri tom splaskla. Z jen moment predtim prazdnych oci, zustaly mu pod zbytky sedych chlupu, ktere kdysi tvorily oboci, jen uzke sterbiny ukazujici belmo jeho bulev a dodavajici jeho vyrazu pohled o nic plnejsi, a ve vlnach previsle kuze zavaleny a bezzuby usmev se mu vykreslil pod nosem hned v nekolika radach. *<basefont color=#ffffff> Roky jsem prestal pocitat jiz davno. K cemu je starci na cestach nejaky letopocet ? Beztak se to kazdou chvili meni... <basefont color=#ffff88>* Oblicej starce se nahle vratil zpet do sveho klidneho stavu a znovu se tak divas na ublizeneho cloveka prostoupeneho nestestim.. *<basefont color=#ffffff> Prosim te ale vyslys mou prosbu. Jsem na cestach jiz dlouhy cas a moc neudrzim. Bez recall formule se nehnu z mista. <src.sex("Dobra zeno","Dobry muzi")>, pomoz starci v nouzi! Mas-li u sebe alespon jeden svitek navic, budu schopen vratit se domu! Do tepla, k peci me zeny.")
+  argo.HTMLGUMP(170,230,440,100,16,0,36)
+  argo.setText(17,"Je mi lito, ale nemam s sebou prebytecny recall svitek.")
+  argo.button(25,395+0*<d_def_radek_vyska>,0fa5,0fa7,0,11,0)
+  argo.text(60,395+0*<d_def_radek_vyska>,152,17)
+  if (<src.restest 1 i_scroll_recall>)
+    argo.setText(18,"Bezevseho, jeden svitek ti mohu obetovat.")
+    argo.setText(19,"* predat svitek *")
+    argo.button(25,395+1*<d_def_radek_vyska>,0fa5,0fa7,1,0,1)	// predat svitek
+    argo.text(60,395+1*<d_def_radek_vyska>,152,18)
+    argo.text(350,395+1*<d_def_radek_vyska>,142,19)
+  endif
+  
+page 11
+  argo.setText(20,<?safe?>"<basefont color=#ffff88>* Starec zrejme odtusil tve sdeleni a zkroutil svou tvar do jeste zubozenejsi podoby... Asi bude lepsi nechat toho chudaka byt... *<basefont color=#ffffff>")
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.setText(21,"* Odejit *")
+  argo.text(60,395,142,21)
+  argo.button(25,395,0fa5,0fa7,1,0,3)	// odejit
+  
+
+[dialog d_q019_pocestny text]
+Pocestny..
+Neni to pocestny?				//1
+Muzu pomoci?				//2
+Obchodovat?				//3
+Hledam praci				//4
+Nesu ti					//5
+Prohlednout				//6
+
+
+[dialog d_q019_pocestny button]
+ON=1
+if (<src.restest 1 i_scroll_recall>)
+  if !(<src.qtag(q019_pocestny)>)
+    src.qtag(q019_pocestny,1,32)
+  endif
+  newequip(i_q019_portMe)
+  src.consume(1,i_scroll_recall)
+  src.addExp(100)
+  f_quest_complete(32)  // splnenie questu "Pocestny"
+endif
+
+
+ON=2
+say("Za dost ! ? Vzdyt nemam ani vindru! Od sobce pomoc nepotrebuji, to tu radeji umru hlady..")
+
+ON=3
+emote("is crying childishly.")
+
+[itemdef i_q019_portMe]
+name=portovac pocestneho
+id=i_memory
+type=t_eq_script
+
+on=@equip
+cont.say("Heru Morgul Kel")
+cont.paralyze(-1,1)
+cont.anim(17)
+timer=4
+
+on=@timer
+arg(portedTo,<cont.f_q019_spawnPort>)
+cont.paralyze_remove(1)
+cont.home=<arg(portedTo)>
+cont.go(<arg(portedTo)>)
+cont.update
+remove
+
+[events e_q019_pocestny]
+on=@death
+f_q019_spawnPort
+
+[function f_q019_spawnPort]
+dorand 70
+  arg(portTo,3331,889,20) //gondor (30)
+  arg(portTo,2639,1404,40)
+  arg(portTo,2249,999,0)
+  arg(portTo,2060,1384,0)
+  arg(portTo,1292,3151,68)
+  arg(portTo,2255,2948,-1)
+  arg(portTo,2721,3177,30)
+  arg(portTo,2291,1895,0)
+  arg(portTo,3112,734,60)
+  arg(portTo,818,824,0)
+  arg(portTo,2780,2829,10)
+  arg(portTo,2212,2282,0)
+  arg(portTo,5385,3734,46)
+  arg(portTo,5454,3775,40)
+  arg(portTo,2768,3029,0)
+  arg(portTo,1651,3058,0)
+  arg(portTo,2022,2637,0)
+  arg(portTo,1469,2415,3)
+  arg(portTo,1047,2150,5)
+  arg(portTo,1709,2594,2)
+  arg(portTo,399,1506,0)
+  arg(portTo,1170,1585,10)
+  arg(portTo,1011,1109,0)
+  arg(portTo,823,898,0)
+  arg(portTo,1046,700,10)
+  arg(portTo,1463,1186,0)
+  arg(portTo,1580,1309,0)
+  arg(portTo,1974,1294,2)
+  arg(portTo,1877,1722,0)
+  arg(portTo,2088,1862,0)
+  arg(portTo,3127,3272,20) // mordor (30)
+  arg(portTo,3022,2560,0)
+  arg(portTo,2790,2383,59)
+  arg(portTo,4882,3103,0)
+  arg(portTo,4789,3801,0)
+  arg(portTo,4640,3958,-1)
+  arg(portTo,3968,3721,5)
+  arg(portTo,3328,3528,40)
+  arg(portTo,2584,3653,-1)
+  arg(portTo,3245,3237,25)
+  arg(portTo,4150,3088,0)
+  arg(portTo,3744,3572,0)
+  arg(portTo,3400,3945,-1)
+  arg(portTo,4487,2509,0)
+  arg(portTo,4033,3324,0)
+  arg(portTo,4318,4033,-1)
+  arg(portTo,4028,1833,10)
+  arg(portTo,3557,2275,15)
+  arg(portTo,3309,2410,15)
+  arg(portTo,3141,2564,0)
+  arg(portTo,3341,3040,1)
+  arg(portTo,4822,3371,1)
+  arg(portTo,3651,2555,0)
+  arg(portTo,4152,2873,0)
+  arg(portTo,3628,3684,21)
+  arg(portTo,3215,3869,39)
+  arg(portTo,4520,2851,0)
+  arg(portTo,4493,1820,0)
+  arg(portTo,2872,2465,60)
+  arg(portTo,3415,2659,10)
+  arg(portTo,3830,146,20)// neutral (10)
+  arg(portTo,2188,118,2)
+  arg(portTo,2781,696,0)
+  arg(portTo,3526,1147,0)
+  arg(portTo,2994,540,20)
+  arg(portTo,3371,592,1)
+  arg(portTo,4195,698,0)
+  arg(portTo,3951,1027,0)
+  arg(portTo,4337,1031,10)
+  arg(portTo,3823,1373,0)
+enddo
+memoryfindtype(MEMORY_ISPAWNED).link.p=<arg(portTo)>
+memoryfindtype(MEMORY_ISPAWNED).link.timer=1
+return<arg(portTo)>
+
+[eof]

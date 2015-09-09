@@ -1,0 +1,1927 @@
+///TEMPLATE
+
+[SPEECH spk_q034_quake]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_quake
+endif
+
+[function f_q034_quake]
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)&&(!src.isgm)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_quake)
+
+[dialog d_q034_quake]
+argo.questDialog_create(03008,"MOJE MENO")//prve je obrazok | druhe meno
+argo.dialog_newPage("Pozdrav")
+//DEFAULTNI HODNOTY:
+//argo.questDialog_baseButt(1) // Kdo jsi?
+//argo.questDialog_baseButt(2) // Mohu pomoci?
+//argo.questDialog_baseButt(3) // Obchodovat
+//argo.questDialog_baseButt(4) // Hledam praci
+//argo.questDialog_baseButt(5) // Nesu ti
+//argo.questDialog_baseButt(6) // Prohlednout
+
+argo.questDialog_baseButt(1,20,"NECO1")// ktory button | posunutie textu doprava o X | text buttonu
+argo.questDialog_baseButt(2,20,"NECO2")
+argo.questDialog_baseButt(3,20,"NECO3")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"TEXT 0")
+  argo.questDialog_HTMLGUMP
+  argo.f_q000_shouldBePromoted_Request
+
+argo.dialog_page("NECO1")
+  argo.setText(argo.newTextLine,"TEXT 1")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("NECO2")
+  argo.setText(argo.newTextLine,"TEXT 2")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("NECO3")
+  argo.setText(argo.newTextLine,"TEXT 3")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne nechcu!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Text 4*")
+  argo.questDialog_HTMLGUMP
+
+[dialog d_q034_quake button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("MALY LEVEL")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("VELKY LEVEL")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("JESTE NEMUZES LEBO SI ODMIETOL")
+        return 1
+      endif
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("UZ SI QUEST UROBIL UZ NEMOZES")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("JESTE NEMUZES")//len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>) //portuje hraca
+  endif
+
+  say("Toto povie npc ak prijme")
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Toto povie npc ak odmietne")
+endif
+///KONEC TEMPLATE
+
+//////////////////////FENIX/////////////////////////////////
+[dialog d_q034_fenix]
+argo.questDialog_create(03008,"Reyton")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Bud pozdraven, jmenuji se Reyton a jsem ucenec.")
+  argo.questDialog_HTMLGUMP
+  argo.f_q000_shouldBePromoted_Request
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis starsiho muze, ktereho zjevne neco trapi.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Krysi lide zamoruji i Edoras. Pry byli videni v podzemi pradavneho hrbitova.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Ettin lord mi ukradl sosku fenixe. Je to stara rodinna pamatka a je pro mne velmi dulezita, mohl by jsi mi ji prinest? Pokud ano, prenesu te do blizkosti jeho doupete.")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+argo.f_q000_shouldBePromoted_Answer
+
+[dialog d_q034_fenix button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+  endif
+
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("MALY LEVEL")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Tebe nebudu takovou malickosti zatezovat!")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("JESTE NEMUZES LEBO SI ODMIETOL")
+        return 1
+      endif
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("UZ SI QUEST UROBIL UZ NEMOZES")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("JESTE NEMUZES")//len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti.")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+  
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+[SPEECH spk_q034_fenix]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_fenix
+endif
+
+[function f_q034_fenix]
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)&&(!src.isgm)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_fenix)
+
+///KONEC FENIX
+
+////////////////////////// sekyra ////////////////////////////////////////
+[dialog d_q034_sekyra]
+argo.questDialog_create(03136,"Nuurx")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"CO?! Aha, jmenuji se Nuurx a jsem drevorubec.")
+  argo.questDialog_HTMLGUMP
+  argo.f_q000_shouldBePromoted_Request
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis starsiho silneho muze, ktery je velmi zjevne rozladen.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Nesnasim krysy a cely ten narod. Nejen, ze mne okradli, ale pry obsadili i soutesku v Rhunu!!!")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Krysi lide mi ukradli sekeru. Bez ni jsem bez prace a pan mne ztresta! Mohl by jsi mi ji prinest? Pokud ano, prenesu te do blizkosti krysich lidi, kteri mi ji ukradli.")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+argo.f_q000_shouldBePromoted_Answer
+
+[dialog d_q034_sekyra button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("MALY LEVEL")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Tebe nebudu takovou malickosti zatezovat! Zabij radsi par Gondoru.")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("JESTE NEMUZES LEBO SI ODMIETOL")
+        return 1
+      endif
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("UZ SI QUEST UROBIL UZ NEMOZES")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("JESTE NEMUZES")//len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti.")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+[SPEECH spk_q034_sekyra]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_sekyra                              ///// ZDE upravit
+endif
+
+[function f_q034_sekyra]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_sekyra)                       ///// ZDE upravit
+
+///KONEC Sekyra
+
+////////////////////////// krysy G ////////////////////////////////////////
+[dialog d_q034_krysyg]
+argo.questDialog_create(03102,"Norbert")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Jmenuji se Norbert a jsem obchodnikem.")
+  argo.questDialog_HTMLGUMP
+  argo.f_q000_shouldBePromoted_Request
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis muze stredniho veku. Je velmi draze oblecen.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Je mozne, ze muj bratr zadal tento ukol i nekomu jinemu, mozna i nepriteli! ")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Mam dum na samote. Vratil jsem se domu z kupeckych cest a dum jsem nalezl obsazen krysi haveti. Dam ti vsak pouze jednu moznost splnit tento ukol a jako dukaz mi dones otcovu posledni vuli!!!")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+argo.f_q000_shouldBePromoted_Answer
+
+[dialog d_q034_krysyg button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("MALY LEVEL")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Tebe nebudu takovou malickosti zatezovat! Jdi radeji zabit par Mordoru!")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("JESTE NEMUZES LEBO SI ODMIETOL")
+        return 1
+      endif
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Dekuji ti za tvoji minulou pomoc.")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("JESTE NEMUZES")//len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti.")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+  
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+[SPEECH spk_q034_krysyg]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_krysyg                              ///// ZDE upravit
+endif
+
+[function f_q034_krysyg]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_krysyg)                       ///// ZDE upravit
+
+///KONEC krysyg
+
+////////////////////////// krysy M ////////////////////////////////////////
+[dialog d_q034_krysym]
+argo.questDialog_create(03103,"Robert")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Jmenuji se Robert a jsem dobrodruh.")
+  argo.questDialog_HTMLGUMP
+  argo.f_q000_shouldBePromoted_Request
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis muze stredniho veku. Neni mu skoro videt do tvare a vypada osuntele.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Je mozne, ze muj bratr zadal tento ukol i nekomu jinemu, mozna i nepriteli! ")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Mam dum na samote. Vratil jsem se domu z dobrodruznych cest a dum jsem nalezl obsazen krysi haveti. Dam ti vsak pouze jednu moznost splnit tento ukol a jako dukaz mi dones otcovu posledni vuli!!!")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+argo.f_q000_shouldBePromoted_Answer
+
+[dialog d_q034_krysym button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("MALY LEVEL")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Tebe nebudu takovou malickosti zatezovat! Zabij radsi par Gondoru.")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("JESTE NEMUZES LEBO SI ODMIETOL")
+        return 1
+      endif
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Dekuji ti za tvoji minulou pomoc.")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("JESTE NEMUZES")//len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti.")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+  
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+[SPEECH spk_q034_krysym]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_krysym                              ///// ZDE upravit
+endif
+
+[function f_q034_krysym]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_krysym)                       ///// ZDE upravit
+
+///KONEC krysym
+
+////////////////////////// Tutorial 1 ////////////////////////////////////////
+[dialog d_q034_TT1]
+argo.questDialog_create(03140,"Arcimag")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Jmeno ti neprozradim, ale vez, ze jsem se venuji magii.")
+  argo.questDialog_HTMLGUMP
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis starsiho muze s bilym plnovousem.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Proslycha se, ze i na toto uzemi prosakuje temna magie. Je mnoho co udelat. Zdejsi Liche Lord je jen zlomek skutecneho zla!")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Ano, velmi bych tvou pomoc uvital. Zaludna monstra mi znovu odnesla moji magickou kristalovou kouli. Mohl by jsi mi ji donest? Bez ni si pripadam bezmocny.")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+[dialog d_q034_TT1 button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("Je mi lito, ale ty bys tam neprezil!")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Tebe nebudu takovou malickosti zatezovat! Zabij radsi par Gondoru.")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("JESTE NEMUZES LEBO SI ODMIETOL")
+        return 1
+      endif
+    endif
+  endif
+  
+
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Dekuji ti za tvoji minulou pomoc.")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("JESTE NEMUZES")//len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti.")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+  
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+
+[SPEECH spk_q034_TT1]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_TT1                              ///// ZDE upravit
+endif
+
+[function f_q034_TT1]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_TT1)                       ///// ZDE upravit
+
+///KONEC Tutorial 1
+
+////////////////////////// Tutorial Shaman ////////////////////////////////////////
+[dialog d_q034_TT_shaman]
+argo.questDialog_create(03083,"Hlavni saman")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Bud zdrav, jmenuji se Afi, jsem hlavnim samanem.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis starsiho muze v habitu s kouzelnou holi.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Samanuv udel je zde v Tutorialu nelehky. Snad ti mohu pomoci tim, ze te zamestnam.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Ano, velmi bych tvou pomoc uvital. Potreboval bych donest hlavu pro mocne voodoo kouzlo. Casem se tuto schopnost taktez naucis! Posilim te, aby jsi byl schopny silna monstra pozabijet! Jsi opravdu pripraven vyrazit?")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+[dialog d_q034_TT_shaman button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("Je mi lito, ale musis ziskat alespon prvni uroven!")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Tebe nebudu takovou malickosti zatezovat! Zabij radsi par Gondoru.")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("Odmitnul jsi mi pomoci, zkus to za hodinu!")
+        return 1
+      endif
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Dekuji ti za tvoji minulou pomoc.")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("Kouzlo je prilis narocne, podari se mi pouze 1x za hodinu")    //len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti.")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+
+[SPEECH spk_q034_TT_shaman]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_TT_shaman                              ///// ZDE upravit
+endif
+
+[function f_q034_TT_shaman]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+if (src.profession!=class_shaman)&&!(src.isgm)
+  say("S tebou se nemam o cem bavit")
+  return 1
+endif
+dialog(d_q034_TT_shaman)                       ///// ZDE upravit
+
+///KONEC Tutorial Shaman
+
+
+////////////////////////// SPIDER G ////////////////////////////////////////
+[dialog d_q034_spiderG]
+argo.questDialog_create(03157,"Podivny muz")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Kdo jsi? Muzes mi pomoci?.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis muze s divnym pohledem a spicatyma usima. Neco ti tu nehraje, ale nedokazes to specifikovat.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Slysel jsem pribehy o orcich, kteri krmi sve pavouci milacky lidskym masem. Jsem presvedcen, ze je to nesmysl, ale ty by jsi mi mohl dokazat, zda je to pravda ci lez!")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Ano, mel bych pro tebe jeden ukol. Je to takova malickost... U nas na farme napada kravy zly vlkodav, mohl by jsi ho zabit? Jsi pripraven vyrazit?")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+[dialog d_q034_spiderG button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("Je mi lito, ale musis jeste posilit!")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Ty by jsi mi mohl me plany zhatit!")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("Odmitnul jsi mi pomoci, zkus to za hodinu!")
+        return 1
+      endif
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Coze?! Ty jsi prezil? Uz se mi neukazuj!.")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("Coze?! Ty jsi prezil? Dnes uz se mi neukazuj!")    //len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Muhaha! Nakrm pavouky!.")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+
+[SPEECH spk_q034_spiderG]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_spiderG                              ///// ZDE upravit
+endif
+
+[function f_q034_spiderG]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_spiderG)                       ///// ZDE upravit
+
+///KONEC SPIDER G
+
+////////////////////////// SPIDER M ////////////////////////////////////////
+[dialog d_q034_spiderM]
+argo.questDialog_create(03157,"Podivny muz")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Kam koukas? Chces neco?")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis muze s divnym pohledem a spicatyma usima. Neco ti tu nehraje, ale nedokazes to specifikovat.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Slysel jsem pribehy o orcich, kteri krmi sve pavouci milacky lidskym masem. Jsem presvedcen, ze je to nesmysl, ale ty by jsi mi mohl dokazat, zda je to pravda ci lez!")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Ano, mel bych pro tebe jeden ukol. Je to takova malickost... U nas na farme napada kravy zly vlkodav, mohl by jsi ho zabit? Jsi pripraven vyrazit?")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, prijmam.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+[dialog d_q034_spiderM button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("Je mi lito, ale musis jeste posilit!")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Ty by jsi mi mohl me plany zhatit!")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("Odmitnul jsi mi pomoci, zkus to za hodinu!")
+        return 1
+      endif
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Coze?! Ty jsi prezil? Tahni pryc!.")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("Coze?! Ty jsi prezil? Dnes uz se mi neukazuj!")    //len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("JESTE TAM NEMUZES") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Muhaha! Nakrm pavouky!.")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+
+[SPEECH spk_q034_spiderM]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_spiderM                              ///// ZDE upravit
+endif
+
+[function f_q034_spiderM]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_spiderM)                       ///// ZDE upravit
+
+///KONEC SPIDER M
+
+////////////////////////// GHOST ////////////////////////////////////////
+[dialog d_q034_Ghost]
+argo.questDialog_create(03135,"Placici zena")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Kdo jsi? Muzes mi pomoci?.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis zenu. Na prvni pohled te zaujme jeji krasa a vznesenost. Z nejakeho duvodu place...*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Magie je mocna zbran, ale ja se ji teprve ucim. Moje schopnosti na tyto stvury nestaci!. ")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Nejaci vetrelci zabrali muj dum, vcetne me magicke knihy. Ocistil by jsi muj dum od tech stvur? Vrat mi prosim moji knihu. Ale bud opatrny!!! Mohu te premistit? ")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, premisti mne.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+[dialog d_q034_Ghost button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("Je mi lito, ale jsi slabsi nez ja.")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Ty by jsi mi mohl me plany zhatit!")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("Odmitnul jsi mi pomoci, zkus to zitra!")
+        return 1
+      endif
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Coze?! Ty jsi prezil? Tahni pryc!.")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("Zrovna ted od tebe pomoc nepotrebuji. Zkus to zitra")    //len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("Musim nabrat sily k premisteni, prijd pozdeji! Predem dekuji.") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti a dekuji!")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+
+[SPEECH spk_q034_Ghost]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_Ghost                              ///// ZDE upravit
+endif
+
+[function f_q034_Ghost]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_Ghost)                       ///// ZDE upravit
+
+///KONEC GHOST
+
+////////////////////////// LIZARD G ////////////////////////////////////////
+[dialog d_q034_LizardG]
+argo.questDialog_create(03162,"Smutna divka")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2)   // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6)   // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Kdo jsi? Muzes mi pomoci?.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis mladou divku s rozpustenymi vlasy. Na prvni pohled si vsimnes, ze je smutna. Asi ji neco trapi*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"Ochocovani zvere muze byt vydelkem i mocnym pomocnikem. Zver te muze nejen spolehlive vozit, ale i branit. Spousta lidi je za takovou zver ochotna velmi draze zaplatit.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Vtrhnuli k nam podivni lide, vypadali jako jesteri. Nikdy jsem nikoho podobneho nevidela! Vypadalo to, ze jdou na jisto. Pozabijeli vsechny straze a ukradli z kaple vzacnou sosku. Pomuzes mi ji ziskat zpet? Mozna by jsi nemel jit sam! Jsi pripraven vyrazit? ")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, vyrazime.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+[dialog d_q034_lizardg button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("Je mi lito, ale jsi slabsi nez ja.")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Nebudu te takovou drobnosti obtezovat!")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("Odmitnul jsi mi pomoci, zkus to zitra!")
+        return 1
+      endif
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Cestu jiz znas. Jdi po svych!")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("Zrovna ted od tebe pomoc nepotrebuji. Zkus to zitra")    //len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("Musim nabrat sily k premisteni, prijd pozdeji! Predem dekuji.") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti a dekuji!")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+
+[SPEECH spk_q034_LizardG]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_LizardG                             ///// ZDE upravit
+endif
+
+[function f_q034_LizardG]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_LizardG)                       ///// ZDE upravit
+
+///KONEC LizardG
+
+////////////////////////// LIZARD M ////////////////////////////////////////
+[dialog d_q034_LizardM]
+argo.questDialog_create(03137,"Tajemny dobrodruh")
+
+argo.dialog_newPage("Pozdrav")
+
+//argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2)   // Mohu pomoci?
+argo.questDialog_baseButt(3,20,"Drby...")
+argo.questDialog_baseButt(6)   // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Kdo jsi? Muzes mi pomoci?.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis muze v temne kapi. Jiz na prvni pohled vzbuzuje respekt. V duchu si rikas, ze by jsi ho nemel rozcilit*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Drby...")
+  argo.setText(argo.newTextLine,"V dobe valek obchod vzkveta. Zvlaste ten zbrojirensky! Vzdy mej po ruce tu spravnou zbran a zbroj, jinak bude tvuj zivot kratky!")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"To mi rekni ty! Ale jednu pracicku bych tu pro tebe mel! V bazine je starodavny chram, podle pergamenu, ktery jsem ziskal, by tam mel byt i poklad. Vyzvedni jej pro mne. Ale bud opatrny, mozna by jsi nemel jit sam... Jsi tedy pripraven vyrazit? ")
+  argo.questDialog_HTMLGUMP
+  
+  argo.setText(argo.newTextLine,"Ano, vyrazime.")
+  argo.questDialog_addResponse(0,1,1,"Ano")//toto nemen
+  
+  argo.setText(argo.newTextLine,"Ne, nechci!")
+  argo.questDialog_addResponse(0,1,1,"Ne")//toto nemen
+
+[dialog d_q034_lizardm button]
+on=0
+
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("Ano"))
+  if (src.isgm)
+    src.go(<tag.portto>)
+    return 1
+  endif
+  if (strlen(<tag.minlevel>))
+    if (<src.tag.level> < <tag.minlevel>)
+      say("Je mi lito, ale na tuto praci jsi prilis slaby.")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxlevel>))
+    if (<src.tag.level> > <tag.maxlevel>)
+      say("Nebudu te takovou drobnosti obtezovat!")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<tag.minskillrank>))
+    if (<src.tag.skillrank> < <tag.minskillrank>)
+      say("MALY SKILLRANK")
+      return 1
+    endif
+  endif
+
+  if (strlen(<tag.maxskillrank>))
+    if (<src.tag.skillrank> > <tag.maxskillrank>)
+      say("VELKY SKILLRANK")
+      return 1
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeatafterdeny)>!=1) && (<tag.canrepeatafterdeny>!=1))
+      say("NEMOZES LEBO SI ODMIETOL A UZ NIKDY NEBUDES MOCT")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      if (eval(<src.qtag(q034_<tag.questid>_againafterdeny)>) > <serv.time>)
+        say("Odmitnul jsi mi pomoci, zkus to zitra!")
+        return 1
+      endif
+    endif
+  endif
+  
+  if (strlen(<src.qtag(q034_<tag.questid>_canrepeat)>))
+    if ((<src.qtag(q034_<tag.questid>_canrepeat)>!=1) && (<tag.canrepeat>!=1))
+      say("Cestu jiz znas. Jdi po svych!")
+      return 1
+    endif
+  endif
+  if (<tag.canrepeat>==1)
+    if (strlen(<tag.timeragain>))
+      if (eval(<src.qtag(q034_<tag.questid>_again)>) > <serv.time>)
+        say("Zrovna ted od tebe pomoc nepotrebuji. Zkus to zitra")    //len tento hrac nemoze
+        return 1
+      endif
+      src.qtag(q034_<tag.questid>_again,<serv.time>+<tag.timeragain>*10)
+    endif
+  endif
+  src.qtag(q034_<tag.questid>_canrepeat,<tag.canrepeat>)
+  
+    
+  if (strlen(<tag.timeragainall>))
+    if (eval(<tag(again)>) > <serv.time>)
+      say("Musim nabrat sily k premisteni, prijd pozdeji!") //nemoze nikto
+      return 1
+    endif
+    tag(again,<serv.time>+<tag.timeragainall>*10)
+  endif
+  
+  say("Hodne stesti!")
+
+  if (strlen(<tag.porttimer>))
+    src.newequip(i_q034_port_timer)
+    lastnew.more1=<tag.porttimer>
+    lastnew.tag(portto,<tag.portto>)
+  else
+    src.go(<tag.portto>)
+  endif
+
+elseif (<argn> == argo.dialog_linkButton("Ne"))
+  if (<tag.canrepeatafterdeny>==1)
+    if (strlen(<tag.timeragainafterdeny>))
+      src.qtag(q034_<tag.questid>_againafterdeny,<serv.time>+<tag.timeragainafterdeny>*10)
+    endif
+  endif
+
+  src.qtag(q034_<tag.questid>_canrepeatafterdeny,<tag.canrepeatafterdeny>)
+
+  say("Snad si to nekdy rozmyslis...")
+endif
+
+[SPEECH spk_q034_LizardM]                     ///// ZDE upravit
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q034_LizardM                             ///// ZDE upravit
+endif
+
+[function f_q034_LizardM]                     ///// ZDE upravit
+if (strlen(<tag.realm>))
+  if (<src.tag.realm>!=<tag.realm>)
+    say("S nepritelem se nebudu bavit")
+    return 1
+  endif
+endif
+dialog(d_q034_LizardM)                       ///// ZDE upravit
+
+///KONEC LizardM

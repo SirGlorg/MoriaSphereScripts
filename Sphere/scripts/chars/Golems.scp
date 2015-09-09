@@ -1,0 +1,2739 @@
+///////////////////////////////////////////////
+//////////////    GOLEMS   ////////////////////
+///////////////////////////////////////////////
+
+[CHARDEF 02f0]
+DEFNAME=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=100
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+TEVENTS=e_golem
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Copper Golem
+
+ON=@Create
+color=color_o_copper
+NPC=brain_monster
+FAME=500
+KARMA=-10000
+
+STR=500
+DEX=90
+INT=0
+
+maxhits={1800 1900}
+maxstam={80 100}
+maxmana=0
+
+tag.experience=<eval {80.0 90.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[2]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {300 450}>
+tag(resist_summon,300)
+tag(resist_bleed,1000) //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,-100)
+tag(resist_slash,-100)
+tag(resist_pierce,100)
+tag(resist_blunt,-400) // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,100)
+tag(resist_elect,-200)
+tag(resist_cold,-300)
+
+//typ monstra
+tag(monstertype,golem,80)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=180.0
+SpiritSpeak=25.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_ore_copper,{1 5}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_iron]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=50
+ARMOR=100
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+TEVENTS=e_golem
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Iron Golem
+
+ON=@Create
+color=color_o_iron
+NPC=brain_monster
+FAME=600
+KARMA=-10000
+
+STR=1313
+DEX=110
+INT=0
+
+maxhits={2500 2700}
+maxstam={100 120}
+maxmana=0
+
+tag.experience=<eval {140.0 150.0}>
+
+tag.npc_stun_time=20                         // 2 seconds of stun
+Tag.npc_stun_chance=30                         //3%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[2]>
+
+//other resists
+tag(resist_poison,1000) //golemove jsou z 99% imunni proti jedu
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,600) //indivindi podle monstra
+tag(resist_bleed,1000) //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,200)
+tag(resist_slash,200)
+tag(resist_pierce,200)
+tag(resist_blunt,-400) // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,100)
+tag(resist_elect,-800)
+tag(resist_cold,-400)
+
+//typ monstra
+tag(monstertype,golem,80)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=180.0
+SpiritSpeak=25.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_ore_iron,{1 4}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_silver]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=70
+ARMOR=100
+MOVERATE=20
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+TEVENTS=e_golem
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Silver Golem
+
+ON=@Create
+color=color_o_silver
+NPC=brain_monster
+FAME=700
+KARMA=-10000
+
+STR=2125
+DEX=200
+INT=0
+
+maxhits={3800 4000}
+maxstam={150 200}
+maxmana=0
+
+tag.experience=<eval {150.0 190.0}>
+
+tag.npc_stun_time=20                 // 2 seconds of stun
+Tag.npc_stun_chance=50               //5%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000) //golemove jsou z 99% imunni proti jedu
+tag.resist_para=<eval {650 750}>
+tag(resist_summon,700) //indivindi podle monstra
+tag(resist_bleed,1000) //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,150)
+tag(resist_slash,150)
+tag(resist_pierce,150)
+tag(resist_blunt,-400) // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,100)
+tag(resist_elect,-600)  //nachylnost na elektrinu
+tag(resist_cold,-400)   //nachylnost na chlad
+
+//typ monstra
+tag(monstertype,golem,80)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=180.0
+SpiritSpeak=25.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//item=i_ore_silver,7
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_golden]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=80
+ARMOR=110
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+TEVENTS=e_golem
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Golden Golem
+
+ON=@Create
+color=color_o_gold
+NPC=brain_monster
+FAME=800
+KARMA=-10000
+
+STR=2938
+DEX=250
+INT=0
+
+maxhits={4700 4900}
+maxstam={140 160}
+maxmana=0
+
+tag.experience=<eval {220.0 290.0}>
+
+tag.npc_stun_time=20                         // 2 seconds of stun
+Tag.npc_stun_chance=75                         //7.5%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000) //golemove jsou z 99% imunni proti jedu
+tag.resist_para=<eval {650 750}>
+tag(resist_summon,700) //indivindi podle monstra
+tag(resist_bleed,1000) //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,350)
+tag(resist_slash,350)
+tag(resist_pierce,150)
+tag(resist_blunt,-400) // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,400)
+tag(resist_elect,-400)  //nachylnost na elektrinu
+tag(resist_cold,-200)   //nachylnost na chlad
+
+//typ monstra
+tag(monstertype,golem,60)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=180.0
+SpiritSpeak=25.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//item=i_ore_gold,6
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_verite]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=100
+ARMOR=120
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+TEVENTS=e_golem
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Verite Golem
+
+ON=@Create
+color=color_o_verite
+NPC=brain_monster
+FAME=900
+KARMA={-5000 -9000}
+
+STR=3750
+DEX=350
+INT=0
+
+maxhits={5400 5700}
+maxstam={200 240}
+maxmana=0
+
+tag.experience=<eval {300.0 350.0}>
+
+tag.npc_stun_time=20                         // 2 seconds of stun
+Tag.npc_stun_chance=100                        //10%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000) //golemove jsou z 99% imunni proti jedu
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,800) //indivindi podle monstra
+tag(resist_bleed,1000) //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,600)
+tag(resist_slash,600)
+tag(resist_pierce,450)
+tag(resist_blunt,100)  // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-50)  //nachylnost na elektrinu
+tag(resist_cold,150)   //nachylnost na chlad
+
+//typ monstra
+tag(monstertype,golem,60)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=180.0
+SpiritSpeak=35.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_ore_verite,{1 3}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_valorite]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=110
+ARMOR=130
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+TEVENTS=e_golem
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Valorite Golem
+
+ON=@Create
+color=color_o_valorite
+NPC=brain_monster
+FAME=1000
+KARMA={-6000 -10000}
+
+STR=4500
+DEX=350
+INT=0
+
+maxhits={9000 10500}
+maxstam={280 350}
+maxmana=0
+
+tag.experience=<eval {430.0 450.0}>
+
+tag.npc_stun_time=20             // 2 seconds of stun
+Tag.npc_stun_chance=150          //15%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,1000) //golemove jsou z 99% imunni proti jedu
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,800) //indivindi podle monstra
+tag(resist_bleed,1000) //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,600)
+tag(resist_slash,600)
+tag(resist_pierce,450)
+tag(resist_blunt,100)  // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-50)  //nachylnost na elektrinu
+tag(resist_cold,150)   //nachylnost na chlad
+
+//typ monstra
+tag(monstertype,golem,60)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=180.0
+SpiritSpeak=45.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_ore_valorite,{1 2}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_obsidian]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=140
+ARMOR=140
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+TEVENTS=e_golem
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Obsidian Golem
+
+ON=@Create
+color=color_o_obsidian
+NPC=brain_monster
+FAME=1100
+KARMA={-7500 -10000}
+
+STR=5375
+DEX=400
+INT=0
+
+maxhits={13000 14500}
+maxstam={340 390}
+maxmana=0
+
+tag.experience=<eval {700.0 750.0}>
+tag.npc_stun_time=20                         // 2 seconds of stun
+Tag.npc_stun_chance=200                        //20%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,1000)     //golemove jsou z 99% imunni proti jedu
+tag(resist_para,1000)       //indivindi podle monstra - vetsinou immune
+tag(resist_summon,850)      //indivindi podle monstra
+tag(resist_bleed,1000)      //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,600)
+tag(resist_slash,600)
+tag(resist_pierce,450)
+tag(resist_blunt,100)  // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-50)  //nachylnost na elektrinu
+tag(resist_cold,150)   //nachylnost na chlad
+
+//typ monstra
+tag(monstertype,golem,50)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=200.0
+SpiritSpeak=60.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_ore_obsidian,1
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_adamantinum]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=145
+ARMOR=150
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_pushall
+TEVENTS=e_npc_reactivearmor
+TEVENTS=e_golem
+TEVENTS=e_parakrik
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Admantinum Golem
+
+ON=@Create
+color=color_o_adamantinum
+NPC=brain_monster
+FAME=1200
+KARMA={-7500 -10000}
+
+STR=6188
+DEX=400
+INT=0
+
+maxhits={19000 19600}
+maxstam={370 420}
+maxmana=0
+
+tag.experience=<eval {800.0 850.0}>
+
+tag(e_pushall_time,10)
+tag(e_pushall_chance,500) // 50.0%
+
+tag.hit_damage=85
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,1000)    //golemove jsou z 99% imunni proti jedu
+tag(resist_para,1000)      //indivindi podle monstra - vetsinou immune
+tag(resist_summon,950)     //indivindi podle monstra
+tag(resist_bleed,1000)     //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,800)
+tag(resist_pierce,650)
+tag(resist_blunt,200)  // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,800)
+tag(resist_elect,-50)  //nachylnost na elektrinu
+tag(resist_cold,150)   //nachylnost na chlad
+
+//typ monstra
+tag(monstertype,golem,40)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=250.0
+SpiritSpeak=125.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_ore_adamantinum,1
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_shadow]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=150
+ARMOR=150
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_pushall
+TEVENTS=e_npc_reactivearmor
+TEVENTS=e_golem
+TEVENTS=e_parakrik
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Shadow Golem
+
+ON=@Create
+color=color_o_shadow
+NPC=brain_monster
+FAME=1500
+KARMA={-7500 -10000}
+
+STR=6500
+DEX=500
+INT=0
+
+maxhits={25000 26000}
+maxstam={510 540}
+maxmana=0
+
+tag.experience=<eval {900.0 950.0}>
+
+tag(e_pushall_time,10)
+tag(e_pushall_chance,200) // 20.0%
+
+tag.hit_damage=90
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//other resists
+tag(resist_poison,1000)    //golemove jsou z 99% imunni proti jedu
+tag(resist_para,1000)      //indivindi podle monstra - vetsinou immune
+tag(resist_summon,950)     //indivindi podle monstra
+tag(resist_bleed,1000)     //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,800)
+tag(resist_pierce,650)
+tag(resist_blunt,200)  // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,800)
+tag(resist_elect,-50)  //nachylnost na elektrinu
+tag(resist_cold,150)   //nachylnost na chlad
+
+//typ monstra
+tag(monstertype,golem,40)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=250.0
+SpiritSpeak=150.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_ore_shadow,1
+//ITEM=i_ore_shadow,{0 1} 
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_golem_mithril]
+ID=c_golem_copper
+NAME=Golem
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=190
+ARMOR=200
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_reactivearmor
+TEVENTS=e_golem
+TEVENTS=e_summoneater                         //smaze summona, co zasahne
+TEVENTS=e_pushall
+TEVENTS=e_parakrik
+TEVENTS=e_npc_multishot                        //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Golems
+DESCRIPTION=Mithril Golem
+
+ON=@Create
+color=color_o_mithril
+NPC=brain_monster
+FAME=1500
+KARMA={-7500 -10000}
+
+STR=7000
+DEX=600
+INT=0
+
+maxhits={30500 30900}
+maxstam={630 660}
+maxmana=0
+
+tag.experience=<eval {1100.0 1200.0}>
+
+tag.multishot_chance=300                       // 30% chance pri zasahu monstra
+tag.multishot_delay=10,15                      // prodleva nez znovu
+tag.multishot_dmg=50,60                        // dmg in between 
+
+tag(kudlyimmune,2000000000)
+
+tag(e_pushall_time,10)
+tag(e_pushall_chance,500) // 50.0%
+
+tag.hit_damage=100
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)    //golemove jsou z 99% imunni proti jedu
+tag(resist_para,1000)      //indivindi podle monstra - vetsinou immune
+tag(resist_summon,1000)    //indivindi podle monstra
+tag(resist_bleed,1000)     //golem nekrvaci
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,800)
+tag(resist_pierce,650)
+tag(resist_blunt,200)  // skalu rozbijes hlavne drtivou zbrani
+
+//magic resists
+tag(resist_fire,800)
+tag(resist_elect,-50)  //nachylnost na elektrinu
+tag(resist_cold,150)   //nachylnost na chlad
+
+//typ monstra
+tag(monstertype,golem,30)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+TACTICS=100.0
+WRESTLING=120.0
+RESIST=250.0
+SpiritSpeak=200.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_ore_mithril,1
+item=i_gold
+
+
+//////////////////////////////////////////////////////////
+/////////////////// SPIRITS SPECIAL///////////////////////
+//////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_blood]
+id=c_wisp
+NAME=Spirit
+
+attack=45
+ARMOR=35
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_USEHANDS
+FOODTYPE=t_spell
+RESOURCES=t_magic
+
+CATEGORY=Dungy
+SUBSECTION=Etheria
+DESCRIPTION=Blood spirit
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater
+TEVENTS=e_npc_infiniteMana
+
+ON=@Create
+NPC=brain_animal
+FAME=2000
+KARMA=-5000
+color=098c
+
+STR=1000
+DEX=200
+INT=400
+
+maxhits={5000 5500}
+maxstam={175 250}
+maxmana=1000
+
+tag.experience=<eval {160.0 180.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(resist_poison,-500)
+tag.resist_para=<eval {650 750}>
+tag(resist_summon,400)
+tag(resist_bleed,-400)
+
+tag(resist_sharp,150)
+tag(resist_slash,150)
+tag(resist_pierce,-150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,250)
+tag(resist_elect,-400)
+tag(resist_cold,-200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+//typ monstra
+tag(monstertype,spirit,60)
+
+ei=90.0
+magery=110.0
+Resist=250.0
+WRESTLING=100.0
+SpiritSpeak=50.0
+
+ITEMNEWBIE=i_light_source
+ATTR=attr_magic|attr_newbie
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_lightning
+addspell=s_paralyze
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{10 15}
+
+///////////////////////////////////////
+
+[CHARDEF c_spirit_water]
+id=c_wisp
+NAME=Spirit
+
+attack=45
+ARMOR=30
+
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_USEHANDS
+FOODTYPE=t_spell
+RESOURCES=t_magic
+
+CATEGORY=Dungy
+SUBSECTION=Etheria
+DESCRIPTION=Water spirit
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater
+TEVENTS=e_npc_infiniteMana
+
+ON=@Create
+NPC=brain_animal
+FAME=110
+KARMA=-1000
+color=color_o_valorite
+
+STR=1000
+DEX=150
+INT=400
+
+maxhits={5000 5500}
+maxstam={125 170}
+maxmana=1000
+
+tag.experience=<eval {160.0 200.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(resist_poison,250)
+tag.resist_para=<eval {650 750}>
+tag(resist_summon,400)
+tag(resist_bleed,-300)
+
+tag(resist_sharp,4150)
+tag(resist_slash,150)
+tag(resist_pierce,-150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,750)
+tag(resist_elect,-400)
+tag(resist_cold,-600)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+//typ monstra
+tag(monstertype,spirit,60)
+
+ei=90.0
+magery=100.0
+Resist=250.0
+WRESTLING=100.0
+SpiritSpeak=60.0
+
+ITEMNEWBIE=i_light_source
+ATTR=attr_magic|attr_newbie
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_lightning
+addspell=s_paralyze
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{15 25}
+
+///////////////////////////////////////////////////////////
+/////////////////// REAPERS ///////////////////////////////
+///////////////////////////////////////////////////////////
+
+[CHARDEF 02f]
+DEFNAME=c_reaper
+NAME=Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK
+
+attack=20
+ARMOR=20
+MOVERATE=3
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_reaper
+
+CATEGORY=Monsters
+SUBSECTION=Reapers
+DESCRIPTION=Reaper
+
+ON=@Create
+NPC=brain_monster
+KARMA={-3000 -5999}
+FAME=100
+
+STR={166 215}
+DEX={75 95}
+INT=0
+
+maxhits={250 290}
+maxstam={70 99}
+maxmana=0
+
+tag.experience=<eval {22.0 26.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[2]>
+
+//other resists
+tag(resist_poison,970)          //reaperi nejsou imunni na jed
+tag.resist_para=<eval {250 350}>
+tag(resist_summon,300)          //indivindi podle monstra
+tag(resist_bleed,200)           //docela krvaci
+
+//weap resists
+tag(resist_sharp,200) 
+tag(resist_slash,-500)        //sekerami na stromy
+tag(resist_pierce,900)        //sipy na prd
+tag(resist_blunt,900)         //kladivem ne
+//magic resists
+tag(resist_fire,-600)         //ohen je boli
+tag(resist_elect,900)         //elektrina reaperovi neublizuje
+tag(resist_cold,200)          //mraz jaks taks
+
+//typ monstra
+tag(monstertype,reaper,80)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING={55.0 65.0}
+RESIST=80.0
+TACTICS={65.0 70.0}
+WRESTLING={70.0 80.0}
+SpiritSpeak=30.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=I_LOG_copper,{1 5}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_reaper_spruce]
+ID=c_reaper
+NAME=Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK
+
+attack=30
+ARMOR=30
+MOVERATE=5
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+TEVENTS=e_reaper
+
+CATEGORY=Monsters
+SUBSECTION=Reapers
+DESCRIPTION=Spruce Reaper
+
+ON=@Create
+NPC=brain_monster
+KARMA={-3000 -5999}
+FAME=700
+
+STR={2000 2500}
+DEX={60 85}
+INT=200
+
+maxhits={900 1000}
+maxstam={60 90}
+maxmana=500
+
+tag.experience=<eval {70.0 80.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,650)          //reaperi nejsou imunni na jed
+tag.resist_para=<eval {350 450}>
+tag(resist_summon,400)          //indivindi podle monstra
+tag(resist_bleed,300)           //docela krvaci
+
+//weap resists
+tag(resist_sharp,200) 
+tag(resist_slash,-500)        //sekerami na stromy
+tag(resist_pierce,900)        //sipy na prd
+tag(resist_blunt,900)         //kladivem ne
+//magic resists
+tag(resist_fire,-600)         //ohen je boli
+tag(resist_elect,900)         //elektrina reaperovi neublizuje
+tag(resist_cold,200)          //mraz jaks taks
+
+//typ monstra
+tag(monstertype,reaper,80)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING=100.0
+RESIST=80.0
+TACTICS={45.0 60.0}
+WRESTLING={80.0 90.0}
+MAGERY=100.0
+EI=100.0
+SpiritSpeak=30.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_fireball
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=I_LOG_copper,{1 5}
+ITEM=RANDOM_REAGENT_NECRO,{5 20}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_reaper_chesnut]
+ID=c_reaper
+NAME=Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK|mt_run
+
+attack=35
+ARMOR=35
+MOVERATE=5
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+TEVENTS=e_summoneater
+TEVENTS=e_reaper
+
+CATEGORY=Monsters
+SUBSECTION=Reapers
+DESCRIPTION=Chesnut Reaper
+
+ON=@Create
+NPC=brain_monster
+KARMA={-3000 -5999}
+FAME=800
+color=05E5
+
+STR={2100 2600}
+DEX={100 120}
+INT=190
+
+maxhits={2400 2700}
+maxstam={100 120}
+maxmana=1000
+
+tag.experience=<eval {110.0 140.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,375) //reaperi nejsou imunni na jed
+tag.resist_para=<eval {350 450}>
+tag(resist_summon,400) //indivindi podle monstra
+tag(resist_bleed,400) //docela krvaci
+
+//weap resists
+tag(resist_sharp,200) 
+tag(resist_slash,-500)        //sekerami na stromy
+tag(resist_pierce,900)        //sipy na prd
+tag(resist_blunt,900)         //kladivem ne
+
+//magic resists
+tag(resist_fire,-600)         //ohen je boli
+tag(resist_elect,900)         //elektrina reaperovi neublizuje
+tag(resist_cold,200)          //mraz jaks taks
+
+//typ monstra
+tag(monstertype,reaper,80)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING=100.0
+RESIST=80.0
+TACTICS={60.0 100.0}
+WRESTLING={70.0 80.0}
+MAGERY=100.0
+EI=100.0
+SpiritSpeak=35.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_fireball
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=I_LOG_iron,{1 4}
+ITEM=RANDOM_REAGENT_NECRO,{15 20}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_reaper_oak]
+ID=c_reaper
+NAME=Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=40
+MOVERATE=5
+
+RESOURCES=
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+TEVENTS=e_summoneater
+TEVENTS=e_reaper
+
+CATEGORY=Monsters
+SUBSECTION=Reapers
+DESCRIPTION=Oak Reaper
+
+ON=@Create
+NPC=brain_monster
+KARMA={-3000 -5999}
+FAME=900
+color=05F2
+
+STR={2800 3000}
+DEX=100
+INT=250
+
+maxhits={4000 4200}
+maxstam={100 120}
+maxmana=1000
+
+tag.experience=<eval {150.0 170.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,-300)          //reaperi nejsou imunni na jed
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,500)          //indivindi podle monstra
+tag(resist_bleed,200)           //docela krvaci
+
+//weap resists
+tag(resist_sharp,200) 
+tag(resist_slash,-500)        //sekerami na stromy
+tag(resist_pierce,900)        //sipy na prd
+tag(resist_blunt,900)         //kladivem ne
+
+//magic resists
+tag(resist_fire,-600)         //ohen je boli
+tag(resist_elect,900)         //elektrina reaperovi neublizuje
+tag(resist_cold,200)          //mraz jaks taks
+
+//typ monstra
+tag(monstertype,reaper,80)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING=100.0
+RESIST=100.0
+TACTICS={100.0 130.0}
+WRESTLING={80.0 90.0}
+MAGERY=100.0
+EI=100.0
+SpiritSpeak=40.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_fireball
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=I_LOG_verite,{1 3}
+ITEM=RANDOM_REAGENT_NECRO,{15 30}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_reaper_teak]
+ID=c_reaper
+NAME=Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK|mt_run
+
+attack=45
+ARMOR=45
+MOVERATE=5
+
+RESOURCES=
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+TEVENTS=e_summoneater
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_reaper
+
+CATEGORY=Monsters
+SUBSECTION=Reapers
+DESCRIPTION=Teak Reaper
+
+ON=@Create
+NPC=brain_monster
+KARMA={-3000 -5999}
+FAME=1000
+color=01C4
+
+STR={3000 3500}
+DEX=100
+INT=300
+
+maxhits={5500 7000}
+maxstam={100 120}
+maxmana=1000
+
+tag.experience=<eval {240.0 260.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//other resists
+tag(resist_poison,-500)          //reaperi nejsou imunni na jed
+tag.resist_para=<eval {650 750}>
+tag(resist_summon,700)          //indivindi podle monstra
+tag(resist_bleed,400)           //docela krvaci
+
+//weap resists
+tag(resist_sharp,450) 
+tag(resist_slash,-50)        //sekerami na stromy
+tag(resist_pierce,900)        //sipy na prd
+tag(resist_blunt,900)         //kladivem ne
+
+//magic resists
+tag(resist_fire,-50)         //ohen je boli
+tag(resist_elect,950)         //elektrina reaperovi neublizuje
+tag(resist_cold,450)          //mraz jaks taks
+
+//typ monstra
+tag(monstertype,reaper,60)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING=100.0
+RESIST=120.0
+TACTICS={100.0 130.0}
+WRESTLING=100.0
+MAGERY=100.0
+EI=100.0
+SpiritSpeak=45.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_fireball
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=I_LOG_valorite,{1 2}
+ITEM=RANDOM_REAGENT_NECRO,{25 40}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_reaper_mahagon]
+ID=c_reaper
+NAME=Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK|mt_run
+
+attack=60
+ARMOR=60
+MOVERATE=5
+
+RESOURCES=
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+TEVENTS=e_summoneater
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_reaper
+
+CATEGORY=Monsters
+SUBSECTION=Reapers
+DESCRIPTION=Mahagon Reaper
+
+ON=@Create
+NPC=brain_monster
+KARMA={-3000 -5999}
+FAME=1100
+color=0ED
+
+STR={4000 4500}
+DEX={125 150}
+INT=350
+
+maxhits={14000 15000}
+maxstam={100 150}
+maxmana=1000
+
+tag.experience=<eval {350.0 400.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//other resists
+tag(resist_poison,-500)          //reaperi nejsou imunni na jed
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,700)          //indivindi podle monstra
+tag(resist_bleed,400)           //docela krvaci
+
+//weap resists
+tag(resist_sharp,450) 
+tag(resist_slash,-50)        //sekerami na stromy
+tag(resist_pierce,900)        //sipy na prd
+tag(resist_blunt,900)         //kladivem ne
+
+//magic resists
+tag(resist_fire,-50)         //ohen je boli
+tag(resist_elect,950)         //elektrina reaperovi neublizuje
+tag(resist_cold,450)          //mraz jaks taks
+
+//typ monstra
+tag(monstertype,reaper,60)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING={55.0 65.0}
+RESIST=140.0
+TACTICS={100.0 130.0}
+WRESTLING=100.0
+MAGERY=130.0
+EI=100.0
+SpiritSpeak=55.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_fireball
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=I_LOG_obsidian,1
+ITEM=RANDOM_REAGENT_NECRO,{25 50}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_reaper_eben]
+ID=c_reaper
+NAME=Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK|mt_run
+
+attack=80
+ARMOR=80
+MOVERATE=5
+
+RESOURCES=
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+TEVENTS=e_summoneater
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_reaper
+TEVENTS=e_parakrik
+TEVENTS=e_explosiondispell
+
+CATEGORY=Monsters
+SUBSECTION=Reapers
+DESCRIPTION=Eben Reaper
+
+ON=@Create
+NPC=brain_monster
+KARMA={-3000 -5999}
+FAME=1200
+color=0774
+
+STR={4500 5000}
+DEX={150 175}
+INT=400
+
+maxhits={18000 19000}
+maxstam={150 200}
+maxmana=1000
+
+tag.experience=<eval {700.0 750.0}>
+
+tag(e_explosiondispell_chance,100) //10% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,30)
+
+tag(poisoning_dmg,35) // affects spell_poison
+tag(poisoning_MvM_dmg,80) // affects spell_poison
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,-500)          //reaperi nejsou imunni na jed
+tag.resist_para=<eval {800 950}>
+tag(resist_summon,700)          //indivindi podle monstra
+tag(resist_bleed,400)           //docela krvaci
+
+//weap resists
+tag(resist_sharp,450) 
+tag(resist_slash,-50)        //sekerami na stromy
+tag(resist_pierce,900)        //sipy na prd
+tag(resist_blunt,900)         //kladivem ne
+
+//magic resists
+tag(resist_fire,-50)         //ohen je boli
+tag(resist_elect,950)         //elektrina reaperovi neublizuje
+tag(resist_cold,450)          //mraz jaks taks
+
+//typ monstra
+tag(monstertype,reaper,40)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING={55.0 65.0}
+RESIST=160.0
+TACTICS={100.0 130.0}
+WRESTLING=100.0
+MAGERY=140.0
+EI=110.0
+SpiritSpeak=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_poison
+addspell=s_lightning
+addspell=s_fireball
+addspell=s_magic_reflection
+addspell=s_summon_elem_air
+
+ON=@NPCRestock
+ITEM=I_LOG_adamantinum,1
+ITEM=RANDOM_REAGENT_NECRO,{35 50}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_reaper_elven]
+ID=c_reaper
+NAME=Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK|mt_run
+
+attack=90
+ARMOR=90
+MOVERATE=5
+
+RESOURCES= 
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+TEVENTS=e_summoneater
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_reaper
+TEVENTS=e_parakrik
+TEVENTS=e_explosiondispell
+
+CATEGORY=Monsters
+SUBSECTION=Reapers
+DESCRIPTION=Elven Reaper
+
+ON=@Create
+NPC=brain_monster
+KARMA={-3000 -5999}
+FAME=1500
+color=07D6
+
+STR=5000
+DEX=200
+INT=420
+
+maxhits={30000 31000}
+maxstam={200 240}
+maxmana=2000
+
+tag.experience=<eval {850.0 900.0}>
+
+tag(e_explosiondispell_chance,150) //15% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,20)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+//other resists
+tag(resist_poison,1000)      //reaperi nejsou imunni na jed - elven je vyjimka
+tag(resist_para,1000)        //indivindi podle monstra - vetsinou immune
+tag(resist_summon,1000)      //indivindi podle monstra
+tag(resist_bleed,600)
+
+//weap resists
+tag(resist_sharp,450) 
+tag(resist_slash,-50)        //sekerami na stromy
+tag(resist_pierce,900)        //sipy na prd
+tag(resist_blunt,900)         //kladivem ne
+
+//magic resists
+tag(resist_fire,-50)         //ohen je boli
+tag(resist_elect,950)         //elektrina reaperovi neublizuje
+tag(resist_cold,450)          //mraz jaks taks
+
+//typ monstra
+tag(monstertype,reaper,40)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING={55.0 65.0}
+RESIST=200.0
+TACTICS=100.0
+WRESTLING=100.0
+MAGERY=120.0
+EI=120.0
+SpiritSpeak=190.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_fireball
+addspell=s_magic_reflection
+addspell=s_summon_undead
+
+ON=@NPCRestock
+ITEM=I_LOG_mithril,1
+ITEM=RANDOM_REAGENT_NECRO,{45 50}
+item=i_gold
+
+///////////////////////////////////////////////////////////
+////////////////// SPIRITS ////////////////////////////////
+///////////////////////////////////////////////////////////
+
+[CHARDEF 03a]
+DEFNAME=c_wisp
+NAME=Wisp
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_WISP
+ANIM=078c7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_USEHANDS
+
+attack=18
+ARMOR=20
+moverate=4
+
+RESOURCES=t_magic
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Wisp
+
+ON=@Create
+NPC=brain_animal
+FAME=10
+KARMA=-2000
+
+STR=400
+DEX=100
+INT=80
+
+maxhits={550 600}
+maxstam={125 150}
+maxmana=300
+
+tag.experience=<eval {35.0 40.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//typ monstra
+tag(monstertype,spirit,80)
+
+
+tag.weapflag=dam_physical
+
+//other resists
+tag(resist_poison,1000)            //ducha neotravis
+tag.resist_para=<eval {200 350}>
+tag(resist_summon,100)
+tag(resist_bleed,500)              //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,600)        //odolnost na mece
+tag(resist_slash,100)        //sekyry
+tag(resist_pierce,00)        //sipky nic moc
+tag(resist_blunt,-400)       //na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-700)       //zranitelnost energii
+tag(resist_cold,-300)
+
+PARRYING=55.0
+MAGERY=70.0
+Resist=100.0
+TACTICS=80.0
+WRESTLING=80.0
+ei=50.0
+SpiritSpeak=15.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=RANDOM_REAGENT_NECRO,{1 10}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_copper]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=20
+ARMOR=20
+moverate=4
+
+RESOURCES=t_magic
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Copper Spirit
+
+ON=@Create
+color=color_o_copper
+NPC=brain_monster
+FAME=125
+KARMA=-1000
+
+STR=500
+DEX=200
+INT=100
+
+maxhits={950 1000}
+maxstam={125 150}
+maxmana=1000
+
+tag.experience=<eval {90.0 95.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)     //ducha neotravis
+tag.resist_para=<eval {350 500}>
+tag(resist_summon,400)
+tag(resist_bleed,800)       //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,600)        //odolnost na mece
+tag(resist_slash,100)        //sekyry
+tag(resist_pierce,00)        //sipky nic moc
+tag(resist_blunt,-400)       //na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-700)       //zranitelnost energii
+tag(resist_cold,-300)
+
+//typ monstra
+tag(monstertype,spirit,80)
+
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+PARRYING={55.0 65.0}
+ei=70.0
+magery=70.0
+Resist=100.0
+WRESTLING=70.0
+SpiritSpeak=15.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{10 25}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_iron]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=25
+ARMOR=20
+moverate=4
+
+RESOURCES=t_magic
+FOODTYPE=t_spell
+//=r_swamp,r_jungle,r_forests
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_curse           //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Iron Spirit
+
+ON=@Create
+color=color_o_iron
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=1300
+DEX=200
+INT=140
+
+maxhits={1200 1300}
+maxstam={125 150}
+maxmana=1000
+
+tag.experience=<eval {120.0 130.0}>
+
+tag.npc_curse_chance=50                // 5% chance to trigger this event
+tag.npc_curse_delay=20,25              // delay between another possible strike
+tag.npc_curse_dmg=20,25                // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)     //ducha neotravis
+tag.resist_para=<eval {400 550}>
+tag(resist_summon,500)      //indivindi podle monstra
+tag(resist_bleed,800)       //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,800)        //odolnost na mece
+tag(resist_slash,300)        //sekyry
+tag(resist_pierce,00)        //sipky nic moc
+tag(resist_blunt,-400)       //na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-450)       //zranitelnost energii
+tag(resist_cold,-100)
+
+//typ monstra
+tag(monstertype,spirit,80)
+
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+PARRYING={55.0 65.0}
+ei=80.0
+magery=90.0
+Resist=100.0
+WRESTLING=80.0
+SpiritSpeak=20.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{20 35}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_silver]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=30
+ARMOR=30
+moverate=4
+
+RESOURCES=t_magic
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_curse        //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Silver Spirit
+
+ON=@Create
+color=color_o_silver
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=2000
+DEX=200
+INT=180
+
+maxhits={2050 2100}
+maxstam={125 150}
+maxmana=1000
+
+tag.experience=<eval {150.0 160.0}>
+
+tag.npc_curse_chance=50                // 5% chance to trigger this event
+tag.npc_curse_delay=20,25              // delay between another possible strike
+tag.npc_curse_dmg=25,30                // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,1000)      //ducha neotravis
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,600)       //indivindi podle monstra
+tag(resist_bleed,800)        //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,800)        //odolnost na mece
+tag(resist_slash,300)        //sekyry
+tag(resist_pierce,00)        //sipky nic moc
+tag(resist_blunt,-200)       //na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-450)       //zranitelnost energii
+tag(resist_cold,-100)
+
+//typ monstra
+tag(monstertype,spirit,80)
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+PARRYING={55.0 65.0}
+ei=90.0
+magery=100.0
+Resist=90.0
+WRESTLING=100.0
+SpiritSpeak=25.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{20 45}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_gold]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=35
+ARMOR=35
+moverate=4
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_curse              //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Wisp
+
+ON=@Create
+color=color_o_gold
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=2500
+DEX=200
+INT=220
+
+maxhits={2750 3000}
+maxstam={125 150}
+maxmana=1000
+
+tag.experience=<eval {190.0 200.0}>
+
+tag.npc_curse_chance=50                // 5% chance to trigger this event
+tag.npc_curse_delay=20,25              // delay between another possible strike
+tag.npc_curse_dmg=25,30                // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,1000)    //ducha neotravis
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,600)     //indivindi podle monstra
+tag(resist_bleed,800)      //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,800)        //odolnost na mece
+tag(resist_slash,300)        //sekyry
+tag(resist_pierce,00)        //sipky nic moc
+tag(resist_blunt,-200)       //na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-450)       //zranitelnost energii
+tag(resist_cold,-100)
+
+//typ monstra
+tag(monstertype,spirit,80)
+
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+PARRYING={55.0 65.0}
+ei=100.0
+magery=120.0
+Resist=100.0
+WRESTLING=90.0
+SpiritSpeak=35.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{20 45}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_verite]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=40
+ARMOR=40
+moverate=4
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+//TEVENTS=e_summoneater                //smaze summona, co zasahne
+TEVENTS=e_npc_curse                    //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Spirit Verite
+
+ON=@Create
+color=color_o_verite
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=3000
+DEX=200
+INT=260
+
+maxhits={7750 8000}
+maxstam={115 190}
+maxmana=1000
+
+tag.experience=<eval {240.0 250.0}>
+
+tag.npc_curse_chance=50                // 5% chance to trigger this event
+tag.npc_curse_delay=15,20              // delay between another possible strike
+tag.npc_curse_dmg=30,35                // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,1000)    //ducha neotravis
+tag.resist_para=<eval {600 750}>
+tag(resist_summon,850)     //indivindi podle monstra
+tag(resist_bleed,800)      //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,800)        //odolnost na mece
+tag(resist_slash,300)        //sekyry
+tag(resist_pierce,00)        //sipky nic moc
+tag(resist_blunt,-200)       //na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-450)       //zranitelnost energii
+tag(resist_cold,-100)
+
+//typ monstra
+tag(monstertype,spirit,80)
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+PARRYING={55.0 65.0}
+ei=110.0
+magery=120.0
+Resist=130.0
+WRESTLING=110.0
+SpiritSpeak=45.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{30 55}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_valorite]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=45
+ARMOR=50
+moverate=4
+
+RESOURCES=t_magic
+FOODTYPE=t_spell
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_summoneater              //smaze summona, co zasahne
+TEVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Spirit Valorite
+
+ON=@Create
+color=color_o_valorite
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=4000
+DEX=200
+INT=300
+
+maxhits={13500 13900}
+maxstam={155 190}
+maxmana=1000
+
+tag.experience=<eval {300.0 320.0}>
+
+tag.npc_curse_chance=50            // 5% chance to trigger this event
+tag.npc_curse_delay=15,20          // delay between another possible strike
+tag.npc_curse_dmg=35,40            // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//other resists
+tag(resist_poison,1000)          //ducha neotravis
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,800)           //indivindi podle monstra
+tag(resist_bleed,850)            //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,800)            //odolnost na mece
+tag(resist_slash,450)            //sekyry
+tag(resist_pierce,200)           //sipky nic moc
+tag(resist_blunt,-50)            //na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-200)       //zranitelnost energii
+tag(resist_cold,-50)
+
+//typ monstra
+tag(monstertype,spirit,60)
+
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+ei=120.0
+magery=120.0
+Resist=145.0
+WRESTLING=120.0
+SpiritSpeak=55.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{50 75}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_obsidian]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=50
+ARMOR=55
+moverate=4
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_summoneater                         //smaze summona, co zasahne
+TEVENTS=e_npc_curse                           //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Spirit Obsidian
+
+ON=@Create
+color=color_o_obsidian
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=5000
+DEX=200
+INT=340
+
+maxhits={15500 15900}
+maxstam={175 250}
+maxmana=1500
+
+tag.experience=<eval {400.0 450.0}>
+
+tag.npc_curse_chance=100                // 10% chance to trigger this event
+tag.npc_curse_delay=15,20               // delay between another possible strike
+tag.npc_curse_dmg=40,50                 // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//other resists
+tag(resist_poison,1000)          //ducha neotravis
+tag.resist_para=<eval {800 950}>
+tag(resist_summon,900) 
+tag(resist_bleed,900)            //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,800)        //odolnost na mece
+tag(resist_slash,450)        //sekyry
+tag(resist_pierce,200)       //sipky nic moc
+tag(resist_blunt,-50)        // na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,800)
+tag(resist_elect,-50)
+tag(resist_cold,150)
+
+//typ monstra
+tag(monstertype,spirit,60)
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+ei=130.0
+magery=120.0
+Resist=150.0
+WRESTLING=120.0
+SpiritSpeak=75.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_lightning
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{50 75}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_adamantinum]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=60
+ARMOR=60
+moverate=4
+
+RESOURCES=t_magic
+FOODTYPE=t_spell
+//=r_swamp,r_jungle,r_forests
+ 
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_summoneater                         //smaze summona, co zasahne
+TEVENTS=e_parakrik
+TEVENTS=e_explode
+TEVENTS=e_explosiondispell
+TEVENTS=e_phoenix_fire
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Spirit Adamantinum
+
+ON=@Create
+color=color_o_adamantinum
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=5000
+DEX=250
+INT=380
+
+maxhits={19000 20000}
+maxstam={225 275}
+maxmana=1000
+
+tag.experience=<eval {650.0 700.0}>
+
+tag(e_explosiondispell_chance,50) //5% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,30)
+
+Tag.explode_dmg=40
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)    //ducha neotravis
+tag.resist_para=<eval {880 970}>
+tag(resist_summon,950)
+tag(resist_bleed,1000)     //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,800)        //odolnost na mece
+tag(resist_slash,450)        //sekyry
+tag(resist_pierce,200)       //sipky nic moc
+tag(resist_blunt,-50)        // na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,-50)
+tag(resist_cold,150)
+
+//typ monstra
+tag(monstertype,spirit,40)
+
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+ei=108.0
+magery=120.0
+Resist=155.0
+WRESTLING=120.0
+SpiritSpeak=100.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_lightning
+addspell=s_explosion
+addspell=s_energy_bolt
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{50 75}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_spirit_mithril]
+id=c_wisp
+NAME=Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_wisp
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=70
+ARMOR=80
+moverate=4
+
+BLOODCOLOR=colors_gray
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_spirit
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_summoneater                         //smaze summona, co zasahne
+TEVENTS=e_parakrik
+TEVENTS=e_explode
+TEVENTS=e_phoenix_fire
+TEVENTS=e_explosiondispell
+
+CATEGORY=Monsters
+SUBSECTION=Spiriti
+DESCRIPTION=Spirit Mitril
+
+ON=@Create
+color=color_o_mithril
+NPC=brain_monster
+FAME=125
+KARMA=-5000
+
+STR=7000
+DEX=300
+INT=450
+
+maxhits={30500 30900}
+maxstam={250 340}
+maxmana=2000
+
+tag.experience=<eval {990.0 1000.0}>
+
+Tag.explode_dmg=50
+
+tag(e_explosiondispell_chance,100) //10% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,30)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+//other resists
+tag(resist_poison,1000)     //ducha neotravis
+tag(resist_para,1000)       //indivindi podle monstra - vetsinou immune
+tag(resist_summon,1000)     //indivindi podle monstra
+tag(resist_bleed,1000)      //spirit vetsinou nekrvaci
+
+//weap resists
+tag(resist_sharp,800)        //odolnost na mece
+tag(resist_slash,450)        //sekyry
+tag(resist_pierce,200)       //sipky nic moc
+tag(resist_blunt,-50)        // na spirity hodne drtivymi zbranemi
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,-50)
+tag(resist_cold,150)
+
+//typ monstra
+tag(monstertype,spirit,40)
+
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+ei=110.0
+magery=120.0
+Resist=200.0
+WRESTLING=150.0
+SpiritSpeak=200.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+
+itemnewbie=i_spellbook
+addspell=s_explosion
+addspell=s_lightning
+addspell=s_energy_bolt
+addspell=s_summon_elem_air
+addspell=s_summon_elem_fire
+addspell=s_magic_reflection
+//addspell=s_summon_elem_earth
+//addspell=s_summon_elem_water
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_reagent,{50 75}
+
+///////////////////////////////////////////////////////////

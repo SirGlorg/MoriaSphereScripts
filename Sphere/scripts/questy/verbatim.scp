@@ -1,0 +1,2488 @@
+[ITEMDEF i_webpad]
+Name=Snuzka kokonu
+ID=0DF9
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Naslapka s pavucinou
+
+ON=@Create
+attr=010
+color=0481
+tag(refreshTime,30)
+more2=3
+moreZ=5 // rozptyl pavucin
+
+ON=@Step
+if (src.isplayer)
+  if (<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+    return 0
+  endif
+  if (strlen(<tag.tm>))
+    if (<tag.tm> < <serv.time>)&&(<more1>==1) // vyprsel cas kdy se nesmi znova stavet
+      tag.remove(tm)
+      more1=0
+    endif
+  endif
+  if (<more1>==0)
+    arg(i,0)
+    while (i < <eval more2>) //hodime tri, slovy tri weby... site ...
+      src.newitemsafe(i_spider_web)
+      lastnew.p=<eval(<p_x>+{-<moreZ> <moreZ>})>,<eval(<p_y>+{-<moreZ> <moreZ>})>,<p_z>,<mapplane>
+      lastnew.timer={90 100}
+      lastnew.type=t_web
+      //lastnew.attr=020 // is magic item? vysvetlit, nerozumela, nepouzila. Normalni pavucina tohle nemela, takze yavanna nedala a nenechala
+      arg(i,#+1)
+    endwhile
+  endif
+  more1=1  //deaktivovat po prvnim slapnuti
+  tag(tm,<eval (<serv.time>+<tag(refreshTime)>)>) //dat timer na deaktivaci
+endif
+
+ON=@userDClick
+if (src.isGM)
+  dialog(d_webpad)
+  return 1
+endif
+
+[dialog d_webpad]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,330)
+argo.tag(vyska,126)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,3,130,171)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Webpad dlazdice")
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Reaktivace/ds:")
+argo.texta(lastxpos,lastypos+(1*d_def_radek_vyska),<d_def_writecolor>,"Pavucin:")
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),<d_def_writecolor>,"Rozptyl:")
+
+argo.settext(11,"<?eval tag(refreshTime)?>") //reaktivace ds
+argo.settext(12,"<?eval more2?>") //pocet pavucin
+argo.settext(13,"<?eval moreZ?>") //rozptyl
+argo.textentry(<argo.dialog_textpos(1,1)>,198,<d_def_radek_vyska>,textcolor,1,11)
+argo.textentry(lastxpos,lastypos+(1*d_def_radek_vyska),198,<d_def_radek_vyska>,textcolor,2,12)
+argo.textentry(lastxpos,lastypos+(2*d_def_radek_vyska),198,<d_def_radek_vyska>,textcolor,3,13)
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_webpad button]
+on=0
+src.SysMessage("<src.sex Stornoval Stornovala> jsi volbu. Nastaveni zustava nezmeneno.")
+
+on=1
+src.SysMessage("Nastavujes nove hodnoty spawnu.")
+tag(refreshTime,<argtxt(1)>)
+more2=<argtxt(2)>
+moreZ=<argtxt(3)>
+
+[itemdef i_shutdoorpad_delayed]
+ID=0AEC
+name=Shut Door Pad Delayed
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Naslapka na zavreni s pauzou
+
+on=@Create
+attr=090
+color=049
+tag(dvere1,"0")
+tag(prodleva,"5")
+
+on=@Step
+if (src.isgm)
+  return 1
+elseif (src.npc)
+  return 1
+elseif 
+  tag(dvere1).timer=<tag.prodleva>
+  return 1
+endif
+
+ON=@userDClick
+if (src.isgm) 
+  src.sysmessage Zamer dvere
+  src.tag.dvere1=<UID>
+  target
+else
+  return 0
+endif
+return 1
+
+ON=@TARGON_ITEM
+src.sysmessage nastavil jsi dvere: <src.TARG.UID>
+tag(dvere1,<src.TARG.UID>)
+return 1
+
+
+[ITEMDEF i_onstep_odemkni]
+Name=Onstep odemkni
+ID=0AEC
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Naslapka na odemykani
+
+ON=@Create
+more1=0
+more2=1
+attr=04090 //decay, nevermove, invis
+timer=-1
+color=044D
+tag(dvere1,"0")
+tag(dvere2,"0")
+tag(prodleva,"2")
+ON=@userDClick
+if (src.isgm) 
+  src.sysmessage Zamer dvere, ale radeji na to nesahej
+  src.tag.dlazdiceotdvere=<UID>
+  target
+else
+  return 0
+endif
+return 1
+
+ON=@Step
+if(src.isplayer)
+  if(<src.flags>&statf_dead)//||(src.isgm) //ne duch ni GM ! 
+    return 0
+  endif
+  more2=0
+  timer=<tag(prodleva)> 
+  if (<tag(dvere1)>!=0)
+    tag(dvere1).tag(zamknute,"0")
+    tag(dvere1).Type=t_door
+    tag(dvere1).tag(LockPicking,"0")
+    tag(dvere1).timer=30
+  endif
+else
+  return 0
+endif
+
+ON=@timer
+if (<tag(dvere1)>!=0)
+  tag(dvere1).tag(zamknute,"1")
+  tag(dvere1).Type=t_door_locked
+  tag(dvere1).tag(LockPicking,"5000")
+  tag(dvere1).timer=1 
+endif
+more2=1
+return 1
+
+ON=@TARGON_ITEM
+src.sysmessage nastavil jsi dvere: <src.TARG.UID>
+tag(dvere1,<src.TARG.UID>)
+return 1
+
+
+
+[function respawnguard]  //prespawnuje vsechny guardz ktere mame, opatrne s tim
+respawncertain(c_vguard_rohan_hala_jezdec)
+respawncertain(c_vguard_gondor_hala_jezdec)
+respawncertain(c_vguard_mordor_hala_jezdec)
+respawncertain(c_vguard_dol_hala_jezdec)
+respawncertain(c_vguard_krajnik_sekera_jezdec)
+respawncertain(c_vguard_trpaslik_sekera_jezdec)
+respawncertain(c_vguard_harad_hala_jezdec)
+respawncertain(c_vguard_rohan_mec_jezdec)
+respawncertain(c_vguard_gondor_mec_jezdec)
+respawncertain(c_vguard_mordor_mec_jezdec)
+respawncertain(c_vguard_dol_mec_jezdec)
+respawncertain(c_vguard_elf_lesni_mec_jezdec)
+respawncertain(c_vguard_elf_sedy_mec_jezdec)
+respawncertain(c_vguard_krajnik_kyj_jezdec)
+respawncertain(c_vguard_trpaslik_sekera2_jezdec)
+respawncertain(c_vguard_harad_mec_jezdec)
+respawncertain(c_vguard_rohan_kopi_jezdec)
+respawncertain(c_vguard_gondor_kopi_jezdec)
+respawncertain(c_vguard_mordor_kopi_jezdec)
+respawncertain(c_vguard_dol_kopi_jezdec)
+respawncertain(c_vguard_elf_sedy_kopi_jezdec)
+respawncertain(c_vguard_elf_lesni_kopi_jezdec)
+respawncertain(c_vguard_krajnik_vidle_jezdec)
+respawncertain(c_vguard_trpaslik_kopi_jezdec)
+respawncertain(c_vguard_harad_kopi_jezdec)
+respawncertain(c_vguard_rohan_hala_pesak)
+respawncertain(c_vguard_gondor_hala_pesak)
+respawncertain(c_vguard_mordor_hala_pesak)
+respawncertain(c_vguard_dol_hala_pesak)
+respawncertain(c_vguard_elf_lesni_kopi_pesak)
+respawncertain(c_vguard_elf_sedy_kopi_pesak)
+respawncertain(c_vguard_krajnik_sekera_pesak)
+respawncertain(c_vguard_trpaslik_sekera_pesak)
+respawncertain(c_vguard_harad_mec_pesak)
+respawncertain(c_vguard_rohan_luk_jezdec)
+respawncertain(c_vguard_gondor_luk_jezdec)
+respawncertain(c_vguard_mordor_luk_jezdec)
+respawncertain(c_vguard_dol_luk_jezdec)
+respawncertain(c_vguard_elf_lesni_luk_jezdec)
+respawncertain(c_vguard_elf_sedy_luk_jezdec)
+respawncertain(c_vguard_krajnik_kus_jezdec)
+respawncertain(c_vguard_trpaslik_kus_jezdec)
+respawncertain(c_vguard_harad_luk_jezdec)
+respawncertain(c_vguard_rohan_mec_pesak)
+respawncertain(c_vguard_elf_lesni_mec_pesak)
+respawncertain(c_vguard_elf_sedy_mec_pesak)
+respawncertain(c_vguard_elf_sedy_kopi_pesak)
+respawncertain(c_vguard_rohan_luk_pesak)
+respawncertain(c_vguard_gondor_luk_pesak)
+respawncertain(c_vguard_mordor_luk_pesak)
+respawncertain(c_vguard_elf_lesni_luk_pesak)
+respawncertain(c_vguard_elf_sedy_luk_pesak)
+respawncertain(c_vguard_krajnik_kus_pesak)
+respawncertain(c_vguard_trpaslik_kus_pesak)
+respawncertain(c_vguard_harad_luk_pesak)
+respawncertain(c_vguard_rohan_luk_stand)
+respawncertain(c_vguard_gondor_luk_stand)
+respawncertain(c_vguard_mordor_luk_stand)
+respawncertain(c_vguard_elf_lesni_luk_stand)
+respawncertain(c_vguard_elf_sedy_luk_stand)
+respawncertain(c_vguard_krajnik_kus_stand)
+respawncertain(c_vguard_trpaslik_kus_stand)
+respawncertain(c_vguard_harad_luk_stand)
+respawncertain(c_vguard_rohan_mage)
+respawncertain(c_vguard_gondor_mage)
+respawncertain(c_vguard_mordor_mage)
+respawncertain(c_vguard_ogre)
+respawncertain(c_vguard_skret)
+respawncertain(c_vguard_orc_rhun)
+
+
+[events e_excelent]
+on=@aftergetswing
+if (var(damage_flags)& dam_sharp)
+  if rand(15)==1
+  dorand 4
+    newnpc(c_ancient_ooze)
+    newnpc(c_smaragd_ooze)
+    newnpc(c_poison_ooze)
+    newnpc(c_magic_ooze)
+  enddo
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnewchar.tag(experience,0)
+  lastnew.timer=300
+endif
+
+on=@death
+newnpc(c_ancient_ooze)
+newnpc(c_smaragd_ooze)
+newnpc(c_poison_ooze)
+newnpc(c_magic_ooze)
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_autoreflect]
+
+on=@aftergetswing
+  flag_reflection=1
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing  
+on=@beforegeteffect
+on=@beforedoeffect
+
+
+[events e_strazce_sumonner]
+
+on=@aftergetswing
+if (<mana> < 100)
+  mana = <mana> +1000
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+[defnames mount_colors] // barvy ze souboru definic npc_evil_race
+color_mount_chief={076f 0771}
+color_mount_lord={0772 0774}
+
+[defnames favourite_colors] // barvy ze souboru definic npc_evil_race
+color_npc_maiar_dur={{0756 0759} 4 {075f 0762} 5}
+color_npc_gurg_ath={{06ab 06ad} 3 06b5 1 06b6 1 06be 1 06bf 1 {06c6 06c8} 3 {06ce 06d1} 4 {06d7 06da} 5}
+color_npc_skurut_hai={0589 1 058a 1 0592 1 0593 1 059c 1 059d 1 05a3 1 05a4 1 05a5 1 05ae 1 05ad 1}
+color_npc_saur_hat={051a 051d} 4 {0524 0526} 3 {052d 0530} 4 0537 1 0538 1 0540 1 0541 1 {0548 054b} 4}
+color_npc_nurn_man={076f 0774}
+
+[ITEMDEF i_timer_before_npc_recall]
+ID=i_memory
+NAME=timer before NPC recall
+
+on=@equip
+cont.say(Heru Morgul Kel)
+timer=4
+
+on=@timer
+cont.remove
+
+
+[ITEMDEF i_robe_gm_npc] 
+ID=0204F
+TYPE=T_CLOTHING
+DYE=1
+DESCRIPTION=GM Robe for NPC
+SUBSECTION=GM Robes
+CATEGORY=Provisions - GM Items
+
+
+[ITEMDEF i_verbatim_afk_countdown]
+id=i_decorative_armor
+Name=Verbatimuv Guard
+
+ON=@Create
+attr_movenever(1)
+attr_invis(1)
+color=0432
+
+on=@dropon_ground
+timer=1
+more=59
+say("Nereaujes na pritomnost sveho boha!")
+say("Od trestu te deli 60 sekund! Odpocitavam ...") 
+
+on=@timer
+if (more)
+  say("<more>")
+  more=<eval more-1>
+ // if (rescount)
+    timer 1
+ // endif
+else
+  say("Nepozdravit boha behem jeho vzacne navstevy hrdelni zlocin!")
+endif
+return 1
+
+//___________________________________________________________________
+// Veci pro QV2
+//___________________________________________________________________
+
+[itemdef i_qv2_gate]
+
+NAME=Brana s odmenou
+ID=i_moongate_blue
+TYPE=T_SCRIPT
+CATEGORY=Questy
+SUBSECTION=QV2
+DESCRIPTION=Brana s odmenou
+on=@Create
+more2=3000
+morep=2000 2000
+
+on=@Step
+if (src.isplayer)//npc NE !
+  if (<src.tag(hypno_mystik)>)
+    src.sysmessage(Tuto gatu nemuzes pouzivat)
+    return 1
+  endif
+  if (<src.flags>&statf_dead)
+    src.sysmessage musis byt nazivu
+    return 1
+  endif
+  if (tag(hrac[<src>])>serv.time)
+    src.sysmessage Jeste nemuzes dostat experience.
+  else
+    tag(hrac[<src>],<eval serv.time+24*60*60*10>)
+    src.addexp(<more2>)
+    src.giveitem=i_mi_bag
+    src.giveitem=i_bottle_liquor
+    src.giveitem=i_bottle_liquor
+    src.giveitem=i_cashiers_check
+    lastnew.more1=100000
+    src.giveitem=i_pet_horse_brown_lt
+    lastnew.color=0263
+    lastnew.name=Mustang
+    lastnew.tag.myfood=64
+    lastnew.tag.myhits=490
+    lastnew.tag.my_id=C_A_MUSTANG_SKY
+    src.giveitem=i_hat_jester
+    lastnew.color=0445
+    lastnew.tag(imi_value[6], 5)  // +5begging
+    lastnew.mif_finishitem  
+    lastnew.name=Novorocni cepicka  
+  endif
+  src.go <morep>
+endif
+
+[ITEMDEF i_qv2_egg]
+ID=i_fruit_coconut
+NAME=Vzacne Vejce
+VALUE=50000
+
+CATEGORY=Questy
+SUBSECTION=QV2
+DESCRIPTION=Vejce
+
+ON=@Create
+  color=0434
+  attr=attr_identified
+  more=0
+
+
+
+//___________________________________________________________________
+// Veci pro cast s Nexmiriasem
+//___________________________________________________________________
+
+[events e_cajun_lord]
+
+on=@aftergetswing
+if rand(20)==1
+  SAY("Heru Val")
+  sfx 533
+  gohome
+  newnpc(c_cajun_child1)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=60
+  newnpc(c_cajun_child2)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=60
+  newnpc(c_cajun_child3)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=60
+endif
+if rand(20)==10
+  SAY("Heru Val")
+  sfx 533
+  gohome
+  newnpc(c_cajun_child3)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=60
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+on=@death
+while (memoryfindtype(0209c))
+  memoryfindtype(0209c).link.multi_damage(100)
+  memoryfindtype(0209c).remove 
+endwhile
+SAY("Ruth Mor")
+newnpc(c_cajun)
+lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+lastnewchar.fame=0
+lastnew.timer=600
+
+
+[events e_ignus]
+
+on=@aftergetswing
+if rand(20)==1
+  sfx(00ef)
+  SAY("Beleg Val Mor Ruin")
+  fireexplosion(10)
+  while (memoryfindtype(0209c))
+    memoryfindtype(0209c).link.multi_damage(50)
+    memoryfindtype(0209c).remove 
+  endwhile
+endif
+if rand(16)==1
+  SAY("Heru Val")
+  sfx 533
+  newnpc(c_elem_fire_terror)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnewchar.tag(experience,0)
+  lastnew.timer=60
+  newnpc(c_elem_fire_terror)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnewchar.tag(experience,0)
+  lastnew.timer=60
+  newnpc(c_elem_fire_terror)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnewchar.tag(experience,0)
+  lastnew.timer=60
+  gohome
+endif
+
+on=@death
+sfx(00ef)
+while (memoryfindtype(0209c))
+  memoryfindtype(0209c).link.multi_damage(150)
+  memoryfindtype(0209c).remove 
+endwhile
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_healdrinker]
+
+on=@aftergetswing
+if(tag(neknockuj))!=1
+  tag(neknockuj,1)
+  return 0
+endif
+if tag(vypito)!=1
+  if (<hits> < <maxhits>/2) && rand(30)==1
+    hits=(hits)+(maxhits/3)
+    emote("drinking potion")
+    emote("healing")
+    return 0
+  endif
+  if (<hits> < <maxhits>/2) && rand(20)==1
+    newequip(i_npc_stoneskin_p)
+    tag(vypito,1)
+    return 0
+  endif
+  if (<hits> < <maxhits>/2) && rand(12)==1
+    newequip(i_npc_spellshield_p)
+    tag(vypito,1)
+    return 0
+  endif
+endif
+
+return 0
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+[events e_menavec_ledovka]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if body!=c_gazer
+  events=-e_tele_to_target
+  findid(i_attack_guard).remove
+endif
+if !(tag(polymorfmdelay))
+  tag(polymorfmdelay,<serv.time>+50)
+  return 0
+endif
+
+on=@aftergetswing
+if (rand(2)==1) && !(findid(i_morfovatko)) && (tag(polymorfmdelay) < <serv.time>)
+  dorand 8
+    tag(doceho,c_snow_spirit)
+    tag(doceho,c_spider_elder)
+    tag(doceho,c_gladiator_lord_snow)
+    tag(doceho,c_snow_titan_lord)
+    tag(doceho,c_golem_frost)
+    tag(doceho,c_excelent) //tag(doceho,c_ptak_ohnivak) -> neexistujici ID
+    tag(doceho,c_minotaur)
+    tag(doceho,c_strazce_ledu)
+  enddo
+  newequip(i_morfovatko)
+  lastnew.tag(zmenimsena,<tag(doceho)>)
+endif
+return 0
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+
+//___________________________________________________________________
+// Veci pro cast se Shagarem
+//___________________________________________________________________
+
+
+[itemdef i_chair_shagar]
+id=i_chair_stone
+
+on=@Step
+if (tag(time)><serv.time>)||(src.findlayer(layer_horse))
+  return 1
+endif
+tag(time,<serv.time>+1200)
+src.newitem(i_shagar_mista)
+src.act.equip
+
+[itemdef i_chair_shagar_mista]
+id=i_memory
+type=t_eq_script
+
+on=@equip
+cont.flag_stone=1
+cont.invis=1
+tag(myp,<cont.p>)
+tag(hop,1)
+timer=5
+
+on=@timer
+timer=5
+if (tag(hop)==1)
+  cont.go minas morgul
+elseif (tag(hop)==9)
+  cont.go tahabar
+else
+  cont.go(<tag(myp)>)
+  cont.flag_stone=0
+  cont.invis=0
+  remove
+endif
+tag(hop,#+1)
+return 1
+
+[ITEMDEF i_door_shagar1]
+ID=032c
+NAME=Divna zed
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Secret Door 1
+
+ON=@Create
+TYPE=t_door_locked
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage Ta zed je nejaka divna
+
+if (<src.RESTEST 1 i_shagar_klic>)
+ src.consume=i_shagar_klic
+ TYPE=t_door
+ src.sysmessage Vlozil jsi klic do otvoru ve zdi. 
+endif
+
+// --------------- BRANY do shagaru ---------------------
+
+[ITEMDEF i_shagar_vstup]
+ID=i_moongate_blue
+NAME=Vstup do jeskyne smrti Shagar
+TYPE=t_telepad
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=urci cestu
+
+ON=@Create
+morep=5819, 1978,10
+attr=attr_newbie
+attr=attr_move_never
+
+ON=@Step
+if (src.isPlayer)&&(<serv.time> > <tag.time>)
+tag.time=<serv.time>+10*60*60*6
+tag.shagar=<eval {1 3}>
+endif
+src.tag.shagar=<tag.shagar>
+src.go (morep)
+return 1  
+
+
+[ITEMDEF i_shagar_gate_1]
+ID=i_moongate_blue
+TYPE=t_normal
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=cesta 1
+
+ON=@Create
+color=043f
+name=Tajemny portal
+attr=attr_newbie
+attr=attr_move_never
+
+ON=@Step
+if (src.tag(shagar)==1)
+  src.go <morep>
+else
+  src.sysmessage Portal je zda se bez energie. Jiste tu bude jina cesta.
+endif
+
+[ITEMDEF i_shagar_gate_2]
+ID=i_moongate_blue
+TYPE=t_normal
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=cesta 2
+
+ON=@Create
+color=043f
+name=Tajemny portal
+attr=attr_newbie
+attr=attr_move_never
+
+ON=@Step
+if (src.tag(shagar)==2)
+src.go <morep>
+else
+src.sysmessage Portal je zda se bez energie. Jiste tu bude jina cesta.
+endif
+
+[ITEMDEF i_shagar_gate_3]
+ID=i_moongate_blue
+TYPE=t_normal
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=cesta 3
+
+ON=@Create
+color=043f
+name=Tajemny portal
+attr=attr_newbie
+attr=attr_move_never
+
+ON=@Step
+if (src.tag(shagar)==3)
+src.go <morep>
+else
+src.sysmessage Portal je zda se bez energie. Jiste tu bude jina cesta.
+endif
+
+
+[events e_drone_large]
+
+on=@aftergetswing
+if rand(25)==1
+      SAY("Heru Val Drone")
+      
+      newnpc(c_drone_small)
+      lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+      lastnewchar.fame=0
+      lastnewchar.flag_conjured=1
+      lastnewchar.newequip(i_osklivejsmazse)
+      lastnew.timer=60
+      newnpc(c_drone_small)
+      lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+      lastnewchar.fame=0
+      lastnewchar.flag_conjured=1
+      lastnewchar.newequip(i_osklivejsmazse)
+      lastnew.timer=60
+      newnpc(c_drone_small)
+      lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+      lastnewchar.fame=0
+      lastnewchar.flag_conjured=1
+      lastnewchar.newequip(i_osklivejsmazse)
+      lastnew.timer=60
+      gohome
+      
+endif
+if rand(20)==10
+      SAY("Heru Val Drone")
+      
+      newnpc(c_drone_small)
+      lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+      lastnewchar.fame=0
+      lastnewchar.flag_conjured=1
+      lastnewchar.newequip(i_osklivejsmazse)
+      lastnew.timer=60
+      gohome
+      
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[ITEMDEF i_qv1_branazdi]
+ID=i_moongate_blue
+name=Wall Gate
+
+CATEGORY=Dungy
+SUBSECTION=Verbatim
+DESCRIPTION=Gate se zdi
+
+ON=@Create
+color=0990
+attr_movenever(1)
+attr_invis(1)
+tag.thief=100.0
+tag.costavim12=0c8
+tag.costavim34=0c9
+tag.vydrzstavby=120
+
+//tag.costavim12 a tag.costavim34 musi udavat jaky item stavim v jakem smeru
+
+on=@Step
+if(src.isplayer)
+   //if(<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+  //  return 0
+   //endif
+  if(strlen(<tag.tm>))
+    if(<tag.tm> < <serv.time>)&&(<more1>==1) // vyprsel cas kdy se nesmi znova stavet
+       tag.tm=""
+       more1=0
+    endif
+   endif
+  if(<more1>==0)  //je mozno stavet znova
+      arg(hlidacnpc,<finduid(0109145)>)
+      if !(tag.smer1==0) //budu stavet ve smeru vychod
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-3)>,<eval(<p_y>-<tag.smer1>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-2)>,<eval(<p_y>-<tag.smer1>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-1)>,<eval(<p_y>-<tag.smer1>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>)>,<eval(<p_y>-<tag.smer1>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+1)>,<eval(<p_y>-<tag.smer1>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+        
+         hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+2)>,<eval(<p_y>-<tag.smer1>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+3)>,<eval(<p_y>-<tag.smer1>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+      endif
+      if !(tag.smer2==0) //budu stavet ve smeru zapad
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-3)>,<eval(<p_y>+<tag.smer2>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-2)>,<eval(<p_y>+<tag.smer2>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-1)>,<eval(<p_y>+<tag.smer2>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>)>,<eval(<p_y>+<tag.smer2>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+1)>,<eval(<p_y>+<tag.smer2>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+        
+         hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+2)>,<eval(<p_y>+<tag.smer2>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+3)>,<eval(<p_y>+<tag.smer2>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim12>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+      endif
+       if !(tag.smer3==0) //budu stavet ve smeru sever
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+<tag.smer3>)>,<eval(<p_y>-3)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+<tag.smer3>)>,<eval(<p_y>-2)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+<tag.smer3>)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+<tag.smer3>)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+<tag.smer3>)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+        
+         hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+<tag.smer3>)>,<eval(<p_y>+2)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>+<tag.smer3>)>,<eval(<p_y>+3)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+  
+      endif
+      if !(tag.smer4==0) //budu stavet ve smeru jih
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-<tag.smer4>)>,<eval(<p_y>-3)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-<tag.smer4>)>,<eval(<p_y>-2)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-<tag.smer4>)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-<tag.smer4>)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-<tag.smer4>)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+        
+         hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-<tag.smer4>)>,<eval(<p_y>+2)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+        hlidacnpc.newitemsafe(i_qv1_zakladzdi)
+        lastnew.p=<eval(<p_x>-<tag.smer4>)>,<eval(<p_y>+3)>,<eval(<p_z>)>,<mapplane>
+        lastnew.tag.costavim=<tag.costavim34>
+        lastnew.tag.vydrzstavby=<tag.vydrzstavby>
+
+      endif
+    more1=1  //deaktivovat po prvnim slapnuti
+    tag.tm=<eval (<serv.time>+<tag.vydrzstavby>+100)> //dat timer na deaktivaci
+   
+ endif
+else
+ return 0
+endif
+ 
+
+[ITEMDEF i_qv1_zakladzdi]
+ID=i_coin_gold
+Name=Zaklad zdi
+
+CATEGORY=Verbatim
+
+ON=@Create
+color=0994
+timer=1
+
+on=@Step
+//say("Stoji na me hrac")  
+src.dir=<dir_revert(<dir>)>
+src.knockbackhim
+
+on=@timer
+arg(hlidacnpc,<finduid(0109145)>)
+  sfx(01e9)
+  hlidacnpc.newitemsafe(<tag.costavim>)
+  lastnew.p=<p>
+  lastnew.name=Shagarova Zed
+  lastnew.timer={<tag.vydrstavby> (<tag.vydrzstavby>+40)}
+remove
+
+[EVENTS e_npc_firefielder]
+
+on=@aftergetswing
+//if rand(15)==1
+  if (src.isplayer) //&& (src.action=067)
+
+        newitemsafe(i_fx_field_fire)
+        lastnew.p=<eval(<src.p_x>-2)>,<eval(<src.p_y>)>,<eval(<src.p_z>)>,<src.mapplane>
+        lastnew.timer={90 100}
+        lastnew.link=<uid>
+        lastnew.type=t_spell
+        lastnew.morep=28,1000,1
+        lastnew.attr=020
+
+        newitemsafe(i_fx_field_fire)
+        lastnew.p=<eval(<src.p_x>-1)>,<eval(<src.p_y>)>,<eval(<src.p_z>)>,<src.mapplane>
+        lastnew.timer={90 100}
+        lastnew.link=<uid>
+        lastnew.type=t_spell
+        lastnew.morep=28,1000,1
+        lastnew.attr=020
+
+        newitemsafe(i_fx_field_fire)
+        lastnew.p=<eval(<src.p_x>)>,<eval(<src.p_y>)>,<eval(<src.p_z>)>,<src.mapplane>
+        lastnew.timer={90 100}
+        lastnew.link=<uid>
+        lastnew.type=t_spell
+        lastnew.morep=28,1000,1
+        lastnew.attr=020
+        
+        newitemsafe(i_fx_field_fire)
+        lastnew.p=<eval(<src.p_x>+1)>,<eval(<src.p_y>)>,<eval(<src.p_z>)>,<src.mapplane>
+        lastnew.timer={90 100}
+        lastnew.link=<uid>
+        lastnew.type=t_spell
+        lastnew.morep=28,1000,1
+        lastnew.attr=020
+      
+        newitemsafe(i_fx_field_fire)
+        lastnew.p=<eval(<src.p_x>+2)>,<eval(<src.p_y>)>,<eval(<src.p_z>)>,<src.mapplane>
+        lastnew.timer={90 100}
+        lastnew.link=<uid>
+        lastnew.type=t_spell
+        lastnew.morep=28,1000,1
+        lastnew.attr=020
+
+  else
+    return 0
+  //endif
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+
+[ITEMDEF i_bleedpad]
+ID=0AEC
+name=Bleedingpad
+
+CATEGORY=Dungy
+SUBSECTION=Verbatim
+DESCRIPTION=Dlazdice s bleedingem
+
+ON=@Create
+color=0611
+attr_movenever(1)
+attr_invis(1)
+tag.thief=100.0
+more1=0
+
+on=@Step
+if (src.action==skill_magery)
+ return 0
+endif 
+if (src.isplayer)
+ if (<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+  return 0
+ endif
+ if (strlen(<tag.tm>))
+  if (<tag.tm> < <serv.time>)&&(<more1>==1) //deaktivovana a uz pres cas !  
+   tag.tm=""
+   more1=0
+  endif
+ endif
+ if (<more1>==0)
+  if (<tag.thief> > 0)&&(<src.removetrap> >= <tag.thief>)&&(rand(4)==1)  
+   src.sysmessage deaktivoval jsi past
+   more1=1
+   tag.tm=<eval (<serv.time>+{3000 6000})>
+   return 0
+  endif
+  if (<src.removetrap> > 75.0)&&(rand(4)!=1)
+   src.sysmessage POZOR ! Past !
+   tag.tm=<eval (<serv.time>+30)>
+   more1=1 //deactivate
+  endif
+  if (src.isplayer)&&(<more1>==0)&&(rand(2)==1) //stale neni deaktivovana - slape looser
+   tag.tm=<eval (<serv.time>+100)> //deset sekund na utek
+   more1=1//docasne odstranit
+   src.anim=20 //gethit :) z  
+    var(swingedchar,<src>)
+    sfx(01da)
+    src.npc_bleed
+    var(swingedchar,"")
+    src.paralyze({300 500}) //30-50s
+    src.redmessage(Obepnula te ostnata rostlina, nemuzes se hnout!) 
+    src.sysmessage (krvacim pred <src.findid(i_krvaceni).more2>)
+    src.findid(i_krvaceni).more2=024
+    src.sysmessage (krvacim pred <src.findid(i_krvaceni).more2>)
+   endif
+ endif
+else
+ return 0
+endif
+
+[ITEMDEF i_spawnpad_advanced]
+ID=0AEC
+name=Advanced Spawn Pad
+
+CATEGORY=Dungy
+SUBSECTION=Verbatim
+DESCRIPTION=Super dlazdice s potvorama
+
+ON=@Create
+color=098c
+attr_movenever(1)
+attr_invis(1)
+more1=0
+tag(resTime,600)
+tag(monsterRevealTime,3)
+
+on=@UserClick
+if (src.isgm)
+  message("RemoveTrap: <tag.thief>")
+  message("<eval(((<tag.tm>)-(<serv.time>))/10)>s do dalsi aktivace") //nevim co s tim je ale nejak to nechce pocitat pokud tam nenarvu vsechny ty zavorky
+  return 1
+endif
+
+
+on=@userDClick
+if (src.isgm)
+ dialog(d_verbuvadvancedspawnpad)
+ return 1
+ENDIF
+
+
+ON=@Step
+if (src.isplayer)
+  if (<src.flags>&statf_dead)||(src.isgm)  //ne duch ni GM ! 
+    return 0
+  endif
+  if (<eval tag(spDeactivatedTill)> < <serv.time>) // pad is innactive for some time after catching the player
+    f_trap_removeTrap_clearDepricatedTags
+    if f_removeTrap_tryActivateTrap // checkne removetrap
+      if (rand(2)==1)
+        sfx(020c)
+        arg(monsterRevealTime,<eval tag(monsterRevealTime)>)
+        if (<arg(monsterRevealTime)> == 0)
+          arg(monsterRevealTime,600)
+        endif
+        arg(i,1)
+        while (i <= 5)
+          if (<tag(SPAWNID<i>)> != 0)
+            src.newitem(i_spawnpad_advanced_monster_creator)
+            arg(monster_creator,<lastnew>)
+            monster_creator.p=<TAG(SPAWNP<i>)>
+            monster_creator.more1=<TAG(SPAWNID<i>)>
+            monster_creator.morep=1,1,1
+            monster_creator.timer=<arg(monsterRevealTime)>
+          endif
+          arg(i,#+1)
+        endwhile
+        if (safe.tag(restime))
+          tag(spDeactivatedTill,<eval (<serv.time>+<tag(restime)>)>)
+        else
+          tag(restime,450)
+          tag(spDeactivatedTill,<eval (<serv.time>+<tag(restime)>)>)  //defaultni prodleva mezi spawny
+        endif
+      endif
+    endif
+  endif
+else
+ return 0
+endif
+
+[ITEMDEF i_spawnpad_advanced_monster_creator]
+ID=0AEC
+name=Monster Creator
+type=t_spawn_char
+
+on=@Create
+attr_movenever(1)
+attr_invis(1)
+
+on=@timer
+if <tag(lastspawned)>
+  remove
+endif
+
+// asi uz se nepouziva
+[ITEMDEF i_zmizni_advanced]
+id=i_memory
+name=zmizni
+type=t_eq_script
+layer=30
+
+on=@timer
+cont.remove
+return 0
+on=@equip
+dorand 30
+cont.say "OOoooO Oo OoO oOOO"
+cont.say "OoOOOoO OoOoOOOoO oOoOOOoO"
+cont.say "Ted zemrete!"
+cont.say "Heru Beleg Ruin"
+cont.say "Na neeeee!"
+cont.say "Zde neprojdete!"
+cont.say "Sundam si zuby a rozkousu te mezi dasnema!"
+cont.say "Tady nemas co pohledavat"
+cont.say "We are the Borg"
+cont.say "You will be assimilated"
+cont.say "Odpor je marny"
+cont.say "Odejdi nebo zemri!"
+cont.say "Ty si dovolujes rusit muj klid?"
+cont.say "To je naposled, co jsi sem vstoupil!"
+cont.say "Prisel tvuj cas..."
+cont.say "Ahhh, cerstva krev!"
+cont.say "Kdo si dovoluje vstoupit na me uzemi?"
+cont.say "Tva smrt bude pomala..."
+cont.say "JIDLO...."
+cont.say "Mozkyyyy"
+cont.say "Tady nemas co pohledavat"
+cont.say "Pojd bliz a umres!"
+cont.say "Odtud se uz vcelku nedostanete!"
+cont.say "Deckaaa svacinaaaa"
+cont.say "Bubububububu"
+cont.say "Mugagagagaga"
+cont.say "Aby te mor hnal po poli a ty si zakopl!"
+cont.say "To bude pecka"
+cont.say "Beru si clerdu"
+cont.say "Banzaaaaaaaaaaaj"
+cont.say "Je cas udelat vybave papa..."
+return 0
+
+[DIALOG d_verbuvadvancedspawnpad]
+100,100
+arg(textcolor,52)
+argo.tag(sirka,400)
+argo.tag(vyska,<eval 23+(13*d_def_radek_vyska)+(2*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,10,100)
+argo.dialog_pozadi(<argo.tag(nexty)>,3,180)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,ID 1)
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,0481,ID 2)
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),0481,ID 3)
+argo.texta(lastxpos,lastypos+(3*d_def_radek_vyska),0481,ID 4)
+argo.texta(lastxpos,lastypos+(4*d_def_radek_vyska),0481,ID 5)
+
+argo.texta(lastxpos,lastypos+(5*d_def_radek_vyska),0481,Pozice 1)
+argo.texta(lastxpos,lastypos+(6*d_def_radek_vyska),0481,Pozice 2)
+argo.texta(lastxpos,lastypos+(7*d_def_radek_vyska),0481,Pozice 3)
+argo.texta(lastxpos,lastypos+(8*d_def_radek_vyska),0481,Pozice 4)
+argo.texta(lastxpos,lastypos+(9*d_def_radek_vyska),0481,Pozice 5)
+argo.texta(<argo.dialog_textpos(1,0)>,0481,"RemoveTrap")
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,0481,"reset dlazky/ds")
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),0481,"SpawnTime po naslapnuti/s")
+
+argo.settext(101,"<?tag.SPAWNID1?>")
+argo.settext(102,"<?TAG.SPAWNID2?>")
+argo.settext(103,"<?TAG.SPAWNID3?>")
+argo.settext(104,"<?TAG.SPAWNID4?>")
+argo.settext(105,"<?TAG.SPAWNID5?>")
+argo.settext(106,"<?f_sp_repair_pos(<TAG.SPAWNP1>)?>")
+argo.settext(107,"<?f_sp_repair_pos(<TAG.SPAWNP2>)?>")
+argo.settext(108,"<?f_sp_repair_pos(<TAG.SPAWNP3>)?>")
+argo.settext(109,"<?f_sp_repair_pos(<TAG.SPAWNP4>)?>")
+argo.settext(110,"<?f_sp_repair_pos(<TAG.SPAWNP5>)?>")
+argo.settext(111,"<?eval tag(restime)?>")
+argo.settext(112,"<?eval tag(monsterRevealTime)?>")
+//src.smsg("hodnota 21 - 24: <argv(21)>,<argv(22)>,<argv(23)>,<argv(24)>")
+argo.dialog_textpos(0,1)
+var(lastxpos,<eval var(lastxpos)>-80) //indentation correction
+argo.textentry(lastxpos,lastypos,200,d_def_radek_vyska,<textcolor>,      1,101)
+argo.textentry(lastxpos,lastypos+d_def_radek_vyska,200,d_def_radek_vyska,<textcolor>,    2,102)
+argo.textentry(lastxpos,lastypos+(2*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,  3,103)
+argo.textentry(lastxpos,lastypos+(3*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,  4,104)
+argo.textentry(lastxpos,lastypos+(4*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,  5,105)
+argo.textentry(lastxpos,lastypos+(5*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,  6,106)
+argo.textentry(lastxpos,lastypos+(6*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,  7,107)
+argo.textentry(lastxpos,lastypos+(7*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,  8,108)
+argo.textentry(lastxpos,lastypos+(8*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,  9,109)
+argo.textentry(lastxpos,lastypos+(9*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,  10,110)
+
+argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)  //cancel
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)    //ok
+argo.button(lastxpos+210,lastypos+(5*d_def_radek_vyska),0fb4,0fb6,1,0,2)    //set pos1
+argo.button(lastxpos+210,lastypos+(6*d_def_radek_vyska),0fb4,0fb6,1,0,3)    //set pos2
+argo.button(lastxpos+210,lastypos+(7*d_def_radek_vyska),0fb4,0fb6,1,0,4)    //set pos3
+argo.button(lastxpos+210,lastypos+(8*d_def_radek_vyska),0fb4,0fb6,1,0,5)    //set pos4
+argo.button(lastxpos+210,lastypos+(9*d_def_radek_vyska),0fb4,0fb6,1,0,6)    //set pos5
+argo.button(lastxpos+238,lastypos+(5*d_def_radek_vyska),4005,4007,1,0,7)    //go pos1
+argo.button(lastxpos+238,lastypos+(6*d_def_radek_vyska),4005,4007,1,0,8)    //go pos2
+argo.button(lastxpos+238,lastypos+(7*d_def_radek_vyska),4005,4007,1,0,9)    //go pos3
+argo.button(lastxpos+238,lastypos+(8*d_def_radek_vyska),4005,4007,1,0,10)    //go pos4
+argo.button(lastxpos+238,lastypos+(9*d_def_radek_vyska),4005,4007,1,0,11)    //go pos5
+
+argo.button(<argo.dialog_textpos(1,1)>,0fab,0fad,1,0,12)    //RemoveTrap dialog button
+argo.textentry(lastxpos,lastypos+d_def_radek_vyska,200,d_def_radek_vyska,<textcolor>,    11,111)
+argo.textentry(lastxpos,lastypos+(2*d_def_radek_vyska),200,d_def_radek_vyska,<textcolor>,    12,112)
+
+[DIALOG d_verbuvadvancedspawnpad BUTTON]
+ON=0
+src.SYSMESSAGE Cancelled
+return 0
+
+ON=1
+src.sysmessage(p: <p> ,co: <uid>, name: <name>)
+src.sysmessage(1: <argtxt(1)> 2:<argtxt(2)> 3:<argtxt(3)> 4:<argtxt(4)> 5: <argtxt(5)> 6: <argtxt(6)>)
+src.sysmessage(7: <argtxt(7)> 8:<argtxt(8)> 9:<argtxt(9)> 10:<argtxt(10)>)
+TAG.SPAWNID1=<argtxt(1)>
+TAG.SPAWNID2=<argtxt(2)>
+TAG.SPAWNID3=<argtxt(3)>
+TAG.SPAWNID4=<argtxt(4)>
+TAG.SPAWNID5=<argtxt(5)>
+TAG.SPAWNP1=<argtxt(6)>
+TAG.SPAWNP2=<argtxt(7)>
+TAG.SPAWNP3=<argtxt(8)>
+TAG.SPAWNP4=<argtxt(9)>
+TAG.SPAWNP5=<argtxt(10)>
+tag(restime,<eval argtxt(11)>)
+if (<tag(restime)> < 50)
+  src.redMessage("cas mezi dvema spawny musi byt alespon 5s!")
+  tag(restime,50)
+endif
+tag(monsterRevealTime,<eval argtxt(12)>)
+if (<tag(monsterRevealTime)> < 1)
+  src.redMessage("cas na respawn monstra musi byt alespon 3s!")
+  tag(monsterRevealTime,3)
+endif
+
+ON=2 // set position 1
+TAG.SPAWNP1=<src.p>
+dialog(d_verbuvadvancedspawnpad)
+
+ON=3 // set position 2
+TAG.SPAWNP2=<src.p>
+dialog(d_verbuvadvancedspawnpad)
+
+ON=4 // set position 3
+TAG.SPAWNP3=<src.p>
+dialog(d_verbuvadvancedspawnpad)
+
+ON=5 // set position 4
+TAG.SPAWNP4=<src.p>
+dialog(d_verbuvadvancedspawnpad)
+
+ON=6 // set position 5
+TAG.SPAWNP5=<src.p>
+dialog(d_verbuvadvancedspawnpad)
+
+ON=7 // goto position 1
+src.p=<TAG.SPAWNP1>
+src.updatex
+dialog(d_verbuvadvancedspawnpad)
+
+ON=8 // goto position 2
+src.p=<TAG.SPAWNP2>
+src.updatex
+dialog(d_verbuvadvancedspawnpad)
+
+ON=9 // goto position 3
+src.p=<TAG.SPAWNP3>
+src.updatex
+dialog(d_verbuvadvancedspawnpad)
+
+ON=10 // goto position 4
+src.p=<TAG.SPAWNP4>
+src.updatex
+dialog(d_verbuvadvancedspawnpad)
+
+ON=11 // goto position 5
+src.p=<TAG.SPAWNP5>
+src.updatex
+dialog(d_verbuvadvancedspawnpad)
+
+on=12
+f_trap_removeTrap_clearDepricatedTags
+dialog(d_trap_removeTrap,d_verbuvadvancedspawnpad)
+
+[FUNCTION f_sp_repair_pos]
+if (argvcount == 0)
+  arg(return_string,",,,")
+elseif (argvcount < 4)
+  arg(return_string,"<argv(0)>,<argv(1)>,<argv(2)>,0")
+else
+  arg(return_string,"<argv(0)>,<argv(1)>,<argv(2)>,<argv(3)>")
+endif
+return<return_string>
+
+//___________________________________________________________________
+// Itemy pro cast duse, subkvest Popletalius
+//___________________________________________________________________
+
+
+
+
+[ITEMDEF i_q029_alchnezdar_planek]
+id = 0e34
+type = t_scroll_blank
+name = Planek pro kovare
+
+on=@Create
+attr=attr_newbie
+
+ON=@userDClick
+src.scroll sc_q029_alchnezdar_planek
+return 1
+
+[scroll sc_q029_alchnezdar_planek]
+Vidis zbesilou cmaranici plnou skrtanic a nesrozumitelnych popisku. 
+
+[ITEMDEF i_qv1_midnight_past]
+id=02c72
+Name=Past na elemy
+
+CATEGORY=Verbatim
+
+
+ON=@Create
+color=0990
+WEIGHT=160.0
+
+on=@userDClick
+ if (!<more1l>)
+   message("Musim opatrne aby past nesklapla...") 
+   more1 = 1
+   return 1
+ else
+   redmessage("Auuuveeeeejs!") 
+   sfx(049) //cvak
+   src.hits=0
+   more1l = 0
+   return 1
+ endif
+
+ 
+on=@Step
+//say("Step")  
+if (<src.npc>)&&(<src.tag.umru_jen_v_pasti>==1)
+say("Cvak")
+sfx(01ef) //zvuk pasti
+ src.hits=0
+endif 
+return 1
+
+[EVENTS e_qv1_midnight]
+on=@skillstroke
+// finduid(0497).sysmessage(Midnight <src> je od navnady <finduid(<act>).distancefrom()>)
+if(action==072)
+  if(finduid(<act>).distancefrom() < 2 )  
+   say("Mnam mnam mnam")
+   sfx(0230) //zvuk jidla najit
+   // say("Beru si cil na: <act.tag.where>")  
+   // src.go <act.tag.where> // fachalo ale delalo oblacky 
+   src.P = <act.tag.where>
+   src.update
+  endif
+endif
+
+on=@aftergetswing
+hits=<eval (<maxhits>+1)>
+
+on=@beforegeteffect
+hits=<eval (<maxhits>+1)>
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+
+[ITEMDEF i_qv1_navnada]
+ID=i_cake
+TYPE=t_qv1_navnada
+NAME=Pulnocni dobrutka
+
+CATEGORY=Verbatim
+
+ON=@Create
+color=0994
+WEIGHT=5.0
+
+[typedef t_qv1_navnada]
+on=@userDClick
+message("No, vypada to lakave, ale ja bych to teda nejedl")  
+
+on=@dropon_ground
+tag(where,<p>) //pouziva se pro midnighta aby vedel kam se portnout
+
+
+[ITEMDEF i_qv1_kamen_noci]
+ID=i_gem_diamond
+NAME=Pulnocni stripek
+
+CATEGORY=Verbatim
+
+
+ON=@Create
+color=0433
+WEIGHT=50.0
+
+on=@userDClick
+message("Pekelne studeny a tezky stripek kamene temneho jak pulnoc sama")  
+
+
+[ITEMDEF i_qv1_ajda_hulka]
+
+ID=i_staff_gnarled
+Name=Hulka
+
+CATEGORY=Verbatim
+
+ON=@Create
+color=065
+WEIGHT=300
+
+tag(imi_value[25], 100)  //25 - magery, +100
+mif_finishitem
+
+Name=Tajemna hul [Artefakt]
+//finduid(09fa43).delayedmessage(<servertime> QV-item (Hulka) <lastnew>. Pozice <cont.P>)   // naco to? co to? huh?
+
+on=@equip
+src.redmessage(Nejsi povolany uchopit tuto hulku!)
+f_svlikaci_pauza(0,2) //dvahand
+
+on=@unequip
+tag.remove(imi_skill_present)
+tag.remove(imi_value_25)  // uz nepridava nic - IBA PISE ZE PRIDAVA ALE NAOZAJ UZ NE! - plati pre kazdy z tychto artefaktov
+
+on=@userclick
+src.sysmessage("+100% ke skillu Magery")
+ 
+[ITEMDEF i_qv1_ajda_satecky]
+
+ID=i_dress_full
+Name=Saty
+
+CATEGORY=Verbatim
+
+ON=@Create
+color=065
+WEIGHT=240
+
+lastnew.tag(imi_value[60], 100)  //60 - sila, +100
+mif_finishitem
+
+NAME=Hedvabne saty [Artefakt]
+//finduid(09fa43).delayedmessage(<servertime> QV-item (Saty) <lastnew>. Pozice <cont.P>) 
+
+on=@equip
+src.redmessage(Nejsi povolany obleci tyto saty!)
+f_svlikaci_pauza(0,22) //roba
+
+on=@unequip
+tag.remove(imi_other_present)
+tag.remove(imi_value_60)
+
+on=@userclick
+src.sysmessage("+100 k sile")
+
+[ITEMDEF i_qv1_ajda_satecky1]
+
+ID=i_dress_full
+Name=Saty
+
+CATEGORY=Verbatim
+
+ON=@Create
+color=065
+WEIGHT=240
+
+NAME=Hedvabne saty [Artefakt]
+
+ 
+[ITEMDEF i_qv1_ajda_plast]
+
+ID=i_cape
+
+CATEGORY=Verbatim
+
+ON=@Create
+color=044c
+WEIGHT=20
+
+lastnew.tag(imi_value[60], 100)  //60 - sila, +100
+mif_finishitem
+
+Name=Hedvabny plast [Artefakt]
+//finduid(09fa43).delayedmessage(<servertime> QV-item (Plast) <lastnew>. Pozice <cont.P>) 
+
+on=@equip
+src.redmessage(Nejsi povolany obleci tento plast!)
+f_svlikaci_pauza(0,20) //cape
+
+on=@unequip
+tag.remove(imi_other_present)
+tag.remove(imi_value_60)
+
+on=@userclick
+src.sysmessage("+100 k sile")
+
+[ITEMDEF i_qv1_ajda_klobouk]
+
+ID=i_hat_floppy
+
+CATEGORY=Verbatim
+
+
+ON=@Create
+color=065
+WEIGHT=30
+
+tag(imi_value[25], 100)  //25 - magery, +100
+mif_finishitem
+name=Plateny kloboucek [Artefakt]
+//finduid(09fa43).delayedmessage(<servertime> QV-item (Klobouk) <lastnew>. Pozice <cont.P>) 
+
+on=@equip
+src.redmessage(Nejsi povolany nasadit si tento klobouk!)
+f_svlikaci_pauza(0,6) //hlava
+ 
+on=@unequip
+tag.remove(imi_skill_present)
+tag.remove(imi_value_25)
+ 
+on=@userclick
+src.sysmessage("+100% ke skillu Magery")
+
+[ITEMDEF i_qv1_ajda_zbroj]
+
+ID=i_armor_female_studded
+
+CATEGORY=Verbatim
+
+ON=@Create
+color=044c
+WEIGHT=400
+
+tag(imi_value[25], 100)  //25 - magery, +100
+tag(imi_value[62], 100)  //62 - int, +100
+mif_finishitem
+name=Tajemna zbroj [Artefakt]
+//finduid(09fa43).delayedmessage(<servertime> QV-item (Zbroj) <lastnew>. Pozice <cont.P>) 
+
+on=@equip
+src.redmessage(Nejsi povolany obleci tuto zbroj!)
+f_svlikaci_pauza(0,13) //chest
+
+on=@unequip
+tag.remove(imi_skill_present)
+tag.remove(imi_value_62)
+tag.remove(imi_other_present)
+tag.remove(imi_value_25)
+
+on=@userclick
+src.sysmessage("+100% ke skillu Magery")
+src.sysmessage("+100 k inteligenci")
+
+[ITEMDEF i_qv1_ulomek]
+ID=01c6f
+NAME=Ulomek [artefakt]
+
+CATEGORY=Verbatim
+
+ON=@Create
+color=0480
+Attr_CanDecay(1)
+Attr_MoveAlways(1)
+finduid(09fa43).delayedmessage(<servertime> QV-item (Ulomek) <lastnew>. Pozice <cont.P>) 
+
+ON=@userDClick
+message("Ulomek neceho kovoveho")  
+
+
+[ITEMDEF i_qv1_krystal1_plnej]
+ID=01f1c
+NAME=Krystal
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Krystal_1
+
+ON=@Create
+color=0480
+Attr_CanDecay(1)
+Attr_MoveAlways(1)
+
+ON=@userDClick
+message("Neobycejny krystal")  
+
+[ITEMDEF i_qv1_krystal1_prazdnej]
+ID=01f1a
+NAME=Krystal
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Krystal_1
+
+ON=@Create
+color=0480
+Attr_CanDecay(1)
+Attr_MoveAlways(1)
+
+ON=@userDClick
+message("Neobycejny krystal")  
+
+[ITEMDEF i_qv1_krystal2_plnej]
+ID=01f19
+NAME=Krystal
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Krystal_2
+
+ON=@Create
+color=0480
+Attr_CanDecay(1)
+Attr_MoveAlways(1)
+
+ON=@userDClick
+message("Neobycejny krystal")  
+
+[ITEMDEF i_qv1_krystal2_prazdnej]
+ID=01f1d
+NAME=Krystal
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Krystal_2
+
+ON=@Create
+color=0480
+Attr_CanDecay(1)
+Attr_MoveAlways(1)
+
+ON=@userDClick
+message("Neobycejny krystal")  
+
+[ITEMDEF i_zmrzlavoda]
+ID=i_bottle_empty
+NAME=Zmrzla voda
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Zmrzla Voda
+
+ON=@Create
+color=0994
+
+on=@userDClick
+message("Vypada to jako zmrzla voda v lahvi, ale cert vi na co je") 
+
+
+//___________________________________________________________________
+// Oltare (doplnit skutecne tagy a skutecna mista)
+//___________________________________________________________________
+
+
+[ITEMDEF i_snow_oltar_sily]
+ID=01216
+NAME=Oltar Sily
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Oltar Sily
+
+ON=@Create
+color=0481
+Attr_MoveNever(1)
+Attr_Static(1)
+
+ON=@userDClick
+message("Citis slabe chveni")  
+
+on=@freespace
+//kermel.sysmessage(Slapli ze me)
+tag.remove(stepper)
+if(strlen(<src.tag(vb_oltar_sily)>))
+ link.more1=<link.more1>-1 //snizit na pocitadle
+ link.trigger(@counterchangedown)
+endif
+
+on=@Step
+if(!strlen(<link>))
+ src.sysmessage(Oltar neni pripraven)
+ return 1
+endif
+if(src.isevent(e_steppad)) //aby to porad neprojizdelo kdyz na nem bude stat spravnej clovek ... 
+ return 1
+else 
+ //kermel.sysmessage(Slapli na me)
+ src.tag(step_counter,1)
+ src.events=+e_steppad
+ src.tag(v_pad,<uid>) 
+ if(strlen(<src.tag(vb_oltar_sily)>))
+  say(CVAK)
+  tag(stepper,<src>) //ulozit si toho kdo na nem stoji
+  link.more1=<link.more1>+1 //zvednout na pocitadle
+  link.trigger(@counterchangeup)  
+ else
+  src.sysmessage(Cvak... ...a nic!) 
+ endif
+endif
+
+[ITEMDEF i_snow_oltar_duse]
+ID=01216
+NAME=Oltar Duse
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Oltar Duse
+
+ON=@Create
+color=0481
+Attr_MoveNever(1)
+Attr_Static(1)
+
+ON=@userDClick
+message("Citis slabe chveni")  
+
+on=@freespace
+//kermel.sysmessage(Slapli ze me)
+tag.remove(stepper)
+if(strlen(<src.tag(vb_oltar_duse)>))
+ link.more1=<link.more1>-1 //snizit na pocitadle
+ link.trigger(@counterchangedown)
+endif
+
+on=@Step
+if(!strlen(<link>))
+ src.sysmessage(Oltar neni pripraven)
+ return 1
+endif
+if(src.isevent(e_steppad)) //aby to porad neprojizdelo kdyz na nem bude stat spravnej clovek ... 
+ return 1
+else 
+ //kermel.sysmessage(Slapli na me)
+ src.tag(step_counter,1)
+ src.events=+e_steppad
+ src.tag(v_pad,<uid>) 
+ if(strlen(<src.tag(vb_oltar_duse)>))
+  say(CVAK)
+  tag(stepper,<src>) //ulozit si toho kdo na nem stoji
+  link.more1=<link.more1>+1 //zvednout na pocitadle
+  link.trigger(@counterchangeup)  
+ else
+  src.sysmessage(Cvak... ...a nic!) 
+ endif
+endif
+
+[ITEMDEF i_snow_oltar_krve]
+ID=01216
+NAME=Oltar Krve
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Oltar Krve
+
+ON=@Create
+color=0481
+Attr_MoveNever(1)
+Attr_Static(1)
+
+ON=@userDClick
+message("Citis slabe chveni")  
+
+on=@freespace
+//kermel.sysmessage(Slapli ze me)
+tag.remove(stepper)
+if(strlen(<src.tag(vb_oltar_krve)>))
+ link.more1=<link.more1>-1 //snizit na pocitadle
+ link.trigger(@counterchangedown)
+endif
+
+on=@Step
+if(!strlen(<link>))
+ src.sysmessage(Oltar neni pripraven)
+ return 1
+endif
+if(src.isevent(e_steppad)) //aby to porad neprojizdelo kdyz na nem bude stat spravnej clovek ... 
+ return 1
+else 
+ //kermel.sysmessage(Slapli na me)
+ src.tag(step_counter,1)
+ src.events=+e_steppad
+ src.tag(v_pad,<uid>) 
+ if(strlen(<src.tag(vb_oltar_krve)>))
+  say(CVAK)
+  tag(stepper,<src>) //ulozit si toho kdo na nem stoji
+  link.more1=<link.more1>+1 //zvednout na pocitadle
+  link.trigger(@counterchangeup)  
+ else
+  src.sysmessage(Cvak... ...a nic!) 
+ endif
+endif
+
+[ITEMDEF i_snow_oltar_mrazu]
+ID=01216
+NAME=Oltar Mrazu
+
+CATEGORY=Verbatim
+SUBSECTION=Ledova Jeskyne
+DESCRIPTION=Oltar Mrazu
+
+ON=@Create
+color=0481
+Attr_MoveNever(1)
+Attr_Static(1)
+
+ON=@userDClick
+message("Citis slabe chveni")  
+
+on=@freespace
+//kermel.sysmessage(Slapli ze me)
+tag.remove(stepper)
+if(strlen(<src.tag(vb_oltar_mrazu)>))
+ link.more1=<link.more1>-1 //snizit na pocitadle
+ link.trigger(@counterchangedown)
+endif
+
+on=@Step
+if(!strlen(<link>))
+ src.sysmessage(Oltar neni pripraven)
+ return 1
+endif
+if(src.isevent(e_steppad)) //aby to porad neprojizdelo kdyz na nem bude stat spravnej clovek ... 
+ return 1
+else 
+ //kermel.sysmessage(Slapli na me)
+ src.tag(step_counter,1)
+ src.events=+e_steppad
+ src.tag(v_pad,<uid>) 
+ if(strlen(<src.tag(vb_oltar_mrazu)>))
+  say(CVAK)
+  tag(stepper,<src>) //ulozit si toho kdo na nem stoji
+  link.more1=<link.more1>+1 //zvednout na pocitadle
+  link.trigger(@counterchangeup)  
+ else
+  src.sysmessage(Cvak... ...a nic!) 
+ endif
+endif
+
+[itemdef i_counter_pad]
+id=0AEC
+Name=Altar Step counter pad
+
+on=@Create
+attr_movenever(1)
+attr_invis(1)
+more1=0
+morep=1000 982 //umisteni te gaty
+
+on=@counterchangeup
+//say(Counter up)
+if(<more1>==1)
+ src.newitemsafe(01af8)  
+ lastnew.p=<morep>
+ lastnew.update
+ link=<lastnew>
+ //say(more jednicka:<more1>)
+ return 1
+endif
+if(<more1>==2)
+ link.dispid=<link.dispid>+1
+ link.update
+ //say(more dvojka:<more1>)
+ return 1
+endif
+if(<more1>==3)
+ link.dispid=<link.dispid>+1
+ link.update
+ //say(more trojka:<more1>)
+ return 1
+endif
+if(<more1>==4)
+ link.remove  
+ link=""
+ odstranime_tagy_stepperum
+ src.newitemsafe(i_vb_snow_gate)
+ lastnew.link=<uid> //navazeme novou gatu pro pozdejsi praci s ni
+ lastnew.p=<morep>
+ lastnew.update
+ //say(more hotovo:<more1>)
+ return 1
+endif
+
+on=@counterchangedown
+//say(Counter down)
+if(<more1>==0)
+ link.remove
+ link=""
+ //say(more konec:<more1>)
+ return 1
+endif
+if(<more1>==1)
+ link.dispid=<link.dispid>-1
+ link.update
+ //say(more jednicka:<more1>)
+ return 1
+endif
+if(<more1>==2)
+ link.dispid=<link.dispid>-1
+ link.update
+ //say(more dvojka:<more1>)
+ return 1
+endif
+
+[function odstranime_tagy_stepperum]
+//kermel.sysmessage(odstranuji tagy)
+tag(i_snow_oltar_mrazu).tag(stepper).tag.remove(vb_oltar_mrazu)
+tag(i_snow_oltar_sily).tag(stepper).tag.remove(vb_oltar_sily)
+tag(i_snow_oltar_duse).tag(stepper).tag.remove(vb_oltar_duse)
+tag(i_snow_oltar_krve).tag(stepper).tag.remove(vb_oltar_krve)
+
+[itemdef i_vb_snow_gate]
+id=i_moongate_blue
+name=Verbatimova snezna brana //nejake chytre jmeno
+type=t_script
+
+on=@Create
+attr_newbie(1)
+attr_movenever(1)
+timer=600
+morep=996,988 //kam to bude hazet
+
+on=@timer
+link.more1=0 //vynuluje se to pocitadlo stoupnuti
+remove
+
+on=@Step
+src.go(<morex>,<morey>,<morez>,<morem>)
+
+[function setaltar]
+newitemsafe(i_setaltar_target)
+lastnew.equip
+
+[itemdef i_setaltar_target]
+id=i_memory
+name=Targetter
+type=t_eq_script
+
+on=@Create
+more1=1
+
+on=@equip
+target(Zamer oltar k pripraveni)
+
+on=@targon_item
+if(<more1>)
+ if(src.targ.baseid==i_snow_oltar_mrazu)||(src.targ.baseid==i_snow_oltar_sily)||(src.targ.baseid==i_snow_oltar_duse)||(src.targ.baseid==i_snow_oltar_krve)
+  link=<src.targ> //uloz si do linku ten zamereny oltar
+  more1=0
+  target(Zamer pocitadlo)
+  return 1
+ else
+  target(Rekl jsem OLTAR!!!)
+  return 1
+ endif
+else
+ if(src.targ.baseid==i_counter_pad)
+  src.targ.tag(<link.baseid>,<link>) //do tagu nazvanych podle jednotlivych oltaru ulozit ty oltare
+  link.link=<src.targ> //link ulozeneho oltare spojit s pocitadlem
+  src.sysmessage(Oltar nastaven)
+  remove
+  return 1
+ else
+  target(Rekl jsem POCITADLO !!!!)
+  return 1
+ endif 
+endif
+
+on=@targon_ground
+if(<more1>)
+ target(Rekl jsem OLTAR!)
+ return 1
+else
+ target(Rekl jsem POCITADLO!)
+endif
+
+on=@targon_char
+if(<more1>)
+ target(Rekl jsem OLTAR!)
+ return 1
+else
+ target(Rekl jsem POCITADLO!)
+endif
+
+[events e_steppad]
+on=@Step
+if(<tag(step_counter)>==2) //na prvni slapnuti se nedeje nic (doslapnuti na kamen), az na druhe dojde k tomu odstraneni
+ tag(v_pad).trigger(@freespace)
+ tag.remove(v_pad)
+ tag.remove(step_counter)
+ events(-e_steppad)
+else
+ tag(step_counter,<tag(step_counter)>+1)
+endif
+
+[ITEMDEF i_snow_anim1]
+ID=i_fx_sparkle
+NAME=Zhmotnena energie
+
+ON=@spelleffect
+if(argn==41)||(argn==34)||(argn==54) //dispell,dispell field, massdispel 
+ return 1
+endif
+
+
+//___________________________________________________________________
+// Casti tela Ajdy tlejici i mumifikovane
+//___________________________________________________________________
+
+
+[ITEMDEF i_qv1_lr_ajdy]
+ID=i_flesh_left_arm
+NAME=Tlejici leva ruka Ajdy
+
+ON=@Create
+color=0989
+timer=<eval{9600 20000}>
+
+on=@userDClick
+message("Fuj! To je ale nechutne, tlejici ruka!")  
+tag(jouda,<src>)
+
+on=@userclick
+message("Fuj! To je ale nechutne, tlejici ruka!")  
+tag(jouda,<src>)
+
+ON=@timer
+finduid(tag(jouda)).sysmessage Ruka se diky teplu a nevhodnemu zachazeni uplne rozpadla !!!
+remove
+
+[ITEMDEF i_qv1_pr_ajdy]
+ID=i_flesh_right_arm
+NAME=Tlejici prava ruka Ajdy
+
+ON=@Create
+color=0989
+timer=<eval{9600 20000}>
+
+on=@userDClick
+message("Fuj! To je ale nechutne, tlejici ruka!")  
+tag(jouda,<src>)
+
+on=@userclick
+message("Fuj! To je ale nechutne, tlejici ruka!")  
+tag(jouda,<src>)
+
+ON=@timer
+finduid(tag(jouda)).sysmessage Ruka se diky teplu a nevhodnemu zachazeni uplne rozpadla !!!
+remove
+
+[ITEMDEF i_qv1_ln_ajdy]
+ID=i_flesh_left_leg
+NAME=Tlejici leva noha Ajdy
+
+ON=@Create
+color=0989
+timer=<eval{9600 20000}>
+
+on=@userDClick
+message("Fuj! To je ale nechutne, tlejici noha!")  
+tag(jouda,<src>)
+
+on=@userclick
+message("Fuj! To je ale nechutne, tlejici noha!")  
+tag(jouda,<src>)
+
+ON=@timer
+finduid(tag(jouda)).sysmessage Noha se diky teplu a spatnemu skladovani uplne rozpadla !!!
+remove
+
+[ITEMDEF i_qv1_pn_ajdy]
+ID=i_flesh_right_leg
+NAME=Tlejici prava noha Ajdy
+
+ON=@Create
+color=0989
+timer=<eval{9600 20000}>
+
+on=@userDClick
+message("Fuj! To je ale nechutne, tlejici noha!")  
+tag(jouda,<src>)
+
+on=@userclick
+message("Fuj! To je ale nechutne, tlejici noha!")  
+tag(jouda,<src>)
+
+ON=@timer
+finduid(tag(jouda)).sysmessage Noha se diky teplu a spatnemu skladovani uplne rozpadla !!!
+remove
+
+[ITEMDEF i_qv1_torso_ajdy]
+ID=i_flesh_torso
+NAME=Tlejici telo Ajdy
+
+ON=@Create
+color=0989
+timer=<eval{8000 16000}>
+
+on=@userDClick
+message("Fuj! To je ale nechutne, tlejici telo!")  
+tag(jouda,<src>)
+
+ON=@timer
+finduid(tag(jouda)).sysmessage Z tela se vyvalil spokojene napapany cervik, zbytek tela se zmenil na smradlavou kasi!!!
+remove
+
+[ITEMDEF i_qv1_hlava_ajdy]
+ID=i_flesh_head
+NAME=Tlejici hlava Ajdy
+
+ON=@Create
+color=0989
+timer=<eval{8100 12000}>
+
+on=@userDClick
+message("Fuj! To je ale nechutne, napul rozlozena hlava!!!")  
+tag(jouda,<src>)
+
+ON=@timer
+finduid(tag(jouda)).sysmessage Hlava se zacala pekelne zapachat, a uplne shnila.
+remove
+
+
+[ITEMDEF i_qv1_lr_ajda]
+ID=i_flesh_left_arm
+NAME=Leva ruka Ajdy
+
+on=@userDClick
+message("Perfektne zakonzerovana leva zenska ruka")  
+
+[ITEMDEF i_qv1_pr_ajda]
+ID=i_flesh_right_arm
+NAME=Prava ruka Ajdy
+
+on=@userDClick
+message("Perfektne zakonzerovana prava zenska ruka")  
+
+[ITEMDEF i_qv1_ln_ajda]
+ID=i_flesh_left_leg
+NAME=Leva noha Ajdy
+
+on=@userDClick
+message("Perfektne zakonzerovana leva zenska noha")  
+
+[ITEMDEF i_qv1_pn_ajda]
+ID=i_flesh_right_leg
+NAME=Prava noha Ajdy
+
+on=@userDClick
+message("Perfektne zakonzerovana prava zenska noha")  
+
+[ITEMDEF i_qv1_torso_ajda]
+ID=i_flesh_torso
+NAME=Torso Ajdy
+
+on=@userDClick
+message("Perfektne zakonzerovany zensky hrudnik, nedotykat se bradavek!")  
+
+[ITEMDEF i_qv1_hlava_ajda]
+ID=i_flesh_head
+NAME=Hlava Ajdy
+
+on=@userDClick
+message("Perfektne zakonzerovana prazdna zenska hlava")  
+
+
+//___________________________________________________________________
+// Nasleduje kopie skriptu treasures.scp , modifikovana pro kvest QV1
+// vsechny itemy generovany obsahuji string QV1 oproti puvodnim defum
+//___________________________________________________________________
+
+
+[function f_qv1_randfern]
+dorand 11
+return tm_rocks
+return  i_bone_shards
+return  0913
+return  0d16
+return  0d19
+return  031be
+return  01b9e
+return  0122b
+return  i_bone_ribcage
+return  0d16
+return  01ae3
+enddo
+
+
+[typedef t_qv1_unidentified_map]
+ON=@userDClick
+if (src.CARTOGRAPHY<<TAG.qv1map>)||(src.nolightfizz)
+ src.say(Misto na mape je mi zcela nezname)
+ return 1
+ENDIF
+// morep = the treasure location = MOREX,MOREY
+if !(tag(vylusteno))
+ tag(vylusteno,1)
+ NAME="Mapa k pokladu"
+ TYPE=T_MAP
+ src.NEWITEM(f_qv1_randfern)// Place trigger random tile on UO Map
+ src.say(Ano, to misto poznavam.)
+ more1=<tag(qv1map)>
+ lastnew.TYPE=T_qv1_TREAS_CHEST
+ lastnew.TAG.qv1MAP=<TAG.qv1MAP>
+ lastnew.timer=3600
+ lastnew.attr=attr_static|attr_move_never
+ lastnew.LINK=<UID>
+ lastnew.P=<morep> // da polohu podle tagu mapy
+ lastnew.fix
+ f_showmap
+ finduid(09fa43).tag(pocetvylustenych,<finduid(09fa43).tag(pocetvylustenych)>+1)
+ finduid(09fa43).delayedmessage(<servertime> Mapka QV1 <lastnew> vylustena <src.name> , level <lastnew.TAG.qv1MAP>, pozice <lastnew.P>) 
+
+ return 0
+ENDIF
+
+
+[TYPEDEF T_qv1_TREAS_CHEST]
+
+ON=@userDClick
+if ( <LINK.TOPOBJ.UID> != <src.UID> )  
+ return 1
+ENDIF
+if (src.FINDLAYER(1).id==i_pickaxe)
+ src.ANIM=0B
+ SOUND=0126  //kopani?
+else
+ src.message="Chtelo by to poradny nacini"
+ return 1
+endif
+if (src.MINING > tag(qv1MAP)) && !(src.nolightfizz)
+  src.message <tag(qv1MAP)>
+  if (tag(qv1MAP) > 975)
+    finduid(01a8c1d).tag(mylastnew).p=<p> //lvl 5
+    src.MESSAGE="5"
+  elseif (tag(qv1MAP) > 920)
+    finduid(01a8256).tag(mylastnew).p=<p> //lvl 4
+    src.MESSAGE="4"
+  elseif (tag(qv1MAP) > 825)
+    finduid(019e4eb).tag(mylastnew).p=<p> //lvl 3
+    src.MESSAGE="3"
+  elseif  (tag(qv1MAP) > 650)
+    finduid(019faaa).tag(mylastnew).p=<p> //lvl 2
+    src.MESSAGE="2"
+  else
+    if (finduid(01a35c0).p == finduid(finduid(01a35c0).tag(mylastnew)).p)
+      finduid(01a35c0).tag(mylastnew).p=<p> //lvl 1
+      src.MESSAGE="1"
+    else
+      src.message="Kopani te unavilo, zkus to zachvili"
+      // to znamena ze poklad este neni vygenerovanej
+      return 1
+    endif 
+  endif
+  src.MESSAGE="Juuuuu! Truhla s pokladem!"
+  LINK.REMOVE      //remove linked deciphered map
+  REMOVE        //remove trigger plant
+  return 1
+else
+  src.message="Moc to nejde"
+ENDIF
+return 1
+
+on=@timer
+link.tag.remove(vylusteno)
+remove
+
+[ITEMDEF i_qv1_u_treasure_map]
+ID=i_map
+NAME="Tajemna mapa"
+
+CATEGORY=Maps - Treasure
+DESCRIPTION=Map QV1 - nesahej na to rozbijes to!
+
+on=@userDClick
+if (type==t_map)
+ src.arrowquest <morep>
+ f_showmap
+ENDIF
+if !(tag(vylusteno))
+ tag(vylusteno,1)
+ src.NEWITEM(f_qv1_randfern)//Place trigger random tile on UO Map
+ lastnew.TYPE=T_qv1_TREAS_CHEST
+ lastnew.TAG.qv1MAP=<TAG.qv1MAP>
+ lastnew.timer=3600
+ lastnew.attr=attr_static|attr_move_never
+ lastnew.LINK=<UID>
+ lastnew.P=<morep>
+ lastnew.fix
+
+ENDIF
+
+ON=@Create
+//color=0724
+more2={0 65535}
+TYPE=t_qv1_unidentified_map
+TAG.qv1MAP=<eval {300 1000}>
+
+//poèítadlo a ms
+finduid(09fa43).tag(pocetmapek,<finduid(09fa43).tag(pocetmapek)>+1)
+//finduid(09fa43).delayedmessage(<servertime> Mapka QV1 <lastnew> vytvorena - celkem ve svete <finduid(09fa43).tag(pocetmapek)> mapek) 
+
+f_qv1_Map_GetCoords
+
+[FUNCTION f_qv1_Map_GetCoords]
+DORAND 16
+ morep=391,3884,10
+ morep=577,2692,10
+ morep=2423,3480,2
+ morep=331,2097
+ morep=1655,25
+ morep=1705,549
+ morep=2419,3487,2
+ morep=4967,3163
+ morep=6047,3262,-10
+ morep=5373,1414,10
+ morep=5783,2274,10
+ morep=5280,2235,-18
+ morep=6051,3504,20
+ morep=5850,2270,10
+ morep=5864,2288,10
+ morep=6115,3459,20 
+
+ENDDO
+  

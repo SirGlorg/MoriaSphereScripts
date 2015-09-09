@@ -1,0 +1,1512 @@
+//////////////////////////////////////////////////////
+//               MEGAQUEST - DRAKOBIJCI             //
+//                   (c)  Marek                     //
+//////////////////////////////////////////////////////
+
+
+// i_dragon_scale_<farba anglicky>
+// brown green black blue red white gold
+
+
+/////////////////////  BAHNAK /////////////////////////
+
+[CHARDEF c_drak_bahno]
+id=c_sea_serpent
+//id=c_serpent_giant
+NAME=Bahenni drak
+SOUND=snd_MONSTER_CORPSR1
+ICON=i_pet_SNAKE_GIANT
+CAN=MT_WALK|MT_run
+
+attack=130
+ARMOR=125
+moverate=3
+
+RESOURCES=50 i_ribs_raw,100 i_reag_dragon_blood
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_stun
+//TEVENTS=e_npc_leaper
+TEVENTS=e_summoneater                //smaze summona, co zasahne
+TEVENTS=e_parakrik
+TEVENTS=e_npc_detect
+TEVENTS=e_NPC_Bleed
+TEVENTS=e_inexhaustible
+TEVENTS=e_dragon_regeneration
+TEVENTS=e_bahenny_drak_aura          //dmg vsem + nejde na to resist ani protijed
+TEVENTS=e_bahenny_drak_krev          //krev na blizko zrani + pak je naslapka 
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Bahenni drak
+
+ON=@Create
+COLOR=colors_drag_swamp
+//COLOR=01D9
+//COLOR=0999
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=5000
+DEX=300
+INT=100
+
+maxhits={30000 30500}
+maxstam={700 800}
+maxmana=0
+
+tag.experience=<eval {500.0 525.0}>
+
+tag.bahenny_drak_aura_chance=1000     // 100% - sanca v promile
+tag.bahenny_drak_aura_delay=60        // 60 sek - prodleva mezi pustenim aury
+tag.bahenny_drak_aura_speed=10        // 10 sek - rychlost skytani 
+tag.bahenny_drak_aura_power=10        // 10x - pocet skitov
+tag.bahenny_drak_aura_dmg=50          // max dmg aury
+tag(dragon_fire_aura_resist,0)          // 0 = nefunguje resist na auru
+
+tag.npc_bleed=700                     //70.0%
+
+tag.regeneration_hp=700          // pocet hp ktore zregeneruje
+tag.regeneration_speed=10        // rychlost regeneracie v sekundach
+
+//tag.npc_port_timer=15
+//tag(npc_port_distance,9)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,dragon,50)             //50% vliv itemu
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_summon,950)
+tag(resist_para,1000)
+tag(resist_bleed,500)  //krvaci dost
+
+tag(resist_sharp,350)
+tag(resist_slash,250)   // sekery
+tag(resist_pierce,550)
+tag(resist_blunt,850)
+
+tag(resist_fire,200)
+tag(resist_elect,500)
+tag(resist_cold,800)
+
+PARRYING=120.0
+WRESTLING=130.0
+Resist=200.0
+SpiritSpeak=60.0
+POISONING=500.0
+DETECTINGHIDDEN={190.0 290.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+//ITEM=RANDOM_REAGENT,{100 150}
+
+/////////////////////  HNEDY /////////////////////////
+
+[CHARDEF c_drak_hnedy]
+id=c_drake_base
+NAME=Drak
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_run|MT_FIRE_IMMUNE
+
+attack=110
+ARMOR=125
+moverate=3
+
+RESOURCES=50 i_ribs_raw,100 i_reag_dragon_blood
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_stun
+//TEVENTS=e_npc_leaper
+TEVENTS=e_summoneater                   //smaze summona, co zasahne
+TEVENTS=e_parakrik
+TEVENTS=e_npc_detect
+TEVENTS=e_NPC_Bleed
+TEVENTS=e_phoenix                       //Reborn
+TEVENTS=e_npc_critic                    //sance na kritik melee
+TEVENTS=e_dragon_regeneration
+TEVENTS=e_inexhaustible
+TEVENTS=e_fire_dragon_aura		// draci aura - hp mana stam
+TEVENTS=e_fire_dragon                   // draci dech
+tevents=e_q040_dragon_death             // systemova vec, nemazat!!!
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Hnedy drak
+
+ON=@Create
+COLOR=0650
+//COLOR=01D9
+//COLOR=0999
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=5000
+DEX=400
+INT=150
+
+maxhits={30000 30500}
+maxstam={900 1000}
+maxmana=0
+
+tag.experience=<eval {1000.0 1025.0}>
+
+tag(q040_dragons_qtag_wanted,6)         // systemova vec, nemazat!!!
+
+tag(dragon_fire_aura_chance,1000)	// 100% - sanca v promile
+tag(dragon_fire_aura_delay,30) 		// 30 sek - prodleva mezi pustenim aury
+tag(dragon_fire_aura_speed,5) 		// 5 sek - rychlost skytani 
+tag(dragon_fire_aura_power,10) 		// 10x - pocet skitov
+tag(dragon_fire_aura_dmg,50) 		// max dmg aury
+tag(dragon_fire_aura_resist,1)          // 0 = nefunguje resist na auru
+
+tag(dragon_fire_chance,800)  	        // 80% - sanca zasadenia
+tag(dragon_fire_dmg,120)		// dmg po prechode
+tag(dragon_fire_type,4)			// typ ohna - cerny - pouze dmg
+tag(dragon_fire_delay,20)		// prodleva kedy zase moze pustit ohen
+
+tag.npc_bleed=1000                      //100.0%
+
+tag.regeneration_hp=2000                // pocet hp ktore zregeneruje
+tag.regeneration_speed=10               // rychlost regeneracie v sekundach
+
+tag.npc_critic_chance=350               //25% chance
+tag.npc_critic_dmg=35,40                //dmg in between
+
+tag.npc_port_timer=10
+tag(npc_port_distance,6)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,dragon,50)             //50% vliv itemu
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,00)
+tag(resist_summon,1000)
+tag(resist_para,1000)
+tag(resist_bleed,00)  //krvaci dost
+
+tag(resist_sharp,900)
+tag(resist_slash,990)   // sekery
+tag(resist_pierce,600)
+tag(resist_blunt,800)
+
+tag(resist_fire,450)
+tag(resist_elect,1000)
+tag(resist_cold,700)
+
+PARRYING=120.0
+WRESTLING=130.0
+Resist=200.0
+SpiritSpeak=60.0
+POISONING=300.0
+DETECTINGHIDDEN={190.0 290.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+//ITEM=RANDOM_REAGENT,{100 150}
+ITEM=i_dragon_scale_brown
+
+
+/////////////////////  ZELENY /////////////////////////
+
+[CHARDEF c_drak_Zeleny]
+id=c_drake_base
+NAME=Drak
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_run|MT_FIRE_IMMUNE
+
+attack=120
+ARMOR=125
+moverate=3
+
+RESOURCES=50 i_ribs_raw,100 i_reag_dragon_blood
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_stun
+//TEVENTS=e_npc_leaper
+TEVENTS=e_summoneater                   //smaze summona, co zasahne
+TEVENTS=e_parakrik
+TEVENTS=e_npc_detect
+//TEVENTS=e_NPC_Bleed
+TEVENTS=e_phoenix                       //Reborn
+TEVENTS=e_npc_critic                    //sance na kritik melee
+TEVENTS=e_dragon_regeneration
+TEVENTS=e_inexhaustible
+TEVENTS=e_fire_dragon_aura		// draci aura - hp mana stam
+TEVENTS=e_fire_dragon                   // draci dech
+TEVENTS=e_bahenny_drak_krev             //krev na blizko zrani + pak je naslapka 
+tevents=e_q040_dragon_death             // systemova vec, nemazat!!!
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Zeleny drak
+
+ON=@Create
+COLOR=0111
+//COLOR=01D9
+//COLOR=0999
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=5000
+DEX=300
+INT=250
+
+maxhits={30000 30500}
+maxstam={800 900}
+maxmana=0
+
+tag.experience=<eval {1100.0 1125.0}>
+
+tag(q040_dragons_qtag_wanted,8)         // systemova vec, nemazat!!!
+
+tag(dragon_fire_aura_chance,1000)	// 100% - sanca v promile
+tag(dragon_fire_aura_delay,30) 		// 30 sek - prodleva mezi pustenim aury
+tag(dragon_fire_aura_speed,5) 		// 5 sek - rychlost skytani 
+tag(dragon_fire_aura_power,10) 		// 10x - pocet skitov
+tag(dragon_fire_aura_dmg,55) 		// max dmg aury
+tag(dragon_fire_aura_resist,1)          // funguje resist na auru
+
+tag(dragon_fire_chance,800)  	        // 80% - sanca zasadenia
+tag(dragon_fire_dmg,140)		// dmg po prechode
+tag(dragon_fire_type,3)			// typ ohna - jedovaty
+tag(dragon_fire_delay,20)		// prodleva kedy zase moze pustit ohen
+
+//tag.npc_bleed=700                     // 70.0%
+
+tag.regeneration_hp=1800                // pocet hp ktore zregeneruje
+tag.regeneration_speed=10               // rychlost regeneracie v sekundach
+
+tag.npc_critic_chance=300               //30% chance
+tag.npc_critic_dmg=50,55                //dmg in between
+
+tag.npc_port_timer=10
+tag(npc_port_distance,6)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,dragon,50)             //50% vliv itemu
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_summon,1000)
+tag(resist_para,1000)
+tag(resist_bleed,00)                  //krvaci dost
+
+tag(resist_sharp,900)
+tag(resist_slash,600)                 // sekery
+tag(resist_pierce,800)
+tag(resist_blunt,1000)
+
+tag(resist_fire,700)
+tag(resist_elect,450)
+tag(resist_cold,1000)
+
+PARRYING=120.0
+WRESTLING=130.0
+Resist=200.0
+SpiritSpeak=60.0
+POISONING=800.0
+DETECTINGHIDDEN={190.0 290.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+//ITEM=RANDOM_REAGENT,{100 150}
+ITEM=i_dragon_scale_green
+
+
+/////////////////////  OHNIVEJ /////////////////////////
+
+[CHARDEF c_drak_ohen]
+id=c_drake_base
+NAME=Drak
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_run|MT_FIRE_IMMUNE
+
+attack=130
+ARMOR=125
+moverate=3
+
+RESOURCES=50 i_ribs_raw,100 i_reag_dragon_blood
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_stun
+TEVENTS=e_npc_leaper
+TEVENTS=e_summoneater                   //smaze summona, co zasahne
+//TEVENTS=e_parakrik
+TEVENTS=e_npc_detect
+//TEVENTS=e_NPC_Bleed
+TEVENTS=e_phoenix                       //Reborn
+TEVENTS=e_npc_critic                    //sance na kritik melee
+TEVENTS=e_explode
+TEVENTS=e_inexhaustible
+TEVENTS=e_dragon_regeneration
+TEVENTS=e_npc_summoning
+TEVENTS=e_fire_dragon_aura		// dracia aura - hp mana stam
+TEVENTS=e_fire_dragon                   // draci dech
+TEVENTS=e_fire_dragon_bomb   		// ohnivy vybuch
+tevents=e_q040_dragon_death // systemova vec, nemazat!!!
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Ohnivy drak
+
+ON=@Create
+COLOR=00
+//COLOR=01D9
+//COLOR=0999
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=5000
+DEX=300
+INT=950
+
+maxhits={30000 30500}
+maxstam={800 900}
+maxmana=0
+
+tag.experience=<eval {1400.0 1425.0}>
+
+tag(q040_dragons_qtag_wanted,10) // systemova vec, nemazat!!!
+
+tag(dragon_fire_aura_chance,1000)	// 100% - sanca v promile
+tag(dragon_fire_aura_delay,30) 		// 30 sek - prodleva mezi pustenim aury
+tag(dragon_fire_aura_speed,5) 		// 5 sek - rychlost skytani 
+tag(dragon_fire_aura_power,10) 		// 10x - pocet skitov
+tag(dragon_fire_aura_dmg,65) 		// max dmg aury
+tag(dragon_fire_aura_resist,1)          // funguje resist na auru
+
+tag(dragon_fire_chance,800)  	        // 80% - sanca zasadenia
+tag(dragon_fire_dmg,160)		// dmg po prechode
+tag(dragon_fire_type,1)			// typ ohna - 1 az 5
+tag(dragon_fire_delay,30)		// prodleva kedy zase moze pustit ohen
+
+tag(dragon_fire_bomb_chance,800)        // sanca zasadenia v promile
+tag(dragon_fire_bomb_dmg,40)		// dmg po prejdeni
+tag(dragon_fire_bomb_type,1)		// typ ohna - 1 az 5 
+tag(dragon_fire_bomb_delay,10)		// prodleva kedy zase moze pustit ohen
+
+tag(npc_summoning_chance,400)      //40%
+tag(npc_summoning_time,190)        //nezakouzli znovu v sek
+tag(npc_summoning_count,4)         //pocet
+tag(npc_summoning_char[0],c_elem_fire_dragon)
+tag(npc_summoning_char[1],c_elem_fire_dragon)
+tag(npc_summoning_char[2],c_elem_fire)
+tag(npc_summoning_char[3],c_elem_fire)
+
+//tag.npc_bleed=500                     // 50.0%
+
+tag.npc_critic_chance=350               //35% chance
+tag.npc_critic_dmg=50,55                //dmg in between
+
+tag.regeneration_hp=2000                // pocet hp ktore zregeneruje
+tag.regeneration_speed=10               // rychlost regeneracie v sekundach
+
+tag.npc_port_timer=10
+tag(npc_port_distance,4)
+
+Tag.explode_dmg=100
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,dragon,50)             //50% vliv itemu
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_summon,1000)
+tag(resist_para,1000)
+tag(resist_bleed,800)  //krvaci dost
+
+tag(resist_sharp,600)
+tag(resist_slash,800)   // sekery
+tag(resist_pierce,1000)
+tag(resist_blunt,900)
+
+tag(resist_fire,1000)
+tag(resist_elect,700)
+tag(resist_cold,450)
+
+PARRYING=120.0
+WRESTLING=130.0
+Resist=200.0
+SpiritSpeak=60.0
+//POISONING=300.0
+DETECTINGHIDDEN={190.0 290.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=i_dragon_scale_red
+//ITEM=RANDOM_REAGENT,{100 150}
+
+/////////////////////  LEDOVY /////////////////////////
+
+[CHARDEF c_drak_led]
+id=c_drake_base
+NAME=Drak
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_run|MT_FIRE_IMMUNE
+
+attack=140
+ARMOR=125
+moverate=3
+
+RESOURCES=50 i_ribs_raw,100 i_reag_dragon_blood
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_stun
+//TEVENTS=e_npc_leaper
+TEVENTS=e_summoneater                   //smaze summona, co zasahne
+//TEVENTS=e_parakrik
+TEVENTS=e_npc_detect
+//TEVENTS=e_NPC_Bleed
+TEVENTS=e_phoenix                       //Reborn
+TEVENTS=e_npc_critic                    //sance na kritik melee
+//TEVENTS=e_explode
+TEVENTS=e_inexhaustible
+TEVENTS=e_dragon_regeneration
+TEVENTS=e_npc_summoning
+TEVENTS=e_fire_dragon_aura		// dracia aura - hp mana stam
+TEVENTS=e_fire_dragon                   // draci dech
+TEVENTS=e_fire_dragon_bomb   		// ohnivy vybuch
+tevents=e_q040_dragon_death             // systemova vec, nemazat!!!
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Ledovy drak
+
+ON=@Create
+COLOR=0480
+//COLOR=01D9
+//COLOR=0999
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=5000
+DEX=300
+INT=550
+
+maxhits={30000 30500}
+maxstam={800 900}
+maxmana=0
+
+tag.experience=<eval {1500.0 1555.0}>
+
+tag(q040_dragons_qtag_wanted,12)        // systemova vec, nemazat!!!
+
+tag(dragon_fire_aura_chance,1000)	// 100% - sanca v promile
+tag(dragon_fire_aura_delay,10) 		// 10 sek - prodleva mezi pustenim aury
+tag(dragon_fire_aura_speed,5) 		// 5 sek - rychlost skytani 
+tag(dragon_fire_aura_power,2) 		// 2x - pocet skitov
+tag(dragon_fire_aura_dmg,45) 		// max dmg aury
+tag(dragon_fire_aura_resist,1)          // funguje resist na auru
+
+tag(dragon_fire_chance,800)  	        // 80% - sanca zasadenia
+tag(dragon_fire_dmg,170)		// dmg po prechode
+tag(dragon_fire_type,2)			// typ ohna - 1 az 5
+tag(dragon_fire_delay,11)		// prodleva kedy zase moze pustit ohen
+
+//tag.npc_bleed=500                     // 50.0%
+
+tag.npc_critic_chance=350               //35% chance
+tag.npc_critic_dmg=40,45                //dmg in between
+
+tag.regeneration_hp=1500                // pocet hp ktore zregeneruje
+tag.regeneration_speed=10               // rychlost regeneracie v sekundach
+
+tag(dragon_fire_bomb_chance,800)        // sanca zasadenia v promile
+tag(dragon_fire_bomb_dmg,40)		// dmg po prejdeni
+tag(dragon_fire_bomb_type,2)		// typ ohna - 1 az 5 
+tag(dragon_fire_bomb_delay,9)		// prodleva kedy zase moze pustit ohen
+
+tag(npc_summoning_chance,400)           //40%
+tag(npc_summoning_time,200)             //nezakouzli znovu v sek
+tag(npc_summoning_count,4)              //pocet
+tag(npc_summoning_char[0],c_phantom_snow_dragon)
+tag(npc_summoning_char[1],c_phantom_snow_dragon)
+tag(npc_summoning_char[2],c_ooze_snow_dragon)
+tag(npc_summoning_char[3],c_ooze_snow_dragon)
+
+tag.npc_port_timer=10
+tag(npc_port_distance,4)
+
+tag.npc_stun_time=20              //2 seconds of stun
+Tag.npc_stun_chance=300           //35%, defaultne 20% 
+
+//Tag.explode_dmg=200
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,dragon,50)             //50% vliv itemu
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_summon,1000)
+tag(resist_para,1000)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,1000)
+tag(resist_slash,800)   // sekery
+tag(resist_pierce,900)
+tag(resist_blunt,650)
+
+tag(resist_fire,490)
+tag(resist_elect,700)
+tag(resist_cold,1000)
+
+PARRYING=120.0
+WRESTLING=130.0
+Resist=200.0
+SpiritSpeak=60.0
+//POISONING=300.0
+DETECTINGHIDDEN={190.0 290.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=i_dragon_scale_blue
+//ITEM=RANDOM_REAGENT,{100 150}
+
+
+/////////////////////  CERNY /////////////////////////
+
+[CHARDEF c_drak_cerny]
+id=c_drake_base
+NAME=Drak
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK|MT_run|MT_FIRE_IMMUNE
+
+attack=150
+ARMOR=125
+moverate=3
+
+RESOURCES=50 i_ribs_raw,100 i_reag_dragon_blood
+BLOODCOLOR=color_o_obsidian
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_stun
+//TEVENTS=e_npc_leaper
+TEVENTS=e_summoneater                   //smaze summona, co zasahne
+//TEVENTS=e_parakrik
+TEVENTS=e_npc_detect
+TEVENTS=e_NPC_Bleed
+TEVENTS=e_phoenix_25                    //Reborn jen o 25
+TEVENTS=e_npc_critic                    //sance na kritik melee
+//TEVENTS=e_explode
+TEVENTS=e_inexhaustible
+TEVENTS=e_dragon_regeneration
+TEVENTS=e_npc_summoning
+TEVENTS=e_fire_dragon_aura		// dracia aura - hp mana stam
+TEVENTS=e_fire_dragon                   // draci dech
+//TEVENTS=e_fire_dragon_bomb   		// ohnivy vybuch
+TEVENTS=e_fire_dragon_cage              // klec
+tevents=e_q040_dragon_death             // systemova vec, nemazat!!!
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Cerny drak
+
+ON=@Create
+color=0455
+//COLOR=01D9
+//COLOR=0999
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=5000
+DEX=300
+INT=950
+
+maxhits={30000 30500}
+maxstam={800 900}
+maxmana=0
+
+tag.experience=<eval {1500.0 1555.0}>
+
+tag(q040_dragons_qtag_wanted,14)        // systemova vec, nemazat!!!
+
+tag(dragon_fire_aura_chance,1000)	// 100% - sanca v promile
+tag(dragon_fire_aura_delay,30) 		// 30 sek - prodleva mezi pustenim aury
+tag(dragon_fire_aura_speed,5) 		// 5 sek - rychlost skytani 
+tag(dragon_fire_aura_power,10) 		// 10x - pocet skitov
+tag(dragon_fire_aura_dmg,85) 		// max dmg aury
+tag(dragon_fire_aura_resist,1)          // funguje resist na auru
+
+tag(dragon_fire_chance,800)  	        // 80% - sanca zasadenia
+tag(dragon_fire_dmg,210)		// dmg po prechode
+tag(dragon_fire_type,4)			// typ ohna - 1 az 5
+tag(dragon_fire_delay,20)		// prodleva kedy zase moze pustit ohen
+
+tag.npc_bleed=950                       // 95.0%
+
+tag.npc_critic_chance=350               //35% chance
+tag.npc_critic_dmg=50,65                //dmg in between
+
+tag.regeneration_hp=1650                // pocet hp ktore zregeneruje
+tag.regeneration_speed=10               // rychlost regeneracie v sekundach
+
+tag(dragon_fire_bomb_chance,800)        // sanca zasadenia v promile
+tag(dragon_fire_bomb_dmg,40)		// dmg po prejdeni
+tag(dragon_fire_bomb_type,4)		// typ ohna - 1 az 5 
+tag(dragon_fire_bomb_delay,20)		// prodleva kedy zase moze pustit ohen
+
+tag(dragon_fire_cage_chance,1000)       // sanca v promile
+tag(dragon_fire_cage_delay,25)          // prodleva v sekundach medzi klietkami
+tag(dragon_fire_cage_type,4)            // typ ohna, rovnako ako utoky - 1 az 5
+tag(dragon_fire_cage_duration,16)       // kolko sekund bude klietka existovat
+
+tag(npc_summoning_chance,800)           //80%
+tag(npc_summoning_time,180)             //nezakouzli znovu v sek
+tag(npc_summoning_count,2)              //pocet
+tag(npc_summoning_char[0],c_imp_dragon)
+tag(npc_summoning_char[1],c_imp_dragon)
+
+//tag(npc_summoning_char[2],c_imp_dragon)
+//tag(npc_summoning_char[3],c_imp_dragon)
+
+//tag.npc_port_timer=10
+//tag(npc_port_distance,4)
+
+//tag.npc_stun_time=20                 //2 seconds of stun
+//Tag.npc_stun_chance=300              //35%, defaultne 20% 
+
+//Tag.explode_dmg=200
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,dragon,50)             //50% vliv itemu
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,-1000)
+tag(resist_summon,1000)
+tag(resist_para,1000)
+tag(resist_bleed,600)
+
+tag(resist_sharp,800)
+tag(resist_slash,400)   // sekery
+tag(resist_pierce,600)
+tag(resist_blunt,800)
+
+tag(resist_fire,1000)
+tag(resist_elect,1000)
+tag(resist_cold,1000)
+
+PARRYING=120.0
+WRESTLING=130.0
+Resist=200.0
+SpiritSpeak=60.0
+//POISONING=300.0
+DETECTINGHIDDEN={190.0 290.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=i_dragon_scale_black
+//ITEM=RANDOM_REAGENT,{100 150}
+
+
+/////////////////////  BILY /////////////////////////
+
+[CHARDEF c_drak_bily]
+id=c_drake_base
+NAME=Drak
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+CAN=MT_WALK
+
+attack=200
+ARMOR=300
+moverate=3
+
+RESOURCES=50 i_ribs_raw,100 i_reag_dragon_blood
+BLOODCOLOR=0481
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_stun
+//TEVENTS=e_npc_leaper
+TEVENTS=e_summoneater                   //smaze summona, co zasahne
+//TEVENTS=e_parakrik
+TEVENTS=e_npc_detect
+//TEVENTS=e_NPC_Bleed
+TEVENTS=e_phoenix_25                    //Reborn jen o 25
+TEVENTS=e_npc_critic                    //sance na kritik melee
+//TEVENTS=e_explode
+TEVENTS=e_inexhaustible
+TEVENTS=e_dragon_regeneration
+TEVENTS=e_npc_summoning
+TEVENTS=e_fire_dragon_aura		// dracia aura - hp mana stam
+//TEVENTS=e_fire_dragon                 // draci dech
+TEVENTS=e_fire_dragon_round
+TEVENTS=e_fire_dragon_bomb   		// ohnivy vybuch
+//TEVENTS=e_fire_dragon_cage            // klec
+tevents=e_q040_dragon_death             // systemova vec, nemazat!!!
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Bily drak
+
+ON=@Create
+color=0481
+//COLOR=01D9
+//COLOR=0999
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=5000
+DEX=300
+INT=300
+
+maxhits={30000 30500}
+maxstam={800 900}
+maxmana=1000
+
+tag.experience=<eval {1500.0 1555.0}>
+
+tag(q040_dragons_qtag_wanted,16)        // systemova vec, nemazat!!!
+
+tag(dragon_fire_aura_chance,1000)	// 100% - sanca v promile
+tag(dragon_fire_aura_delay,20) 		// 20 sek - prodleva mezi pustenim aury
+tag(dragon_fire_aura_speed,5) 		// 5 sek - rychlost skytani 
+tag(dragon_fire_aura_power,10) 		// 10x - pocet skitov
+tag(dragon_fire_aura_dmg,110) 		// max dmg aury
+tag(dragon_fire_aura_resist,1)          // funguje resist na auru
+
+tag(fire_dragon_round_chance,1000)      // 100% - sanca v promile
+tag(fire_dragon_round_delay,40)         // 40 sek - prodleva mezi pustenim roundu
+tag(fire_dragon_round_turns,2) 		// 2 otocka - pocet otociek
+tag(fire_dragon_round_type,3) 		// typ ohne 1 - poison
+tag(fire_dragon_round_dmg,100) 		// max dmg
+
+//tag(dragon_fire_chance,800)  	        // 80% - sanca zasadenia
+//tag(dragon_fire_dmg,210)		// dmg po prechode
+//tag(dragon_fire_type,4)               // typ ohna - 1 az 5
+//tag(dragon_fire_delay,20)		// prodleva kedy zase moze pustit ohen
+
+//tag.npc_bleed=950                       // 95.0%
+
+tag.npc_critic_chance=800               //80% chance
+tag.npc_critic_dmg=100,105              //dmg in between
+
+tag.regeneration_hp=1700                // pocet hp ktore zregeneruje
+tag.regeneration_speed=10               // rychlost regeneracie v sekundach
+
+tag(dragon_fire_bomb_chance,800)        // sanca zasadenia v promile
+tag(dragon_fire_bomb_dmg,40)		// dmg po prejdeni
+tag(dragon_fire_bomb_type,1)		// typ ohna - 1 az 5 
+tag(dragon_fire_bomb_delay,150)		// prodleva kedy zase moze pustit ohen
+
+//tag(dragon_fire_cage_chance,1000)       // sanca v promile
+//tag(dragon_fire_cage_delay,25)          // prodleva v sekundach medzi klietkami
+//tag(dragon_fire_cage_type,4)            // typ ohna, rovnako ako utoky - 1 az 5
+//tag(dragon_fire_cage_duration,16)       // kolko sekund bude klietka existovat
+
+tag(npc_summoning_chance,800)           //80%
+tag(npc_summoning_time,280)             //nezakouzli znovu v sek
+tag(npc_summoning_count,1)              //pocet
+tag(npc_summoning_char[0],c_liche_dragon)
+//tag(npc_summoning_char[0],c_ooze_mana_dragon)
+
+//tag(npc_summoning_char[1],c_ooze_mana_dragon)
+//tag(npc_summoning_char[2],c_imp_dragon)
+//tag(npc_summoning_char[3],c_imp_dragon)
+
+//tag.npc_port_timer=10
+//tag(npc_port_distance,4)
+
+tag.npc_stun_time=20                 //2 seconds of stun
+Tag.npc_stun_chance=1000             //100%, defaultne 20% 
+tag.npc_stun_delay=30                //3 sekundy prodleva mezi 2 sancema = defaultne 20
+
+//Tag.explode_dmg=200
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,dragon,50)             //50% vliv itemu
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_summon,1000)
+tag(resist_para,1000)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,1000)
+tag(resist_slash,1000)   // sekery
+tag(resist_pierce,1000)
+tag(resist_blunt,1000)
+
+tag(resist_fire,800)
+tag(resist_elect,600)
+tag(resist_cold,400)
+
+PARRYING=120.0
+WRESTLING=130.0
+Resist=200.0
+SpiritSpeak=60.0
+//POISONING=300.0
+DETECTINGHIDDEN={190.0 290.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=i_dragon_scale_white
+//ITEM=RANDOM_REAGENT,{100 150}
+
+//////////////////////////////////////////////////////////////
+///////////////////////// CRAP  //////////////////////////////
+//////////////////////////////////////////////////////////////
+
+[CHARDEF c_elem_fire_dragon]
+ID=c_elem_fire_m
+NAME=Magma Elemental
+SOUND=snd_ELEMENTL_FIRELEM1
+ICON=i_pet_elem_fire
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_USEHANDS
+
+attack=55
+ARMOR=60
+moverate=3
+
+BLOODCOLOR=colors_red
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_fire
+TEVENTS=e_npc_critic              //sance na kritik melee
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Magma Elemental
+
+ON=@Create
+NPC=brain_monster
+FAME={10 20}
+KARMA={-100 -2500}
+
+STR={600 700}
+DEX={220 250}
+INT={150 200}
+
+maxhits={2900 2950}
+maxstam={220 250}
+maxmana=0
+
+tag.experience=<eval {50.0 60.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag.npc_critic_chance=250         //25% chance
+tag.npc_critic_dmg=40,45          //dmg in between
+
+//other resists
+tag(resist_poison,1000) //elementala neotravis
+tag(resist_para,1000)
+tag(resist_summon,300)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,500)
+tag(resist_pierce,500)
+tag(resist_blunt,500)
+
+//magic resists
+tag(resist_fire,1000)
+tag(resist_elect,500)
+tag(resist_cold,-600)
+
+//typ monstra
+tag(monstertype,fire) 
+
+//weap flags
+tag.weapflag=dam_fire|dam_magic
+
+WRESTLING={90.0 100.0}
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+RESIST={85.0 100.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=i_gold
+//ITEM=i_reag_sulfur_ash,{10 20}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_phantom_snow_dragon]
+ID=c_man
+NAME=Odolny Phantom
+SOUND=snd_MONSTER_GHOST1
+ICON=i_pet_zombie
+ANIM=07bc7f
+CAN=MT_WALK|MT_RUN|MT_SWIM|MT_GHOST|MT_USEHANDS
+
+ATTACK=55
+ARMOR=50
+MOVERATE=3
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+//TEVENTS=e_npc_leaper
+
+CATEGORY=Dungy
+SUBSECTION=Drakobijci
+DESCRIPTION=Phantom
+
+ON=@Create
+color=07FFF     // pruhledna
+NPC=brain_undead
+FAME=30
+KARMA={-2000 -3999}
+
+STR=1000
+DEX=500
+INT=145
+
+maxhits=1800
+maxstam=1000
+maxmana=0
+
+tag.experience=<eval {75.0 85.0}> 
+
+//mystik
+tag(hypnotizable,0) //nezhypnotizujes
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.npc_bleed=500                     // 50.0%
+
+tag.npc_port_timer=20
+tag(npc_port_distance,6)
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,300)
+tag(resist_bleed,-100)
+
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,500)
+tag(resist_pierce,-500)
+tag(resist_blunt,800)
+
+//magic resists
+tag(resist_fire,800)
+tag(resist_elect,-200)
+tag(resist_cold,800)
+
+//typ monstra
+tag(monstertype,snow)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical //ruzne
+
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+WRESTLING={185.0 200.0}
+SpiritSpeak=25.0
+PROVOCATION=100.0
+peacemaking=100.0
+RESIST=200.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_deathrobe
+color=07FFF     // pruhledna
+ITEMNEWBIE=i_cape
+NAME=Death cloak
+color=07FFF     // pruhledna
+ITEMNEWBIE=i_lantern_lit
+
+ON=@NPCRestock
+//ITEM=i_gold,10
+
+////////////////////////////////////////////////////////
+
+[CHARDEF c_ooze_snow_dragon]
+ID=c_slime
+NAME=Mana Ooze
+SOUND=snd_MONSTER_SLIME1
+ICON=i_pet_slime
+ANIM=060c7f
+CAN=MT_WALK
+
+attack=85
+ARMOR=100
+moverate=4
+
+RESOURCES=2 i_ribs_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_curse_mana            //mass sani many
+
+CATEGORY=Monsters
+SUBSECTION=Oozes
+DESCRIPTION=Mana Ooze
+
+ON=@Create
+color=07FFF     // pruhledna
+NPC=brain_monster
+FAME=100
+KARMA={-4000 -5999}
+
+STR=2000
+DEX={350 380}
+INT=100
+
+maxhits=6000
+maxstam={450 500}
+maxmana=0
+
+tag.experience=<eval {140.0 150.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag.npc_curse_mana_chance=750       // 75% chance to trigger this event
+tag.npc_curse_mana_delay=5,7        // delay between another possible strike
+tag.npc_curse_mana_dmg=55,60        // mana reduce in between 
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,300)
+tag(resist_bleed,-500)
+
+//weap resists
+tag(resist_sharp,-100)
+tag(resist_slash,-100)
+tag(resist_pierce,-500)
+tag(resist_blunt,500)
+
+//magic resists
+tag(resist_fire,800)
+tag(resist_elect,-200)
+tag(resist_cold,400)
+
+tag(monstertype,ooze)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING={90.0 100.0}
+TACTICS={100.0 110.0}
+WRESTLING={100.0 105.0}
+PROVOCATION=100.0
+peacemaking=100.0
+RESIST=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=i_gold
+
+/////////////////////////////////////////////////////////////////
+
+[CHARDEF c_imp_dragon]
+ID=c_mongbat
+NAME=Draci imp
+SOUND=snd_MONSTER_MNGBAT1
+ICON=i_pet_mongbat
+CAN=MT_WALK
+
+attack=57
+ARMOR=80
+moverate=5
+
+RESOURCES=2 i_ribs_raw
+BLOODCOLOR=0455
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Monsters
+SUBSECTION=Draci
+DESCRIPTION=Draci imp
+
+ON=@Create
+color=0455
+NPC=brain_monster
+FAME=100
+KARMA={-4000 -5999}
+
+STR=2000
+DEX={350 380}
+INT=200
+
+maxhits=4000
+maxstam={200 250}
+maxmana=0
+
+tag.experience=<eval {50.0 60.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,-100)
+tag(resist_slash,300)
+tag(resist_pierce,450)
+tag(resist_blunt,-500)
+
+//magic resists
+tag(resist_fire,1000)
+tag(resist_elect,1000)
+tag(resist_cold,1000)
+
+tag(monstertype,animal)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING={90.0 100.0}
+TACTICS={100.0 110.0}
+WRESTLING={100.0 105.0}
+PROVOCATION=100.0
+peacemaking=100.0
+RESIST=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=i_gold
+
+////////////////////////////////////////////////////////
+
+[CHARDEF c_ooze_mana_dragon]
+ID=c_slime
+NAME=Energie
+SOUND=snd_MONSTER_SLIME1
+ICON=i_pet_slime
+ANIM=060c7f
+CAN=MT_WALK
+
+attack=45
+ARMOR=10
+moverate=3
+
+RESOURCES=2 i_ribs_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explode                 //pri smrti vybuch
+TEVENTS=e_npc_curse               //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Energie
+
+ON=@Create
+color=0481
+NPC=brain_monster
+FAME=100
+KARMA={-4000 -5999}
+
+STR=2000
+DEX={350 380}
+INT=1000
+
+maxhits=4000
+maxstam={150 200}
+maxmana=1000
+
+tag.experience=<eval {100.0 110.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+Tag.explode_dmg=150
+
+tag.npc_curse_chance=750          // 75% chance to trigger this event
+tag.npc_curse_delay=10,12         // delay between another possible strike
+tag.npc_curse_dmg=20,30           // dmg 
+
+tag.npc_stun_time=20              //2 seconds of stun
+Tag.npc_stun_chance=800           //80%, defaultne 20% 
+tag.npc_stun_delay=30             //3 sekundy prodleva mezi 2 sancema = defaultne 20
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,1000)
+tag(resist_slash,1000)
+tag(resist_pierce,1000)
+tag(resist_blunt,1000)
+
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,600)
+tag(resist_cold,900)
+
+tag(monstertype,ooze)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PARRYING={90.0 100.0}
+TACTICS={100.0 110.0}
+WRESTLING={100.0 105.0}
+PROVOCATION=100.0
+peacemaking=100.0
+RESIST=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=i_gold
+
+///////////////////////////////////////////////////////
+
+[CHARDEF c_liche_dragon]
+ID=c_liche
+NAME=Draci Liche
+SOUND=snd_MONSTER_LICHE1
+ICON=i_pet_LICH
+ANIM=07bc7f
+CAN=MT_WALK|MT_EQUIP|mt_usehands
+
+ATTACK=40
+ARMOR=20
+MOVERATE=3
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_curse               //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Dragons
+DESCRIPTION=Draci Liche
+
+ON=@Create
+Color=0481
+NPC=brain_undead
+FAME=500
+KARMA={-4000 -4999}
+
+STR=1650
+DEX=120
+INT=450
+
+maxhits=4000
+maxstam={150 200}
+maxmana=1000
+
+tag.experience=<eval {100.0 105.0}> 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag.npc_curse_chance=750          // 75% chance to trigger this event
+tag.npc_curse_delay=10,12         // delay between another possible strike
+tag.npc_curse_dmg=20,30           // dmg 
+
+tag.npc_stun_time=20              //2 seconds of stun
+Tag.npc_stun_chance=800           //80%, defaultne 20% 
+tag.npc_stun_delay=30             //3 sekundy prodleva mezi 2 sancema = defaultne 20
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,1000)
+tag(resist_slash,1000)
+tag(resist_pierce,1000)
+tag(resist_blunt,1000)
+
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,600)
+tag(resist_cold,900)
+
+//typ monstra
+tag(monstertype,undead,40)
+tag(monstertype2,humanoid,20)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+PARRYING={85.0 100.0}
+Resist=140.0
+TACTICS={85.0 100.0}
+WRESTLING={85.0 100.0}
+Macefighting={85.0 100.0}
+MAGERY=100.0
+EI=70.0
+SpiritSpeak=25.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////
+
+
+
+
+
+[eof]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

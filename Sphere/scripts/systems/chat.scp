@@ -1,0 +1,524 @@
+[function guildScream]
+arg(myX,<StrGetTok("<src.p>",0,",")>)
+arg(myY,<StrGetTok("<src.p>",1,",")>)
+guildch="Pomoc ! Jsem na souradnicich <arg(myX)>, <arg(myY)> - <src.region.name>"
+
+[function inputChat]
+dialog d_inputChat
+
+[dialog d_inputChat]
+350,350
+argo.tag(sirka,400)
+argo.tag(vyska,<eval 23+(2*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+argo.settext(100,"Zadej zpravu:")
+argo.text(<argo.dialog_textpos(0,0)>,0481,100)
+argo.settext(101,"")
+argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+if (src.findid(i_memory_guild))
+  argo.settext(102,"GuildChat")
+  argo.text(<d_def_okraj>+280,(<argo.tag(vyska)>-<d_def_okraj>)-23,0481,102)
+  if (strlen(<src.tag(guildChatON)>))	//guildchat je zapnuty
+    argo.checkbox((<argo.tag(sirka)>-<d_def_okraj>)-25,(<argo.tag(vyska)>-<d_def_okraj>)-23,210,211,1,1)
+  else
+    argo.checkbox((<argo.tag(sirka)>-<d_def_okraj>)-25,(<argo.tag(vyska)>-<d_def_okraj>)-23,210,211,0,1)
+  endif
+endif
+
+[DIALOG d_inputChat BUTTON]
+on=0
+tag(message,"")
+
+ON=1
+if (<argchk(1)>) //chce psat guilde ?
+  src.tag(guildChatON,1)
+  tag(guildMessage,1)
+else
+  src.tag.remove(guildChatON)
+  tag(guildMessage,0)
+endif
+tag(message,"<argtxt(1)>")
+
+[function zprava]
+if(src.findid(i_chatovadlo))//pro jistotu
+ //src.sysMessage(Nejprve jsi mel dopsat predchozi zpravu) // tohle tady asi bejt nemusi zejo... odstranime to ale pokracujem ve scriptu - precejenom neco napsat chceme! a to ze uz ten dialog otevrenej je nam prece taky nevadi - pozn. Yavanna
+ src.findid(i_chatovadlo).remove
+endif
+src.newitemsafe(i_chatovadlo)
+lastnew.timer=1
+lastnew.equip
+src.inputChat
+
+
+[itemdef i_chatovadlo]
+name=Odesilac message na chat
+id=i_memory
+type=t_eq_script
+
+on=@create
+attr_movenever=1
+attr_invis=1
+
+on=@timer
+if (strcmpi("<cont.tag(message)>","")) 
+  //cont.sysMessage(Zpravu mame: "<cont.tag(message)>")
+  arg(zpr,"<cont.tag(message)>")
+  cont.tag.remove(message)
+  if (<strmatch("<zpr>","*(*")>)||(<strmatch("<zpr>","*[*")>)||(<strmatch("<zpr>","*]*")>)||(<strmatch("<zpr>","*<*")>)||(<strmatch("<zpr>","*{*")>)
+    //cont.redmessage(Nepovolene znaky)
+    cont.tag.remove(message)
+    cont.accmsg(Nepovolene znaky zpravy: "<zpr>")
+    remove
+    return 1
+  else
+    if (<cont.tag(guildMessage)>)
+      cont.guildch("<zpr>")
+      cont.tag.remove(guildMessage)
+      remove
+      return 1
+    endif
+    if (cont.f_check_tag_realm) // realm is NOT properly set
+      remove
+      return 1
+    endif
+    if (<eval cont.tag(realm)>==1)&&(!cont.isgm) //gondor
+      cont.goch("<zpr>")
+      //cont.smsg(removing goch)
+      remove
+      return 1 
+    endif
+    if (<eval cont.tag(realm)>==2)&&(!cont.isgm) //mordor
+      cont.evch("<zpr>")
+      //cont.smsg(removing evch)
+      remove
+      return 1
+    endif
+  endif 
+else
+  cont.tag.remove(message)
+  //cont.sysMessage(timer)
+  timer=1
+  return 1
+endif
+cont.tag.remove(message)
+remove
+
+[DIALOG d_chat_options]
+0,0
+//resizepic 0 0 5054 640 480 
+//resizepic 10 10 3000 620 460 
+resizepic 80 80 2620 400 350
+page 0
+text 230 105 1000 0
+text 107 127 3 1
+
+text 107 149 1000 2
+button 210 149 2443 2443 1 0 1
+text 220 151 1000 3
+
+text 107 171 1000 4
+button 210 171 2443 2443 1 0 2
+text 220 173 1000 5
+
+text 107 193 1000 6
+button 210 193 2443 2443 1 0 3
+text 220 195 1000 7
+
+text 107 215 1000 8	//GM chat
+button 210 215 2443 2443 1 0 4
+text 220 217 1000 9	//on/off
+
+text 107 237 1000 10	//Guild chat
+button 210 237 2443 2443 1 0 5
+text 220 239 1000 11	//on/off
+
+
+text 107 259 37 12	//umlcovaci list
+
+button 107 281 2440 2440 1 0 6
+text 117 283 1000 13
+button 107 303 2440 2440 1 0 7
+text 117 305 1000 14
+button 107 325 2440 2440 1 0 8
+text 117 327 1000 15
+button 107 347 2440 2440 1 0 9
+text 117 349 1000 16
+button 107 369 2440 2440 1 0 10
+text 117 371 1000 17
+button 277 281 2440 2440 1 0 11
+text 287 283 1000 18
+button 277 303 2440 2440 1 0 12
+text 287 305 1000 19
+button 277 325 2440 2440 1 0 13
+text 287 327 1000 20
+button 277 347 2440 2440 1 0 14
+text 287 349 1000 21
+button 277 369 2440 2440 1 0 15
+text 287 371 1000 22
+text 350 149 36 23
+text 110 390 70 24
+//button 300 395 0fa5 0fa7 1 0 15  //  k Citadele       
+//text 360 395 152 23
+
+[DIALOG d_chat_options TEXT]
+Nastaveni chatu
+Kanaly:
+GONDOR Realm
+<?qval(<eval tag(chaton)>&chflag_good,On,Off)?>
+MORDOR Realm
+<?qval(<eval tag(chaton)>&chflag_evil,On,Off)?>
+slyset vse
+<?qval(<eval tag(chaton)>&chflag_all,On,Off)?>
+GMChat	//8
+<?qval(<eval tag(chaton)>&chflag_gm,On,Off)?>	//9
+GuildChat	//10
+<?qval(<eval tag(chaton)>&chflag_guild,On,Off)?>	//11
+Umlcovaci List: (Uved jmeno postavy kterou nechces slyset.)	//12
+<?tag.MUTED1?>
+<?tag.MUTED2?>
+<?tag.MUTED3?>
+<?tag.MUTED4?>
+<?tag.MUTED5?>
+<?tag.MUTED6?>
+<?tag.MUTED7?>
+<?tag.MUTED8?>
+<?tag.MUTED9?>
+<?tag.MUTED10?>
+<?tag.MUTEDTEXT?>
+Zprava se pise prikazem ".zprava"
+//napis zpravu..
+
+[DIALOG d_chat_options BUTTON] 
+ONBUTTON=1
+if (<eval tag(chaton)>&chflag_good)
+  tag(chaton,<eval tag(chaton)&~chflag_good>)
+else
+  tag(chaton,<eval tag(chaton)|chflag_good>)
+endif
+DIALOG=d_chat_options
+
+ONBUTTON=2
+if (<eval tag(chaton)>&chflag_evil)
+  tag(chaton,<eval tag(chaton)&~chflag_evil>)
+else
+  tag(chaton,<eval tag(chaton)|chflag_evil>)
+endif
+DIALOG=d_chat_options
+
+ONBUTTON=3
+if (<eval tag(chaton)>&chflag_all)
+  tag(chaton,<eval tag(chaton)&~chflag_all>)
+else
+  tag(chaton,<eval tag(chaton)|chflag_all>)
+endif
+DIALOG=d_chat_options
+
+ONBUTTON=4
+if (<eval tag(chaton)>&chflag_gm)
+  tag(chaton,<eval tag(chaton)&~chflag_gm>)
+else
+  tag(chaton,<eval tag(chaton)|chflag_gm>)
+endif
+DIALOG=d_chat_options
+
+ONBUTTON=5
+if (<eval tag(chaton)>&chflag_guild)
+  tag(chaton,<eval tag(chaton)&~chflag_guild>)
+else
+  tag(chaton,<eval tag(chaton)|chflag_guild>)
+endif
+DIALOG=d_chat_options
+
+ONBUTTON=6
+INPDLG tag.MUTED1 20
+return 1
+
+ONBUTTON=7
+INPDLG tag.MUTED2 20
+return 1
+
+ONBUTTON=8
+INPDLG tag.MUTED3 20
+return 1
+
+ONBUTTON=9
+INPDLG tag.MUTED4 20
+return 1
+
+ONBUTTON=10
+INPDLG tag.MUTED5 20
+return 1
+
+ONBUTTON=11
+INPDLG tag.MUTED6 20
+return 1
+
+ONBUTTON=12
+INPDLG tag.MUTED7 20
+return 1
+
+ONBUTTON=13
+INPDLG tag.MUTED8 20
+return 1
+
+ONBUTTON=14
+INPDLG tag.MUTED9 20
+return 1
+
+ONBUTTON=15
+INPDLG tag.MUTED10 20
+return 1
+
+//ONBUTTON=15
+//zprava
+//return 0
+
+[function chat]
+DIALOG d_chat_options
+return 1
+
+[function All]
+findid(i_chatovadlo).remove //pro jistotu
+if !(<eval tag(chaton)>&chflag_all)
+ sysMessage("You are not currently on that channel.")
+ return 1
+elseif !(<strmatch("<args>","*(*")>)//&&!(<strmatch("<args>","*,")>)
+ var(chatmessage,"*<?src.name?>* <?args?>")
+ f_chatsend(1)
+else
+ src.redmessage(Nepovolene znaky)
+endif
+
+[function guildMsg]
+findid(i_chatovadlo).remove //pro jistotu
+if !(<eval tag(chaton)>&chflag_guild)	//jsem lognutej na guildchat
+  return 1
+endif
+var(chatmessage,"<?args?>")
+f_chatsend(5)
+
+[function guildch]
+accmsg(GUILDCH: <args>)
+findid(i_chatovadlo).remove //pro jistotu
+if !(<eval tag(chaton)>&chflag_guild)	//jsem lognutej na guildchat
+	sysMessage("You are not currently on that channel.")
+	return 1
+elseif !(<strmatch("<args>","*(*")>)
+ var(chatmessage,"*<?src.name?>* <?args?>")
+ f_chatsend(5)
+else
+ src.redmessage(Nepovolene znaky)
+endif
+
+[function gmch]
+findid(i_chatovadlo).remove //pro jistotu
+if !(<eval tag(chaton)>&chflag_gm)
+	sysMessage("You are not currently on that channel.")
+	return 1
+elseif !(<strmatch("<args>","*(*")>)//&&!(<strmatch("<args>","*,*")>)
+ var(chatmessage,"*<?src.name?>* <?args?>")
+ f_chatsend(2)
+else
+ src.redmessage(Nepovolene znaky)
+endif
+
+[function goch]
+findid(i_chatovadlo).remove //pro jistotu
+accmsg(GOCH: <args>)
+if (<eval tag(realm)>!=1)&&(isgm==0)
+  return 1
+elseif !(<eval tag(chaton)>&chflag_good)
+	sysMessage("You are not currently on that channel.")
+	return 1
+endif
+if(<src.tag(hypno_mystik)>)
+ src.sysMessage(Ve svem stavu nemuzes pouzivat masovou komunikaci)
+ return 1
+endif
+if (f_chatcheck)
+  return 0
+endif
+if !(<strmatch("<args>","*(*")>)
+ var(chatmessage,"*<?src.name?>* <?args?>")
+ f_chatsend(3)
+else
+ src.redmessage(Nepovolene znaky)
+endif
+
+[function evch]
+findid(i_chatovadlo).remove //pro jistotu
+accmsg(EVCH: <args>)
+if (<eval tag(realm)>!=2)&&(isgm==0)
+  return 1
+elseif !(<eval tag(chaton)>&chflag_evil)
+	sysMessage("You are not currently on that channel.")
+	return 1
+endif
+if(<src.tag(hypno_mystik)>)
+ src.sysMessage(Ve svem stavu nemuzes pouzivat masovou komunikaci)
+ return 1
+endif
+if (f_chatcheck)
+  return 0
+endif
+if !(<strmatch("<args>","*(*")>)
+ var(chatmessage,"*<?src.name?>* <?args?>")
+ f_chatsend(4)
+else
+ src.redmessage(Nepovolene znaky)
+endif
+
+[function f_chatcheck]
+if !(tag(MUTED))
+	tag(MUTED,"")
+	return 0
+endif
+if (tag(MUTED))
+	sysMessage You try to chat, but find yourself mute!
+//elseif (FINDID(i_chat_timer))
+//	sysMessage You must wait <FINDID(i_chat_timer)TIMER> seconds before sending another chat message.
+endif
+return 1
+
+[function f_chatsend]
+NEWITEMsafe(i_chat_timer)
+lastnew.p=<p>
+lastnew.TIMERd=1
+lastnew.removefromview
+arg(color,<chatcolor[<argv(0)>]>)
+arg(length,<StrLen(<chatmessage>)>+45)
+if (arg(length)>83+45)
+ arg(length,<eval 83+45>)
+endif
+//logmsg(<chatmessage>)
+lastnew.tag(packet,01c <?HVAL (<arg(length)>&0ff00)/0100?> <?HVAL <arg(length)>&0ff?> 00 00 00 00 00 00 02 <?HVAL (<arg(color)>&0ff00)/0100?> <?HVAL <arg(color)>&0ff?> 00 03 053 079 073 074 065 06d 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <?strtoascii(<eval <arg(length)>-45>,"<chatmessage>")?> 00)
+lastnew.tag(chatmode,<argv(0)>)
+lastnew.tag(chatsrcname,<name>)
+lastnew.tag(sender,<src>)
+
+[ITEMDEF i_chat_timer]
+ID=i_memory
+TYPE=t_eq_script
+NAME="Chat Timer"
+
+ON=@TIMER
+var(chatmode,<tag(chatmode)>)
+var(chatsrcname,<tag(chatsrcname)>)
+var(packet,"<tag(packet)>")
+if (<tag(chatmode)> != 5) // nejde o guildu
+  serv.ALLCLIENTS(f_chatrecieve)
+else	//chat guild -> vyberem jenom guild membery ze stonu
+  if !(itemExists(<tag(sender).findid(i_memory_guild)>))
+    remove
+    return 1
+  endif
+  if (!(itemExists(<tag(sender).findid(i_memory_guild).link>)) || !(tag(sender).findid(i_memory_guild).link.baseid==i_guildstone))
+    remove
+    return 1
+  endif
+  arg(guildStone,<tag(sender).findid(i_memory_guild).link>)
+  arg(membersCount,<arg(guildStone).CoOwners.getcount>)
+  arg(i,0)
+  while (<arg(i)> < <arg(membersCount)>)
+    if (arg(guildStone).CoOwners(<arg(i)>))
+      if (playerExists(<arg(guildStone).CoOwners(<arg(i)>)>))
+        arg(guildStone).CoOwners(<arg(i)>).f_chatrecieve
+        arg(i,#+1)
+      endif
+    endif
+  endwhile
+endif
+remove
+return 1
+
+[function f_chatrecieve]
+if !(<isOnline>)
+  return 1
+endif
+if (f_check_tag_realm)  //realm is wrongly set
+  return 3
+endif
+if (STRCMPi(<var(chatsrcname)>,<tag(MUTED1)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED2)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED3)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED4)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED5)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED6)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED7)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED8)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED9)>)==0)
+elseif (STRCMPi(<var(chatsrcname)>,<tag(MUTED10)>)==0) 
+else
+  if (var(chatmode)==1)&&(<eval tag(chaton)>&chflag_all)
+  elseif (var(chatmode)==2)&&(account.plevel>=4) && (<eval tag(chaton)>&chflag_gm)
+  elseif (var(chatmode)==3)&&(<eval tag(chaton)>&chflag_good)&&((<eval tag(realm)>==1)||(account.plevel>=4))
+  elseif (var(chatmode)==4)&&(<eval tag(chaton)>&chflag_evil)&&((<eval tag(realm)>==2)||(account.plevel>=4))
+  elseif (var(chatmode)==5)&&(<eval tag(chaton)>&chflag_guild)
+  else
+   return 2
+  endif
+  sendpacket(<var(packet)>)
+endif      
+
+
+[function mute]
+newitem i_muteitem
+equip(act)
+
+[function mutemenu]
+if (0<tag.MUTED> == 1)
+	tag(MUTED,0)
+	return 1
+endif
+tag(MUTED,1)
+return 1
+
+[itemdef i_muteitem] 
+id=i_memory
+name=muteitem
+type=t_eq_script 
+layer=30 
+
+on=@timer
+remove
+return 0
+
+on=@equip 
+target Vyber cil.
+
+on=@targon_char
+if (0<SRC.TARG.tag.MUTED> == 1)
+	src.TARG.tag(MUTED,0)
+	src.sysMessage <SRC.TARG.NAME> unmuted.
+	REMOVE
+	return 1
+endif
+SRC.sysMessage <SRC.TARG.NAME> muted.
+src.targ.tag(MUTED,1)
+REMOVE
+return 1
+
+[defnames chatcolors] 
+chatcolor[1]	044 //zelena
+chatcolor[2]	021f //hneda jak hovno, neviditelna
+chatcolor[3]	0480//0487//064//0480//05d//064//0983//099e//0481//06a//084a //modra
+chatcolor[4]	026 //cervena
+chatcolor[5]	044 //whatever guild color
+
+chflag_good	001
+chflag_evil	002
+chflag_all	004
+chflag_gm	008
+chflag_guild	010
+
+[eof]
+
+

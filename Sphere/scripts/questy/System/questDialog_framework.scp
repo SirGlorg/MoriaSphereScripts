@@ -1,0 +1,372 @@
+//////////////////////////////////////////////////////
+//   Q U E S T    D I A L O G   F R A M E W O R K   //
+//                 (c) GM Yavanna                   //
+//////////////////////////////////////////////////////
+
+/////////////////////////////////
+//// T  E  M  P  L  A  T  E  ////
+/////////////////////////////////
+//
+//[dialog d_TEMPLATE]
+//argo.questDialog_create(03000,"<name>") //face ~ 03000-03164
+//arg(qXXX_quest,<eval src.qtag(qXXX_quest)>)
+////if (src.isGM)
+////  argo.button(640,210,03217,03218,1,0,<f_dialog_newExitButton("qXXX_GM_Info")>)
+////endif
+//
+//argo.dialog_newPage("Pozdrav")
+//
+//if (<arg(qXXX_quest)> == 0)
+//  argo.questDialog_baseButt(1) // Kdo jsi?
+//else
+//  argo.questDialog_baseButt(1,25,"Drby...")
+//endif
+//argo.questDialog_baseButt(2) // Mohu pomoci?
+//argo.questDialog_baseButt(3) // Obchodovat
+//argo.questDialog_baseButt(4) // Hledam praci
+//argo.questDialog_baseButt(5) // Nesu ti
+//argo.questDialog_baseButt(6) // Prohlednout
+//
+//argo.dialog_page("Pozdrav")
+//  if (<arg(qXXX_quest)> == 0)
+//    argo.setText(argo.newTextLine,"Bud <src.sex("zdrav","zdrava")>.")
+//    argo.questDialog_HTMLGUMP
+//  elseif (<arg(qXXX_quest)> > 1)
+//    argo.setText(argo.newTextLine,"Rada te znovu vidim!")
+//    argo.questDialog_HTMLGUMP
+//  endif
+//
+//if (<arg(qXXX_quest)> == 0)
+//  argo.dialog_page("Kdo jsi?")
+//    argo.setText(argo.newTextLine,"Jmenuji se <name>.")
+//    argo.questDialog_HTMLGUMP
+//else
+//  argo.dialog_page("Drby...")
+//    argo.setText(argo.newTextLine,"Tady se toho moc nedeje.")
+//    argo.questDialog_HTMLGUMP
+//endif
+//
+//argo.dialog_page("Mohu pomoci?")
+//  argo.setText(argo.newTextLine,"Nevim, co bys pro me <src.sex("mohl","mohla")> udelat.")
+//  argo.questDialog_HTMLGUMP
+//
+//argo.dialog_page("Obchodovat")
+//  argo.setText(argo.newTextLine,"Nemam nic na prodej.")
+//  argo.questDialog_HTMLGUMP
+//
+//argo.dialog_page("Hledam praci")
+//  argo.setText(argo.newTextLine,"U me zadnou praci nenajdes.")
+//  argo.questDialog_HTMLGUMP
+//
+//argo.dialog_page("Nesu ti")
+//  argo.setText(argo.newTextLine,"Co pro me mas?")
+//  argo.questDialog_HTMLGUMP
+//
+//argo.dialog_page("Prohlednout")
+//  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis osobu.*")
+//  argo.questDialog_HTMLGUMP
+//
+//// other quests:
+//
+//[dialog d_TEMPLATE button]
+//on=@AnyButton
+//// no action exits:
+//if (<argn> == 0)
+//  return
+//elseif (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+//  return
+//endif
+//
+//// q000 quest buttons:
+//arg(qXXX_quest,<eval src.qtag(qXXX_quest)>)
+//if (<arg(qXXX_quest)> == 0) // 
+//  if (<argn> == argo.dialog_linkButton("qXXX_button_1")) //
+//    src.qtag(qXXX_quest,1,35)
+//    return
+//  elseif (<argn> == argo.dialog_linkButton("gXXX_button_2")) //
+//    src.qtag(qXXX_quest,2,35)
+//    return
+//  endif
+//elseif (<arg(qXXX_quest)> == 1) //
+//  if (<argn> == argo.dialog_linkButton("gXXX_button_3")) //
+//    src.qtag(qXXX_quest,3,35)
+//    return
+//  endif
+//endif
+//// gms:
+////if (src.isGM)
+////  if (<argn> == argo.dialog_linkButton("qXXX_GM_Info"))
+////    dialog(d_qXXX_gm)
+////    return
+////  endif
+////endif
+//// other quests:
+
+
+[defnames def_questDialog_sizes]
+def_questDialog_width             645
+def_questDialog_height            355
+def_questDialog_HTML_x            170
+def_questDialog_HTML_y            230
+def_questDialog_HTML_width        450
+def_questDialog_HTML_height       100
+def_questDialog_face_x            27
+def_questDialog_face_y            210
+def_questDialog_response_x        30
+def_questDialog_response_y        395
+def_questDialog_response_maxRows  6
+def_questDialog_response_HTMLRows 2
+def_questDialog_rim               25
+def_questDialog_gap               5
+def_questDialog_buttonWidth       30
+def_questDialog_rowHeight         30
+
+[defnames def_questDialog_colors]
+def_questDialog_colorTextEmote      <basefont color=#ffff88>
+def_questDialog_colorTextNormal     <basefont color=#ffffff>
+def_questDialog_colorTextResponse   <basefont color=#D7DF01>
+def_questDialog_colorTextRespEmote  <basefont color=#ff0000> // ~ color 142
+def_questDialog_colorResponse       152
+def_questDialog_colorEmote          142
+def_questDialog_colorBaseButton     1152
+
+[defnames def_questDialog_baseButt]
+def_questDialog_baseButt[1]   160,330
+def_questDialog_baseButt[2]   325,330
+def_questDialog_baseButt[3]   490,330
+def_questDialog_baseButt[4]   160,360
+def_questDialog_baseButt[5]   325,360
+def_questDialog_baseButt[6]   490,360
+def_questDialog_baseButt_text[1]   def_questDialog_colorBaseButton,43,"Kdo jsi?" // color, indention, text
+def_questDialog_baseButt_text[2]   def_questDialog_colorBaseButton,25,"Mohu pomoci?" // color, indention, text
+def_questDialog_baseButt_text[3]   def_questDialog_colorBaseButton,40,"Obchodovat" // color, indention, text
+def_questDialog_baseButt_text[4]   def_questDialog_colorBaseButton,30,"Hledam praci" // color, indention, text
+def_questDialog_baseButt_text[5]   def_questDialog_colorBaseButton,47,"Nesu ti" // color, indention, text
+def_questDialog_baseButt_text[6]   def_questDialog_colorEmote,38,"Prohlednout" // color, indention, text
+
+// argv(0): ksichtik; argv(1): jmeno a titul pozdraveneho
+[function questDialog_create]
+SetLocation(5,5)
+page(0)
+resizepic(20,200,2620,<def_questDialog_width>,<def_questDialog_height>)
+gumppic(<def_questDialog_face_x>, <def_questDialog_face_y>, 03182) // podklad pod ksichtiky	
+gumppic(<eval <def_questDialog_face_x>+11>, <eval <def_questDialog_face_y>+7>, <argv(0)>) // ksichtik   3000-3164
+texta(220, 210, 52, <argv(1)>)     // Jmeno a titul pozdraveneho
+tag(textLines,1)
+tag(buttonsToExitCount,0)
+tag(pagesCount,0)
+tag(actualPage,0)
+
+// used from each quest dialog to simplify basic button creation. Has 1 mendatory and 3 optional arguments. 
+// note: if 2nd argument is passed, the 3rd is mendatory too.
+[function questDialog_baseButt]
+//argv(0): button number; argv(1): x odsazeni textu v buttonu argv(2): popisek buttonu; argv(3): text color
+if (argvcount > 1)
+  if (argvcount > 3) // the text color has been defined
+    f_questDialog_baseButtCreate(<def_questDialog_baseButt[<argv(0)>]>,<argv(3)>,<argv(1)>,<argv(2)>) // modified color, indention and text of the button
+  else
+    f_questDialog_baseButtCreate(<def_questDialog_baseButt[<argv(0)>]>,<def_questDialog_colorBaseButton>,<argv(1)>,<argv(2)>) // modified indention and text of the button
+  endif
+else
+  f_questDialog_baseButtCreate(<def_questDialog_baseButt[<argv(0)>]>,<def_questDialog_baseButt_text[<argv(0)>]>) // no modifications to the default button values
+endif
+
+// creates big basic button from given arguments
+[function f_questDialog_baseButtCreate] //argv(0) - baseX; argv(1) - baseY; argv(2) - color; argv(3) - x odsazeni textu v buttonu; argv(4): popisek buttonu
+button(<argv(0)>, <argv(1)>, 0988, 0988, 0, <dialog_newPage(<argv(4)>)>, 0)
+setText(<newTextLine>,<argv(4)>)
+text(<eval <argv(0)>+<argv(3)>>, <eval <argv(1)>+2>, <argv(2)>, <lastTextLine>)
+
+// reserves new page position, creates the text link to this new page and updates the info tags of this gump
+[function dialog_newPage] //argv(0) - internal page name (the name is a simplified access point)
+arg(newPage,<eval tag(pagesCount)+1>)
+tag(pagesCount,<eval arg(newPage)>)
+tag(page[<eval arg(newPage)>],<argv(0)>) // creates a name link to the given page
+tag(pageResponseRows[<eval arg(newPage)>],0)
+return<eval arg(newPage)>
+
+//creates new page corresponding to the given name
+[function dialog_page] //argv(0) - internal page name
+arg(i,<f_dialog_getPage(<argv(0)>)>)
+if (<arg(i)> == 0)
+  return 0 // no such page !
+endif
+tag(actualPage,<arg(i)>)
+page(<arg(i)>) // create found page
+
+[function f_dialog_getPage] //argv(0) - internal page name
+arg(totalPages,<tag(pagesCount)>)
+arg(i,1)
+while (strcmpi(<tag(page[<arg(i)>])>,<argv(0)>)) //search until the names are the same
+  if (<arg(i)> >= <arg(totalPages)>)
+    src.accmsg("WARNING: Dialog <more1> se pokusil pristoupit k neexistujici strance <argv(0)>")
+    return 0 // no such page !
+  endif
+  arg(i,#+1)
+endwhile
+return<eval arg(i)>
+
+//used to create new page without the need of its separate link creating and actual page declaring
+[function dialog_forcePage] //argv(0) - internal page name
+page(<dialog_newPage(<argv(0)>)>)
+
+// creates the text link to a new exit button and updates the info tags of this gump
+// returns - the number of exit buttons
+[function f_dialog_newExitButton] //argv(0) - internal button name (the name is a simplified access point)
+tag(buttonsToExitCount,<eval tag(buttonsToExitCount)+1>)
+tag(buttonToExit[<eval tag(buttonsToExitCount)>],<argv(0)>) // creates link to the given button
+return<eval tag(buttonsToExitCount)>
+
+//returns a button number that corresponds to the given name
+[function dialog_linkButton] //argv(0) - internal button name
+arg(totalButtons,<tag(buttonsToExitCount)>)
+arg(i,1)
+while (strcmpi(<tag(buttonToExit[<arg(i)>])>,<argv(0)>)) //search until the names are the same
+  if (<arg(i)> >= <arg(totalButtons)>)
+    return -1 // no such page !
+  endif
+  arg(i,#+1)
+endwhile
+return(<arg(i)>) // return found button number
+
+[function newTextLine] // counts the next free text position, returns its value and increments the textLines Counter
+tag(textLines,<eval <tag(textLines)>+1>)
+return<tag(textLines)>
+//settext(<tag(textLines)>,<args>)
+
+[function lastTextLine] // the number of last added Text
+return<eval tag(textLines)>
+
+//saves lastTextLine under a given name
+//returns the textLine number which was assigned to this text
+[function saveTextLine] //argv(0) the internal name of this TextLine
+tag(savedTextsCount,<eval tag(savedTextsCount)+1>)
+tag(savedText[<eval tag(savedTextsCount)>],"<argv(0)>,<eval tag(textLines)>") // saves the number of the last textline
+return<eval tag(textLines)>
+
+//saves a button number that corresponds to the given name
+[function getTextLine] //argv(0) the internal name of this TextLine
+arg(totalTexts,<tag(savedTextsCount)>)
+arg(i,1)
+while (strcmpi(<return_nth(1,<tag(savedText[<arg(i)>])>)>,<argv(0)>)) //search until the names are the same
+  if (<arg(i)> >= <arg(totalTexts)>)
+    return -1 // no such textLine saved !
+  endif
+  arg(i,#+1)
+endwhile
+return(<return_nth(2,<tag(savedText[<arg(i)>])>)>) // returns saved textLine number
+
+
+//simply draws the npc text dialog
+//note: function setText(newTextLine,"") needs to be placed in front of this function !
+[function questDialog_HTMLGUMP]
+HTMLGUMP(<def_questDialog_HTML_x>,<def_questDialog_HTML_y>,<def_questDialog_HTML_width>,<def_questDialog_HTML_height>,<lastTextLine>,0,36)
+
+//creates new button&text elements to the dialog.
+//creates another page, if needed
+//note: function setText(newTextLine,"") needs to be placed in front of this function !
+[function questDialog_addResponse] // argv(0) - is the text long?; argv(1): 0 == page button, 1 == exit button; argv(2): 0 == existing link, 1 == new link; argv(3) - the button/page text name; argv(4) - optional argument -> if == 1 then the text has emote color (works only with shortText)
+f_questDialog_addResponse_setRows(<argv(0)>)
+//the proper page has been set, let's create the button
+if (<argv(1)>) // this is an exit button
+  if (<argv(2)>) // link to a new exit button
+    button(<def_questDialog_response_x>,<def_questDialog_response_y>+<buttonsUsedSpace>,0fa5,0fa7,1,0,<f_dialog_newExitButton(<argv(3)>)>)
+  else // link to an existing button
+    button(<def_questDialog_response_x>,<def_questDialog_response_y>+<buttonsUsedSpace>,0fa5,0fa7,1,0,<dialog_linkButton(<argv(3)>)>)
+  endif
+else // this is a link to another page
+  if (<argv(2)>) // link to a new page
+    button(<def_questDialog_response_x>,<def_questDialog_response_y>+<buttonsUsedSpace>,0fa5,0fa7,0,<dialog_newPage(<argv(3)>)>,0)
+  else // this is a link to an existing page
+    button(<def_questDialog_response_x>,<def_questDialog_response_y>+<buttonsUsedSpace>,0fa5,0fa7,0,<f_dialog_getPage(<argv(3)>)>,0)
+  endif
+endif
+f_questDialog_addResponse_text(<argv(0)>,<eval <argv(4)>>)
+
+//creates copy of another existing button&text elements to the dialog
+//creates another page, if needed.
+//note: previously called argo.saveTextLine("") function has to be called with exactly the same internal name as the original button
+[function questDialog_addSameResponse] // argv(0) - is the text long?; argv(1): 0 == page button, 1 == exit button; argv(2) - the button/page text name; argv(3) - optional argument -> if == 1 then the text has emote color (works only with shortText)
+f_questDialog_addResponse_setRows(<argv(0)>)
+//the proper page has been set, let's create the button
+if (<argv(1)>) // this is an exit button
+  button(<def_questDialog_response_x>,<def_questDialog_response_y>+<buttonsUsedSpace>,0fa5,0fa7,1,0,<dialog_linkButton(<argv(2)>)>)
+else // this is a link to another page
+  button(<def_questDialog_response_x>,<def_questDialog_response_y>+<buttonsUsedSpace>,0fa5,0fa7,0,<f_dialog_getPage(<argv(2)>)>,0)
+endif
+f_questDialog_addResponse_text(<argv(0)>,<eval <argv(3)>>,<getTextLine("<argv(2)>")>)
+
+
+//creates new button&text elements to the dialog.
+//exits the dialog triggering value 0 button (default RClick solution)
+//note: function setText(newTextLine,"") needs to be placed in front of this function !
+[function questDialog_exitResponse] // argv(0) - is the text long? ; argv(1) - optional argument -> if == 1 then the text has emote color (works only with shortText)
+if (<argvcount>)
+  f_questDialog_addResponse_setRows(<argv(0)>)
+  //the proper page has been set, let's create the button
+  button(<def_questDialog_response_x>,<def_questDialog_response_y>+<buttonsUsedSpace>,0fa5,0fa7,1,0,0) // exit button number 1
+  f_questDialog_addResponse_text(<eval argv(0)>,<eval argv(1)>)
+else
+  f_questDialog_exitResponse_Default
+endif
+
+[function f_questDialog_exitResponse_Default]
+arg(defaultTextLine,<getTextLine("*Odejit*")>)
+if (<arg(defaultTextLine)> < 0) // no such text saved yet
+  setText(newTextLine,"*Odejit*") // save this text
+  arg(defaultTextLine,<saveTextLine("*Odejit*")>) // save the textLine under this name
+endif
+f_questDialog_addResponse_setRows(0) // short text
+button(<def_questDialog_response_x>,<def_questDialog_response_y>+<buttonsUsedSpace>,0fa5,0fa7,1,0,0) // exit button number 1
+f_questDialog_addResponse_text(0,1,<arg(defaultTextLine)>)
+
+[function f_questDialog_addResponse_text] //argv(0) - is the text long? ; argv(1) - is this an emote message? (works only with short text); argv(2) - <optional> force THIS text number
+arg(text_x,<eval <def_questDialog_response_x>+<d_def_button_sirka>+<d_def_skvira>>)
+arg(text_y,<eval <def_questDialog_response_y>+<buttonsUsedSpace>>)
+if (<eval argv(2)>) // force explicit textLine number
+  arg(textLine,<argv(2)>)
+else
+  arg(textLine,<lastTextLine>)
+endif
+if (<argv(0)>) // the text is long -> use HTML gump instead of simple text row
+  arg(htmlWidth,<eval <def_questDialog_width>-((2*<def_questDialog_rim>)+<def_questDialog_buttonWidth>+(2*<def_questDialog_gap>))>)
+  HTMLGUMP(<def_questDialog_response_x>+<def_questDialog_buttonWidth>+<def_questDialog_gap>,<def_questDialog_response_y>+<buttonsUsedSpace>,<arg(htmlWidth)>,<def_questDialog_response_HTMLRows>*<def_questDialog_rowHeight>,<arg(textLine)>,0,36)
+else
+  if (<argv(1)>) // the text has emote color signal
+    arg(textColor,<def_questDialog_colorEmote>)
+  else
+    arg(textColor,<def_questDialog_colorResponse>)
+  endif
+  text(<text_x>,<text_y>,<arg(textColor)>,<arg(textLine)>)
+endif
+
+//counts the number of rows for this response text and creates another page if necessary
+[function f_questDialog_addResponse_setRows] //argv(0)  - is the text long ?
+arg(rowsNeeded,1)
+if (<argv(0)>)
+  arg(rowsNeeded,<def_questDialog_response_HTMLRows>)
+endif
+if (<eval tag(pageResponseRows[<eval tag(actualPage)>])+arg(rowsNeeded)> >= <def_questDialog_response_maxRows>)
+  f_questDialog_addResponse_NewPage // at this point, the tag(actualPage) has changed!
+endif
+var(buttonsUsedSpace,<eval (<eval tag(pageResponseRows[<eval tag(actualPage)>])>*<def_questDialog_rowHeight>)>)
+tag(pageResponseRows[<eval tag(actualPage)>],<eval tag(pageResponseRows[<eval tag(actualPage)>])+arg(rowsNeeded)>)
+
+[function f_questDialog_addResponse_NewPage]
+arg(thisPageNumber,<tag(actualPage)>)
+arg(thisPageName,<return_nth(2,<tag(page[<eval arg(thisPageNumber)>])>)>)
+arg(nextPageNumber,<dialog_newPage(<arg(thisPageName)>)>) // reserves new page number, the same name of this page won't influence the search for the correct page. Always the first created page of this name will be found and returned by f_dialog_getPage function
+button(<def_questDialog_width>-15,<def_questDialog_height>+160,9907,9908,0,<arg(nextPageNumber)>,0) // next page
+tag(actualPage,<arg(nextPageNumber)>)
+page(<arg(nextPageNumber)>)
+button(<def_questDialog_width>-15,<def_questDialog_response_y>,9901,9902,0,<arg(thisPageNumber)>,0) // previous page
+
+
+
+/////////////////////////////////
+//  !  G  O  S  S  I  P  S  !  //
+/////////////////////////////////
+
+
+
+[eof]

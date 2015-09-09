@@ -1,0 +1,194 @@
+[CHARDEF c_crunch_kecal] 
+ID=c_man 
+NAME=Urbannus
+DESIRES=i_gold,t_wand,t_reagent,t_bone 
+AVERSIONS=t_TRAP,t_eerie_stuff 
+dam=60 
+ARMOR=80 
+CAN=MT_WALK|mt_run
+
+TSPEECH=crunch_kecal 
+TEVENTS=e_character 
+ 
+CATEGORY=Kvesty
+SUBSECTION=Obyvatele mest
+DESCRIPTION=Ukecanej mordor  
+ 
+ON=@Create 
+TITLE=Ukecanek
+STR=300
+DEX=200 
+INT=100 
+NPC=brain_human 
+tag.experience=<eval {30.0 35.0}> 
+tag.resist_poison=1000
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+COLOR=colors_skin 
+ITEMNEWBIE=i_bardiche
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_platemail_chest 
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_platemail_arms 
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_platemail_gloves 
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_platemail_gorget 
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_platemail_helm 
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_platemail_leggings
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_boots_thigh 
+color=001
+
+ON=@NPCRestock  
+ 
+ON=@npcseenewplayer 
+dorand 8 
+  SAY("Nazdar, kamarade, nechces o necem pokecat?")
+  SAY("Hoja, to se nam ale dneska den vydaril, co? Pojd hodit rec, kamo...")
+  SAY("Onehdy jsem videl Kumora s Reylou, jak hnali se svejma guildama Gondory az k branam Edorasu! Haha, to bylo srandy... Pojd o tom pokecat...")
+  SAY("Cusik kamo, jak ti rikaji? Jo ajooo, ty jsi <src.sex(ten,ta)> <src.name>, ze jo?")
+  SAY("Hej, <src.name>, pojd pokecat o zivote...")
+  SAY("Hej, <src.name>, pojd pokecat o Gondorech, treba o Solande, Markovi nebo Mistare...")
+  SAY("Hej, <src.name>, pojd pokecat o Mordorech, treba o Reyle, Kumorovi, Jurim, nebo Johance...")
+  SAY("Hej, <src.name>, pojd pokecat o mestech, treba o Baradu, Nurnu nebo Haradu...") 	 
+enddo 
+
+//truhla s bankou - pro klaje
+
+[ITEMDEF i_Crunch_bank]
+ID=i_chest_metal_brass
+NAME=Bankovni trezor                                                 
+type=t_normal
+ON=@Create
+color=0986
+on=@userdclick                                                             
+src.sysmessage("Dostal jsi se ke svemu bankovnimu kontu.") 
+src.BANK 
+return 1
+// tlejici hlava zlodejicka z etherky, kterou shani alchymista
+
+[ITEMDEF i_Crunch_hlava2]
+ID=i_flesh_head
+NAME= tlejici hlava             
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-009 Beauova hlava          
+DESCRIPTION=tlejici_hlava                                                       
+
+ON=@Create
+
+on=@userdclick                                                             
+message("podle pachu je to hlava v patricnem stupni rozkladu") 
+
+
+//zlodejicek s hlavou pro alchymistu, bude v druhym patre etherky
+[chardef c_crunch_zlodejicek]
+NAME=Zlodejicek Bell
+ID=c_man 
+DESIRES=i_gold,t_wand,t_reagent,t_bone,i_Crunch_hlava2  
+AVERSIONS=t_TRAP,t_eerie_stuff 
+dam=60 
+ARMOR=80 
+CAN=MT_WALK|mt_run
+TSPEECH=crunch_zlodejicek 
+ 
+TEVENTS=e_character 
+ 
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-009 Beauova hlava
+DESCRIPTION=Zlodejicek 
+  
+ON=@Create 
+STR=600 
+DEX=200 
+INT=100 
+NPC=brain_human 
+tag.experience=<eval {30.0 35.0}> 
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+COLOR=colors_skin 
+ITEMNEWBIE=i_platemail_chest 
+COLOR=098a 
+ITEMNEWBIE=i_studded_sleeves 
+COLOR=06d9 
+ITEMNEWBIE=i_studded_gorget 
+COLOR=06d8 
+ITEMNEWBIE=i_studded_leggings 
+COLOR=06cf 
+ITEMNEWBIE=i_iron_metal_shield 
+COLOR=098a 
+ITEMNEWBIE=i_scimitar_copper 
+COLOR=073d 
+ITEMNEWBIE=i_boots_thigh 
+color=06cf 
+ITEMNEWBIE=i_cape 
+color=06ad 
+ON=@NPCRestock 
+newloot(i_Crunch_hlava2)
+
+[SPEECH crunch_zlodejicek]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj* 
+SAY("Co na mne ziras? Honem si najdi neco na praci, nebo tas zbran a ja te naucim dobrym zpusobum, parchante!")
+
+// Alchymista Beau
+     
+[CHARDEF c_irbis_08]
+NAME=Alchymista Beau
+ID=C_MAN
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=Crunch_Beau
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-009 Beauova hlava
+DESCRIPTION=Alchymista_beau
+
+ON=@Create
+NPC=brain_human
+STR=1000
+DEX=1000
+INT=1000
+
+MEDITATION=10
+INSCRIPTION=10
+MAGERY=70
+WRESTLING=10
+Resist=50
+TACTICS=50
+
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_hat_wizards
+ITEMnewbie=i_sandals
+ITEMnewbie=i_robe
+
+[SPEECH Crunch_Beau]
+on=*hi*
+on=*ahoj*
+on=*cau*
+on=*nazdar*
+IF (<safe.SRC.TAG.splnenkvest_004>)
+  SAY("Jeste jednou dekuji.")
+endif
+if (<SRC.RESTEST 1 i_Crunch__hlava2> )
+  SAY("Krasa, mas tu prisadu! Diky moc, ani nevis, jak moc jsem ti za tu hlavu vdecny! Jsem navdeky tvym dluznikem...")
+  src.consume=1 i_Crunch_hlava2
+  SRC.TAG.splnenkvest_004=1
+  src.addexp(1500)
+else
+  SAY("Vitej... potreboval bych, abys mi prinesl tlejici hlavu, potrebuji ji jako prisadu... Jiste se ti odmenim, pokud mi ji prineses... Diky moc!")
+endif
+
+
+[eof]

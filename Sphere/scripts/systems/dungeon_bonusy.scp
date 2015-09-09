@@ -1,0 +1,1519 @@
+///////////////////////////////////////////////////////
+//        U N I V E R Z A L N I   P A S T I          //
+//                                                   //
+//                 @&(_! GM Yavanna                  //
+//                      & spol.                      //
+///////////////////////////////////////////////////////
+
+[ITEMDEF i_duch_dlazba]
+ID=0AEC
+NAME=nepusti ducha
+
+CATEGORY=Noe
+SUBSECTION=misc
+DESCRIPTION=dlazdice proti duchum
+
+ON=@Create
+attr=090
+COLOR=0481
+
+ON=@step
+if (<src.flags>&statf_dead)
+  if (<moreX>)
+    src.move(<dir_inttochar(<eval moreX-1>)>)
+  else
+    src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+  endif
+  return 1
+endif
+if !(src.isGM)
+  if (region.tag(houserealm))
+    if !(region.tag(houserealm)==<src.tag(realm)>) && !(src.ispet)
+      src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+    endif
+  endif
+endif
+
+
+[ITEMDEF i_duch_dlazba2]
+ID=0AEC
+NAME=nepusti ducha
+
+CATEGORY=Noe
+SUBSECTION=misc
+DESCRIPTION=dlazdice proti duchum
+
+ON=@Create
+attr=090
+COLOR=0481
+
+ON=@step
+if (<src.isGM>)
+  return 1
+endif
+if (<src.flags>&statf_dead)
+  src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+  return 1
+endif
+if (region.tag(houserealm))
+  if (region.tag(houserealm)==<src.tag(realm)>)
+  else
+    src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+  endif
+endif
+
+[ITEMDEF i_dlazka_hlad]
+ID=0AEC
+NAME=Srazi food a svetlo
+
+CATEGORY=Noe
+SUBSECTION=misc
+DESCRIPTION=dlazdice srazi jidlo a svetlo
+
+ON=@Create
+attr=090
+COLOR=0481
+
+ON=@step
+if src.isgm
+  return 0
+else
+  src.nightsight = 0
+  src.food = 0
+endif
+
+[typedef t_ifNoTimerPort]
+on=@Step
+if !(src.isGM)
+  if (<timer> < 0)
+    if (type==t_door_guarded)
+      src.go(<tag(noTimerPosition)>)
+    else
+      src.go(<morep>)
+    endif
+  endif
+endif
+
+
+
+
+
+
+/////////////////////////////////////////////////
+//      W A L L   B U I L D I N G   P A D      //
+//              (c) GM Yavanna                 //
+/////////////////////////////////////////////////
+
+[itemdef i_pad_wallBuilding]
+ID=0AEC
+NAME=Postavi zed
+
+CATEGORY=Dungeony
+SUBSECTION=Naslapky
+DESCRIPTION=dlazdice vytvori zed
+
+on=@Create
+attr=090 //nevermove and invis
+tag(thief,100.0)
+tag(wallsCount,0)
+tag(wallRisingType,0)
+tag(wallsTimer,60)
+tag(wallBits,0)
+tag(wallID,0c8)
+tag(wallIDDec,200)
+
+on=@UserDCLick
+if (src.isGM)
+  dialog(d_pad_wallBuilding)
+  return 1
+endif
+
+on=@Step
+if !(src.isGM) && (src.isPlayer)
+  if (<tag(wallBits)>&<wallBuild_canBeDeactivated>)	//deactivating of a trap is allowed
+    if !(<tag(wallBits)>&<wallBuild_wallsAreSpawned>)	//the trap is not already activated
+      if !(f_removeTrap_tryActivateTrap) // activation of the trap depending on the removeTrap skill of src. returns 1 if it remains activated
+        return 1
+      endif
+    endif
+  endif
+  if (!(<src.flags>&statf_dead) || (<tag(wallBits)>&<wallBuild_ghostCanTrigger>)) //budto jsem zivy nebo je specialne povoleno duchum projit
+    if (<tag(wallBits)>&<wallBuild_padCanBeMoved>)  //the trap can be moved after successfull step
+      f_trap_moveTrap
+    endif
+    f_pad_wallBuilding_startTrigger(<src>)
+  endif
+endif
+
+on=@Timer
+f_pad_wallBuilding_endTrigger
+return 1
+
+on=@TargOn_Item
+if (<eval more2> == 0)	//targetujeme zed
+  if (<src.targ.type> == t_wall)
+    tag(wallID,<src.targ.dispID>)
+    tag(wallIDDec,<src.targ.dispiddec>)
+    src.sysMessage("ID zdi uspesne zmeneno !")
+  else	//targetujeme zem kvuli novemu spawnu zdi
+    src.redMessage("zacilit lze pouze predmety s typem t_wall")
+  endif
+else
+  src.redMessage("Nesmis zamerovat objekty ale zem !")
+endif
+dialog(d_pad_wallBuilding)
+return 1
+
+on=@TargOn_Char
+if (<eval more2> == 0)	//targetujeme zed
+  src.redMessage("Zacilit lze pouze predmety s typem t_wall")
+else	//targetujeme zem kvuli novemu spawnu zdi
+  src.redMessage("Nesmis zamerovat objekty ale zem !")
+endif
+dialog(d_pad_wallBuilding)
+return 1
+
+on=@TargOn_Ground
+if (<eval more2> == 0)
+  src.redMessage("Zacilit lze pouze predmety s typem t_wall")
+else
+  tag(wallPosition[<eval tag(wallsCount)>],<src.targp>)
+  tag(wallsCount,#+1)
+endif
+dialog(d_pad_wallBuilding)
+return 1
+
+[function f_pad_wallBuilding_startTrigger]
+if !(<tag(wallBits)>&<wallBuild_wallsAreSpawned>)	// walls aren't spawned yet ie. the bit telling that the walls are spawned is not set
+  tag.wallBits=<tag(wallBits)>|<wallBuild_wallsAreSpawned>
+  if (<eval tag(wallRisingType)> == 0)
+    f_pad_wallBuilding_buildWall(<argv(0)>)
+  elseif (<eval tag(wallRisingType)> == 1)
+    f_pad_wallBuilding_buildWall_North(<argv(0)>)
+  elseif (<eval tag(wallRisingType)> == 2)
+    f_pad_wallBuilding_buildWall_East(<argv(0)>)
+  elseif (<eval tag(wallRisingType)> == 3)
+    f_pad_wallBuilding_buildWall_South(<argv(0)>)
+  elseif (<eval tag(wallRisingType)> == 4)
+    f_pad_wallBuilding_buildWall_West(<argv(0)>)
+  endif
+endif
+
+[function f_pad_wallBuilding_endTrigger]
+if (<tag(wallBits)>&<wallBuild_wallsAreSpawned>)	//walls are up
+  if !(<tag(wallBits)>&<wallBuild_wallsBeingSpawned>)	//walls aren't being spawned at the moment...
+    if !(<tag(wallBits)>&<wallBuild_wallsBeingRemoved>)
+      tag.wallBits=<tag(wallBits)>|<wallBuild_wallsBeingRemoved>
+      if (<eval tag(wallRisingType)> == 0)
+        f_pad_wallBuilding_buildWall_remove
+      elseif (<eval tag(wallRisingType)> == 1)
+        f_pad_wallBuilding_buildWall_North_remove
+      elseif (<eval tag(wallRisingType)> == 2)
+        f_pad_wallBuilding_buildWall_East_remove
+      elseif (<eval tag(wallRisingType)> == 3)
+        f_pad_wallBuilding_buildWall_South_remove
+      elseif (<eval tag(wallRisingType)> == 4)
+        f_pad_wallBuilding_buildWall_West_remove
+      endif
+    endif
+  endif
+endif
+
+[dialog d_pad_wallBuilding]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,400)
+argo.tag(vyska,<eval 230+(<tag(wallsCount)>*<d_def_radek_vyska>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,7,133,175)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,374)
+argo.dialog_pozadi(<argo.tag(nexty)>,<tag(wallsCount)>,374)
+argo.dialog_pozadi(<argo.tag(nexty)>,0,133,238)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Upec treba chleba, postav treba zed... woe")
+argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,<lastypos>-3,0fab,0fad,1,0,5)		//help
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"ID Zdi:")
+argo.button(lastxpos+98,lastypos+0*(d_def_radek_vyska),0fa5,0fa7,1,0,2)	//set new wall id
+argo.texta(lastxpos,lastypos+(d_def_radek_vyska),<d_def_writecolor>,"Trvani zdi v s:")
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),<d_def_writecolor>,"RemoveTrap:")
+argo.texta(lastxpos,lastypos+(3*d_def_radek_vyska),<d_def_writecolor>,"MoveTrap:")
+argo.texta(lastxpos,lastypos+(4*d_def_radek_vyska),<d_def_writecolor>,"Spina duch?:")
+argo.texta(lastxpos,lastypos+(5*d_def_radek_vyska),<d_def_writecolor>,"Efekt zvednuti?:")
+argo.texta(lastxpos,lastypos+(6*d_def_radek_vyska),<d_def_writecolor>,"Typ animace:")
+argo.button(lastxpos+98,lastypos+6*(d_def_radek_vyska),0fa5,0fa7,1,0,3)	//set new wall rising type
+
+argo.texta(<argo.dialog_textpos(1,1)>,<d_def_readcolor>,"<?tag(wallID)?>")
+argo.settext(12,<?tag(wallsTimer)?>)
+argo.textentry(lastxpos,lastypos+<d_def_radek_vyska>,160,<d_def_radek_vyska>,textcolor,1,12)
+argo.checkBox(lastxpos,lastypos+2*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallBuild_canBeDeactivated>,3)
+argo.button(lastxpos+25,lastypos+2*<d_def_radek_vyska>,0fab,0fad,1,0,6)		//RemoveTrap dialog
+argo.checkBox(lastxpos,lastypos+3*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallBuild_padCanBeMoved>,4)
+argo.button(lastxpos+25,lastypos+3*<d_def_radek_vyska>,0fab,0fad,1,0,7)		//MoveTrap dialog
+argo.checkBox(lastxpos,lastypos+4*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallBuild_ghostCanTrigger>,1)
+argo.checkBox(lastxpos,lastypos+5*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallBuild_risingEffect>,2)
+argo.texta(lastxpos,lastypos+6*<d_def_radek_vyska>,<d_def_readcolor>,"<?wallBuild_risingTypeInfo[<eval tag(wallRisingType)>]?>")
+
+argo.tilepichue(lastxpos+187,lastypos,<tag(wallIDDec)>)
+
+argo.texta(<argo.dialog_textpos(2,0)>,<d_def_readcolor>,"Seznam pozic:")
+argo.texta(lastxpos+250,lastypos,<d_def_readcolor>,"Nova pozice")
+argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,lastypos,0fa5,0fa7,1,0,4)	//add new spawn position
+
+argo.dialog_textpos(3,0) 
+arg(n,0)
+while (n < <tag(wallsCount)>)
+  argo.texta(lastxpos,lastypos+(<arg(n)>*<d_def_radek_vyska>),<d_def_readcolor>,"<?tag(wallPosition[<eval arg(n)>])?>")
+  argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-65,lastypos+(<arg(n)>*d_def_radek_vyska),0fb4,0fb6,1,0,100+<arg(n)>)	//go to this position
+  argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,lastypos+(<arg(n)>*d_def_radek_vyska),0fb1,0fb3,1,0,1000+<arg(n)>)	//delete this position
+  arg(n,#+1)
+endwhile
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_pad_wallBuilding button]
+on=0 // cancel
+src.sysMessage("Nastaveni nebylo zmeneno")
+
+on=1
+f_wallBuilding_setDialogValues(<argtxt(1)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+
+on=2
+f_wallBuilding_setDialogValues(<argtxt(1)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+more2=0
+target("Zamer novou zed")
+return 1
+
+on=3
+f_wallBuilding_setDialogValues(<argtxt(1)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+menu(menu_pad_wallBuilding)
+return 1
+
+on=4
+f_wallBuilding_setDialogValues(<argtxt(1)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+more2=1
+targetg("Zamer misto, kde se ma vytvaret zed")
+return 1
+
+on=5	//HELP
+f_wallBuilding_setDialogValues(<argtxt(1)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+dialog(d_pad_wallBuilding_help)
+dialog(d_pad_wallBuilding)
+
+on=6	//removeTrap dialog
+f_wallBuilding_setDialogValues(<argtxt(1)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+dialog(d_trap_removeTrap,d_pad_wallBuilding)
+
+on=7	//moveTrap dialog
+f_wallBuilding_setDialogValues(<argtxt(1)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+dialog(d_trap_moveTrap,d_pad_wallBuilding)
+
+on=@AnyButton
+f_wallBuilding_setDialogValues(<argtxt(1)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+if (<argn> >= 1000)	//handling remove of targets
+  arg(buttToRemove,<eval <argn>-1000>)
+  while (<arg(buttToRemove)+1> < <eval tag(wallsCount)>)
+    tag(wallPosition[<eval buttToRemove>],<tag(wallPosition[<eval buttToRemove+1>])>)
+    arg(buttToRemove,#+1)
+  endwhile
+  tag(wallsCount,#-1)
+  tag.remove(wallPosition[<eval tag(wallsCount)>])
+elseif (<argn> >= 100)	//handling jumping on targets
+  src.go(<tag(wallPosition[<eval <argn>-100>])>)
+endif
+dialog(d_pad_wallBuilding)
+
+[function f_wallBuilding_setDialogValues]	
+tag(wallsTimer,<eval argv(0)>)
+if (<argv(1)>)
+  tag.wallBits=<tag(wallBits)>|<wallBuild_ghostCanTrigger>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallBuild_ghostCanTrigger>
+endif
+if (<argv(2)>)
+  tag.wallBits=<tag(wallBits)>|<wallBuild_risingEffect>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallBuild_risingEffect>
+endif
+if (<argv(3)>)
+  tag.wallBits=<tag(wallBits)>|<wallBuild_canBeDeactivated>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallBuild_canBeDeactivated>
+endif
+if (<argv(4)>)
+  tag.wallBits=<tag(wallBits)>|<wallBuild_padCanBeMoved>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallBuild_padCanBeMoved>
+endif
+[dialog d_pad_wallBuilding_help]
+argo.setText(1," ID Wall: Pokud chces, aby dlazka vytvarela jiny typ zdi, zamer jinou pomoci prilehleho tlacitka. Zacileny objekt musi byt typu t_wall !<br><br> Trvani zdi: cislo v sekundach udavajici, jak dlouho bude dana sada zdi na miste nez zmizi.<br><br> RemoveTrap: Hodnota potrebna k odstraneni pasti.<br><br>Spina duch: urcuje, zda bude duch po proslapnuti aktivovat naslapku.<br><br> Efekt zvednuti: rika, zda budou zdi po objeveni animovany - tj budou postupne vychazet ze zeme.<br><br> Typ animace: zde se urci, jakym zpusobem se budou zdi objevovat.<br><br> Seznam pozic: pro vytvoreni nove pozice klikni na button -Nova pozice- a zatargetuj zem, na miste, kde se ma zobrazovat. Je jedno, v jakem poradi budes zdi umistovat, je pouze dobre se ujistit, ze nevkladas 2 zdi na jedno misto - script to nekontroluje. Chybne zadane pozice tedy staci smazat a normalne pridat dalsi pozici na konec vypisu, na animace to nema vliv. Po pridani nove pozice se objevi radek, ve kterem je pozice vypsana a je mozne se portnout na danou pozici nebo dany zaznam smazat a pridat jiny.")
+argo.f_dialog_HelpCreator("HELP - i_pad_wallBuilding")
+
+[menu menu_pad_wallBuilding]
+Jak se maji zdi objevit ?
+
+on=0 <wallBuild_risingTypeInfo[0]>
+tag(wallRisingType,0)
+dialog(d_pad_wallBuilding)
+
+on=0 <wallBuild_risingTypeInfo[1]>
+tag(wallRisingType,1)
+dialog(d_pad_wallBuilding)
+
+on=0 <wallBuild_risingTypeInfo[2]>
+tag(wallRisingType,2)
+dialog(d_pad_wallBuilding)
+
+on=0 <wallBuild_risingTypeInfo[3]>
+tag(wallRisingType,3)
+dialog(d_pad_wallBuilding)
+
+on=0 <wallBuild_risingTypeInfo[4]>
+tag(wallRisingType,4)
+dialog(d_pad_wallBuilding)
+
+[defNames pad_wallBuilding_defs]
+wallBuild_risingTypeInfo[0]	"Proste zobrazeni zdi"
+wallBuild_risingTypeInfo[1]	"Uzavirani ze Severu"
+wallBuild_risingTypeInfo[2]	"Uzavirani z Vychodu"
+wallBuild_risingTypeInfo[3]	"Uzavirani z Jihu"
+wallBuild_risingTypeInfo[4]	"Uzavirani ze Zapadu"
+wallBuild_ghostCanTrigger		000000001
+wallBuild_risingEffect			000000002
+wallBuild_wallsAreSpawned		000000004
+wallBuild_wallsBeingSpawned	000000008
+wallBuild_wallsBeingRemoved	000000010
+wallBuild_canBeDeactivated	000000020
+wallBuild_padCanBeMoved			000000040
+
+[function f_pad_wallBuilding_rise]
+if (<tag(wallBits)>&<wallBuild_risingEffect>)
+  argv(0).z=<argv(0).z>-10
+  argv(0).type=t_wb_wall_rising
+  argv(0).timerd=2
+endif
+
+[function f_pad_wallBuilding_fall]
+if (<tag(wallBits)>&<wallBuild_risingEffect>)
+  argv(0).moreX=1
+  argv(0).more2=<argv(0).more1>
+  argv(0).timer=0
+else
+  argv(0).remove
+endif
+
+[function f_pad_wallBuilding_buildWall]
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  argv(0).newItem(<tag(wallID)>)
+  arg(myWall,<lastnew>)
+  myWall.attr=attr_decay|attr_move_never
+  myWall.p=<tag(wallPosition[<eval arg(n)>])>
+  f_pad_wallBuilding_rise(<arg(myWall)>)
+  tag(spawnedWall[<eval arg(n)>],<myWall>)
+  arg(n,#+1)
+endwhile
+timer=<tag(wallsTimer)>
+
+sfx(04cf)
+
+
+[function f_pad_wallBuilding_buildWall_remove]
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  f_pad_wallBuilding_fall(<tag(spawnedWall[<eval arg(n)>])>)
+  tag.remove(spawnedWall[<eval arg(n)>])
+  arg(n,#+1)
+endwhile
+tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsAreSpawned>
+tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingRemoved>
+sfx(04cf)
+
+[typedef t_wb_wall_rising]
+on=@Timer
+if (<eval more1> < 5) && (<eval moreX> == 0)
+  f_moveUp
+  if (<more1> == 0)
+    sfx(557)
+  endif
+  timerD=2
+  more1=<more1> +1
+elseif (<eval more1> == 5) && (<eval moreX> == 0)
+  more2=5
+  moreX=1
+  return 1
+elseif (<eval more2> > 0)
+  f_moveDown
+  timerD=2
+  more2=<more2> -1
+else	//zed dopadla na zem
+  remove
+endif
+return 1
+
+
+///////////////////////////////////////////////
+//  N O R T H   W A L L S   H A N D L I N G  //
+///////////////////////////////////////////////
+
+[function f_pad_wallBuilding_buildWall_North]	//the lowest Y pos starts
+tag(risedWalls,0)
+tag(processedCoordinate,0)	//the walue of the last processed wall - this is being checked so that in every cycle only unprocessed walls would be taken into account
+tag(creatorAllMighty,<argv(0)>)	//we need a src UID to create new walls on him
+tag.wallBits=<tag(wallBits)>|<wallBuild_wallsBeingSpawned>
+f_pad_wallBuilding_buildWall_NorthCycle
+type=t_pad_wallBuilding_timerHandle_North
+timerd=2
+
+[function f_pad_wallBuilding_buildWall_NorthCycle]
+arg(n,1)
+arg(minY,<getYPos(<tag(wallPosition[0])>)>)	//lets assign the first wall Y pos as a so far found minimum
+while (<tag(wallsCount)> > <arg(n)>)	//this cycle searches for the lowest unprocessed Ypos which will be used to rise all walls at this Yposition in the next cycle
+  if (<arg(minY)> > <tag(processedCoordinate)>)
+    arg(currentYPos,<getYPos(<tag(wallPosition[<eval arg(n)>])>)>)
+    if (<arg(currentYPos)> > <tag(processedCoordinate)>)	// this Ypos is lower than the one we've already saved and its higher than the already processed position
+      if (<arg(minY)> > <arg(currentYPos)>)
+        arg(minY,<arg(currentYPos)>)
+      endif
+    endif
+  else
+    arg(minY,<getYPos(<tag(wallPosition[<eval arg(n)>])>)>)	//lets assign the first wall Y pos as a so far found minimum
+  endif
+  arg(n,#+1)
+endwhile
+//tag(creatorAllMighty).sysMessage("minY is: <arg(minY)>")
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  if (<getYPos(<tag(wallPosition[<eval arg(n)>])>)> == <arg(minY)>)
+    //tag(creatorAllMighty).sysMessage("rising <arg(n)>")
+    tag(creatorAllMighty).newItem(<tag(wallID)>)
+    arg(myWall,<lastnew>)
+    myWall.attr=attr_decay|attr_move_never
+    myWall.p=<tag(wallPosition[<eval arg(n)>])>
+    f_pad_wallBuilding_rise(<arg(myWall)>)
+    tag(spawnedWall[<eval tag(risedWalls)>],<myWall>)
+    tag(risedWalls,#+1)
+    //tag(creatorAllMighty).sysMessage("risedWalls: <tag(risedWalls)>")
+  endif
+  arg(n,#+1)
+endwhile
+tag(processedCoordinate,<arg(minY)>)
+
+
+[function f_pad_wallBuilding_buildWall_North_remove]
+tag(processedCoordinate,9999999)	//the walue of the last processed wall - this is being checked so that in every cycle only unprocessed walls would be taken into account
+tag(removedWalls,0)
+f_pad_wallBuilding_buildWall_North_removeCycle
+timerd=2
+sfx(557)
+
+[function f_pad_wallBuilding_buildWall_North_removeCycle]
+arg(n,0)
+while (<strlen(<tag(spawnedWall[<arg(n)>])>)> == 0)	//this cycle will find the first existing ! wall
+  arg(n,#+1)
+endwhile
+arg(maxY,<getYPos(<tag(spawnedWall[<arg(n)>]).p>)>)	//lets assign the first existing wall Y pos as a so far found maximum
+arg(n,#+1)	//we can the search for next wall from the next position so that we won't search between the deleted ones again - those were ignored in previous cycle already
+while (<tag(wallsCount)> > <arg(n)>)	//this cycle searches for the highest unprocessed Ypos which will be used to remove all walls at this Yposition in the next cycle
+  if (<arg(maxY)> < <tag(processedCoordinate)>)
+    if (<strLen(<tag(spawnedWall[<eval arg(n)>])>)>)	//is this wall still there somewhere ?
+      arg(currentYPos,<getYPos(<tag(spawnedWall[<eval arg(n)>]).p>)>)
+      if (<arg(currentYPos)> < <tag(processedCoordinate)>)	// this Ypos is higher than the one we've already saved and is lower than the already processed position
+        if (<arg(maxY)> < <arg(currentYPos)>)
+          arg(maxY,<arg(currentYPos)>)
+        endif
+      endif
+    endif
+  else
+    arg(maxY,<getYPos(<tag(spawnedWall[<eval arg(n)>]).p>)>)	//lets assign the first wall Y pos as a so far found minimum
+  endif
+  arg(n,#+1)
+endwhile
+//tag(creatorAllMighty).sysMessage("maxpos: <arg(maxY)>; processed: <tag(processedCoordinate)>")
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  if (<strLen(<tag(spawnedWall[<eval arg(n)>])>)>)
+    if (<getYPos(<tag(spawnedWall[<eval arg(n)>]).p>)> == <arg(maxY)>)
+      f_pad_wallBuilding_fall(<tag(spawnedWall[<eval arg(n)>])>)
+      tag.remove(spawnedWall[<eval arg(n)>])
+      tag(removedWalls,#+1)
+      //tag(creatorAllMighty).sysMessage("removedWalls: <tag(removedWalls)>")
+    endif
+  endif
+  arg(n,#+1)
+endwhile
+tag(processedCoordinate,<arg(maxY)>)
+
+
+[typedef t_pad_wallBuilding_timerHandle_North]
+on=@Timer
+if (<tag(wallBits)>&<wallBuild_wallsBeingSpawned>)	//the walls are being spawned at the moment
+  if (<tag(risedWalls)> < <tag(wallsCount)>)
+    f_pad_wallBuilding_buildWall_NorthCycle
+    sfx(04cf)
+    timerd=2
+  else
+    timer=<tag(wallsTimer)>
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingSpawned>	//remove info about walls being spawned
+    tag(removedWalls,0)
+    tag.remove(risedWalls)
+    tag.remove(processedCoordinate)
+    //tag.remove(creatorAllMighty)
+  endif
+else	//the walls are being removed at the moment
+  if (<tag(removedWalls)> < <tag(wallsCount)>)
+    f_pad_wallBuilding_buildWall_North_removeCycle
+    timerd=2
+  else
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsAreSpawned>
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingRemoved>
+    tag.remove(removedWalls)
+    tag.remove(processedCoordinate)
+    type=00
+  endif
+endif
+return 1
+
+
+///////////////////////////////////////////////
+//  W E S T   W A L L S   H A N D L I N G  //
+///////////////////////////////////////////////
+
+
+[function f_pad_wallBuilding_buildWall_West]	//the lowest X pos starts
+tag(risedWalls,0)
+tag(processedCoordinate,0)	//the walue of the last processed wall - this is being checked so that in every cycle only unprocessed walls would be taken into account
+tag(creatorAllMighty,<argv(0)>)	//we need a src UID to create new walls on him
+tag.wallBits=<tag(wallBits)>|<wallBuild_wallsBeingSpawned>
+f_pad_wallBuilding_buildWall_WestCycle
+type=t_pad_wallBuilding_timerHandle_West
+timerd=2
+
+[function f_pad_wallBuilding_buildWall_WestCycle]
+arg(n,1)
+arg(minX,<getXPos(<tag(wallPosition[0])>)>)	//lets assign the first wall X pos as a so far found minimum
+while (<tag(wallsCount)> > <arg(n)>)	//this cycle searches for the lowest unprocessed Xpos which will be used to rise all walls at this Xposition in the next cycle
+  if (<arg(minX)> > <tag(processedCoordinate)>)
+    arg(currentXPos,<getXPos(<tag(wallPosition[<eval arg(n)>])>)>)
+    if (<arg(currentXPos)> > <tag(processedCoordinate)>)	// this Xpos is lower than the one we've already saved and its higher than the already processed position
+      if (<arg(minX)> > <arg(currentXPos)>)
+        arg(minX,<arg(currentXPos)>)
+      endif
+    endif
+  else
+    arg(minX,<getXPos(<tag(wallPosition[<eval arg(n)>])>)>)	//lets assign the first wall X pos as a so far found minimum
+  endif
+  arg(n,#+1)
+endwhile
+//tag(creatorAllMighty).sysMessage("minX is: <arg(minX)>")
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  if (<getXPos(<tag(wallPosition[<eval arg(n)>])>)> == <arg(minX)>)
+    //tag(creatorAllMighty).sysMessage("rising <arg(n)>")
+    tag(creatorAllMighty).newItem(<tag(wallID)>)
+    arg(myWall,<lastnew>)
+    myWall.attr=attr_decay|attr_move_never
+    myWall.p=<tag(wallPosition[<eval arg(n)>])>
+    f_pad_wallBuilding_rise(<arg(myWall)>)
+    tag(spawnedWall[<eval tag(risedWalls)>],<myWall>)
+    tag(risedWalls,#+1)
+    //tag(creatorAllMighty).sysMessage("risedWalls: <tag(risedWalls)>")
+  endif
+  arg(n,#+1)
+endwhile
+tag(processedCoordinate,<arg(minX)>)
+
+
+[function f_pad_wallBuilding_buildWall_West_remove]
+tag(processedCoordinate,9999999) //the walue of the last processed wall - this is being checked so that in every cycle only unprocessed walls would be taken into account
+tag(removedWalls,0)
+f_pad_wallBuilding_buildWall_West_removeCycle
+timerd=2
+sfx(557)
+
+[function f_pad_wallBuilding_buildWall_West_removeCycle]
+arg(n,0)
+while (<strlen(<tag(spawnedWall[<arg(n)>])>)> == 0)	//this cycle will find the first existing ! wall
+  arg(n,#+1)
+endwhile
+arg(maxX,<getXPos(<tag(spawnedWall[<arg(n)>]).p>)>)	//lets assign the first existing wall X pos as a so far found maximum
+arg(n,#+1)	//we can start the search for next wall from the next position so that we won't search between the deleted ones again - those were ignored in previous cycle already
+while (<tag(wallsCount)> > <arg(n)>)	//this cycle searches for the highest unprocessed Xpos which will be used to remove all walls at this Xposition in the next cycle
+  if (<arg(maxX)> < <tag(processedCoordinate)>)
+    if (<strLen(<tag(spawnedWall[<eval arg(n)>])>)>)	//is this wall still there somewhere ?
+      arg(currentXPos,<getXPos(<tag(spawnedWall[<eval arg(n)>]).p>)>)
+      if (<arg(currentXPos)> < <tag(processedCoordinate)>)	// this Xpos is higher than the one we've already saved and is lower than the already processed position
+        if (<arg(maxX)> < <arg(currentXPos)>)
+          arg(maxX,<arg(currentXPos)>)
+        endif
+      endif
+    endif
+  else
+    arg(maxX,<getXPos(<tag(spawnedWall[<eval arg(n)>]).p>)>)	//lets assign the first wall X pos as a so far found maximum
+  endif
+  arg(n,#+1)
+endwhile
+//tag(creatorAllMighty).sysMessage("maxpos: <arg(maxX)>; processed: <tag(processedCoordinate)>")
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  if (<strLen(<tag(spawnedWall[<eval arg(n)>])>)>)
+    if (<getXPos(<tag(spawnedWall[<eval arg(n)>]).p>)> == <arg(maxX)>)
+      f_pad_wallBuilding_fall(<tag(spawnedWall[<eval arg(n)>])>)
+      tag.remove(spawnedWall[<eval arg(n)>])
+      tag(removedWalls,#+1)
+      //tag(creatorAllMighty).sysMessage("removedWalls: <tag(removedWalls)>")
+    endif
+  endif
+  arg(n,#+1)
+endwhile
+tag(processedCoordinate,<arg(maxX)>)
+
+
+[typedef t_pad_wallBuilding_timerHandle_West]
+on=@Timer
+if (<tag(wallBits)>&<wallBuild_wallsBeingSpawned>)	//the walls are being spawned at the moment
+  if (<tag(risedWalls)> < <tag(wallsCount)>)
+    f_pad_wallBuilding_buildWall_WestCycle
+    sfx(04cf)
+    timerd=2
+  else
+    timer=<tag(wallsTimer)>
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingSpawned>	//remove info about walls being spawned
+    tag(removedWalls,0)
+    tag.remove(risedWalls)
+    tag.remove(processedCoordinate)
+    //tag.remove(creatorAllMighty)
+  endif
+else	//the walls are being removed at the moment
+  if (<tag(removedWalls)> < <tag(wallsCount)>)
+    f_pad_wallBuilding_buildWall_West_removeCycle
+    timerd=2
+  else
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsAreSpawned>
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingRemoved>
+    tag.remove(removedWalls)
+    tag.remove(processedCoordinate)
+    type=00
+  endif
+endif
+return 1
+
+
+///////////////////////////////////////////////
+//  E A S T   W A L L S   H A N D L I N G  //
+///////////////////////////////////////////////
+
+
+[function f_pad_wallBuilding_buildWall_East]	//the highest X pos starts
+tag(risedWalls,0)
+tag(processedCoordinate,9999999)	//the walue of the last processed wall - this is being checked so that in every cycle only unprocessed walls would be taken into account
+tag(creatorAllMighty,<argv(0)>)	//we need a src UID to create new walls on him
+tag.wallBits=<tag(wallBits)>|<wallBuild_wallsBeingSpawned>
+f_pad_wallBuilding_buildWall_EastCycle
+type=t_pad_wallBuilding_timerHandle_East
+timerd=2
+
+[function f_pad_wallBuilding_buildWall_EastCycle]
+arg(n,1)
+arg(maxX,<getXPos(<tag(wallPosition[0])>)>)	//lets assign the first wall X pos as a so far found maximum
+while (<tag(wallsCount)> > <arg(n)>)	//this cycle searches for the highest unprocessed Xpos which will be used to rise all walls at this Xposition in the next cycle
+  if (<arg(maxX)> < <tag(processedCoordinate)>)
+    arg(currentXPos,<getXPos(<tag(wallPosition[<eval arg(n)>])>)>)
+    if (<arg(currentXPos)> < <tag(processedCoordinate)>)	// this Xpos is higher than the one we've already saved in arg(maxX) and its lower than the already processed position (so it can be processed again)
+      if (<arg(maxX)> < <arg(currentXPos)>)
+        arg(maxX,<arg(currentXPos)>)
+      endif
+    endif
+  else
+    arg(maxX,<getXPos(<tag(wallPosition[<eval arg(n)>])>)>)	//lets assign the first wall X pos as a so far found maximum
+  endif
+  arg(n,#+1)
+endwhile
+//tag(creatorAllMighty).sysMessage("maxX is: <arg(maxX)>")
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  if (<getXPos(<tag(wallPosition[<eval arg(n)>])>)> == <arg(maxX)>)
+    //tag(creatorAllMighty).sysMessage("rising <arg(n)>")
+    tag(creatorAllMighty).newItem(<tag(wallID)>)
+    arg(myWall,<lastnew>)
+    myWall.attr=attr_decay|attr_move_never
+    myWall.p=<tag(wallPosition[<eval arg(n)>])>
+    f_pad_wallBuilding_rise(<arg(myWall)>)
+    tag(spawnedWall[<eval tag(risedWalls)>],<myWall>)
+    tag(risedWalls,#+1)
+    //tag(creatorAllMighty).sysMessage("risedWalls: <tag(risedWalls)>")
+  endif
+  arg(n,#+1)
+endwhile
+tag(processedCoordinate,<arg(maxX)>)
+
+
+[function f_pad_wallBuilding_buildWall_East_remove]
+tag(processedCoordinate,0)	//the walue of the last processed wall - this is being checked so that in every cycle only unprocessed walls would be taken into account
+tag(removedWalls,0)
+f_pad_wallBuilding_buildWall_East_removeCycle
+timerd=2
+sfx(557)
+
+[function f_pad_wallBuilding_buildWall_East_removeCycle]
+arg(n,0)
+while (<strlen(<tag(spawnedWall[<arg(n)>])>)> == 0)	//this cycle will find the first existing ! wall
+  arg(n,#+1)
+endwhile
+arg(minX,<getXPos(<tag(spawnedWall[<arg(n)>]).p>)>)	//lets assign the first existing wall X pos as a so far found minimum
+arg(n,#+1)	//we can start the search for next wall from the next position so that we won't search between the deleted ones again - those were ignored in previous cycle already
+while (<tag(wallsCount)> > <arg(n)>)	//this cycle searches for the lowest unprocessed Xpos which will be used to remove all walls at this Xposition in the next cycle
+  if (<arg(minX)> > <tag(processedCoordinate)>)
+    if (<strLen(<tag(spawnedWall[<eval arg(n)>])>)>)	//is this wall still there somewhere ?
+      arg(currentXPos,<getXPos(<tag(spawnedWall[<eval arg(n)>]).p>)>)
+      if (<arg(currentXPos)> > <tag(processedCoordinate)>)	// this Xpos is lower than the one we've already saved and is higher than the already processed position
+        if (<arg(minX)> > <arg(currentXPos)>)
+          arg(minX,<arg(currentXPos)>)
+        endif
+      endif
+    endif
+  else
+    arg(minX,<getXPos(<tag(spawnedWall[<eval arg(n)>]).p>)>)	//lets assign the first wall X pos as a so far found minimum
+  endif
+  arg(n,#+1)
+endwhile
+//tag(creatorAllMighty).sysMessage("minpos: <arg(minX)>; processed: <tag(processedCoordinate)>")
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  if (<strLen(<tag(spawnedWall[<eval arg(n)>])>)>)
+    if (<getXPos(<tag(spawnedWall[<eval arg(n)>]).p>)> == <arg(minX)>)
+      f_pad_wallBuilding_fall(<tag(spawnedWall[<eval arg(n)>])>)
+      tag.remove(spawnedWall[<eval arg(n)>])
+      tag(removedWalls,#+1)
+      //tag(creatorAllMighty).sysMessage("removedWalls: <tag(removedWalls)>")
+    endif
+  endif
+  arg(n,#+1)
+endwhile
+tag(processedCoordinate,<arg(minX)>)
+
+
+[typedef t_pad_wallBuilding_timerHandle_East]
+on=@Timer
+if (<tag(wallBits)>&<wallBuild_wallsBeingSpawned>)	//the walls are being spawned at the moment
+  if (<tag(risedWalls)> < <tag(wallsCount)>)
+    f_pad_wallBuilding_buildWall_EastCycle
+    sfx(04cf)
+    timerd=2
+  else
+    timer=<tag(wallsTimer)>
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingSpawned>	//remove info about walls being spawned
+    tag(removedWalls,0)
+    tag.remove(risedWalls)
+    tag.remove(processedCoordinate)
+    //tag.remove(creatorAllMighty)
+  endif
+else	//the walls are being removed at the moment
+  if (<tag(removedWalls)> < <tag(wallsCount)>)
+    f_pad_wallBuilding_buildWall_East_removeCycle
+    timerd=2
+  else
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsAreSpawned>
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingRemoved>
+    tag.remove(removedWalls)
+    tag.remove(processedCoordinate)
+    type=00
+  endif
+endif
+return 1
+
+
+
+///////////////////////////////////////////////
+//  S O U T H   W A L L S   H A N D L I N G  //
+///////////////////////////////////////////////
+
+[function f_pad_wallBuilding_buildWall_South]	//the highest Y pos starts
+tag(risedWalls,0)
+tag(processedCoordinate,9999999)	//the walue of the last processed wall - this is being checked so that in every cycle only unprocessed walls would be taken into account
+tag(creatorAllMighty,<argv(0)>)	//we need a src UID to create new walls on him
+tag.wallBits=<tag(wallBits)>|<wallBuild_wallsBeingSpawned>
+f_pad_wallBuilding_buildWall_SouthCycle
+type=t_pad_wallBuilding_timerHandle_South
+timerd=2
+
+[function f_pad_wallBuilding_buildWall_SouthCycle]
+arg(n,1)
+arg(maxY,<getYPos(<tag(wallPosition[0])>)>)	//lets assign the first wall Y pos as a so far found maximum
+while (<tag(wallsCount)> > <arg(n)>)	//this cycle searches for the highest unprocessed YXpos which will be used to rise all walls at this Yposition in the next cycle
+  if (<arg(maxY)> < <tag(processedCoordinate)>)
+    arg(currentYPos,<getYPos(<tag(wallPosition[<eval arg(n)>])>)>)
+    if (<arg(currentYPos)> < <tag(processedCoordinate)>)	// this Ypos is higher than the one we've already saved in arg(maxY) and its lower than the already processed position (so it can be processed again)
+      if (<arg(maxY)> < <arg(currentYPos)>)
+        arg(maxY,<arg(currentYPos)>)
+      endif
+    endif
+  else
+    arg(maxY,<getYPos(<tag(wallPosition[<eval arg(n)>])>)>)	//lets assign the first wall Y pos as a so far found maximum
+  endif
+  arg(n,#+1)
+endwhile
+//tag(creatorAllMighty).sysMessage("maxY is: <arg(maxY)>")
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  if (<getYPos(<tag(wallPosition[<eval arg(n)>])>)> == <arg(maxY)>)
+    //tag(creatorAllMighty).sysMessage("rising <arg(n)>")
+    tag(creatorAllMighty).newItem(<tag(wallID)>)
+    arg(myWall,<lastnew>)
+    myWall.attr=attr_decay|attr_move_never
+    myWall.p=<tag(wallPosition[<eval arg(n)>])>
+    f_pad_wallBuilding_rise(<arg(myWall)>)
+    tag(spawnedWall[<eval tag(risedWalls)>],<myWall>)
+    tag(risedWalls,#+1)
+    //tag(creatorAllMighty).sysMessage("risedWalls: <tag(risedWalls)>")
+  endif
+  arg(n,#+1)
+endwhile
+tag(processedCoordinate,<arg(maxY)>)
+
+
+[function f_pad_wallBuilding_buildWall_South_remove]
+tag(processedCoordinate,0)	//the walue of the last processed wall - this is being checked so that in every cycle only unprocessed walls would be taken into account
+tag(removedWalls,0)
+f_pad_wallBuilding_buildWall_South_removeCycle
+timerd=2
+sfx(557)
+
+[function f_pad_wallBuilding_buildWall_South_removeCycle]
+arg(n,0)
+while (<strlen(<tag(spawnedWall[<arg(n)>])>)> == 0)	//this cycle will find the first existing ! wall
+  arg(n,#+1)
+endwhile
+arg(minX,<getYPos(<tag(spawnedWall[<arg(n)>]).p>)>)	//lets assign the first existing wall Y pos as a so far found minimum
+arg(n,#+1)	//we can start the search for next wall from the next position so that we won't search between the deleted ones again - those were ignored in previous cycle already
+while (<tag(wallsCount)> > <arg(n)>)	//this cycle searches for the lowest unprocessed Ypos which will be used to remove all walls at this Yposition in the next cycle
+  if (<arg(minX)> > <tag(processedCoordinate)>)
+    if (<strLen(<tag(spawnedWall[<eval arg(n)>])>)>)	//is this wall still there somewhere ?
+      arg(currentYPos,<getYPos(<tag(spawnedWall[<eval arg(n)>]).p>)>)
+      if (<arg(currentYPos)> > <tag(processedCoordinate)>)	// this Ypos is lower than the one we've already saved and is higher than the already processed position
+        if (<arg(minX)> > <arg(currentYPos)>)
+          arg(minX,<arg(currentYPos)>)
+        endif
+      endif
+    endif
+  else
+    arg(minX,<getYPos(<tag(spawnedWall[<eval arg(n)>]).p>)>)	//lets assign the first wall Y pos as a so far found minimum
+  endif
+  arg(n,#+1)
+endwhile
+//tag(creatorAllMighty).sysMessage("minpos: <arg(minX)>; processed: <tag(processedCoordinate)>")
+arg(n,0)
+while (<tag(wallsCount)> > <arg(n)>)
+  if (<strLen(<tag(spawnedWall[<eval arg(n)>])>)>)
+    if (<getYPos(<tag(spawnedWall[<eval arg(n)>]).p>)> == <arg(minX)>)
+      f_pad_wallBuilding_fall(<tag(spawnedWall[<eval arg(n)>])>)
+      tag.remove(spawnedWall[<eval arg(n)>])
+      tag(removedWalls,#+1)
+      //tag(creatorAllMighty).sysMessage("removedWalls: <tag(removedWalls)>")
+    endif
+  endif
+  arg(n,#+1)
+endwhile
+tag(processedCoordinate,<arg(minX)>)
+
+
+[typedef t_pad_wallBuilding_timerHandle_South]
+on=@Timer
+if (<tag(wallBits)>&<wallBuild_wallsBeingSpawned>)	//the walls are being spawned at the moment
+  if (<tag(risedWalls)> < <tag(wallsCount)>)
+    f_pad_wallBuilding_buildWall_SouthCycle
+    sfx(04cf)
+    timerd=2
+  else
+    timer=<tag(wallsTimer)>
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingSpawned>	//remove info about walls being spawned
+    tag(removedWalls,0)
+    tag.remove(risedWalls)
+    tag.remove(processedCoordinate)
+    //tag.remove(creatorAllMighty)
+  endif
+else	//the walls are being removed at the moment
+  if (<tag(removedWalls)> < <tag(wallsCount)>)
+    f_pad_wallBuilding_buildWall_South_removeCycle
+    timerd=2
+  else
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsAreSpawned>
+    tag.wallBits=<tag(wallBits)>&~<wallBuild_wallsBeingRemoved>
+    tag.remove(removedWalls)
+    tag.remove(processedCoordinate)
+    type=00
+  endif
+endif
+return 1
+
+
+//////////////////////////////////////////////////////////////////
+//    W A L L - B U I L D I N G   P A D ' S   S W I T C H E S   //
+//////////////////////////////////////////////////////////////////
+
+[itemDef i_switch_wallBuildingLink]
+id=01092
+name=Packa
+type=t_normal
+flip=1
+dupelist=0108F
+
+on=@create
+tag(switchBits,0)
+
+on=@UserDClick
+if (src.isGM)
+  dialog(d_switch_wallBuilding)
+elseif (!(<src.flags>&statf_dead) || (<tag(switchBits)>&<switch_wallBuild_ghostCanTrigger>)) //budto jsem zivy nebo je specialne povoleno duchum projit
+  if (<tag(switchBits)>&<switch_wallBUild_isGuarded>)	//guarding system is turned on
+    if (f_guarditAdv_CheckSpawns)	// 1 == guard is alive
+      src.sysMessage("Packu nema smysl prehazovat, dokud je strazce nazivu.")
+      return 1
+    endif
+  endif
+  if (more1 == 0)
+    if (<tag(switchBits)>&<switch_wallBuild_canTurnOn>)	//turn ON
+      tag(wallBuildingPadID).f_pad_wallBuilding_startTrigger(<src>)
+    endif
+    f_switch_turnOn	//just switch the switch graphic, but do no harm :)
+    more1=1
+  else
+    if (<tag(switchBits)>&<switch_wallBuild_canTurnOff>)	//turn OFF
+      tag(wallBuildingPadID).f_pad_wallBuilding_endTrigger
+    endif
+    f_switch_turnOff	//just switch the switch graphic, but do no harm :)
+    more1=0
+  endif
+else
+  src.sysMessage("Tohle jako duch udelat nemuzes")
+endif
+return 1
+
+on=@TargOn_Item
+if (src.targ.ID==i_pad_wallBuilding)
+  tag(wallBuildingPadID,<src.targ>)
+else
+  src.redMessage("Zacilit lze pouze predmet i_pad_wallBuilding!")
+endif
+dialog(d_switch_wallBuilding)
+return 1
+
+on=@TargOn_Char
+src.redMessage("Zacilit lze pouze predmet i_pad_wallBuilding!")
+dialog(d_switch_wallBuilding)
+return 1
+
+on=@Timer
+return 1
+
+[dialog d_switch_wallBuilding]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,350)
+argo.tag(vyska,145)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,4,133,190)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Spinac wallBuilding padu (<?p?>)")
+argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,<lastypos>-3,0fab,0fad,1,0,5)		//help
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Naslapka:")
+argo.button(lastxpos+98,lastypos+0*(d_def_radek_vyska),0fa5,0fa7,1,0,2)	//set link to
+argo.texta(lastxpos,lastypos+(1*d_def_radek_vyska),<d_def_writecolor>,"Spina duch?:")
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),<d_def_writecolor>,"Je hlidano?:")
+argo.texta(lastxpos,lastypos+(3*d_def_radek_vyska),<d_def_writecolor>,"Pravomoce hrace:")
+
+argo.dialog_textpos(1,1)
+if (<strlen(<tag(wallBuildingPadID)>)>)
+  argo.texta(lastxpos,lastypos,<d_def_readcolor>,"<?tag(wallBuildingPadID)?>")
+  argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-64,<lastypos>-3,0fab,0fad,1,0,3)		//pad Dialog
+  argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,<lastypos>-3,0fb4,0fb6,1,0,4)		//port to pad
+else
+  argo.texta(lastxpos+30,lastypos,<d_def_NAcolor>,"-nespecifikovano-")
+endif
+argo.settext(11,<?tag(wallsTimer)?>)
+argo.settext(12,<?tag(thief)?>)
+argo.checkBox(lastxpos,lastypos+1*<d_def_radek_vyska>,210,211,<tag(switchBits)>&<switch_wallBuild_ghostCanTrigger>,1)
+argo.checkBox(lastxpos,lastypos+2*<d_def_radek_vyska>,210,211,<tag(switchBits)>&<switch_wallBUild_isGuarded>,4)
+argo.button(lastxpos+25,lastypos+2*<d_def_radek_vyska>,0fab,0fad,1,0,6)		//guarditAdv dialog
+argo.texta(lastxpos,lastypos+(3*d_def_radek_vyska),<d_def_writecolor>,"Zapnout:")
+argo.checkBox(lastxpos+63,lastypos+3*<d_def_radek_vyska>,210,211,<tag(switchBits)>&<switch_wallBuild_canTurnOn>,2)
+argo.texta(lastxpos+95,lastypos+(3*d_def_radek_vyska),<d_def_writecolor>,"Vypnout:")
+argo.checkBox(lastxpos+163,lastypos+3*<d_def_radek_vyska>,210,211,<tag(switchBits)>&<switch_wallBuild_canTurnOff>,3)
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_switch_wallBuilding button]
+on=0 // cancel
+src.sysMessage("Nastaveni nebylo zmeneno")
+
+on=1 // setSettings
+f_switch_wallBuilding_setDialogValues(<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+src.sysMessage("Nastaveni byla v poradku ulozena")
+
+on=2 //set link to wall Building pad
+f_switch_wallBuilding_setDialogValues(<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+target("Zamer naslapku i_pad_wallBuilding")
+
+on=3 //open wallBuilding Dialog
+f_switch_wallBuilding_setDialogValues(<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+tag(wallBuildingPadID).dialog(d_pad_wallBuilding)
+dialog(d_switch_wallBuilding)
+
+on=4 //port to wallbuilding pad
+f_switch_wallBuilding_setDialogValues(<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+src.go(<tag(wallBuildingPadID).p>)
+dialog(d_switch_wallBuilding)
+
+on=5 //HELP
+f_switch_wallBuilding_setDialogValues(<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+dialog(d_switch_wallBuilding_help)
+dialog(d_switch_wallBuilding)
+
+on=6 //Guarding system
+f_switch_wallBuilding_setDialogValues(<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>)
+dialog(d_guarditAdv,d_switch_wallBuilding)
+
+[dialog d_switch_wallBuilding_help]
+argo.setText(1," Wallbuilding switch je urcen k spinani naslapky i_pad_wallBuilding.<br> Naslapka: je linkem na naslapku, jejiz vlastnosti se budou spinat/vypinat pri prepinani vypinace. Po pridani linku budou zobrazeny buttony, pres ktere je mozne zobrazit dialog zvolene naslapky a portovat na jeji misto.<br><br> Spina duch: Zaskrtni, pokud chces, aby mel duch moznost prepnout packu.<br><br> Pravomoce hrace: urcuje, zda hrac muze zaktivovanou cilovou naslapku spinat/vypinat nebo oboji.")
+argo.f_dialog_HelpCreator("HELP - i_switch_wallBuildingLink")
+
+[function f_switch_wallBuilding_setDialogValues]
+if (<argv(0)>)
+  tag.switchBits=<tag(switchBits)>|<switch_wallBuild_ghostCanTrigger>
+else
+  tag.switchBits=<tag(switchBits)>&~<switch_wallBuild_ghostCanTrigger>
+endif
+if (<argv(1)>)
+  tag.switchBits=<tag(switchBits)>|<switch_wallBuild_canTurnOn>
+else
+  tag.switchBits=<tag(switchBits)>&~<switch_wallBuild_canTurnOn>
+endif
+if (<argv(2)>)
+  tag.switchBits=<tag(switchBits)>|<switch_wallBuild_canTurnOff>
+else
+  tag.switchBits=<tag(switchBits)>&~<switch_wallBuild_canTurnOff>
+endif
+if (<argv(3)>)
+  tag.switchBits=<tag(switchBits)>|<switch_wallBUild_isGuarded>
+else
+  tag.switchBits=<tag(switchBits)>&~<switch_wallBUild_isGuarded>
+endif
+
+[defnames switch_wallBuilding]
+switch_wallBuild_canTurnOn				000000001
+switch_wallBuild_canTurnOff				000000002
+switch_wallBuild_ghostCanTrigger	000000004
+switch_wallBUild_isGuarded				000000008
+
+
+
+
+
+/////////////////////////////////////////////
+//      W A L L   M O V I N G   P A D      //
+//                                         //
+//             (c) GM Yavanna              //
+//                                         //
+//        @designed by GM Yavanna          //
+//        @tested by GM Yavanna            //
+//        @special thanks to GM Yavanna    //
+/////////////////////////////////////////////
+
+[defnames pad_wallMoving]
+wallMove_risingTypeInfo[0]  "Proste odstraneni zdi"
+wallMove_risingTypeInfo[1]  "Odsun ze Severu"
+wallMove_risingTypeInfo[2]  "Odsun z Vychodu"
+wallMove_risingTypeInfo[3]  "Odsun z Jihu"
+wallMove_risingTypeInfo[4]  "Odsun ze Zapadu"
+wallMove_ghostCanTrigger    000000001
+wallMove_risingEffect       000000002
+wallMove_moveUP             000000004 // signal, that walls are being moved up instead of down
+wallMove_wallsAreMoved      000000008 // signal, that walls are idle and staying at its alternative position
+wallMove_wallsBeingMoved    000000010 // signal, that walls are being moved to its alternative position at the moment
+wallMove_wallsBeingMovedBck 000000020 // signal, that walls are retreating to its original position at the moment
+wallMove_canBeDeactivated   000000040
+wallMove_padCanBeMoved      000000080
+
+[itemdef i_pad_wallMoving]
+ID=0AEC
+NAME=Postavi zed
+
+CATEGORY=Dungeony
+SUBSECTION=Naslapky
+DESCRIPTION=dlazdice vytvori zed
+
+on=@Create
+attr=090 //nevermove and invis
+tag(thief,100.0)
+tag(wallsCount,0)
+tag(wallMoveType,0)
+tag(wallElevationPoints,10)
+tag(wallsTimer,60)
+tag(wallBits,0)
+
+on=@UserDCLick
+if (src.isGM)
+  dialog(d_pad_wallMoving)
+  return 1
+endif
+
+on=@Step
+if !(src.isGM) && (src.isPlayer)
+  if (!(<src.flags>&statf_dead) || (<tag(wallBits)>&<wallMove_ghostCanTrigger>)) //Player is either alive or ghosts are explicitely allowed to trigger the pad
+    if (<tag(wallBits)>&<wallMove_canBeDeactivated>)	//deactivating of a trap is allowed
+      if !(f_removeTrap_tryActivateTrap) // activation/deactivation of the trap. If the is deactivated the trigger stops
+        return 1
+      endif
+    endif
+    f_pad_wallMoving_startTrigger(<src>)
+  endif
+endif
+
+on=@Timer
+f_pad_wallMoving_endTrigger
+return 1
+
+on=@TargOn_Item
+tag(wallUID[<eval tag(wallsCount)>],<src.targ>)
+tag(wallsCount,#+1)
+src.sysMessage("Zed uspesne zaznamenana !")
+dialog(d_pad_wallMoving)
+return 1
+
+on=@TargOn_Char
+src.redMessage("Nesmis zamerovat npc nebo hrace, ale zdi !")
+dialog(d_pad_wallMoving)
+return 1
+
+[dialog d_pad_wallMoving]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,336)
+argo.tag(vyska,<eval ((7*<d_def_skvira>)+(2*<d_def_okraj>)+((11+<tag(wallsCount)>)*<d_def_radek_vyska>))>)
+
+arg(leftColumnLength,145)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,8,<leftColumnLength>,<eval ((<argo.tag(sirka)>-(3*<d_def_skvira>))-(2*<d_def_okraj>))-140>)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,<eval ((<argo.tag(sirka)>-(2*<d_def_skvira>))-(2*<d_def_okraj>))>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<tag(wallsCount)>,<eval (<argo.tag(sirka)>-(2*<d_def_skvira>))-(2*<d_def_okraj>))>)
+argo.dialog_pozadi(<argo.tag(nexty)>,0,<leftColumnLength>,<eval ((<argo.tag(sirka)>-(3*<d_def_skvira>))-(2*<d_def_okraj>))-140>)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Delani, delani, zdi z dungu vyhani..")
+argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,<lastypos>-3,0fab,0fad,1,0,2)		//help
+
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Trvani presunu/s:")
+argo.texta(lastxpos,lastypos+(1*d_def_radek_vyska),<d_def_writecolor>,"Vyska presunu:")
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),<d_def_writecolor>,"RemoveTrap:")
+argo.texta(lastxpos,lastypos+(3*d_def_radek_vyska),<d_def_writecolor>,"MoveTrap:")
+argo.texta(lastxpos,lastypos+(4*d_def_radek_vyska),<d_def_writecolor>,"Spina duch?:")
+argo.texta(lastxpos,lastypos+(5*d_def_radek_vyska),<d_def_writecolor>,"Efekt zvednuti?:")
+argo.texta(lastxpos,lastypos+(6*d_def_radek_vyska),<d_def_writecolor>,"Vzhuru?:")
+argo.texta(lastxpos,lastypos+(7*d_def_radek_vyska),<d_def_writecolor>,"Typ animace:")
+
+argo.settext(13,<?tag(wallsTimer)?>)
+argo.settext(14,<?tag(wallElevationPoints)?>)
+argo.textentry(<argo.dialog_textpos(1,1)>,160,<d_def_radek_vyska>,textcolor,1,13)
+argo.textentry(lastxpos,lastypos+1*<d_def_radek_vyska>,160,<d_def_radek_vyska>,textcolor,2,14)
+argo.checkBox(lastxpos,lastypos+2*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallMove_canBeDeactivated>,5)
+argo.button(lastxpos+25,lastypos+2*<d_def_radek_vyska>,0fab,0fad,1,0,5)		//RemoveTrap dialog
+argo.checkBox(lastxpos,lastypos+3*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallMove_padCanBeMoved>,4)
+argo.button(lastxpos+25,lastypos+3*<d_def_radek_vyska>,0fab,0fad,1,0,6)		//MoveTrap dialog
+argo.checkBox(lastxpos,lastypos+4*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallMove_ghostCanTrigger>,1)
+argo.checkBox(lastxpos,lastypos+5*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallMove_risingEffect>,2)
+argo.checkBox(lastxpos,lastypos+6*<d_def_radek_vyska>,210,211,<tag(wallBits)>&<wallMove_moveUP>,3)
+argo.texta(lastxpos,lastypos+7*<d_def_radek_vyska>,<d_def_readcolor>,"<?wallMove_risingTypeInfo[<eval tag(wallRisingType)>]?>")
+argo.button(lastxpos-37,lastypos+(7*(d_def_radek_vyska))-3,0fa5,0fa7,1,0,3)	//set new wall rising type
+
+argo.texta(<argo.dialog_textpos(2,0)>,<d_def_readcolor>,"Seznam objektu:")
+argo.texta(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-125,lastypos,<d_def_readcolor>,"Nova zed")
+argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,lastypos,0fa5,0fa7,1,0,4)	//add new spawn position
+
+argo.dialog_textpos(3,0) 
+arg(n,0)
+while (n < <tag(wallsCount)>)
+  argo.texta(lastxpos,lastypos+(<arg(n)>*<d_def_radek_vyska>),<d_def_readcolor>,"<?tag(wallUID[<eval arg(n)>])?>")
+  argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-65,lastypos+(<arg(n)>*d_def_radek_vyska),0fb4,0fb6,1,0,100+<arg(n)>)	//go to this position
+  argo.button(<argo.tag(sirka)>-<d_def_okraj>-<d_def_skvira>-33,lastypos+(<arg(n)>*d_def_radek_vyska),0fb1,0fb3,1,0,1000+<arg(n)>)	//delete this position
+  arg(n,#+1)
+endwhile
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_pad_wallMoving button]
+on=0 // cancel
+src.sysMessage("Nastaveni nebylo zmeneno")
+
+on=1  //ok
+f_wallMoving_setDialogValues(<argtxt(1)>,<argtxt(2)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>,<argChk(5)>)
+
+on=2	//Help
+f_wallMoving_setDialogValues(<argtxt(1)>,<argtxt(2)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>,<argChk(5)>)
+dialog(d_pad_wallMoving_help)
+dialog(d_pad_wallMoving)
+
+on=3
+f_wallMoving_setDialogValues(<argtxt(1)>,<argtxt(2)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>,<argChk(5)>)
+menu(menu_pad_wallMoving)
+return 1
+
+on=4  //add new Wall
+f_wallMoving_setDialogValues(<argtxt(1)>,<argtxt(2)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>,<argChk(5)>)
+target("Zamer zed, ktera se ma presunout.")
+return 1
+
+on=5	//removeTrap dialog
+f_wallMoving_setDialogValues(<argtxt(1)>,<argtxt(2)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>,<argChk(5)>)
+dialog(d_trap_removeTrap,d_pad_wallMoving)
+
+on=6	//moveTrap dialog
+f_wallMoving_setDialogValues(<argtxt(1)>,<argtxt(2)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>,<argChk(5)>)
+dialog(d_trap_moveTrap,d_pad_wallMoving)
+
+on=@AnyButton
+f_wallMoving_setDialogValues(<argtxt(1)>,<argtxt(2)>,<argChk(1)>,<argChk(2)>,<argChk(3)>,<argChk(4)>,<argChk(5)>)
+if (<argn> >= 1000)	//handling remove of targets
+  arg(buttToRemove,<eval <argn>-1000>)
+  while (<arg(buttToRemove)+1> < <eval tag(wallsCount)>)
+    tag(wallUID[<eval buttToRemove>],<tag(wallUID[<eval buttToRemove+1>])>)
+    arg(buttToRemove,#+1)
+  endwhile
+  tag(wallsCount,#-1)
+  tag.remove(wallUID[<eval tag(wallsCount)>])
+elseif (<argn> >= 100)	//handling jumping on targets
+  src.go(<tag(wallUID[<eval <argn>-100>]).p>)
+endif
+dialog(d_pad_wallMoving)
+
+[function f_wallMoving_setDialogValues]	
+tag(wallsTimer,<eval argv(0)>)
+tag(wallElevationPoints,<eval argv(1)>)
+if (<argv(2)>)
+  tag.wallBits=<tag(wallBits)>|<wallMove_ghostCanTrigger>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallMove_ghostCanTrigger>
+endif
+if (<argv(3)>)
+  tag.wallBits=<tag(wallBits)>|<wallMove_risingEffect>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallMove_risingEffect>
+endif
+if (<argv(4)>)
+  tag.wallBits=<tag(wallBits)>|<wallMove_moveUP>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallMove_moveUP>
+endif
+if (<argv(5)>)
+  tag.wallBits=<tag(wallBits)>|<wallMove_padCanBeMoved>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallMove_padCanBeMoved>
+endif
+if (<argv(6)>)
+  tag.wallBits=<tag(wallBits)>|<wallMove_canBeDeactivated>
+else
+  tag.wallBits=<tag(wallBits)>&~<wallMove_canBeDeactivated>
+endif
+
+[dialog d_pad_wallMoving_help]
+argo.setText(1," ID Wall: Pokud chces, aby dlazka vytvarela jiny typ zdi, zamer jinou pomoci prilehleho tlacitka. Zacileny objekt musi byt typu t_wall !<br><br> Trvani zdi: cislo v sekundach udavajici, jak dlouho bude dana sada zdi na miste nez zmizi.<br><br> RemoveTrap: Hodnota potrebna k odstraneni pasti.<br><br>Spina duch: urcuje, zda bude duch po proslapnuti aktivovat naslapku.<br><br> Efekt zvednuti: rika, zda budou zdi po objeveni animovany - tj budou postupne vychazet ze zeme.<br><br> Typ animace: zde se urci, jakym zpusobem se budou zdi objevovat.<br><br> Seznam pozic: pro vytvoreni nove pozice klikni na button -Nova pozice- a zatargetuj zem, na miste, kde se ma zobrazovat. Je jedno, v jakem poradi budes zdi umistovat, je pouze dobre se ujistit, ze nevkladas 2 zdi na jedno misto - script to nekontroluje. Chybne zadane pozice tedy staci smazat a normalne pridat dalsi pozici na konec vypisu, na animace to nema vliv. Po pridani nove pozice se objevi radek, ve kterem je pozice vypsana a je mozne se portnout na danou pozici nebo dany zaznam smazat a pridat jiny.")
+argo.f_dialog_HelpCreator("HELP - i_pad_wallMoving")
+
+[menu menu_pad_wallMoving]
+Jak se maji zdi objevit ?
+
+on=0 <wallMove_risingTypeInfo[0]>
+tag(wallRisingType,0)
+dialog(d_pad_wallMoving)
+
+on=0 <wallMove_risingTypeInfo[1]>
+tag(wallRisingType,1)
+dialog(d_pad_wallMoving)
+
+on=0 <wallMove_risingTypeInfo[2]>
+tag(wallRisingType,2)
+dialog(d_pad_wallMoving)
+
+on=0 <wallMove_risingTypeInfo[3]>
+tag(wallRisingType,3)
+dialog(d_pad_wallMoving)
+
+on=0 <wallMove_risingTypeInfo[4]>
+tag(wallRisingType,4)
+dialog(d_pad_wallMoving)
+
+
+////////////////////////////////////////////////////////////////////////////
+//                                                                        //
+//                    Irmova zazracna mizici dlazdicka                    //
+//                                                                        //
+//                   Je-li hrac prilis tezky, zbrorti se.                 //
+//                                                                        //
+////////////////////////////////////////////////////////////////////////////
+
+[itemdef i_pad_mario]
+id=010a3
+name=vibrujici dlazba
+
+category=Dungeony
+subsection=Naslapky
+description=Propadavaci dlazdice
+
+on=@create
+attr=010
+color=0476
+
+on=@step
+if (!(src.isGM) && (<timer>==-1) && !(<src.flags>&statf_dead))
+
+  if (<eval finduid(tag(packa)).more2> == 0) // deaktivacni packa neni stiskla
+    if (<eval src.weight> > 100) // da se projit leda skoro bez veci
+      attr=090
+      tag.normalni_barva=<color>
+      color=044c // aby to poznali GM; pozn.: zmena barvy musi byt az po atributech!
+      update
+
+      timer=5 // dlazdicka se znovu objevi za pet vterin
+      src.z=<src.z>-7 // aby postava propadla, je potreba posun aspon o sedm
+      src.fix // shodi postavu na nejblizsi podlahu
+
+      // hlasky napovi, ze je treba byt lehci
+      if (<eval src.weight> > 250)
+        src.sysmessage("Podlaha se pod tebou okamzite zbortila.")
+        src.say("Au!")
+      elseif (<eval src.weight> > 100)
+        src.sysmessage("Podlaha se pod tebou zbortila.")
+      else
+        src.sysmessage("Podlaha se pod tebou otrasla a zbortila.")
+      endif
+    else
+      src.sysmessage("Podlaha pod tebou jemne vibruje.")
+    endif
+  endif
+
+  return 1
+else
+  return 1
+endif
+
+on=@timer
+attr=010
+color=<tag.normalni_barva>
+update
+return 1
+
+on=@userdclick
+if (src.isgm)
+  target("Zamer deaktivacni packu.")
+endif
+return 1
+
+on=@targon_char
+src.redmessage("Zamerit lze pouze prepinaci packu!")
+return 1
+
+on=@targon_item
+if (src.targ.type==t_basics_switch_r)
+  tag(packa,<src.targ>)
+  src.sysmessage("Objekty byly propojeny.")
+else
+  src.redmessage("Zamerit lze pouze prepinaci packu!")
+endif
+return 1
+
+/////////////////////////////////////////////
+//            E X P L O S I O N            //
+//                                         //
+//             (c) GM Yavanna              //
+//                                         //
+//        @designed by GM Yavanna          //
+//        @tested by GM Yavanna            //
+//        @special thanks to GM Yavanna    //
+/////////////////////////////////////////////
+
+[defnames def_explosions]
+def_explosion_clr_average  1084
+def_explosion_clr_weak     1109
+def_explosion_baseDmg      60
+def_explosion_timerd       2
+
+[itemdef i_explosion_damage]
+Name=Vybuch
+ID=i_fx_explode
+
+on=@Create
+tag(damage,<def_explosion_baseDmg>)
+timer=1
+attr=attr_move_never
+dorand 3
+  dispID=i_fx_explode
+  dispID=i_fx_explosion_2
+  dispid=i_fx_explosion_3
+enddo
+
+on=@Step
+if (src.isGM) || (src.isDead)
+ return 1
+endif
+if !((<link.uid>) == (<src.uid>)) && (src.isPlayer || src.isPet)	//dame dmg i summonum a jezditkum
+  if (src.isEvent(e_explosion_damage))
+    if (<src.tag(explosionDamageStep)> > <serv.time>) // if the player stepped on the firecolumn at this position in the last 2 seconds
+      return 1
+    endif
+  endif
+  src.damage_noresponse(<eval tag(damage)>,dam_fire|dam_magic)
+  src.events=+e_explosion_damage
+  src.tag(explosionDamageStep,<serv.time>+7) // 1 second silence
+endif
+
+on=@Timer
+arg(damage,<eval tag(damage)-{3 20}>)
+if (<arg(damage)> <= 0)
+  remove
+  return
+endif
+timerd=<def_explosion_timerd>
+tag(damage,<arg(damage)>)
+f_explosionDmg_setColor
+update
+return 1
+
+[events e_explosion_damage]
+on=@step
+if (<src.tag(explosionDamageStep)> < <serv.time>)
+  tag.remove(explosionDamageStep)
+  events=-e_explosion_damage
+endif
+
+[function f_explosionDmg_place] //x,y,z,mapplane, <optional> damage
+newitem(<i_explosion_damage>)
+lastnew.p=<eval argv(0)>,<eval argv(1)>,<eval argv(2)>,<eval argv(3)>
+lastnew.link=<UID>
+lastnew.update
+if (<eval argv(4)>)
+  lastnew.tag(damage,<argv(4)>)
+endif
+lastnew.f_explosionDmg_setColor
+
+[function f_explosionDmg_setColor]
+arg(dmg,<eval tag(damage)>)
+if (<arg(dmg)> < 15)
+  color=<def_explosion_clr_Weak>
+elseif (<arg(dmg)> < 45)
+  color=<def_explosion_clr_average>
+endif
+
+[EOF]

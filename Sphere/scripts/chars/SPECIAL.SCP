@@ -1,0 +1,3525 @@
+///////////////////////////////////////////////////////////
+
+[CHARDEF 0b6]
+DEFNAME=c_gladiator
+NAME=Gladiator
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=80
+ARMOR=130
+MOVERATE=4
+
+RESOURCES=29 i_ribs_raw 
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_humanoid
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Gladiator
+
+ON=@Create
+NPC=brain_monster
+FAME=250
+KARMA=-6000
+
+STR=2200
+DEX=370
+INT=120
+
+maxhits={10000 11000}
+maxstam={305 355}
+maxmana=0
+
+tag.experience=<eval {200.0 240.0}>
+
+tag.npc_port_timer=10
+tag(npc_port_distance,9)
+
+tag.stam_dmg_chance=350             // 35% chance to trigger this event
+tag.stam_dmg_power=30               // takes 30 of stam
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,500) //na humanoidy silny
+tag.resist_para=<eval {650 750}>
+tag(resist_summon,600) //individualni
+tag(resist_bleed,400) //individualni
+
+//weap resists
+tag(resist_sharp,350)
+tag(resist_slash,150)
+tag(resist_pierce,-150)
+tag(resist_blunt,50)
+
+//magic resists
+tag(resist_fire,50)
+tag(resist_elect,-250)
+tag(resist_cold,100)
+
+//typ monstra
+tag(monstertype,humanoid,60)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PEACEMAKING=100.0
+WRESTLING=160.0
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+/////////////////////////////////////////////////////
+
+[CHARDEF 0bd]
+DEFNAME=c_gladiator_lord
+NAME=Gladiator Lord
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=120
+ARMOR=140
+MOVERATE=4
+
+RESOURCES=8 i_ribs_raw
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_humanoid
+TEVENTS=e_npc_bleed
+TEVENTS=e_parakrik
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Gladiator Lord
+
+ON=@Create
+NPC=brain_monster
+FAME=250
+KARMA=-10000
+
+STR=9000
+DEX=380
+INT=130
+
+maxhits={22000 24000}
+maxstam={360 370}
+maxmana=0
+
+tag.experience=<eval {700.0 750.0}>
+
+tag.roundattack_damage=50,60  //dmg od - do
+tag.roundattack_time=10,15    //cas od - do
+tag.roundattack_chance=400    //20.0%
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=40               // takes 40 of stam
+
+tag.npc_bleed=400 //40.0%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+
+//other resists
+tag(resist_poison,100) //na humanoidy silny
+tag.resist_para=<eval {800 925}>
+tag(resist_summon,700) //individualni
+tag(resist_bleed,400) //individualni
+
+//weap resists
+tag(resist_sharp,250)
+tag(resist_slash,150)
+tag(resist_pierce,-150)
+tag(resist_blunt,100)
+
+//magic resists
+tag(resist_fire,150)
+tag(resist_elect,-150)
+tag(resist_cold,100)
+
+//typ monstra
+tag(monstertype,humanoid,40)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+WRESTLING=130.0
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//on=@npc_seewantitem
+//act.remove //nevim zda ten item je act, ale predpokladam, ze ano. Zkus to 
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 030c]
+defname=c_excelent
+NAME=Excelent
+CAN=MT_WALK|mt_run
+
+attack=100
+ARMOR=100
+MOVERATE=4
+
+//RESOURCES=1 i_ore_mithril
+BLOODCOLOR=color_o_mithril
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+TEVENTS=e_summoneater          //smaze summona, co zasahne
+//TEVENTS=e_excelent
+TEVENTS=e_npc_critic              //sance na kritik melee
+TEVENTS=e_npc_curse_mana            //mass sani many
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Excelent
+
+ON=@Create
+color=color_o_Mithril
+NPC=brain_monster
+FAME=250
+KARMA=-5000
+
+STR=20000
+DEX=500
+INT=300
+
+maxhits={28000 29000}
+maxstam={600 700}
+maxmana=0
+
+tag.experience=<eval {750.0 800.0}>
+
+tag.npc_critic_chance=250           //25% chance
+tag.npc_critic_dmg=20,25            //dmg in between
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,25      // delay between another possible strike
+tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[10]>
+
+tag(monstertype,reaper)
+//tag(monstertype,undead,50)
+
+tag.weapflag=dam_blunt|dam_physical
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {925 980}>
+tag(resist_summon,1000)
+tag(resist_bleed,700)
+
+tag(resist_sharp,350)
+tag(resist_slash,250)
+tag(resist_pierce,550)
+tag(resist_blunt,-150)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+POISONING={400.0 500.0}
+WRESTLING=140.0
+TACTICS=100.0
+RESIST=150.0
+SpiritSpeak=110.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[chardef 04D]
+defname=c_kraken
+name=Kraken
+SOUND=snd_MONSTER_DRAGON1
+CAN=MT_WALK|MT_SWIM|mt_run
+
+attack=80
+ARMOR=105
+MOVERATE=3
+
+RESOURCES=9 i_ribs_raw,8 i_reag_dragon_blood
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_ovinovac
+TEVENTS=e_npc_roundattack
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Kraken
+
+ON=@Create
+color=0598
+NPC=brain_monster
+FAME=2000
+KARMA={-3000 -8000}
+
+STR=6500
+DEX=180
+INT=30
+
+maxhits={5000 6000}
+maxstam={150 200}
+maxmana=0
+
+tag.experience=<eval {120.0 130.0}>
+
+tag.roundattack_damage=40,45  //dmg od - do
+tag.roundattack_time=10,15    //prodleva od - do v sek
+tag.roundattack_chance=200    //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,animal)
+
+tag.weapflag=dam_physical|dam_blunt
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {800 950}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,-150)
+tag(resist_slash,-250)        //sekery
+tag(resist_pierce,150)
+tag(resist_blunt,150)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+PARRYING=120.0
+Resist=170.0
+TACTICS=150.0
+WRESTLING=120.0
+SpiritSpeak=35.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 0311]
+DEFNAME=c_minotaur
+NAME=Minotaur
+sound=snd_monster_daemon1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f
+CAN=MT_WALK|mt_run|mt_usehands
+
+attack=90
+ARMOR=65
+MOVERATE=3
+
+resources=12 i_ribs_raw, 12 i_reag_daemon_bone
+BLOODCOLOR=colors_blue
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_getwpn
+TEVENTS=e_npc_roundattack
+TEVENTS=e_humanoid
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Minotaur
+
+ON=@Create
+NPC=brain_monster
+FAME=2000
+KARMA={-2000 -2500}
+
+STR=6900
+DEX=420
+INT=100
+
+maxhits={8500 9500}
+maxstam={350 380}
+maxmana=0
+
+tag.experience=<eval {220.0 230.0}>
+
+tag.roundattack_damage=30,40  //dmg od - do
+tag.roundattack_time=10,15    //prodleva od - do v sek
+tag.roundattack_chance=400    //40.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_blunt|dam_physical
+
+//other resists
+tag(resist_poison,500) 
+tag.resist_para=<eval {800 900}>
+tag(resist_summon,600) //individualni
+tag(resist_bleed,400) //individualni
+
+//weap resists
+tag(resist_sharp,-350)
+tag(resist_slash,-250)
+tag(resist_pierce,-100)
+tag(resist_blunt,650)
+
+//magic resists
+tag(resist_fire,250)
+tag(resist_elect,250)
+tag(resist_cold,100)
+
+Resist=175.0
+WRESTLING=120.0
+Parrying=150.0
+tactics=150.0
+SpiritSpeak=80.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_minotaur_strazce]
+id=c_minotaur
+NAME=Strazce
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+CAN=MT_WALK|mt_run
+
+attack=100
+ARMOR=70
+moverate=4
+
+resources=12 i_ribs_raw, 12 i_reag_daemon_bone
+BLOODCOLOR=colors_blue
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater         //smaze summona, co zasahne
+TEVENTS=e_daemon
+TEVENTS=e_npc_bleed
+TEVENTS=e_npc_roundattack_pullall
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Minotaur Strazce
+
+ON=@Create
+color=098c
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2500}
+
+STR=6900
+DEX=440
+INT=50
+
+maxhits={10500 10500}
+maxstam={380 400}
+maxmana=0
+
+tag.experience=<eval {250.0 270.0}>
+
+tag.npc_bleed=400 //40.0%
+
+tag.roundattack_damage=50,60 //dmg od - do
+tag.roundattack_time=10,15   //cas od - do
+tag.roundattack_chance=200    //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,600)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,600)
+tag(resist_bleed,400)
+
+//weap resists
+tag(resist_sharp,-350)
+tag(resist_slash,-250)
+tag(resist_pierce,-100)
+tag(resist_blunt,650)
+
+//magic resists
+tag(resist_fire,250)
+tag(resist_elect,250)
+tag(resist_cold,100)
+
+Resist=175.0
+WRESTLING=150.0
+Parrying=150.0
+tactics=150.0
+SpiritSpeak=75.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+
+///////////////////////////////////////////////////////////
+///////////////////     EYES     //////////////////////////
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_iron_eye]
+id=c_gazer
+NAME=Eye
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=40
+ARMOR=20
+moverate=4
+
+resources=1 i_ore_iron
+BLOODCOLOR=color_o_iron
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Iron eye
+
+ON=@Create
+color=color_o_iron
+NPC=brain_monster
+FAME=150
+KARMA=-2000
+
+STR=250
+DEX=1000
+INT=500
+
+maxhits={300 360}
+maxstam={400 450}
+maxmana=0
+
+tag.experience=<eval {30.0 34.0}>
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,350)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,500)
+tag(resist_elect,400)
+tag(resist_cold,450)
+
+//typ monstra
+tag(monstertype,eye)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+tactics=100.0
+Resist=100.0
+WRESTLING=1000
+SpiritSpeak=30.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_ice_eye]
+id=c_gazer
+NAME=Eye
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=45
+ARMOR=25
+moverate=4
+
+BLOODCOLOR=color_ice
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+TEVENTS=e_snowmonster
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Ice eye
+
+ON=@Create
+color=0480
+NPC=brain_monster
+FAME=1
+KARMA=-2000
+
+STR=450
+DEX=1000
+INT=650
+
+maxhits={400 450}
+maxstam={700 800}
+maxmana=0
+
+tag.experience=<eval {45.0 50.0}>
+
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,350)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,-400)
+tag(resist_elect,500)
+tag(resist_cold,450)
+
+//typ monstra
+tag(monstertype,eye)
+tag(monstertype2,snow)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+Resist=2000
+tactics=100.0
+WRESTLING=1000
+SpiritSpeak=30.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_snow_eye]
+id=c_gazer
+NAME=Eye
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=40
+ARMOR=20
+moverate=4
+
+BLOODCOLOR=color_snow
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+TEVENTS=e_snowmonster
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Snow eye
+
+ON=@Create
+color=0481
+NPC=brain_monster
+FAME=1
+KARMA=-2000
+
+STR=500
+DEX=1000
+INT=600
+
+maxhits={350 400}
+maxstam={400 500}
+maxmana=0
+
+tag.experience=<eval {30.0 34.0}>
+
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,350)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,-200)
+tag(resist_elect,500)
+tag(resist_cold,450)
+
+//typ monstra
+tag(monstertype,eye)
+tag(monstertype2,snow)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+Resist=200.0
+WRESTLING=1000.0
+tactics=100.0
+SpiritSPeak=30.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_shadow_eye]
+id=c_gazer
+NAME=Eye
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=40
+ARMOR=50
+moverate=4
+
+resources=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+TEVENTS=e_duplicator
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Shadow eye
+
+ON=@Create
+color=07FFF
+NPC=brain_monster
+FAME=1
+KARMA=-2000
+
+STR=500
+DEX=500
+INT=100
+
+maxhits={800 900}
+maxstam={400 600}
+maxmana=0
+
+tag.experience=<eval {45.0 50.0}>
+tag(npc_port_distance,10)
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,350)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,500)
+tag(resist_elect,500)
+tag(resist_cold,450)
+
+//typ monstra
+tag(monstertype,eye)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+Resist=200.0
+WRESTLING=1000.0
+tactics=100.0
+stealth=200.0
+hiding=200.0
+peacemaking=100.0
+SpiritSpeak=40.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_stone_eye]
+id=c_gazer
+NAME=Eye
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=45
+ARMOR=50
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Shadow eye
+
+ON=@Create
+color=0482
+NPC=brain_monster
+FAME=1
+KARMA=-2000
+
+STR=500
+DEX=500
+INT=100
+
+maxhits={900 1000}
+maxstam={300 400}
+maxmana=0
+
+tag.experience=<eval {40.0 45.0}>
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,350)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,500)
+tag(resist_blunt,-500)
+
+//magic resists
+tag(resist_fire,500)
+tag(resist_elect,500)
+tag(resist_cold,450)
+
+//typ monstra
+tag(monstertype,eye)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+Resist=200.0
+WRESTLING=1000.0
+tactics=100.0
+peacemaking=100.0
+SpiritSpeak=40.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_exorcist_eye]
+id=c_gazer
+NAME=Eye
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=50
+ARMOR=20
+moverate=4
+
+BLOODCOLOR=022f
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+TEVENTS=e_summoneater
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Exorcist eye
+
+ON=@Create
+COLOR=022d
+NPC=brain_monster
+FAME=150
+KARMA=-2000
+
+STR=250
+DEX=1000
+INT=500
+
+maxhits={500 590}
+maxstam={850 1000}
+maxmana=0
+
+tag.experience=<eval {50.0 55.0}>
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,500)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,950)
+tag(resist_slash,950)
+tag(resist_pierce,-200)
+tag(resist_blunt,950)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+//typ monstra
+tag(monstertype,eye)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+tactics=100.0
+Resist=100.0
+WRESTLING=1000.0
+SpiritSPeak=45.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 030a]
+DEFNAME=c_beholder
+NAME=Beholder
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+anim=0ffc78c7f 
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=50
+ARMOR=30
+moverate=4
+
+RESOURCES=4 i_ribs_raw
+BLOODCOLOR=-1
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Belhoder
+
+ON=@Create
+color=0981
+NPC=brain_monster
+FAME=1
+KARMA={-350 -1500}
+
+STR=700
+DEX=400
+INT=0
+
+maxhits={2780 2900}
+maxstam={380 390}
+maxmana=0
+
+tag.experience=<eval {85.0 100.0}>
+
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,350)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,500)
+tag(resist_elect,500)
+tag(resist_cold,450)
+
+//typ monstra
+tag(monstertype,eye)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+POISONING={150.0 200.0}
+Resist=200.0
+tactics=100.0
+WRESTLING=1000.0
+detectinghidden=250.0
+peacemaking=100.0
+SpiritSpeak=30.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 016]
+DEFNAME=c_gazer
+NAME=Gazer
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+ANIM=06007f
+CAN=MT_WALK
+
+attack=15
+ARMOR=20
+moverate=4
+
+RESOURCES=4 i_ribs_raw
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Gazer
+
+ON=@Create
+NPC=brain_monster
+FAME=1
+KARMA=-1000
+
+STR=500
+DEX={86 105}
+INT=40
+
+maxhits={220 250}
+maxstam={80 110}
+maxmana=0
+
+tag.experience=<eval {20.0 24.0}>
+tag(npc_port_distance,10)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,eye)
+
+tag.weapflag=dam_slashing|dam_physical
+
+//other resists
+tag(resist_poison,800)
+tag(resist_para,200)
+tag(resist_summon,150)
+tag(resist_bleed,100)
+
+//weap resists
+tag(resist_sharp,-100)
+tag(resist_slash,-200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,50)
+
+PARRYING={55.0 65.0}
+Resist={50.0 65.0}
+TACTICS={50.0 70.0}
+WRESTLING={60.0 70.0}
+SpiritSpeak=25.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_light_source
+
+ON=@NPCRestock
+ITEM=loot_GAZER
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_gazer_elder]
+ID=c_gazer
+NAME=Elder Gazer
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+ANIM=06007f
+CAN=MT_WALK|MT_FIRE_IMMUNE
+
+attack=25
+ARMOR=30
+moverate=4
+
+RESOURCES=8 i_ribs_raw
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Elder Gazer
+
+ON=@Create
+COLOR=0400
+NPC=brain_monster
+FAME=1
+KARMA=-3000
+
+STR=500
+DEX=125
+INT=60
+
+maxhits={400 480}
+maxstam={80 110}
+maxmana={250 400}
+
+tag.experience=<eval {40.0 45.0}>
+
+tag(npc_port_distance,10)
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,eye)
+
+tag.weapflag=dam_slashing|dam_physical
+
+//other resists
+tag(resist_poison,830)
+tag(resist_para,200)
+tag(resist_summon,150)
+tag(resist_bleed,100)
+
+//weap resists
+tag(resist_sharp,-100)
+tag(resist_slash,-200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,50)
+
+PARRYING={55.0 65.0}
+MAGERY={70.0 85.0}
+Resist={50.0 65.0}
+TACTICS={50.0 70.0}
+WRESTLING={50.0 70.0}
+EI={60.0 70.0}
+SpiritSpeak=30.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_light_source
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_harm
+addspell=s_fireball
+
+ON=@NPCRestock
+ITEM=loot_GAZER
+ITEM=i_gold
+
+///////////////////////////////////////////////////////////
+/////////////////////   STRAZCE    ////////////////////////
+///////////////////////////////////////////////////////////
+
+[chardef c_strazce_ohne]
+ID=c_ghost
+name=Strazce Ohne
+SOUND=snd_ELEMENTL_FIRELEM1
+ICON=i_pet_elem_water
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=80
+ARMOR=60
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_manashield
+TEVENTS=e_fire
+TEVENTS=e_npc_curse_mana            //mass sani many
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+TEVENTS=e_fire_dragon_bomb          //ohnivy vybuch
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Strazce Ohne
+
+ON=@Create
+Color=0981
+NPC=brain_monster
+FAME=250
+KARMA=-5000
+
+STR=2500
+DEX=290
+INT=350
+
+maxhits={10000 11000}
+maxstam={200 260}
+maxmana=200
+
+tag.experience=<eval {350.0 380.0}>
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,20      // delay between another possible strike
+tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=40               // takes 40 of stam
+
+tag(dragon_fire_bomb_chance,800)        // sanca zasadenia v promile
+tag(dragon_fire_bomb_dmg,40)		// dmg po prejdeni
+tag(dragon_fire_bomb_type,4)		// typ ohna - 4 - pouze dmg 
+tag(dragon_fire_bomb_delay,10)		// prodleva kedy zase moze pustit ohen
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,500)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,-200)
+tag(resist_slash,-100)
+tag(resist_pierce,800)
+tag(resist_blunt,350)
+
+//magic resists
+tag(resist_fire,1000)
+tag(resist_elect,400)
+tag(resist_cold,-500)
+
+//typ monstra
+tag(monstertype,fire)
+tag(monstertype2,humanoid,40)
+
+//weap flags
+tag.weapflag=dam_magic|dam_fire
+
+Resist=250.0
+WRESTLING={90.0 100.0}
+MAGERY=200.0
+EI={90.0 100.0}
+Parrying=150.0
+provocation=100
+SpiritSpeak=60.0
+
+ITEMNEWBIE=i_light_source
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_summon_elem_fire
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=i_reag_sulfur_ash,{30 40}
+//ITEM=random_reagent,{25 35}
+
+///////////////////////////////////////////////////////////
+
+[chardef c_strazce_vody]
+ID=c_ghost
+name=Strazce Vody
+SOUND=snd_ELEMENTL_WATREL1
+ICON=i_pet_elem_water
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=90
+ARMOR=70
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_manashield
+TEVENTS=e_water
+TEVENTS=e_npc_curse_mana            //mass sani many
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+TEVENTS=e_npc_summoning             //zmizej az za 2 hodky
+TEVENTS=e_dragon_regeneration
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Strazce Vody
+
+ON=@Create
+Color=0984
+NPC=brain_monster
+FAME=250
+KARMA=-5000
+
+STR=2500
+DEX=290
+INT=350
+
+maxhits={15000 16000}
+maxstam={200 260}
+maxmana=1000
+
+tag.experience=<eval {300.0 320.0}>
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,20      // delay between another possible strike
+tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=40               // takes 40 of stam
+
+tag.regeneration_hp=500          // pocet hp ktore zregeneruje
+tag.regeneration_speed=5         // rychlost regeneracie v sekundach
+
+tag(npc_summoning_chance,500)      //50%
+tag(npc_summoning_time,60)        //nezakouzli znovu 60 sek
+tag(npc_summoning_count,1)        //pocet
+tag(npc_summoning_char[0],c_spirit_water)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,550)
+tag(resist_bleed,-500)
+
+//weap resists
+tag(resist_sharp,-350)
+tag(resist_slash,350)
+tag(resist_pierce,-300)
+tag(resist_blunt,800)
+
+//magic resists
+tag(resist_fire,1000)
+tag(resist_elect,-500)
+tag(resist_cold,-100)
+
+//typ monstra
+tag(monstertype,water)
+tag(monstertype2,humanoid,40)
+
+//weap flags
+tag.weapflag=dam_cold|dam_magic
+
+Resist=250.0
+WRESTLING={100.0 120.0}
+//MAGERY=120.0
+EI={90.0 100.0}
+Parrying=100.0
+provocation=100
+SpiritSpeak=55.0
+
+ITEMNEWBIE=i_light_source
+//ITEMNEWBIE=i_spellbook
+//addspell=s_harm
+//addspell=s_summon_elem_water
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=random_reagent,{25 35}
+
+///////////////////////////////////////////////////////////
+
+[chardef c_strazce_vzduchu
+ID=c_ghost
+name=Strazce Vzduchu
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_water
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=50
+ARMOR=50
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_manashield
+TEVENTS=e_air
+TEVENTS=e_summoneater               //smaze summona, co zasahne
+TEVENTS=e_npc_curse_mana            //mass sani many
+//TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+TEVENTS=e_npc_summoning             //zmizej az za 2 hodky
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Strazce Vzduchu
+
+ON=@Create
+Color=0985
+NPC=brain_monster
+FAME=250
+KARMA=-5000
+
+STR=2500
+DEX=290
+INT=300
+
+maxhits={10000 10500}
+maxstam={200 220}
+maxmana=1000
+
+tag.experience=<eval {350.0 380.0}>
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,20      // delay between another possible strike
+tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=40               // takes 40 of stam
+
+tag(npc_summoning_chance,500)      //50%
+tag(npc_summoning_time,50)        //nezakouzli znovu 50 sek
+tag(npc_summoning_count,4)        //pocet
+tag(npc_summoning_char[0],c_elem_air)
+tag(npc_summoning_char[1],c_elem_air)
+tag(npc_summoning_char[2],c_elem_air)
+tag(npc_summoning_char[3],c_elem_air)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,850)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,400)
+tag(resist_slash,-100)
+tag(resist_pierce,-250)
+tag(resist_blunt,-350)
+
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,1000)
+tag(resist_cold,-500)
+
+//typ monstra
+tag(monstertype,air)
+tag(monstertype2,humanoid,40)
+//weap flags
+tag.weapflag=dam_lightning|dam_magic
+
+Resist=150.0
+ei=120.0
+magery=120.0
+WRESTLING=120.0
+SpiritSpeak=55.0
+Parrying=110.0
+provocation=100
+
+ITEMNEWBIE=i_light_source
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_lightning
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=random_reagent,{55 75}
+
+///////////////////////////////////////////////////////////
+
+[chardef c_strazce_zeme]
+ID=c_ghost
+name=Strazce Zeme
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_water
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=80
+ARMOR=110
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_infiniteMana
+TEVENTS=e_earth
+TEVENTS=e_npc_curse_mana            //mass sani many
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+TEVENTS=e_npc_summoning             //zmizej az za 2 hodky
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Strazce Zeme
+
+ON=@Create
+color= {0709 0751}
+NPC=brain_monster
+FAME=250
+KARMA=-5000
+
+STR=2500
+DEX=200
+INT=350
+
+maxhits={15000 16000}
+maxstam={100 120}
+maxmana=00
+
+tag.experience=<eval {320.0 330.0}>
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,20      // delay between another possible strike
+tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=40               // takes 40 of stam
+
+tag(npc_summoning_chance,500)      //50%
+tag(npc_summoning_time,60)        //nezakouzli znovu 30 sek
+tag(npc_summoning_count,4)        //pocet
+tag(npc_summoning_char[0],c_elem_earth)
+tag(npc_summoning_char[1],c_elem_earth)
+tag(npc_summoning_char[2],c_elem_earth)
+tag(npc_summoning_char[3],c_elem_earth)
+
+tag.npc_stun_time=10              //1 seconds of stun
+Tag.npc_stun_chance=300           //30%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,600)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,800)
+tag(resist_pierce,700)
+tag(resist_blunt,-500)
+
+//magic resists
+tag(resist_fire,500)
+tag(resist_elect,-500)
+tag(resist_cold,200)
+
+//typ monstra
+tag(monstertype,earth)
+tag(monstertype2,humanoid,40)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+Resist=150.0
+WRESTLING={110.0 120.0}
+//MAGERY=110.0
+EI={90.0 100.0}
+Parrying=110.0
+provocation=100
+SpiritSpeak=65.0
+
+ITEMNEWBIE=i_light_source
+//ITEMNEWBIE=i_spellbook
+//addspell=s_harm
+//addspell=s_summon_elem_earth
+//addspell=s_magic_reflection
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=random_reagent,{35 55}
+
+///////////////////////////////////////////////////////////
+
+[chardef c_strazce_krve]
+ID=c_ghost
+name=Strazce Krve
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_water
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+attack=80
+ARMOR=70
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_infiniteMana
+//TEVENTS=e_npc_manashield
+TEVENTS=e_blood
+TEVENTS=e_npc_curse_mana            //mass sani many
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+TEVENTS=e_npc_summoning             //zmizej az za 2 hodky
+TEVENTS=e_lifeLeech                 //kazda rana saje HP
+TEVENTS=e_npc_bleed
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Strazce Krve
+
+ON=@Create
+color=098c
+NPC=brain_monster
+FAME=250
+KARMA=-5000
+
+STR=2500
+DEX=290
+INT=350
+
+maxhits={15000 16000}
+maxstam={400 600}
+maxmana=00
+
+tag.experience=<eval {300.0 330.0}>
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,20      // delay between another possible strike
+tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=40               // takes 40 of stam
+
+tag(npc_summoning_chance,500)      //50%
+tag(npc_summoning_time,50)        //nezakouzli znovu 50 sek
+tag(npc_summoning_count,2)        //pocet
+tag(npc_summoning_char[0],c_vampire_blood)
+tag(npc_summoning_char[1],c_vampire_blood)
+
+tag.npc_lifeLeech=200,220      //tolik si prida kazdou ranou
+
+tag.npc_bleed=700             //70%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,-250)
+tag(resist_para,1000)
+tag(resist_summon,450)
+tag(resist_bleed,-500)
+
+//weap resists
+tag(resist_sharp,-100)
+tag(resist_slash,-350)
+tag(resist_pierce,-100)
+tag(resist_blunt,800)
+
+//magic resists
+tag(resist_fire,-200)
+tag(resist_elect,-300)
+tag(resist_cold,-300)
+
+//typ monstra
+tag(monstertype,blood)
+tag(monstertype2,humanoid,40)
+//weap flags
+tag.weapflag=dam_sharp|dam_physical
+
+Resist=250.0
+WRESTLING={110.0 120.0}
+//MAGERY=300.0
+EI={90.0 100.0}
+Parrying=150.0
+provocation=100
+SpiritSpeak=55.0
+
+ITEMNEWBIE=i_light_source
+//ITEMNEWBIE=i_spellbook
+//addspell=s_harm
+//addspell=s_summon_daemon
+//addspell=s_greater_heal 
+//addspell=s_magic_reflection
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=i_reag_blood_vial, {30 55}
+//ITEM=random_reagent,{25 35}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_strazce_snehu]
+ID=c_ghost
+NAME=Strazce Snehu
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+CAN=MT_WALK|mt_run
+
+attack=80
+ARMOR=100
+moverate=4
+
+RESOURCES=10 i_ribs_raw
+BLOODCOLOR=-1
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_potiondrinker
+TEVENTS=e_snowmonster
+//TEVENTS=e_parakrik
+TEVENTS=e_npc_curse_mana            //mass sani many
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+TEVENTS=e_npc_multishot             //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_stun
+
+CATEGORY=Dungy
+SUBSECTION=Ledova jeskyne
+DESCRIPTION=Strazce Snehu
+
+ON=@Create
+color=0481
+NPC=brain_monster
+FAME=1000
+KARMA={-6000 -10000}
+
+STR=5000
+DEX=250
+INT=0
+
+maxhits={20000 22000}
+maxstam={230 310}
+maxmana=0
+
+tag.experience=<eval {300.0 330.0}>
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,20      // delay between another possible strike
+tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=40               // takes 40 of stam
+
+tag.multishot_chance=250          // 25% chance pri zasahu monstra
+tag.multishot_delay=10,15         // prodleva nez znovu
+tag.multishot_dmg=30,40           // dmg in between 30 and 40
+
+tag.npc_stun_time=10              //1 seconds of stun
+Tag.npc_stun_chance=100           //10%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {800 950}>
+tag(resist_summon,550)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,50)
+tag(resist_pierce,550)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,-500)
+tag(resist_elect,400)
+tag(resist_cold,1000)
+
+//typ monstra
+tag(monstertype,snow)
+tag(monstertype2,humanoid,60)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical|dam_cold
+
+WRESTLING=120.0
+RESIST=180.0
+TACTICS=100.0
+PARRYING=100.0
+SpiritSpeak=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_strazce_ledu]
+ID=c_ghost
+NAME=Strazce Ledu
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+CAN=MT_WALK|mt_run
+
+attack=90
+ARMOR=100
+moverate=4
+
+RESOURCES=10 i_ribs_raw
+BLOODCOLOR=-1
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_potiondrinker
+TEVENTS=e_snowmonster
+//TEVENTS=e_elem_terror
+TEVENTS=e_npc_curse_mana            //mass sani many
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+TEVENTS=e_npc_multishot             //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_stun
+
+CATEGORY=Dungy
+SUBSECTION=Ledova jeskyne
+DESCRIPTION=Strazce Ledu
+
+ON=@Create
+color=0480
+NPC=brain_monster
+FAME=1100
+KARMA={-7500 -10000}
+
+STR=5000
+DEX=250
+INT=0
+
+maxhits={10000 1100}
+maxstam={180 210}
+maxmana=0
+
+tag.experience=<eval {330.0 350.0}>
+
+tag.npc_stun_time=10              //1 seconds of stun
+Tag.npc_stun_chance=300           //30%, defaultne 20% 
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,20      // delay between another possible strike
+tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=40               // takes 40 of stam
+
+tag.multishot_chance=750          // 75% chance pri zasahu monstra
+tag.multishot_delay=15,20         // prodleva nez znovu
+tag.multishot_dmg=50,60           // dmg in between 50 and 60
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {800 950}>
+tag(resist_summon,750)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,600)
+tag(resist_pierce,800)
+tag(resist_blunt,-500)
+
+//magic resists
+tag(resist_fire,-500)
+tag(resist_elect,200)
+tag(resist_cold,800)
+
+//typ monstra
+tag(monstertype,snow)
+tag(monstertype2,humanoid,60)
+
+//weap flags
+tag.weapflag=dam_blunt|dam_physical|dam_cold
+
+WRESTLING=150.0
+RESIST=200.0
+TACTICS=100.0
+PARRYING=100.0
+SpiritSpeak=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_ophidian_mage_evil]
+ID=c_ophidian_mage
+NAME=Evil
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_ophid_mage
+ANIM=07fc7f
+CAN=MT_WALK|mt_run|MT_fire_immune
+
+attack=90
+ARMOR=100
+MOVERATE=3
+
+RESOURCES=28 i_ribs_raw
+BLOODCOLOR=0996
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_autoreflect
+TEVENTS=e_summoneater
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_curse_mana            //mass sani many
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Evil
+
+ON=@Create
+color=0998
+NPC=brain_monster
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=400
+
+maxhits={20000 22000}
+maxstam={250 300}
+maxmana=1000
+
+tag.experience=<eval {450.0 500.0}>
+
+tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+tag.npc_curse_mana_delay=15,25      // delay between another possible strike
+tag.npc_curse_mana_dmg=20,30        // mana reduce in between 50 and 60
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//other resists
+tag(resist_poison,-1000)
+tag(resist_para,1000)
+tag(resist_summon,550)
+tag(resist_bleed,-500)
+
+//weap resists
+tag(resist_sharp,-150)
+tag(resist_slash,350)
+tag(resist_pierce,-250)
+tag(resist_blunt,150)
+
+//magic resists
+tag(resist_fire,800)
+tag(resist_elect,350)
+tag(resist_cold,-500)
+
+//typ monstra
+tag(monstertype,daemon,40)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+peacemaking=100.0
+provocation=100.0
+Resist=250.0
+WRESTLING=100.0
+magery=120.1
+ei=120.0
+SpiritSpeak=45.0
+
+itemnewbie=i_spellbook
+addspell=s_lightning
+addspell=s_fireball
+addspell=s_flamestrike
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=random_reagent,{45 55}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 031c]
+DEFNAME=c_cajun_lord
+NAME=Cajun Lord
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_elem_earth
+ANIM=07fc7f
+CAN=MT_WALK|mt_run
+
+attack=135
+ARMOR=100
+MOVERATE=3
+
+RESOURCES=28 i_ribs_raw
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+TEVENTS=e_cajun_lord
+TEVENTS=e_summoneater               //smaze summona, co zasahne
+TEVENTS=e_npc_curse_stam            //mass sani staminy
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Cajun Lord
+
+ON=@Create
+NPC=brain_monster
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=9000
+DEX=600
+INT=100
+
+maxhits={20000 21000}
+maxstam={380 395}
+maxmana=0
+
+tag.experience=<eval {600.0 650.0}>
+
+tag.npc_curse_stam_chance=250       // 25% chance to trigger this event
+tag.npc_curse_stam_delay=20,25      // delay between another possible strike
+tag.npc_curse_stam_dmg=30,40        // stam reduce in between 50 and 60
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag(monstertype,humanoid,40)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,900)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,-150)
+tag(resist_slash,-150)
+tag(resist_pierce,-150)
+tag(resist_blunt,350)
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-150)
+tag(resist_cold,100)
+
+Resist=250.0
+WRESTLING=100.0
+SpiritSpeak=85.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT_NECRO,{20 30}
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 031b]
+DEFNAME=c_cajun
+NAME=Cajun
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_elem_earth
+ANIM=07fc7f
+CAN=MT_WALK|mt_run
+
+attack=60
+ARMOR=60
+MOVERATE=3
+
+RESOURCES=18 i_ribs_raw
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+TEVENTS=e_summoneater         //smaze summona, co zasahne
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Cajun
+
+ON=@Create
+NPC=brain_monster
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=3000
+DEX=250
+INT=360
+
+maxhits={9300 9500}
+maxstam={230 250}
+maxmana=700
+
+tag.experience=<eval {230.0 330.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,daemon,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,900)
+tag(resist_summon,900)
+tag(resist_bleed,600)
+
+//weap resists
+tag(resist_sharp,150)
+tag(resist_slash,150)
+tag(resist_pierce,150)
+tag(resist_blunt,-150)
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-150)
+tag(resist_cold,100)
+
+peacemaking=100.0
+provocation=100.0
+Resist=250.0
+WRESTLING=120.0
+magery=120.1
+ei=100.0
+SpiritSpeak=60.0
+
+itemnewbie=i_spellbook
+addspell=s_lightning
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT_NECRO,{10 30}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+[chardef 0308]
+DEFNAME=c_cajun_child1
+NAME=Cajun
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=95
+MOVERATE=3
+
+RESOURCES=1 i_ribs_raw
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Cajun Child1
+
+ON=@Create
+
+NPC=brain_monster
+FAME=20
+KARMA=-3000
+
+STR={700 750}
+DEX={150 160}
+INT={150 155}
+
+maxhits={800 900}
+maxstam={150 160}
+maxmana=700
+
+tag.experience=<eval {30.0 35.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,daemon,60)
+
+tag.weapflag=dam_physical
+
+//other resists
+tag(resist_poison,800)
+tag(resist_para,700)
+tag(resist_summon,700)
+tag(resist_bleed,300)
+
+//weap resists
+tag(resist_sharp,150)
+tag(resist_slash,150)
+tag(resist_pierce,350)
+tag(resist_blunt,-150)
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-150)
+tag(resist_cold,100)
+
+WRESTLING={70.0 100.0}
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+RESIST=200.0
+MAGERY=100.0
+EI={90.0 100.0}
+SpiritSpeak=45.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_spellbook
+addspell=s_greater_heal 
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=RANDOM_REAGENT,{5 10}
+
+///////////////////////////////////////////////////////////
+
+[chardef c_cajun_child2]
+
+ID=c_cajun_child1
+NAME=Cajun
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=95
+MOVERATE=3
+
+RESOURCES=1 i_ribs_raw
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Cajun Child2
+
+ON=@Create
+NPC=brain_monster
+FAME=20
+KARMA=-3000
+
+STR={700 750}
+DEX={150 160}
+INT={150 155}
+
+maxhits={1400 1500}
+maxstam={150 160}
+maxmana=0
+
+tag.experience=<eval {40.0 45.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,daemon,60)
+
+tag.weapflag=dam_physical
+
+//other resists
+tag(resist_poison,800)
+tag(resist_para,700)
+tag(resist_summon,700)
+tag(resist_bleed,300)
+
+//weap resists
+tag(resist_sharp,150)
+tag(resist_slash,150)
+tag(resist_pierce,350)
+tag(resist_blunt,-150)
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-150)
+tag(resist_cold,100)
+
+wrestling=110.0
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+RESIST=200.0
+swordsmanship={60.0 80.0}
+archery={100.0 120.0}
+SpiritSpeak=40.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=RANDOM_REAGENT,{5 10}
+
+///////////////////////////////////////////////////////////
+
+[chardef c_cajun_child3]
+ID=c_cajun_child1
+NAME=Cajun
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+anim=0ffc78c7f 
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=95
+MOVERATE=3
+
+RESOURCES=1 i_ribs_raw
+BLOODCOLOR=0985
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_warcry
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Cajun Child3
+
+ON=@Create
+
+NPC=brain_monster
+FAME=20
+KARMA=-3000
+
+STR={700 750}
+DEX={150 160}
+INT={150 155}
+
+maxhits={1800 1900}
+maxstam={150 160}
+maxmana=0
+
+tag.experience=<eval {45.0 50.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,daemon,60)
+
+tag.weapflag=dam_physical
+
+//other resists
+tag(resist_poison,650)
+tag(resist_para,700)
+tag(resist_summon,700)
+tag(resist_bleed,300)
+
+//weap resists
+tag(resist_sharp,150)
+tag(resist_slash,150)
+tag(resist_pierce,350)
+tag(resist_blunt,-150)
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,-150)
+tag(resist_cold,100)
+
+WRESTLING={70.0 100.0}
+PARRYING={80.0 95.0}
+TACTICS={85.0 100.0}
+RESIST=200.0
+SpiritSpeak=40.0
+
+ITEMNEWBIE=i_bow
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=RANDOM_REAGENT,{5 10}
+
+///////////////////////////////////////////////////////////
+
+[chardef 0310]
+defname=c_satan
+NAME=Satan
+SOUND=snd_MONSTER_DAEMON1
+anim=0ffc78c7f
+CAN=MT_WALK|MT_USEHANDS|mt_run|MT_FIRE_IMMUNE
+
+attack=50
+ARMOR=70
+moverate=4
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Satan
+
+ON=@Create
+NPC=brain_monster
+Name=#NAMES_DAEMON
+fame={4000 8000}
+karma={-5000 -5999}
+
+str=1000
+dex=300
+int=200
+
+maxhits={4000 4100}
+maxstam=300
+maxmana=0
+
+tag.experience=<eval {80.0 95.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,daemon)
+
+tag.weapflag=dam_physical
+
+//other resists
+tag(resist_poison,600)
+tag(resist_para,700)
+tag(resist_summon,700)
+tag(resist_bleed,300)
+
+//weap resists
+tag(resist_sharp,150)
+tag(resist_slash,150)
+tag(resist_pierce,-150)
+tag(resist_blunt,-150)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,350)
+tag(resist_cold,-100)
+
+swordsmanship={60.0 80.0}
+parrying={65.0 75.0}
+resist={85.0 95.0}
+tactics={60.0 80.0}
+wrestling={70.0 80.0}
+peacemaking=100.0
+SpiritSpeak=40.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////
+
+[CHARDEF c_bulva]
+id=c_gazer
+NAME=Bulva
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=45
+ARMOR=50
+moverate=4
+
+BLOODCOLOR=color_o_verite
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+TEVENTS=e_summoneater_vamp
+TEVENTS=e_duplicator
+
+CATEGORY=Monsters
+SUBSECTION=Eyes and Gazers
+DESCRIPTION=Bulva
+
+ON=@Create
+color=0433
+NPC=brain_monster
+FAME=150
+KARMA=-2000
+
+STR=300
+DEX=1000
+INT=500
+
+maxhits={1400 1500}
+maxstam={400 600}
+maxmana=0
+
+tag.experience=<eval {60.0 70.0}>
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanNotBe>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,850)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,700)
+tag(resist_elect,700)
+tag(resist_cold,650)
+
+//typ monstra
+tag(monstertype,eye)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+tactics=100.0
+Resist=100.0
+WRESTLING=1000
+SpiritSpeak=30.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_phantom]
+ID=c_man
+NAME=Phantom
+SOUND=snd_MONSTER_GHOST1
+ICON=i_pet_zombie
+ANIM=07bc7f
+CAN=MT_WALK|MT_RUN|MT_SWIM|MT_GHOST|MT_USEHANDS
+
+ATTACK=10
+ARMOR=20
+MOVERATE=3
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_undead
+
+CATEGORY=Dungy
+SUBSECTION=Special
+DESCRIPTION=Phantom
+
+ON=@Create
+COLOR=07FFF
+NPC=brain_undead
+FAME=30
+KARMA={-2000 -3999}
+
+STR=200
+DEX=2000
+INT=45
+
+maxhits={100 160}
+maxstam=1300
+maxmana=0
+
+tag.experience=2.0
+
+//mystik
+tag(hypnotizable,0) //nezhypnotizujes
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_para,1000) //individualni
+//weap resists
+tag(resist_pierce,800)
+
+//typ monstra
+tag(monstertype,undead,80)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical //ruzne
+
+
+wrestling=110.0
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+WRESTLING={185.0 200.0}
+SpiritSpeak=30.0
+
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_deathrobe
+COLOR=0849
+ITEMNEWBIE=i_cape
+NAME=Death cloak
+COLOR=0849
+ITEMNEWBIE=i_lantern_lit
+
+ON=@NPCRestock
+ITEM=i_gold,10
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_phantom_snow]
+ID=c_man
+NAME=Phantom
+SOUND=snd_MONSTER_GHOST1
+ICON=i_pet_zombie
+ANIM=07bc7f
+CAN=MT_WALK|MT_RUN|MT_SWIM|MT_GHOST|MT_USEHANDS
+
+ATTACK=10
+ARMOR=20
+MOVERATE=3
+
+RESOURCES=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+
+CATEGORY=Dungy
+SUBSECTION=Ledova jeskyne
+DESCRIPTION=Phantom snow
+
+ON=@Create
+COLOR=07FFF
+NPC=brain_undead
+FAME=30
+KARMA={-2000 -3999}
+
+STR=200
+DEX=2000
+INT=45
+
+maxhits={100 160}
+maxstam=1300
+maxmana=0
+
+tag.experience=<eval {5.0 6.0}> 
+
+//mystik
+tag(hypnotizable,0) //nezhypnotizujes
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+//other resists
+tag(resist_para,1000) //individualni
+//weap resists
+tag(resist_pierce,800)
+
+//typ monstra
+tag(monstertype,snow)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical //ruzne
+
+wrestling=110.0
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+WRESTLING={185.0 200.0}
+SpiritSpeak=25.0
+
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_deathrobe
+COLOR=0481
+ITEMNEWBIE=i_cape
+NAME=Death cloak
+COLOR=0481
+ITEMNEWBIE=i_lantern_lit
+
+ON=@NPCRestock
+ITEM=i_gold,10
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_phantom_gray]
+ID=c_man
+NAME=Phantom
+SOUND=snd_MONSTER_GHOST1
+ICON=i_pet_zombie
+ANIM=07bc7f
+CAN=MT_WALK|MT_RUN|MT_SWIM|MT_GHOST|MT_USEHANDS
+
+ATTACK=10
+ARMOR=20
+MOVERATE=3
+
+RESOURCES=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+
+CATEGORY=Dungy
+SUBSECTION=Special
+DESCRIPTION=Phantom gray
+
+ON=@Create
+COLOR=07FFF
+NPC=brain_undead
+FAME=30
+KARMA={-2000 -3999}
+
+STR=200
+DEX=2000
+INT=45
+
+maxhits={100 160}
+maxstam=1300
+maxmana=0
+
+tag.experience=<eval {5.0 6.0}> 
+
+//mystik
+tag(hypnotizable,0) //nezhypnotizujes
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+//other resists
+tag(resist_para,1000) //individualni
+//weap resists
+tag(resist_pierce,800)
+//typ monstra
+tag(monstertype,undead,80)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical //ruzne
+
+wrestling=110.0
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+WRESTLING={185.0 200.0}
+SpiritSpeak=25.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_deathrobe
+COLOR=096a
+ITEMNEWBIE=i_cape
+NAME=Death cloak
+COLOR=096a
+ITEMNEWBIE=i_lantern_lit
+
+ON=@NPCRestock
+ITEM=i_gold,10
+
+///////////////////////////////////////////////////////////
+///////////////////  DEADLY ITEMS  ////////////////////////
+///////////////////////////////////////////////////////////
+
+[CHARDEF 026A]  //mec
+DEFNAME=c_item_sword
+NAME=Mec
+SOUND=snd_WEAPONS_SWORD1
+ICON=i_pet_WISP
+//ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=90
+ARMOR=80
+MOVERATE=4
+
+BLOODCOLOR=0980
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+TEVENTS=e_npc_bleed
+TEVENTS=e_summoneater
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Zive predmety - Mec
+
+ON=@Create
+color=0980
+NPC=brain_monster
+FAME=250
+KARMA=-6000
+
+STR=3000
+DEX=500
+INT=00
+
+maxhits={5000 6000}
+maxstam={450 520}
+maxmana=0
+
+tag.experience=<eval {150.0 170.0}>
+
+tag.npc_critic_chance=250         //25% chance
+tag.npc_critic_dmg=20,25          //dmg in between
+
+tag.npc_bleed=300             //30%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,550)
+tag(resist_slash,550)
+tag(resist_pierce,750)
+tag(resist_blunt,500)
+
+//magic resists
+tag(resist_fire,50)
+tag(resist_elect,-500)
+tag(resist_cold,-200)
+
+//typ monstra
+tag(monstertype,golem,60)
+//weap flags
+tag.weapflag=dam_sharp|dam_physical
+
+PEACEMAKING=100.0
+WRESTLING=160.0
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 03E1]
+DEFNAME=c_item_shield_chaos
+NAME=Stit
+SOUND=snd_WEAPONS_HVYSWRD1
+ICON=i_pet_WISP
+//ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=70
+ARMOR=150
+MOVERATE=4
+
+BLOODCOLOR=0980
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater
+TEVENTS=e_autoreflect
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Zive predmety - chaos stit
+
+ON=@Create
+color=0980
+NPC=brain_monster
+FAME=250
+KARMA=-6000
+
+STR=3000
+DEX=200
+INT=00
+
+maxhits={10000 11000}
+maxstam={150 170}
+maxmana=0
+
+tag.experience=<eval {150.0 170.0}>
+
+tag.npc_critic_chance=250         //25% chance
+tag.npc_critic_dmg=20,25          //dmg in between
+
+tag.npc_bleed=300             //30%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,250)
+tag(resist_slash,250)
+tag(resist_pierce,850)
+tag(resist_blunt,00)
+
+//magic resists
+tag(resist_fire,250)
+tag(resist_elect,-500)
+tag(resist_cold,-200)
+
+//typ monstra
+tag(monstertype,golem,60)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PEACEMAKING=100.0
+WRESTLING=160.0
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 0286]
+DEFNAME=c_item_hammer
+NAME=Kladivo
+SOUND=snd_WEAPONS_BLUNT01
+ICON=i_pet_WISP
+//ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=100
+ARMOR=80
+MOVERATE=4
+
+BLOODCOLOR=0980
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+TEVENTS=e_npc_stun
+TEVENTS=e_summoneater
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Zive predmety - Mec
+
+ON=@Create
+color=0980
+NPC=brain_monster
+FAME=250
+KARMA=-6000
+
+STR=3000
+DEX=500
+INT=00
+
+maxhits={5000 6000}
+maxstam={450 520}
+maxmana=0
+
+tag.experience=<eval {150.0 170.0}>
+
+tag.npc_critic_chance=250         //25% chance
+tag.npc_critic_dmg=15,20          //dmg in between
+
+tag.npc_stun_time=20              //2 seconds of stun
+Tag.npc_stun_chance=400           //30%, defaultne 20% 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,550)
+tag(resist_slash,550)
+tag(resist_pierce,750)
+tag(resist_blunt,500)
+
+//magic resists
+tag(resist_fire,50)
+tag(resist_elect,-500)
+tag(resist_cold,-200)
+
+//typ monstra
+tag(monstertype,golem,60)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PEACEMAKING=100.0
+WRESTLING=160.0
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 0263]
+DEFNAME=c_item_lba
+NAME=Sekyra
+SOUND=snd_WEAPONS_AXE01
+ICON=i_pet_WISP
+//ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=90
+ARMOR=50
+MOVERATE=4
+
+BLOODCOLOR=0980
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+TEVENTS=e_npc_bleed
+TEVENTS=e_summoneater
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Zive predmety - LBA
+
+ON=@Create
+color=0980
+NPC=brain_monster
+FAME=250
+KARMA=-6000
+
+STR=3000
+DEX=300
+INT=00
+
+maxhits={5000 6000}
+maxstam={250 320}
+maxmana=0
+
+tag.experience=<eval {190.0 200.0}>
+
+tag.npc_critic_chance=500         //50% chance
+tag.npc_critic_dmg=30,35          //dmg in between
+
+tag.npc_bleed=100             //10%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,550)
+tag(resist_slash,550)
+tag(resist_pierce,750)
+tag(resist_blunt,500)
+
+//magic resists
+tag(resist_fire,50)
+tag(resist_elect,-500)
+tag(resist_cold,-200)
+
+//typ monstra
+tag(monstertype,golem,60)
+//weap flags
+tag.weapflag=dam_slash|dam_physical
+
+PEACEMAKING=100.0
+WRESTLING=160.0
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 03A1]
+DEFNAME=c_item_helm
+NAME=Helma
+SOUND=snd_WEAPONS_HVYSWRD1
+ICON=i_pet_WISP
+//ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=70
+ARMOR=150
+MOVERATE=4
+
+BLOODCOLOR=0980
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater
+TEVENTS=e_odinvis_krik
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Zive predmety - Helma
+
+ON=@Create
+color=0980
+NPC=brain_monster
+FAME=250
+KARMA=-6000
+
+STR=3000
+DEX=200
+INT=00
+
+maxhits={10000 11000}
+maxstam={150 170}
+maxmana=0
+
+tag.experience=<eval {150.0 170.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,250)
+tag(resist_slash,250)
+tag(resist_pierce,-500)
+tag(resist_blunt,00)
+
+//magic resists
+tag(resist_fire,250)
+tag(resist_elect,-500)
+tag(resist_cold,-200)
+
+//typ monstra
+tag(monstertype,golem,60)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+PEACEMAKING=100.0
+WRESTLING=160.0
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 0268]
+DEFNAME=c_item_hxb
+NAME=Kuse
+SOUND=snd_WEAPONS_CROSSBOW
+ICON=i_pet_WISP
+//ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=70
+MOVERATE=3
+
+BLOODCOLOR=0980
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater
+TEVENTS=e_npc_sniper
+TEVENTS=e_npc_multishot
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Zive predmety - HxB
+
+ON=@Create
+color=0980
+NPC=brain_monster
+FAME=250
+KARMA=-6000
+
+STR=3000
+DEX=200
+INT=00
+
+maxhits={5000 6000}
+maxstam={150 170}
+maxmana=0
+
+tag.experience=<eval {150.0 170.0}>
+
+tag.multishot_chance=250          // 25% chance pri zasahu monstra
+tag.multishot_delay=15,20         // prodleva nez znovu
+tag.multishot_dmg=30,40           // dmg in between 30 and 40
+
+tag.npc_sniper_dmg=15             //o 15 HP
+tag.npc_sniper_chance=300         //30% Defaultne 20%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,-500)
+tag(resist_slash,-500)
+tag(resist_pierce,-200)
+tag(resist_blunt,00)
+
+//magic resists
+tag(resist_fire,-500)
+tag(resist_elect,500)
+tag(resist_cold,200)
+
+//typ monstra
+tag(monstertype,golem,60)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+PEACEMAKING=100.0
+WRESTLING=160.0
+ARCHERY={100.0 110.0}
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+ITEMNEWBIE=i_arrow,{50 75}
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF 027F]
+DEFNAME=c_item_spear
+NAME=Ostep
+SOUND=snd_WEAPONS_SWISH01
+ICON=i_pet_WISP
+//ANIM=079c7f
+CAN=MT_WALK|mt_run
+
+attack=40
+ARMOR=50
+MOVERATE=4
+
+BLOODCOLOR=0980
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_bleed
+TEVENTS=e_summoneater
+
+CATEGORY=Monsters
+SUBSECTION=Special
+DESCRIPTION=Zive predmety - LBA
+
+ON=@Create
+color=0980
+NPC=brain_monster
+FAME=250
+KARMA=-6000
+
+STR=1000
+DEX=1000
+INT=00
+
+maxhits={5000 6000}
+maxstam={550 620}
+maxmana=0
+
+tag.experience=<eval {60.0 70.0}>
+
+tag.npc_bleed=800     //80.0%
+tag(npc_port_distance,9)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 950}>
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,-150)
+tag(resist_slash,-150)
+tag(resist_pierce,150)
+tag(resist_blunt,200)
+
+//magic resists
+tag(resist_fire,50)
+tag(resist_elect,-500)
+tag(resist_cold,-200)
+
+//typ monstra
+tag(monstertype,golem,60)
+
+//weap flags
+tag.weapflag=dam_slash|dam_physical
+
+PEACEMAKING=100.0
+WRESTLING=160.0
+TACTICS=120.0
+Parrying=150.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold

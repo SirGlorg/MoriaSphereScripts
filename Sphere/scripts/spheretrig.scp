@@ -1,0 +1,183 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Friday, April 28, 2000
+//
+//VERSION=0.54
+
+
+[typedef 1003]
+// Trapped chest.
+defname=T_TRAPCHEST
+ON=@UserDClick
+  if <src.tinkering>>=300
+    src.message("You disarm the trap and open the chest.")
+    type=t_container
+    return 0
+  else
+    src.message You fail to disarm the trap.
+    if rand(2)
+      src.message("The trap does not go off. Lucky.")
+      type=t_container
+      return 0
+    else
+      effect=3,i_fx_explode
+      soun=snd_SPELL_EXPLOSION
+      src.damage_noresponse(<eval {20 35}>,dam_god)
+      type=t_container
+      return 0
+    endif
+  endif
+
+
+[itemdef I_HAIR_TIE]
+//HAIR TIE
+NAME=ponytail hair tie
+id=i_fishing_weight
+type=0
+
+ON=@Create
+  COLOR=038a // grey color
+
+ON=@UserDClick
+  if <src.findlayer(11).id>==i_hair_LONG
+    src.findlayer(11).id=i_hair_PONYTAIL
+  elseif <src.findlayer(11).id>==i_hair_PONYTAIL
+    src.findlayer(11).id=i_hair_LONG
+  endif
+
+//Invasion Spawns
+//First add the following to your TUStrig,scp
+
+[typedef T_CHEST_LOCKED]
+
+//This is how you make a chest with a lock. Add any item, then give it this trigger. Double click on the trigger to get a chest with 2 keys.
+//It should be easy to add to the skills section.
+
+ON=@UserDClick
+  src.newitem={ i_key_copper 1 i_key_gold 1 i_key_iron 1 i_key_rusty 1}
+  VAR.KEY=<src.act.SERIAL>
+  src.act.more1=<VAR.KEY>
+  src.act.DUPE
+  src.act.BOUNCE
+
+  src.newitem={ i_chest_metal 1 i_chest_metal_brass 1 I_CHEST_WOODEN_BRASS 1 }
+  src.act.BOUNCE
+  src.act.more1=<VAR.KEY>
+
+
+// How do you give or set a trigger to an item?
+// /set type T_CHEST_TRAP
+// How to make a trapped chest #1
+// /add I_CHEST_TRAP
+// /set type T_CHEST_TRAP
+
+// A player needs tinkering and gears to open this chest. You can set the following commands:
+// /set more min // the min damage the trap will do.
+// /set more2 max // the max damage the trap will do.
+// /set moreX amount // refers to the min amount a players tinkering has to be to disarm the chest.
+
+// for the chests + locks use (/set type 8001)
+
+
+// might not work!!!!!
+
+// I have an item that used to function properly, where when you would double click it it would open a menu via the following command
+[itemdef I_CHEST_TRAP]
+// Add items I_CHEST_TRAP and put trigger T_CHEST_TRAP on it and sit back and watch the fun.
+// Trapped chest #1
+id={ i_chest_metal 1 i_chest_metal_brass 1 I_CHEST_WOODEN_BRASS 1}
+type=t_container
+
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Trapped chest 1
+
+ON=@Create
+attr=attr_move_never
+
+[typedef T_CHEST_TRAP]
+//Chest trigger, works with item I_CHEST_TRAP
+//1. Check tinkering
+//2. Check tools (no, 50% blow up)
+//3. Check for gear
+//4. Blow up if failed
+//5. Consume gear
+
+ON=@UserDClick
+  if <src.restest 1 i_GEARS>
+    src.CONSUME 1 i_GEARS
+  else
+    src.message("You fail to disarm the trap.")
+    src.damage_noresponse(<eval <more>+(-<more2>)>,dam_god)
+    src.newitem=i_FIRE_COLUMN
+    src.act.attr attr_can_decay|attr_move_never
+    src.act.timer 2
+    src.update
+    src.soun=snd_SPELL_EXPLOSION
+    return 0
+  endif
+  if <src.tinkering>>=<moreX>
+    src.message("You attempt to disarm the trap.")
+    if <src.restest 1 i_tinker_tools>
+      if rand(2)
+        src.message("You disarm the trap successfully.")
+        timer=<moreY>
+        moreZ=1
+        type=t_container
+        return 0
+      else
+        src.message("You fail to disarm the trap.")
+        src.damage_noresponse(<eval <more>+(-<more2>)>,dam_god)
+        src.newitem=i_FIRE_COLUMN
+        src.act.attr attr_can_decay|attr_move_never
+        src.act.timer 2
+        src.update
+        src.soun=snd_SPELL_EXPLOSION
+        return 0
+      endif
+    else
+      if rand(10)==5
+        src.message("You disarm the trap successfully.")
+        timer=<moreY>
+        moreZ=1
+        type=t_container
+        return 0
+      else
+        src.message("You fail to disarm the trap.")
+        src.damage_noresponse(<eval <more>+(-<more2>)>,dam_god)
+        src.newitem i_fire_column
+        src.act.attr attr_can_decay|attr_move_never
+        src.act.timer 2
+        src.update
+        src.soun snd_spell_explosion
+        return 0
+      endif
+    endif
+  endif
+
+ON=@timer
+  moreZ=0
+  return 1
+
+//
+// Here is some sample code to get it to work.
+// How to make a trapped chest #1
+// /add I_CHEST_TRAP
+// /set type T_CHEST_TRAP
+//
+// A player needs tinkering and gears to open this chest. You can set the following commands:
+// /set more min // the min damage the trap will do.
+// /set more2 max // the max damage the trap will do.
+// /set moreX amount // refers to the min amount a players tinkering has to be to disarm the chest.
+// ---------
+//   example of a workable class script. if any of you guys hosting script archives want to touch base, I'll pass along the entire script set.
+
+[EOF]
+

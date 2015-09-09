@@ -1,0 +1,139 @@
+// tags to edit behavior:
+// tag.backstub_damageReducer=500 // 50% efficiency of the backstub damage boost
+
+[events e_backstub]
+on=@NPCSeeNewPlayer
+if !(findid(i_backStub_hide)) && ((flag_insubstantial)!=1)
+  newequipsafe(i_backStub_hide)
+  lastnew.timer=2
+endif
+return 0
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (<flag_insubstantial>==1) && (<wasHarmed>)
+  flag_insubstantial=0
+  update
+  if (act.isPlayer)
+    arg(damageBoost,<eval (<act.maxhits>-<var(ubrano)>)>) // D A M A G E   C O M P U T A T I O N   S T A R T
+    arg(damageBoost,<eval ((arg(damageBoost)*3)/5)>)
+    if (<eval tag(backstub_damageReducer)>)
+      arg(damageBoost,<eval ((<arg(damageBoost)>*<tag(backstub_damageReducer)>)/1000)>)
+    endif
+    var(ubrano,<eval (<var(ubrano)>+<arg(damageBoost)>)>) // E N D   O F   D M G.   C O M P U T A T I O N
+    act.sysMessage("<act.sex("Byl jsi proboden","Byla jsi probodena")> ze zalohy!")
+  endif
+  tag(pojistkahid,1)
+  newitemsafe(i_backStub_hide)
+  lastnew.equip
+endif
+if (!(findid(i_backStub_hide))) && !tag(pojistkahid)
+  flag_insubstantial=0
+  update
+  newitemsafe(i_backStub_hide)
+  lastnew.timer=8
+  lastnew.equip
+  return 0
+endif
+
+on=@aftergetswing
+if (<eval tag(npc_backstub_iamHiding)>==1)  && !(<eval tag(npc_backstub_interuptHid)>)
+  tag(npc_backstub_interuptHid,1)
+  return 0
+endif
+
+on=@spelleffect
+if (argn==38)
+  findid(i_backStub_hide).remove
+endif
+
+if (argn==48)
+  flag_insubstantial=0
+  update
+endif
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_backStub_hide]
+
+id=i_memory
+type=t_eq_script
+name=hid
+
+on=@create
+timer=7
+
+on=@unequip
+cont.flag_insubstantial=1
+
+on=@equip
+cont.tag(npc_backstub,1) // tells the script "tryreveal" that this npc can be revealed even though it has flag_insubstantial
+tag(removebleeding,1)
+
+on=@timer
+if (cont.findid(i_rune_peacemaking)) || (cont.isParalyzed)
+  timer=10
+  return 1
+elseif !(<eval cont.tag(npc_backstub_iamHiding)>)
+  cont.emote("is hiding")
+  cont.tag(npc_backstub_iamHiding,1)
+  timer=2
+elseif (cont.tag(npc_backstub_interuptHid)==1)
+  timer=10
+  cont.emote("has been interupted!")
+  cont.tag(npc_backstub_iamHiding,"")
+  cont.tag(npc_backstub_interuptHid,"")
+else
+  cont.tag(npc_backstub_iamHiding,"")
+  cont.tag(npc_backstub,"")
+  cont.paralyze_remove
+  cont.invis
+  cont.update
+  remove
+endif
+return 1
+
+[function zakernak]
+if (isGM)
+  newitem(i_zakernak)
+  lastnew.equip
+else
+  sysMessage("ses buger")
+  return 1
+endif
+
+[itemdef i_zakernak]
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+timer 20
+target("Zamer potvoru.")
+
+on=@targon_item
+remove 
+return 1
+
+on=@targon_ground
+remove 
+return 1
+
+on=@targon_char
+if (src.targ.isplayer) || (src.targ.findid(i_backStub_hide))
+  src.sysMessage("Pouzivej to jen na potvory!!!!")
+  return 1
+else
+  src.targ.events=+e_backstub
+  src.targ.newequipsafe(i_backStub_hide)
+  return 0
+endif
+
+
+[eof]

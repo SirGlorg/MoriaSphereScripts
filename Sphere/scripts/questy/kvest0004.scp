@@ -1,0 +1,1042 @@
+/////////////////////////////////////////////
+//
+//  Kvesty      Clenstvi v ruznych uskupeni  a vyznaní  
+//
+//  1.  Sluzebnik Oromeho     - pro Druidy a Rangery
+//  2.  Auleho priznenec      - jen pro trpasliky
+//  3.  Vzivac Tulkase        - ucitel bojovniku
+//  4.  Ulmuv zak             - sluzebnik pana vod
+//  5.  Nasledovnik Arienuv   - sluzebnik ohne a vzivatel slunce..
+//  6.  Mandosuv zak          - Strazce mrtvich  
+//  7.  Manweho zak           - pana vetru       
+//  8.  Klerik Yavanny        - darkyne plodu      
+//  9.  Klerik Vardy          - kralovny hvezd  
+// 10.  Lorienuv zak          - Pana snu.
+// 11.  stoupenec Morgothuv   -ten jez vzal zlo za sve .. jiz neni cesty spet
+//   
+//
+/////////////////////////////////////////////
+
+
+
+[ITEMDEF I_kristal_Druid_ucen]
+ID=0df2
+NAME=Druid ucen
+RESOURCES=2 i_ingot_silver, 2 i_ingot_gold, 1 I_GEM_DIAMOND
+TYPE=T_WAND
+DAM=2,6
+//SPEED=35
+REQSTR=1
+TWOHANDS=N
+VALUE={16 24}
+WEIGHT=50.0
+CATEGORY=Kvesty
+SUBSECTION= Druid
+DESCRIPTION=stribrna dika
+
+ON=@Create
+HITPOINTS={31 70}
+
+ON=@userDCLICK
+src.premenax
+src.newitem=i_NECRO_delayx
+src.act.equip
+
+[ITEMDEF i_NECRO_delayx]
+NAME=Delay mistr
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+
+ON=@Create
+timer=40 
+
+on=@unequip
+cont.premena_zpet
+
+ON=@Timer
+remove
+return 1
+
+[function premenax]
+if (src.profession==class_mag)
+body=c_dragon_red
+src.STR=(<SRC.STR> + 100)
+src.DEX=(<SRC.DEX> + 50)
+src.INT=(<SRC.INT> - 50)
+sfx snd_SPELL_lightning
+elseif (src.profession==class_necro)
+body=C_liche
+STR=(<SRC.STR> + 100)
+DEX=(<SRC.DEX> + 50)
+INT=(<SRC.INT> - 50)
+sfx snd_SPELL_lightning
+else
+message("Tento predmet se ti nikdy nemel  dostat do roukou")
+endif
+
+[function premena_zpetx]
+sfx snd_SPELL_lightning
+src.STR=(<SRC.STR> - 100)
+src.DEX=(<SRC.DEX> - 50)
+src.INT=(<SRC.INT> + 50)
+src.mana=0
+src.stamina=1
+src.body=<src.obody>
+
+[ITEMDEF I_hulka_z_menu]
+ID=0df2
+NAME=Druid ucen
+RESOURCES=2 i_ingot_silver, 2 i_ingot_gold, 1 I_GEM_DIAMOND
+TYPE=T_WAND
+DAM=2,6
+//SPEED=35
+REQSTR=1
+TWOHANDS=N
+VALUE={16 24}
+WEIGHT=50.0
+CATEGORY=Kvesty
+SUBSECTION=pokusy
+DESCRIPTION=menu hulka
+
+ON=@Create
+HITPOINTS={31 70}
+
+ON=@userDCLICK
+  src.DIALOG(d_race_pick)
+
+
+
+/////////////////////////////////////////////////////////////////////////
+
+//BS3 Class/Race selection menu
+
+[DIALOG d_race_pick]
+0, 2	
+resizepic 60 60 3600 500 430
+page 0
+gumppic 205 149 1418 			// Castle
+text 155 108 955 0	      	        // Welcome..
+text 155 128 995 1	 	     	// Select:
+text 155 150 1152 11
+button 155 180 210 211 1 0 4		// button_1
+text 180 180 995 5			// Race_1
+button 155 210 210 211 1 0 2	        // button_2
+text 180 210 995 3		        // Race_2
+button 155 240 210 211 1 0 3		// button_3
+text 180 240 995 4		     	// Race_3
+text 155 270 33 12
+button 155 300 210 211 1 0 1		// button_4
+text 180 300 995 2		        // Race_4
+button 155 330 210 211 1 0 5            // button_5
+text 180 330 995 6                      // Race_5
+button 155 360 210 211 1 0 6            // button_6
+text 180 360 995 7                      // Race_6
+text 260 180 42 13
+button 260 210 210 211 1 0 7
+text 285 210 995 8
+button 260 240 210 211 1 0 8
+text 285 240 995 9
+button 260 270 210 211 1 0 9
+text 285 270 995 11
+
+page 2
+gumppic 205 149 1418 			// Castle
+text 155 108 955 0	      	        // Welcome..
+text 155 128 995 1	 	     	// Select:
+text 155 150 1152 11
+
+
+[DIALOG d_race_pick TEXT]
+<?SRC.NAME?>, you are a <?SRC.TITLE?>,
+Please select your Race:
+Drow
+Dwarf
+Elf
+Human
+Half-Orc
+promena v Licha
+Ogre
+Gargoyle
+Troll
+Good Races:
+zueurvil Races:
+Monster Races:
+
+[DIALOG d_race_pick BUTTON]
+ONBUTTON=0
+ SRC.SYSMESSAGE "You must choose a race."
+ DIALOG d_race_pick
+ONBUTTON=1
+ DIALOG d_race_pick_drow
+ONBUTTON=2
+ DIALOG d_race_pick_dwarf
+ONBUTTON=3
+ DIALOG d_race_pick_elf
+ONBUTTON=4
+ DIALOG d_race_pick_human
+ONBUTTON=5
+ DIALOG d_race_pick_halforc
+ONBUTTON=6
+ DIALOG d_race_pick_borg
+ONBUTTON=7
+   DIALOG d_CLERIC
+// DIALOG d_race_pick_ogre
+ONBUTTON=8
+ DIALOG d_race_pick_garg
+ONBUTTON=9
+
+
+[DIALOG d_race_pick_drow]
+150 150	
+resizepic 70 180 3600 200 100
+page 0
+text 88 195 995 0   // this is for: Are you sure you wish 
+text 118 215 995 1  // to be a Drow?
+button 95 240 247 248 1 0 1  // OKAY Button
+button 178 240 243 241 1 0 2  // CANCEL Button
+
+[DIALOG d_race_pick_drow TEXT]
+Are you sure you wish 
+to be a Drow?
+
+[DIALOG d_race_pick_drow BUTTON]
+ONBUTTON=0
+	DIALOG d_race_pick
+ONBUTTON=1
+	f_RaceDrow
+ONBUTTON=2
+	DIALOG d_race_pick
+
+[DIALOG d_race_pick_dwarf]
+150 150	
+resizepic 70 180 3600 200 100
+text 88 195 995 0
+text 114 215 995 1
+button 95 240 247 248 1 0 1  // OKAY
+button 178 240 243 241 1 0 2  // CANCEL?
+
+[DIALOG d_race_pick_dwarf TEXT]
+Are you sure you wish 
+to be a Dwarf?
+
+[DIALOG d_race_pick_dwarf BUTTON]
+ONBUTTON=0
+ DIALOG d_race_pick
+ONBUTTON=1
+	f_RaceDwarf
+ONBUTTON=2
+ DIALOG d_race_pick
+
+[DIALOG d_race_pick_elf]
+150 150	
+resizepic 70 180 3600 200 100
+page 0
+text 88 195 995 0
+text 120 215 995 1
+button 95 240 247 248 1 0 1  // OKAY
+button 178 240 243 241 1 0 2  // CANCEL?
+
+[DIALOG d_race_pick_elf TEXT]
+Are you sure you wish 
+to be an Elf?
+
+[DIALOG d_race_pick_elf BUTTON]
+ONBUTTON=0
+ DIALOG d_race_pick
+ONBUTTON=1
+	f_RaceElf
+ONBUTTON=2
+ DIALOG d_race_pick
+
+[DIALOG d_race_pick_human]
+150 150	
+resizepic 70 180 3600 200 100
+page 0
+text 88 195 995 0
+text 110 215 995 1
+button 95 240 247 248 1 0 1  // OKAY
+button 178 240 243 241 1 0 2  // CANCEL?
+
+[DIALOG d_race_pick_human TEXT]
+Are you sure you wish 
+to be an Human?
+
+[DIALOG d_race_pick_human BUTTON]
+ONBUTTON=0
+ DIALOG d_race_pick
+ONBUTTON=1
+body=C_man
+ f_RaceHuman
+ONBUTTON=2
+ DIALOG d_race_pick
+
+[DIALOG d_race_pick_halforc]
+150 150	
+resizepic 70 180 3600 200 100
+page 0
+text 88 195 995 0
+text 110 215 995 1
+button 95 240 247 248 1 0 1  // OKAY
+button 178 240 243 241 1 0 2  // CANCEL?
+
+[DIALOG d_race_pick_halforc TEXT]
+Are you sure you wish 
+to be a Half-Orc?
+
+[DIALOG d_race_pick_halforc BUTTON]
+ONBUTTON=0
+ DIALOG d_race_pick
+ONBUTTON=1
+ f_RaceHalfOrc
+ONBUTTON=2
+ DIALOG d_race_pick
+
+[DIALOG d_race_pick_borg]
+150 150	
+resizepic 70 180 3600 200 100
+page 0
+text 88 195 995 0
+text 110 215 995 1
+button 95 240 247 248 1 0 1  // OKAY
+button 178 240 243 241 1 0 2  // CANCEL?
+
+[DIALOG d_race_pick_borg TEXT]
+Are you sure you wish 
+to be Borg?
+
+[DIALOG d_race_pick_borg BUTTON]
+ONBUTTON=0
+ DIALOG d_race_pick
+ONBUTTON=1
+body=C_liche
+STR=(<SRC.STR> + 100)
+DEX=(<SRC.DEX> + 50)
+INT=(<SRC.INT> - 50)
+sfx snd_SPELL_lightning
+ONBUTTON=2
+ DIALOG d_race_pick
+
+[DIALOG d_race_pick_ogre]
+150 150	
+resizepic 70 180 3600 200 100
+page 0
+text 88 195 995 0
+text 110 215 995 1
+button 95 240 247 248 1 0 1  // OKAY
+button 178 240 243 241 1 0 2  // CANCEL?
+
+[DIALOG d_race_pick_ogre TEXT]
+Are you sure you wish 
+to be an Ogre?
+
+[DIALOG d_race_pick_ogre BUTTON]
+ONBUTTON=0
+ DIALOG d_race_pick
+ONBUTTON=1
+ f_RaceOgre
+ONBUTTON=2
+ DIALOG d_race_pick
+
+[DIALOG d_race_pick_garg]
+150 150	
+resizepic 70 180 3600 200 100
+page 0
+text 88 195 995 0
+text 110 215 995 1
+button 95 240 247 248 1 0 1  // OKAY
+button 178 240 243 241 1 0 2  // CANCEL?
+
+[DIALOG d_race_pick_garg TEXT]
+Are you sure you wish 
+to be an Gargoyle?
+
+[DIALOG d_race_pick_garg BUTTON]
+ONBUTTON=0
+ DIALOG d_race_pick
+ONBUTTON=1
+ f_RaceGargoyle
+ONBUTTON=2
+ DIALOG d_race_pick
+
+[DIALOG d_race_pick_troll]
+150 150	
+resizepic 70 180 3600 200 100
+page 0
+text 88 195 995 0
+text 110 215 995 1
+button 95 240 247 248 1 0 1  // OKAY
+button 178 240 243 241 1 0 2  // CANCEL?
+
+[DIALOG d_race_pick_troll TEXT]
+Are you sure you wish 
+to be an Troll?
+
+[DIALOG d_race_pick_troll BUTTON]
+ONBUTTON=0
+ DIALOG d_race_pick
+ONBUTTON=1
+ f_RaceTroll
+ONBUTTON=2
+ DIALOG d_race_pick
+
+
+////////////////////////////////////////////////////////////////////
+
+[DIALOG d_CLERIC]
+06e, 046
+page 0
+resizepic 0 0 5170 330 284
+button 35 65 2225 2225 0 1
+button 35 111 2226 2226 0 2
+button 35 157 2227 2227 0 3
+button 35 203 2228 2228 0 4
+button 285 65 2229 2229 0 5
+button 285 111 2230 2230 0 6
+button 285 157 2231 2231 0 7
+button 285 203 2232 2232 0 8
+page 1
+button 290 260 2085 2085 0 2
+text 140 30 0 0
+text 125 46 0 1
+button 78 65 2446 2446 0 9
+text 90 66 0 2
+button 78 88 2446 2446 0 10
+text 90 89 0 3
+button 78 111 2446 2446 0 11
+text 90 112 0 4
+button 78 134 2446 2446 0 12
+text 90 135 0 5
+button 78 157 2446 2446 0 13
+text 90 158 0 6
+button 78 180 2446 2446 0 14
+text 90 181 0 7
+button 78 203 2446 2446 0 15
+text 90 204 0 8
+button 78 226 2446 2446 0 16
+text 90 227 0 9
+page 2
+button 290 5 2084 2084 0 1
+button 290 260 2085 2085 0 3
+text 120 30 0 0
+text 105 46 0 10
+button 78 65 2446 2446 0 17
+text 90 66 0 11
+button 78 88 2446 2446 0 18
+text 90 89 0 12
+button 78 111 2446 2446 0 19
+text 90 112 0 13
+button 78 134 2446 2446 0 20
+text 90 135 0 14
+button 78 157 2446 2446 0 21
+text 90 158 0 15
+button 78 180 2446 2446 0 22
+text 90 181 0 16
+button 78 203 2446 2446 0 23
+text 90 204 0 17
+button 78 226 2446 2446 0 24
+text 90 227 0 18
+page 3
+button 290 5 2084 2084 0 2
+button 290 260 2085 2085 0 4
+text 120 30 0 0
+text 105 46 0 19
+button 78 65 2446 2446 0 25
+text 90 66 0 20
+button 78 88 2446 2446 0 26
+text 90 89 0 21
+button 78 111 2446 2446 0 27
+text 90 112 0 22
+button 78 134 2446 2446 0 28
+text 90 135 0 23
+button 78 157 2446 2446 0 29
+text 90 158 0 24
+button 78 180 2446 2446 0 30
+text 90 181 0 25
+button 78 203 2446 2446 0 31
+text 90 204 0 26
+button 78 226 2446 2446 0 32
+text 90 227 0 27
+page 4
+button 290 5 2084 2084 0 3
+button 290 260 2085 2085 0 5
+text 120 30 0 0
+text 105 46 0 28
+button 78 65 2446 2446 0 33
+text 90 66 0 29
+button 78 88 2446 2446 0 34
+text 90 89 0 30
+button 78 111 2446 2446 0 35
+text 90 112 0 31
+button 78 134 2446 2446 0 36
+text 90 135 0 32
+button 78 157 2446 2446 0 37
+text 90 158 0 33
+button 78 180 2446 2446 0 38
+text 90 181 0 34
+button 78 203 2446 2446 0 39
+text 90 204 0 35
+button 78 226 2446 2446 0 40
+text 90 227 0 36
+page 5
+button 290 5 2084 2084 0 4
+button 290 260 2085 2085 0 6
+text 120 30 0 0
+text 105 46 0 37
+button 78 65 2446 2446 0 41
+text 90 66 0 38
+button 78 88 2446 2446 0 42
+text 90 89 0 39
+button 78 111 2446 2446 0 43
+text 90 112 0 40
+button 78 134 2446 2446 0 44
+text 90 135 0 41
+button 78 157 2446 2446 0 45
+text 90 158 0 42
+button 78 180 2446 2446 0 46
+text 90 181 0 43
+button 78 203 2446 2446 0 47
+text 90 204 0 44
+button 78 226 2446 2446 0 48
+text 90 227 0 45
+page 6
+button 290 5 2084 2084 0 5
+button 290 260 2085 2085 0 7
+text 120 30 0 0
+text 105 46 0 46
+button 78 65 2446 2446 0 49
+text 90 66 0 47
+button 78 88 2446 2446 0 50
+text 90 89 0 48
+button 78 111 2446 2446 0 51
+text 90 112 0 49
+button 78 134 2446 2446 0 52
+text 90 135 0 50
+button 78 157 2446 2446 0 53
+text 90 158 0 51
+button 78 180 2446 2446 0 54
+text 90 181 0 52
+button 78 203 2446 2446 0 55
+text 90 204 0 53
+button 78 226 2446 2446 0 56
+text 90 227 0 54
+page 7
+button 290 5 2084 2084 0 6
+button 290 260 2085 2085 0 8
+text 120 30 0 0
+text 105 46 0 55
+button 78 65 2446 2446 0 57
+text 90 66 0 56
+button 78 88 2446 2446 0 58
+text 90 89 0 57
+button 78 111 2446 2446 0 59
+text 90 112 0 58
+button 78 134 2446 2446 0 60
+text 90 135 0 59
+button 78 157 2446 2446 0 61
+text 90 158 0 60
+button 78 180 2446 2446 0 62
+text 90 181 0 61
+button 78 203 2446 2446 0 63
+text 90 204 0 62
+button 78 226 2446 2446 0 64
+text 90 227 0 63
+page 8
+button 290 5 2084 2084 0 7
+button 290 260 2085 2085 0 9
+text 120 30 0 0
+text 105 46 0 64
+button 78 65 2446 2446 0 65
+text 90 66 0 65
+button 78 88 2446 2446 0 66
+text 90 89 0 66
+button 78 111 2446 2446 0 67
+text 90 112 0 67
+button 78 134 2446 2446 0 68
+text 90 135 0 68
+button 78 157 2446 2446 0 69
+text 90 158 0 69
+button 78 180 2446 2446 0 70
+text 90 181 0 70
+button 78 203 2446 2446 0 71
+text 90 204 0 71
+button 78 226 2446 2446 0 72
+text 90 227 0 72
+page 9
+button 290 5 2084 2084 0 8
+button 290 260 2085 2085 0 10
+text 125 30 0 1
+text 140 45 0 2
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 75 120 3572
+tilepic 105 100 3625
+text 155 75 0 73
+text 155 100 0 74
+text 155 120 0 75
+text 60 160 0 202
+text 90 180 0 203
+text 90 200 0 204
+button 140 220 1149 1148 1 0 1
+page 10
+button 290 5 2084 2084 0 9
+button 290 260 2085 2085 0 11
+text 125 30 0 1
+text 130 45 0 3
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 76
+text 155 120 0 77
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 2
+page 11
+button 290 5 2084 2084 0 10
+button 290 260 2085 2085 0 12
+text 125 30 0 1
+text 140 45 0 4
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 78
+text 155 120 0 79
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 3
+page 12
+button 290 5 2084 2084 0 11
+button 290 260 2085 2085 0 13
+text 125 30 0 1
+text 125 45 0 5
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 80
+text 155 120 0 81
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 4
+page 13
+button 290 5 2084 2084 0 12
+button 290 260 2085 2085 0 14
+text 125 30 0 1
+text 120 45 0 6
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 82
+text 155 120 0 83
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 5
+page 14
+button 290 5 2084 2084 0 13
+button 290 260 2085 2085 0 15
+text 125 30 0 1
+text 122 45 0 7
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 84
+text 155 120 0 85
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 6
+page 15
+button 290 5 2084 2084 0 14
+button 290 260 2085 2085 0 16
+text 125 30 0 1
+text 120 45 0 8
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 75 120 3572
+tilepic 105 100 3625
+text 155 75 0 73
+text 155 100 0 86
+text 155 120 0 87
+text 60 160 0 202
+text 90 180 0 203
+text 90 200 0 204
+button 140 220 1149 1148 1 0 7
+page 16
+button 290 5 2084 2084 0 15
+button 290 260 2085 2085 0 17
+text 125 30 0 1
+text 105 45 0 9
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 88
+text 155 120 0 89
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 8
+page 17
+button 290 5 2084 2084 0 16
+button 290 260 2085 2085 0 18
+text 125 30 0 1
+text 105 45 0 11
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 90
+text 155 120 0 91
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 9
+page 18
+button 290 5 2084 2084 0 17
+button 290 260 2085 2085 0 19
+text 125 30 0 1
+text 105 45 0 12
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 92
+text 155 120 0 93
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 10
+page 19
+button 290 5 2084 2084 0 18
+button 290 260 2085 2085 0 20
+text 125 30 0 1
+text 105 45 0 13
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 75 120 3572
+tilepic 100 100 3142
+text 155 75 0 73
+text 155 100 0 94
+text 155 120 0 95
+text 60 160 0 202
+text 90 180 0 203
+text 90 200 0 205
+button 140 220 1149 1148 1 0 11
+page 20
+button 290 5 2084 2084 0 19
+button 290 260 2085 2085 0 21
+text 125 30 0 1
+text 105 45 0 14
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 96
+text 155 120 0 97
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 12
+page 21
+button 290 5 2084 2084 0 20
+button 290 260 2085 2085 0 22
+text 125 30 0 1
+text 105 45 0 15
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 98
+text 155 120 0 99
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 13
+page 22
+button 290 5 2084 2084 0 21
+button 290 260 2085 2085 0 23
+text 125 30 0 1
+text 105 45 0 16
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 100
+text 155 120 0 101
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 14
+page 23
+button 290 5 2084 2084 0 22
+button 290 260 2085 2085 0 24
+text 125 30 0 1
+text 105 45 0 17
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 102
+text 155 120 0 103
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 15
+page 24
+button 290 5 2084 2084 0 23
+button 290 260 2085 2085 0 25
+text 125 30 0 1
+text 105 45 0 18
+gumppic 65 65 2091
+resizepic 70 80 2620 75 75
+tilepic 90 110 3572
+text 155 75 0 73
+text 155 100 0 104
+text 155 120 0 105
+text 60 160 0 202
+text 90 180 0 203
+button 140 220 1149 1148 1 0 16
+
+[DIALOG d_CLERIC TEXT]
+// 0
+INDEX
+First Circle
+Bless
+Command
+Heal
+Detect Evil
+Detect Poison
+Night Sight
+Purify Food
+Protect from Evil
+// 10
+Second Circle
+Aid
+Charm
+Dust Devil
+Find Traps
+Paralyze
+Obscurement
+Messenger
+Resist Fire/Cold
+Third Circle
+// 20
+Animate Dead
+Lightning
+Continual Light
+Create Food
+Cure
+Dispel Magic
+Feign Death
+Glyph of Warding
+Fourth Circle
+Locate Person
+// 30
+Meld into Stone
+Prayer
+Pyrotechnics
+Remove Curse
+Remove Paralysis
+Stone Shape
+Summon Insects
+Fifth Circle
+Summon I
+Medium Heal 
+// 40
+Imbue
+Neutralize Poison
+Fire Field
+Speak with Plants
+Spell Immunity
+Water Walk
+Sixth Circle
+Summon II
+Atonement
+Greater Heal
+// 50
+Dispel Evil
+Flame Strike
+Passplant
+True Seeing
+Recall
+Seventh Circle
+Aerial Servant
+Antianimal Shell
+Blade Spirit
+Fire Elemental
+// 60
+Forbiddance
+Heal All
+Holy Word
+Succor
+Eighth Circle
+Heroes Feast
+Part Water
+Stone Tell
+Wall of Thorns
+Summon Weather
+// 70
+Gate
+Sticks to Snakes
+Resurrection
+Verbal Component
+// 1st
+Dominus Benedicis
+
+Te Impero
+
+Dominus Sanas
+
+// 80
+Malorum Video
+
+Te Sine Videre
+Veneno
+Lucem Tibi
+Dona
+Purga Hunc
+Cibum
+Defende
+ab Malorum
+// 2nd
+// 90
+Dominus cum
+te es
+Fascinaris
+
+Emitte te Animam
+Pulverulentam
+Laqueum Video
+
+Debilitaris
+
+// 100
+Obscura
+
+Nuntium te
+Emitte
+// 3rd
+Calor et Frigus
+Nihil Sunt
+17
+
+18
+
+// 110
+19
+
+20
+
+21
+
+22
+
+23
+
+// 4th
+// 120
+24
+
+25
+
+26
+
+27
+
+28
+
+// 130
+29
+
+30
+
+31
+
+// 5th
+32
+
+33
+
+// 140
+34
+
+35
+
+36
+
+37
+
+38
+
+// 150
+39
+
+// 6th
+40
+
+41
+
+42
+
+43
+
+// 160
+44
+
+45
+
+46
+
+47
+
+48
+
+// 7th
+// 170
+49
+
+50
+
+51
+
+52
+
+53
+
+// 180
+54
+
+55
+
+56
+
+// 8th
+57
+
+58
+
+// 190
+59
+
+60
+
+61
+
+62
+
+63
+
+// 200
+64
+
+Material Component(s):
+Holy Symbol
+Holy Water
+Pinch of Dust
+Piece of gold wire (5429)
+Piece of Bread
+Any Alchemy Symbol (Blessed) (6173)
+A Rock
+Sparklys (5535)
+A Blessed Rune
+
+[DIALOG d_CLERIC BUTTON]
+
+
+
+[eof]

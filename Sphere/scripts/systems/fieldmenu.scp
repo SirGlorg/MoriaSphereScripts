@@ -1,0 +1,981 @@
+///////////////////////////////////// pouzite funkce z vendormenu
+//[function findvendorplac]
+//[function isvendorplac]
+//[function f_vend_ownershipto]//uid of future owner, needs src
+//[function f_vend_zbyva_casu]
+//[function vm_namerank]
+//[function vm_findrankloop]
+//[function vm_section]//y,index,rank,text
+//[function f_vend_dorprih_mjtl_gm] //slouží pouze k rozhodnutí co zobrazit v menu -  jestli Dorovnat nebo Prihodit 50k
+//[function f_vend_unblockitem]
+//[function f_vend_cas_do_konce_drazby]
+
+[function f_eq_fieldsignlayer]//upraveno
+if !(findlayer(103))
+ newitem i_memory_fieldsign
+ equip(act)
+endif
+///////////////////////////////////// nevim
+
+
+[function f_checkfieldnajem]
+while (tag(najemcont).findtype(t_gold)) && !(tag(paiduntil) == 2147483600) //25920000 - decisekund za mesic (30 dni) //2147483600 - maximalni rozlisitelnost v signed 32Integeru
+  arg(pridatcasu,<eval ((tag(najemcont).findtype(t_gold).amount*2592)/tag(najem))*10000>)
+  if (<eval (2147483600-tag(paiduntil))> < arg(pridatCasu) ) // doslo by prictenim celeho casu k preteceni ?
+    tag(paiduntil,2147483600)
+  else
+    tag(paiduntil,<eval tag(paiduntil)+arg(pridatcasu)>)
+  endif
+  tag(najemcont).findtype(t_gold).remove
+endwhile
+
+f_payRentFrom(i_cashiers_check)
+f_payRentFrom(i_cashiers_mesec)
+f_payRentFrom(i_cashiers_pokladnicka)
+
+if (tag(autorent))
+  if (<eval(tag(paiduntil))> < <eval(serv.time)>)
+    src.redmessage(Nedostatecne zaplaceny najem - vystehovavam prostor .)
+    trashfieldplac
+  endif
+endif
+
+[function trashfieldplac] //upraveno
+if !(src) 
+ src=<more1> 
+endif
+src.accmsg(trashes fieldplac uid=<uid> (<name>))
+if (<src.ischar>) 
+ src.newitemsafe(i_backpack)
+ tag(backpack_s_vecma,<lastnew>)
+ lastnew.name="veci z pole <?name?> - <?serv.rtimetext?>"
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ foreachlocked(trashvenditem)
+ array_clear(tag.lockedlist)
+ if (finduid(tag(backpack_s_vecma)).rescount)
+  finduid(tag(backpack_s_vecma)).cont=<tag(najemcont)>  
+ else
+  finduid(tag(backpack_s_vecma)).remove
+ endif
+ tag.remove(backpack_s_vecma)
+ tag(ownerscont).contents(link.remove)
+ tag(ownerscont).emptycont
+ tag.remove(bankactivated)
+ if !(<tag(drazba)>) //bezi li drazba, bude nadale pokracovat a nic se nedeje
+  //src.sysmessage(neni drazba, nuluju)
+  tag(najem,10000) //nova drazba zacne automaticky na 10k  
+ endif 
+ more1=067288 //majitelem se stane Dinivan :o)  - pro drazbu a aby si nikdo nemohl jen tak vzit stanek
+endif
+
+[function trashfielditem]
+if ((isevent(t_fieldmenu))||(type==t_fieldmenu))
+  //vyvesky nechame viset :)
+  return
+else
+  attr=<tag(vm_storeattr)>
+  tag(vm_storeattr,"")
+  tag(vm_lockedto,"")
+  tag(vm_lockit,"")
+  unblockitem
+  events -t_lockeditem
+  //to s tema dverma tam nechavam, nicemu to neskodi a co kdyby tam mel vystaveny dvere :)) 
+  if ((type==t_door_locked)||(type==t_door)||(type==t_door_field))
+   type=t_door
+   link(0)
+  else
+   removefromview
+   src.accmsg(trashes item uid=<uid> (<amount> <name>))
+   cont=<lastnew>
+  endif
+endif
+
+[function f_fieldmenu]
+link.tag(lastusedsign,<src.uid>) //link v této funkci je link té cedule t_fieldmenu - coz je pole
+src.f_eq_fieldsignlayer
+
+//nasledujici blok se pouzije v pripade, ze uz existuje v dane oblasti vendorplac 
+//linknuti vice ceduli k jednomu placu...
+if (!(safe.link.isvendorplac))//&&(sector.allitems(findvendorplac(<uid>))))//neni linknut&&nalezl v sektoru vendorplac
+ //src.classmessage(nemame link)//, za to mame vendorplac)
+ tag(vm_lockit,0)//nastaveni zakladni dostupnosti menu 
+ var(vendorplacfound,0)
+ sector.allitems(findvendorplac(<uid>)) //uid te cedule 
+ //src.classmessage(nalezen vendorplac: <var(vendorplacfound)>)
+ if (var(vendorplacfound))
+  //src.classmessage(vendorplac nalezen)
+  link=var(vendorplacfound)
+  src.classmessage(V tomto sektoru nalezen prostor  <?finduid(link).name?>. Menu prirazeno.)
+  //return 1
+  else
+  src.classmessage(Nebylo nalezeno pole, na ktery by cedule sla linknout.)
+ endif
+endif
+
+//nasledujici blok se provede jen tehdy, neexistuje-li v dane oblasti vendorplac vubec
+if (!(safe finduid(link.tag(ownerscont)).isitem))//neni aktivovan (nema owneruv pytlicek)
+ src.classmessage(Toto pole nyni patri tobe.)
+ if !(safe link.isitem)//neni to multidum  -tomuhle moc nerozumim, necham to tak, treba to pujde, multidomy to nejsou
+  src.classmessage(zakladam worldgem)
+  src.newitemsafe(i_worldgem_bit)
+  link=<lastnew>
+  lastnew.attr=0b0
+  lastnew.p=<p>
+  lastnew.type=t_vendorplac
+  lastnew.more1=<src>
+  //link.tag(mammajitele,1)
+  if (myrepregion)
+   lastnew.name=<var(lastrepregion).name>
+  else
+   lastnew.name=<region.name>
+  endif
+ else
+  link.events +t_vendorplac
+  //src.classmessage(Zadne klice od nej nebudes potrebovat)
+ endif
+ 
+ src.newitemsafe(i_pouch)//ownerovo
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(18)
+ lastnew.more1=1 //majitelovo cislo
+ lastnew.link=<link>
+ lastnew.name=majitel
+ link.tag(ownerscont,<lastnew>) //link uz je nyni ten worldgem
+ 
+ src.newitemsafe(i_field_chest)
+ lastnew.attr=attr_move_never
+ lastnew.P=<P>
+ lastnew.fix
+ lastnew.link=<link>
+ lastnew.name=Najem
+ link.tag(najemcont,<lastnew>) //link=ten worldgem...
+ link.tag(paiduntil,<serv.time>) //vynuluje se najem
+ link.tag(najem,10000)//100k default
+ if (region.tag(housenumber))
+   link.tag(housenumber,<region.tag(housenumber)>)
+   var(najmy[link.tag(housenumber)],<link>)
+ else
+   link.tag(housenumber,<array_add(var.najmy,<link>)>)
+ endif
+ link.tag(block,0)
+ link.tag(autorent,1) //to je asi rozumny, zejo...
+ link.tag(drazba,0)
+ link.tag(vendpos_nastavena,0)
+ link.tag(vendorplaced,0)
+ link.f_vend_ownershipto(<src>) //src - ten co klika na ceduli
+ src.sysmessage(Najem cini <link.tag(najem)>gp)
+ src.redmessage(Autorent zapnut, zaplat si najem jeste nez podruhe kliknes na ceduli!) 
+ //return 1
+endif
+
+//kontrola pritomnosti najemni truhlicky (jednou se mi stalo ze zmizela...)
+if !(finduid(link.tag(najemcont))).isitem //neexistuje-li truhlicka
+ src.newitemsafe(i_field_chest)
+ lastnew.attr=attr_move_never
+ lastnew.P=<P>
+ lastnew.fix
+ lastnew.link=<link>
+ lastnew.name=Najem
+ link.tag(najemcont,<lastnew>) //link=ten worldgem...
+ if (region.tag(housenumber))
+   link.tag(housenumber,<region.tag(housenumber)>)
+   var(najmy_stanky[link.tag(housenumber)],<link>)
+ else
+   link.tag(housenumber,<array_add(var.najmy_stanky,<link>)>)
+ endif
+ src.sysmessage(Truhlicka navracena!)
+ src.sysmessage(Najem cini <link.tag(najem)>gp)
+endif
+
+link.f_checkfieldnajem
+if !(link.more1)//dum je bez majitele :o) - tohle uz se neprovede nikdy
+ src.classmessage(Dum je bez majitele)
+ if !(src.isgm)
+  link.potvrdit(myfieldplac,Chces obsadit toto misto?) //pokud se zvoli ANO (OK button) provede se myfieldplac
+  return 1
+ endif
+endif
+
+//nasledujici konstrukce zamerne nepouziva elseifu protoze nejak nefungujou (neprovadeji se), proto je to tak 
+//komplikovany
+if(<link.tag(drazba)>) //probiha-li drazba
+ if(<link.more1>==067288) //majitelem jsem ja - drazba jen 1 tyden
+  arg(doba,6048000) 
+  arg(max_doba,6048000)
+ else //klasicke 3+1 tyden
+  arg(doba,18144000)
+  arg(max_doba,24192000)	
+ endif
+ arg(doba_od_zacatku_drazby,<eval <serv.time>-<link.tag(zacatekdrazby)>>)
+ if ( <arg(doba_od_zacatku_drazby)> > <arg(doba)> ) && (finduid(<link.more1>).isgm) //prvni drazba noveho stanku, majitelem jsem ja
+  if(src.isgm)
+   src.sysmessage(konec drazby)
+  endif
+  pole_konec_drazby
+  return 1	
+ endif
+ if((<arg(doba_od_zacatku_drazby)> >= <arg(doba)>)&&(<arg(doba_od_zacatku_drazby)> <= <arg(max_doba)>)&&(<link.tag(zajemce)>!=<link.more1>)&&(<src>==<link.more1>)) //dele nez (18144000)3 tydny&&kratsi dobu nez (24192000) 4 tydny&&nejvyssi nabidka neni od majitele&&klikatel na ceduli je majitel
+  if(src==067288)
+   src.sysmessage(Majitel ma cas na dorovnani)
+  endif
+  src.redmessage(Na dorovnani nabidky ti zbyva <f_vend_zbyva_casu>)
+  link.dialog d_field_menu
+  return 1
+ endif
+ if((<arg(doba_od_zacatku_drazby)>> <arg(max_doba)>)&&(<link.tag(zajemce)>!=<link.more1>)&&(<src>==<link.tag(zajemce)>)) //doba drazby delsi nez (24192000) 4 tydny&&nejvyssi nabidka neni od majitele&&kliknul si ten co nabidl nejvic
+  if(src==067288)
+   src.sysmessage(konec drazby a klikl ten co vyhral)
+  endif
+  pole_konec_drazby
+  return 1
+ endif
+ if((<arg(doba_od_zacatku_drazby)>> <arg(max_doba)>)&&(<link.tag(zajemce)>!=<link.more1>)&&(<src>==<link.more1>)) //konec drazby&&majitel nestihl dorovnat&&klikl majitel
+  if(src==067288)
+   src.sysmessage(konec drazby majitel prohral a klikl majitel)
+  endif
+  src.sysmessage(Nestihl jsi dorovnat nabidku, pole ti uz nepatri)
+  pole_konec_drazby
+  return 1
+ endif
+ if((<arg(doba_od_zacatku_drazby)>> <arg(max_doba)>)&&(<link.tag(zajemce)>==<link.more1>)&&(<src>==<link.tag(zajemce)>)) //doba drazby > (2419200) 4 tydny&&majitel stihl dorovnat&&klikatel je sam majitel
+  if(src==067288)
+   src.sysmessage(konec drazby vyhral puvodni majitel)
+  endif
+  src.sysmessage(Drazba skoncila, majitelem zustavas ty)
+  //src.redmessage(Zkontroluj si najem!)
+  src.sysmessage(Najem prepocten a pridan jeden mesic)    
+  link.tag(drazba,0) //konec drazby
+  arg(zaplaceno_dni,<link.paiduntildays>)
+  arg(stary_najem,<link.tag(najem)>)
+  link.tag(najem,<link.tag(nabidka)>) //novy najem = nejvyssi nabidka
+  arg(novy_najem,<link.tag(najem)>)
+  arg(pocet_dni_nova_cena_najmu,<eval (<arg(zaplaceno_dni)>*<arg(stary_najem)>)/<arg(novy_najem)>>) //pocet zaplacenych dni z puvodniho najmu pri nove cene
+  link.tag(paiduntil,<eval (<serv.time>+(<arg(pocet_dni_nova_cena_najmu)>*864000))+25920000>) //v decisekundach: prepocte stare zaplaceni na novy najem a prida 1 mesic za drazbu
+  src.sysmessage(Novy najem cini <link.tag(najem)>gp.)
+  link.tag.remove(nabidka)
+  link.tag.remove(zacatekdrazby)
+  link.tag.remove(zajemce)
+  link.DIALOG d_field_menu
+  return 1
+ endif
+ if((<arg(doba_od_zacatku_drazby)> >= <arg(doba)>)&&(<arg(doba_od_zacatku_drazby)> <= <arg(max_doba)>)&&(<src>!=<link.more1>)&&(!(src.isgm))) //doba drazby >(1814400)3 tydny&&kratsi nez (2419200)4 tydny&&kliknul nekdo jinej nez majitel&&a nekliknul GM   
+   if(src==067288)
+    src.sysmessage(cas na dorovnani pro majitele)
+   endif
+   src.sysmessage(Prihazovat jiz nemuzes, majitel ma na dorovnani nabidky <f_vend_zbyva_casu>)
+   return 1
+ endif  
+ if((<arg(doba_od_zacatku_drazby)> > <arg(max_doba)>)&&(<src>!=<link.more1>)&&(<src>!=<link.tag(zajemce)>)&&(!(src.isgm))) //doba drazby >(24192000) 4tydny&&neklikl majitel&&neklikl nejvyssi nabidka&&neklikl GM
+  if(src==067288)
+   src.sysmessage(konec drazby neklikl ani ten co vyhral ani majitel a majitel prohral)
+  endif
+  src.sysmessage(Konec drazby, nejsi majitelem stanku ani jsi neucinil nejvyssi nabidku, nezbyva ti, nez to zkusit priste)   
+  pole_konec_drazby
+  return 1
+ endif
+ if((<arg(doba_od_zacatku_drazby)> > <arg(doba)>)&&(<arg(doba_od_zacatku_drazby)> < <arg(max_doba)>)&&(<link.tag(zajemce)>==<link.more1>)&&(<src>==<link.more1>)) //dele nez (18144000)3 tydny&&kratsi dobu nez (24192000) 4 tydny&&nejvyssi nabidka je uz od majitele&&klikatel na ceduli je majitel
+  if(src==067288)
+   src.sysmessage(konec drazby majitel ma cas na dorovnani a dorovnal - drazba konci drive)
+  endif
+  src.sysmessage(Nabidka je dorovnana, do konce ctvrteho tydne zbyva <f_vend_zbyva_casu>)
+  link.dialog d_field_menu
+  return 1
+ endif 
+endif
+
+link.DIALOG d_field_menu
+return 1
+
+[function pole_konec_drazby] //src- klikatel, uid - cedule //upraveno
+arg(majitel,<link.more1>)
+link.trashfieldplac
+arg(zaplaceno_dni,<link.paiduntildays>) //kolik mel starej majitel zpalaceno
+arg(star_najem_den,<eval <link.tag(najem)>/30>) //kolk cinil starej najem/den 
+arg(vratit_majiteli,<eval (<arg(star_najem_den)>*<arg(zaplaceno_dni)>)>) //puv. majitel dostane tolik do banky
+//src.sysmessage(zaplaceno: <arg(zaplaceno_dni)>, starnajem: <arg(star_najem_den)>, vratit: <arg(vratit_majiteli)>)
+src.newitemsafe(i_cashiers_check)
+//src.sysmessage(sek vytvoren <lastnew>)
+lastnew.more=<arg(vratit_majiteli)>
+lastnew.name=Preplatek najmu z pole 
+lastnew.cont=<finduid(<arg(majitel)>).findlayer(29)> //banka stareho majitele, ale stejne mu to dava do batohu
+lastnew.update
+link.more1=<link.tag(zajemce)> //novy majitel prodejniho mista - posledni nejvyssi nabidka
+link.tag(drazba,0) //konec drazby  
+link.tag(najem,<link.tag(nabidka)>) //posledni nabidka = novy najem
+link.tag(paiduntil,<eval <serv.time>+25920000>) //najem na mesic
+finduid(<link.more1>).delayedmessage(Jsi novym majitelem pole, cislo <link.tag(housenumber)>)
+finduid(<link.more1>).delayedmessage(Najem cini <link.tag(najem)>gp)
+finduid(<link.more1>).delayedmessage(Najem zaplacen na jeden mesic dopredu)
+link.tag.remove(nabidka)
+link.tag.remove(zacatekdrazby)
+link.tag.remove(zajemce)
+if(<src>==<link.more1>) //kliknul novy majitel
+ link.DIALOG d_field_menu
+endif
+return 1
+
+[function myfieldplac]
+if (ischar) //jestlize to provadi hrac tak nedelat nic 
+elseif (isvendorplac) //jestlize to provadi item vendorplac (to je to volani link.potvrdit(...) - o kus vys
+ f_vend_ownershipto(<src>) //udela to majitelem toho co klikal na ceduli
+endif
+// tag(paiduntil,<serv.time>) //a nastavi zaplacenost najmu
+DIALOG d_field_menu
+
+[function field_findrank]
+var(vm_rank,0) //verejnost
+if (finduid(<args>).isgm)
+ var(vm_rank,2) //GM
+elseif (<more1>==<args>)
+ finduid(<tag.vend_ownermemUID>).more1=<uid>
+ finduid(<tag.vend_ownermemUID>).morep=<p>
+ finduid(<tag.vend_ownermemUID>).name=owner:<name>
+ var(vm_rank,1) //majitel
+endif
+if (safe tag(block))//&&(vm_rank<4)
+ if (var(vm_rank))
+  src.redmessage(Pole je zablokovano! Pro vice informaci napis page.)
+ endif
+ if (var(vm_rank)<2)
+  var(vm_rank,-1)
+ endif
+endif
+return <var(vm_rank)>
+
+
+
+[DIALOG d_field_menu]//upraveno
+30,0
+arg(itemlevel,<eval tag(lastusedsign).tag(vm_lockit)>)
+//src.sysmessage(<arg(itemlevel)>)
+field_findrank(<src>)
+//var(vm_rank,0)
+vm_namerank(<var(vm_rank)>) //0,1,2 - verejnost, majitel, GM
+//src.sysmessage(Tvuj rank je: <var(vm_rank)>; Tvuj namerank je : <namestr>)  - V PORADKU
+//src.smsg hm_rank:<hm_rank> itemlevel:<arg(itemlevel)>
+argo.settext(100,"Pole cislo <?eval tag(housenumber)?><br><?safe tag(housename)?>")
+
+if (var(vm_rank)<arg(itemlevel))//rank je 0-2, item level o par radku vyse podle lockitu.lockit je zakladne na 0
+ argo.gumppic(100,100,100)
+ argo.htmlgump(120,120,100,60,100,0,0)
+else
+ doswitch var(vm_rank)  //0,1,2 
+  argo.tag(radku,4)  //cudliku verejnosti
+  argo.tag(radku,10)  //cudliku majitele
+  argo.tag(radku,19) //cudliku GM
+ enddo
+ argo.tag(sirka,260)
+ //argo.tag(vyska,360)
+ 
+ //if (cm_displaymore)
+ argo.tag(vyska,<eval 100+((2+argo.tag(radku))*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+ //else
+ // argo.tag(vyska,<eval (6*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+ //endif
+ 
+ argo.dialog_prvni
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//owner
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//owner
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname
+ arg(vedleX,<argo.tag(sloupec_x[1])>+<d_def_odsazeni>)
+ argo.dialog_pozadi(114+d_def_skvira,2)//najem
+ argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29)//tlacitka
+ argo.dialog_zpruhledni
+ //argo.resizepic(0,0,2620,290,360)
+ argo.gumppic(<argo.dialog_textpos(0,0,1)>,100)
+ //argo.htmlgump(120,120,100,60,0,0,0)
+ argo.htmlgump(lastxpos+20,lastypos+20,100,60,100,0,0)//
+ argo.texta(vedleX,argo.tag(obj_y[0]),955,Majitel:)
+ argo.texta(vedleX,argo.tag(obj_y[1]),955,<finduid(more1).getrealnamebyrealm(<region.tag.houserealm>)>)
+ argo.texta(vedleX,argo.tag(obj_y[2]),955,Tvuj status:)
+ argo.texta(vedleX,argo.tag(obj_y[3]),955,<namestr>)
+ 
+ 
+ argo.texta(<argo.dialog_textpos(4,0)>,955,Najem: <tag.najem> gp)
+ argo.texta(lastxpos,lastypos+d_def_radek_vyska,955,Zaplaceno na <paiduntildays> dni)//<sectodays((tag(paiduntil)-serv.time)/10)> 
+ 
+ arg(ypos,<argo.tag(obj_y[5])>)
+ arg(ypos,<argo.vm_section(<ypos>,1,0,Drazebni nabidka)>)
+ arg(ypos,<argo.vm_section(<ypos>,2,1,Zamknout/odemknout vec)>)
+ //arg(ypos,<argo.vm_section(<ypos>,3,0,<qval(f_vend_dorprih_mjtl_gm,Dorovnat <tag(nabidka)>,Prihodit <qval(<tag(nabidka)>,<eval <tag(nabidka)>+10000>,<eval <tag(najem)>+10000>)>)>)>) //majitel+gm pouze dorovnat, verejnost Prihodit 50k
+ arg(ypos,<argo.vm_section(<ypos>,19,0,<qval(f_vend_dorprih_mjtl_gm,Dorovnat <tag(nabidka)>,Prihodit)>)>)//<qval(<tag(nabidka)>,<eval <tag(nabidka)>+10000>,<eval <tag(najem)>+10000>)>)>)>)
+ arg(ypos,<argo.vm_section(<ypos>,4,2,Prihodit)>) //GM ma jeste navic tuto moznost
+ arg(ypos,<argo.vm_section(<ypos>,5,1,Priradit hlidace )>)
+// arg(ypos,<argo.vm_section(<ypos>,6,1,Zmena pohlavi Vendora)>)
+ arg(ypos,<argo.vm_section(<ypos>,7,1,Prejmenovat pole)>)
+ 
+ arg(ypos,<argo.vm_section(<ypos>,9,0,"<qval(<tag(bankactivated)>,"Otevrit banku","Aktivovat banku (100k gp)")>")>)
+ arg(ypos,<argo.vm_section(<ypos>,10,1,Predat vlastnictvi pole)>)
+ 
+ arg(ypos,<argo.vm_section(<ypos>,11,2,<qval(<tag(block)>,Od,Za)>blokovat pole)>)
+ arg(ypos,<argo.vm_section(<ypos>,12,2,Trash pole)>) //=trashvendorplac
+// arg(ypos,<argo.vm_section(<ypos>,8,2,<qval(<tag(vendor_trest)>,Vratit vendora z trestu,Odstranit vendora (trest))>)>) //trashvendor
+// arg(ypos,<argo.vm_section(<ypos>,18,2,Odstranit vendora (uplne))>) //trashvendor_itagy
+ arg(ypos,<argo.vm_section(<ypos>,13,2,Vynulovat zaplaceni)>)
+ arg(ypos,<argo.vm_section(<ypos>,14,2,Nastavit najem)>)
+ arg(ypos,<argo.vm_section(<ypos>,15,2,<qval(<tag(autorent)>,Vy,Za)>pnout autorent)>) 
+ arg(ypos,<argo.vm_section(<ypos>,16,2,Zastavit drazbu)>) 
+// arg(ypos,<argo.vm_section(<ypos>,17,1,Nastavit pozici pro vendora)>)
+// arg(ypos,<argo.vm_section(<ypos>,20,1,Help)>)
+endif
+
+[DIALOG d_field_menu BUTTON]
+on=1//Drazebni nabidka
+if (f_field_checkrightsmes(0))
+DIALOG d_fieldmenu_nabidka
+endif
+
+on=2//zamknout/odemknout vec
+if (f_field_checkrightsmes(1))
+//src.say chci zamknout vec
+src.newitemsafe(i_target_field)
+lastnew.name=zamknout vec
+lastnew.link=<uid>
+lastnew.more1=2
+lastnew.more2=<vm_rank>
+lastnew.equip
+endif
+
+//on=3//dorovnat / prihodit 50k
+//if (f_vend_checkrightsmes(0))
+// if(!(<var(vm_rank)>)) //zahajit drazbu nebo prihodit 50k (pro verejnost)    
+//   if(!<tag(drazba)>) //neprobiha-li zrovna drazba pozn. vsechny tagy jdou na ten worldgem
+//      if(src.pay((<tag(najem)>+50000))) 
+//       tag(nabidka,<tag(najem)>+50000) //link je porad ten worldgem t_vendorplac
+//       tag(zajemce,<src>) //uid zajemce
+//       tag(zacatekdrazby,<serv.time>)
+//       tag(drazba,1) //zahajit drazbu
+//       src.sysmessage(Ucinil jsi zakladni nabidku <tag(nabidka)>gp.)
+//      else
+//       src.sysmessage(Nemas dost penez na zahajeni drazby, potrebujes aspon <eval <tag(najem)>+10000> gp.)
+//      endif    
+//   else //probiha-li drazba
+//      arg(uplynula_doba_drazby,<serv.time>-<eval tag(zacatekdrazby)>)
+//      if(<arg(uplynula_doba_drazby)> < 18144000) //cas od zacatku drazby je mensi nez tri tydny (3*7*24*3600*10=18144000)
+//         if(src.pay((<tag(nabidka)>+10000)))
+//           tag(nabidka,<tag(nabidka)>+10000) //autorem je porad ten worldgem t_vendorplac
+//           tag(zajemce,<src>)
+//          src.sysmessage(Zvysil jsi nabidku o 50k gp. Nejvyssi nabidka je nyni <tag(nabidka)>gp)
+//          else
+//           src.sysmessage(Nemas dost penez na prihozeni, potrebujes <eval <tag(nabidka)>+10000> gp.)
+//          endif
+//       else
+//          src.sysmessage(Drazba uz skoncila)
+//      endif
+//   endif
+// else //((var(vm_rank))||(var(vm_rank)==2)) //dorovnavat    
+//    if(<tag(drazba)>) //probiha-li drazba
+//      if(!(<tag(zajemce)>==<more1>)) //0 pokud stejne
+//        if(src.isgm)
+//          src.sysmessage(Jako GM muzes dorovnat zdarma)
+//          src.accmsg(dorovnal nabidku v drazbe stanku <name> ve prospech majitele <more1.name>)
+//          tag(zajemce,#<more1>) //GM dorovnal ve prospech majitele (zajemce tudiz bude = majiteli)
+//        else //neni to gm, je to majitel
+//         if(src.pay(<tag(nabidka)>)) //jestlize si muze majitel dovolit dorovnat
+//            tag(zajemce,<src>) // majitel dorovnal, stal se nejvyssi nabidkou ale samotna max. nabidka se nezvysuje...
+//            src.sysmessage(Dorovnal jsi nejvyssi nabidku)
+//          else
+//            src.sysmessage(Nemas dost penez k dorovnani nabidky)
+//          endif
+//        endif
+//      else //retezce byly stejne
+//        src.sysmessage(Nejvyssi nabidka patri majiteli, neni treba dorovnavat)
+//      endif
+//    else //drazba neprobiha
+//     src.sysmessage(Neprobiha zadna drazba, neni potreba nic dorovnavat) 
+//    endif   
+// endif
+// dialog d_vendmenu_nabidka
+//endif
+
+on=4//prihodit (GM)
+if (f_field_checkrightsmes(2))
+  if(!<tag(drazba)>)  
+    input(Jaka ma byt nabidka? nejmene <eval <tag(najem)>+10000> ,f_field_prihod_gm,<eval 10000+<tag(najem)>>)
+  else //probiha-li drazba
+    arg(uplynula_doba_drazby,<serv.time>-<eval tag(zacatekdrazby)>)
+    if(<arg(uplynula_doba_drazby)> < 18144000) //cas od zacatku drazby je mensi nez tri tydny (3*7*24*3600*10=18144000)
+      input(Nova nabidka? nejmene <eval <tag(nabidka)>+10000> ,f_field_prihod_gm,<eval 10000+<tag(nabidka)>>) 
+    else
+      src.sysmessage(Drazba uz skoncila)
+    endif       
+  endif
+endif
+
+on=5// zadat hlidace
+if (f_field_checkrightsmes(1))
+src.newitem i_target_field
+src.act.name=hlidac
+src.act.link=<uid> 
+src.act.more1=5
+src.act.equip
+endif
+
+
+
+//on=6//zmena pohlavi vendora
+//if (f_vend_checkrightsmes(1))
+//  if(<tag(vendorplaced)>)
+//    if(<tag(vendor_trest)>)
+//     src.redmessage(Vendor je za trest odstranen, napis page pro vyreseni situace)
+//    else
+//     if(finduid(<tag(vendoruid)>).body==c_man)
+//        finduid(<tag(vendoruid)>).body=c_woman
+//        finduid(<tag(vendoruid)>).speech=spk_vendor_custom  //protoze to maze jejich rec   
+//     else
+//        finduid(<tag(vendoruid)>).body=c_man   
+//        finduid(<tag(vendoruid)>).speech=spk_vendor_custom  //protoze to maze jejich rec   
+//     endif
+//     src.sysmessage(Pohlavi vendora zmeneno.)    
+//    endif
+//  else
+//    src.sysmessage(Neni tu vendor, nemuzes menit nic)
+//  endif
+//endif
+
+on=7//prejmenovat prodejni misto
+if (f_field_checkrightsmes(1))
+//src.say chci prejmenovat dum
+ //src.smsg Jak se ma dum jmenovat?
+ //src.targ=<uid>
+ //src.everbtarg finduid(<uid>).renamehouse=tag(housename)
+ input(Jak se ma pole jmenovat?,tag.housename,<tag(housename)>)
+endif
+
+//on=8//vyhodit vendora
+//if (f_vend_checkrightsmes(2))
+// if(<tag(vendor_trest)>) //Navratit vendora
+//  arg(vendorfound,<tag(vendoruid)>)
+//  if(arg(vendorfound)) //mame-li vendora (vratil vendorovo UID)
+//    finduid(arg(vendorfound)).p=<tag(vendpos)> //premisti na novou pozici
+//    finduid(arg(vendorfound)).update
+//    src.sysmessage(Vendor navracen)
+//  else 
+//    src.sysmessage(Vendor nenalezen - pravdepodobne byl zrusen po potrestani!)      
+//    tag.remove(vendor_trest)
+//  endif
+//  tag.remove(vendor_trest)
+// else //Odstranit vendora za trest
+//  potvrdit(trashvendor,"Opravdu chces odstranit vendora? Nezrusi tagy => majitel si nemuze pridat noveho vendora - pouzij pouze jako TREST nikoliv k vyklizeni stanku !!!")
+// endif 
+//endif
+//
+on=9//banka
+if (tag(bankactivated))
+  if ((distancefrom(<src>) < 4) || (<region> == <src.region>))
+   if (<src.tag.realm>==<region.tag.houserealm>)
+    src.bankself
+   else
+    src.sysmessage("K teto funkci nemas prava.")
+   endif 
+  else
+    src.sysMessage("Stojis daleko")
+  endif
+else
+  potvrdit("field_aktivuj_banku", Skutecne chces aktivovat banku u tohoto pole a zaplatit za to 100 000 gp?)
+endif
+
+on=10//predat vlastnictvi
+if (f_field_checkrightsmes(1))
+//src.say chci predat vlastnictvi domu.
+src.newitem i_target_field
+src.act.name=vlastnik
+src.act.link=<uid> 
+src.act.more1=10
+src.act.equip
+endif
+
+on=11//block plac
+if (f_field_checkrightsmes(2))
+ potvrdit(f_field_blockplac,"Opravdu chces pole <qval(<tag(block)>,Od,Za)>blokovat?")
+endif
+
+on=12//trash plac
+if (f_field_checkrightsmes(2))
+ potvrdit(trashfieldplac,"Opravdu chces vyklidit pole?") 
+endif
+
+on=13//vynulovat najem
+if (f_field_checkrightsmes(2))
+ potvrdit(tag(paiduntil,<serv.time>),"Opravdu chces vynulovat najem?")
+endif
+
+on=14//nastavit najem
+if (f_field_checkrightsmes(2))
+ //src.smsg Kolik gp ma byt mesicni najem?
+ //src.everbtarg finduid(<uid>).tag.najem=
+ input("Kolik ma byt najem?",tag.najem,<tag(najem)>)
+endif
+
+on=15//autorent
+if (f_field_checkrightsmes(2))
+ if (tag(autorent))
+  src.smsg Automaticky najem vypnut.
+  tag(autorent,0)
+ else
+  src.smsg Automaticky najem zapnut.
+  tag(autorent,1)
+ endif
+endif
+
+on=16//zastavit drazbu
+if (f_field_checkrightsmes(2))
+ potvrdit(f_field_zastavit_drazbu,"Opravdu chces zastavit drazbu tohoto pole?")
+ return 1
+endif
+
+//on=17//pozice pro Vendora
+//if (f_vend_checkrightsmes(1))
+// src.newitemsafe(i_target_vendor)
+// lastnew.link=<uid>
+// lastnew.more1=17
+// lastnew.equip
+//endif
+
+//on=18//odstranit vendora i s tagy
+//if (f_vend_checkrightsmes(2))
+// potvrdit(trashvendor_itagy,"Opravdu chces odstranit vendora? Odstraneni i s tagy => pokud nechas majitele muze si pridat noveho vendora!")
+// return 1
+//endif
+//
+on=19//prihodit libovolne
+if (f_field_checkrightsmes(0))
+  if(!(<var(vm_rank)>)) //zahajit drazbu nebo prihodit (pro verejnost)    
+    if(!<tag(drazba)>) //neprobiha-li zrovna drazba pozn. vsechny tagy jdou na ten worldgem
+      input(Jaka ma byt prvni nabidka? nejmene <eval <tag(najem)>+10000>,f_field_prihod,<eval 10000+<tag(najem)>>)     
+    else //probiha-li drazba
+      arg(uplynula_doba_drazby,<serv.time>-<eval tag(zacatekdrazby)>)
+      if(<arg(uplynula_doba_drazby)> < 18144000) //cas od zacatku drazby je mensi nez tri tydny (3*7*24*3600*10=18144000)
+         input(Nova nabidka? nejmene <eval <tag(nabidka)>+10000> ,f_field_prihod,<eval 10000+<tag(nabidka)>>)
+      else
+        src.sysmessage(Drazba uz skoncila)
+      endif    
+    endif 
+  else //((var(vm_rank))||(var(vm_rank)==2)) //dorovnavat    
+    if(<tag(drazba)>) //probiha-li drazba
+      if(!(<tag(zajemce)>==<more1>)) //posledni zajemce v drazbe neni majitel
+        if(src.isgm) //klikl GM
+          src.sysmessage(Jako GM muzes dorovnat zdarma)
+          src.accmsg(dorovnal nabidku v drazbe o "<name>" ve prospech majitele "<more1.name>")
+          tag(zajemce,#<more1>) //GM dorovnal ve prospech majitele (zajemce tudiz bude = majiteli)
+        else //neni to gm,  klikl majitel
+          if(src.pay(<tag(nabidka)>)) //jestlize si muze majitel dovolit dorovnat
+            tag(zajemce,<src>) // majitel dorovnal, stal se nejvyssi nabidkou ale samotna max. nabidka se nezvysuje...
+            src.sysmessage(Dorovnal jsi nejvyssi nabidku)
+	    src.accmsg(Dorovnal jako majitel nabidku na <name>)
+          else
+            src.sysmessage(Nemas dost penez k dorovnani nabidky, potrebujes <tag(nabidka)> gp.)
+          endif
+        endif
+      else //posledni zajemce v drazbe uz je majitel sam
+        src.sysmessage(Nejvyssi nabidka patri majiteli, neni treba dorovnavat)
+      endif
+    else //drazba neprobiha
+      src.sysmessage(Neprobiha zadna drazba, neni potreba nic dorovnavat) 
+    endif   
+  endif 
+endif
+
+//on=20 // Help
+//src.dialog(d_vendor_help)
+ 
+[function f_field_prihod] //argv(0) - to co zadal v inputu za castku
+arg(castka,<fixNumber(<args>)>)
+if(!<tag(drazba)>) //zavolano z prvni casti buttonu 19
+   if(<arg(castka)> < (<eval <tag(najem)>+10000>))
+     src.sysmessage(Drazbu muzes zahajit vstupni castkou nejmene <eval <tag(najem)>+10000>)
+   else 
+     if(src.pay(<arg(castka)>)) 
+       tag(nabidka,<arg(castka)>) //link je porad ten worldgem t_vendorplac
+       tag(zajemce,<src>) //uid zajemce
+       tag(zacatekdrazby,<serv.time>)
+       tag(drazba,1) //zahajit drazbu
+       src.sysmessage(Ucinil jsi zakladni nabidku <tag(nabidka)> gp.)
+       src.accmsg(Zahajil drazbu o pole <name> nabidkou <castka>)
+     else
+       src.sysmessage(Nemas dost penez na zahajeni drazby, potrebujes aspon <eval (<tag(najem)>+10000)> gp.)
+     endif   
+   endif  
+else //drazba neni, zavolano z druhe casti buttonu 19
+   if(<arg(castka)> < (<eval <tag(nabidka)>+10000>))
+     src.sysmessage(Nabidku muzes zvysit nejmene na <eval <tag(nabidka)>+10000>)
+   else 
+     if(src.pay(<arg(castka)>))
+       tag(nabidka,<arg(castka)>) //autorem je porad ten worldgem t_vendorplac
+       tag(zajemce,<src>)
+       src.sysmessage(Zvysil jsi nabidku na <tag(nabidka)> gp.)
+       src.accmsg(Zvysil nabidku v drazbe o pole <name> castkou <castka>)
+     else
+       src.sysmessage(Nemas dost penez na prihozeni, potrebujes aspon <eval <tag(nabidka)>+10000> gp.)
+     endif
+   endif     
+endif
+dialog d_fieldmenu_nabidka
+
+[function f_field_prihod_gm]
+arg(castka,<fixNumber(<args>)>)
+if(!<tag(drazba)>) //zavolano z prvni casti buttonu 4
+   if(<arg(castka)> < (<eval <tag(najem)>+10000>))
+     src.sysmessage(Drazbu muzes zahajit vstupni castkou nejmene <eval <tag(najem)>+10000>)
+   else 
+     src.sysmessage(Jako GM muzes drazit zdarma)
+     src.accmsg(zahajil drazbu o "<name>" castkou <castka>)
+     tag(nabidka,<arg(castka)>) //link je porad ten worldgem t_vendorplac
+     tag(zajemce,<src>) //uid zajemce
+     tag(zacatekdrazby,<serv.time>)
+     tag(drazba,1) //zahajit drazbu
+     src.sysmessage(Ucinil jsi zakladni nabidku <tag(nabidka)> gp.)     
+   endif  
+else //drazba neni, zavolano z druhe casti buttonu 4
+   if(<arg(castka)> < (<eval <tag(nabidka)>+10000>))
+     src.sysmessage(Nabidku muzes zvysit nejmene na <eval <tag(nabidka)>+10000>)
+   else 
+     src.sysmessage(Jako GM zvysujes nabidku zdarma)
+     src.accmsg(prihodil do drazby o "<name>" castku <castka>)
+     tag(nabidka,<arg(castka)>) //autorem je porad ten worldgem t_vendorplac
+     src.sysmessage(Zvysil jsi nabidku na <tag(nabidka)> gp.)     
+   endif     
+endif
+dialog d_fieldmenu_nabidka
+
+[function field_aktivuj_banku]
+if (src.pay(100000)) 
+  tag(bankactivated,1)
+  src.accmsg("bank activated at pole uid=<uid> (<name>)")
+  src.classmessage(Banka aktivovana.)
+  dialog d_field_menu
+endif
+
+[function f_field_checkrightsmes] //overi prava uzivatele vyvesky vendora //upraveno
+if (f_field_checkrights(<args>))
+ return 1
+else
+ src.redmessage(Nemas na to pravo.)
+ return 0
+endif
+
+[function f_field_checkrights] //dtto co predchozi //upraveno
+field_findrank(<src>)
+if (<vm_rank>>=<args>)
+ return 1
+else
+ return 0
+endif
+
+[function f_field_zastavit_drazbu]//upraveno
+field_findrank(<src>)
+if(<vm_rank>==2) //GM
+ tag(drazba,0)
+ tag.remove(zajemce)
+ tag.remove(nabidka)
+ tag.remove(zacatekdrazby)
+ src.accmsg(zastavil drazbu pole <name>)
+ src.sysmessage(Zastavil jsi drazbu pole <name>)
+ DIALOG d_field_menu
+endif
+
+[function f_field_lockeditem]
+if (finduid(tag.vm_lockedto)) //najde li uid cedule na kterou je to zamceno
+ if (finduid(<tag.vm_lockedto>).isvendorplac)//je locknut k stanku
+  var(globallock,<eval finduid(<tag.vm_lockedto>).tag.vm_lockit>)//uroven zamceni celeho stanku (defaultne 0)
+  var(itemlevel,<tag.vm_lockit>)
+  var(itemuid,0)
+  if (<itemlevel>>2)
+   var(itemuid,<itemlevel>) //ulozeni hodnoty
+   finduid(<tag.vm_lockedto>).field_findrank(<itemlevel>) //cedule nalezne rank toho itemu :)
+   var(itemlevel,<vm_rank>+1)
+  endif
+  finduid(<tag.vm_lockedto>).field_findrank(<src>)
+  //src.smsg itemlevel:<itemlevel>. charlevel:<vm_rank>
+  if ((type==t_door_locked)||(<itemlevel><=<vm_rank>)||(<itemuid>==<src>))&&(<globallock><=<vm_rank>)
+  //dvere jsou zamcene - standart|| mensi itemlevel||jsem vlastnikem
+   return 0
+  else
+   src.redmessage(Nemas na to pravo.)
+   return 1
+  endif
+ endif
+endif
+events -t_field_lockeditem
+unblockitem
+return 0
+
+[DIALOG d_field_statask]//upraveno
+0,0
+if(<src.isgm>) //bude tam i cudlik GM
+ argo.resizepic(100,100,2620,300,130)
+else //pouze cudliky verjena a vlastnik
+ argo.resizepic(100,100,2620,300,110)
+endif
+
+argo.settext(0,Na jakou uroven chces vec zamknout?) //uvodni text
+argo.text(120,120,955,0) //uvodni text
+
+argo.settext(1,Verejna)  //text 1
+argo.text(140,145,955,1) //text cudliku 1 (verejnost)
+argo.button(120,150,2104,2103,1,0,1)
+
+argo.settext(2,Vlastnik)
+argo.text(140,165,955,2)//text cudliku 4 (majitel)
+argo.button(120,170,2104,2103,1,0,4)
+
+if(<src.isgm>)
+  argo.settext(3,GM)
+  argo.text(140,185,955,3) //text cudliku 5 (GM)
+  argo.button(120,190,2104,2103,1,0,5) 
+endif
+
+[DIALOG d_field_statask BUTTON]//upraveno
+on=0
+remove
+on=1 //cudlik 1 (verejnost)
+f_field_lock(0)
+//on=2
+//f_lock(1)
+//on=3 //cudlik 3 (GM)
+//f_lock(2)
+on=4 //vlastnik
+f_field_lock(1)
+on=5 //GM
+f_field_lock(2)
+//on=6
+//if (src.uid==0)||(src.uid==1)||(src.uid==2)||(src.uid==3)||(src.uid==4)||(src.uid==5)
+//  src.classmessage(Mas nevhodnou postavu na osobni zamykani...kontaktuj GM...)
+//elseif (src.targ.type==<NID(t_housemenu)>)
+//  src.sysmessage("Nemuzes zamknout vyvesku domu na osobu.")
+//else
+//  f_lock(<src>)
+endif
+
+ 
+[function f_field_lock]//link - house, src.targ - zamknuta vec, args - level //upraveno
+if (src.targ.issameregion(<link>))&&(src.targ.cont==0) //predmet ve stanku a na zemi
+  if(src.targ==<link.tag(najemcont)>) //pokousel se zamykat truhlicku
+    src.sysmessage(Truhlicku zamykat nemuzes)
+    link.dialog d_field_menu
+    return 1
+  endif
+  src.targ.tag(vm_lockit,<args>) //level zamceni
+  link.array_findremove(tag.lockedlist,<src.targ>)//seznam itemu na domu
+  link.array_add(tag.lockedlist,<src.targ>)//seznam itemu na domu
+  //link.array_dump(tag.lockedlist)
+  if (src.targ.type!=t_fieldmenu)
+   src.targ.tag(vm_lockedto,<link>) //uid cedule domu
+   src.targ.tag(vm_storeattr,<src.targ.attr>) //ulozit atributy
+   src.targ.attr_movenever=1 //a nastavit nove
+   src.targ.attr_movealways=0
+   src.targ.attr_decay=0
+   src.targ.attr_candecay=0
+   src.targ.events +t_field_lockeditem
+   src.classmessage(Vec zamknuta)
+   if (<src.targ.type>==t_door)
+    src.targ.type=t_door_field
+   endif
+  endif
+  remove
+endif
+
+[function f_field_blockplac]
+if (argvcount)
+ arg(value,<args>)
+elseif (safe tag(block))
+ arg(value,0) 
+else
+ arg(value,1) 
+endif
+if (arg(value))
+ try tag(block,1)
+ foreachlocked(f_field_blockitem)
+ src.redmessage(Pole zablokovano.)
+else
+ try tag(block,"")
+ foreachlocked(f_vend_unblockitem)
+ src.classmessage(Pole odblokovano.)
+endif
+
+
+[function f_field_blockitem] //pro pripadne blokovani prodejniho mista //upraveno
+if (<safe.tag.vm_lockedto>)
+ if (finduid(<tag.vm_lockedto>).isvendorplac)//je locknut k domu
+  if !(strlen(<tag.vm_storecolor>))//neni uz blocknut
+   events +t_field_lockeditem//pro jistotu
+   tag(vm_storecolor,<eval color>)
+   color=1
+  endif 
+ endif
+endif
+
+
+[DIALOG d_fieldmenu_nabidka]     //upraveno
+0,0
+resizepic 100 100 2620 550 <eval (5*d_def_radek_vyska)+(3*d_def_okraj)>  //s gumpem width=480
+//tag(uvodni_text,"<link.name>")
+//tag(nabidka,"<tag(nabidka)>")
+//tag(zajemce,"<tag(zajemce)>")
+argo.settext(100,Stav drazby pole "<?name?> - <?tag(housename)?>") //jméno linku (to je vendorplac)
+argo.settext(101,Nabidka: <?tag(nabidka)?>)
+argo.settext(102,Zajemce s posledni nabidkou: <?tag(zajemce).name?>)
+
+//argo.htmlgump(120,120,450,30,0,0,100) //uvodni text
+argo.text(120,120,955,100) //uvodni text
+argo.text(140,145,955,101) //text 1  s gumpem y=155
+argo.text(140,165,955,102) //text 2  s gumpem y=175
+if(<?tag.drazba?>)
+  argo.tag(cas,<f_vend_cas_do_konce_drazby>)
+  argo.settext(103,Cas do konce drazby: <argo.tag(cas)>) //text 3
+  argo.text(140,185,955,103) //text pri drazbe s gumpem y=195
+else
+  argo.settext(104,Cas do konce drazby: Drazba neni zahajena) //text 4
+  argo.text(140,185,955,104) //text kdyz drazba neni s gumpem y=195
+endif
+
+[typedef t_door_field]
+on=@userdclick
+if (isevent(t_field_lockeditem))
+ events=-t_field_lockeditem
+endif
+if (more2==0)
+ more2=<dispid>
+ morep=<p>
+endif
+if (dispid != <more2>) 
+  type=t_door
+  dclick
+  type=t_door_field
+  more2=<dispid>
+  morep=<p>
+elseif !(hlidaccheck(<finduid(<tag(vm_lockedto)>).tag(hlidac)>))
+  if (src.isGM)
+    src.sysmessage("GMko projde")
+    type=t_door
+    dclick
+    type=t_door_field
+  elseif (<hval(<finduid(<tag(vm_lockedto)>).more1>)>==<hval(src.uid)>)
+    //src.sysmessage("Majitel projde")
+    type=t_door
+    dclick
+    type=t_door_field
+  else
+    src.sysmessage("Neprojdes!")
+  endif
+else
+  type=t_door
+  dclick
+  type=t_door_field
+endif
+return 1
+
+on=@timer
+dispid=<more2>
+p=<morep>
+update
+return 1
+
+[function hlidaccheck]
+return <args.ismypet>
+
+[eof]

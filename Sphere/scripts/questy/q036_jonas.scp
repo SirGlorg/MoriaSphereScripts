@@ -1,0 +1,491 @@
+////////////////////
+// UHROVITY JONAS //
+////////////////////
+
+//1) NPC Uhrovity Jonas - mladej vyrostek, co si o sobe hodne mysli. Chce po postavach, aby mu pomohly premluvit otce, kterej ma u sebe mec, jenz se v jejich rodine dedi z otce na syna uz dlouhy roky - akorat otec mu ho nechce dat.
+//2) NPC Evzen, coz je Jonasuv otec - kdyz za nim postavy prijdou, aby zjistily, proc Jonasovi nechce dat mec, rekne jim, ze si mysli, ze jeste neni pripravenej, ze jeste nic poradnyho nezazil.
+//3) Na zaklade tohodle se Jonas nasere a postavy dostanou collector na 4x scorp kingy, ktery maji donest Evzenovi a rict, ze to zabil Jonas jako dukaz sve dospelosti
+//4) Evzen collector prijme, ale rekne, ze to neni nic, ze to by zvladnul kazdej mlicnak
+//5) Jonas je s rozumem v koncich, tak posila postavy k panovi cervu (ten boss s pokladkem nad oazou, je v takovy jeskyni, kam se porti, kdyz se zabije par cervu, kde se udajne skryva jakysi Hubert - to bude hidujici NPC, ktery postavam poradi, at se vybodnou na nejaky zabijeni priser, ze tech za svuj zivot Evzen zabil tisice - at na to jdou pres zenskou
+//6) Jonas po tyhle informaci postavy posila na rhunskej ostrov za Fiflenou - ta je podle jeho informaci ta nejvic nedostupna zena :)
+//7) NPC fiflena reaguje odlisne - pokud je hrac zena, usmeje se, a rekne, ze je pro kazdou rostarnu, kterou by nasrala svyho napadnika, kterej ji uz unavuje - vymenou za damskou valo plate hrud da svoje kalhotky jako "dukaz" toho, ze ji Evzen svedl
+// - pokud je hrac muz, rekne mu, at si na takovyhle prasarny najde nejakou devku... ale pokud by mel treba 30k, mohli by se nejak domluvit... samozrejme za 30k da hraci rovnez kalhotky
+//8) s kalhotkama jdou hraci za Jonasem, ten jim rekne, ze parada a posle je s nima za otcem Evzenem, ktery je uznale vymeni za mec - mec pak hraci odevzdaji u Jonase, kde kvest konci a tam se dostava odmena, kterou jeste nemam vymyslenou :)
+
+////////////////////////
+//// TAGY
+// q036_jonas - 1  - prijal quest od Jonasa
+// q036_jonas - 2  - pokecal s Evzenom (jonasov otec)
+// q036_jonas - 3  - pokecal s Jonasom a prijal collector na 4 titan lordov
+// q036_jonas - 4  - odnesie collector Evzenovi
+// q036_jonas - 5  - pokeca s Jonasom, ide vyhladat Pana Cervov
+// q036_jonas - 6  - pokeca s panom Cervov
+// q036_jonas - 7  - pokeca s Jonasom
+// q036_jonas - 8  - pokeca s Fiflenou
+// q036_jonas - 9  - prinesie jej val plate zensku hrud / necklace itemovy
+// q036_jonas - 10 - pokecal s Evzenom, prijal mec
+// q036_jonas - 11 - odniesol mec Jonasovi, dostal ozmenu - quest complete
+/////////////////////////
+
+[speech spk_q036_jonas_uhrovity]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q036_jonas_uhrovity)
+
+[function f_q036_jonas_uhrovity]
+if (<src.flags>&statf_dead)
+ return 1
+else
+  dialog(d_q036_jonas_uhrovity)
+endif
+
+[dialog d_q036_jonas_uhrovity]
+argo.questDialog_create(03082,"Uhrovity Jonas")
+
+argo.dialog_newPage("Pozdrav")
+arg(q036_jonas,<eval src.qtag(q036_jonas)>)
+
+if (<arg(q036_jonas)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Muzu pomoci?")
+endif 
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Ahoj.")
+  argo.questDialog_HTMLGUMP
+
+if (<arg(q036_jonas)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jsem Jonas, syn bojovnika Evzena! Nutno vsak rici, ze muj otec je v porovnani se mnou nic... mozna snad kdyz byl mlady...ale ted... ted jsem nejmocnejsi bojovnik v okoli!")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Muzu pomoci?")
+    argo.setText(argo.newTextLine,"Hmm, jak o tom tak premyslim, mozna by se mensi pomoc hodila. Mam pro tebe ukol...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ale ja ti nechci pomoci...")
+    argo.questDialog_addResponse(0,1,1,"Goodbye") 
+    argo.setText(argo.newTextLine,"Muzes mi o tom povedet vice?")
+    argo.questDialog_addResponse(0,0,1,"q036_about_work")
+    
+  argo.dialog_page("q036_about_work")
+    argo.setText(argo.newTextLine,"Je to jednoduche. Muj otec ma krasny mec. Ten mec je v drzeni nasi rodiny jiz cela staleti, vzdy se dedi z otce na syna... ale Evzen mi ten mec stale nechce dat! Pry jeste nejsem pripraven, pry si jej jeste nezaslouzim! Zkus od nej mec nejak ziskat - ale ne, ze mu neco udelas! Porad je to preci jen muj otec... Najdes ho nekde v pousti pred ztracenym mestem, porad se tam honi za nejakym klicem ci co...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobra, zkusim to s nim nejak dohodnout.")
+    argo.questDialog_addResponse(0,1,1,"q036_accept_work") 
+    argo.setText(argo.newTextLine,"Promin, ale do toho fakt nejdu.")
+    argo.questDialog_addResponse(0,1,0,"Goodbye")   
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Nemam nic, co by te mohlo zajimat.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  if (<arg(q036_jonas)> == 0)
+    argo.setText(argo.newTextLine,"Pche, praci... Prace smrdi, poradne muze zivi ocel!")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q036_jonas)> > 0)
+    argo.setText(argo.newTextLine,"Jak praci? Svuj ukol uz mas! Ja cekam...")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Nesu ti")  
+  if ((<arg(q036_jonas)> == 0)||(<arg(q036_jonas)> == 11))
+    argo.setText(argo.newTextLine,"Urcite nemas nic, co by me mohlo jen trochu zajimat...")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(q036_jonas)> == 1)||(<arg(q036_jonas)> == 2)||(<arg(q036_jonas)> == 3)||(<arg(q036_jonas)> == 4)||(<arg(q036_jonas)> == 5)||(<arg(q036_jonas)> == 6)||(<arg(q036_jonas)> == 7)||(<arg(q036_jonas)> == 8)||(<arg(q036_jonas)> == 9)||(<arg(q036_jonas)> == 10))
+    argo.setText(argo.newTextLine,"Copak, mas uz ten mec?")
+    argo.questDialog_HTMLGUMP
+    if <arg(q036_jonas)> == 2)
+    	argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Bohuzel. Evzen vzkazuje, ze si jej zatim nezaslouzis. Abys jej mohl ziskat, musis si jej nejprve zaslouzit.")
+      argo.questDialog_addResponse(1,0,1,"q036_first_work_info") 
+    elseif <arg(q036_jonas)> == 4)
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Porad nic. Evzen s usmevem na rtech rikal, ze tohle mu jako dukaz tve pripravenosti ziskat mec rozhodne nestaci - tohle pry zvladne kazdy mlicnak...")
+      argo.questDialog_addResponse(1,0,1,"q036_second_work_info") 
+    elseif <arg(q036_jonas)> == 6)
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Hubert vzkazuje, at upustis od zabijeni priser, to na takoveho mazaka, jakym je Evzen, neplati. Rikal, at to radeji zkusis pres ziskani nejake nedostupne zeny - to je totiz i pro tveho otce nezpochybnitelny dukaz toho, ze jsi poradny chlap!")
+      argo.questDialog_addResponse(1,0,1,"q036_third_work_info") 
+    elseif <arg(q036_jonas)> == 10)
+      argo.setText(argo.newTextLine,"Presne tak! Tady ho mas!")
+      argo.questDialog_addResponse(0,1,1,"q036_complete") 
+    endif
+    argo.setText(argo.newTextLine,"Zatim ho nemam, promin.")
+    argo.questDialog_addResponse(0,1,1,"q036_have_no_sword") 
+  endif
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Mlady, uhrovity a na prvni pohled namysleny fakan, ktery se mermomoci snazi tvarit a pusobit jako ostrileny bojovnik. Kazdym svym sebemensim projevem vsak dava najevo, ze jim rozhodne neni a jeste pekne dlouho nebude.*")
+  argo.questDialog_HTMLGUMP
+ 
+if <arg(q036_jonas)> == 2)
+	argo.dialog_page("q036_first_work_info") 
+	  argo.setText(argo.newTextLine,"Hmm, jak toho staryho paprdu presvedcit? Uz to mam! Tady mas truhlu a zabij pro me... ja nevim... treba ctyri titan lordy! urizni jim hlavy a hod je do truhly - tu pak i s hlavami dones memu otci s tim, ze to ja jsem je premohl a holyma rukama jim utrhl hlavy. To ho urcite presvedci!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ehm, no jak myslis. Jdu na to.")
+      argo.questDialog_addResponse(0,1,1,"q036_first_work_accept") 
+      argo.setText(argo.newTextLine,"Jsi normalni? Tomuhle nikdo neuveri, do toho ja rozhodne nejdu.")
+      argo.questDialog_addResponse(0,1,1,"q036_refuse") 
+endif
+
+if <arg(q036_jonas)> == 4)
+	argo.dialog_page("q036_second_work_info") 
+	  argo.setText(argo.newTextLine,"Sakra, dochazi mi napady. Ale jeste je preci jen nadeje - dojdi za Hubertem, je to stary lovec, ktery se s oblibou schovava v jeskyni u cervu a vsemoznych jinych plesnivych bestii nad Oazou Hagir. Je to zkuseny muz a zna se s mym otcem Evzenem - ten jiste bude vedet, co na nej plati!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Vlezt do cerviho brlohu? Tak to bohuzel...")
+      argo.questDialog_addResponse(0,1,1,"q036_refuse") 
+      argo.setText(argo.newTextLine,"Uff, no dobre. Zkusim ho najit.")
+      argo.questDialog_addResponse(0,1,1,"q036_second_work_accept") 
+endif
+
+if <arg(q036_jonas)> == 6)
+	argo.dialog_page("q036_third_work_info") 
+	  argo.setText(argo.newTextLine,"Sakra, ze me to nenapadlo driv! To je vyborny napad, otec sam byl vzdycky na pekny zensky, co si tak vybavuju! Najdi Fiflenu, zije kdesi na hradku na nejakem svem zaplivanem ostruvku, kde odmita vsechny mozne i nemozne napadniky - je to ta nejnedostupnejsi zena, kterou znam. Pokud nejakym...ehm...zpusobem... ziskas jeji kalhotky a ty pak doneses memu otci...  Buwehe, ten bude cumet!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Hmm... no co, figuru mam uchazejici. Zkusim je od ni nejak ziskat.")
+      argo.questDialog_addResponse(0,1,1,"q036_third_work_accept") 
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Delas si srandu? Zabit nejaka krvelacna monstra je jedna vec... ale pokouset zenu, navic Fiflenu? Nikdy!")
+      argo.questDialog_addResponse(1,1,1,"q036_refuse") 
+endif
+
+[dialog d_q036_jonas_uhrovity button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q036_complete"))
+ if (<eval src.qtag(q036_jonas)> == 10)
+    say("Zjova, paradni mec! Nevis o nekom, kdo by ho koupil? Kazdopadne zde je tva odmena.")
+    src.qtag(q036_jonas,11,42)
+    src.addexp(1500)
+    src.givegold(15000) 
+    f_quest_complete(42)  // splnenie questu "Uhrovity Jonas"
+  else
+    say("Ale vzdyt ten mec nemas!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q036_first_work_accept"))
+  if (src.tag(level)>=15)
+    say("Vyborne! A pamatuj, az je zabijes, jejich hlavu do truhly!")
+    src.qtag(q036_jonas,3,42)
+    src.newitem(i_q036_tl_collector)
+    src.act.bounce
+  else
+  	say("Nato si este velmi slaby...")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q036_second_work_accept"))
+  say("A davej pozor - mozna se bude skryvat!")
+  src.qtag(q036_jonas,5,42)
+elseif (<argn> == argo.dialog_linkButton("q036_third_work_accept"))
+  say("Super, tak se snaz!")
+  src.qtag(q036_jonas,7,42)
+elseif (<argn> == argo.dialog_linkButton("q036_accept_work"))
+  say("Vyborne, zkus od nej neco zjistit...")
+  src.qtag(q036_jonas,1,42)
+elseif (<argn> == argo.dialog_linkButton("q036_refuse"))
+  say("Tak si trhni a uz me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("q036_have_no_sword"))
+  say("Tak se ho snaz ziskat!")
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+///////////////////////////
+
+[speech spk_q036_jonas_evzen]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q036_jonas_evzen)
+
+[function f_q036_jonas_evzen]
+if (<src.flags>&statf_dead)
+ return 1
+else
+  dialog(d_q036_jonas_evzen)
+endif
+
+[dialog d_q036_jonas_evzen]
+argo.questDialog_create(03020,"Bojovnik Evzen")
+
+argo.dialog_newPage("Pozdrav")
+arg(q036_jonas,<eval src.qtag(q036_jonas)>)
+
+if (<arg(q036_jonas)> == 1)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif 
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Bud zdrav!")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q036_jonas)> == 1)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Ahoj, me jmeno je Evzen. Sveho casu jsem byl udatnym bojovnikem, ale ty doby uz jsou davno pryc, a tak si jen uzivam zaslouzeneho odpocinku a snazim se, aby z meho syna jednou taky neco bylo.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"...a prave tvuj syn me za tebou posila!")
+    argo.questDialog_addResponse(0,0,1,"q036_son_send_him") 
+
+  argo.dialog_page("q036_son_send_him")
+    argo.setText(argo.newTextLine,"A co mi chce, hejsek? Posledne, kdyz jsme se videli, nemlel nic jineho, nez ze chce muj mec. Nedalo se s nim vubec mluvit.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ano, tady jsi uderil hrebicek na hlavicku - chce ten mec...")
+    argo.questDialog_addResponse(0,0,1,"q036_son_want_sword") 
+    argo.setText(argo.newTextLine,"A vis, ze vlastne ani nevim? To je fuk, mej se...")
+    argo.questDialog_addResponse(0,1,1,"Goodbye")   
+  
+  argo.dialog_page("q036_son_want_sword")
+    argo.setText(argo.newTextLine,"Tak na to at rychle zapomene! Tenhle mec musi nosit hrdy bojovnik a to jen ten, kdo si jej zaslouzi! Nez aby ho nosil ten mlicnak na okrasu, to si ho radsi s sebou vezmu do hrobu! Musi si ho nejprve zaslouzit!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Aha, dobre, povim mu to.")
+    argo.questDialog_addResponse(0,1,1,"q036_tell_son") 
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Je mi lito, ale nemam na prodej nic, co by te mohlo zajimat.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Promin, ale nemam pro tebe zadnou praci.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"refuse") 
+  if (<arg(q036_jonas)> == 3) && (<src.f_collector_isFull(i_q036_tl_collector)>)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Posila me tvuj syn Jonas. Ulovil pro tebe tyhle Titan lordy, pry holyma rukama, jako dukaz sve chrabrosti.")
+    argo.questDialog_addResponse(1,1,1,"q036_give_tl") 
+  elseif (<arg(q036_jonas)> == 9)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Jonas svedl Fiflenu, tu nejnedostupnejsi zenu na celem svete... posila ti tyto kalhotky jako dukaz.")
+    argo.questDialog_addResponse(1,0,1,"q036_give_underwear") 
+  endif	 
+ 
+if (<arg(q036_jonas)> == 9) 
+argo.dialog_page("q036_give_underwear") 
+	argo.setText(argo.newTextLine,"Hmmm, tak Fiflenu rikas, jo? Buwaha, tak on zas tak neschopny, jak jsem si jen myslel, nebude! Konecne mi dela radost, chlapec! Dobra, dej mu tenhle mec. Vyrid mu, at ho nosi se cti a hrdosti jako kazdy bojovnik nasi rodiny!")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Dobra, diky, predam mu ho a vyridim mu, cos mi rekl.")
+  argo.questDialog_addResponse(0,1,1,"q036_take_sword")  
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Postarsi, ale poradne urostly chlap. Je videt, ze za svuj zivot uz prosel nejednou bitvou a ne ze vsech vyvaznul bez nejakeho toho sramu. Prestoze vypada jako klidas, asi by nebylo dobre si s nim nic zacinat.*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q036_jonas_evzen button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q036_take_sword"))
+    say("Tady mas ten mec.")
+    src.qtag(q036_jonas,10,42)
+    src.SysMessage("<?src.sex(Prijal,Prijala)?> jsi stary mec.")
+elseif (<argn> == argo.dialog_linkButton("q036_give_tl"))
+  if (<src.f_collector_isFull(i_q036_tl_collector)>)
+    say("Pche, to zvladne kazdy. At se snazi vic!")
+    src.consume(i_q036_tl_collector)
+    src.addexp(750)
+    src.qtag(q036_jonas,4,42)
+  else
+    say("Ale vzdyt ty to jeste nemas!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q036_tell_son"))
+  say("A at se tu jen tak neukazuje!")
+  src.qtag(q036_jonas,2,42)
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Tak si trhni a uz me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+[speech spk_q036_jonas_hubert]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q036_jonas_hubert)
+
+[function f_q036_jonas_hubert]
+if (<src.flags>&statf_dead)
+ return 1
+else
+  dialog(d_q036_jonas_hubert)
+endif
+
+[dialog d_q036_jonas_hubert]
+argo.questDialog_create(03087,"Podivin Hubert")
+
+argo.dialog_newPage("Pozdrav")
+arg(q036_jonas,<eval src.qtag(q036_jonas)>)
+
+if (<arg(q036_jonas)> == 5)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif 
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Ahoj.")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q036_jonas)> == 5)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Rikaji mi Hubert. Ale kdo jsi sakra ty?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja jsem <?src.name?>, posila me za tebou mlady Jonas...")
+    argo.questDialog_addResponse(0,0,1,"q036_jonas_send_him") 
+    argo.setText(argo.newTextLine,"Do toho ti nic neni!")
+    argo.questDialog_addResponse(0,1,1,"refuse")
+    
+  argo.dialog_page("q036_jonas_send_him") 
+    argo.setText(argo.newTextLine,"A co mi chce, ten mlicnak? Jeho otec, to je pravy bojovnik, ne to rozmazlene decko...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Neopovazuj se ho urazet, je to dobry kluk!")
+    argo.questDialog_addResponse(0,1,0,"refuse")
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Chtel by se s tebou poradit, co by mohlo zapusobit na jeho otce, aby od nej ziskal ten rodinny mec... poslal mu nejake trofeje titan lordu, ale to nestacilo...")
+    argo.questDialog_addResponse(1,0,1,"q036_need_advice") 
+
+  
+  argo.dialog_page("q036_need_advice") 
+    argo.setText(argo.newTextLine,"Hmmm, jeho otec uz zabil vic monster, nez kdy Jonas vubec uvidi... s tim na nej nepochodi, to je jasne. Ale mohl by to zkusit pres zensky. Zensky vzdycky zaberou...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, to mu poradim, diky.")
+    argo.questDialog_addResponse(0,1,1,"q036_got_advice") 
+    argo.setText(argo.newTextLine,"To se mi zda jako pekne blba rada.)
+    argo.questDialog_addResponse(0,1,0,"refuse")
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Ja nic neprodavam.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Promin, nemam pro tebe nic.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"goodbye",1) 
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Podivny chlap, celou dobu se snazi stat pokud mozno ve stinu - tak aby na nej bylo co nejmene videt.*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q036_jonas_hubert button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q036_got_advice"))
+    say("Pozdrav Evzena, kdyz ho uvidis.")
+    src.qtag(q036_jonas,6,42)
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Tak me neotravuj!")
+endif
+
+/////////////////////////////
+//// dialogy pre fiflenu ////
+/////////////////////////////
+
+[function f_q036_jonas_fiflena_bargain]
+if (<eval src.qtag(q036_jonas)> == 7)
+  setText(newTextLine,"Posila me za tebou Jonas. Mam te jeho jmenem o neco pozadat...")
+  questDialog_addResponse(0,0,1,"q036_jonas_send_him")
+endif
+
+[function f_q036_jonas_fiflena_bring]
+if (<eval src.qtag(q036_jonas)> == 8)
+  setText(newTextLine,"<src.sex("Prinesl","Prinesla")> jsem ti <src.sex("ty penize","tu zenskou hrud")>.")
+  questDialog_addResponse(0,1,1,"q036_have_item")
+endif
+
+[function f_q036_jonas_fiflena_answer]
+if (<eval src.qtag(q036_jonas)> == 7)
+  dialog_page("q036_jonas_send_him")
+    setText(newTextLine,"A co ode me chce, ten spratek?")
+    questDialog_HTMLGUMP
+      setText(newTextLine,"<def_questDialog_colorTextResponse>No, existuje jeden mec a... no, to je moc dlouhy pribeh. Proste a jednoduse potrebuji tvoje kalhotky!")
+      questDialog_addResponse(1,0,1,"q036_want_her")
+      
+  dialog_page("q036_want_her")
+    if (src.obody == c_man)
+      setText(newTextLine,"Huh, coze? Takova drzost... ty prasaku! Ale co, od ty doby, co existuji penize, jsem se naucila takovehle urazky prehlizet... Takze se nejak domluvime a treba by se nejaky ty kalhotky nasly. Mam jedny, ktere nosim teprve tyden.")
+      questDialog_HTMLGUMP
+        setText(newTextLine,"A co bys za ne chtela?")
+        questDialog_addResponse(0,0,1,"q036_what_she_wants") 
+    else 
+      setText(newTextLine,"Hehe, tak kalhotky, jo? No co, ja jsem pro kazdou srandu. Nejak se domluvime, kdyz mi neco prineses...")
+      questDialog_HTMLGUMP
+        setText(newTextLine,"A co bys tedy chtela?")
+        questDialog_addResponse(0,0,1,"q036_what_she_wants") 
+    endif
+    
+  dialog_page("q036_what_she_wants")
+    if (src.obody == c_man)
+      setText(newTextLine,"Nooo, co ja vim. Prines mi treba 30000 zlatych. To by melo stacit na nove. Dvoje nove. Nebo radeji troje! Ruzove... A s krajkami!")
+      questDialog_HTMLGUMP
+        setText(newTextLine,"Uhm, tricet? No dobra, prinesu ti je.")
+        questDialog_addResponse(0,1,1,"q036_bring_item") 
+    else
+      setText(newTextLine,"Hmm, jsi zenska jako ja, penize z tebe tahat nebudu. Tak mi treba prines zenskou platovou zbroj z valoritu. A at ma hezky vyboulena prsa! ")
+      questDialog_HTMLGUMP
+        setText(newTextLine,"Jasan, zbroj minimalne s trojkama. Jdu na to!")
+        questDialog_addResponse(0,1,1,"q036_bring_item") 
+    endif
+endif
+
+[function f_q036_jonas_fiflena_Button] //argv(0) == button number (<argn>)
+if (<argv(0)> == dialog_linkButton("q036_bring_item"))
+  src.qtag(q036_jonas,8,42)
+  argv(1).say("A pohni, nemam na tebe cely den!")
+  return 1
+elseif (<argv(0)> == dialog_linkButton("q036_have_item"))
+  if (src.obody == c_man)
+    if ((<eval src.qtag(q036_jonas)> == 8) && (<src.rescount i_gold> >= 30000))
+      src.qtag(q036_jonas,9,42)
+      src.consume(30000,i_gold)
+      src.addexp(750)
+      argv(1).say("Tady jsou ty kalhotky jako dukaz, ze me svedl...")
+      src.SysMessage("<?src.sex(Prijal,Prijala)?> jsi kalhotky.")
+      return 1
+    else
+      argv(1).say("Ale vzdyt to nemas!")
+    endif
+  else
+    if ((<eval src.qtag(q036_jonas)> == 8) && (<src.rescount i_valorite_female_platemail> >= 1))
+      src.qtag(q036_jonas,9,42)
+      src.consume(1,i_valorite_female_platemail)
+      src.addexp(750)
+      argv(1).say("Tu mas moje kalhotky jako dukaz, ze me svedl...")
+      src.SysMessage("<?src.sex(Prijal,Prijala)?> jsi kalhotky.")
+      return 1
+    else
+      argv(1).say("Ale vzdyt to nemas!")
+    endif
+  endif
+endif
+return 0

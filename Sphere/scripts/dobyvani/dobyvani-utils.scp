@@ -1,0 +1,208 @@
+//(C) Dinivan - Moria (cz)
+
+//Funkce na ziskani dilcich hodnot casu (zivotne dulezite pro vyhlasovani valek :)
+//format casu je "YYYY/MM/DD HH:MM:SS"
+
+[function getYear]
+return <eval strMid(<servertime>,0,4)>
+
+[function getMonth] 
+return <eval strMid(<servertime>,5,2)>
+
+[function getDay] 
+return <eval strMid(<servertime>,8,2)>
+
+[function getHour]
+return <eval strMid(<servertime>,11,2)>
+
+[function getMinute]
+return <eval strMid(<servertime>,14,2)>
+
+[function getSecond]
+return <eval strMid(<servertime>,17,2)>
+
+[function abs]//absolutni hodnota
+if(<eval argv(0)> < 0)
+ return <eval <argv(0)>*(-1)>
+else 
+ return <eval argv(0)>
+endif
+
+[function isWeekend] //tak tohle opravdu ne !!! :) UO nema zadnej kalendar
+return 0
+
+[function isHourOK]//hodina, OK-od, OK-do
+if(<eval argv(1)> < <eval argv(2)>) //OK - standardni postup
+ if(<eval argv(0)> >= <eval argv(1)>) && (<eval argv(0)> <= <eval argv(2)>)  
+  return 1
+ endif
+else //treba zadano od 17 do 2 (do rana) zejo...
+ if(<eval argv(0)> < <eval argv(1)>) //presahlo to zrejme pulnoc
+  if(<eval argv(0)> <= <eval argv(2)>) //mene nez horni mez? (za pulnoci)
+   return 1
+  endif
+ else //jsme nad dolni mezi, OK
+  return 1
+ endif
+endif
+return 0 //kdykoliv jindy
+
+[function checkDateCorrectness]//den, mesic
+arg(day,<eval argv(0)>)
+arg(month, <eval argv(1)>)
+if(<month> > 12)
+ src.redmessage("Rok ma jenom dvanact mesicu.")
+ return 0
+endif
+if(<day> > <eval d_month_days_<month>>) //datum presahlo max v tom mesici
+ src.redmessage("<d_month_name_<month>> ma jen <d_month_days_<month>> dni.")
+ return 0
+endif
+return 1
+
+
+// VYPNUTO DOBYVANI, ZAKOMENTOVANI FUNKCE
+[function getNearestKeepName]//argv0 - cislo realmu
+//src.newitemsafe(i_bag)
+//arg(mybag,<lastnew>)
+//mybag.p=<p_x> <p_y> <p_z>
+//var(found_nearest_keep,0)
+//arg(fn,1)
+//arg(srcRealm,<getRealmName(<argv(0)>)>)
+//while(<fn> <= <keeps_world_count>)
+// arg(keepname,<keep_name_<srcRealm>_<fn>>)
+// if(<eval found_nearest_keep>==0)
+  //kermel.smsg(prvni pevnost: <var(keep_<keepname>)>)
+//  var(found_nearest_keep,<finduid(<var(keep_<keepname>)>)>)
+// else
+  //kermel.smsg(druha pevnost: <var(keep_<keepname>)> vzdalenost2: <mybag.distancefrom(<var(keep_<keepname>)>)> vzdalenost1: <mybag.distancefrom(<found_nearest_keep>)>)
+//  if(mybag.distancefrom(<var(keep_<keepname>)>) <= mybag.distancefrom(<found_nearest_keep>) ) 
+//   var(found_nearest_keep,<var(keep_<keepname>)>)
+//  endif
+// endif
+// arg(fn,#+1)
+//endwhile
+//arg(nkp,<found_nearest_keep.tag(jmeno_mesta)>)
+//mybag.remove
+//if(found_nearest_keep == 0)
+// var(found_nearest_keep,"")
+// return 0
+//else
+// var(found_nearest_keep,"")
+// return<arg(nkp)>
+//endif
+return 0
+
+
+[function getRealmName]
+if(<eval argv(0)>==1)
+ return"Gondor"
+else
+ return"Mordor"
+endif
+
+[function getSrcRealm]
+if(isplayer) //je to hrac
+ if(<eval tag(realm)>==1)
+  return"Gondor"
+ else
+  return"Mordor"
+ endif
+endif
+if(npc) //zrejme guard
+ if(typedef.tag(guard))
+  if(<eval typedef.tag(guard)>==1) 
+   return"Gondor"
+  else
+   return"Mordor"
+  endif
+ endif
+endif
+return 0
+
+[function warMessage]
+if(<eval tag(realm)> == <eval argv(0)>)
+ if(<eval tag(realm)>==1)  
+  bluemessage(<argv(1)>)
+ else
+  redmessage(<argv(1)>)
+ endif
+endif
+
+[function delayedWarMessage]
+if(isonline) //jako predchozi verze
+ warMessage(<argv(0)>,<argv(1)>)
+else //posle zpravu podle realmu jako delayedmessage (po nalogovani ji uvidej)
+ if(<eval tag(realm)> == <eval argv(0)>)
+  if(<eval tag(realm)>==1)  
+   delayedredmessage(<argv(1)>)
+  else
+   delayedredmessage(<argv(1)>)
+  endif
+ endif
+endif
+
+
+[defnames dobyvani_pevnosti]
+d_fort_warFrom		17	
+d_fort_warTo		0
+
+d_fort_weekend_warFrom  17
+d_fort_weekend_warTo	0
+
+d_fortcount		3
+
+//Gondor 1
+d_area_Gondor_1_1	Osgiliath zapadni breh
+d_area_Gondor_1_2	Pelenorska pole
+d_areas_Gondor_1	2
+
+d_area_Gondor_2_1	Vychodni Marka
+d_area_Gondor_2_2	Anorien
+d_areas_Gondor_2	2
+
+d_area_Mordor_1_1	Osgiliath vychodni breh
+d_area_Mordor_1_2	Vychodni breh
+d_area_Mordor_1_3	Severni Ithilien
+d_area_Mordor_1_4	Jizni Ithilien
+d_areas_Mordor_1	4
+
+d_area_Mordor_2_1 	Minas Morgul
+d_area_Mordor_2_2 	Gorgoroth
+d_areas_Mordor_2	2
+	
+d_area_Mordor_3_1	Rhovanion
+d_area_Mordor_3_1	Temny hvozd
+d_areas_Mordor_3	2
+
+d_palantir_Osgiliath_Zapadni_Breh	Gondor_1
+d_palantir_Osgiliath_Vychodni_Breh	Mordor_1
+d_palantir_Vychodni_Marka		Gondor_2
+d_palantir_Minas_Morgul			Mordor_2
+
+[defnames months_all]
+d_month_days_1		31
+d_month_days_2		28	
+d_month_days_3		31
+d_month_days_4		30
+d_month_days_5		31
+d_month_days_6		30
+d_month_days_7		31
+d_month_days_8		31
+d_month_days_9		30
+d_month_days_10		31
+d_month_days_11		30
+d_month_days_12		31
+
+d_month_name_1		Leden
+d_month_name_2		Unor		
+d_month_name_3		Brezen
+d_month_name_4		Duben	
+d_month_name_5		Kveten
+d_month_name_6		Cerven
+d_month_name_7		Cervenec
+d_month_name_8		Srpen	
+d_month_name_9		Zari
+d_month_name_10		Rijen
+d_month_name_11		Listopad
+d_month_name_12		Prosinec

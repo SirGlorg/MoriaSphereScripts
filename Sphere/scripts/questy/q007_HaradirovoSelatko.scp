@@ -1,0 +1,3292 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-007 Haradirovo Selatko                           //
+//                            (c)-Sir Glorg-                                        //
+//                    namet+puvodni podoba: (asi) -Noe-                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+//Poznamka Sir Glorg:
+// - IMHO by mela byt moznost od inscriptera ziskat druhou knihu v pripade, ze prvni vymenim
+//   -> asi by to chtelo od nej ziskat dalsi ukol nekde bokem pro nej neco zaridit + nova varka sutru a voila.
+//   -> nabeh na quest je u Rodriga - adopce delfina (tag.q007_delfin)
+//   -> predstava - nekde pokecat s nejakym rybarem, zjistit, ze kecal, nastvat se na rodriga zmlatit neco donyst nekomu zradlo jeste nekoho zmlatit trikrat to zamotat dokola a jit si pro knizku k inscripterovi. uff .. adios
+
+// popis zmenenych tagu:
+//Selatko == 1 Zadan ukol haradirem
+//Lakomec == 1 Hospodsky odmita vydat sele, tvrdi ze nic nema
+//Carodejnice == 1 Haradir me rek, ze by mohla pomoct carodejka
+//Carodejnice_regy == 1 Carodejnice chce donyst regy aby pomohla se seletem
+//Rachel == 1 Dal sem Rachel regy a ona mi za to slibila pomoc s hospodskym.
+//Rachel == 2 Hospodskej me posila pro Luk Dryady jako dukaz, ze sem ji zabil
+//Informace == 1 Hospodskej mi konecne dal to sele
+//Hotovo == 1 -> remove tagu: selatko rachel informace lakomec carodejnice
+//Kovar == 1 -> zadan ukol kovarem - mam donyst 3 sutry
+//Kovar == 2 -> dones sem sutry a 
+//Kniha == 1 -> zadanej ukol inscripterem donyst sutry
+//Kniha == 2 -> mam knihu inscripce
+//Kniha == 3 -> vymenil sem knihu za pero
+
+
+
+[function f_q007_checkOldTags]
+if (0<src.tag(selatko)> == 1)
+  src.qtag(q007_haradirovo_selatko,1)
+  src.tag.remove(selatko)
+endif
+if (0<src.tag(Lakomec)> == 1)
+  src.qtag(q007_haradirovo_selatko,2)
+  src.tag.remove(Lakomec)
+endif
+if (0<src.tag(Carodejnice)> == 1)
+  src.qtag(q007_haradirovo_selatko,3)
+  src.tag.remove(Carodejnice)
+endif
+if (0<src.tag(Carodejnice_regy)> == 1)
+  src.qtag(q007_haradirovo_selatko,4)
+  src.tag.remove(Carodejnice_regy)
+endif
+if (0<src.tag(Rachel)> == 1)
+  src.qtag(q007_haradirovo_selatko,5)
+  src.tag.remove(Rachel)
+elseif (0<src.tag(Rachel)> == 2)
+  src.qtag(q007_haradirovo_selatko,6)
+  src.tag.remove(Rachel)
+endif
+if (0<src.tag(Informace)> == 1)
+  src.qtag(q007_haradirovo_selatko,7)
+  src.tag.remove(Informace)
+endif
+if (0<src.tag(Hotovo)> == 1)
+  src.qtag(q007_haradirovo_selatko,8)
+  src.tag.remove(Hotovo)
+endif
+if (0<src.tag(Kovar)> != 0)
+  src.qtag(q007_prastary_kovar,<src.tag(Kovar)>)
+  src.tag.remove(Kovar)
+endif
+if (0<src.tag(Kniha)> != 0)
+  src.qtag(q007_stary_inscripter,<src.tag(Kniha)>)
+  src.tag.remove(Kniha)
+endif
+if (0<src.tag(q007_haradir_Nemethen)> == 1)
+  src.qtag(q007_haradir_Nemethen,1)
+  src.tag.remove(q007_haradir_Nemethen)
+endif
+
+[function f_q007_Rodrigo_checkOldTags]
+if (<src.tag.Rodrigo> == 1)
+  src.qtag(q007_Rodrigo,1)
+  src.tag.remove(Rodrigo)
+endif
+if (<src.TAG.q007_delfin> == 1)
+  src.qtag(q007_delfin,1)
+  src.tag.remove(q007_delfin)
+endif
+
+
+//////////////////////////////////////////////////////
+//Speech Haradir
+//////////////////////////////////////////////////////
+
+[SPEECH spk_q007_haradir]
+ON = *hi*
+ON = *dobry*
+ON = *ahoj*
+ON = *hospodsky*
+ON = *selatko*
+
+if (<distance>>3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_haradir_DClick
+endif
+
+
+
+///////////// ON DCLICK+SPEECH Haradir Function
+
+[FUNCTION f_q007_haradir_DClick]
+src.f_q007_checkOldTags
+if (0<src.qtag(q007_haradirovo_selatko)> == 8)
+  DIALOG(d_q007_haradir8)
+elseif ((0<src.qtag(q007_haradirovo_selatko)> == 7) && (<SRC.RESTEST 1 i_selatko>))
+  DIALOG(d_q007_haradir7)  
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 7)
+  DIALOG(d_q007_haradir6)
+elseif (0<src.qtag(q007_haradirovo_selatko)> >= 5)
+  DIALOG(d_q007_haradir5)
+elseif (0<src.qtag(q007_haradirovo_selatko)> >= 3)
+  DIALOG(d_q007_haradir4)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 2)
+  DIALOG(d_q007_haradir3)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 1)
+  DIALOG(d_q007_haradir2)
+else 
+  DIALOG(d_q007_haradir)
+endif
+
+
+///////////// Gump 1 Haradir
+
+
+[dialog d_q007_haradir]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03106 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?     
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 0 5 0  //
+text 60 398 152 8
+text 75 413 152 9
+button 25 430 0fa5 0fa7 0 6 0  //         
+text 60 430 152 10
+text 75 445 152 11
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5
+HTMLGUMP(170,230,440,100,12,0,36) // cestuji rad
+button 25 395 0fa5 0fa7 0 7 0  //
+text 60 398 152 14
+
+page 6
+HTMLGUMP(170,230,440,100,13,0,36) // cestovani me moc nebere
+button 25 395 0fa5 0fa7 0 7 0  //
+text 60 398 152 14
+
+page 7
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 152 16
+
+[dialog d_q007_haradir text]
+Haradir                                                                               //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Take te zdravim!                                                                      //4
+Me jmeno je Haradir. Lovim s nekolika prateli vsechno, co se da na severu sehnat.     //5
+Aaah.. *usmal se* .. Cestujes rad ?                                                   //6
+Mlady, urostly muz. Pres svuj zjevne nevysoky vek se chova velmi jiste a rozvazne. Nevypada nijak agresivne, ale rozzurit ho nebude nejlepsi cestou k zachovani sve tvare bez jizev.    //7
+Mohu ti jen rici, ze me nohy poslapaly mnoho cest mezi kolosy Modrych hor             //8
+a brehem Nurnskeho more.                                                              //9
+Ja mam radsi hospodu za rohem, praci ve sve knihovne a sluzebnou, ktera mi            //10
+nakoupi.                                                                              //11
+Hmm... Chces-li mi opravdu pomoci, pak ti nebude tva vytrvalost velkym prinosem. Vis.. *utichl a uprel svuj pohled daleko pred sebe* ..mam tu na starost nekolik lidi a nemohu je opustit. Uz davno si zaslouzili mnohem vice, nez jen tuhe maso lednich medvedu. Kdysi jsem hodne cestoval, mozna jako ty... *usmal se a opet obratil svuj zrak na tebe* ... a mnoho casu jsem stravil s elfy z Sedych pristavu. Cistili jsme ostrovy blizko pobrezi od ruznych besitii. Na jednom ostrove jsem se setkal s hospodskym. Ten chudak mel obrovske problemy s nevidanymi tvory. Mel jsem odsud, z domova, mnoho zkusenosti s bojem na snehu a proto jsem souhlasil, ze mu pomohu. Beztak to byl duvod, proc jsme se mnoho let plavili po mori. Nekolik tydnu jsem i s posadkou lodi Malle Aiwiva cistil cely ostrov. To, co jsem tam videl, nikdy nezapomenu. Stiny v mlze... stale ukryty v neprostupnem snehu, jejich krik ! Ale to neni dulezite, to je jiz davno.   //12
+*usmal se* To je nevidana statecnost. Ovsem cas na knihy a jidlo za rohem ti mohu zarucit, budes-li mi chtit pomoci.<br> Vis.. *utichl a uprel svuj pohled daleko pred sebe* ..mam tu na starost nekolik lidi a nemohu je opustit. Uz davno si zaslouzili mnohem vice, nez jen tuhe maso lednich medvedu. Kdysi jsem hodne cestoval, prevracet se doma na lavici mne nikdy neuspokojovalo ... *opet obratil svuj zrak na tebe a usmal se* ... a mnoho casu jsem stravil s elfy z Sedych pristavu. Cistili jsme ostrovy blizko pobrezi od ruznych besitii. Na jednom ostrove jsem se setkal s hospodskym. Ten chudak mel obrovske problemy s nevidanymi tvory. Mel jsem odsud, z domova, mnoho zkusenosti s bojem na snehu a proto jsem souhlasil, ze mu pomohu. Beztak to byl duvod, proc jsme se mnoho let plavili po mori. Nekolik tydnu jsem i s posadkou lodi Malle Aiwiva cistil cely ostrov. To, co jsem tam videl, nikdy nezapomenu. Stiny v mlze... stale ukryty v neprostupnem snehu, jejich krik ! Ale to neni dulezite, to je jiz davno.      //13
+Prosim pokracuj...                                                                    //14
+To opravdu neni dulezite... V kazdem pripade mi ten hospodsky zustal dluzen sluzbicku. Proto jsem ho tenkrat pozadal, aby mi poslal pecene sele. U Mandose! Jak on umi ta mala stvoreni vyudit! Ten vsivak vsak neposlal nic a dokonce mi zaprel svuj slib i penize, ktere jsem mu za nej dal. Ja vsak nemohu opustit svou rodinu a jit si to s nim vyridit. Prosim, jdi za nim a prines mi od nej sele, ktere mi slibil. Budu ti zavazan.<br>*Haradir se na tebe podival s velkym ocekavanim*   //15
+Mas me slovo, ze se za tim hospodskym vypravim.                                       //16
+
+
+
+[dialog d_q007_haradir button]
+on=1
+ src.qtag(q007_haradirovo_selatko,1,6)
+ Say Moc ti dekuji! Snad ho presvedcis.
+
+
+
+///////////// Gump 2 Haradir     - on tag == 1
+
+[dialog d_q007_haradir2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03106 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Selatko ...
+text 215 360 1152 4   //
+
+
+page 1 // -pozdrav-
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se ti dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // selatko ...
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+
+page 6
+HTMLGUMP(170,230,440,100,11,0,36) // kde je ten hospodsky
+button 25 395 0fa5 0fa7 0 7 0  //
+text 60 398 152 12
+
+page 7
+HTMLGUMP(170,230,440,100,13,0,36) // jak komunikoval s hospodskym
+button 25 395 0fa5 0fa7 0 8 0  //
+text 60 398 152 14
+
+page 8
+HTMLGUMP(170,230,440,100,15,0,36) // kde je Nemethen
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 152 16
+
+
+[dialog d_q007_haradir2 text]
+Haradir                                                                               //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Selatko...                                                                            //4
+Take te zdravim!                                                                      //5
+Prozatim tady vychazime akorat. Co nalovime prodame nebo snime. Neni cas se hnout z mista.//6
+Uz jsi vyrazil za tim hospodskym? Nic jineho me netrapi. Tady si vse zaridim sam.     //7 
+Mlady, urostly muz. Pres svuj zjevne nevysoky vek se chova velmi jiste a rozvazne. Nevypada nijak agresivne, ale rozzurit ho nebude nejlepsi cestou k zachovani sve tvare bez jizev.    //8
+Uz mas to selatko?! *nadsene vykrikl*                                                 //9
+Je mi lito... Nevzpomenes si, na kterem ostrove najdu toho hospodskeho?               //10
+To opravdu nevim. Ja se v lodnich mapach nevyznam. Byl jsem prilis mlady a zajimal jsem se jen o boj... abych byl lepsi nez ostatni. Neprislo mi dulezite, kde jsem a s kym se utkam.    //11
+Jak jsi ale s tim hospodskym celou dobu komunikoval?                                  //12
+Rekl mi to Nemethen, na lodi to byl muj nejlepsi pritel. Vlastne jen diky nemu s tebou ted mohu mluvit. Obcas sem zamnou zasel. Ja jsem uz s plavbami skoncil, ale jeho nesmrtelnost mu davala vic casu a vytrvalosti. Pozadal jsem ho proto, aby obcas zavital za hospodskym a pripomnel mu jeho slib. Od Nemethena take vim, ze mne hospodsky zaprel. //13
+A kde najdu Nemethena ted?                                                            //14
+*smutne sklonil hlavu* V Anduine proteklo mnoho vody od doby, kdy jsem ho naposledy videl. Kdyz se semnou naposledy loucil, tvaril se velmi nervozne... Kdyby jsi o nem na svych cestach slysel, prosim dej mi o nem vedet! //15
+Muzes se spolehnout..                                                                 //16
+// mam takove vnitrni pnuti, ze hospodsky je hovado
+
+
+
+[dialog d_q007_haradir2 button]
+on=1
+ src.qtag(q007_haradir_Nemethen,1)
+ Say Dekuji ti. Budu vdecny za kazdou zpravu...
+
+
+
+
+///////////// Gump 3 Haradir - on tag == 2
+
+[dialog d_q007_haradir3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03106 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Selatko ...
+text 215 360 1152 4   //
+
+
+page 1 // -pozdrav-
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se ti dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // selatko ...
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+text 60 413 152 11
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36) // hospodsky vse zaprel
+button 25 395 0fa5 0fa7 0 7 0  //
+text 60 398 152 13
+
+page 7
+HTMLGUMP(170,230,440,100,14,0,36) // jak na hospodskeho
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 152 15
+button 25 415 0fa5 0fa7 0 8 0  //
+text 60 418 152 16
+
+page 8
+HTMLGUMP(170,230,440,100,17,0,36) // kde je carodejka
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 152 15
+
+
+[dialog d_q007_haradir3 text]
+Haradir                                                                               //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Selatko...                                                                            //4
+Take te zdravim!                                                                      //5
+Prozatim tady vychazime akorat. Co nalovime prodame nebo snime. Neni cas se hnout z mista.//6
+Uz jsi vyrazil za tim hospodskym? Nic jineho me netrapi. Tady si vse zaridim sam.     //7 
+Mlady, urostly muz. Pres svuj zjevne nevysoky vek se chova velmi jiste a rozvazne. Nevypada nijak agresivne, ale rozzurit ho nebude nejlepsi cestou k zachovani sve tvare bez jizev.    //8
+Uz mas to selatko?! *nadsene vykrikl*                                                 //9
+Ano byl jsem u toho hospodskeho. Jsem si jist, ze to byl on, ale tvrdi, ze ti nikdy   //10
+zadne sele neslibil. //11
+Stale mne dokaze prekvapit jeho lakota. Ja bych ho!... *zatnul pest*... Poslouchej, mozna je jeste jedna moznost, jak toho stareho hospodare presvedcit, aby splnil svuj zavazek. Poslouchej...                                                        //12
+Pokracuj...                                                                           //13
+Za tech par tydnu, ktere jsem stravil na ostrove jsem nekolikrat videl velmi puvabnou zenu. Zdalo se, ze ma na hospodskeho obrovsky vliv, ale nebylo mi jasne proc ji porad tak podstrojuje. Mam pocit, ze ji je za neco velmi zavazan. Jeji jmeno je Rachel a podle vseho je to carodejnice.   //14
+Dobra, pokusim se ji najit.                                                           //15
+Nevis, kde je Rachel ted?                                                             //16
+Bohuzel nemam tuseni. Tenkrat prijela svou vlastni lodi... pobyla tam par dni a opet zmizela na mori.        //17
+
+
+
+[dialog d_q007_haradir3 button]
+on=1
+ src.qtag(q007_haradirovo_selatko,3,6)
+ Say Snad ta Carodejka pomuze. Mej se !
+
+
+
+///////////// Gump 4 Haradir   - on tag 3/4
+
+[dialog d_q007_haradir4]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03106 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Selatko ...
+text 215 360 1152 4   //
+
+
+page 1 // -pozdrav-
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se ti dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // selatko ...
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+
+
+page 6
+HTMLGUMP(170,230,440,100,11,0,36) // kde je carodejka
+
+
+[dialog d_q007_haradir4 text]
+Haradir                                                                               //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Selatko...                                                                            //4
+Take te zdravim!                                                                      //5
+Prozatim tady vychazime akorat. Co nalovime prodame nebo snime. Neni cas se hnout z mista.//6
+Uz jsi vyrazil za tim hospodskym? Nic jineho me netrapi. Tady si vse zaridim sam.     //7 
+Mlady, urostly muz. Pres svuj zjevne nevysoky vek se chova velmi jiste a rozvazne. Nevypada nijak agresivne, ale rozzurit ho nebude nejlepsi cestou k zachovani sve tvare bez jizev.    //8
+Uz mas to selatko?! *nadsene vykrikl*                                                 //9
+Nevis, kde je Rachel ted?                                                             //10
+Bohuzel nemam tuseni. Tenkrat prijela svou vlastni lodi... pobyla tam par dni a opet zmizela na mori.        //11
+
+
+
+[dialog d_q007_haradir4 button]
+
+
+
+
+
+///////////// Gump 5 Haradir   - on tag == 5/6
+
+[dialog d_q007_haradir5]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03106 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Selatko ...
+text 215 360 1152 4   //
+
+
+page 1 // -pozdrav-
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se ti dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // selatko ...
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+
+
+page 6
+HTMLGUMP(170,230,440,100,11,0,36) // Nasel jsem tu carodejku
+
+
+[dialog d_q007_haradir5 text]
+Haradir                                                                               //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Selatko...                                                                            //4
+Take te zdravim!                                                                      //5
+Prozatim tady vychazime akorat. Co nalovime prodame nebo snime. Neni cas se hnout z mista.//6
+Uz jsi vyrazil za tim hospodskym? Nic jineho me netrapi. Tady si vse zaridim sam.     //7 
+Mlady, urostly muz. Pres svuj zjevne nevysoky vek se chova velmi jiste a rozvazne. Nevypada nijak agresivne, ale rozzurit ho nebude nejlepsi cestou k zachovani sve tvare bez jizev.    //8
+Uz mas to selatko?! *nadsene vykrikl*                                                 //9
+Bohuzel, ale uz jsem nasel Rachel. Snad mi pomuze...                                  //10
+Vyborne! Doufal jsem, ze bude vedet, jak s nim pohnout. Snad je jeji vliv vetsi nez jeho chamtivost. //11
+
+
+[dialog d_q007_haradir5 button]
+
+
+
+
+///////////// Gump 6 Haradir   - on tag 7 + Nemas sele u sebe
+
+[dialog d_q007_haradir6]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03106 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Selatko ...
+text 215 360 1152 4   //
+
+
+page 1 // -pozdrav-
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se ti dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // selatko ...
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+
+
+page 6
+HTMLGUMP(170,230,440,100,11,0,36) // presvedcil jsem hospodskeho
+
+
+[dialog d_q007_haradir6 text]
+Haradir                                                                               //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Selatko...                                                                            //4
+Take te zdravim!                                                                      //5
+Prozatim tady vychazime akorat. Co nalovime prodame nebo snime. Neni cas se hnout z mista.//6
+Uz jsi vyrazil za tim hospodskym? Nic jineho me netrapi. Tady si vse zaridim sam.     //7 
+Mlady, urostly muz. Pres svuj zjevne nevysoky vek se chova velmi jiste a rozvazne. Nevypada nijak agresivne, ale rozzurit ho nebude nejlepsi cestou k zachovani sve tvare bez jizev.    //8
+Uz mas to selatko?! *nadsene vykrikl*                                                 //9
+Tak jsem toho hospodskeho presvedcil.                                                 //10
+Tesim se, az mi to selatko doneses. Dlouho s nim neotalej at je cerstve. Uz se nemuzu te lahudky dockat a doufam, ze pratelum zachutna tak, jako kdysi mne. //11
+
+
+[dialog d_q007_haradir6 button]
+
+
+
+
+
+///////////// Gump 7 Haradir   - on tag == 7 +  sele MAS s sebou
+
+[dialog d_q007_haradir7]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03106 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Selatko ...
+text 215 360 1152 4   //
+
+
+page 1 // -pozdrav-
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se ti dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // selatko ...
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+
+
+page 6
+HTMLGUMP(170,230,440,100,11,0,36) // donesl jsem ti selatko
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 142 12
+
+
+[dialog d_q007_haradir7 text]
+Haradir                                                                               //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Selatko...                                                                            //4
+Take te zdravim!                                                                      //5
+Prozatim tady vychazime akorat. Co nalovime prodame nebo snime. Neni cas se hnout z mista. //6
+Uz jsi vyrazil za tim hospodskym? Nic jineho me netrapi. Tady si vse zaridim sam.     //7 
+Mlady, urostly muz. Pres svuj zjevne nevysoky vek se chova velmi jiste a rozvazne. Nevypada nijak agresivne, ale rozzurit ho nebude nejlepsi cestou k zachovani sve tvare bez jizev.    //8
+Uz mas to selatko?! *nadsene vykrikl*                                                 //9
+Donesl jsem ti to selatko.                                                            //10
+Vyborne! Tady, dej mi ho sem prosim.                                                  //11
+*Predat selatko Haradirovi*                                                           //12
+
+
+
+[dialog d_q007_haradir7 button]
+ON = 1
+if (<SRC.RESTEST 1 i_selatko> )&&(0<src.qtag(q007_haradirovo_selatko)> == 7)
+  Say Aaah! To je krasavec! Jeste jednou Diky! Mozna bych vedel o necem, co te bude zajimat...
+  src.consume=i_selatko
+  src.addexp(500)
+  src.qtag(q007_haradirovo_selatko,8,6)
+  f_quest_complete(6)  // splnenie questu "Haradirovo Selatko"
+else
+  Say Ty u sebe to sele nemas! Snazis se ze me udelat hlupaka?
+endif
+
+
+
+
+
+///////////// Gump 8 Haradir   - splnen quest tag == 8
+
+[dialog d_q007_haradir8]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03106 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Informace ...
+text 212 360 1152 4   //
+
+
+page 1 // -pozdrav-
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Jak se ti dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // Informace ...
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+button 25 415 0fa5 0fa7 0 7 0  //
+text 60 418 152 11
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36) // o inscripterovi
+button 25 395 0fa5 0fa7 0 7 0  //
+text 60 398 152 11
+
+page 7
+HTMLGUMP(170,230,440,100,13,0,36) // o kovari
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+
+
+[dialog d_q007_haradir8 text]
+Haradir                                                                               //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Informace                                                                             //4
+Take te zdravim!                                                                      //5
+Prozatim tady vychazime akorat. Co nalovime prodame nebo snime. Neni cas se hnout z mista. //6
+Dekuji, ale uz jsi mi <?src.sex("pomohl","pomohla")?> dost. Nic dalsiho pro me udelat nemuzes.     //7 
+Mlady, urostly muz. Pres svuj zjevne nevysoky vek se chova velmi jiste a rozvazne. Nevypada nijak agresivne, ale rozzurit ho nebude nejlepsi cestou k zachovani sve tvare bez jizev.    //8
+Mam pro tebe dva pribehy. Kazdy se tyka jedne vyznamne postavy. S tvymi zkusenostmi by se ti mohly informace v nich obsazene hodit. //9
+Povez mi o Inscripterovi.                                                             //10
+Povez mi o Kovari.                                                                    //11
+Dnes je pro ucedniky magie tezke ziskat i nejzakladnejsi dovednosti i kdyz je v dnesni magii jen zlomek toho, co ovladali nejvetsi z carodeju minulych veku. V soucasnem uceni je proto snadne rozlisit magii do kruhu. Pokud se v tomto oboru vyznas jiste vis, ze osmy kruh je bezne nedosazitelny a k jeho ovladnuti je potreba vice nez jen studium. Jak se pres tuto hranici dostat vi jen nekolik malo starcu. Jeden z nich zije ve svem sklepeni kdesi v Severni Spousti. Je velice vzdelany a dokaze odhadnout lidi. Casto o ostatnich vi vice, nez oni sami. Vyhledej ho a uvidi-li v tobe dobreho cloveka, muze ti pomoci se studiem magickych formuli. //12
+Z dob, kdy se kovaly ty nejvzacnejsi rudy a vznikaly zbroje tak pevne, ze jimi neproletel zadny sip a palice orku na nich nezanechaly stopy, a presto tak lehke, ze ji oblekla i nejjemnejsi divka, z te doby zustalo jen malo moudrych, kteri dosud znaji tajemstvi, jak tyto rudy zpracovavat. Vim vsak o jednom kovari, ktery zna tato tajemstvi. Je opravdovym mistrem sveho remesla a mas-li sam pocit, ze uz ve svem uceni nemuzes dosahnout lepsich vysledku, on ti jiste bude schopen povedet vic. Je to velky samotar, vzdy sem prijde, nakoupi nejake zasoby jidla a kozesin, a zase zmizi cestou k Zeleznym horam. Je to ale veliky dobrak a ver mi, ze se mu zminim o tvych skutcich. Najit ho vsak budes muset sam. Cekat tu na nej by byla ztrata casu. Nekdy se neukaze nekolik mesicu a nikdy se zde prilis nezdrzi.  //13
+
+
+
+[dialog d_q007_haradir8 button]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////
+//Speech Hospodsky
+//////////////////////////////////////////////////////
+
+
+[SPEECH spk_q007_hospodsky] 
+
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*selatko*
+ON=*haradir*
+ON=*eriol*
+
+
+if (<distance>>3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_hospodsky_DClick
+endif
+
+[FUNCTION f_q007_hospodsky_DClick]
+src.f_q007_checkOldTags
+src.f_q017_checkOldTags
+DIALOG(d_q007_hospodsky)
+
+
+///////////// Gump 1 Hospodsky
+
+[dialog d_q007_hospodsky]
+argo.SetLocation=5,5
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)		// podklad pod ksichtiky
+argo.gumppic(40,215,03123)		// ksichtik   3000-3164
+
+argo.setText(0,"Hospodsky")
+if (<eval <src.qtag(q007_haradirovo_selatko)>> < 2)
+  argo.setText(1,"Kdo jsi?")
+else
+  argo.setText(1,"Jak se dari?")
+endif
+argo.setText(2,"Mohu pomoci?")
+argo.setText(3,"-Prohlednout-")
+argo.setText(4,"Nabidka")
+argo.text(220,210,52,0)			// Jmeno a titul pozdraveneho
+argo.button(160,330,0988,0988,0,2,0)	// Kdo jsi ? / Jak se dari?
+argo.text(217,331,1152,1)		//
+argo.button(325,330,0988,0988,0,3,0)	// Mohu pomoct ?
+argo.text(361,331,1152,2)		//
+argo.button(490,330,0988,0988,0,4,0)	// Prohlednout ...
+argo.text(527,331,142,3)		//
+argo.button(160,360,0988,0988,0,5,0)	// Nabidka
+argo.text(220,361,1152,4)		//
+if (<eval <src.qtag(q007_haradirovo_selatko)>> == 1) || (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)
+  argo.setText(18,"Selatko")
+  argo.button(325,360,0988,0988,0,6,0)	// Selatko
+  argo.text(380,361,1152,18)		//
+endif
+if (<eval src.restest i_q017_kolektor_srnky>) && (<eval src.findid(i_q017_kolektor_srnky).tag.contentscount>==200)
+  argo.setText(18,"Nesu ti")
+  argo.button(325,360,0988,0988,0,12,0)	// Nesu ti
+  argo.text(380,361,1152,18)		//
+endif
+
+argo.page(1) // pozdrav
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6)
+  argo.setText(5,"Vitej! Rad te tu zase vidim, co si das?")
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 6)
+  argo.setText(5,"Opet te tu vitam! Jak jsi na tom ?")
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> >= 2)
+  argo.setText(5,"Vitej v me krcme namorniku! Aaah, to jsi ty ...")
+else
+  argo.setText(5,"Vitej v me krcme namorniku!")
+endif
+argo.HTMLGUMP(170,230,440,100,5,0,36)
+//q006_erioluv_vnuk
+if ((src.qtag(q006)==19)&&(src.findid(i_q006_pergamen)))
+	argo.button(25,395,0fa5,0fa7,0,15,0)
+	argo.settext(99,"*povedet o Eriolovy, pergamenu...*")
+	argo.text(60,395,152,99)
+endif
+
+
+argo.page(2)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6)
+  if (<src.qtag(q017_terlak_ochrana)>) || (<src.qtag(q017_terlak)>)
+    argo.setText(6,"Je mi ted mnohem lepe. Obchody se zacaly hybat... Konecne si mohu dovolit prodat tolik jidla jako driv. Ale ostrov ma ted velmi spatnou povest. Bude trvat jeste dlouho, nez se vse vrati do starych koleji.")
+  else
+    argo.setText(6,"Je mi ted mnohem lepe. Obchody se zacaly hybat... Konecne si mohu dovolit prodat tolik jidla jako driv. Ale ostrov ma ted velmi spatnou povest. Bude trvat jeste dlouho, nez se vse vrati do starych koleji. Minulou noc tu dokonce byla skupina dobrodruhu a obchodniku... Jeden z nich tu utratil hotove jmeni, coz byla jedina vec, diky ktere sem ho tu jeste snesl.. Porad mel usta plna nelibosti k Terlakovi...")
+    argo.setText(18,"Terlak hmm... rekni mi vic..")
+    argo.button(25,395,0fa5,0fa7,0,6,0)  // Terlak ? ! Rekni mi vic!
+    argo.text(60,398,152,18)
+  endif
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 6) // jak se dari ?
+  argo.setText(6,"Nejsem ted ve sve kuzi... Prosim, spechej se svym ukolem nez bude pozde!")
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> >= 2) // jak se dari ?
+  argo.setText(6,"Nadherne... Hospudka stoji, lide chteji veci z nabidek... Zadna selatka ... Nemuze mi byt lepe.")
+else	// kdo jsi?
+  argo.setText(6,"Kdo jsem? .. *nasilne se rozesmal* .. Jsem hospodsky a stastny vlastnik tehle krcmy ! Das si neco ?")
+endif
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+
+argo.page(3) // Mohu ti pomoci ?
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6)
+  argo.setText(7,"Myslim, ze jsi toho pro mne vykonal dost! jen se klidne napij...")
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 6)
+  argo.setText(7,"Ted mi muze pomoci jen... *Zoufale na tebe pohledl* ... Nechtej abych to opakoval.")
+  if (<src.restest(1 i_lukdryady)>)
+    argo.setText(18,"Uz se nemusis bat, Dryada je mrtva!")
+    argo.button(25,395,0fa5,0fa7,0,6,0)  // mam ten luk !
+    argo.text(60,398,152,18)
+  endif
+else
+  argo.setText(7,"Dokud budes schopen, vypij a snez co se do tebe vejde! Vypadas pohuble jen se neboj a dej svemu zanedbanemu telu co potrebuje. Pak budu spokojen i ja.")
+endif
+argo.HTMLGUMP(170,230,440,100,7,0,36)
+
+
+argo.page(4) // prohlednout...
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6)
+  argo.setText(8,"Trochu roztrzity, starsi hospodsky. Zda se, ze na ostrove starvil hodne casu sam, ale co jsi mu pomohl, je mnohem veselejsi.")
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 6)
+  argo.setText(8,"Trochu roztrzity, starsi hospodsky. Zda se, ze na ostrove starvil hodne casu sam, a tak na sebe ani nepouta prilis velkou pozornost.<br>Co se ti sveril se svym problemem, vypada mnohem nervozneji.")
+else
+  argo.setText(8,"Trochu roztrzity, starsi hospodsky. Zda se, ze na ostrove starvil hodne casu sam, a tak na sebe ani nepouta prilis velkou pozornost.")
+endif
+argo.HTMLGUMP(170,230,440,100,8,0,36)
+
+
+argo.page(5) // nabidka
+argo.setText(9,"Mam tu sirokou nabidku. Tady se podivej a vyber si sam a pamatuj, alkohol podavany v malych davkach neskodi v jakemkoliv mnozstvi!")
+argo.setText(10,"Dam si vino!")
+argo.setText(11,"150gp")
+argo.setText(12,"Dam si neco tvrdsiho. Prodej mi koralku!")
+argo.setText(13,"200gp")
+argo.setText(14,"Lahvinka svetleho piva mi udela dobre.")
+argo.setText(15,"100gp")
+argo.setText(16,"Aaah! Dzbanek jablecneho vina!")
+argo.setText(17,"250gp")
+argo.HTMLGUMP(170,230,440,100,9,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,1)	// vino
+argo.text(60,398,152,10)
+argo.text(500,398,152,11)
+argo.button(25,415,0fa5,0fa7,1,0,2)	// koralka
+argo.text(60,418,152,12)
+argo.text(500,418,152,13)
+argo.button(25,435,0fa5,0fa7,1,0,3)	// svetle pivo
+argo.text(60,438,152,14)
+argo.text(500,438,152,15)
+argo.button(25,455,0fa5,0fa7,1,0,4)	// dzbanek jablecneho vina
+argo.text(60,458,152,16)
+argo.text(500,458,152,17)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6)
+  if !(<src.qtag(q017_terlak_ochrana)>) && (<src.qtag(q017_terlak)>)
+    argo.setText(19,"Nemel by jsi dalsi lektvar na zpevneni tela ?")
+    argo.button(25,495,0fa5,0fa7,0,10,0)	// dzbanek jablecneho vina
+    argo.text(60,498,152,19)
+  endif
+endif
+  
+
+
+argo.page(6)	// selatko
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6) && !(<eval src.qtag(q017_terlak_ochrana)>) && !(<eval src.qtag(q017_terlak)>)
+  argo.setText(19,"Aahh.. Alchymista Terlak. Je to muj dlouholety pritel. Nevidel jsem ho od dob, kdy odtud utekl. To bylo jeste pred utokem dryady. Odjel odsud hned jak to bylo mozne pry si nemohl dovolit zadne riziko povazoval svou praci za velike riziko. Leta se snazil spoutat magicke sily ruznych bylin, kamenu a mocnych slov, aby je vlozil do beznych predmetu... Po nocich jsme se obcas zavreli do kuchyne a zkouseli vsemozne kombinace *hospodsky se rozesmal*. To byly doby. Pamatuji si jeho vyraz kdykoliv prisel s novou myslenkou a byl si jisty, ze ted neco objevil, ale nasim nejlepsim vysledkem byl nakonec obycejny lektvar na zpevneni tela...")
+  argo.setText(20,"Lektvar na zpevneni tela ?")
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+  argo.button(25,395,0fa5,0fa7,0,7,0)
+  argo.text(60,398,152,20)
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)
+  argo.setText(19,"Hmm ?")
+  argo.setText(20,"Mluvil jsem s Haradirem. Tvrdi, ze mu dluzis selatko.")
+  argo.setText(21,"Ty psi vymesku! Dej mi to sele, ktere dluzis Haradirovi!")
+  argo.setText(22,"Nevypadas sice jako hlupak, ale jen blbec by mi nedal sele, kdyz ho poprosim.")
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+  argo.button(25,395,0fa5,0fa7,0,7,0)
+  argo.text(60,398,152,20)
+  argo.button(25,415,0fa5,0fa7,0,8,0)
+  argo.text(60,418,152,21)
+  argo.button(25,435,0fa5,0fa7,0,9,0)
+  argo.text(60,438,152,22)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)
+  argo.setText(19,"Hmm ?")
+  argo.setText(20,"Posila me Rachel. Jestli mi nedas to selatko, muzes se nadobro rozloucit s jejim")
+  argo.setText(21,"korenim.")
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+  argo.button(25,395,0fa5,0fa7,0,7,0)  // neda, tak nedostane
+  argo.text(60,398,152,20)
+  argo.text(60,413,152,21)
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 6)	// mam luk dryady
+  argo.setText(19,"Vazne! Jsi same prekvapeni! Prilis jsem nedoufal v tve vitezstvi... Budiz tva ochota a statecnost vzroem pro ostatni! Na tve jmeno nikdy nezapomenu a budu rad, kdyz se tu jeste nekdy ukazes. Doufam ze na sebe nenechas dlouho cekat... Mas tedy ten dukaz?")
+  argo.setText(20,"*Predat luk a pockat si na selatko...*")
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,7)  // vymena luk vs sele
+  argo.text(60,398,142,20)
+endif
+
+argo.page(7)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6) && !(<eval src.qtag(q017_terlak_ochrana)>) && !(<eval src.qtag(q017_terlak)>)
+  argo.setText(21,"Ano ! *Hospodsky se opet rozesmal*. Terlak znal nejake kouzlo uzivane k ochrane ruznych mist. Je to neprilis silne kouzlo vetsinou slouzi jen k odstraseni zvedavcu... Ovsem pokud jsi jeho sile vystaven prilis dlouho, roztrha te na kusy. *Hospodsky vyvalil z ust dalsi davka smichu* Ucinnek lektvaru je schopen absorbovat negativni energii kouzla a umozni ti nejaky cas pretrvat.")
+  argo.setText(22,"Kde je alchymista ted ?")
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+  argo.button(25,395,0fa5,0fa7,0,8,0)
+  argo.text(60,398,152,22)
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)		// dluzis sele
+  argo.setText(23,"Kdoze? Ani nevim kdo to je! Navic zadna selata neprodavam...")
+  argo.setText(26,"Nelzi! Rekl mi dost.")
+  argo.setText(27,"Jsi si jisty? Podle toho co vim by si ho zaslouzil i bez placeni.")
+  argo.HTMLGUMP(170,230,440,100,23,0,36)
+  argo.button(25,395,0fa5,0fa7,0,10,0)
+  argo.text(60,398,152,26)
+  argo.button(25,415,0fa5,0fa7,0,11,0)
+  argo.text(60,418,152,27)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)	// vydirani chudaka hospodskyho
+  argo.setText(22,"Coze? ! Ale to preci ! ... Aargh ... *hospodskemu stuhl usmev a sklopil zrak*")
+  argo.setText(23,"*pokracovat*")
+  argo.HTMLGUMP(170,230,440,100,22,0,36)
+  argo.button(25,395,0fa5,0fa7,0,8,0)  // pokracovat
+  argo.text(60,398,142,23)
+endif
+
+argo.page(8)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6) && !(<eval src.qtag(q017_terlak_ochrana)>) && !(<eval src.qtag(q017_terlak)>)
+  argo.setText(23,"Dlouho jsem o nem neslysel, az ten opilec vcera tvrdil, ze ma s Terlakem schuzku... Drzel v ruce velmi zajimave krystaly, porad si s nimi pohraval a tvrdil, ze jsou to klice... <?src.sex(veril,verila)?> by jsi tomu? Navic hledal zoldaka, ktery by mu pomohl dostat se do jeskyni kdesi severne od Belfalske zatoky... Nakonec se mu podarilo za par mescu zlatych najmout Gargamela, znameho a neprilis prijemneho zoldaka.")
+  argo.setText(24,"Mohl by jsi mi pripravit ten ochranny lektvar?")
+  argo.HTMLGUMP(170,230,440,100,23,0,36)
+  argo.button(25,395,0fa5,0fa7,0,9,0)
+  argo.text(60,398,152,24)
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)		// naval sele
+  argo.setText(24,"Vem si sve urazky tam, odkud jsi prisel chytraku! Ja tady zadna selata neprodavam!")
+  argo.setText(30,"*Tohle nema cenu, ten nic neprizna*")
+  argo.setText(31,"Nesmysl ty stary lakomce! Nemyslis, ze je cas splatit dluh?")
+  argo.HTMLGUMP(170,230,440,100,24,0,36)
+  argo.button(25,395,0fa5,0fa7,0,12,0)
+  argo.text(60,398,152,31)
+  argo.button(25,415,0fa5,0fa7,1,0,5)
+  argo.text(60,418,142,30)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5) // chce abych se naklonil
+  argo.setText(24,"Tohle se nemelo nikdy stat... Poslouchej mne ted dobre... *hospodsky se nervozne rozhledl, naklonil se bliz a naznacil, ze chce totez po tobe*...")
+  argo.setText(25,"Poslouchej, na tyhle komedie nemam cas...")
+  argo.setText(26,"*naklonit se bliz*")
+  argo.HTMLGUMP(170,230,440,100,24,0,36)
+  argo.button(25,395,0fa5,0fa7,0,9,0)  //na tohle nemam cas
+  argo.text(60,398,152,25)
+  argo.button(25,415,0fa5,0fa7,0,10,0)  //naklonit se bliz
+  argo.text(60,418,142,26)
+endif
+
+argo.page(9)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6) && !(<eval src.qtag(q017_terlak_ochrana)>) && !(<eval src.qtag(q017_terlak)>)
+  argo.setText(25,"*Hospodsky se na tebe uprene podival* Nezminoval jsem se, ze je ten lektvar v podstate k nicemu ? Proti utocnemu kouzlu neobstoji a divil bych se, kdyby jsi poznal rozdil... Zvlastni asi to vsichni maji potrebu zkusit... Ten hlupak Gargamel byl tim lektvarem take posedly a jeste pred odjezdem mi za jednu davku zaplatil celych tisic zlatych. Nedivil bych se, kdyby to byla jeho plna mzda za cestu k Terlakovi.. Ze jsi to ty, jednu davku ti namicham zdarma, stale ti to dluzim. Aby byl ucinek platny, musis lektvar vypit jeste horky. Dokud se s obrannym kouzlem nestretnes, bude lektvar pusobit. Nemysli si ale, ze te jeho ucinky ochrani podruhe. Jak jednou zapusobi, telo jej vyplavi a je potreba dat si novou davku.")
+  argo.setText(26,"*Pockat nez hospodsky pripravi lektvar a napit se...*")
+  argo.HTMLGUMP(170,230,440,100,25,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,8)	// napit se ochranneho lektvaru -> Terlak Gate
+  argo.text(60,398,142,26)
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)		// jen blbec mi neda sele
+  argo.setText(25,"*Dlouze se na tebe zahledel* ... Vidis tady ten pult? Diky nemu ti mohu podat cokoliv si obednas, aniz bych se te jen lehce dotkl. Tady zamnou muzes spatrit polici plnou cistych sklenic a poharu, ktere ti naplnim cimkoliv si jen budes prat. A tady nahore nejvyzsi chlouba me male hospudky. Visi zde velka popsana cedule, kde je vypsano vse, co ti mohu nabidnout. Kdyz na ni pohlednes co vidis ? PROTOZE JEN NEGRAMOTNY HLUPAK TAM VIDI NEJAKE SELE!")
+  argo.setText(33,"*zvednout svicen ze stolu*")
+  argo.HTMLGUMP(170,230,440,100,25,0,36)
+  argo.button(25,395,0fa5,0fa7,0,7,0)
+  argo.text(60,398,152,20)
+  argo.button(25,415,0fa5,0fa7,0,13,0)
+  argo.text(60,418,142,33)
+  argo.button(25,435,0fa5,0fa7,1,0,5)
+  argo.text(60,438,142,30)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)	// chce abych se naklonil s vetsim durazem
+  argo.setText(27,"Prosim ! *hospodskemu nahle vyrostl na tvari velmi nalehavy vyraz*")
+  argo.HTMLGUMP(170,230,440,100,27,0,36)
+  argo.button(25,395,0fa5,0fa7,0,10,0)  // naklonit se
+  argo.text(60,398,142,26)
+endif
+
+argo.page(10)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6) && !(<eval src.qtag(q017_terlak_ochrana)>)		// nemas dalsi lektvar na zpevneni tela ?
+  argo.setText(40,"K cemu ? ! *Hospodsky vytrestene vyhrkl* ... Nejsem si jisty, jestli to chci vubec vedet ... A hlavne si nejsem jisty, zda si uvedomujes skutecnou cenu toho lektvaru. Jeden takovy lektvar vyzaduje desitky ingredienci a nektere jsou velice vzacne !")
+  argo.setText(41,"Je mi lito, ale skutecne potrebuji ten lektvar.")
+  argo.HTMLGUMP(170,230,440,100,40,0,36)
+  argo.button(25,395,0fa5,0fa7,0,11,0)
+  argo.text(60,398,152,41)
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)
+  argo.setText(28,"Ja ze jsem lhar! Nikdy jsem nikomu zadne sele neslibil a nech me byt!")
+  argo.HTMLGUMP(170,230,440,100,28,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,5)
+  argo.text(60,398,142,30)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)	// pribeh hospodskeho part1
+  argo.setText(28,"*Hospodsky se opet rozhledl, a spustil* ... Poslouchej, pred nekolika lety jsem zde mel velike problemy s nekolika bestiemi, ktere se potulovaly kolem meho hostince a odhanely mi zakazniky. Nekolik lidi, co zde zili, vystvaly z jejich domovu a od te doby mne zivi pouze namornici, co sem prijdou nacerpat nove sily.")
+  argo.setText(29,"Pokracuj...")
+  argo.HTMLGUMP(170,230,440,100,28,0,36)
+  argo.button(25,395,0fa5,0fa7,0,11,0)  // pokracovat
+  argo.text(60,398,152,29)
+endif
+
+argo.page(11)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> > 6) && !(<eval src.qtag(q017_terlak_ochrana)>)		// nemas dalsi lektvar na zpevneni tela ?
+  argo.setText(42,"*Hospodsky si otrel celo*. No dobra... naber mi do tohodle mesce 200 srncich oci. Aby lektvar spravne pusobil, je treba kazde oko vyjmout jinemu zvireti. Dve oci jedne srny mi jsou k nicemu a lektvar nebude pusobit! Navrch po tobe budu chtit deset tisic zlatych. Stale nechapu, k cemu takove mrhani zivotem...")
+  argo.setText(43,"Dej mi ten mesec, ja uz si s tim poradim...")
+  argo.HTMLGUMP(170,230,440,100,42,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,9)	// dat mesec na srnky
+  argo.text(60,398,152,43)
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)
+  argo.setText(29,"HAHAHA ! Zadarmo ! A zit budu z ceho ? Beztak o nicem nevim to bych si pamatoval.")
+  argo.HTMLGUMP(170,230,440,100,29,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,5)
+  argo.text(60,398,142,30)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)	// pribeh hospodskeho part2
+  argo.setText(30,"Tenkrat prijela lod Malle Aiwiva plna ozbrojencu, kteri cistili ostrovy od podobne haveti. Pozadal jsem je, aby mi pomohli a ja jsem jim za to poskytl ubytovani a dodaval jim zasoby jidla a dobreho piti. Bojovali tu nekolik tydnu a nemohu nepripomenout, ze mezi nesmrtelnymi elfy vynikal prosty clovek. Ano, byl to Haradir a jeho umeni vice nez napomohlo tomu, ze jsme mohli opet bezstarostne prochazet nase statky dal od pobrezi.")
+  argo.HTMLGUMP(170,230,440,100,30,0,36)
+  argo.button(25,395,0fa5,0fa7,0,12,0)  // pokracovat
+  argo.text(60,398,152,29)
+endif
+
+
+argo.page(12)
+if (<eval <src.qtag(q017_terlak_ochrana)>> == 1)
+  argo.setText(19,"Mas ty oci ? Vyborne, dej mi je spolu s 10 000 gp jak jsme se dohodli a uvarim ti dalsi lektvar...")
+  argo.setText(20,"*Predat oci a penize*")
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,8)
+  argo.text(60,398,142,20)
+elseif (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)
+  argo.setText(32,"Ja zadne dluhy nemam. Mam nejlepsi hospodu siroko daleko proc bych se zadluzoval! Odpust si svou drzost hrdino a radsi se napij.")
+  argo.HTMLGUMP(170,230,440,100,32,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,5)
+  argo.text(60,398,142,30)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)	// pribeh hospodskeho part3
+  argo.setText(31,"Za dobu jejich pritomnosti jsem jim upekl a vyudil nejedno ze svych nejlepsich selatkek. Dal jsem si tenkrat velmi zalezet... Pri odjezdu mne tedy Haradir skutecne pozadal, abych mu jedno pripravil a poslal. Jenze klid na ostrove nemel dlouhe trvani... boje vzbudili demona, ktery prezival v zdejsich skalach. Zla Dryada opustila svou skrys a s mucivym krikem znovu napadla nasi osadu. Tentokrat vsak jeji prisluhovaci neznali slitovani. Pobili temer vse, co potkali. Nazivu nechali jen nekolik celedinu a me. Obestoupili mne vsechny ty bestie a ja musel prisahat...")
+  argo.HTMLGUMP(170,230,440,100,31,0,36)
+  argo.button(25,395,0fa5,0fa7,0,13,0)  // pokracovat
+  argo.text(60,398,142,23)
+endif
+
+
+argo.page(13)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)		// zvednul jsem svicen
+  argo.setText(34,"Vidis tady ten svicen? Kdyz se podivas blize, je velmi zdobny. S jeho pomoci ti mo-")
+  argo.setText(35,"hu velmi hrube poranit sverac a nekolikrat tydne si vzpomenes na chvili, kdy jsi mi")
+  argo.setText(36,"odmitl vydat to selatko bez nasili, az zase budes potrebovat uvolnit ze sveho tela vse,")
+  argo.setText(37,"co jsi do nej vpravil. Jidlo, ktere odpiras druhym.")
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+  argo.button(25,395,0fa5,0fa7,0,14,0)
+  argo.text(60,398,152,34)
+  argo.text(60,413,152,35)
+  argo.text(60,428,152,36)
+  argo.text(60,443,152,37)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)	// pribeh hospodskeho part4
+  argo.setText(32,"Prisahal jsem, ze neprozradim jeji pritomnost a budu ji dodavat cerstve zasoby pro jeji sluzebniky. Nemohu se ani poskrabat na rameni, aniz by o tom nevedela. Mam pocit, jako by mne sledovaly stovky oci... Prosim, jestli chces sve sele, musis mne te Dryady zbavit!")
+  argo.setText(33,"*Pokynutim hlavy naznacit souhlas.*")
+  argo.HTMLGUMP(170,230,440,100,32,0,36)
+  argo.button(25,395,0fa5,0fa7,0,14,0)  // pokynout k souhlasu
+  argo.text(60,398,142,33)
+endif
+
+
+argo.page(14)
+if (<eval <src.qtag(q007_haradirovo_selatko)>> == 1)
+  argo.setText(38,"Ahh... zvlastni, ze jmenujes zrovna tenhle svicen. Me zene se pry jeho hrubost take libi... *odkaslal si a uprene se na tebe podival* ...Ja jsem na takove silaky jako jsi ty zvykly a ver mi, ze tu nikdomu strevni zakruty prerovnavat nebudes! Bez si shanet selatka k nekomu jinemu!")
+  argo.setText(39,"*Tohle nema cenu, ten nic neprizna. Navic by mi mrtvy nebyl k nicemu.*")
+  argo.HTMLGUMP(170,230,440,100,38,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,5)
+  argo.text(60,398,142,39)
+elseif  (<eval <src.qtag(q007_haradirovo_selatko)>> == 5)
+  argo.setText(34,"Vyborne ! ... * Hospodsky nadsenim nachvili ztratil kontrolu nad svymy gesty a rozlil nekolik lahvi drahe lihoviny* ... Ahh .. Dobra tedy ! Zabij ji a dostanes sve sele! Ale nechtej mne osalit, prines mi jeji luk na dukaz, ze jsi ji opravdu usmrtil. Nehne se bez nej na krok a ma ho stale pri sobe. Ted prosim jdi...")
+  argo.setText(35,"*Prijmout ukol...*")
+  argo.HTMLGUMP(170,230,440,100,34,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,6)	// prijmout ukol
+  argo.text(60,398,142,35)
+endif
+
+//q006_erioluv_vnuk
+argo.page(15)
+if ((src.qtag(q006)==19)&&(src.findid(i_q006_pergamen)))
+	argo.settext(97,"Muj znamy Eriol ma problemy s Mohylovymi duchy? To je nemile, tem je lepsi se vyhybat! Kazdopadne chlapci by mohl pomoci lektvar Ocisteni. Na nej je treba dve srdce ptaka krvavce, tri nejsilnejsi protijedy a vzacna bylina. Rekni to Eriolovy on uz bude vedet co delat.")
+	argo.HTMLGUMP(170,230,440,100,97,0,36)
+	argo.button(25,395,0fa5,0fa7,1,0,11)
+	argo.settext(98,"Dekuji, reknu mu to.")
+	argo.text(60,395,152,98)
+endif
+
+[dialog d_q007_hospodsky button]
+on=1 // vino
+if ((<serv.time> - <src.tag.q007_hospodsky_vino>) >= 3000) || (<eval <src.tag.q007_hospodsky_vino>> == 0)
+ if (<src.RESTEST 150 i_gold>)
+  src.CONSUME(150 i_gold)
+  src.TAG.q007_hospodsky_vino = <serv.time>
+  src.giveitem(i_bottle_wine)
+  Say("Tady mas sve vino.")
+ else
+  Say("Podivej, bez penez muzes jit leda ven lizat snih.")
+ endif
+else
+ Say("Myslim, ze mas prozatim dost.")
+endif
+
+on=2 // koralka
+if ((<serv.time> - <src.tag.q007_hospodsky_vino>) >= 3000) || (<eval <src.tag.q007_hospodsky_vino>> == 0)
+ if <src.RESTEST 200 i_gold>
+  src.CONSUME=200 i_gold
+  src.TAG.q007_hospodsky_vino = <serv.time>
+  src.giveitem(i_bottle_liquor)
+  Say("Kopni to tam namorniku!")
+ else
+  Say("Podivej, bez penez muzes jit leda ven lizat snih.")
+ endif
+else
+ Say("Myslim, ze mas prozatim dost.")
+endif
+
+on=3 // svetle pivo
+if ((<serv.time> - <src.tag.q007_hospodsky_vino>) >= 3000) || (<eval <src.tag.q007_hospodsky_vino>> == 0)
+ if <src.RESTEST 100 i_gold>
+  src.CONSUME=100 i_gold
+  src.TAG.q007_hospodsky_vino = <serv.time>
+  src.giveitem(i_bottle_ale)
+  Say("Tady mas svoji zrzavou krasku.")
+ else
+  Say("Podivej, bez penez muzes jit leda ven lizat snih.")
+ endif
+else
+ Say("Myslim, ze mas prozatim dost.")
+endif
+
+on=4 // dzbanek jablecneho vina
+if ((<serv.time> - <src.tag.q007_hospodsky_vino>) >= 3000) || (<eval <src.tag.q007_hospodsky_vino>> == 0)
+ if <src.RESTEST 200 i_gold>
+  src.CONSUME=200 i_gold
+  src.TAG.q007_hospodsky_vino = <serv.time>
+  src.giveitem(i_jug_cider)
+  Say("Aaah jedna varka piti pro panicky..")
+ else
+  Say("Podivej, bez penez muzes jit leda ven lizat snih.")
+ endif
+else
+ Say("Myslim, ze mas prozatim dost.")
+endif
+
+on=5 // vyreseni gumpu _ je to hamoun nic neda.
+src.qtag(q007_haradirovo_selatko,2,6)
+Say("Pche... Selatko...")
+
+on=6
+src.qtag(q007_haradirovo_selatko,6,6)
+Say("Hodne stesti! Snad jsem neudelal chybu...")
+
+on=7
+if (<src.restest(1 i_lukdryady)>)
+ Say("Zde je selatko jak jsem slibil. Jeste jednou ti dekuji !")
+ src.addexp(500)
+ src.consume(i_lukdryady)
+ src.qtag(q007_haradirovo_selatko,7,6)
+ src.giveitem(i_selatko)
+else 
+ Say("Ty ho nemas ! Thalione smiluj se ! Chces sem zavleci valku a smrt ? Prines mi ten luk!")
+endif
+
+on=8
+if (<eval src.qtag(q017_terlak_ochrana)>==1)
+  if (<src.restest i_q017_kolektor_srnky>) && (<src.findid(i_q017_kolektor_srnky).tag.contentscount>==200)
+    if (<src.restest(10000 i_gold)>)
+      src.qtag(q017_terlak_ochrana,2,18)
+      src.sound(49)
+      Say("Doufam ze ti to alespon chutna...")
+      src.consume(i_q017_kolektor_srnky)
+      src.consume(10000 i_gold)
+      src.addExp(200)
+    else
+      Say("Nemas u sebe dost penez! Je mi lito, ale zadarmo to tentokrat nebude...")
+    endif
+  endif
+else
+  src.qtag(q017_terlak_ochrana,2,18)
+  src.sound(49)
+  Say("Tak a je to ! Chutna vyborne zeano ? Ale to je asi vse, co z toho budes mit...")
+  src.addExp(200)
+endif
+
+on=9
+src.newitemsafe(i_q017_kolektor_srnky)
+lastnew.bounce
+src.qtag(q017_terlak_ochrana,1,18)
+Say("Tady mas ...")
+
+on=10
+
+on=11
+if ((src.qtag(q006)==19)&&(src.findid(i_q006_pergamen)))
+	src.consume(i_q006_pergamen)
+	src.qtag(q006,20,22)
+	src.addexp(300)
+endif
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////
+//Speech Carodejnice
+//////////////////////////////////////////////////////
+
+
+[SPEECH spk_q007_Carodejnice]
+
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*selatko*
+ON=*haradir*
+ON=*rachel*
+
+if (<distance>>3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_carodejnice_DClick
+endif
+
+[FUNCTION f_q007_carodejnice_DClick]
+src.f_q007_checkOldTags
+if (0<src.qtag(q007_haradirovo_selatko)> >= 5)
+ DIALOG(d_q007_carodejnice5)
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 4)
+ if <SRC.RESTEST 1000 i_reag_Batwing>
+  DIALOG(d_q007_carodejnice4)
+ else
+  DIALOG(d_q007_carodejnice3)
+ endif
+elseif (0<src.qtag(q007_haradirovo_selatko)> == 3)
+ DIALOG(d_q007_carodejnice2)
+else
+ DIALOG(d_q007_carodejnice)
+endif
+
+
+///////////// Gump 1 Carodejnice
+
+
+[dialog d_q007_carodejnice]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03039 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?     
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q007_carodejnice text]
+Carodejnice Rachel                                                                    //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Abrasum, Xerdum RhoOooOon Huron! ...<br>Mor Gul .... AAAAAh !  Proc mne rusis! Klid se mi z cesty, kvuli tobe jsem znicila elixir!       //4
+Jmenuji se rachel. Vic nepotrebujes vedet.                                            //5
+Ano. Zmiz mi z oci!                                                                   //6
+Mlada a jiste puvabna zena. Ovsem stit jejiho puvabu prilepen na odpor ke vsemu okolo mi rika, ze je to uplne jedno.<br>Neustale neco micha a snazi se na to plne soustredit. Zda se, ze tva pritomnost ji v tom nepomaha.  //7
+
+
+
+[dialog d_q007_carodejnice button]
+
+
+
+
+///////////// Gump 2 Carodejnice     - on tag carodejnice
+
+[dialog d_q007_carodejnice2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03039 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?     
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Hospodsky ...
+text 205 360 1152 4   //
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // kdo jsi?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // Hospodsky
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+text 60 413 152 11
+
+
+page 6 // pomuze s hospodskym?
+HTMLGUMP(170,230,440,100,12,0,36)
+button 25 395 0fa5 0fa7 0 8 0  // co po me chces
+text 60 398 152 14
+button 25 415 0fa5 0fa7 1 0 2  // husa
+text 60 418 152 15
+button 25 435 0fa5 0fa7 0 7 0  // proc ma na hospodskyho vliv
+text 60 438 152 13
+
+
+page 7
+HTMLGUMP(170,230,440,100,16,0,36)
+button 25 395 0fa5 0fa7 0 8 0  // co po me chces
+text 60 398 152 14
+button 25 415 0fa5 0fa7 1 0 2  // husa
+text 60 418 152 15
+
+
+page 8
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // beru
+text 60 398 152 18
+
+
+[dialog d_q007_carodejnice2 text]
+Carodejnice Rachel                                                                    //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Hospodsky                                                                             //4
+Abrasum, Xerdum RhoOooOon Huron! ...<br>Mor Gul .... AAAAAh !  Proc mne rusis! Klid se mi z cesty, kvuli tobe jsem znicila elixir!       //5
+Jmenuji se rachel. Vic nepotrebujes vedet.                                            //6
+Ano. Zmiz mi z oci!                                                                   //7
+Mlada a jiste puvabna zena. Ovsem stit jejiho puvabu prilepen na odpor ke vsemu okolo mi rika, ze je to uplne jedno.<br>Neustale neco micha a snazi se na to plne soustredit. Zda se, ze tva pritomnost ji v tom nepomaha.  //8
+Hmmm ?//9
+Haradir si mysli, ze by jsi mohla presvedcit Hospodskeho z Ledoveho ostrova splnit    //10
+jeho slib.                                                                            //11
+Toho stareho lakotu? AAaaAhahahaha... Je to velice troufale zadat mne o takovou sluzbu. Mozna bych vedela, jak pohnout jeho sebevedomim. Nemam cas starat se o hlouposti. Udelej mi laskavost a pomohu ti.  //12
+Jakto, ze mas na toho Hospodskeho takovy vliv?                                        //13
+Dobra, co po mne chces?                                                               //14
+Nemyslim si, ze bych mel cas delat poskoka kdejake namyslene huse...                  //15
+Nepotrebujes prilis bystrosti k odhaleni skutecnosti, ze pro jedno sele je to az moc povyku, je to tak? Nebud prekvapeny vim presne co Haradirovi slibil. Upeci sele nebo ho hodit do udirny umi kazdy nemehlo. Co vsak dela jeho selatka vyjmecnymi, to je spravna smes koreni. On sam nevi cim ta neboha stvoreni cpe, nezna recept. Dal jiz neni treba vysvetlovat ... //16
+Potrebuji na sve lektvary spoustu ruznych prisad. Hodne casu travim na ostrovech, kde se daji snadneji nalezt vzacnejsi byliny. Bohuzel vsak existuje prisada, ktere zde mam opravdovy nedostatek. Jsou to kridla netopyru (batwings). Dones mi tisic jejich kridel a pak ti pomohu s hospodskym. //17
+Dobre, udelam to.//18
+
+
+
+
+
+[dialog d_q007_carodejnice2 button]
+ON = 1 // jo, prinesu regy
+ src.qtag(q007_haradirovo_selatko,4,6)
+ Say("A pospes si.")
+
+ON = 2 // je husa
+ Say("Az zmoudris, prijd a mozna se domluvime...")
+
+
+
+
+///////////// Gump 3 Carodejnice     - on tag carodejnice_regy + regy nemas
+
+[dialog d_q007_carodejnice3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03039 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Hospodsky ...
+text 205 360 1152 4   //
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // jak se dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // Hospodsky
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+
+
+page 6 // pomuze s hospodskym?
+HTMLGUMP(170,230,440,100,11,0,36)
+
+
+
+[dialog d_q007_carodejnice3 text]
+Carodejnice Rachel                                                                    //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Hospodsky                                                                             //4
+Abrasum, Xerdum RhoOOoOooO OooOon Huron! ...<br>AAAAAh !  Zase ty!                            //5
+Prave jsem diky tobe zkazila dalsi lektvar... *nenavistne se na tebe podivala*        //6
+Prines mi 1000 netopyrich kridel (batwings), jak jsme se dohodli.                     //7
+Mlada a jiste puvabna zena. Ovsem stit jejiho puvabu prilepen na odpor ke vsemu okolo mi rika, ze je to uplne jedno.<br>Neustale neco micha a snazi se na to plne soustredit. Zda se, ze tva pritomnost ji v tom nepomaha.  //8
+Hmmm ?                                                                                //9
+Nemohla by jsi toho hospodskeho zatim presvedcit, nez nasbiram ta kridla?             //10
+Ne, nemohla. Nezdrzuj me...                                                           //11
+
+
+
+[dialog d_q007_carodejnice3 button]
+ON = 1 // jo, prinesu regy
+ src.qtag(q007_haradirovo_selatko,4,6)
+ Say A pospes si
+
+ON = 2 // je husa
+ Say Az zmoudris, prijd a mozna se domluvime...
+
+
+
+///////////// Gump 4 Carodejnice     - on tag carodejnice_regy + mam u sebe regy
+
+[dialog d_q007_carodejnice4]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03039 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Hospodsky ...
+text 205 360 1152 4   //
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // jak se dari?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // Hospodsky
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //
+text 60 398 152 10
+
+
+page 6 // pomuze s hospodskym?
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 7 0  //
+text 60 418 152 13
+
+page 7 // pomuze s hospodskym?
+HTMLGUMP(170,230,440,100,14,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 142 12
+
+
+
+[dialog d_q007_carodejnice4 text]
+Carodejnice Rachel                                                                    //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Hospodsky                                                                             //4
+Abrasum, Xerdum RhoOooOon Huron! ...<br>AAAAAh !  Zase ty!                            //5
+Prave jsem diky tobe zkazila dalsi lektvar... *nenavistne se na tebe podivala*        //6
+Prines mi 1000 netopyrich kridel (batwings), jak jsme se dohodli.                     //7
+Mlada a jiste puvabna zena. Ovsem stit jejiho puvabu prilepen na odpor ke vsemu okolo mi rika, ze je to uplne jedno.<br>Neustale neco micha a snazi se na to plne soustredit. Zda se, ze tva pritomnost ji v tom nepomaha.  //8
+Hmmm ?                                                                                //9
+Mam tady ty kridla, jak jsme se dohodli.                                              //10
+Vyborne! Tak mi je dej. S tim hospodskym se netrap. Rekni mu, ze jsem te poslala. On si nemuze dovolit ti neverit jeho kuchyne ho zivi. A ted uz jdi mam sve prace dost.   //11
+*Provest vymenu*                                                                      //12
+Celou dobu mi stacilo namluvit mu, ze me posilas?                                     //13
+*Usmala se* ... Nekdy je usudek dost chaby, i kdyz se vse zda byt logicke a spravne, je to tak? Jdi uz, mam praci... //14
+
+
+[dialog d_q007_carodejnice4 button]
+ON = 1 // provest vymenu
+if <SRC.RESTEST 1000 i_reag_Batwing>
+ src.consume=1000 i_reag_Batwing
+ src.qtag(q007_haradirovo_selatko,5,6)
+ Say A s hospodskym se uz netrap...
+else
+ Say Co to na mne zkousis ? Chci 1000 netopyrich kridel ...
+endif
+
+
+
+
+///////////// Gump 5 Carodejnice     - on tag carodejnice_regy + mam u sebe regy
+
+[dialog d_q007_carodejnice5]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03039 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Jak se ti dari ?     
+text 189 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // jak se dari?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q007_carodejnice5 text]
+Carodejnice Rachel                                                                    //0
+Jak se ti dari?                                                                       //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Abrasum, Xerdum RhoOooOon Huron! ...<br>AAAAAh !  Zase ty!                            //4
+Prave jsem diky tobe zkazila dalsi lektvar... *nenavistne se na tebe podivala*        //5
+Ano. Zmiz mi z oci!                                                                   //6
+Mlada a jiste puvabna zena. Ovsem stit jejiho puvabu prilepen na odpor ke vsemu okolo mi rika, ze je to uplne jedno.<br>Neustale neco micha a snazi se na to plne soustredit. Zda se, ze tva pritomnost ji v tom nepomaha.  //8
+
+
+[dialog d_q007_carodejnice5 button]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////
+//Speech Prastary Kovar
+//////////////////////////////////////////////////////
+
+
+
+[SPEECH spk_q007_kovar]
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*haradir*
+ON=*mithril*
+
+if (<distance>>2)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_kovar_DClick
+endif
+
+
+[FUNCTION f_q007_kovar_DClick]
+src.f_q007_checkOldTags
+IF (0<src.qtag(q007_prastary_kovar)>==2)
+ DIALOG(d_q007_kovar6)
+elseIF (0<src.qtag(q007_prastary_kovar)>==1)
+ IF (<src.RESTEST 1 i_mesicni_kamen> )&&(<src.RESTEST 1 i_meteorit> )&&(<src.RESTEST 1 i_kamen_krve>)
+  DIALOG(d_q007_kovar5)
+ else
+  DIALOG(d_q007_kovar4)
+ endif
+elseIF (0<src.qtag(q007_haradirovo_selatko)> == 8)
+ IF (<src.blacksmithing> > 999)
+  DIALOG(d_q007_kovar3)
+ else 
+  DIALOG(d_q007_kovar2)
+ endif
+else
+ DIALOG(d_q007_kovar)
+endif
+
+
+
+
+///////////// Gump 1 - Prastary Kovar
+
+[dialog d_q007_kovar]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q007_kovar text]
+Prastary Kovar                                                                        //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Jak jsi se sem dostal ? ... Nemam na tebe cas, kovu Mithrillovou zbroj a potrebuji se soustredit.        //4
+Me jmeno neni dulezite. Jsem jen stary kovar, ktery potrebuje klid ke sve praci...    //5
+*usmal se* Dekuji, ale myslim, ze ma moudrost prekona tve mladicke nadseni.           //6
+Velice stary kovar. V jeho rukou je vsak stale videt obrovska sila. Jak tu tak pri sve praci obiha kolem kovadliny s kladivem v ruce, vsimas si jeho nezvykle obratnosti. Jiz na prvni pohled tak tento kovar sve remeslo dela ohromne dlouho.  //7
+
+
+[dialog d_q007_kovar button]
+
+
+
+
+
+///////////// Gump 2 - Prastary Kovar
+
+[dialog d_q007_kovar2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q007_kovar2 text]
+Prastary Kovar                                                                        //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Aaa. To musis byt ty, o kom mi Haradir vypravel! Vymamil jsi pro nej od hospodskeho selatko je to tak? Vitam te tu. Jsem rad, ze se jeste najdou lide, jako jsi ty.  //4
+Me jmeno neni dulezite. Jsem jen stary kovar, ktery miluje svou praci a samotu...     //5
+*usmal se* Dekuji, ale myslim, ze ma moudrost prekona tve mladicke nadseni. Kdyby jsi si vsak nekdy myslel, ze jsi tam venku nabyl veskerych znalosti kovarskeho remesla, prijd zamnou a ja ti ukazu, jak hluboka nevedomost venku panuje.      //6
+Velice stary kovar. V jeho rukou je vsak stale videt obrovska sila. Jak tu tak pri sve praci obiha kolem kovadliny s kladivem v ruce, vsimas si jeho nezvykle obratnosti. Jiz na prvni pohled tak tento kovar sve remeslo dela ohromne dlouho.  //7
+
+
+[dialog d_q007_kovar2 button]
+
+
+
+///////////// Gump 3 - Prastary Kovar
+
+[dialog d_q007_kovar3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 0 5 0  //
+text 60 398 152 8
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5 // o kovarine vim vse !
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  predvest, co umim
+text 60 398 142 10
+
+
+page 6 // predvedl jsem, co umim
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 0 7 0  // jake jsou suroviny ?
+text 60 398 152 12
+
+
+page 7 // predvedl jsem, co umim
+HTMLGUMP(170,230,440,100,13,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 152 14
+
+[dialog d_q007_kovar3 text]
+Prastary Kovar                                                                        //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Aaa ty jsi ten, co pomohl Haradirovi ziskat selatko! Je skvele, ze jsou tu stale lide, jako ty.        //4
+Me jmeno neni dulezite. Jsem jen stary kovar, ktery miluje svou praci a samotu...     //5
+*Usmal se* Dekuji, ale myslim, ze ma moudrost prekona tve mladicke nadseni. Kdyby jsi si vsak nekdy myslel, ze jsi tam venku nabyl veskerych znalosti kovarskeho remesla, prijd zamnou a ja ti ukazu, jak hluboka nevedomost venku panuje.      //6
+Velice stary kovar. V jeho rukou je vsak stale videt obrovska sila. Jak tu tak pri sve praci obiha kolem kovadliny s kladivem v ruce, vsimas si jeho nezvykle obratnosti. Jiz na prvni pohled tak tento kovar sve remeslo dela ohromne dlouho.  //7
+Ano, presne takovy pocit mam! Jsem si temer jist, ze vim o kovarine uplne vse.        //8
+Ano ... Jiste .. tak mi ukaz co umis...                                               //9
+*Predvest svoje schopnosti*                                                           //10
+- po jistem case -<br>Vyborne ! Prekonal jsi veskere me predstavy ! Uff ... skoro ani nevim, kde bych ti co vytkl. Tva prace je opravdu mistrovska, ale vim o necem, co by ti mohlo pomoci. Znam tajemstvi, jak vytvorit kladivo, kteremu podlehne kazdy kov. S jeho pomoci budes moci pracovat v tak obrovskem zaru, ze ti podlehne i kov ,jako je Mithrill. K vyrobe takoveho kladiva je vsak potreba zvlastnich surovin, jejichz vzacnost by prekonala mithrill samotny.  //11
+Co je to za suroviny?                                                                 //12
+Libis se mi. Jsi primy a nebojis se. Jde o tri kameny, jez jsou jeden bez druheho k nicemu. Spoji-li se ale jejich sily je jejich moc obrovska. Jde o Meteorit, Mesicni kamen a kamen Krve. Nevim ale, kde by jsi mohl najit jediny z nich, natoz pak vsechny. Jsem si ale jist, ze informace o tom, kde je najdes je nekde na prodej. To vsak ponecham na tobe. Dones mi je a ja ti pak budu schopen vyrobit to kladivo.                        //13
+Dobra, pokusim se ti ty kameny prinest.                                               //13
+
+[dialog d_q007_kovar3 button]
+ON = 1
+ src.qtag(q007_prastary_kovar,1,8)
+ Say Preji ti hodne stesti. Pamatuj, potrebuji ty kameny vsechny tri.
+
+
+
+
+///////////// Gump 4 - Prastary Kovar
+
+[dialog d_q007_kovar4]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Kameny
+text 217 360 1152 8   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5 // Kameny
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  kde ty kameny sezenu
+text 60 398 152 10
+
+page 6 // kde sezenu sutry
+HTMLGUMP(170,230,440,100,11,0,36)
+
+
+[dialog d_q007_kovar4 text]
+Prastary Kovar                                                                        //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Rad te opet vidim. Co te sem privadi ?                                                //4
+Me jmeno neni dulezite. Jsem jen stary kovar, ktery miluje svou praci a samotu...     //5
+*Usmal se* Dekuji, ale myslim, ze ma moudrost prekona tve mladicke nadseni.           //6
+Velice stary kovar. V jeho rukou je vsak stale videt obrovska sila. Jak tu tak pri sve praci obiha kolem kovadliny s kladivem v ruce, vsimas si jeho nezvykle obratnosti. Jiz na prvni pohled tak tento kovar sve remeslo dela ohromne dlouho.  //7
+Kameny                                                                                //8
+Hmm ?                                                                                 //9
+Opravdu nevis, kde bych ty kameny mohl ziskat?                                        //10
+Je mi lito.                                                                           //11
+
+
+[dialog d_q007_kovar4 button]
+
+
+
+
+
+
+///////////// Gump 5 - Prastary Kovar
+
+[dialog d_q007_kovar5]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Kameny
+text 217 360 1152 8   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5 // Kameny
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  mam ty sutry
+text 60 398 152 10
+
+
+page 6 // mam kameny
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  predat kameny
+text 60 398 142 12
+
+
+[dialog d_q007_kovar5 text]
+Prastary Kovar                                                                        //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Rad te opet vidim. Co te sem privadi ?                                                //4
+Me jmeno neni dulezite. Jsem jen stary kovar, ktery miluje svou praci a samotu...     //5
+*Usmal se* Dekuji, ale myslim, ze ma moudrost prekona tve mladicke nadseni.           //6
+Velice stary kovar. V jeho rukou je vsak stale videt obrovska sila. Jak tu tak pri sve praci obiha kolem kovadliny s kladivem v ruce, vsimas si jeho nezvykle obratnosti. Jiz na prvni pohled tak tento kovar sve remeslo dela ohromne dlouho.  //7
+Kameny                                                                                //8
+Hmm ?                                                                                 //9
+Tady, prinesl jsem ty kameny.                                                         //10
+Dobra, podej mi je at se mohu pustit do prace.                                        //11
+*Predat kameny*                                                                       //12
+
+
+
+[dialog d_q007_kovar5 button]
+ON = 1
+ IF (<src.RESTEST 1 i_mesicni_kamen> )&&(<src.RESTEST 1 i_meteorit> )&&(<src.RESTEST 1 i_kamen_krve>)
+  src.addexp(2000)
+  src.qtag(q007_prastary_kovar,2,8)
+  src.consume=i_mesicni_kamen
+  src.consume=i_meteorit
+  src.consume=i_kamen_krve
+  src.giveitem(i_adamantinum_kladivko) 
+  Say Tady mas to kladivo. Ted jiz tve schopnosti nikdo neprekona.
+  f_quest_complete(8)  // splnenie questu "Ada. Kladivko"
+ else
+  Say Nemas ty kameny u sebe. Potrebuji vsechny tri abych to kladivo mohl vyrobit.
+ endif
+
+
+
+///////////// Gump 6 - Prastary Kovar
+
+[dialog d_q007_kovar6]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03059 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+
+
+[dialog d_q007_kovar6 text]
+Prastary Kovar                                                                        //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Rad te opet vidim. Co te sem privadi ?                                                //4
+Me jmeno neni dulezite. Jsem jen stary kovar, ktery miluje svou praci a samotu...     //5
+*Usmal se* Dekuji, ale myslim, ze ma moudrost prekona tve mladicke nadseni.           //6
+Velice stary kovar. V jeho rukou je vsak stale videt obrovska sila. Jak tu tak pri sve praci obiha kolem kovadliny s kladivem v ruce, vsimas si jeho nezvykle obratnosti. Jiz na prvni pohled tak tento kovar sve remeslo dela ohromne dlouho.  //7
+
+
+
+[dialog d_q007_kovar6 button]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////
+//Speech Mag Inscripter
+//////////////////////////////////////////////////////
+
+
+
+[SPEECH spk_q007_maginscript]
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*haradir*
+ON=*mithril*
+
+if (<distance>>3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_maginscript_DClick
+endif
+
+
+[FUNCTION f_q007_maginscript_DClick]
+src.f_q007_checkOldTags
+IF (0<src.qtag(q007_stary_inscripter)> > 1)
+ DIALOG(d_q007_maginscript6)
+elseIF (0<src.qtag(q007_stary_inscripter)>==1)
+ IF (<src.RESTEST 1 i_mesicni_kamen> )&&(<src.RESTEST 1 i_meteorit> )&&(<src.RESTEST 1 i_kamen_krve>)
+  DIALOG(d_q007_maginscript5)
+ else
+  DIALOG(d_q007_maginscript4)
+ endif
+elseIF (0<src.qtag(q007_haradirovo_selatko)> == 8)
+ IF (<src.Inscription> > 799)
+  DIALOG(d_q007_maginscript3)
+ else 
+  DIALOG(d_q007_maginscript2)
+ endif
+else
+ DIALOG(d_q007_maginscript)
+endif
+
+
+
+///////////// Gump 1 - Stary Inscripter
+
+[dialog d_q007_maginscript]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03053 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q007_maginscript text]
+Stary Inscripter                                                                      //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Jak jsi se sem dostal ? Nemam na tebe cas, mam pred sebou jeste spoustu knih.         //4
+Me jmeno neni dulezite. Jsem jen stary mag, ktery potrebuje klid ke sve praci...      //5
+Dekuji, ale myslim, ze si vystacim sam.                                               //6
+Na prvni pohled mag, jakych jsi videl spoustu. Stary, vekem strhany a presto velmi dobre upraveny. Na cele ma vyrytu moudrost v nekolika vlnach vrasek. Ze vseho kolem se da usuzovat, ze tento mag ma zajem predevsim o magicke svitky a knihy.<br>Neco v chovani toho starika ti napovida, ze by jsi na nej nemel utocit...   //7
+
+
+[dialog d_q007_maginscript button]
+
+
+
+///////////// Gump 2 - Stary Inscripter
+
+[dialog d_q007_maginscript2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03053 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q007_maginscript2 text]
+Stary Inscripter                                                                      //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Aaa. To musis byt ty, o kom mi Haradir vypravel! Vymamil jsi pro nej od hospodskeho selatko je to tak? Vitam te tu.      //4
+Me jmeno neni dulezite. Jsem jen stary mag, ktery potrebuje klid ke sve praci. Pokud by jsi ale nekdy mel touhu naucit zjistit vice o magickych svitcich prijd zamnou a pomohu ti. Nejprve se ale musis sam naucit zaklady s temi ti ja pomoci nemohu. Pouze tva vlastni pile te muze prenest pres tuto prekazku.      //5
+Dekuji, ale myslim, ze si vystacim sam.                                               //6
+Na prvni pohled mag, jakych jsi videl spoustu. Stary, vekem strhany a presto velmi dobre upraveny. Na cele ma vyrytu moudrost v nekolika vlnach vrasek. Ze vseho kolem se da usuzovat, ze tento mag ma zajem predevsim o magicke svitky a knihy.<br>Neco v chovani toho starika ti napovida, ze by jsi na nej nemel utocit...   //7
+
+
+[dialog d_q007_maginscript2 button]
+
+
+
+
+///////////// Gump 3 - Stary Inscripter
+
+[dialog d_q007_maginscript3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03053 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 0 5 0  //
+text 60 398 152 8
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5 // V cem spociva tva pomoc ?
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  co je to za kameny
+text 60 398 152 10
+
+
+page 6 // co je to za kameny
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // dobra jdu na to
+text 60 398 152 12
+button 25 415 0fa5 0fa7 0 7 0  // kde je sezenu
+text 60 418 152 13
+
+
+page 7 // predvedl jsem, co umim
+HTMLGUMP(170,230,440,100,14,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //
+text 60 398 152 12
+
+
+[dialog d_q007_maginscript3 text]
+Stary Inscripter                                                                      //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Aaa. To musis byt ty, o kom mi Haradir vypravel! Vymamil jsi pro nej od hospodskeho selatko je to tak? Vitam te tu.      //4
+Me jmeno neni dulezite. Jsem jen stary mag, ktery potrebuje klid ke sve praci. Citim v tobe velkou moudrost. Myslim ze psani magickych svitku ti neni uplne cizi. Mozna bych ti mohl pomoci ja, pokud bys mel zajem.    //5
+Dekuji, ale myslim, ze si vystacim sam. Aaah ale citim kolem tebe obrovskou silu vzdelani. Myslim ze bych ti mohl pomoci ja.                                               //6
+Na prvni pohled mag, jakych jsi videl spoustu. Stary, vekem strhany a presto velmi dobre upraveny. Na cele ma vyrytu moudrost v nekolika vlnach vrasek. Ze vseho kolem se da usuzovat, ze tento mag ma zajem predevsim o magicke svitky a knihy.<br>Neco v chovani toho starika ti napovida, ze by jsi na nej nemel utocit...   //7
+V cem tva pomoc spociva?                                                              //8
+Myslim, ze tva znalost magickych svitku dosahla takove urovne, ze je na case naucit se dalsimu kruhu.. *tajemne se usmal* ..Nezistne jsi pomohl Haradirovi, pak ti jiste mohu tyto vedomosti predat, ale nebude to az tak snadne. Budes potrebovat Magickou knihu Inscripce, aby jsi mohl do svitku vkladat magicke formule osmeho kruhu. Mohu ti takovou napsat. Znam pismo i texty, ktere v takove knize musi byt. Aby vsak byla pouzitelna, je treba do ni vlozit magickou silu tri kamenu. Prines mi ty kameny a ja ti obstaram tu knihu.   //9
+Co je to za kameny?                                                                   //10
+Jde o velice vzacne artefakty. Nektere z nich se na zemi bezne nevyskytuji. Moudri se domnivaji, ze dva z nich spadly z nebes, posledni vznikl pri obrovskem uvolneni energie na konci tretiho veku. Pravda o nich je vsak zahalena hustou mlhou casu a tajemstvi. Jiz prvni spisy o kamenech mluvi neprilis jasne. Avsak jejich moc byla popsana celkem podrobne a mnoho magu jejich sily vyuzivalo pri vyrobe magickych predmetu. Dones mi tedy tyto tri kameny - Meteorit, Mesicni Kamen a Krvavy Kamen. Pamatuj, ze bude-li chybet jediny kamen, nebudou mit ostatni zadnou moc.    //11
+Dobra, pokusim se je sehnat.                                                          //12
+Kde ty kameny mohu ziskat?                                                            //13
+Bohuzel ti nemohu rici, kde presne je muzes sehnat. Ovsem nekolik takovych kamenu bylo uloupeno. Urcite se da nekde koupit informace, kde se daji sehnat.          //14
+
+
+[dialog d_q007_maginscript3 button]
+ON = 1
+ src.qtag(q007_stary_inscripter,1,7)
+ Say Preji ti hodne stesti. Pamatuj, potrebuji ty kameny vsechny tri.
+
+
+
+///////////// Gump 4 - Stary Inscripter
+
+[dialog d_q007_maginscript4]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03053 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Kameny
+text 217 360 1152 8   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5 // Kameny
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  kde ty kameny sezenu
+text 60 398 152 10
+
+page 6 // Kde je sezenu
+HTMLGUMP(170,230,440,100,11,0,36)
+
+
+
+[dialog d_q007_maginscript4 text]
+Stary Inscripter                                                                      //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Opet te tu vitam.                                                                     //4
+Me jmeno neni dulezite. Jsem jen stary mag, ktery potrebuje klid ke sve praci. Citim v tobe velkou moudrost. Myslim ze psani magickych svitku ti neni uplne cizi. Mozna bych ti mohl pomoci ja, pokud bys mel zajem.    //5
+Dekuji, ale myslim, ze si vystacim sam.                                               //6
+Na prvni pohled mag, jakych jsi videl spoustu. Stary, vekem strhany a presto velmi dobre upraveny. Na cele ma vyrytu moudrost v nekolika vlnach vrasek. Ze vseho kolem se da usuzovat, ze tento mag ma zajem predevsim o magicke svitky a knihy.<br>Neco v chovani toho starika ti napovida, ze by jsi na nej nemel utocit...   //7
+Kameny                                                                                //8
+Hmmm?                                                                                 //9
+Kde ty kameny mohu ziskat?                                                            //10
+Bohuzel ti nemohu rici, kde presne je muzes sehnat. Ovsem nekolik takovych kamenu bylo uloupeno. Urcite se da nekde koupit informace, kde se daji sehnat.          //14
+
+
+[dialog d_q007_maginscript4 button]
+
+
+
+
+///////////// Gump 5 - Stary Inscripter
+
+[dialog d_q007_maginscript5]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03053 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+button 160 360 0988 0988 0 5 0  // Kameny
+text 217 360 1152 8   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5 // Kameny
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  prinesl jsem ty sutry
+text 60 398 152 10
+
+page 6 // prinesl sem sutry
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  predat kameny
+text 60 398 142 12
+
+
+[dialog d_q007_maginscript5 text]
+Stary Inscripter                                                                      //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Opet te tu vitam.                                                                     //4
+Me jmeno neni dulezite. Jsem jen stary mag, ktery potrebuje klid ke sve praci. Citim v tobe velkou moudrost. Myslim ze psani magickych svitku ti neni uplne cizi. Mozna bych ti mohl pomoci ja, pokud bys mel zajem.    //5
+Dekuji, ale myslim, ze si vystacim sam.                                               //6
+Na prvni pohled mag, jakych jsi videl spoustu. Stary, vekem strhany a presto velmi dobre upraveny. Na cele ma vyrytu moudrost v nekolika vlnach vrasek. Ze vseho kolem se da usuzovat, ze tento mag ma zajem predevsim o magicke svitky a knihy.<br>Neco v chovani toho starika ti napovida, ze by jsi na nej nemel utocit...   //7
+Kameny                                                                                //8
+Hmmm?                                                                                 //9
+Tady, prinesl jsem ty kameny.                                                         //10
+Dobra, podej mi je at se mohu pustit do prace.                                        //11
+*Predat kameny*                                                                       //12
+
+
+
+[dialog d_q007_maginscript5 button]
+ON = 1
+ IF (<src.RESTEST 1 i_mesicni_kamen> )&&(<src.RESTEST 1 i_meteorit> )&&(<src.RESTEST 1 i_kamen_krve>)
+  src.addexp(2000)
+  src.qtag(q007_stary_inscripter,2,7)
+  src.consume=i_mesicni_kamen
+  src.consume=i_meteorit
+  src.consume=i_kamen_krve
+  src.giveitem(i_book_inscription) 
+  Say Vyborne ! Tady mas tu knihu. Strez sve vedomosti obezretne!
+  f_quest_complete(7)  // splnenie questu "Kniha Inscripce"
+ else
+  Say Nemas ty kameny u sebe. Potrebuji silu vsech tri kamenu.
+ endif
+
+
+
+///////////// Gump 6 - Stary Inscripter
+
+[dialog d_q007_maginscript6]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03053 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q007_maginscript6 text]
+Stary Inscripter                                                                      //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Rad te tu vidim priteli!                                                              //4
+Me jmeno neni dulezite.                                                               //5
+Dekuji, ale myslim, ze si vystacim sam.                                               //6
+Na prvni pohled mag, jakych jsi videl spoustu. Stary, vekem strhany a presto velmi dobre upraveny. Na cele ma vyrytu moudrost v nekolika vlnach vrasek. Ze vseho kolem se da usuzovat, ze tento mag ma zajem predevsim o magicke svitky a knihy.<br>Neco v chovani toho starika ti napovida, ze by jsi na nej nemel utocit...   //7
+
+
+
+[dialog d_q007_maginscript6 button]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////
+//Speech Divous
+//////////////////////////////////////////////////////
+
+
+
+[SPEECH spk_q007_divous]
+
+ON=*hi*
+ON=*buy*
+ON=*ahoj*
+
+if (<distance>>3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_divous_DClick
+endif
+
+
+[FUNCTION f_q007_divous_DClick]
+src.f_q007_checkOldTags
+IF (0<src.qtag(q007_stary_inscripter)> == 3)
+ DIALOG(d_q007_divous3)
+elseif (<SRC.RESTEST 1 i_book_inscription>)
+ DIALOG(d_q007_divous2)
+else
+ DIALOG(d_q007_divous)
+endif
+
+
+
+///////////// Gump 1 - Divous
+
+[dialog d_q007_divous]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+[dialog d_q007_divous text]
+Divous                                                                                //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+*Hic* Hahaa witam wsechny cizinceee ! Kdopak se to sem waali ii ? *Hic* Jehee.. *usmal se* ..wy se tady nemate radi...   //4
+Ja jsem Diwous... *Hic*                                                               //5
+Jo... *Hic* .. Nejaky cas se snazim sehnat Knihu Inscripce. Techto wzacnych knih je *Hic* pra-amalo a jaaa bez ni nemohu post-oupit w uceni. Nemam sice moc co za ni nabidnoot, akorat takowehle pero. *Hic* Kdyz jsem byl mladsi, wyhral jsem ho nad nejakym magem... Hehe to byla tenkrat zabava.. *jeho tvar se pokusila o skodolibe gesto* .. a jak se wydesene sklebil a chtel ho *Hic* zpet! Hehehe *Hic* hee-eh .. no kdyby ho tolik nechtel, snad bych mu ho i dal, stejne newim, k cemu to je. Nemohl jsem wsak *Hic* jeho narku odolat... a ziiiral na svou sazku w mych rukou *Hic* ... No co, kdybys mel nekdy tu knihu, dej wedet...    //6
+Stary ozrala... Zda se, ze byval, nebo nedej Mandos stale JE ucnem magie.             //7
+
+
+
+[dialog d_q007_divous button]
+
+
+
+///////////// Gump 2 - Divous
+
+[dialog d_q007_divous2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 0 5 0  //  nabidnout knihu
+text 60 398 152 8
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5 // nabidnul jsem knihu
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout knihu
+text 60 398 152 10
+button 25 415 0fa5 0fa7 1 0 2  //  nabidnout knihu
+text 60 418 152 11
+
+
+
+[dialog d_q007_divous2 text]
+Divous                                                                                //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+*Hic* Hahaa witam wsechny cizince ! Kdopak se to sem waali ii ? *Hic* Jehee.. *usmal se* ..wy se tady nemate radi...   //4
+Ja jsem Diwous... *Hic*                                                               //5
+Jo... *Hic* .. Nejaky cas se snazim sehnat Knihu Inscripce. Techto wzacnych knih je *Hic* pra-amalo a jaaa bez ni nemohu post-oupit w uceni. Nemam sice moc co za ni nabidnoot, akorat takowehle pero. *Hic* Kdyz jsem byl mladsi, wyhral jsem ho nad nejakym magem... Hehe to byla tenkrat zabava.. *jeho tvar se pokusila o skodolibe gesto* .. a jak se wydesene sklebil a chtel ho *Hic* zpet! Hehehe *Hic* hee-eh .. no kdyby ho tolik nechtel, snad bych mu ho i dal, stejne newim, k cemu to je. Nemohl jsem wsak *Hic* jeho narku odolat... a ziiiral na svou sazku w mych rukou *Hic* ... No co, kdybys mel nekdy tu knihu, dej wedet...    //6
+Stary ozrala... Zda se, ze byval, nebo nedej Mandos stale JE ucnem magie.             //7
+Co tahle kniha? Neni to takova, jakou jsi chtel?                                      //8
+Ano ! To je presne ona! Kde jsi ji *Hic* nasel ? Dej mi ji ! Musim ji mit ...         //9
+Dobra, vymenim ji za to pero, ktere ti dal ten mag pred lety.                         //10
+Na tu knihu zapomen! Nesverim ji kdejeke chatre...                                    //11
+
+
+[dialog d_q007_divous2 button]
+ON = 1
+IF (<src.RESTEST 1 i_book_inscription>)
+ src.consume=i_book_inscription
+ src.giveitem(i_magicke_pero)
+ src.qtag(q007_stary_inscripter,3,7)
+ Say Tady mas to pero..
+ f_quest_complete(7,1)  // splnenie questu "Magicke Pero"
+else
+ Say Hej ! Kam jsi dal tu knihu?
+endif
+
+ON = 2
+ Say Tak jdi pryc! A nerus me tu...
+
+
+
+///////////// Gump 3 - Divous
+
+[dialog d_q007_divous3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  vymenit pero za knihu ?
+text 60 398 152 9
+button 25 415 0fa5 0fa7 0 5 0  //  nemel by jsi studovat ?
+text 60 418 152 8
+
+
+page 4 // Prohlednout...
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 5 // a ja studovat nebudu, heja heja hej !
+HTMLGUMP(170,230,440,100,10,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  vymenit pero za knihu ?
+text 60 398 152 9
+
+page 6 // nevymenis tu knihu ?
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 0 5 0  //  nemel by jsi studovat ?
+text 60 398 152 8
+
+
+[dialog d_q007_divous3 text]
+Divous                                                                                //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+*Hic* Hahaa witam wsechny cizince ! Kdopak se to sem waali ii ? *Hic* Jehee.. *usmal se* ..wy se tady nemate radi...   //4
+Ja jsem Diwous... *Hic*                                                               //5
+Jaa uz mam wsechno *Hic*...                                                           //6
+Stary ozrala... Zda se, ze byval, nebo nedej Mandos stale JE ucnem magie.             //7
+Nemel by jsi zacit studovat?                                                          //8
+Nevymenil by jsi zpet Knihu Inscripce za to pero, co jsi mi dal? Nejak se mi nehodi   //9
+Nesmysl! Na to je spousta casu ... Tady mam jeste dneska nejakou zabawu *Hic*         //10
+Wymenit tu knihu!? *Hic* To nepripada w uwahu... Shanel jsem ji leta...               //11
+
+
+[dialog d_q007_divous3 button]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////
+//Speech Rodrigo
+//////////////////////////////////////////////////////
+
+
+
+[SPEECH spk_q007_rodrigo]
+
+ON=*hi*
+ON=*buy*
+ON=*ahoj*
+
+if (<distance>>3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_rodrigo_DClick
+endif
+
+
+[FUNCTION f_q007_rodrigo_DClick]
+src.f_q007_Rodrigo_checkOldTags
+IF (<src.qtag(q007_Rodrigo)> == 1)
+ DIALOG(d_q007_rodrigo2)
+else
+ DIALOG(d_q007_rodrigo)
+endif
+
+
+
+///////////// Gump 1 - Rodrigo
+
+[dialog d_q007_rodrigo]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182  // podklad pod ksichtiky	
+gumppic 40 215 03000  // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2   //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3    //
+button 160 360 0988 0988 0 5 0  // Nabidka
+text 220 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  takze jsi pirat
+text 60 398 152 10
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // Nabidka
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 7 0  //  co nejaka sleva?
+text 60 418 152 13
+
+
+page 6 // nestaci rict ze ses pirat ?
+HTMLGUMP(170,230,440,100,11,0,36)
+
+
+page 7 // bude sleva?
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 8 0  //  ja to jen zkusil...
+text 60 418 152 14
+
+
+page 8 // bude sleva?
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 9 0  //  pochlebovat
+text 60 418 152 16
+
+
+page 9 // bude sleva?
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 10 0  //  takze 8k? 
+text 60 418 152 18
+
+
+page 10 // sleva bude ...
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 2  //  nabidnout 8k
+text 60 398 142 19
+button 25 415 0fa5 0fa7 0 11 0  //  mno .. co 6k ?
+text 60 418 152 20
+
+
+page 11 // bude sleva?
+HTMLGUMP(170,230,440,100,21,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 8 0  //  ja to jen zkusil...
+text 60 418 152 14
+
+
+[dialog d_q007_rodrigo text]
+pirat Rodrigo                                                                         //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Nabidka                                                                               //4
+Tohle neni bezpecne misto... Co tu pohledavas.                                        //5
+Me jmeno je Rodrigo. Jsem hrdym muzem mori a narokuji si dan z prevozu na lodich od Umbarskeho pristavu po Sede... //6
+Pomoci mne? Takova suchozemska krysa jako ty? Na to zapomen, od tebe nic nechci...    //7
+Celkem upraveny, opaleny muz v kozene uniforme. Absence haku misto jedne ruky a papouska na rameni je jedine, co kazi dokonaly obrazek zaniceneho namornika. Podle drzych gest a jizev na tvari to ale zadny dobrak nebude.    //8
+Jo muzu ti neco nabidnout... Zaplat mi 10 tisic zlatek a mozna budu mit nejakou informaci, ktera te bude zajimat.  //9
+Nestacilo by rici, "jsem pirat" ?                                                     //10
+Ne.                                                                                   //11
+*Souhlasit a predat 10 tisic gp*                                                      //12
+Nejsem prilis pri penezich, nesla by ta informace ziskat levneji?                     //13
+Ja to jen zkusil ...                                                                  //14
+Jo... To klidne zkousej.                                                              //15
+Vypada to ze jsi opravdu silny, musel jsi na sobe hodne drit co ?                     //16
+Jo.                                                                                   //17
+No a mohl by jsi mi tu informaci tedy prodat levneji? Co takhle 8 tisic?              //18
+*Souhlasit a predat 8 tisic gp*                                                       //19
+mno .. a co 6k ?                                                                      //20
+Ne. 10 tisic.                                                                         //21
+
+
+
+
+[dialog d_q007_rodrigo button]
+ON = 1 //nabidka 10k
+if (<src.RESTEST 10000 i_gold>)
+ src.CONSUME = 10000 i_gold
+ src.qtag(q007_Rodrigo,1)
+ if (<src.qtag(q007_delfin)> == 1)
+  DIALOG(d_q007_rodrigo_informace2)
+ else
+  DIALOG(d_q007_rodrigo_informace)
+ endif
+else
+ Say Hele, necpi mi zlatky, ktery nemas a bez si radsi smajdat po pousti.
+endif
+
+
+ON = 2 //nabidka 8k
+if (<src.RESTEST 8000 i_gold>)
+ src.CONSUME = 8000 i_gold
+ src.qtag(q007_Rodrigo,1)
+ if (<src.qtag(q007_delfin)> == 1)
+  DIALOG(d_q007_rodrigo_informace2)
+ else
+  DIALOG(d_q007_rodrigo_informace)
+ endif
+else
+ Say Hele, necpi mi zlatky, ktery nemas a bez si radsi smajdat po pousti.
+endif
+
+
+
+
+///////////// Gump 2 - Rodrigo
+
+[dialog d_q007_rodrigo2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182  // podklad pod ksichtiky	
+gumppic 40 215 03000  // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?
+text 215 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 361 331 1152 2   //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 527 331 142 3    //
+button 160 360 0988 0988 0 5 0  // Nabidka
+text 220 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // Kdo jsi?
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  takze jsi pirat
+text 60 398 152 10
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // Nabidka
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 7 0  //  co nejaka sleva?
+text 60 418 152 13
+button 25 435 0fa5 0fa7 0 12 0  //  Proc mam platit znova?
+text 60 438 152 22
+
+
+page 6 // nestaci rict ze ses pirat ?
+HTMLGUMP(170,230,440,100,11,0,36)
+
+
+page 7 // bude sleva?
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 8 0  //  ja to jen zkusil...
+text 60 418 152 14
+
+
+page 8 // bude sleva?
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 9 0  //  pochlebovat
+text 60 418 152 16
+
+
+page 9 // bude sleva?
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 10 0  //  takze 8k? 
+text 60 418 152 18
+
+
+page 10 // sleva bude ...
+HTMLGUMP(170,230,440,100,17,0,36)
+button 25 395 0fa5 0fa7 1 0 2  //  nabidnout 8k
+text 60 398 142 19
+button 25 415 0fa5 0fa7 0 11 0  //  mno .. co 6k ?
+text 60 418 152 20
+
+
+page 11 // bude sleva?
+HTMLGUMP(170,230,440,100,21,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 8 0  //  ja to jen zkusil...
+text 60 418 152 14
+
+
+page 12 // co kdyby vedel jeste neco
+HTMLGUMP(170,230,440,100,23,0,36) 
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 7 0  //  co nejaka sleva?
+text 60 418 152 13
+button 25 435 0fa5 0fa7 0 13 0  //  a vis jeste neco?
+text 60 438 152 24
+
+
+page 13 // co kdyby vedel jeste neco
+HTMLGUMP(170,230,440,100,25,0,36) 
+button 25 395 0fa5 0fa7 1 0 1  //  nabidnout 10k
+text 60 398 142 12
+button 25 415 0fa5 0fa7 0 7 0  //  co nejaka sleva?
+text 60 418 152 13
+button 25 435 0fa5 0fa7 1 0 3  //  To je marny..
+text 60 438 152 26
+
+
+[dialog d_q007_rodrigo2 text]
+pirat Rodrigo                                                                         //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Nabidka                                                                               //4
+Tohle neni bezpecne misto... Co tu pohledavas.                                        //5
+Me jmeno je Rodrigo. Jsem hrdym muzem mori a narokuji si dan z prevozu na lodich od Umbarskeho pristavu po Sede... //6
+Pomoci mne? Takova suchozemska krysa jako ty? Na to zapomen, od tebe nic nechci...    //7
+Celkem upraveny, opaleny muz v kozene uniforme. Absence haku misto jedne ruky a papouska na rameni je jedine, co kazi dokonaly obrazek zaniceneho namornika. Podle drzych gest a jizev na tvari to ale zadny dobrak nebude.    //8
+Jo muzu ti neco nabidnout... Zaplat mi 10 tisic zlatek a mozna budu mit nejakou informaci, ktera te bude zajimat.  //9
+Nestacilo by rici, "jsem pirat" ?                                                     //10
+Ne.                                                                                   //11
+*Souhlasit a predat 10 tisic gp*                                                      //12
+Nejsem prilis pri penezich, nesla by ta informace ziskat levneji?                     //13
+Ja to jen zkusil ...                                                                  //14
+Jo... To klidne zkousej.                                                              //15
+Vypada to ze jsi opravdu silny, musel jsi na sobe hodne drit co ?                     //16
+Jo.                                                                                   //17
+No a mohl by jsi mi tu informaci tedy prodat levneji? Co takhle 8 tisic?              //18
+*Souhlasit a predat 8 tisic gp*                                                       //19
+mno .. a co 6k ?                                                                      //20
+Ne. 10 tisic.                                                                         //21
+Chci se jenom na neco doptat. Proc bych mel platit znovu?!                            //22
+Co kdybych mel nejake nove informace? hmm ? Zaplat a reknu ti, co chces vedet...      //23
+A mas nejake nove informace?                                                          //24
+Zaplat a uvidis...                                                                    //25
+To je marny ja jdu pryc...                                                            //26
+
+
+
+[dialog d_q007_rodrigo2 button]
+ON = 1 //nabidka 10k
+if (<src.RESTEST 10000 i_gold>)
+ src.CONSUME = 10000 i_gold
+ if (<src.qtag(q007_delfin)> == 1)
+  DIALOG(d_q007_rodrigo_informace2)
+ else
+  DIALOG(d_q007_rodrigo_informace)
+ endif
+else
+ Say Hele, necpi mi zlatky, ktery nemas a bez si radsi smajdat po pousti.
+endif
+
+ON = 2 //nabidka 8k
+if (<src.RESTEST 8000 i_gold>)
+ src.CONSUME = 8000 i_gold
+ if (<src.qtag(q007_delfin)> == 1)
+  DIALOG(d_q007_rodrigo_informace2)
+ else
+  DIALOG(d_q007_rodrigo_informace)
+ endif
+else
+ Say Hele, necpi mi zlatky, ktery nemas a bez si radsi smajdat po pousti.
+endif
+
+
+ON = 3 //Jdu pryc
+Say Jen jdi. Aspon si zarybarim...
+
+
+
+
+///////////// Gump Informace - Rodrigo
+
+[dialog d_q007_rodrigo_informace]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182  // podklad pod ksichtiky	
+gumppic 40 215 03000  // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 325 330 0988 0988 0 1 0  // Informace
+text 376 331 1152 1   //
+
+
+page 1 // Informace
+HTMLGUMP(170,230,440,100,2,0,36)
+button 25 395 0fa5 0fa7 0 2 0  // o delfinech
+text 60 398 152 3
+button 25 415 0fa5 0fa7 0 3 0  // o ostrovech
+text 60 418 152 4
+button 25 435 0fa5 0fa7 0 4 0  //  o kamenech
+text 60 438 152 5
+button 25 455 0fa5 0fa7 0 5 0  // o carodejce
+text 60 458 152 6
+button 25 475 0fa5 0fa7 0 6 0  // o pousti
+text 60 478 152 7
+
+page 2 // o delfinech
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 0 7 0  //  kde adoptuju delfina ?
+text 60 398 152 13
+
+
+page 3 // o ostrovech
+HTMLGUMP(170,230,440,100,9,0,36)
+
+
+page 4 // o kamenech
+HTMLGUMP(170,230,440,100,10,0,36)
+button 25 395 0fa5 0fa7 0 9 0  //  kde jsou ty kameny ted
+text 60 398 152 18
+
+
+page 5 // o carodejce
+HTMLGUMP(170,230,440,100,11,0,36)
+
+
+page 6 // o pousti
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+page 7 // kde prispeju na delfina?
+HTMLGUMP(170,230,440,100,14,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //  predat 50k
+text 60 398 142 15
+button 25 415 0fa5 0fa7 0 8 0  //  to neni pro me
+text 60 418 152 16
+
+
+page 8 // kde prispeju na delfina?
+HTMLGUMP(170,230,440,100,17,0,36)
+
+
+page 9 // kde jsou sutry ted
+HTMLGUMP(170,230,440,100,19,0,36)
+
+[dialog d_q007_rodrigo_informace text]
+pirat Rodrigo                                                                         //0
+Informace                                                                             //1
+Taak, co bych ti tak rekl ...<BR> Mam tu informaci o stavu Delfinu v mistnich vodach, novinky o ostrovech na zapade, vim o nejakych uloupenych kamenech, mam zpravu o jedne carodejnici no a jeste bych ti mohl povedet neco o tehle pousti.            //3
+Povez mi o delfinech                                                                  //3
+Povez mi o ostrovech                                                                  //4
+Povez mi o kamenech                                                                   //5
+Povez mi o carodejce                                                                  //6
+Povez mi o pousti                                                                     //7
+Mnozi Umbarsti lovci ryb zacali pouzivat pro vylov site a velke navnady. Nedbaji na nejlepsiho spolecnika piratu a proto se tito krasni tvorove casto do jejich pasti chytaji. Vznikla proto namornicka organizace Modry svet, ktera hlida vody Velkeho more a tresta lovce delfinu. V ramci teto organizace bezi i projekt "adoptuj si sveho delfina". Staci dat 50 tisic zlatych a prispejet tak na pomoc temto hrdym tvorum.  //8
+Na Zapad od pobrezi Umbaru, necha-li tvou lod mocny Ulmo v klidu plout, narazis na nekolik ostrovu. Vetsina z nich je neprilis osidlena. Drive se tamnimi vodami plavili elfove z Sedych pristavu a mytili vsechno zle, co jim stalo v ceste. Ovsem jeden ostrov je necim zvlastni. Jsou to vlastne ostrovy dva, ale prvni tvori prstenec kolem druheho. Rika se jim Slunecni ostrovy a na vnitrnim jeste stale najdes vice zla, nez obycejny smrtelnik snese, a projit tim ostrovem se casto povazuje za posledni zkousku muzstvi, ktera ti dovoli poznat nejzassi kouty tvych schopnosti a sahnout si na dno svych sil.    //9
+Obyvatele techto koncin nejsou prilis spokojeni s tim, ze musi platit za prevoz sveho zbozi. Proto obcas postrasime par troufalcu a zabavime jim vse i s lodi. Nemuzeme si dovolit, aby v hlavach mistnich vzkvetala myslenka na odpor. Pri jednom z poslednich prepadu se vsak jedne z nasich lodi podarilo uloupit zvlastni kameny. Mely vyjmecne zarivou barvu a nepripominaly zadnou ze skal, kterou jsem kdy spatril. Puvodni majitel bohuzel nebyl v dobe objeveni beden plnych sena chraniciho tyto skovsty schopen mluvit a nikdo proto netusi, proc je prevazeli tak dusledne zabalene.  //10
+Ano... Carodejnice ... Nikdy jsem nevidel maga krizovat more tak casto, jako ji. Nase lode ji potkavaji kazdou chvili a je jednou z mala osob, kterym dovolime bezstarostne rozcesavat vlasy Uinen, Pani mori. Pokud se nepletu, travi toto rocni obdobi na slunecnim ostrove. Zkus se tam po ni podivat.   //11
+Je tu pisek, spousta prachu a skorpionu... Jinak tu je ale oproti jinym koncinam pomerne klid. Az na tu prisernou valku... Alespon se hejbou obchody se zbranemi a ja mam z ceho zit.   //12
+Kde mohu prispet?                                                                     //13
+Ty chces adpotovat delfina? No to je bajecne! Muzes dat ty penize primo me. Jsem clenem Modreho sveta.  //14
+*Adoptovat delfina za 50 tisic*                                                       //15
+Ne diky tohle neni nic pro me...                                                      //16
+Je to jen tve rozhodnuti. Nikdo te nenuti.                                            //17
+Kde jsou ty kameny ted?                                                               //18
+Na ostrove piratu na severu... Je to bezpecne vzdalene mistnim cestam.                //19
+
+
+[dialog d_q007_rodrigo_informace button]
+ON = 1 //adoptovat delfina za 50k
+if (<src.RESTEST 50000 i_gold>)
+ src.CONSUME = 50000 i_gold
+ src.qtag(q007_delfin,1)
+ src.addexp(200)
+ src.SYSMESSAGE = Citis se skvele, ze jsi pomohl delfinum v preziti.
+ DIALOG(d_q007_rodrigo_informace2)
+else
+ Say Nedelej si ze me sasky ... kdyz ty penize nemas, tak na me nemluv.
+endif
+
+
+
+
+///////////// Gump Informace 2 - Rodrigo
+
+[dialog d_q007_rodrigo_informace2]
+5,5
+page 0
+resizepic 20 200 2620 640 350
+gumppic 30 210 03182  // podklad pod ksichtiky	
+gumppic 40 215 03000  // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 325 330 0988 0988 0 1 0  // Informace
+text 376 331 1152 1   //
+
+
+page 1 // Informace
+HTMLGUMP(170,230,440,100,2,0,36)
+button 25 395 0fa5 0fa7 0 2 0  // o ostrovech
+text 60 398 152 3
+button 25 415 0fa5 0fa7 0 3 0  //  o kamenech
+text 60 418 152 4
+button 25 435 0fa5 0fa7 0 4 0  // o carodejce
+text 60 438 152 5
+button 25 455 0fa5 0fa7 0 5 0  // o pousti
+text 60 458 152 6
+
+page 2 // o ostrovech
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 3 // o kamenech
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //  kde jsou ty kameny ted
+text 60 398 142 11
+
+
+page 4 // o carodejce
+HTMLGUMP(170,230,440,100,9,0,36)
+
+
+page 5 // o pousti
+HTMLGUMP(170,230,440,100,10,0,36)
+
+
+page 6 // kde jsou ty kameny ted?
+HTMLGUMP(170,230,450,100,12,0,36)
+
+
+[dialog d_q007_rodrigo_informace2 text]
+pirat Rodrigo                                                                         //0
+Informace                                                                             //1
+Taak zachrance delfinu, co bych ti mohl rict ...<BR> Mam tu informaci o stavu Delfinu v mistnich vodach, novinky o ostrovech na zapade, vim o nejakych uloupenych kamenech, mam zpravu o jedne carodejnici no a jeste bych ti mohl povedet neco o tehle pousti.            //2
+Povez mi o ostrovech                                                                  //3
+Povez mi o kamenech                                                                   //4
+Povez mi o carodejce                                                                  //5
+Povez mi o pousti                                                                     //6
+Na Zapad od pobrezi Umbaru, necha-li tvou lod mocny Ulmo v klidu plout, narazis na nekolik ostrovu. Vetsina z nich je neprilis osidlena. Drive se tamnimi vodami plavili elfove z Sedych pristavu a mytili vsechno zle, co jim stalo v ceste. Ovsem jeden ostrov je necim zvlastni. Jsou to vlastne ostrovy dva, ale prvni tvori prstenec kolem druheho. Rika se jim Slunecni ostrovy a na vnitrnim jeste stale najdes vice zla, nez obycejny smrtelnik snese, a projit tim ostrovem se casto povazuje za posledni zkousku muzstvi, ktera ti dovoli poznat nejzassi kouty tvych schopnosti a sahnout si na dno svych sil.    //7
+Obyvatele techto koncin nejsou prilis spokojeni s tim, ze musi platit za prevoz sveho zbozi. Proto obcas postrasime par troufalcu a zabavime jim vse i s lodi. Nemuzeme si dovolit, aby v hlavach mistnich vzkvetala myslenka na odpor. Pri jednom z poslednich prepadu se vsak jedne z nasich lodi podarilo uloupit zvlastni kameny. Mely vyjmecne zarivou barvu a nepripominaly zadnou ze skal, kterou jsem kdy spatril. Puvodni majitel bohuzel nebyl v dobe objeveni beden plnych sena chraniciho tyto skovsty schopen mluvit a nikdo proto netusi, proc je prevazeli tak dusledne zabalene.  //8
+Ano... Carodejnice ... Nikdy jsem nevidel maga krizovat more tak casto, jako ji. Nase lode ji potkavaji kazdou chvili a je jednou z mala osob, kterym dovolime bezstarostne rozcesavat vlasy Uinen, Pani mori. Pokud se nepletu, travi toto rocni obdobi na slunecnim ostrove. Zkus se tam po ni podivat.   //9
+Je tu pisek, spousta prachu a skorpionu... Jinak tu je ale oproti jinym koncinam pomerne klid. Az na tu prisernou valku... Alespon se hejbou obchody se zbranemi a ja mam z ceho zit.   //10
+Kde jsou ty kameny ted?                                                               //11
+Na ostrove piratu na severu... Je to bezpecne vzdalene mistnim cestam.                //12
+
+
+[dialog d_q007_rodrigo_informace2 button] 
+
+
+[eof]    

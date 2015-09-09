@@ -1,0 +1,342 @@
+/////	ZLATY LOSOS
+
+[function f_q018_checkOldTags]
+if (src.tag(crunch_informace_010)==1)
+  src.qtag(q018,1)
+  src.tag.remove(crunch_informace_010)
+elseif (src.tag(crunch_informace_010)==2)
+  src.qtag(q018,2)
+  src.tag.remove(crunch_informace_010)
+elseif (src.tag(crunch_informace_010)==3)
+  src.qtag(q018,3)
+  src.tag.remove(crunch_informace_010)
+elseif (src.tag(crunch_informace_010)==4)
+  src.qtag(q018,4)
+  src.tag.remove(crunch_informace_010)
+elseif (src.tag(crunch_informace_010)==5)
+  src.qtag(q018,5)
+  src.tag.remove(crunch_informace_010)
+endif
+if src.tag(splnen_kvest_010)==1)
+	src.qtag(q018,6)
+	src.tag.remove(splnen_kvest_010)
+endif
+return(1)
+
+//////////////////////////////////////////////////
+/////Rybar Podivin 	- 3916, 3609, 1
+[SPEECH spk_q018_rybar] 
+on=*cau*
+on=*ahoj*
+on=*dobry*
+on=*den*
+on=*zdrav*
+on=*prace*
+on=*ukol*
+if (src.targ.distance > 3)
+	src.sysMessage("Na takovou vzdalenost s tebou rybar jednat nebude")
+else
+	f_q018_rybar
+endif
+
+[function f_q018_rybar]
+f_q018_checkOldTags
+dialog(d_q018_rybar)
+return(1)
+
+[dialog d_q018_rybar]
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03122)
+
+argo.settext(0,"Rybar podivin")
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,2,0)
+argo.settext(1,"Kdo jsi?")
+argo.text(210,332,1152,1)
+
+argo.button(325,330,0988,0988,0,3,0)
+argo.settext(2,"Muzu pomoct?")
+argo.text(365,332,1152,2)
+
+argo.button(490,330,0988,0988,0,4,0)
+argo.settext(3,"-Prohlednout-")
+argo.text(525,332,142,3)
+
+argo.page(1)
+if (src.qtag(q018)==6)
+	argo.settext(11,"Ahojda, jak se dari? Toho parchanta lososovskyho jsem porad jeste nechytnul ale urcite mi na tu zlatou musku brzo skoci!")
+elseif (src.qtag(q018)==5)&&(<src.rescount(i_q018_zlata_snura)>>=1)||(<src.rescount(i_crunch_zlata_snura)>>=1)
+	argo.settext(11,"Vyborne!!! Mockrat ti dekuji <src.name>. Podej mi ji!") 
+	argo.button(25,395,0fa5,0fa7,1,0,2)
+	argo.settext(111,"*podat zlatou nit*")
+	argo.text(60,395,152,111)
+else
+	argo.settext(11,"Zdravim te.")
+endif
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+	
+argo.page(2)
+argo.settext(22,"Jsem pouhy rybar. Ziju celej svuj prasivej zivot u tyhle reky. Je tu totiz nejvetsi losos, ktereho jsem kdy zahledl. Ale mam problem... at uz udelam jakoukoliv musku, on mi na ni proste neskoci... Tak me napadlo, ze byste mi mohli pomoct...")
+argo.HTMLGUMP(170,230,440,100,22,0,36)
+
+argo.page(3)
+if !(src.qtag(q018))
+	argo.settext(33,"Takze jsi se nakonec <src.sex rozhodl rozhodla> mi pomoci, <src.name>? To je skvele! Nuze dobra, tady ode me mas rybu jako dar a poslouchej co od tebe potrebuji...")
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.settext(331,"*poslouchat*")
+	argo.text(60,395,152,331)
+elseif ((src.qtag(q018)>=1)&&(src.qtag(q018)<5))
+	argo.settext(33,"Praci jsem ti zadal tak neotravuj a zmiz") 
+else
+	argo.settext(33,"Uz od tebe nic nepotrebuju, odmenu jsi dostal tak se pakuj odsud a neplas tu ryby!")
+endif
+argo.HTMLGUMP(170,230,440,100,33,0,36)
+
+argo.page(4)
+argo.settext(44,"*Vidis staryho muze namacejiciho si nohy po kolena ve studene vode s rybarskym prutem v ruce.*")
+argo.HTMLGUMP(170,230,440,100,44,0,36)
+
+argo.page(5)
+argo.settext(55,"Cestu od Mostu mezi Minasy smerem k poustnimu mestu Rhunu. Tam najdete Mirranu, mou starou pritelkyni, ona by mela vedet neco blizsiho o kouzelnem kole, na kterem se da uprist zlata snura. Myslim, ze pomoci te uz bych byl schopen udelat musku neodolatelnou i pro takovehodle giganta... Moc by mi to pomohlo...")
+argo.HTMLGUMP(170,230,440,100,55,0,36)
+argo.button(25,395,0fa5,0fa7,0,6,0)
+argo.settext(551,"To mam riskovat zivot a hledat to kouzelne kolo jen kvuli prasivymu lososovi?")
+argo.text(60,395,152,551)
+
+argo.page(6)
+argo.settext(66,"*Rybar sebou vztekle trhnul, ale pak se ovladl*. Hodne to pro me znamena, je to proste ma rybarska vasen... moc te o to prosim, kdyz mi tu snuru prineses, urcite se ti odmenim.. predem diky...")
+argo.HTMLGUMP(170,230,440,100,66,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,1)
+argo.settext(661,"Dobra tedy ...")
+argo.text(60,395,152,661)
+
+
+
+[dialog d_q018_rybar text]
+[dialog d_q018_rybar button]
+on=0
+
+on=1
+src.newitem=0dd6
+src.act.bounce
+src.qtag(q018,1,31)
+
+on=2
+if (src.qtag(q018)==5)&&(<src.rescount(i_q018_zlata_snura)>>=1)||(<src.rescount(i_crunch_zlata_snura)>>=1)
+	src.addexp(1000)
+	src.givegold 20000
+	src.findid(i_crunch_zlata_snura).remove
+	src.findid(i_q018_zlata_snura).remove
+	src.qtag(q018,6,31)
+	f_quest_complete(31)  // splnenie questu "Zlaty Losos"
+endif
+//////////////////////////////////////////////////
+/////Mirrana 	- 3014, 2467
+
+[SPEECH spk_q018_mirrana] 
+on=*cau*
+on=*ahoj*
+on=*dobry*
+on=*den*
+on=*zdrav*
+on=*rybar*
+if (src.targ.distance > 3)
+	src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_q018_mirrana
+endif
+
+[function f_q018_mirrana]
+f_q018_checkOldTags
+dialog(d_q018_mirrana)
+return(1)
+
+[dialog d_q018_mirrana]
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03065)
+
+argo.settext(0,"Mirrana")
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,2,0)
+argo.settext(1,"Kdo jsi?")
+argo.text(210,332,1152,1)
+
+argo.button(325,330,0988,0988,0,3,0)
+argo.settext(2,"Muzu pomoct?")
+argo.text(365,332,1152,2)
+
+argo.button(490,330,0988,0988,0,4,0)
+argo.settext(3,"-Prohlednout-")
+argo.text(525,332,142,3)
+
+argo.page(1)
+if (src.qtag(q018)==1)
+argo.settext(11,"Vitej, <src.name>. Co pro tebe mohu udelat?")
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.settext(331,"Posila me rybar...")
+	argo.text(60,395,152,331)
+elseif (src.qtag(q018)==2)
+	argo.settext(11,"Co jeste potrebujes vedet, <src.name>? Vse potrebne jsem ti jiz rekla...")
+elseif ((<src.rescount(i_q018_mirranin_odvar)>>=1)&&(src.qtag(q018)==3))
+	argo.settext(11,"Vyborne! Mas muj lektvar! Tak ted dobre poslouchej...")
+	argo.HTMLGUMP(170,230,440,100,11,0,36)
+	argo.button(25,395,0fa5,0fa7,0,6,0)
+	argo.settext(111,"*poslouchat*")
+	argo.text(60,395,152,111)
+elseif (src.qtag(q018)>=4)
+	argo.settext(11,"Zdravim, <src.sex(muj zachrance,move zachrankyne)>! To se nam ten den pekne vydaril, ze?")
+else
+	argo.settext(11,"Vitej, <src.name>. Co pro tebe mohu udelat?")
+endif
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+
+argo.page(2)
+argo.settext(22,"Jmenuji se Mirrana.")
+argo.HTMLGUMP(170,230,440,100,22,0,36)
+
+argo.page(3)
+argo.settext(33,"Nepotrebuji zadnou pomoc, dekuji.")
+argo.HTMLGUMP(170,230,440,100,33,0,36)
+
+argo.page(4)
+argo.settext(44,"*Vidis mladou pohlednou zenu*")
+argo.HTMLGUMP(170,230,440,100,44,0,36)
+
+argo.page(5)
+argo.settext(55,"Zlata nit rikas? Ano, vim o miste, kde najdes to kouzelne kolo, na nemz se takova snura da uprist. Ale zadarmo ani kure nehrabe. Napadl me tu pred dvema tydny lizard, osklive me pokousal do nohy. Samo o sobe by to nebyla tak priserna rana, ale ty zpropadene vypary, jichz je na techto mistech bezpocet, museli obsahovat neco, co mi ranu zanitilo a zpusobilo, ze se nechce hojit. Najdete mastickare Ernassila, zije pry nekde na Ebenovych ostrovech. On by vam mel dat lektvar, jenz by mi mohl s timto zranenim pomoci. Potom vam reknu, kde najdete ono hledane kolo.")
+argo.HTMLGUMP(170,230,440,100,55,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,1)
+argo.settext(551,"Pokusim se...")
+argo.text(60,395,152,551)
+
+argo.page(6)
+argo.settext(66,"Na mordorske strane zricenin u Minaskeho mostu naleznes schovanou runu. Ma zlatou barvu, neprehlednes ji. Kdyz ji zatlacis do zdi , kouzlo timto vyvolane te prenese az na misto, kde by melo byt zlate kolo schovane. Ale opatrne - nejspis bude hlidane!")
+argo.HTMLGUMP(170,230,440,100,66,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,2)
+argo.settext(661,"*Podat lektvar*")
+argo.text(60,395,152,661)
+
+[dialog d_q018_mirrana text]
+[dialog d_q018_mirrana button]
+on=0
+
+on=1
+src.qtag(q018,2,31)
+
+on=2
+if (<src.rescount(i_q018_mirranin_odvar)>>=1)
+	src.consume=i_q018_mirranin_odvar
+	src.qtag(q018,4,31)
+	src.addexp(500)
+endif
+
+
+//////////////////////////////////////////////////
+/////Elnassir mastickar - 2462, 3324
+[SPEECH spk_q018_elnassir] 
+on=*cau*
+on=*ahoj*
+on=*dobry*
+on=*den*
+on=*zdrav*
+on=*mast*
+if (src.targ.distance > 3)
+	src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_q018_elnassir
+endif
+
+[function f_q018_elnassir]
+f_q018_checkOldTags
+dialog(d_q018_elnassir)
+return(1)
+
+[dialog d_q018_elnassir]
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03103)
+
+argo.settext(0,"Elnassir mastickar")
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,2,0)
+argo.settext(1,"Kdo jsi?")
+argo.text(210,332,1152,1)
+
+argo.button(325,330,0988,0988,0,3,0)
+argo.settext(2,"Muzu pomoct?")
+argo.text(365,332,1152,2)
+
+argo.button(490,330,0988,0988,0,4,0)
+argo.settext(3,"-Prohlednout-")
+argo.text(525,332,142,3)
+
+argo.page(1)
+if (src.qtag(q018)==2)
+	argo.settext(11,"Vitej, <src.name>. Shanis neco konkretniho?")
+	argo.button(25,395,0fa5,0fa7,0,5,0)
+	argo.settext(331,"Potrebuji masticku pro Mirranu...")
+	argo.text(60,395,152,331)
+elseif (src.qtag(q018)==3)
+	argo.settext(11,"Tak co, mas ty ingredience a penize?")
+	if(<src.rescount(i_reag_spider_silk)>>=20)&&(<src.rescount(i_reag_nightshade)>>=80)&&(<src.rescount(i_reag_bone)>>=150)&&(src.qtag(q018)==3)&&(<src.rescount(i_gold)>>=10000)
+		argo.button(25,395,0fa5,0fa7,1,0,2)
+		argo.settext(331,"Ano, tady to je.")
+		argo.text(60,395,152,331)
+	else
+		argo.button(25,395,0fa5,0fa7,1,0,0)
+		argo.settext(331,"Ne, jeste ne.")
+		argo.text(60,395,152,331)
+	endif
+else
+	argo.settext(11,"Vitej, <src.name>. Co pro tebe mohu udelat?")
+endif
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+
+argo.page(2)
+argo.settext(22,"Jmenuji se Elnassir, jsem mastickar.")
+argo.HTMLGUMP(170,230,440,100,22,0,36)
+
+argo.page(3)
+argo.settext(33,"Nepotrebuji pomoc, dekuji za optani.")
+argo.HTMLGUMP(170,230,440,100,33,0,36)
+
+argo.page(4)
+argo.settext(44,"*Vidis, a citis, muze pachnouciho od ruznych bylin*")
+argo.HTMLGUMP(170,230,440,100,44,0,36)
+
+argo.page(5)
+argo.settext(55,"Ano, takovou lecivou mast umim zhotovir. ale jsou k tomu potreba nejaky ty ingredience. Vis co myslim, korinky, bylinky, a tak podobne... Prines mi 20 spider silk, 80 nightshade, 150 bone a 10 tisic zlataku. *usmal se*")
+argo.HTMLGUMP(170,230,440,100,55,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,1)
+argo.settext(551,"Prinesu ti to vsechno.")
+argo.text(60,395,152,551)
+
+[dialog d_q018_elnassir text]
+[dialog d_q018_elnassir button]
+on=0
+
+on=1
+src.qtag(q018,3,31)
+
+on=2
+if(<src.rescount(i_reag_spider_silk)>>=20)&&(<src.rescount(i_reag_nightshade)>>=80)&&(<src.rescount(i_reag_bone)>>=150)&&(src.qtag(q018)==3)&&(<src.rescount(i_gold)>>=10000)
+	src.consume=10000 i_gold
+	src.consume=20 i_reag_spider_silk
+	src.consume=80 i_reag_nightshade
+	src.consume=150 i_reag_bone
+	src.newitem=i_q018_mirranin_odvar
+	src.act.bounce
+else
+	say("Nesnaz se me podvest!")
+endif

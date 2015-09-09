@@ -1,0 +1,466 @@
+/////////////////////////////////////////////
+//  S T A R Y   M U Z
+/////////////////////////////////////////////
+
+[CHARDEF c_q008_old_man]
+ID=c_man
+NAME=Ancam // pan Dlouharuka
+ICON=i_pet_man
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+attack=60
+ARMOR=40
+
+TSPEECH=spk_q008_black_oldman
+
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_character
+TEVENTS=e_summoneater
+TEVENTS=e_monster
+
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=Ancam (stary ranger)
+
+on=@UserDclick
+if (SRC.TARG.DISTANCE > 3)
+ SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q008_black_oldman_DClick
+endif
+
+ON=@Create
+COLOR=colors_skin
+NPC=brain_human
+STR=1000
+DEX=250
+INT=200
+
+maxhits={2800 3200}
+maxstam={120 140}
+maxmana=0
+
+tag.experience=<eval {20.0 40.0}> 
+tag.hypnotizable=2
+
+
+tag.weapflag=dam_physical
+
+tag.resist_para=<eval {500 750}>
+tag.resist_bleed=450
+tag.resist_poison=650
+
+
+
+WRESTLING={150.0 200.0}
+RESIST={120.0 150.0}
+TACTICS={150.0 200.0}
+PARRYING={90.0 100.0}
+FENCING={150.0 200.0}
+SWORDSMANSHIP={150.0 200.0}
+ARCHERY={150.0 200.0}
+MACEFIGHTING={150.0 200.0}
+PROVOCATION=100.0
+PEACEMAKING=100.0
+
+ITEMNEWBIE=i_hair_pageboy
+ITEMNEWBIE=i_beard_short_med
+ITEMNEWBIE=i_chainmail_tunic
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_studded_gloves
+COLOR=color_o_copper
+ITEMNEWBIE=i_platemail_gorget
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_iron_chainmail_leggings
+COLOR=color_o_obsidian
+ITEMNEWBIE=i_boots_calf
+COLOR=0998
+
+ITEMNEWBIE=i_shepherds_crook
+COLOR=0989
+ITEMNEWBIE=i_bolt_jagged,500
+
+
+ITEMNEWBIE=i_cape
+COLOR=0998
+
+ON=@NPCRestock 
+
+
+
+/////////////////////////////////////////////
+//  E L E M E N T A L   S N O W
+/////////////////////////////////////////////
+
+[CHARDEF c_q008_elem_snow]  // dava tag q008_black_monster_1
+
+ID=c_elem_earth_m
+NAME=Snow Elemental
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_earth
+
+can=mt_walk|mt_run
+
+attack=40
+ARMOR=60
+moverate=3
+
+BloodColor=color_snow
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_snowmonster
+TEVENTS=e_npc_stun
+
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=Snow Elemental
+
+ON=@Death
+if (<act.tag.q008_black> == 1)
+  act.tag.q008_black_monster_1 = 1
+endif
+
+
+
+ON=@Create
+COLOR=color_snow
+NPC=brain_monster
+FAME=10
+KARMA={-4000 -4999}
+
+STR={590 610}
+DEX={95 105}
+INT=100
+
+maxhits={600 700}
+maxstam={95 125}
+maxmana=0
+
+tag.experience=<eval {30.0 38.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,900) //indivindi podle monstra
+tag.resist_para=<eval {200 350}>
+tag(resist_summon,450) //indivindi podle monstra
+tag(resist_bleed,650) //snih nejak moc nekrvaci
+
+//weap resists
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,250)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,-500)
+tag(resist_elect,200)
+tag(resist_cold,800)
+
+//typ monstra
+tag(monstertype,snow)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+WRESTLING={90.0 100.0}
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+RESIST={50.0 100.0}
+SpiritSpeak=35.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_elem
+ITEM=i_gold
+
+
+/////////////////////////////////////////////
+//  E L E M E N T A L   I C E
+/////////////////////////////////////////////
+
+
+[CHARDEF c_q008_elem_ice]  // dava tag q008_black_monster_2
+
+ID=c_elem_earth_m
+NAME=Ice Elemental
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+
+CAN=MT_WALK|mt_run
+
+attack=90
+ARMOR=20
+moverate=3
+
+BLOODCOLOR=colors_blue
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_snowmonster
+TEVENTS=e_npc_stun
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=Ice Elemental
+
+ON=@Death
+IF (<act.tag.q008_black> == 1)
+ act.tag.q008_black_monster_2 = 1
+ENDIF
+
+ON=@Create
+COLOR=color_ice
+NPC=brain_monster
+FAME=15
+KARMA=-3500
+
+STR={650 660}
+DEX={100 105}
+INT=100
+
+maxhits={900 1100}
+maxstam={100 105}
+maxmana=0
+
+tag.experience=<eval {38.0 42.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+//other resists
+tag(resist_poison,1000) //indivindi podle monstra
+tag(resist_para,1000) //indivindi podle monstra
+tag(resist_summon,350) //indivindi podle monstra
+tag(resist_bleed,550) //snih nejak moc nekrvaci
+
+//weap resists
+tag(resist_sharp,200)
+tag(resist_slash,200)
+tag(resist_pierce,650)
+tag(resist_blunt,-500)
+
+//magic resists
+tag(resist_fire,-500)
+tag(resist_elect,200)
+tag(resist_cold,800)
+
+//typ monstra
+tag(monstertype,snow)
+//weap flags
+tag.weapflag=dam_blunt|dam_physical
+
+WRESTLING={90.0 100.0}
+PARRYING={85.0 100.0}
+TACTICS={85.0 100.0}
+RESIST={85.0 100.0}
+SpiritSpeak=35.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_elem
+ITEM=i_gold
+
+
+
+/////////////////////////////////////////////
+//  E Y E   S N O W
+/////////////////////////////////////////////
+
+
+[CHARDEF c_q008_eye_snow]  // dava tag q008_black_monster_3
+
+id=c_gazer
+NAME=Snow Eye
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=40
+ARMOR=20
+moverate=4
+
+BLOODCOLOR=color_snow
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+TEVENTS=e_snowmonster
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=Snow eye
+
+ON=@Death
+IF (<act.tag.q008_black> == 1)
+ act.tag.q008_black_monster_3 = 1
+ENDIF
+
+ON=@Create
+color=0481
+NPC=brain_monster
+FAME=1
+KARMA=-2000
+
+STR=500
+DEX=1000
+INT=600
+
+maxhits={350 400}
+maxstam={400 500}
+maxmana=0
+
+tag.experience=<eval {30.0 34.0}>
+
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,350)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,-200)
+tag(resist_elect,500)
+tag(resist_cold,450)
+
+//typ monstra
+tag(monstertype,eye)
+tag(monstertype2,snow)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+Resist=200.0
+WRESTLING=1000.0
+tactics=100.0
+SpiritSPeak=30.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+
+/////////////////////////////////////////////
+//  E Y E   I C E
+/////////////////////////////////////////////
+
+[CHARDEF c_q008_eye_ice]  // dava tag q008_black_monster_4
+
+id=c_gazer
+NAME=Ice Eye
+SOUND=snd_MONSTER_GAZER1
+ICON=i_pet_GAZER
+
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=45
+ARMOR=25
+moverate=4
+
+BLOODCOLOR=color_ice
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+TEVENTS=e_snowmonster
+
+CATEGORY=Questy
+SUBSECTION=Black mustang q008
+DESCRIPTION=Black_Ice eye 
+
+ON=@Death
+IF (<act.tag.q008_black> == 1)
+ act.tag.q008_black_monster_4 = 1
+ENDIF
+
+ON=@Create
+color=0480
+NPC=brain_monster
+FAME=1
+KARMA=-2000
+
+STR=450
+DEX=1000
+INT=650
+
+maxhits={400 450}
+maxstam={700 800}
+maxmana=0
+
+tag.experience=<eval {45.0 50.0}>
+
+tag(npc_port_distance,10)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,350)
+tag(resist_bleed,1000)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,200)
+tag(resist_pierce,-100)
+tag(resist_blunt,-300)
+
+//magic resists
+tag(resist_fire,-400)
+tag(resist_elect,500)
+tag(resist_cold,450)
+
+//typ monstra
+tag(monstertype,eye)
+tag(monstertype2,snow)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+Resist=2000
+tactics=100.0
+WRESTLING=1000
+SpiritSpeak=30.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+[EOF]

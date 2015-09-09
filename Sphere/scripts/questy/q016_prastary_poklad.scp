@@ -1,0 +1,524 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                   Kvest Neutralni-016 Prastary Poklad                            //
+//                            (c)-Sir Glorg-                                        //
+//                      namet+puvodni podoba: -Crunch-                              //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+// (src.qtag(q016_prastary_poklad,11) - uspel - nekrovi sem rek, ze byl poklad velkej.
+// (src.qtag(q016_prastary_poklad,12) - uspel - nekrovi sem rek, ze byl poklad malej.
+// (src.qtag(q016_prastary_poklad,13) - neuspel - nekro se nasral a zabil me i sebe.
+// (src.qtag(q016_prastary_poklad,14) - neuspel - mag se nasral a odmita pokracovat v questu.
+// (src.qtag(q016_prastary_poklad,4) - lahvicka je predana
+//
+// ZMENY TAGU:
+// (src.tag(crunch_informace_011) == 1) -> qtag(q016_prastary_poklad,1) // dostal jsi ukol od nekra
+// (src.tag(crunch_informace_011) == 2) -> qtag(q016_prastary_poklad,2) // dostal jsi ukol od maga
+// (src.tag(crunch_informace_011) == 3) -> qtag(q016_prastary_poklad,3) // sebral jsi vodu z jezirka
+// (src.tag(crunch_informace_011) == 4) -> qtag(q016_prastary_poklad,5) // vis kde je cleric a brana
+// (src.tag(crunch_informace_011) == 5) -> qtag(q016_prastary_poklad,6) // cleric te posila pro veci do truhly
+// (src.tag(crunch_informace_011) == 6) -> qtag(q016_prastary_poklad,7) // cleric te posila pro veci do truhly
+// (src.tag(crunch_informace_011) == 7) -> qtag(q016_prastary_poklad,8) // 
+// (src.tag(crunch_informace_011) == 8) -> qtag(q016_prastary_poklad,9) // 
+// (src.tag(splnen_kvest_011) == 1) -> qtag(q016_prastary_poklad,10)	// splnen quest
+// (src.tag(crunch_brana,1)		-> remove + hodnota hozena do moreX // pomocny tag pro vstup do brany
+// (src.tag(crunch_brana,2)		-> remove + hodnota hozena do moreX // pomocny tag pro vstup do brany
+
+
+
+[function f_q016_checkOldTags]
+if (src.tag(crunch_informace_011) == 1)
+  src.tag.remove(crunch_informace_011)
+  src.qtag(q016_prastary_poklad,1)
+elseif (src.tag(crunch_informace_011) == 2)
+  src.tag.remove(crunch_informace_011)
+  src.qtag(q016_prastary_poklad,2)
+elseif (src.tag(crunch_informace_011) == 3)
+  src.tag.remove(crunch_informace_011)
+  src.qtag(q016_prastary_poklad,3)
+elseif (src.tag(crunch_informace_011) == 4)
+  src.tag.remove(crunch_informace_011)
+  src.qtag(q016_prastary_poklad,5)
+elseif (src.tag(crunch_informace_011) == 5)
+  src.tag.remove(crunch_informace_011)
+  src.qtag(q016_prastary_poklad,6)
+elseif (src.tag(crunch_informace_011) == 6)
+  src.tag.remove(crunch_informace_011)
+  src.qtag(q016_prastary_poklad,7)
+elseif (src.tag(crunch_informace_011) == 7)
+  src.tag.remove(crunch_informace_011)
+  src.qtag(q016_prastary_poklad,8)
+elseif (src.tag(crunch_informace_011) == 8)
+  src.tag.remove(crunch_informace_011)
+  src.qtag(q016_prastary_poklad,9)
+elseif (src.tag(splnen_kvest_011) == 1)
+  src.tag.remove(splnen_kvest_011)
+  src.qtag(q016_prastary_poklad,11)
+endif
+if (<src.tag(crunch_brana)>)
+  src.tag.remove(crunch_brana)
+endif
+
+
+
+////////////////////////////////////////////////
+// D I A L O G   S T A R Y   N E C R O M A N T
+////////////////////////////////////////////////
+
+[dialog d_q016_StaryNegr]
+5,5
+page 0
+argo.tag(necro,<argv(0)>)
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182	// podklad pod ksichtiky	
+gumppic 40 215 03001	// ksichtik   3000-3164
+text 220 210 52 0	// Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0	// Kdo jsi ?     
+text 215 331 1152 1	// 
+button 325 330 0988 0988 0 3 0	// Mohu pomoct ? 
+text 361 331 1152 2	//
+button 490 330 0988 0988 0 4 0	// Prohlednout ...
+text 527 331 142 3	//
+
+page 1	// pozdrav
+HTMLGUMP(170,230,440,100,4,0,36)
+
+page 2	// Kdo jsi
+HTMLGUMP(170,230,440,100,5,0,36)
+
+page 3	// Mohu pomoct
+if (0<src.qtag(q016_prastary_poklad)> > 0)
+  argo.HTMLGUMP(170,230,440,100,18,0,36)
+  if (0<src.qtag(q016_prastary_poklad)> == 010)
+    argo.button 25 395 0fa5 0fa7 0 10 0  // Povedet pravdu - poklad malej
+    argo.text 60 398 142 23
+    argo.button 25 415 0fa5 0fa7 0 11 0  // Zalhat - poklad velkej
+    argo.text 60 418 142 24
+  else
+    argo.button 25 395 0fa5 0fa7 0 9 0  // snazim se
+    argo.text 60 398 152 19
+    argo.button 25 415 0fa5 0fa7 1 0 2  // odmitnout
+    argo.text 60 418 152 20
+    argo.text 60 438 152 21
+  endif
+else
+  argo.HTMLGUMP(170,230,440,100,6,0,36)
+  argo.button 25 395 0fa5 0fa7 0 5 0  //usadit se a poslechnout si pribeh
+  argo.text 60 398 142 7
+endif
+
+page 4 // Prohlednout
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 5 // Nekro zacina vypravet pribeh
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 1 0 2  // nechci spolupracovat -> starik me z poslednich sil killne
+text 60 398 152 10
+button 25 415 0fa5 0fa7 0 6 0  // slibim starikovi pomoc
+text 60 418 152 11
+
+page 6 // Starikovi jsem slibil pomoc, pokracuje v pribehu
+HTMLGUMP(170,230,440,100,12,0,36)
+button 25 395 0fa5 0fa7 0 7 0  // soucitne prikyvuji
+text 60 398 142 13
+
+page 7 // pokracovani pribehu 3. cast
+HTMLGUMP(170,230,440,100,14,0,36)
+button 25 395 0fa5 0fa7 0 8 0  // poslechnout zbytek pribehu
+text 60 398 142 15
+
+page 8 // pokracovani pribehu 4. cast
+HTMLGUMP(170,230,440,100,16,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // odejit a zadat quest
+text 60 398 142 17
+
+page 9 // uspokojive oddechnuti po potvrzeni, ze poklad stale hledam
+HTMLGUMP(170,230,440,100,22,0,36)
+
+page 10 // reakce na pravdu - prazdny poklad
+HTMLGUMP(170,230,440,100,25,0,36)
+button 25 395 0fa5 0fa7 1 0 3  // odejit a zadat quest
+text 60 398 142 27
+
+page 11 // reakce na pravdu - prazdny poklad
+HTMLGUMP(170,230,440,100,26,0,36)
+button 25 395 0fa5 0fa7 1 0 4  // odejit a zadat quest
+text 60 398 142 27
+
+
+[dialog d_q016_StaryNegr Text]
+Stary Nekromant									//0
+Kdo jsi?									//1
+Mohu pomoci?									//2
+-Prohlednout-									//3
+Vitam te tu.									//4
+Ah me jmeno neni dulezite...							//5
+*Na strhane tvari stareho muze si vsimas zablesku oci a chladny pocit na temeni hlavy ti vehnal do oci jasnou vidinu muze, ktery byl kdysi statny, silny a velmi nebezpecny. <?src.sex(Ostrileny,Ostrilena)?> nekolika okamziky, stravenymi ve spolecnosti starych muzu, zkusene hledas vhodne misto k usazeni a opiras se o chladnou zed jeskyne. Ocima preskocis z pachnoucich zbytku pavouka, ktereho jsi prave <?src.sex(zabil,zabila)?>, na svou levou nohu, kde ti pomalu steka krev ze znovuotevrene zanicene rany. Uvolnene nechavas chladne kapky vody, padajici z utrob jeskyne, pomalu stekat po sve zpocene tvari a poslouchas vypraveni stareho nekromanta.*		//6
+*Pokracovat*									//7
+Vidis velmi stareho muze. Je bledy a slaby. Tvuj zrak nejspis klame sero jeskyne, nebot nektere casti muzova tela se zdaji byt naprosto nepokryty kuzi a skoro by jsi <?src.sex(prisahal,prisahala)?>, ze jsi <?src.sex(zahledl, zahledla)?> dve naprosto hola zebra na jeho pravem boku.		//8
+Uz je to dlouho, co jsem byl tak cily jako ty a tobe rovni. Byl jsem take dobrodruh. Take jsem se bil za sve idealy a presvedceni, nasazoval zivot v odpornych podzemnich kobkach a podnikal jine nebezpecne vypravy... Avsak cas se neda zastavit a leti tak silene rychle, ze citim jak se knot svicky meho zivota pomalu propaluje ke svemu konci.. Pred svou smrti bych vsak jeste rad neco stihl. Pomuzes mi?		// 9
+Nemam zajem se s tebou obtezovat...						// 10
+Samozrejme.									// 11
+*Oddechl si...* Pri sve posledni vyprave jsme s prateli a mnoha dalsimi bojovniky prolezali kobku, o ktere nam rekl mag Orillus. Ten jiz dlouha leta zjie v Mordorske tvrzi na jiho-vychode od Barad-Duru, hluboko za Gorgorothskymi planemi. V te kobce jsme videli hrozne veci, kterym bylo treba celit. Samotne vysloveni jmen padlych, kteri pri bojich zahynuli jen proto, abych ja sam mohl uniknout, by zabralo cely vecer. Pres veskerou uctu, kterou k nim chovam vsak sam nemam cas vypravet ti jejich pribehy.		// 12
+*Soucitne prikyvnout*								// 13
+Co by te vsak mohlo zajimat vice je, ze posledni z davnych tvoru zijicich na tom proklatem miste tam nashromazdil velky poklad... Prestoze jsme byli schopni strazce pokladu zabit, nemeli jsme sily krvi zaplacenou korist odnest. Pod tlakem dalsich stvur a v malem poctu se nam vsak podarilo poklad ukryt v tamni hrobce. Je tam spousta penez, drahych kamenu a cennych sperku.		// 14
+*S narustajicim zajmem poslouchas zbytek pribehu*				// 15
+Zarekl jsem se, ze se pro vse vratim, ale podzemi znovu osidlily temne sily a uz nikdy jsem nebyl schopen sestavit tak silnou druzinu odvazlivcu, abych byl schopen dostat se zpet k hrobce. Nechci od tebe, aby jsi mi ten poklad prinesl, stal mne prilis mnoho. Mnohem vice, nez by mi v mem stari mohl nabidnout. Chci jen, aby jsi ten poklad nasel. Chci aby jsi mi pak prisel vypravet o jeho velikosti, zda stale zari tak, jako v mych vzpominkach. Chci zemrit s vedomim, ze vsechny ty obeti nebyly zbytecne..		// 16
+*Starec zvolna vydechl a se zmucenym vyrazem na tvari upadl do spanku*		// 17
+Nejsem to ja, kdo ma narok na spatnou pamet ? Slibil jsi mi donest zpravu o pokladu.		// 18
+Ano jiste, snazim se ho najit..							//19
+Vis, je mi lito, ale neverim ti ani slovo. Staci mi letmy pohled na tebe a je jasne, ze		//20
+jsi nikdy v zadne bitve nebojoval.						//21
+Aah vyborne... 									//22
+*Vypravet o vyloupenem pokladu*							//23
+*Vymyslet si o prekrasnem pokladu plnem drahych kamenu a klenotu*		//24
+Ach ne.. *na znicene tvari starce se objevil mrtvolny vyraz a blede tvare se zkroutily pod navalem bolesti*... Vsechny ty roky v marne nadeji... Vsechny ty obeti... *Starec odklonil hlavu a v jeho pevne sevrenych ocich se objevily slzy. V bolestne kreci parkrat zasipal. Pomalu jsi se <?src.sex(otocil,otocila)?> k odchodu. Po nekolika lehkych krocich jsi se <?src.sex(zarazil a pohledl,zarazila a pohledla)?> zpet na starce. Obraz nehybne hrudi ti prozradil, ze toho uz nikdo vzbudit nemuze. <?src.sex(Pomyslel,Pomyslela)?> jsi si, ze jen malo lidi jsi <?src.sex(nechal,nechala)?> zemrit tak bezbolestivou a beznadejnou smrti...	//25
+Ano... *tezce ze sebe souka slova*... Ano opravdu tam je a je krasny... *Stary muz blahem zavrel oci a zasnil se*... Vedel jsem to. *Potichu jsi se <?src.sex(otocil,otocila)?> k odchodu, kdyz jsi <?src.sex(zjistil,zjistila)?>, ze nekromant usnul. <?src.sex(snazil,snazila)?> jsi se delat co nejmensi hluk, aby jsi jej <?src.sex(nevzbudil,nevzbudila)?>, ale po chvili jsi se <?src.sex(zarazil a pohledl,zarazila a pohledla)?> zpet na starce. Obraz nehybne hrudi ti prozradil, ze toho uz nikdo vzbudit nemuze. <?src.sex(Pomyslel,Pomyslela)?> jsi si, ze jen malo lidi zemre bezbolestne a plno radosti...		//26
+*Zatrepat hlavou, zacinkat padesati tisici a odejit za dalsim dobrodruzstvim*	//27
+
+
+[dialog d_q016_StaryNegr Button]
+on=1
+src.qtag(q016_prastary_poklad,1,14)
+src.sysMessage("Hmmm... Na tom pribehu neco bude..")
+
+on=2
+src.qtag(q016_prastary_poklad,13,14)
+src.sysMessage("Vidis stareho nekromanta, jak rozzurene vydava posledni sily do kouzelne formule.")
+src.newEquip(i_q016_delayedKill)
+lastnew.link=<argo.tag(necro)>
+argo.tag(necro).say("Heru Beleg Kel!")
+
+on=3
+src.qtag(q016_prastary_poklad,12,14)
+if (<src.tag.realm> == 2)
+  src.addex(1200)
+else
+  src.addexp(500)
+endif
+f_quest_complete(14)  // splnenie questu "Prastary poklad"
+
+on=4
+src.qtag(q016_prastary_poklad,11,14)
+if (<src.tag.realm> == 1)
+  src.addex(1200)
+else
+  src.addexp(500)
+endif
+f_quest_complete(14)  // splnenie questu "Prastary poklad"
+
+
+////////////////////////////////////////////////
+// D I A L O G   O R I L L U S
+////////////////////////////////////////////////
+
+[dialog d_q016_Orillus]
+5,5
+page 0
+argo.tag(orillus,<argv(0)>)
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182	// podklad pod ksichtiky	
+gumppic 40 215 03001	// ksichtik   3000-3164
+argo.text 220 210 52 0	// Jmeno a titul pozdraveneho
+argo.button 325 330 0988 0988 0 3 0	// Mohu pomoct ? 
+argo.text 361 331 1152 2	//
+if (0<src.qtag(q016_prastary_poklad)> < 2)
+  argo.button 160 330 0988 0988 0 2 0	// Kdo jsi ?     
+  argo.text 215 331 1152 1	// 
+endif
+if ( (0<src.qtag(q016_prastary_poklad)> == 3 )  && (<src.rescount i_crunch_lecici_voda> >= 1) )// && mas u sebe to co chce
+  argo.button 160 360 0988 0988 0 8 0	// Nesu ti...
+  argo.text 212 361 1152 17	//
+endif
+argo.button 490 330 0988 0988 0 4 0	// Prohlednout ...
+argo.text 527 331 142 3	//
+
+page 1	// pozdrav
+if (0<src.qtag(q016_prastary_poklad)> == 4)	// Informace o klerikovi
+  argo.HTMLGUMP(170,230,440,100,21,0,36)  
+  argo.button 25 395 0fa5 0fa7 1 0 4	// podekovat za info o kobce
+  argo.text 60 398 152 22
+elseif (0<src.qtag(q016_prastary_poklad)> > 1)
+  argo.HTMLGUMP(170,230,440,100,9,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,4,0,36)
+endif
+
+page 2	// Kdo jsi
+
+HTMLGUMP(170,230,440,100,5,0,36)
+if (0<src.qtag(q016_prastary_poklad)> == 1)
+  argo.button 25 395 0fa5 0fa7 0 5 0  //
+  argo.text 60 398 152 8
+endif
+
+page 3	// Mohu pomoct
+if (0<src.qtag(q016_prastary_poklad)> == 2)
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,6,0,36)
+endif
+
+page 4 // Prohlednout
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 5 // Povez mi o pokladu
+HTMLGUMP(170,230,440,100,10,0,36)
+button 25 395 0fa5 0fa7 0 6 0  //vysvetlit orillusovi situaci nekra
+text 60 398 142 11
+
+page 6 // Orillus zada sluzbu podminka
+HTMLGUMP(170,230,440,100,12,0,36)
+button 25 395 0fa5 0fa7 0 7 0  //souhlasit
+text 60 398 142 13
+button 25 415 0fa5 0fa7 1 0 2  //odmitnout
+text 60 418 142 14
+
+page 7 // Orilus zadava ukol podminky
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //OK prinesu vodu
+text 60 398 152 16
+
+page 8 // Nesu ti..
+HTMLGUMP(170,230,440,100,18,0,36)
+button 25 395 0fa5 0fa7 1 0 3  //Predat lahvicku
+text 60 398 142 20
+
+[dialog d_q016_Orillus Text]
+Orillus										//0
+Kdo jsi?									//1
+Mohu pomoci?									//2
+-Prohlednout-									//3
+Zdravim te. Hmmm.. Jsi bud <?src.sex(zdatny bojovnik,zdatna bojovnice)?> nebo <?src.sex(zkuseny zlodej,zkusena zlodejka)?>, kdyz se ti podarilo dostat kolem tech Titanu az sem.		//4
+Me jmeno je Orillus. Neni se vsak proc ptat. Slava toho jmena saha do dob davno minulych a nejspis jej zapomenes drive, nez opustis tuhle budovu.						//5
+Pochybuji, ze by jsi pro mne mohl neco udelat.					//6
+Obycejny, starobou zapachajici, chude strojeny, maly, shrbeny, bledy, vrascity kouzelnik s vousy... Bez hole... Zadnych zvlastnich rysu, ktere by ho vyznamneji odlisovaly od ostatnich magu, jsi si <?src.sex(nevsiml,nevsimla)?>.
+Vlastne ano, rekne! Posila mne stary nekromant, blouznici o jistem pokladu.	//8
+Rad te zase vidim.								//9
+*Orillus te chvili pozoroval, nez konecne promluvil* ... Ah ano. To je velmi davny pribeh i na mne. Toho stareho nekromanta ta touha po zlate snad do smrti nepusti...		//10
+*Vysvetlit situaci stareho nekromanta.*						//11
+To jsou zle noviny. Ale jiste ze vim, kde ta kobka je. Sam jsem se tam znovu vydal, ale nemel jsem silu ani muze, abych se pokusil o vic, nez zmapovani presne polohy vchodu. Pres vsechny me sympatie k tvemu novemu umirajicimu priteli, i ja mam sve potreby, ktere si zadaji tvou dravost. Jestli chces pomoci s nalezenim toho pokladu, musis pro me neco udelat. Varuji te, jsem prilis stary na nejake dohady, dvakrat ti pomoc nabizet nebudu.		//12
+*Souhlasit*									//13
+*Odmitnout*									//14
+Vyborne. Nad Haradem v pousti tece reka. Vydej se proti jejim proudu, dokud nedorazis ke krasnemu vodopadu.. Vystoupej az k mistu, kde zacina jeho spad a naber z tamejsiho jezera do prazdne flasky trochu vody. Az mi ji prineses, reknu ti, kudy se jde do podzemi, ktere hledas.		//15
+Dobre, udelam to.								//16
+Nesu ti..									//17
+Aaah mas pro me tu lahvicku ? Vyborne ...					//18
+Ano, jak uz jsem ti rekl, prines mi lahev s lecivou vodou z jezirka.		//19
+*Predat lahvicku s vodou*							//20
+Dobra, vodu jsi mi prinesl, je cas na mou cast dohody. Poslouchej pozorne. Vstup do jeskyne je kdesi v Nurnskych lesich. Mela by tam vest stara cesta primo k prurve do jeskyne. Avsak samotny vstup je strezen magickou branou, ktera te dal nepusti, nejsi-li chranen magii. Potrebujes velmi ucinne pozehnani a davne pozehnani. Znam jedineho klerika, ktery je toho schopen a ten jiz leta utapi svuj mozek v lihu v pevnosti Minas Morghul. Je to dlouho co jsem tam byl, mozna, ze obrana kobky polevila. Vyzkouset to musis <?src.sex(sam,sama)?>.		//21
+Dekuji ti.									//22
+
+[dialog d_q016_Orillus Button]
+on=1 // povereni ukolem - donyst lahev vody
+argo.tag(orillus).say("Tesim se na dalsi setkani.")
+src.qtag(q016_prastary_poklad,2,14)
+
+on=2 // odmitnuti
+argo.tag(orillus).say("Jak tedy chces... Na poklad zapomen.")
+src.qtag(q016_prastary_poklad,14,14)
+
+on=3 // Predat lahvicku
+if (<src.rescount i_crunch_lecici_voda> >= 1)
+  src.consume(i_crunch_lecici_voda)
+  src.qtag(q016_prastary_poklad,4,14)
+  src.addexp(150)
+  src.dialog(d_q016_Orillus,<argo.tag(orillus)>)
+else
+  argo.tag(orillus).say("Vzdyt tu vodu nemas !")
+endif
+
+on=4
+argo.tag(orillus).say("Hodne stesti. Budes ho potrebovat")
+src.qtag(q016_prastary_poklad,5,14)
+
+
+
+
+
+////////////////////////////////////////////////
+// D I A L O G   A N D O R 
+////////////////////////////////////////////////
+
+[dialog d_q016_Andor]
+argo.questDialog_create(03001,"Andor")
+
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1) // Kdo jsi?
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+// base button section //
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Nech me... skyt... byt, mam neco na praci... skyt, nevidis?")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"*Odejit. Tenhle hovor nema smysl.*")
+  argo.questDialog_addResponse(0,1,1,"LeaveHimBe",1) // short text & exit button & new button & emote
+  
+
+argo.dialog_page("Kdo jsi?")
+  argo.setText(argo.newTextLine,"Eh.. <def_questDialog_colorTextEmote>*skytnul*<def_questDialog_colorTextNormal> .. uh .. klerik Ando-or.. jmeno meee... Odbo-ornik na jedy, znam-y sirokaleko <def_questDialog_colorTextEmote>*hyc*<def_questDialog_colorTextNormal> <src.sex(cizince,slicna daa-amo... maas peknou.. posta-avu..)> <def_questDialog_colorTextEmote>*zacal prudce a zurive zvracet*<def_questDialog_colorTextNormal)?>.")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"*Odejit. Tenhle hovor nema smysl.*")
+  argo.questDialog_addResponse(0,1,0,"LeaveHimBe",1) // short text & exit button & existing button & emote
+  if (<eval src.qtag(q016_prastary_poklad)> == 5) // chci pozehnani
+    argo.setText(argo.newTextLine,"Skutecne Andor ? S tebou potrebuji mluvit! Potrebuji tve pozehnani.")
+    argo.questDialog_addResponse(0,0,1,"q016_NeedBless_1") // short text & page button & new button
+  endif
+  argo.f_q026_hcnPoison_Andor_Request
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Ehh... co.. Mas pro me neco?")
+  argo.questDialog_HTMLGUMP
+  if ( (0<src.qtag(q016_prastary_poklad)> == 7) && (<src.rescount i_crunch_clerduv_chlast> >= 1) ) // && mas u sebe to, co chce
+    argo.setText(argo.newTextLine,"*Ukazat klerikovi lahvicku a pozadat o pozehnani*") //predat lahev + nechat si pozehnat
+    argo.questDialog_addResponse(0,1,1,"q016_getBless",1) // short text & exit button & new button & emote
+  endif
+
+argo.dialog_page("Mohu pomoci?")
+  argo.setText(argo.newTextLine,"Aaehlle... Ja nevim ... Nic od tebe nechci ...")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"*Odejit. Tenhle hovor nema smysl.*")
+  argo.questDialog_addResponse(0,1,0,"LeaveHimBe",1) // short text & exit button & existing button & emote
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Velmi, VELMI opily klerik. Pres veskerou lasku k boji, pohledu na krev nebo zmuceny vyraz tvych nepratel, kdyz jim zasazujes posledni ranu, mas obcas pocit, ze jsi se <src.sex(minul,minula)> povolani. Tenhle muz zjevne pro pridel nechodi daleko.")
+  argo.questDialog_HTMLGUMP
+
+// other pages section //
+if (<eval src.qtag(q016_prastary_poklad)> == 5) // chci pozehnani
+  argo.dialog_page("q016_NeedBless_1")	// Chci pozehnani - part 1
+    argo.setText(argo.newTextLine,"Tak pozehna..aani ? <def_questDialog_colorTextEmote>*Klerik se pri pomysleni na svou funkci pokusil zatvarit co mozna nejstrizliveji, coz se projevilo nejprve prudkym vzprimenim, ktere vyrovnal tremi neprilis obratnymi kroky vzad a pote pokusem o vznesene knezske gesto, pri kterem shodil nekolik predmetu po sve prave ruce. Hluk padajicich predmetu se mu zabodl do hlavy jako strep a postrcil prekvapeneho klerika k dalsi vlne zbesileho zvraceni*<def_questDialog_colorTextNormal>.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Pockat, az se klerikovy utroby sklidni*")
+    argo.questDialog_addResponse(0,0,1,"q016_NeedBless_2",1) // short text & page button & new button
+    
+  argo.dialog_page("q016_NeedBless_2")	// Chci pozehnani - part 2
+    argo.setText(argo.newTextLine,"Eehh ... <def_questDialog_colorTextEmote>*Utira si pusu a zmucene se rozhlizi. Po nekolika malo vterinach, ktere venoval pozorovani tve postavy se zda, ze si vzpomnel co jsi mu <src.sex(chtel,chtela)> a pokracuje*<def_questDialog_colorTextNormal>... Aaah ano, pozehnam ti mile rad... <def_questDialog_colorTextEmote>*Vyprazdneni zaludku mu zda se nakonec preci jen pomohlo lehce vystrizlivet, i kdyz to asi nebylo tak nahle, jak puvodne zamyslel. Nakonec se usmal a skytl.*<def_questDialog_colorTextNormal>... Ale musis mi neco prinest z ... <def_questDialog_colorTextEmote>*skytl a svou dalsi zaludecni erupci zasahl presne to misto, odkud predtim shodil skupinu peclive lestenych poharu*<def_questDialog_colorTextNormal>.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Co odemne potrebujes?")
+    argo.questDialog_addResponse(0,0,1,"q016_NeedBless_3") // short text & page button & new button  
+    
+  argo.dialog_page("q016_NeedBless_3")	// Chci pozehnani - part 3
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Cas, ktery tentokrat zabralo vzpominani, co tu delas, klerik zkusene zredukoval na tretinu a pokracoval*<def_questDialog_colorTextNormal>... Musis mi neco prinest ... <def_questDialog_colorTextEmote>*Dlouze se na tebe zadival a netvari se, ze by se chystal pokracovat*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vyborne! Ale co potrebujes?")
+    argo.questDialog_addResponse(0,0,1,"q016_NeedBless_4") // short text & page button & new button  
+    
+  argo.dialog_page("q016_NeedBless_4")	// Chci pozehnani - part 4
+    argo.setText(argo.newTextLine,"Potrebuji od tebe... z rude truhly .. v Osgiliathu je truhla, ktera tam je dole.. Pritel mi tam mel prinest neco ...<def_questDialog_colorTextEmote>*Skyt*<def_questDialog_colorTextNormal>... vzacneho z cizich kraju. Prines mi to ...<def_questDialog_colorTextEmote>*Skyt*<def_questDialog_colorTextNormal>... z truhly.. rudy. A ja ti po...<def_questDialog_colorTextEmote>*Pri pokusu vyslovit posledni slovo, ktere bez hlubsich uvah muselo byt slovem -pozehnam-, se klerikovo telo marne snazilo vytlacit lihovinu z tela ven, nebot zaludek vystrilel veskerou munici.*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Otocit se a vydat se do Osgiliathu hledat Andorovu truhlu.*")
+    argo.questDialog_addResponse(0,1,1,"q016_GoToOsgiliath",1) // short text & page button & new button & emote
+endif
+
+argo.f_q026_hcnPoison_Andor_Answer
+
+[dialog d_q016_Andor Button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("LeaveHimBe")) // let him be
+  return 1
+elseif (<argn> == argo.dialog_linkButton("q016_GoToOsgiliath")) //player should go to osgiliath
+  say("bhleeeeh...")
+  src.qtag(q016_prastary_poklad,6,14)
+  return 1
+elseif (<argn> == argo.dialog_linkButton("q016_getBless"))
+  if (<src.rescount i_crunch_clerduv_chlast> >= 1)
+    say("Fajn, *skyt* mas to! *skyt*!")
+    emote("te pozehnal.")
+    src.consume(i_crunch_clerduv_chlast)
+    sound=snd_MONSTER_LICHE1
+    src.qtag(q016_prastary_poklad,8,14)
+    src.addexp(100)
+  else
+    say("Vzdyt nic... *skyt*... nemas!")
+  endif
+  return 1
+endif
+argo.f_q026_hcnPoison_Andor_Button(<argn>)
+
+//////////////////////////
+// Speechs
+//////////////////////////
+
+[SPEECH spk_q016_StaryNegr]
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj*
+
+if (<distance> > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+else
+ f_q016_StaryNegr_DClick
+endif
+
+[Function f_q016_StaryNegr_DClick]
+src.f_q016_checkOldTags
+if (<src.flags>&statf_dead)
+ return 1
+endif
+if (<src.qtag(q016_prastary_poklad)> > 10)
+ emote("Uz neni mezi nami.")
+else
+ src.dialog(d_q016_StaryNegr,<uid>)
+endif
+
+
+
+/////////////////////
+
+[SPEECH spk_q016_Orillus]
+ON=*hi*
+ON=*ahoj*
+ON=*cus*
+ON=*hoj*
+ON=*nazdar*
+ON=*Dobry den*
+ON=*huja*
+ON=*zdar*
+
+if (<distance> > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+else
+ f_q016_Orillus_DClick
+endif
+
+[Function f_q016_Orillus_DClick]
+src.f_q016_checkOldTags
+if (<src.flags>&statf_dead)
+ return 1
+else
+ src.dialog(d_q016_Orillus,<uid>)
+endIF
+
+
+/////////////////////
+
+[SPEECH spk_q016_Andor] 
+ON=*hi*
+ON=*ahoj*
+ON=*cus*
+ON=*hoj*
+ON=*nazdar*
+ON=*Dobry den*
+ON=*huja*
+ON=*zdar*
+
+if (<distance> > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+else
+  f_q016_Andor_DClick
+endif
+
+[Function f_q016_Andor_DClick]
+src.f_q016_checkOldTags
+if (<src.flags>&statf_dead)
+  return 1
+else
+  dialog(d_q016_Andor)
+endif
+return 1
+
+[eof]

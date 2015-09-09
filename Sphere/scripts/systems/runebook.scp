@@ -1,0 +1,419 @@
+[ITEMDEF i_book_rune] 
+NAME=Runova Kniha
+ID=i_spellbook 
+TYPE=t_container
+TDATA2=03c
+
+CATEGORY=Astral Planes 
+SUBSECTION=Special Books 
+DESCRIPTION=Rune Book
+
+ON=@CREATE 
+COLOR=0980 
+type=t_runebook
+
+[function checkrunes]
+if (type!=t_rune)||(morex==0)
+//bounce
+endif
+
+[typedef t_runebook]
+ON=@UserDclick
+src.tag.dynamdialog=0
+SRC.SOUND=85 
+contents(checkrunes)
+DIALOG d_BOOK_rune 
+return 1
+
+ON=@TARGON_ITEM 
+IF (<SRC.TARG.TYPE>==t_rune)&&(<src.targ.attr>&0b0d4)==0
+ IF (<SRC.TARG.MOREX>==0) 
+  SRC.SYSMESSAGE Prazdna runa nelze pridat.
+ else 
+  src.targ.cont=<uid>
+ endif
+ENDIF
+RETURN 1
+
+//////////////Start the GUMP////////////////// 
+
+[DIALOG d_BOOK_rune] 
+// recall book! 
+0, 0 
+//page 0 
+gumppic 100 10 2200 
+gumppic 125 50 57 
+gumppic 145 50 58 
+gumppic 160 50 58 
+gumppic 175 50 58 
+gumppic 190 50 58 
+gumppic 205 50 58 
+gumppic 220 50 58 
+gumppic 230 50 59 
+
+gumppic 290 50 57 
+gumppic 310 50 58 
+gumppic 325 50 58 
+gumppic 340 50 58 
+gumppic 355 50 58 
+gumppic 370 50 58 
+gumppic 385 50 58 
+gumppic 395 50 59 
+button 123 14 2235 2235 1 0 52
+button 394 14 2236 2236 1 0 51
+button 290 190 4033 4033 1 0 50
+text 128 <eval <rb_posy>+75> 0 16
+text 128 <eval <var.posy>+88> 0 19
+text 310 187 0 20
+text 175 26 1300 17 
+button 155 28 4033 4033 1 0 49
+text 322 27 1300 18 
+checkbox 295 26 210 211 <morex> 1
+
+
+//lines:
+page <qval(<findcont(src.tag(dynamdialog)+0)>,0,-1)>
+button 125 65 2103 2104 1 0 1
+button 135 65 2103 2104 1 0 17
+button 250 65 2103 2104 1 0 25
+textentry 145 60 115 17 0 0 0
+page <qval(<findcont(src.tag(dynamdialog)+1)>,0,-1)>
+button 125 80 2103 2104 1 0 2//Button 2 
+button 135 80 2103 2104 1 0 18//Button 18 
+button 250 80 2103 2104 1 0 26//Button 26 
+textentry 145 75 115 17 0 1 1//Location 2 
+page <qval(<findcont(src.tag(dynamdialog)+2)>,0,-1)>
+button 125 95 2103 2104 1 0 3//Button 3 
+button 135 95 2103 2104 1 0 19//Button 19 
+button 250 95 2103 2104 1 0 27//Button 27 
+textentry 145 90 115 17 0 2 2//Location 3 
+page <qval(<findcont(src.tag(dynamdialog)+3)>,0,-1)>
+button 125 110 2103 2104 1 0 4//Button 4 
+button 135 110 2103 2104 1 0 20//Button 20 
+button 250 110 2103 2104 1 0 28//Button 28 
+textentry 145 105 115 17 0 3 3//Location 4 
+page <qval(<findcont(src.tag(dynamdialog)+4)>,0,-1)>
+button 125 125 2103 2104 1 0 5//Button 5 
+button 135 125 2103 2104 1 0 21//Button 21 
+button 250 125 2103 2104 1 0 29//Button 29 
+textentry 145 120 115 17 0 4 4//Location 5 
+page <qval(<findcont(src.tag(dynamdialog)+5)>,0,-1)>
+button 125 140 2103 2104 1 0 6//Button 6 
+button 135 140 2103 2104 1 0 22//Button 22 
+button 250 140 2103 2104 1 0 30//Button 30 
+textentry 145 135 115 17 0 5 5//Location 6 
+page <qval(<findcont(src.tag(dynamdialog)+6)>,0,-1)>
+button 125 155 2103 2104 1 0 7//Button 7 
+button 135 155 2103 2104 1 0 23//Button 23 
+button 250 155 2103 2104 1 0 31//Button 31 
+textentry 145 150 115 17 0 6 6//Location 7 
+page <qval(<findcont(src.tag(dynamdialog)+7)>,0,-1)>
+button 125 170 2103 2104 1 0 8//Button 8 
+button 135 170 2103 2104 1 0 24//Button 24 
+button 250 170 2103 2104 1 0 32//Button 32 
+textentry 145 165 115 17 0 7 7//Location 8 
+//oposit page 
+page <qval(<findcont(src.tag(dynamdialog)+8)>,0,-1)>
+button 285 65 2103 2104 1 0 9 //Button 9 
+button 295 65 2103 2104 1 0 33//Button 33
+button 410 65 2103 2104 1 0 41//Button 41 
+textentry 305 60 115 17 0 8 8//Location 9 
+page <qval(<findcont(src.tag(dynamdialog)+9)>,0,-1)>
+button 285 80 2103 2104 1 0 10 //Button 10 
+button 295 80 2103 2104 1 0 34//Button 34 
+button 410 80 2103 2104 1 0 42//Button 42 
+textentry 305 75 115 17 0 9 9//Location 10 
+page <qval(<findcont(src.tag(dynamdialog)+10)>,0,-1)>
+button 285 95 2103 2104 1 0 11 //Button 11 
+button 295 95 2103 2104 1 0 35//Button 35 
+button 410 95 2103 2104 1 0 43//Button 43 
+textentry 305 90 115 17 0 10 10//Location 11 
+page <qval(<findcont(src.tag(dynamdialog)+11)>,0,-1)>
+button 285 110 2103 2104 1 0 12//Button 12 
+button 295 110 2103 2104 1 0 36//Button 36 
+button 410 110 2103 2104 1 0 44//Button 44 
+textentry 305 105 115 17 0 11 11//Location 12 
+page <qval(<findcont(src.tag(dynamdialog)+12)>,0,-1)>
+button 285 125 2103 2104 1 0 13//Button 13 
+button 295 125 2103 2104 1 0 37//Button 37 
+button 410 125 2103 2104 1 0 45//Button 45 
+textentry 305 120 115 17 0 12 12//Location 13 
+page <qval(<findcont(src.tag(dynamdialog)+13)>,0,-1)>
+button 285 140 2103 2104 1 0 14//Button 14 
+button 295 140 2103 2104 1 0 38//Button 38 
+button 410 140 2103 2104 1 0 46//Button 46 
+textentry 305 135 115 17 0 13 13//Location 14 
+page <qval(<findcont(src.tag(dynamdialog)+14)>,0,-1)>
+button 285 155 2103 2104 1 0 15//Button 15 
+button 295 155 2103 2104 1 0 39//Button 39 
+button 410 155 2103 2104 1 0 47//Button 47 
+textentry 305 150 115 17 0 14 14//Location 15 
+page <qval(<findcont(src.tag(dynamdialog)+15)>,0,-1)>
+button 285 170 2103 2104 1 0 16//Button 16 
+button 295 170 2103 2104 1 0 40//Button 40 
+button 410 170 2103 2104 1 0 48//Button 48 
+textentry 305 165 115 17 0 15 15//Location 16 
+//textentry 225 226 253 25 0 0 2
+
+[DIALOG d_BOOK_rune TEXT] 
+<?findcont(src.tag(dynamdialog)+0).name?>//Location 1 
+<?findcont(src.tag(dynamdialog)+1).name?>//Location 2 
+<?findcont(src.tag(dynamdialog)+2).name?>//Location 3 
+<?findcont(src.tag(dynamdialog)+3).name?>//Location 4 
+<?findcont(src.tag(dynamdialog)+4).name?>//Location 5 
+<?findcont(src.tag(dynamdialog)+5).name?>//Location 6 
+<?findcont(src.tag(dynamdialog)+6).name?>//Location 7 
+<?findcont(src.tag(dynamdialog)+7).name?>//Location 8 
+<?findcont(src.tag(dynamdialog)+8).name?>//Location 9 
+<?findcont(src.tag(dynamdialog)+9).name?>//Location 10 
+<?findcont(src.tag(dynamdialog)+10).name?>//Location 11 
+<?findcont(src.tag(dynamdialog)+11).name?>//Location 12 
+<?findcont(src.tag(dynamdialog)+12).name?>//Location 13 
+<?findcont(src.tag(dynamdialog)+13).name?>//Location 14 
+<?findcont(src.tag(dynamdialog)+14).name?>//Location 15 
+<?findcont(src.tag(dynamdialog)+15).name?>//Location 16 
+| |_Gate  Vratit_|//text 16 
+Pridat Runu//text 17 
+Runova kniha//text 18 
+|_Recall//text 19
+potvrd prejmen.
+
+[DIALOG d_BOOK_rune BUTTON] 
+on=0 
+morex=<argchk(1)>
+SRC.SOUND=85 
+on=1
+morex=<argchk(1)>
+rb_recall(0)
+on=2 
+morex=<argchk(1)>
+rb_recall(1)
+on=3 
+morex=<argchk(1)>
+rb_recall(2)
+on=4 
+morex=<argchk(1)>
+rb_recall(3)
+on=5 
+morex=<argchk(1)>
+rb_recall(4)
+on=6 
+morex=<argchk(1)>
+rb_recall(5)
+on=7 
+morex=<argchk(1)>
+rb_recall(6)
+on=8 
+morex=<argchk(1)>
+rb_recall(7)
+on=9 
+morex=<argchk(1)>
+rb_recall(8)
+on=10 
+morex=<argchk(1)>
+rb_recall(9)
+on=11 
+morex=<argchk(1)>
+rb_recall(10)
+on=12 
+morex=<argchk(1)>
+rb_recall(11)
+on=13 
+morex=<argchk(1)>
+rb_recall(12)
+on=14 
+morex=<argchk(1)>
+rb_recall(13)
+on=15 
+morex=<argchk(1)>
+rb_recall(14)
+on=16 
+morex=<argchk(1)>
+rb_recall(15)
+on=17 
+morex=<argchk(1)>
+rb_gate(0)
+on=18 
+morex=<argchk(1)>
+rb_gate(1)
+on=19
+morex=<argchk(1)>
+rb_gate(2)
+on=20 
+morex=<argchk(1)>
+rb_gate(3)
+on=21 
+morex=<argchk(1)>
+rb_gate(4)
+on=22 
+morex=<argchk(1)>
+rb_gate(5)
+on=23 
+morex=<argchk(1)>
+rb_gate(6)
+on=24 
+morex=<argchk(1)>
+rb_gate(7)
+on=25 
+morex=<argchk(1)>
+rb_return(0)
+on=26 
+morex=<argchk(1)>
+rb_return(1)
+on=27 
+morex=<argchk(1)>
+rb_return(2)
+on=28 
+morex=<argchk(1)>
+rb_return(3)
+on=29 
+morex=<argchk(1)>
+rb_return(4)
+on=30 
+morex=<argchk(1)>
+rb_return(5)
+on=31 
+morex=<argchk(1)>
+rb_return(6)
+on=32 
+morex=<argchk(1)>
+rb_return(7)
+on=33 
+morex=<argchk(1)>
+rb_gate(8)
+on=34 
+morex=<argchk(1)>
+rb_gate(9)
+on=35 
+morex=<argchk(1)>
+rb_gate(10)
+on=36 
+morex=<argchk(1)>
+rb_gate(11)
+on=37 
+morex=<argchk(1)>
+rb_gate(12)
+on=38 
+morex=<argchk(1)>
+rb_gate(13)
+on=39 
+morex=<argchk(1)>
+rb_gate(14)
+on=40 
+morex=<argchk(1)>
+rb_gate(15)
+on=41 
+morex=<argchk(1)>
+rb_return(8)
+on=42 
+morex=<argchk(1)>
+rb_return(9)
+on=43 
+morex=<argchk(1)>
+rb_return(10)
+on=44 
+morex=<argchk(1)>
+rb_return(11)
+on=45 
+morex=<argchk(1)>
+rb_return(12)
+on=46 
+morex=<argchk(1)>
+rb_return(13)
+on=47 
+morex=<argchk(1)>
+rb_return(14)
+on=48 
+morex=<argchk(1)>
+rb_return(15)
+on=49 
+morex=<argchk(1)>
+//pridat runu! 
+SRC.SOUND=85 
+TARGET Zamer runu,kteru chces pridat.
+on=50
+morex=<argchk(1)>
+var.u=0
+while (u<16)
+findcont(<u>+src.tag(dynamdialog)).name=<argtxt(u)>
+var.u=<u>+1
+endwhile
+dialog d_BOOK_rune
+
+on=51
+morex=<argchk(1)>
+src.tag(dynamdialog,<eval src.tag(dynamdialog)+16>)
+dialog d_BOOK_rune
+
+on=52
+morex=<argchk(1)>
+src.tag(dynamdialog,<eval src.tag(dynamdialog)-16>)
+if (src.tag(dynamdialog)<0)
+src.tag.dynamdialog=0
+endif
+dialog d_BOOK_rune
+
+[function rb_recall]
+//if (morex)
+ if (src.findid(i_scroll_recall))
+  if (src.mana>=20)
+   safe(src.findid(i_scroll_recall).dclick)
+   //src.findid(i_scroll_recall).dclick
+   src.act=<findcont(src.tag(dynamdialog)+<args>).uid>
+   safe(src.last)
+  else
+   src.sysmessage Nemas dost many
+  endif
+ //else
+  //src.sysmessage Nemas svitek Recall!
+ //endif
+else
+ src.act=<findcont(src.tag(dynamdialog)+<args>).uid>
+ safe(src.cast 32)
+ safe(src.last)
+endif
+
+[function rb_gate]
+//if (morex)
+ if (src.findid(i_scroll_gate_travel))
+  if (src.mana>=40)
+   safe(src.findid(i_scroll_gate_travel).dclick)
+   //src.findid(i_scroll_gate_travel).dclick
+   src.act=<findcont(src.tag(dynamdialog)+<args>).uid>
+   safe(src.last)
+  else
+   src.sysmessage Nemas dost many
+  endif
+ //else
+ // src.sysmessage Nemas svitek Gate!
+ //endif
+else
+ src.act=<findcont(src.tag(dynamdialog)+<args>).uid>
+ safe(src.cast 52)
+ safe(src.last)
+endif
+
+[function rb_return]
+src.act=<findcont(src.tag(dynamdialog)+<args>).uid>
+src.act.bounce
+dialog d_BOOK_rune
+
+[function bookgate]
+src.tag.dynamdialog=<args>
+findud(i_book_rune).rb_gate(0)
+
+[function bookrecall]
+src.tag.dynamdialog=<args>
+findud(i_book_rune).rb_recall(0)
+
+[function rb_posy]
+var.posy=<eval (<rescount>-src.tag(dynamdialog))-1>
+if (posy>7)
+var.posy=7
+elseif (posy<0)
+var.posy=0
+endif
+var.posy=<posy>*15
+return <posy>
+
+[eof]

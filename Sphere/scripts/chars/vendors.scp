@@ -1,0 +1,3840 @@
+// ****************************************************************************
+// SPHERE by : Menasoft ©1997-2000
+// www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+// ****************************************************************************
+// FILE LAST UPDATED: Thursday, June 29, 2000
+//VERSION=0.54
+
+[CHARDEF 0190]
+DEFNAME=c_man
+Name=Man
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+RESOURCES=i_flesh_head, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2
+FOODTYPE=15 t_food, t_fruit
+BLOODCOLOR=0
+attack=4
+ARMOR=0
+
+TEVENTS=e_character
+
+DESCRIPTION=Man
+SUBSECTION=Miscellaneous
+CATEGORY=Vendori
+
+ON=@Create
+NPC=brain_human
+COLOR=colors_skin
+str=100
+dex=100
+int=100
+
+//FENCING={15.0 38.0}
+//PARRYING={15.0 38.0}
+//SWORDSMANSHIP={15.0 38.0}
+//WRESTLING={15.0 38.0}
+//MACEFIGHTING={15.0 38.0}
+//Resist={15.0 38.0}
+//TACTICS={15.0 38.0}
+allskills=0
+
+[CHARDEF 0191]
+DEFNAME=c_woman
+NAME=Woman
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+ICON=i_pet_woman
+RESOURCES=i_flesh_head_2, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2
+FOODTYPE=15 t_food,t_fruit
+BLOODCOLOR=0
+attack=0
+ARMOR=0
+
+
+TEVENTS=e_character
+//
+DESCRIPTION=Woman
+SUBSECTION=Miscellaneous
+CATEGORY=Vendori
+
+ON=@Create
+NPC=brain_human
+COLOR=colors_skin
+
+//FENCING={15.0 38.0}
+//PARRYING={15.0 38.0}
+//SWORDSMANSHIP={15.0 38.0}
+//WRESTLING={15.0 38.0}
+//MACEFIGHTING={15.0 38.0}
+//Resist={15.0 38.0}
+//TACTICS={15.0 38.0}
+allskills=0
+
+[CHARDEF c_h_vendor_f]
+NAME=Vendor
+id=c_woman
+can=MT_NONMOVER|MT_EQUIP|MT_FEMALE
+maxfood=04fff
+tevents=e_vendor_custom
+TSPEECH=spk_vendor_custom
+
+CATEGORY=Civilized
+SUBSECTION=Tradesmen
+DESCRIPTION=Vendor female
+
+ON=@Create
+NAME=#NAMES_HUMANfeMALE
+tag{provize,10}
+tag(noanimate,1)
+title=the Vendor
+provocation=1
+COLOR=colors_skin
+FLAGS=statf_pet|statf_invul|statf_freeze
+STR=100
+DEX=0
+INT=100
+
+ON=@npcseenewplayer
+SRC.EVENTS -e_arena
+SRC.TAG.ARENA=""
+
+[CHARDEF c_h_vendor]
+NAME=Vendor
+ID=c_man
+can=MT_NONMOVER|MT_EQUIP|MT_MALE
+maxfood=04fff
+
+tevents=e_vendor_custom
+TSPEECH=spk_vendor_custom
+CATEGORY=Civilized
+SUBSECTION=Tradesmen
+DESCRIPTION=Vendor
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+tag{provize,10}
+tag(noanimate,1)
+title=the Vendor
+provocation=1
+COLOR=colors_skin
+FLAGS=statf_pet|statf_invul|statf_freeze
+STR=100
+DEX=0
+INT=100
+
+ON=@npcseenewplayer
+SRC.EVENTS -e_arena
+SRC.TAG.ARENA=""
+
+[CHARDEF 0192]
+//Ghost robe is not automatic !
+DEFNAME=c_ghost_man
+NAME=Ghost
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST
+RESOURCES=
+FOODTYPE=
+//=r_house
+//=t_TRAP,t_eerie_stuff
+//=i_gold,e_notoriety
+DESCRIPTION=Ghost
+SUBSECTION=Miscellaneous
+CATEGORY=Vendori
+
+ON=@Create
+NPC=brain_human
+
+FENCING={15.0 38.0}
+PARRYING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+Resist={15.0 38.0}
+TACTICS={15.0 38.0}
+
+[CHARDEF 0193]
+//Ghost robe is not automatic !
+DEFNAME=c_ghost_woman
+NAME=Ghost
+ICON=i_pet_woman
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST|MT_FEMALE
+RESOURCES=8 i_ribs_raw
+FOODTYPE=
+//=r_house
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+DESCRIPTION=Ghost Woman
+SUBSECTION=Miscellaneous
+CATEGORY=Vendori
+
+ON=@Create
+NPC=brain_human
+
+FENCING={15.0 38.0}
+PARRYING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+Resist={15.0 38.0}
+TACTICS={15.0 38.0}
+
+//[CHARDEF 01a4]
+////Male Kid {Blond Hair} {not in t2a}
+////NOTE: NOT in T2a !
+//DEFNAME=c_child_mb
+//
+//NAME=Child
+//RESOURCES=4 t_food
+//CAN=MT_WALK|MT_RUN|MT_USEHANDS
+//ICON=i_pet_MAN
+//FOODTYPE=15 t_food,t_fruit
+////=i_gold,e_notoriety
+////=r_house
+////=t_TRAP,t_eerie_stuff
+//TSPEECH=spk_human_prime
+//
+//
+//DESCRIPTION=Child {Blond}
+//SUBSECTION=Miscellaneous
+//CATEGORY=Vendori
+//
+//ON=@Create
+//NPC=brain_human
+//
+//FENCING={8.0 19.0}
+//PARRYING={8.0 19.0}
+//SWORDSMANSHIP={8.0 19.0}
+//WRESTLING={8.0 19.0}
+//MACEFIGHTING={8.0 19.0}
+//Resist={8.0 19.0}
+//TACTICS={8.0 19.0}
+//
+//[CHARDEF 01a5]
+//Male Kid {Dark Hair}
+//NOTE: NOT in T2a !
+//DEFNAME=c_child_md
+
+//NAME=Child
+//CAN=MT_WALK|MT_RUN|MT_USEHANDS
+//ICON=i_pet_MAN
+//FOODTYPE=15 t_food,t_fruit
+////=r_house
+////=i_gold,e_notoriety
+//RESOURCES=4 i_ribs_raw
+////=t_TRAP,t_eerie_stuff
+//TSPEECH=spk_human_prime
+//
+//
+//DESCRIPTION=Child {Brunette}
+//SUBSECTION=Miscellaneous
+//CATEGORY=Vendori
+
+//ON=@Create
+//NPC=brain_human
+
+//FENCING={8.0 19.0}
+//PARRYING={8.0 19.0}
+//SWORDSMANSHIP={8.0 19.0}
+//WRESTLING={8.0 19.0}
+//MACEFIGHTING={8.0 19.0}
+//Resist={8.0 19.0}
+//TACTICS={8.0 19.0}
+
+//[CHARDEF 01a6]
+////Female Kid {Blond Hair} {toddler}
+////NOTE: NOT in T2a !
+//DEFNAME=c_child_fb
+
+//NAME=Child
+//CAN=MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+//ICON=i_pet_woman
+//FOODTYPE=15 t_food,t_fruit
+////=r_house
+////=i_gold,e_notoriety
+//RESOURCES=4 i_ribs_raw
+////=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//
+//
+//DESCRIPTION=Child {Female Blonde}
+//SUBSECTION=Miscellaneous
+//CATEGORY=Vendori
+//BLOODCOLOR=0
+//
+//ON=@Create
+//NPC=brain_human
+
+//FENCING={8.0 19.0}
+//PARRYING={8.0 19.0}
+//SWORDSMANSHIP={8.0 19.0}
+//WRESTLING={8.0 19.0}
+//MACEFIGHTING={8.0 19.0}
+//Resist={8.0 19.0}
+//TACTICS={8.0 19.0}
+
+
+//[CHARDEF 01a7]
+////Female Kid {Dark Hair}
+////NOTE: NOT in T2a !
+//DEFNAME=c_child_fd
+//
+//NAME=Child
+//CAN=MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+//ICON=i_pet_woman
+//FOODTYPE=15 t_food,t_fruit
+////=r_house
+////=i_gold,e_notoriety
+//RESOURCES=4 i_ribs_raw
+////=t_TRAP,t_eerie_stuff
+//TSPEECH=spk_human_prime
+//
+//
+//DESCRIPTION=Child {Female Brunette}
+//SUBSECTION=Miscellaneous
+//CATEGORY=Vendori
+//BLOODCOLOR=0
+//
+//ON=@Create
+//NPC=brain_human
+//FENCING={8.0 19.0}
+//PARRYING={8.0 19.0}
+//SWORDSMANSHIP={8.0 19.0}
+//WRESTLING={8.0 19.0}
+//MACEFIGHTING={8.0 19.0}
+//Resist={8.0 19.0}
+//TACTICS={8.0 19.0}
+
+[CHARDEF 01a8]
+//Use this as our invis man id.
+DEFNAME=c_man_invisible
+NAME=Man
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+ICON=i_pet_MAN
+RESOURCES=4 i_ribs_raw
+FOODTYPE=15 t_food,t_fruit
+//=i_gold,e_notoriety
+//=r_house
+//=t_TRAP,t_eerie_stuff
+//TSPEECH=spk_human_prime
+//
+DESCRIPTION=Man {Invis}
+SUBSECTION=Miscellaneous
+CATEGORY=Vendori
+
+ON=@Create
+NPC=brain_human
+
+FENCING={8.0 19.0}
+PARRYING={8.0 19.0}
+SWORDSMANSHIP={8.0 19.0}
+WRESTLING={8.0 19.0}
+MACEFIGHTING={8.0 19.0}
+Resist={8.0 19.0}
+TACTICS={8.0 19.0}
+
+[CHARDEF 03db]
+DEFNAME=c_man_gm
+NAME=GM
+ICON=i_pet_MAN
+FOODTYPE=15 t_food, t_fruit
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS|MT_SWIM|MT_GHOST
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=GM Body
+
+ON=@Create
+STR={130 150}
+INT={170 190}
+DEX={100 150}
+
+
+///////////////////////////////////////prodejci ////////////////////////////////////////
+//vendors:
+
+[CHARDEF 0578]
+DEFNAME=C_m_WEAPONSMITH
+NAME=Kovar zbrani
+ID=C_MAN
+//=i_gold,e_notoriety,t_log,t_ingot
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobWeaponsmith
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+//TEVENTS=e_Human_Needs
+//TEVENTS=e_Human_ConvInit
+//TEVENTS=e_Human_Greet
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+NPC=brain_vendor
+COLOR=color_trpaslik
+STR=150
+DEX=150
+INT=100
+
+ARMSLORE={45.0 68.0}
+BLACKSMITHING={65.0 88.0}
+FENCING={45.0 68.0}
+PARRYING={55.0 78.0}
+SWORDSMANSHIP={45.0 68.0}
+WRESTLING={45.0 68.0}
+MACEFIGHTING={55.0 70.0}
+TACTICS={55.0 78.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+ITEMnewbie=i_bardiche_iron
+ITEMnewbie=i_iron_platemail
+ITEMnewbie=i_iron_plate_helm
+ITEMnewbie=i_iron_platemail_gorget
+ITEMnewbie=i_iron_platemail_leggings
+ITEMnewbie=i_iron_platemail_arms
+ITEMnewbie=i_iron_platemail_gauntlets
+ITEMnewbie=i_boots_thigh
+
+
+SELL=VENDOR_S_WEAPONS_metal
+//BUY=VENDOR_B_WEAPONS_metal
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Zbrane
+
+
+
+[CHARDEF 0546]
+DEFNAME=C_m_BOWYER
+NAME=Lucistnik
+ID=C_MAN
+//=i_gold,e_notoriety,t_log,t_board,t_feather
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobBowyer
+TSPEECH=spk_shopkeep
+//
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+NPC=brain_vendor
+COLOR=color_elf
+STR=150
+DEX=150
+INT=100
+
+ARCHERY={65.0 88.0}
+BOWCRAFT={65.0 88.0}
+LUMBERJACKING={55.0 75.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={25.0 48.0}
+TACTICS={35.0 55.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+ITEMnewbie=i_leather_gorget
+COLOR=colors_brown
+
+ON=@NPCRestock
+SELL=VENDOR_S_BOWYER
+//BUY=VENDOR_B_BOWYER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Luky, sipy {male}
+
+[CHARDEF 0547]
+DEFNAME=C_f_BOWYER
+NAME=Lucistnik
+ID=C_WOMAN
+//=i_gold,e_notoriety,t_log,t_board,t_feather
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobBowyer
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Lucistnik
+NPC=brain_vendor
+COLOR=color_elf
+STR=150
+DEX=150
+INT=100
+
+ARCHERY={65.0 88.0}
+BOWCRAFT={65.0 88.0}
+LUMBERJACKING={55.0 75.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={25.0 48.0}
+TACTICS={35.0 55.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+ITEMnewbie=i_leather_gorget
+COLOR=colors_brown
+
+ON=@NPCRestock
+
+SELL=VENDOR_S_BOWYER
+//BUY=VENDOR_B_BOWYER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Luky, sipy {female}
+
+[CHARDEF 0512]
+DEFNAME=C_m_TINKER
+NAME=Tinker
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobTinker
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Tinker
+NPC=brain_vendor
+COLOR=color_hobit
+STR=150
+DEX=150
+INT=100
+
+LOCKPICKING={45.0 68.0}
+TINKERING={45.0 68.0}
+FENCING={15.0 38.0}
+PARRYING={35.0 58.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={35.0 58.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+ITEMnewbie=i_tinker_tools
+
+ON=@NPCRestock
+
+SELL=VENDOR_S_TINKER
+//BUY=VENDOR_B_TINKER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Tinker {male}
+
+[CHARDEF 0513]
+DEFNAME=C_F_TINKER
+NAME=Tinker
+ID=C_WOMAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobTinker
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Tinker
+NPC=brain_vendor
+COLOR=color_hobit
+STR=150
+DEX=150
+INT=100
+
+LOCKPICKING={45.0 68.0}
+TINKERING={45.0 68.0}
+FENCING={15.0 38.0}
+PARRYING={35.0 58.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={35.0 58.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+ITEMnewbie=i_tinker_tools
+
+ON=@NPCRestock
+
+SELL=VENDOR_S_TINKER
+//BUY=VENDOR_B_TINKER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Tinker {female}
+
+[CHARDEF 0426]
+DEFNAME=C_m_CARPENTER
+NAME=Truhlar
+ID=C_MAN
+//=i_gold,e_notoriety,t_log,t_board
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobCarpenter
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Truhlar
+NPC=brain_vendor
+COLOR=color_clovek
+STR=150
+DEX=150
+INT=100
+
+CARPENTRY={55.0 78.0}
+SWORDSMANSHIP={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={45.0 68.0}
+LUMBERJACKING={50.0 70.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+//vendor items
+
+sell=i_staff_black_copper,{0 3}
+price=120
+sell=i_club_copper,{0 3}
+price=70
+//sell=i_staff_quarter_copper,{0 3}
+//price=150
+//sell=i_shepherds_crook_copper,{0 3}
+sell=i_drum,{0 3}
+sell=i_tambourine,{0 3}
+sell=i_lyre,{0 3}
+sell=i_lute,{0 3}
+sell=i_saw,{0 3}
+sell=i_hammer,{0 3}
+
+SELL=VENDOR_S_CARPENTER
+
+//BUY=VENDOR_B_CARPENTER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Truhlar {male}
+
+[CHARDEF 0427]
+//Female CARPENTER
+DEFNAME=C_f_CARPENTER
+NAME=Truhlarka
+ID=C_WOMAN
+//=i_gold,e_notoriety,t_log,t_board
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobCarpenter
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Truhlarka
+NPC=brain_vendor
+COLOR=color_clovek
+STR=150
+DEX=150
+INT=100
+
+CARPENTRY={55.0 78.0}
+SWORDSMANSHIP={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={45.0 68.0}
+LUMBERJACKING={50.0 70.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+//sell=i_staff_black_copper,{0 3}
+//price=120
+sell=i_club_copper,{0 3}
+price=70
+//sell=i_staff_quarter_copper,{0 3}
+//price=150
+sell=i_shepherds_crook_copper,{0 3}
+sell=i_drum,{0 3}
+sell=i_tambourine,{0 3}
+sell=i_lyre,{0 3}
+sell=i_lute,{0 3}
+sell=i_saw,{0 3}
+sell=i_hammer,{0 3}
+
+SELL=VENDOR_S_CARPENTER
+//BUY=VENDOR_B_CARPENTER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Truhlar {female}
+
+[CHARDEF 0402]
+DEFNAME=C_m_BARBER
+NAME=Holic
+ID=C_MAN
+//=t_TRAP,t_eerie_stuff
+//=i_gold,e_notoriety
+
+
+//TSPEECH=spk_human_prime
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Holic
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Holic
+NPC=brain_vendor
+COLOR=colors_skin
+NEED=i_gold
+
+STR=150
+DEX=150
+INT=100
+
+FENCING={15.0 38.0}
+PARRYING={45.0 68.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+Resist={45.0 68.0}
+TACTICS={45.0 68.0}
+
+ITEMNEWBIE=i_lantern
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+tag(noanimate,1)
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+SELL=i_hair_SHORT,10
+price=400
+SELL=i_hair_LONG,10
+price=400
+SELL=i_hair_PONYTAIL,10
+price=400
+SELL=i_hair_MOHAWK,10
+price=400
+SELL=i_hair_PAGEBOY,10
+price=400
+SELL=i_hair_BUNS,10
+price=400
+SELL=i_hair_AFRO,10
+price=400
+SELL=i_hair_RECEDING,10
+price=400
+SELL=i_hair_2_PIGTAILS,10
+price=400
+SELL=i_hair_KRISNA,10
+price=400
+//SELL=i_hair_NONE,10
+//price=400
+SELL=i_beard_SHORT_MED,10
+price=400
+SELL=i_beard_LONG_MED,10
+price=400
+SELL=i_beard_VANDYKE,10
+price=400
+SELL=i_beard_LONG,10
+price=400
+SELL=i_beard_SHORT,10
+price=400
+SELL=i_beard_GOATEE,10
+price=400
+SELL=i_beard_MUSTACHE,10
+price=400
+SELL=i_beard_NONE,10
+price=400
+SELL=i_bottle_hair_dye,10
+price=200
+
+
+
+
+[CHARDEF 0534]
+DEFNAME=C_m_PROVIS
+NAME=Provisioner
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobprovisioner
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Provisioner
+NPC=brain_vendor
+COLOR=color_clovek
+STR=150
+DEX=150
+INT=100
+
+ARMSLORE={15.0 38.0}
+ItemID={35.0 55.0}
+FENCING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+tag(noanimate,1)
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+SELL=VENDOR_S_PROVISIONER
+//BUY=VENDOR_B_PROVISIONER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Provisioner {male}
+
+[CHARDEF 0535]
+//Female PROVISIONER
+DEFNAME=C_f_PROVIS
+NAME=Provisioner
+ID=C_WOMAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobprovisioner
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Provisioner
+NPC=brain_vendor
+COLOR=color_clovek
+STR=150
+DEX=150
+INT=100
+
+ARMSLORE={15.0 38.0}
+ItemID={35.0 55.0}
+FENCING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+SELL=VENDOR_S_PROVISIONER
+//BUY=VENDOR_B_PROVISIONER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Provisioner {female}
+
+[CHARDEF 0418]
+DEFNAME=C_H_BANKER
+NAME=Banker
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+TSPEECH=spk_jobbanker
+//TSPEECH=spk_shopkeep
+
+
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Banker
+color=color_clovek
+STR=150
+DEX=150
+INT=100
+
+SWORDSMANSHIP={15.0 38.0}
+ITEMID={50.0 70.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+NPC=BRAIN_BANKER
+NEED=i_gold
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_fancy
+COLOR=colors_green
+ITEMnewbie=i_pants_long
+COLOR=colors_yellow
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Banker {male}
+
+[CHARDEF 0419]
+DEFNAME=C_H_BANKER_F
+NAME=Bankerka
+ID=C_WOMAN
+//ATT=
+//ARMOR=
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_jobbanker
+//TSPEECH=spk_shopkeep
+
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Bankerka
+color=color_clovek
+STR=150
+DEX=150
+INT=100
+
+SWORDSMANSHIP={15.0 38.0}
+ITEMID={50.0 70.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+NPC=BRAIN_BANKER
+NEED=i_gold
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_fancy
+COLOR=colors_green
+ITEMnewbie=random_skirt
+COLOR=colors_yellow
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+ITEMnewbie=RANDOM_LIGHT
+
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Banker {female}
+
+[CHARDEF 0492]
+DEFNAME=C_m_MAGESHOP
+NAME=Mag
+ID=C_MAN
+//=i_gold,t_wand,t_reagent,t_bone
+//=3-7
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobmageshop
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Mag
+NPC=brain_vendor
+COLOR=color_npc_maiar_dur
+STR=150
+DEX=150
+INT=100
+
+MEDITATION={75.0 100.0}
+INSCRIPTION={50.0 65.0}
+MAGERY={86.0 100.0}
+WRESTLING={15.0 38.0}
+Resist={55.0 78.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=loot_human
+ITEMnewbie=i_gold
+ITEMnewbie=i_hat_wizards
+COLOR=colors_all
+ITEMnewbie=i_staff_black
+ITEMnewbie=i_sandals
+ITEMnewbie=i_robe
+COLOR=colors_all
+ITEMnewbie=random_upper_scroll
+ITEMnewbie=random_upper_scroll
+
+SELL=VENDOR_S_MAGE_SHOP
+//BUY=VENDOR_B_MAGE_SHOP
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Mage {male}
+
+[CHARDEF 0493]
+DEFNAME=C_f_MAGESHOP
+NAME=Mag
+ID=C_WOMAN
+//=i_gold,t_wand,t_reagent,t_bone
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobmageshop
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Mag
+NPC=brain_vendor
+COLOR=color_npc_maiar_dur
+STR=150
+DEX=150
+INT=100
+
+MEDITATION={75.0 100.0}
+INSCRIPTION={50.0 65.0}
+MAGERY={86.0 100.0}
+WRESTLING={15.0 38.0}
+Resist={55.0 78.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=loot_human
+ITEMnewbie=i_gold
+ITEMnewbie=i_hat_wizards
+COLOR=colors_all
+ITEMnewbie=i_staff_black
+ITEMnewbie=i_sandals
+ITEMnewbie=i_robe
+COLOR=colors_all
+ITEMnewbie=random_upper_scroll
+ITEMnewbie=random_upper_scroll
+
+SELL=VENDOR_S_MAGE_SHOP
+//BUY=VENDOR_B_MAGE_SHOP
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Mage {female}
+
+[CHARDEF 0516]
+// shopkeep
+DEFNAME=C_m_HEALER
+NAME=Healer
+ID=C_MAN
+//=i_gold,e_notoriety,i_reag_GARLIC,i_reag_GINSENG,i_cloth
+//=t_TRAP
+
+//TSPEECH=spk_human_prime
+//Tspeech=jobhealer
+Tspeech=spk_healer
+TEVENTS=e_healer
+TSPEECH=spk_shopkeep
+TEVENTS=e_item_refuser
+//
+
+TEVENTS=e_character
+ 
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Healer
+NPC=brain_vendor
+COLOR=color_priest
+STR=150
+DEX=150
+INT=100
+
+ANATOMY={55.0 78.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_robe
+COLOR=colors_yellow
+ITEMnewbie=i_sandals
+
+
+SELL=VENDOR_S_HEALER
+//BUY=VENDOR_B_HEALER_SHOP
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Healer {male}
+
+[CHARDEF 0517]
+DEFNAME=C_f_HEALER
+NAME=Healer
+ID=C_WOMAN
+//=T_TRAP
+//=i_gold,e_notoriety,i_reag_GARLIC,i_reag_GINSENG,i_cloth
+
+//TSPEECH=spk_human_prime
+//Tspeech=jobhealer
+Tspeech=spk_healer
+TEVENTS=e_healer
+TSPEECH=spk_shopkeep
+TEVENTS=e_item_refuser
+//
+
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Healer
+COLOR=color_priest
+STR=150
+DEX=150
+INT=100
+
+ANATOMY={55.0 78.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+NPC=brain_vendor
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_robe
+COLOR=color_trpaslik
+ITEMnewbie=i_sandals
+
+
+SELL=VENDOR_S_HEALER
+//BUY=VENDOR_B_HEALER_SHOP
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Healer {female}
+
+[CHARDEF 0554]
+//Male ARMORER
+DEFNAME=C_m_ARMORER
+NAME=Kovar zbroji
+ID=C_MAN
+//=i_gold,e_notoriety,t_ingot
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobarmourer
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Kovar zbroji
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+
+MINING={35.0 55.0}
+ARMSLORE={65.0 88.0}
+BLACKSMITHING={55.0 78.0}
+FENCING={35.0 55.0}
+PARRYING={35.0 50.0}
+SWORDSMANSHIP={35.0 50.0}
+WRESTLING={45.0 68.0}
+MACEFIGHTING={35.0 50.0}
+TACTICS={35.0 55.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_iron_platemail
+ITEMnewbie=i_iron_plate_helm
+ITEMnewbie=i_iron_platemail_gorget
+ITEMnewbie=i_iron_platemail_leggings
+ITEMnewbie=i_iron_platemail_arms
+ITEMnewbie=i_iron_platemail_gauntlets
+ITEMnewbie=i_boots_thigh
+ITEMnewbie=i_iron_heater_shield
+
+
+SELL=VENDOR_S_ARMORER
+//BUY=VENDOR_B_ARMORER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Zbroje {male}
+
+
+///////////////////////////// nove
+
+[CHARDEF 0431]
+DEFNAME=C_H_FARMER_F
+NAME=Farmarka
+ID=C_WOMAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobfarmer
+TSPEECH=spk_shopkeep
+
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Farmarka
+NPC=brain_vendor
+COLOR=color_hobit
+STR=150
+DEX=150
+INT=100
+
+FENCING={10.0 15.0}
+SWORDSMANSHIP={10.0 15.0}
+WRESTLING={10.0 15.0}
+MACEFIGHTING={10.0 15.0}
+TACTICS={10.0 15.0}
+ANIMALLORE={25.0 45.0}
+VETERINARY={25.0 45.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_dress_plain
+COLOR=colors_all
+ITEMnewbie=i_hat_wide_brim
+COLOR=colors_neutral
+ITEMnewbie=random_boots
+
+SELL=VENDOR_S_FARMER
+////BUY=VENDOR_B_FARMER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Farmarka {female}
+
+
+
+
+[CHARDEF 0490]
+DEFNAME=C_H_ALCHEMIST
+NAME=Alchymista
+ID=C_MAN
+
+//=i_gold,e_notoriety,t_magic
+//=t_TRAP,t_eerie_stuff
+
+
+TSPEECH=spk_shopkeep
+
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Alchymista
+NPC=brain_vendor
+COLOR=color_npc_maiar_dur
+STR=150
+DEX=150
+INT=100
+
+ALCHEMY={55.0 78.0}
+TasteID={55.0 78.0}
+WRESTLING={15.0 38.0}
+//MAGICRESISTANCE={25.0 48.0}
+TACTICS={15.0 38.0}
+POISONING={35.0 55.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=i_robe
+COLOR=colors_red
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_S_ALCHEMIST
+////BUY=VENDOR_B_ALCHEMIST
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Alchymista
+
+
+
+[CHARDEF 0500]
+DEFNAME=C_H_COOK
+NAME=Hospodsky
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobCook
+TSPEECH=spk_shopkeep
+
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Hospodsky
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+
+COOKING={55.0 78.0}
+TasteID={50.0 70.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=i_apron_half
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_S_FARMER
+////BUY=VENDOR_B_FARMER
+
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Hospodsky
+
+
+
+
+[CHARDEF 0507]
+DEFNAME=C_H_TAILOR_F
+NAME=Krejci
+ID=C_WOMAN
+//=i_gold,e_notoriety,i_cloth
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobTailor
+TSPEECH=spk_shopkeep
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Krejci
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+
+TAILORING={50.0 70.0}
+WRESTLING={15.0 35.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_S_TAILOR
+//BUY=VENDOR_B_TAILOR
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Krejci
+
+
+
+
+[CHARDEF 0526]
+DEFNAME=C_H_SHIPWRIGHT
+NAME=Lodnik - Rybar
+ID=C_MAN
+//=i_gold,e_notoriety,t_log,t_board
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobShipwright
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Lodnik - Rybar
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+
+PARRYING={15.0 35.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_S_SHIP
+//BUY=VENDOR_B_SHIP
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Lodnik, Rybar
+
+
+
+[CHARDEF 0548]
+DEFNAME=C_H_ANIMALTRAINER
+NAME=Ranger
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobAnimal
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Ranger
+COLOR=color_elf
+STR=150
+DEX=150
+INT=100
+
+ANIMALLORE={45.0 68.0}
+TAMING={55.0 78.0}
+VETERINARY={35.0 58.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+NPC=BRAIN_ANIMAL_TRAINER
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_boots
+ITEMnewbie=i_staff_quarter
+
+SELL=VENDOR_S_TRAINER
+////BUY=VENDOR_B_TRAINER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Ranger
+
+[CHARDEF 0549]
+DEFNAME=C_H_ANIMALTRAINER_F
+NAME=Ranger
+ID=C_WOMAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobAnimal
+TSPEECH=spk_shopkeep
+
+//
+
+//
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Ranger
+COLOR=color_elf
+STR=150
+DEX=150
+INT=100
+
+ANIMALLORE={45.0 68.0}
+TAMING={55.0 78.0}
+VETERINARY={35.0 58.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+NPC=BRAIN_ANIMAL_TRAINER
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_boots
+ITEMnewbie=i_staff_quarter
+
+SELL=VENDOR_S_TRAINER
+//BUY=VENDOR_B_TRAINER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Rangerka
+
+
+
+///////////////////////////////// vesnicane
+
+[CHARDEF 0469]
+DEFNAME=C_H_PEASANT_F
+NAME=Pocestna
+ID=C_WOMAN
+HIREDAYWAGE=10
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff,e_carnivores3
+
+//TSPEECH=spk_human_prime
+
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Pocestna
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+NPC=brain_human
+NEED=i_gold
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Pocestny
+
+[CHARDEF 0468]
+DEFNAME=C_H_PEASANT
+NAME=Pocestny
+ID=C_MAN
+HIREDAYWAGE=10
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff,e_carnivores3
+
+//TSPEECH=spk_human_prime
+
+
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Pocestny
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+NPC=brain_human
+NEED=i_gold
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Pocestny {woman}
+
+///////////////////////////////////////prodejci PK ////////////////////////////////////////
+
+
+[CHARDEF 0578a]
+DEFNAME=C_m_WEAPONSMITHa
+NAME=Kovar zbrani
+ID=C_MAN
+//=i_gold,e_notoriety,t_log,t_ingot
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobWeaponsmith
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+//TEVENTS=e_Human_Needs
+//TEVENTS=e_Human_ConvInit
+//TEVENTS=e_Human_Greet
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Kovar zbrani
+NPC=brain_vendor
+COLOR=color_npc_skurut_hai
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ARMSLORE={45.0 68.0}
+BLACKSMITHING={65.0 88.0}
+FENCING={45.0 68.0}
+PARRYING={55.0 78.0}
+SWORDSMANSHIP={45.0 68.0}
+WRESTLING={45.0 68.0}
+MACEFIGHTING={55.0 70.0}
+TACTICS={55.0 78.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_iron_platemail
+ITEMnewbie=i_iron_plate_helm
+ITEMnewbie=i_iron_platemail_gorget
+ITEMnewbie=i_iron_platemail_leggings
+ITEMnewbie=i_iron_platemail_arms
+ITEMnewbie=i_iron_platemail_gauntlets
+ITEMnewbie=i_boots_thigh
+
+ITEMnewbie=i_bardiche_iron
+
+
+SELL=VENDOR_S_WEAPONS_metal
+//BUY=VENDOR_B_WEAPONS_metal
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Zbrane {male}
+
+
+
+[CHARDEF 0546a]
+DEFNAME=C_m_BOWYERa
+NAME=Lucistnik
+ID=C_MAN
+//=i_gold,e_notoriety,t_log,t_board,t_feather
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobBowyer
+TSPEECH=spk_shopkeep
+//
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Lucistnik
+NPC=brain_vendor
+COLOR=color_elf
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ARCHERY={65.0 88.0}
+BOWCRAFT={65.0 88.0}
+LUMBERJACKING={55.0 75.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={25.0 48.0}
+TACTICS={35.0 55.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+ITEMnewbie=i_leather_gorget
+COLOR=colors_brown
+
+
+SELL=VENDOR_S_BOWYER
+//BUY=VENDOR_B_BOWYER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Luky, sipy {male}
+
+[CHARDEF 0547a]
+DEFNAME=C_f_BOWYERa
+NAME=Lucistnice
+ID=C_WOMAN
+//=i_gold,e_notoriety,t_log,t_board,t_feather
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobBowyer
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Lucistnice
+NPC=brain_vendor
+COLOR=color_npc_saur_hat
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ARCHERY={65.0 88.0}
+BOWCRAFT={65.0 88.0}
+LUMBERJACKING={55.0 75.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={25.0 48.0}
+TACTICS={35.0 55.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+ITEMnewbie=i_arrow,{40 70}
+ITEMnewbie=i_boots_thigh
+color=color_npc_saur_hat
+ITEMnewbie=i_cape
+color=color_npc_saur_hat
+ITEMnewbie=i_sash
+color=1
+
+SELL=VENDOR_S_BOWYER
+//BUY=VENDOR_B_BOWYER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Luky, sipy {female}
+
+[CHARDEF 0512a]
+DEFNAME=C_m_TINKERa
+NAME=Tinker
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobTinker
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Tinker
+NPC=brain_vendor
+COLOR=color_npc_gurg_ath
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+LOCKPICKING={45.0 68.0}
+TINKERING={45.0 68.0}
+FENCING={15.0 38.0}
+PARRYING={35.0 58.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={35.0 58.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=loot_human
+ITEMnewbie=i_gold
+ITEMnewbie=i_studded_LEGGINGS
+color=color_npc_gurg_ath
+ITEMnewbie=i_studded_TUNIC
+color=color_npc_gurg_ath
+ITEMnewbie=i_studded_gorget
+color=color_npc_gurg_ath
+ITEMnewbie=i_studded_sleeves
+color=color_npc_gurg_ath
+ITEMnewbie=i_boots_thigh
+color=color_npc_gurg_ath
+ITEMnewbie=i_cape
+color=color_npc_gurg_ath
+ITEMnewbie=i_sash
+color=1
+
+ITEMnewbie=i_tinker_tools
+
+SELL=VENDOR_S_TINKER
+//BUY=VENDOR_B_TINKER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Tinker {male}
+
+[CHARDEF 0513a]
+DEFNAME=C_F_TINKERa
+NAME=Tinker
+ID=C_WOMAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobTinker
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Tinker
+NPC=brain_vendor
+COLOR=color_npc_gurg_ath
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+LOCKPICKING={45.0 68.0}
+TINKERING={45.0 68.0}
+FENCING={15.0 38.0}
+PARRYING={35.0 58.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={35.0 58.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=loot_human
+ITEMnewbie=i_gold
+ITEMnewbie=i_studded_LEGGINGS
+color=color_npc_gurg_ath
+ITEMnewbie=i_studded_TUNIC
+color=color_npc_gurg_ath
+ITEMnewbie=i_studded_gorget
+color=color_npc_gurg_ath
+ITEMnewbie=i_studded_sleeves
+color=color_npc_gurg_ath
+ITEMnewbie=i_boots_thigh
+color=color_npc_gurg_ath
+ITEMnewbie=i_cape
+color=color_npc_gurg_ath
+ITEMnewbie=i_sash
+color=1
+
+ITEMnewbie=i_tinker_tools
+
+SELL=VENDOR_S_TINKER
+//BUY=VENDOR_B_TINKER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Tinker {female}
+
+[CHARDEF 0426a]
+DEFNAME=C_m_CARPENTERa
+NAME=Truhlar
+ID=C_MAN
+//=i_gold,e_notoriety,t_log,t_board
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobCarpenter
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Truhlar
+NPC=brain_vendor
+COLOR=color_npc_nurn_man
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+CARPENTRY={55.0 78.0}
+SWORDSMANSHIP={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={45.0 68.0}
+LUMBERJACKING={50.0 70.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+//sell=i_staff_black_copper,{0 3}
+//price=120
+sell=i_club_copper,{0 3}
+price=70
+//sell=i_staff_quarter_copper,{0 3}
+//price=150
+sell=i_shepherds_crook_copper,{0 3}
+sell=i_drum,{0 3}
+sell=i_tambourine,{0 3}
+sell=i_lyre,{0 3}
+sell=i_lute,{0 3}
+sell=i_saw,{0 3}
+sell=i_hammer,{0 3}
+
+SELL=VENDOR_S_CARPENTER
+
+//BUY=VENDOR_B_CARPENTER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Truhlar {male}
+
+[CHARDEF 0427a]
+//Female CARPENTER
+DEFNAME=C_f_CARPENTERa
+NAME=Truhlarka
+ID=C_WOMAN
+//=i_gold,e_notoriety,t_log,t_board
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobCarpenter
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Truhlarka
+NPC=brain_vendor
+COLOR=color_clovek
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+CARPENTRY={55.0 78.0}
+SWORDSMANSHIP={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={45.0 68.0}
+LUMBERJACKING={50.0 70.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+//sell=i_staff_black_copper,{0 3}
+//price=120
+sell=i_club_copper,{0 3}
+price=70
+//sell=i_staff_quarter_copper,{0 3}
+//price=150
+sell=i_shepherds_crook_copper,{0 3}
+sell=i_drum,{0 3}
+sell=i_tambourine,{0 3}
+sell=i_lyre,{0 3}
+sell=i_lute,{0 3}
+sell=i_saw,{0 3}
+sell=i_hammer,{0 3}
+
+SELL=VENDOR_S_CARPENTER
+
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Truhlar {female}
+
+[CHARDEF C_m_BARBER_mordor]
+NAME=Holic
+ID=C_MAN
+//=t_TRAP,t_eerie_stuff
+//=i_gold,e_notoriety
+
+
+//TSPEECH=spk_human_prime
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Holic
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Holic
+NPC=brain_vendor
+COLOR=colors_skin
+NEED=i_gold
+
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+FENCING={15.0 38.0}
+PARRYING={45.0 68.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+Resist={45.0 68.0}
+TACTICS={45.0 68.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=i_lantern
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+SELL=i_hair_SHORT,10
+price=400
+SELL=i_hair_LONG,10
+price=400
+SELL=i_hair_PONYTAIL,10
+price=400
+SELL=i_hair_MOHAWK,10
+price=400
+SELL=i_hair_PAGEBOY,10
+price=400
+SELL=i_hair_BUNS,10
+price=400
+SELL=i_hair_AFRO,10
+price=400
+SELL=i_hair_RECEDING,10
+price=400
+SELL=i_hair_2_PIGTAILS,10
+price=400
+SELL=i_hair_KRISNA,10
+price=400
+//SELL=i_hair_NONE,10
+//price=400
+SELL=i_beard_SHORT_MED,10
+price=400
+SELL=i_beard_LONG_MED,10
+price=400
+SELL=i_beard_VANDYKE,10
+price=400
+SELL=i_beard_LONG,10
+price=400
+SELL=i_beard_SHORT,10
+price=400
+SELL=i_beard_GOATEE,10
+price=400
+SELL=i_beard_MUSTACHE,10
+price=400
+SELL=i_beard_NONE,10
+price=400
+SELL=i_bottle_hair_dye,10
+price=200
+
+
+
+
+[CHARDEF 0534a]
+DEFNAME=C_m_PROVISa
+NAME=Provisioner
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobprovisioner
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Provisioner
+NPC=brain_vendor
+COLOR=color_npc_nurn_man
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ARMSLORE={15.0 38.0}
+ItemID={35.0 55.0}
+FENCING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+SELL=VENDOR_S_PROVISIONER
+//BUY=VENDOR_B_PROVISIONER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Provisioner {male}
+
+[CHARDEF 0535a]
+//Female PROVISIONER
+DEFNAME=C_f_PROVISa
+NAME=Provisioner
+ID=C_WOMAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobprovisioner
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Provisioner
+NPC=brain_vendor
+COLOR=color_npc_nurn_man
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ARMSLORE={15.0 38.0}
+ItemID={35.0 55.0}
+FENCING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+SELL=VENDOR_S_PROVISIONER
+//BUY=VENDOR_B_PROVISIONER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Provisioner {female}
+
+[CHARDEF 0424]
+//reznik
+DEFNAME=c_m_butcher
+NAME=Reznik
+ID=C_man
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobprovisioner
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Reznik
+NPC=brain_vendor
+COLOR=color_npc_nurn_man
+STR=150
+DEX=150
+INT=100
+
+
+ARMSLORE={15.0 38.0}
+ItemID={35.0 55.0}
+FENCING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+SELL=VENDOR_S_BUTCHER_TEMPLATE
+//BUY=VENDOR_B_PROVISIONER
+
+CATEGORY=Vendori
+SUBSECTION=Modry VENDORI
+DESCRIPTION=Reznik 
+
+
+[CHARDEF c_m_butcher_mordor]
+//reznik
+NAME=Reznice
+ID=C_man
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobprovisioner
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Reznice
+NPC=brain_vendor
+COLOR=color_npc_nurn_man
+STR=150
+DEX=150
+INT=100
+KARMA=1000
+
+ARMSLORE={15.0 38.0}
+ItemID={35.0 55.0}
+FENCING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+
+SELL=VENDOR_S_BUTCHER_TEMPLATE
+//BUY=VENDOR_B_PROVISIONER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Reznik 
+
+
+
+
+[CHARDEF 0492a]
+DEFNAME=C_m_MAGESHOPa
+NAME=Mag
+ID=C_MAN
+//=i_gold,t_wand,t_reagent,t_bone
+//=3-7
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobmageshop
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Mag
+NPC=brain_vendor
+COLOR=color_npc_maiar_dur
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+MEDITATION={75.0 100.0}
+INSCRIPTION={50.0 65.0}
+MAGERY={86.0 100.0}
+WRESTLING={15.0 38.0}
+Resist={55.0 78.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=loot_human
+ITEMnewbie=i_gold
+ITEMnewbie=i_hat_wizards
+color=color_npc_maiar_dur
+ITEMnewbie=i_staff_black
+ITEMnewbie=i_sandals
+color=color_npc_maiar_dur
+ITEMnewbie=i_robe
+color=color_npc_maiar_dur
+ITEMnewbie=random_upper_scroll
+ITEMnewbie=random_upper_scroll
+
+SELL=VENDOR_S_MAGE_SHOP
+//BUY=VENDOR_B_MAGE_SHOP
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Mage {male}
+
+[CHARDEF 0493a]
+DEFNAME=C_f_MAGESHOPa
+NAME=Mag
+ID=C_WOMAN
+//=i_gold,t_wand,t_reagent,t_bone
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobmageshop
+TSPEECH=spk_shopkeep
+
+//
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Mag
+NPC=brain_vendor
+COLOR=color_npc_maiar_dur
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+MEDITATION={75.0 100.0}
+INSCRIPTION={50.0 65.0}
+MAGERY={86.0 100.0}
+WRESTLING={15.0 38.0}
+Resist={55.0 78.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=loot_human
+ITEMnewbie=i_hat_wizards
+color=color_npc_maiar_dur
+ITEMnewbie=i_staff_black
+ITEMnewbie=i_sandals
+color=color_npc_maiar_dur
+ITEMnewbie=i_robe
+color=color_npc_maiar_dur
+ITEMnewbie=random_upper_scroll
+ITEMnewbie=random_upper_scroll
+
+SELL=VENDOR_S_MAGE_SHOP
+//BUY=VENDOR_B_MAGE_SHOP
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Mage {female}
+
+[CHARDEF 0516a]
+// shopkeep
+DEFNAME=C_m_HEALERa
+NAME=Healer
+ID=C_MAN
+//=i_gold,e_notoriety,i_reag_GARLIC,i_reag_GINSENG,i_cloth
+//=t_TRAP
+
+//TSPEECH=spk_human_prime
+Tspeech=spk_healer
+TEVENTS=e_healer
+TSPEECH=spk_shopkeep
+TEVENTS=e_item_refuser
+//
+
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Healer
+NPC=brain_vendor
+COLOR=color_npc_nurn_man
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ANATOMY={55.0 78.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_robe
+COLOR=color_npc_nurn_man
+ITEMnewbie=i_sandals
+COLOR=color_npc_nurn_man
+
+
+SELL=VENDOR_S_HEALER
+//BUY=VENDOR_B_HEALER_SHOP
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Healer {male}
+
+[CHARDEF 0517a]
+DEFNAME=C_f_HEALERa
+NAME=Healer
+ID=C_WOMAN
+//=T_TRAP
+//=i_gold,e_notoriety,i_reag_GARLIC,i_reag_GINSENG,i_cloth
+
+//TSPEECH=spk_human_prime
+Tspeech=spk_healer
+TEVENTS=e_healer
+TSPEECH=spk_shopkeep
+TEVENTS=e_item_refuser
+//
+
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Healer
+COLOR=color_npc_nurn_man
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ANATOMY={55.0 78.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+NPC=brain_vendor
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_robe
+COLOR=color_npc_nurn_man
+ITEMnewbie=i_sandals
+COLOR=color_npc_nurn_man
+
+
+SELL=VENDOR_S_HEALER
+//BUY=VENDOR_B_HEALER_SHOP
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Healer {female}
+
+
+
+[CHARDEF 0554a]
+//Male ARMORER
+DEFNAME=C_m_ARMORERa
+NAME=Kovar zbroji
+ID=C_MAN
+//=i_gold,e_notoriety,t_ingot
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobarmourer
+TSPEECH=spk_shopkeep
+
+//
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Kovar zbroji
+NPC=brain_vendor
+COLOR=color_npc_skurut_hai
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+MINING={35.0 55.0}
+ARMSLORE={65.0 88.0}
+BLACKSMITHING={55.0 78.0}
+FENCING={35.0 55.0}
+PARRYING={35.0 50.0}
+SWORDSMANSHIP={35.0 50.0}
+WRESTLING={45.0 68.0}
+MACEFIGHTING={35.0 50.0}
+TACTICS={35.0 55.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_iron_platemail
+ITEMnewbie=i_iron_plate_helm
+ITEMnewbie=i_iron_platemail_gorget
+ITEMnewbie=i_iron_platemail_leggings
+ITEMnewbie=i_iron_platemail_arms
+ITEMnewbie=i_iron_platemail_gauntlets
+ITEMnewbie=i_boots_thigh
+ITEMnewbie=i_iron_heater_shield
+
+SELL=VENDOR_S_ARMORER
+//BUY=VENDOR_B_ARMORER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Zbroje {male}
+
+
+///////////////////////////// nove
+
+[CHARDEF 0431A]
+DEFNAME=C_H_FARMERa_F
+NAME=Farmarka
+ID=C_WOMAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobfarmer
+TSPEECH=spk_shopkeep
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Farmarka
+NPC=brain_vendor
+COLOR=color_hobit
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+FENCING={10.0 15.0}
+SWORDSMANSHIP={10.0 15.0}
+WRESTLING={10.0 15.0}
+MACEFIGHTING={10.0 15.0}
+TACTICS={10.0 15.0}
+ANIMALLORE={25.0 45.0}
+VETERINARY={25.0 45.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_dress_plain
+COLOR=colors_all
+ITEMnewbie=i_hat_wide_brim
+COLOR=colors_neutral
+ITEMnewbie=random_boots
+
+SELL=VENDOR_S_FARMER
+////BUY=VENDOR_B_FARMER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Farmarka {female}
+
+
+
+
+[CHARDEF 0490a]
+DEFNAME=C_H_ALCHEMISTa
+NAME=Alchymista
+ID=C_MAN
+
+//=i_gold,e_notoriety,t_magic
+//=t_TRAP,t_eerie_stuff
+
+
+TSPEECH=spk_shopkeep
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Alchymista
+NPC=brain_vendor
+COLOR=color_npc_maiar_dur
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ALCHEMY={55.0 78.0}
+TasteID={55.0 78.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+POISONING={35.0 55.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=loot_human
+ITEMnewbie=i_hat_straw
+color=color_npc_maiar_dur
+ITEMnewbie=i_sandals
+color=color_npc_maiar_dur
+ITEMnewbie=i_robe
+color=color_npc_maiar_dur
+ITEMnewbie=random_upper_scroll
+ITEMnewbie=random_upper_scroll
+
+SELL=VENDOR_S_ALCHEMIST
+////BUY=VENDOR_B_ALCHEMIST
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Alchymista
+
+
+
+[CHARDEF 0500a]
+DEFNAME=C_H_COOKa
+NAME=Hospodsky
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobCook
+TSPEECH=spk_shopkeep
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Hospodsky
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+COOKING={55.0 78.0}
+TasteID={50.0 70.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=i_apron_half
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_S_FARMER
+////BUY=VENDOR_B_FARMER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Hospodsky
+
+
+
+
+[CHARDEF 0507a]
+DEFNAME=C_H_TAILOR_Fa
+NAME=Krejci
+ID=C_WOMAN
+//=i_gold,e_notoriety,i_cloth
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobTailor
+TSPEECH=spk_shopkeep
+//
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Krejci
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+TAILORING={50.0 70.0}
+WRESTLING={15.0 35.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_S_TAILOR
+/////BUY=VENDOR_B_TAILOR
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Krejci
+
+
+
+
+[CHARDEF 0526a]
+DEFNAME=C_H_SHIPWRIGHTa
+NAME=Lodnik - Rybar
+ID=C_MAN
+//=i_gold,e_notoriety,t_log,t_board
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobShipwright
+TSPEECH=spk_shopkeep
+
+//
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Lodnik - Rybar
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+PARRYING={15.0 35.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_S_SHIP
+//BUY=VENDOR_B_SHIP
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Lodnik, Rybar
+
+
+
+[CHARDEF 0548a]
+DEFNAME=C_H_ANIMALTRAINER_mordor
+NAME=Ranger
+ID=C_MAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobAnimal
+TSPEECH=spk_shopkeep
+
+//
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Ranger
+COLOR=color_elf
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ANIMALLORE={45.0 68.0}
+TAMING={55.0 78.0}
+VETERINARY={35.0 58.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+NPC=BRAIN_ANIMAL_TRAINER
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_pants
+COLOR=colors_all
+ITEMnewbie=random_boots
+ITEMnewbie=i_staff_quarter
+
+SELL=VENDOR_S_TRAINER
+////BUY=VENDOR_B_TRAINER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Ranger
+
+[CHARDEF 0549a]
+DEFNAME=C_H_ANIMALTRAINER_Fa
+NAME=Ranger
+ID=C_WOMAN
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobAnimal
+TSPEECH=spk_shopkeep
+
+//
+TEVENTS=e_item_refuser
+
+
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Ranger
+COLOR=color_elf
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+ANIMALLORE={45.0 68.0}
+TAMING={55.0 78.0}
+VETERINARY={35.0 58.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+NPC=BRAIN_ANIMAL_TRAINER
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_boots
+ITEMnewbie=i_staff_quarter
+
+SELL=VENDOR_S_TRAINER
+////BUY=VENDOR_B_TRAINER
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Rangerka
+
+///////////////////////////////// PK vesnicane
+
+[CHARDEF 0469a]
+DEFNAME=C_H_PEASANT_Fa
+NAME=Pocestna
+ID=C_WOMAN
+HIREDAYWAGE=10
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff,e_carnivores3
+
+//TSPEECH=spk_human_prime
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Pocestna
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+NPC=brain_human
+NEED=i_gold
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Pocestny
+
+[CHARDEF 0468a]
+DEFNAME=C_H_PEASANTa
+NAME=Pocestny
+ID=C_MAN
+HIREDAYWAGE=10
+//=i_gold,e_notoriety
+//=t_TRAP,t_eerie_stuff,e_carnivores3
+
+//TSPEECH=spk_human_prime
+
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Pocestny
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+KARMA=-1000
+
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+NPC=brain_human
+NEED=i_gold
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+
+
+
+CATEGORY=Vendori
+SUBSECTION=PK VENDORI
+DESCRIPTION=Pocestny {woman}
+
+/////////////////////////////////////////////////////////////////Newbie nuzky quest/////////
+
+
+/////Vendor pro modre////////
+
+[CHARDEF c_tomcon_nuzky_g]
+NAME=Mistr Tailor
+ID=C_WOMAN
+//=i_gold,e_notoriety,i_cloth
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+TEVENTS=e_item_refuser
+TSPEECH=spk_shopkeep
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Vendor nuzky
+DESCRIPTION=Tailor blue
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Mistr Krejci
+NPC=brain_vendor
+COLOR=colors_skin
+NEED=i_gold
+
+STR=1500
+DEX=500
+INT=100
+KARMA=-1000
+
+TAILORING={50.0 70.0}
+WRESTLING={70.0 80.0}
+TACTICS={80.0 100.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=i_newbie_scissors,{1 3}
+price=2000
+
+
+
+/////Vendor pro cervene/////
+
+[CHARDEF c_tomcon_nuzky_m]
+NAME=Mistr Tailor
+ID=C_WOMAN
+//=i_gold,e_notoriety,i_cloth
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+TEVENTS=e_item_refuser
+TSPEECH=spk_shopkeep
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Vendor nuzky
+DESCRIPTION=Tailor red
+
+ON=@Create
+NAME=#NAMES_HUMANFEMALE
+Title=Mistr Krejci
+NPC=brain_vendor
+COLOR=colors_skin
+NEED=i_gold
+
+STR=1500
+DEX=500
+INT=100
+KARMA=-1000
+
+TAILORING={50.0 70.0}
+WRESTLING={70.0 80.0}
+TACTICS={80.0 100.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_shirt_plain
+COLOR=colors_all
+ITEMnewbie=random_skirt
+COLOR=colors_all
+ITEMnewbie=random_shoes
+COLOR=colors_neutral
+
+SELL=i_newbie_scissors,{1 3}
+price=2000
+
+
+
+[ITEMDEF i_newbie_scissors]//newbie nuzky//
+DEFNAME=i_newbie_scissors
+ID=0f9e
+RESOURCES=4 i_ingot_iron
+TYPE=T_SCISSORS
+WEIGHT=1
+SKILLMAKE=TINKERING 140.0,t_tinker_tools
+
+CATEGORY=Tomcon
+SUBSECTION=Tailor
+DESCRIPTION=Scissors
+
+
+ON=@Create
+attr=attr_newbie
+color=008fe
+
+[CHARDEF c_vetesnik]
+
+NAME=Vetesnik
+ID=C_MAN
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+attack=30
+ARMOR=40
+
+moverate=4
+
+
+
+RESOURCES=8 t_magic
+FOODTYPE=15 t_meat_raw
+//=r_mountains,r_caves,r_dungeon
+//=r_caves
+BLOODCOLOR=020
+
+TSPEECH=magic_item_exchanger_gondor
+TEVENTS=e_character
+
+
+
+CATEGORY=Moria
+SUBSECTION=Item NPC
+DESCRIPTION=Vetesnik (vymena magic itemu)
+
+ON=@Create
+NAME=Vetesnik 
+COLOR=colors_skin
+NPC=brain_vendor
+FAME=100
+KARMA=5000
+STR=100
+DEX=250
+INT=200
+
+maxhits={1000 1200}
+maxstam={200 310}
+maxmana=50
+
+tag(noanimate,1)
+tag(hypnotizable,0)
+tag(price,5000)
+
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+ITEMNEWBIE=i_candle_lit 
+ITEMNEWBIE=i_spellbook_8 
+Name="Seznam obchodu"
+Color=098A
+ITEMNEWBIE=i_ring_gold 
+ITEMNEWBIE=i_bracelet_gold 
+ITEMNEWBIE=i_necklace_gold 
+ITEMNEWBIE=i_pants_short 
+Color=098A
+ITEMNEWBIE=i_shirt_plain 
+Color=098A
+ITEMNEWBIE=i_sandals 
+Color=098A
+ITEMNEWBIE=i_hat_feather 
+Color=098A
+
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+WRESTLING={150.0 200.0}
+Resist={120.0 150.0}
+TACTICS={150.0 200.0}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+
+ON=@UserDClick
+if(src.targ.distance>3)
+	src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+else
+	dialog(d_magic_item_exchanger,0)
+endif
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_vyberci]
+
+NAME=Vyberci
+ID=C_WOMAN
+
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+attack=30
+ARMOR=40
+
+moverate=4
+
+
+
+RESOURCES=8 t_magic
+FOODTYPE=15 t_meat_raw
+//=r_mountains,r_caves,r_dungeon
+//=r_caves
+BLOODCOLOR=020
+
+TSPEECH=magic_item_exchanger_mordor
+TEVENTS=e_character
+
+
+
+
+CATEGORY=Moria
+SUBSECTION=Item NPC
+DESCRIPTION=Vyberci (vymena magic itemu)
+
+ON=@Create
+NAME=Vyberci 
+COLOR=colors_skin
+NPC=brain_vendor
+FAME=100
+KARMA=-100
+STR=100
+DEX=250
+INT=200
+
+maxhits={1000 1200}
+maxstam={200 310}
+maxmana=50
+
+tag(noanimate,1)
+tag(hypnotizable,0)
+tag(price,5000)
+
+ITEMNEWBIE=random_female_hair
+
+
+ITEMNEWBIE=i_cape 
+Color=0845
+ITEMNEWBIE=i_necklace_gold 
+Color=0845
+ITEMNEWBIE=i_skull_cap 
+Color=0845
+ITEMNEWBIE=i_bracelet_gold 
+ITEMNEWBIE=i_sandals 
+ITEMNEWBIE=i_armor_female_skirt 
+color=098A
+ITEMNEWBIE=i_axe 
+color=0845
+ITEMNEWBIE=i_IRON_FEMALE_PLATEMAIL 
+Color=098A
+
+
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+WRESTLING={150.0 200.0}
+Resist={120.0 150.0}
+TACTICS={150.0 200.0}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+
+ON=@UserDClick
+if(src.targ.distance>3)
+	src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+else
+	dialog(d_magic_item_exchanger,1)
+endif
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_diy_vendor_man]
+DEFNAME=c_diy_vendor
+NAME=Vendor
+ID=C_MAN
+attack=30
+ARMOR=40
+
+moverate=4
+
+TSPEECH=spk_diy_vendor
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=Item NPC
+DESCRIPTION=Custom vendor - man
+
+ON=@Create
+NAME=Bohous
+COLOR=colors_skin
+NPC=brain_vendor
+FAME=100
+KARMA=-100
+STR=100
+DEX=250
+INT=200
+
+maxhits={1000 1200}
+maxstam={200 310}
+maxmana=50
+
+tag(noanimate,1)
+tag(hypnotizable,0)
+
+
+provocation=100
+peacemaking=100
+FENCING={800.0 100.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={80.0 100.0}
+WRESTLING={80.0 100.0}
+Resist={50.0 70.0}
+TACTICS={80.0 100.0}
+
+ON=@UserDclick
+IF (<distance><3)
+	if (src.isdead)
+		src.redmessage("Jako duch tohle nemuzes.")
+		return 1
+	endif
+  DIALOG(d_dyi_vendor)
+ENDIF
+IF (src.isgm)
+  DIALOG(d_dyi_vendor_gmmenu)
+ENDIF
+
+ON=@NPCRestock
+ITEMnewbie=i_sandals
+color=colors_all
+ITEMnewbie=i_pants_long
+color=colors_all
+ITEMnewbie=i_doublet
+color=colors_all
+ITEMnewbie=i_studded_sleeves
+color=colors_all
+ITEMnewbie=i_bracelet_gold
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+
+
+[CHARDEF c_diy_vendor_woman]
+DEFNAME=c_diy_vendor_w
+NAME=Vendor
+ID=C_WOMAN
+attack=30
+ARMOR=40
+
+moverate=4
+
+TSPEECH=spk_diy_vendor
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=Item NPC
+DESCRIPTION=Custom vendor - woman
+
+ON=@Create
+NAME=Betka
+COLOR=colors_skin
+NPC=brain_vendor
+FAME=100
+KARMA=-100
+STR=100
+DEX=250
+INT=200
+
+maxhits={1000 1200}
+maxstam={200 310}
+maxmana=50
+
+tag(noanimate,1)
+tag(hypnotizable,0)
+
+provocation=100
+peacemaking=100
+FENCING={800.0 100.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={80.0 100.0}
+WRESTLING={80.0 100.0}
+Resist={50.0 70.0}
+TACTICS={80.0 100.0}
+
+ON=@UserDclick
+IF (<distance><3)
+	if (src.isdead)
+		src.redmessage("Jako duch tohle nemuzes.")
+		return 1
+	endif
+  DIALOG(d_dyi_vendor)
+ENDIF
+IF (src.isgm)
+  DIALOG(d_dyi_vendor_gmmenu)
+ENDIF
+
+ON=@NPCRestock
+ITEMnewbie=i_sandals
+color=colors_all
+ITEMnewbie=i_pants_long
+color=colors_all
+ITEMnewbie=i_doublet
+color=colors_all
+ITEMnewbie=i_studded_sleeves
+color=colors_all
+ITEMnewbie=i_bracelet_gold
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+
+
+  
+[EOF]
+//VENDOR_S_TAILOR
+//VENDOR_S_TRAINER
+//VENDOR_S_ALCHEMIST
+//VENDOR_S_FARMER
+//VENDOR_S_MAGE_SHOP
+//VENDOR_s_ARMORER
+//VENDOR_S_HEALER_SHOP
+//VENDOR_S_PROVISIONER
+//VENDOR_S_TINKER
+//VENDOR_s_CARPENTER
+//VENDOR_S_BOWYER
+//VENDOR_S_SHIP
+//VENDOR_S_WEAPONS_metal

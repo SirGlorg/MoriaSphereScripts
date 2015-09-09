@@ -1,0 +1,512 @@
+[defnames cm_nastaveni]
+d_def_cm_nastav_radku	6
+
+[function nastav_cm]
+if (finduid(safe def_cm_<args>))
+ finduid(def_cm_<args>).dialog(d_cm_nastaveni)
+endif
+
+[dialog d_cm_nastaveni]
+SetLocation(0,0)
+if !(safe isitem)
+ src.sysmessage("Chyba pri otevirani menu...otevri znova,pripadne volej GM")
+ src.tag(cmopen_<src.tag.lastcm>,"")
+ break
+ return -1
+endif
+
+if (cont)
+ arg(hobj,<uid>)
+ while (<eval arg(hobj).Cont>!=<eval arg(hobj).topobj>)
+  arg(urovne_uid,"<safe urovne_uid><arg(hobj)>,")
+  arg(hobj,<arg(hobj).cont>)
+ endwhile
+ arg(urovne_uid,"<safe urovne_uid><arg(hobj)>,")
+endif
+arg(urovne_uid,"<safe urovne_uid><topobj>") 
+
+argo.tag(firsti,<eval argv(0)>)
+if (rescount>argo.tag(firsti)+d_def_cm_nastav_radku)
+ arg(imax,<eval argo.tag(firsti)+d_def_cm_nastav_radku>)
+ argo.tag(radku,<d_def_cm_nastav_radku>)
+else
+ arg(imax,<rescount>)
+ argo.tag(radku,<eval rescount-argo.tag(firsti)>)
+endif
+argo.tag(lasti,<eval imax>)
+
+argo.tag(sirka,700)
+argo.tag(vyska,<eval (23+(1+(argo.tag(radku)*4))*<d_def_radek_vyska>)+(5*<d_def_skvira>)+(2*<d_def_okraj>)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>*4,80)
+//argo.dialog_pozadi(<argo.tag(nexty)>,1,20,70,300,20)
+
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,"<?cm_UIDs_list(<arg(urovne_uid)>)?>")
+
+argo.button((<argo.tag(sirka)>-<d_def_okraj>)-30,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,4)//cancel
+if (cont)
+ argo.button((<argo.tag(sirka)>-<d_def_okraj>)-60,<argo.tag(obj_y[0])>,0fae,0fb0,1,0,1)
+endif
+
+
+argo.button(<argo.tag(sirka)>-150,argo.tag(obj_y[0]),0984,0983,1,0,3)
+argo.button(<argo.tag(sirka)>-150,argo.tag(obj_y[0])+10,0986,0985,1,0,3)
+argo.Texta(<argo.tag(sirka)>-140,argo.tag(obj_y[0]),2301,craftmenu) 
+
+// if !(index%d_def_cm_nastav_radku)
+//  arg(ipage,#+1)
+//  argo.page(<ipage>)
+//  arg(ypos,<argo.tag(obj_y[1])>)
+if (argo.tag(firsti))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,1,0,8) // prev
+endif
+if (rescount>imax)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,9) // next
+endif
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,<argo.tag(firsti)>)
+while (index<imax)
+ //argo.textA(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>,ypos,2301,Nazev)
+ argo.tilepic(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>,ypos,<NID(<findcont(index).dispiddec)>)>)
+ argo.textA(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,2301,"<findcont(index).name> (<findcont(index).baseid>)")
+ if (findcont(index).cm_section)
+  argo.button(<argo.tag(sloupec_x[1])>-30,ypos,9905,9904,1,0,(index)+100)
+  arg(ypos,#+(3*<d_def_radek_vyska>))
+ else
+  arg(ypos,#+<d_def_radek_vyska>)
+  argo.textA(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>,ypos,2301,Resources:)
+  argo.settext(1000+(index*20),"<col_resources(<findcont(index).baseid>)>")
+  argo.textentry(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,1000,20,2301,(index*7),1000+(index*20))
+  arg(ypos,#+<d_def_radek_vyska>)
+  argo.textA(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>,ypos,2301,Skillmake:)
+  argo.settext(1002+(index*20),"<col_skillmake(<findcont(index).baseid>)>")
+  argo.textentry(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,1000,20,2301,(index*7)+1,1002+(index*20))
+  arg(ypos,#+<d_def_radek_vyska>)
+  argo.textA(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>,ypos,2301,Weight:)
+  argo.settext(1004+(index*20),"<eval(<findcont(index).typedef.weight>)>")
+  argo.textentry(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,100,20,2301,(index*7)+2,1004+(index*20))
+  argo.textA(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>+150,ypos,2301,Value:)
+  argo.settext(1006+(index*20),"<findcont(index).typedef.Value>")
+  argo.textentry(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>+200,ypos,100,20,2301,(index*7)+3,1006+(index*20))
+  argo.textA(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>+300,ypos,2301,Repairable:)
+  argo.settext(1008+(index*20),"<findcont(index).typedef.can_repair>")
+  argo.textentry(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>+380,ypos,100,20,2301,(index*7)+4,1008+(index*20))
+  argo.textA(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>+400,ypos,2301,Dyable:)
+  argo.settext(1010+(index*20),"<findcont(index).typedef.can_dye>")
+  argo.textentry(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>+450,ypos,100,20,2301,(index*7)+5,1010+(index*20))
+  argo.textA(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>+500,ypos,2301,Replicate:)
+  argo.settext(1012+(index*20),"<findcont(index).typedef.can_Replicate>")
+  argo.textentry(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>+570,ypos,100,20,2301,(index*7)+6,1012+(index*20))  
+ endif
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,2)//ok
+argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+var(d_def_radek_vyska,"")
+
+[dialog d_cm_nastaveni button]
+on=0
+
+on=1
+cont.dialog(d_cm_nastaveni,0)
+
+on=2//OK
+arg(i,<argo.tag(firsti)>)
+arg(imax,<argo.tag(lasti)>)
+while (i<imax)
+  //item:<findcont(i).baseid>::
+  //resources: <argtxt(i*7)>
+  //skillmake: <argtxt((i*7)+1)>
+  //weight: <argtxt((i*7)+2)>
+  //value: <argtxt((i*7)+3)>
+  //repair: <argtxt((i*7)+4)>
+  //dye: <argtxt((i*7)+5)>
+  //replicate: <argtxt((i*7)+6)>
+  
+   //item:<findcont(i).baseid>::
+  if !(findcont(i).cm_section)
+    cm_applyint(<findcont(i).baseid>,weight,"<argtxt((i*7)+2)>")
+    cm_applyint(<findcont(i).baseid>,value,"<argtxt((i*7)+3)>")
+    cm_applyint(<findcont(i).baseid>,can_repair,"<argtxt((i*7)+4)>")
+    cm_applyint(<findcont(i).baseid>,can_dye,"<argtxt((i*7)+5)>")
+    cm_applyint(<findcont(i).baseid>,can_replicate,"<argtxt((i*7)+6)>")
+    
+    cm_applytxt(<findcont(i).baseid>,skillmake,"<?argtxt((i*7)+1)?>")
+    cm_applytxt(<findcont(i).baseid>,resources,"<?argtxt(i*7)?>")
+  endif
+  arg(i,#+1)
+endwhile
+dialog(d_cm_nastaveni,<eval argo.tag(firsti)>)
+
+on=3
+dialog(d_craftmenu,<uid>)
+
+on=8
+dialog(d_cm_nastaveni,<eval argo.tag(firsti)-d_def_cm_nastav_radku>)
+
+on=9
+dialog(d_cm_nastaveni,<eval argo.tag(firsti)+d_def_cm_nastav_radku>)
+
+ON=@AnyButton 
+findcont((argn-100)).dialog(d_cm_nastaveni)
+
+[function cm_applyINT]//baseid,resource/skillmake etc., txt, forcechange
+arg(varname,nastaveni_cm_<argv(1)>_<argv(0)>)
+arg(propname,<argv(0)>.<argv(1)>)
+arg(vysledtext,<eval argv(2)>)
+if !(argv(3))
+ if (strlen(<?safe <arg(varname)>?>))
+  if (<?eval(<arg(varname)>)?>==<?arg(vysledtext)?>)//not changed
+   return
+  endif 
+  //src.smsg VAR <?arg(varname)?> <?<arg(varname)>?> changed to <?arg(vysledtext)?>
+ elseif (strlen(<?safe <arg(propname)>?>))
+  if (<?eval(<?<arg(propname)>?>)?>==<?eval(arg(vysledtext))?>)//not changed
+   return
+  endif
+  //src.smsg PROP <?arg(propname)?> <?eval(<arg(propname)>)?> changed to <?eval(arg(vysledtext))?>
+ endif
+endif
+var(<arg(varname)>,<arg(vysledtext)>)
+src.accmsg("Nove nastaveni:")
+debugtry("<arg(propname)>=<arg(vysledtext)>")
+show <arg(propname)>
+
+[function cm_applytxt]//baseid,resource/skillmake etc., txt, forcechange
+arg(varname,nastaveni_cm_<argv(1)>_<argv(0)>)
+arg(propname,<argv(0)>.<argv(1)>)
+//logmsg("promname: __<arg(propname)>__")
+//arg(vysledtext,<?argv(2)?>)
+if !(argv(3))
+ if (strlen(<?safe <arg(varname)>?>))
+  if !(strcmpi("<?<arg(varname)>?>","<?argv(2)?>"))//not changed
+   return
+  endif 
+  //src.smsg(VAR <arg(varname)> <?<arg(varname)>?> changed to)
+  //src.smsg <?argv(2)?>
+ elseif (strlen(<?safe <arg(propname)>?>))
+  arg(coll_name,<?zkrpar_collapse(<?<arg(propname)>?>,)?>)
+  if !(strcmpi(" <arg(coll_name)>","<argv(2)>"))//not changed
+   return
+  endif 
+  //src.smsg(PROP <arg(propname)> ''<arg(coll_name)>'' changed to )
+  //src.smsg ''<?argv(2)?>''
+ endif
+endif
+arg(expanded,<zkrpar_expand(<argv(2)>,)>)
+arg(firstitem,<return_nth(1,<arg(expanded)>,)>)
+//logmsg("firstitem: <firstitem>::<StrGetTok("<firstitem>",1," ")>")
+//logmsg("expanded: <arg(expanded)>")
+//logmsg("prop: <arg(propname)>")
+safe(<arg(propname)>="0 <StrGetTok("<firstitem>",1," ")>") // // makes the resource to wipe.. well almost - And the ERROR is necessary ! ! ! ... For future fanatics like me who would be as stupid as to try to avoid those errors (Yavanna)
+<arg(propname)>="<arg(expanded)>"
+src.accmsg("Nove nastaveni:")
+debugtry(var.<?arg(varname)?>="<?zkrpar_collapse(<?<arg(propname)>?>,)?>")
+show <arg(propname)>
+
+[function cm_applyall]//def: item that should be applied to (in cm probably)
+//run probably by Guardian at startup
+if !(cm_section)
+ if (strlen(<?safe nastaveni_cm_weight_<baseid>?>))
+  cm_applyINT(<baseid>,weight,"<?nastaveni_cm_weight_<baseid>?>",1)
+ endif
+ if (strlen(<?safe nastaveni_cm_value_<baseid>?>))
+  cm_applyINT(<baseid>,value,"<?nastaveni_cm_value_<baseid>?>",1)
+ endif
+ if (strlen(<?safe nastaveni_cm_can_repair_<baseid>?>))
+  cm_applyINT(<baseid>,can_repair,"<?nastaveni_cm_can_repair_<baseid>?>",1)
+ endif
+ if (strlen(<?safe nastaveni_cm_can_dye_<baseid>?>))
+  cm_applyINT(<baseid>,can_dye,"<?nastaveni_cm_can_dye_<baseid>?>",1)
+ endif
+ if (strlen(<?safe nastaveni_cm_can_replicate_<baseid>?>))
+  cm_applyINT(<baseid>,can_replicate,"<?nastaveni_cm_can_replicate_<baseid>?>",1)
+ endif
+ if (strlen(<?safe nastaveni_cm_skillmake_<baseid>?>))
+  cm_applyTXT(<baseid>,skillmake,"<?nastaveni_cm_skillmake_<baseid>?>",1)
+ endif
+ if (strlen(<?safe nastaveni_cm_resources_<baseid>?>))
+  cm_applyTXT(<baseid>,resources,"<?nastaveni_cm_resources_<baseid>?>",1)
+ endif
+endif
+
+[function nastaveni_uplatni_craftmenu]
+logmsg(uplatneni nastaveni craftmenu)
+nastaveni_uplatni_craftmenu_skill(Tinkering)
+nastaveni_uplatni_craftmenu_skill(Tailoring)
+nastaveni_uplatni_craftmenu_skill(Inscription)
+nastaveni_uplatni_craftmenu_skill(Cooking)
+nastaveni_uplatni_craftmenu_skill(Carpentry)
+nastaveni_uplatni_craftmenu_skill(Bowcrafting)
+nastaveni_uplatni_craftmenu_skill(Blacksmithing)
+nastaveni_uplatni_craftmenu_skill(Alchemy)
+nastaveni_uplatni_craftmenu_skill(Service)
+
+[function nastaveni_uplatni_craftmenu_skill]
+if (finduid(safe def_cm_<args>))
+ finduid(def_cm_<args>).contents2(cm_applyall)
+endif
+
+[function col_resources]//arg - baseid
+arg(itembaseid,<findres(itemdef,<args>).baseid>)
+if (strlen(<?<arg(itembaseid)>.resources?>))
+ return"<?zkrpar_collapse(<?<arg(itembaseid)>.resources?>,)?>"
+elseif (strlen(<?safe nastaveni_cm_resources_<arg(itembaseid)>?>))
+ return"<?nastaveni_cm_resources_<arg(itembaseid)>?>"
+else
+ return"N/A - some error found"
+endif
+
+[function col_skillmake]//arg - baseid
+arg(itembaseid,<findres(itemdef,<args>).baseid>)
+if (strlen(<?<arg(itembaseid)>.skillmake?>))
+ return"<?zkrpar_collapse(<?<arg(itembaseid)>.skillmake?>,)?>"
+elseif (strlen(<?safe nastaveni_cm_skillmake_<arg(itembaseid)>?>))
+ return"<?nastaveni_cm_skillmake_<arg(itembaseid)>?>"
+else
+ return"N/A - some error found"
+endif
+
+[function zkrpar_collapse]//z realnyho reslistu udela zkracenej
+arg(i,0)
+while (i<argvcount)
+ if (strlen(<argv(i)>))
+  singleparse("<argv(i)>")
+  arg(retstring,"<safe arg(retstring)><firstnumb> ")
+  if (strlen(<?safe zkrat_<secondnumb>?>))
+   arg(retstring,"<arg(retstring)><?zkrat_<secondnumb>?>")
+  else
+   arg(retstring,"<arg(retstring)><secondnumb>")
+  endif
+  if (i<argvcount-1)&&(strlen(<argv(i+1)>))//kromne posledni
+   arg(retstring,"<arg(retstring)>,")
+  endif
+ endif
+ arg(i,#+1)
+endwhile
+return <arg(retstring)>
+
+[function zkrpar_expand]//ze zkracenyho reslistu udela realnej, potrebuje debug?
+arg(i,0)
+while (i<argvcount)
+ if (strlen(<argv(i)>))
+  singleparse("<argv(i)>")
+  arg(retstring,"<safe arg(retstring)><firstnumb> ")
+  if (strlen(<?safe zkratka_<secondnumb>?>))
+   arg(retstring,"<arg(retstring)><?zkratka_<secondnumb>?>")
+  else
+   arg(retstring,"<arg(retstring)><secondnumb>")
+  endif
+  if (i<argvcount-1)&&(strlen(<argv(i+1)>))//kromne posledni
+   arg(retstring,"<arg(retstring)>,")
+  endif
+ endif
+ arg(i,#+1)
+endwhile
+return <arg(retstring)>
+
+
+[defnames zkratky]
+zkratka_BW			i_reag_batwing
+zkrat_i_reag_batwing		BW
+zkratka_BL			i_reag_blackmoor
+zkrat_i_reag_blackmoor		BL
+zkratka_BP			i_reag_black_pearl
+zkrat_i_reag_black_pearl	BP
+zkratka_BM			i_reag_blood_moss
+zkrat_i_reag_blood_moss		BM
+zkratka_BD			i_reag_blood_spawn
+zkrat_i_reag_blood_spawn	BD
+zkratka_BV			i_reag_blood_vial
+zkrat_i_reag_blood_vial		BV
+zkratka_BO			i_reag_bone
+zkrat_i_reag_bone		BO
+zkratka_BR			i_reag_brimstone
+zkrat_i_reag_brimstone		BR
+zkratka_DB			i_reag_daemon_bone
+zkrat_i_reag_daemon_bone	DB
+zkratka_FD			i_reag_fertile_dirt
+zkrat_i_reag_fertile_dirt	FD
+zkratka_DL			i_reag_dragon_blood
+zkrat_i_reag_dragon_blood	DL
+zkratka_EC			i_reag_executioners_cap
+zkrat_i_reag_executioners_cap	EC
+zkratka_GA			i_reag_garlic
+zkratka_GL			i_reag_garlic
+zkrat_i_reag_garlic		GA
+zkratka_GS			i_reag_ginseng
+zkratka_GI			i_reag_ginseng
+zkrat_i_reag_ginseng		GS
+zkratka_MR			i_reag_mandrake_root
+zkrat_i_reag_mandrake_root	MR
+zkratka_EoN			i_reag_eye_of_newt
+zkrat_i_reag_eye_of_newt	EoN
+zkratka_NS			i_reag_nightshade
+zkrat_i_reag_nightshade		NS
+zkratka_OB			i_reag_obsidian
+zkrat_i_reag_obsidian		OB
+zkratka_PI			i_reag_pig_iron
+zkrat_i_reag_pig_iron		PI
+zkratka_PM			i_reag_pumice
+zkrat_i_reag_pumice		PM
+zkratka_SA			i_reag_sulfur_ash
+zkrat_i_reag_sulfur_ash		SA
+zkratka_SS			i_reag_spider_silk
+zkrat_i_reag_spider_silk	SS
+zkratka_SC			i_reag_serpent_scale
+zkrat_i_reag_serpent_scale	SC
+zkratka_VA			i_reag_volcanic_ash
+zkrat_i_reag_volcanic_ash	VA
+zkratka_DW			i_reag_dead_wood
+zkrat_i_reag_dead_wood		DW
+zkratka_WH			i_reag_worm_heart
+zkrat_i_reag_worm_heart		WH
+
+zkratka_BS			Blacksmithing	
+zkrat_Skill_Blacksmithing	BS
+zkratka_CA			Carpentry	
+zkrat_Skill_Carpentry		CA
+zkratka_CO			Cooking
+zkrat_Skill_Cooking		CO
+zkratka_IS			Inscription
+zkrat_Skill_Inscription		IS
+zkratka_TA			Tailoring
+zkrat_Skill_Tailoring		TA
+zkratka_TK			Tinkering
+zkrat_Skill_Tinkering		TK
+zkratka_MG			Magery
+zkrat_Skill_Magery		MG
+zkratka_AL			Alchemy
+zkrat_Skill_Alchemy		AL
+zkratka_TI			TasteID
+zkrat_Skill_TasteID		TI
+
+zkratka_tTA			t_sewing_kit
+zkrat_t_sewing_kit		tTA
+zkratka_tTK			t_tinker_tools
+zkrat_t_tinker_tools		tTK
+zkratka_tCA			t_carpentry
+zkrat_t_carpentry		tCA
+zkratka_tIS1			i_book_inscription_1
+zkrat_i_book_inscription_1	tIS1
+zkratka_tIS2			i_book_inscription_2
+zkrat_i_book_inscription_2	tIS2
+zkratka_tIS3			i_book_inscription_3
+zkrat_i_book_inscription_3	tIS3
+zkratka_tIS4			i_book_inscription_4
+zkrat_i_book_inscription_4	tIS4
+zkratka_tIS5			i_book_inscription_5
+zkrat_i_book_inscription_5	tIS5
+zkratka_tIS6			i_book_inscription_6
+zkrat_i_book_inscription_6	tIS6
+zkratka_tIS7			i_book_inscription_7
+zkrat_i_book_inscription_7	tIS7
+zkratka_tIS8			i_book_inscription_8
+zkrat_i_book_inscription_8	tIS8
+
+zkrat_i_nails			NA
+zkratka_NA			i_nails
+zkrat_i_board			BRD
+zkratka_BRD			i_board
+zkrat_i_scroll_blank		BLS
+zkratka_BLS			i_scroll_blank
+zkrat_i_bottle_empty		Btl
+zkratka_Btl			i_bottle_empty
+
+zkrat_i_ingot_copper		iCO
+zkratka_iCO			i_ingot_copper
+zkrat_i_ingot_iron		iIR
+zkratka_iIR			i_ingot_iron
+zkrat_i_ingot_silver		iSI
+zkratka_iSI			i_ingot_silver
+zkrat_i_ingot_golden		iGO
+zkratka_iGO			i_ingot_golden
+zkrat_i_ingot_verite		iVE
+zkratka_iVE			i_ingot_verite
+zkrat_i_ingot_valorite		iVA
+zkratka_iVA			i_ingot_valorite
+zkrat_i_ingot_obsidian		iOB
+zkratka_iOB			i_ingot_obsidian
+zkrat_i_ingot_adamantinum	iAD
+zkratka_iAD			i_ingot_adamantinum
+zkrat_i_ingot_mithril		iMI
+zkratka_iMI			i_ingot_mithril
+zkrat_i_ingot_shadow		iSH
+zkratka_iSH			i_ingot_shadow
+
+zkrat_i_log_copper		lSP
+zkratka_lSP			i_log_copper
+zkrat_i_board_copper		bSP
+zkratka_bSP			i_board_copper
+zkrat_i_log_iron		lCH
+zkratka_lCH			i_log_iron
+zkrat_i_board_iron		bCH
+zkratka_bCH			i_board_iron
+zkrat_i_log_verite		lOA
+zkratka_lOA			i_log_verite
+zkrat_i_board_verite		bOA
+zkratka_bOA			i_board_verite
+zkrat_i_log_valorite		lTE
+zkratka_lTE			i_log_valorite
+zkrat_i_board_valorite		bTE
+zkratka_bTE			i_board_valorite
+zkrat_i_log_obsidian		lMA
+zkratka_lMA			i_log_obsidian
+zkrat_i_board_obsidian		bMA
+zkratka_bMA			i_board_obsidian
+zkrat_i_log_adamantinum		lEB
+zkratka_lEB			i_log_adamantinum
+zkrat_i_board_adamantinum	bEB
+zkratka_bEB			i_board_adamantinum
+zkrat_i_log_mithril		lEL
+zkratka_lEL			i_log_mithril
+zkrat_i_board_mithril		bEL
+zkratka_bEL			i_board_mithril
+
+
+zkr_metal[1]	CO
+zkr_metal[2]	IR
+zkr_metal[3]	SI
+zkr_metal[4]	GO
+zkr_metal[5]	VE
+zkr_metal[6]	VA
+zkr_metal[7]	OB
+zkr_metal[8]	AD
+zkr_metal[9]	MI
+
+zkr_drevo[1]	SP
+zkr_drevo[2]	CH
+zkr_drevo[5]	OA
+zkr_drevo[6]	TE
+zkr_drevo[7]	MA
+zkr_drevo[8]	EB
+zkr_drevo[9]	EL
+
+[function zkratky]
+arg(i,1)
+while (i<10)
+ arg(metalname,<metal[i]>)
+ //arg(metalzkr,<zkr_metal[i]>)
+ //logmsg(zkrat_i_ingot_<arg(metalname)>		i<arg(metalzkr)>)                
+ //logmsg(zkratka_i<arg(metalzkr)>			i_ingot_<arg(metalname)>)                
+ //if (i!=3)&&(i!=4)
+  arg(drevozkr,<zkr_drevo[i]>)
+  logmsg(zkrat_i_log_<arg(metalname)>		l<arg(drevozkr)>)                
+  logmsg(zkratka_l<arg(drevozkr)>			i_log_<arg(metalname)>)
+  logmsg(zkrat_i_board_<arg(metalname)>		b<arg(drevozkr)>)                
+  logmsg(zkratka_b<arg(drevozkr)>			i_board_<arg(metalname)>)
+ //endif
+ 
+ arg(i,#+1)
+endwhile
+
+
+
+
+[eof]

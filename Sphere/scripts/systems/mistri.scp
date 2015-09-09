@@ -1,0 +1,1002 @@
+
+[SPEECH spk_mistr] 
+ON=*Dobry*
+ON=*den*
+ON=*mistr*
+ON=*expert*
+ON=*zdravim* 
+ON=*hi*
+ON=*hello*
+ON=*buy*
+src.roundskill(<tag(ucimskill)>)
+if (src.profession==prof_undeclared)
+ src.sysmessage "Mas poskozenou postavu... pouzij svuj krystal nebo zavolej GM..."
+ return 0
+elseif (src.ismagic)
+ src.sysmessage "Nesmis byt pod zadnym magickym vlivem..."
+ return 0
+endif
+
+IF (src.canbe_velmistr(<tag(ucimskill)>))
+ SAY "Vidim ze jsi pripraven stati se VELMISTREM <tag.ucimskill>. Pokud mas zajem staci rici ANO a za poplatek 30000gp te vytrenuji v tomto oboru."
+ return 0    
+elseif (src.canbe_mistr(<tag(ucimskill)>))
+ SAY "Vidim ze jsi pripraven stati se MISTREM <tag.ucimskill>. Pokud mas zajem staci rici ANO a za poplatek 15000gp te vytrenuji v tomto oboru."
+ return 0    
+elseIF (src.canbe_expert(<tag(ucimskill)>))
+ SAY "Vidim ze jsi pripraven stati se EXPERTEM <tag.ucimskill>. Pokud mas zajem staci rici ANO a za poplatek 5000gp te vytrenuji v tomto oboru."
+ return 0   
+else
+say "Nemohu te naucit vice o <tag.ucimskill>."
+return 0   
+endif
+ 
+ON=*YES* 
+ON=*ANO*
+if (src.profession==prof_undeclared)
+ src.sysmessage "Mas poskozenou postavu... pouzij svuj krystal nebo zavolej GM..."
+ return 0
+elseif (src.ismagic)
+ src.sysmessage "Nesmis byt pod zadnym magickym vlivem..."
+ return 0
+endif
+
+IF (src.canbe_velmistr(<tag.ucimskill>))
+ if (src.pay(30000))
+   src.<tag.ucimskill>=800
+   SAY "Byl jsi vytrenovan VELMISTREM <tag.ucimskill> "
+ else
+  SAY "Nemas patricnou sumu, za kterou bych te mohl vytrenovat."
+ endif
+elseif (src.canbe_MISTR(<tag.ucimskill>))
+ if (src.pay(15000))
+  src.<tag.ucimskill>=550
+  SAY "Byl jsi vytrenovan MISTREM <tag.ucimskill> "
+ else
+  SAY "Nemas patricnou sumu, za kterou bych te mohl vytrenovat."
+ endif
+elseIF (src.canbe_expert(<tag.ucimskill>))
+ if (src.pay(5000))
+ src.<tag.ucimskill>=300
+ SAY "Byl jsi vytrenovan EXPERTEM <tag.ucimskill> "
+ else
+  SAY "Nemas patricnou sumu, za kterou bych te mohl vytrenovat."
+ endif
+else
+say "Nemohu te naucit vice o <tag.ucimskill>."
+return 0
+endif
+
+[function canbe_expert]
+if (<?<args>?><=250)
+ if (<safe.src.tag(skillrank)>>=1)
+  if (<finduid(<profession>).<args>>>=300)
+   if (<?<args>?>>=250)
+    if (<src.tag(level)>>2)
+     return 1
+    else
+     sysmessage "Jsi na moc nizke urovni"
+    endif
+   else 
+    sysmessage "Pred dalsi lekci musis jeste trenovat."
+   endif
+  else
+   sysmessage "Dosahl jsi sveho maxima <args>."
+  endif
+ else
+  sysmessage "Jeste nejsi pripraven na dalsi lekci."
+ endif
+endif
+return 0
+
+[function canbe_mistr]
+if (<?<args>?>>250)&&(<?<args>?><=500)
+ if (<safe.src.tag(skillrank)>>=2)
+  if (<finduid(<profession>).<args>>>=55.0)
+   if (<?<args>?>==500)
+    if (<src.tag(level)>>5)
+     return 1
+     else
+     sysmessage "Jsi na moc nizke urovni"
+    endif
+   else 
+    sysmessage "Pred dalsi lekci musis jeste trenovat."
+   endif
+  else
+   sysmessage "Dosahl jsi sveho maxima <args>."
+  endif
+ else
+  sysmessage "Jeste nejsi pripraven na dalsi lekci."
+ endif
+endif
+return 0
+
+[function canbe_velmistr]
+if (<?<args>?>>500)&&(<?<args>?><=750)
+ if (<safe.src.tag(skillrank)>==3)
+  if (<finduid(<profession>).<args>>>=80.0)
+   if (<?<args>?>==750)
+    if (<src.tag(level)>>11)
+     return 1
+    else
+     sysmessage "Jsi na moc nizke urovni"
+    endif
+   else 
+    sysmessage "Pred dalsi lekci musis jeste trenovat."
+   endif
+  else
+   sysmessage "Dosahl jsi sveho maxima <args>."
+  endif
+ else
+  sysmessage "Jeste nejsi pripraven na dalsi lekci"
+ endif
+endif
+return 0
+
+[events e_mistr_craft]
+
+[speech spk_mistr_craft]
+on=*sell*
+on=*hi*
+on=*hello*
+on=*prod*
+on=*exp*
+if (src.profession==class_craft)||(src.isgm)
+  say "Poskytuji lekce na zaklade tvych zkusenosti s remeslnou vyrobou"
+  src.findid(i_buyer_tag_box).remove
+  src.newitemsafe(i_buyer_tag_box)
+  lastnew.equip
+  lastnew.link=<uid>
+  src.findlayer(21).contents(tryexpit)
+  src.findid(i_buyer_tag_box).dialog d_craftmistr
+else
+  say Nemohu slouzit...
+endif
+
+[function tryexpit]
+var(exps,0)
+//if !(baseid==i_dagger)&&!(type==t_scroll_blank)&&!(type==t_shaft)&&!(type==t_weapon_arrow)&&!(type==t_weapon_bolt)&&!(t_bottle_empty)
+//jezis co to je tohleto? proc? a tohle "(t_bottle_empty)" asi nebude moc platna podminka -tart
+//Marek si stezuje, ze se na stack vecech porad buguje a Mandos ze mu to zatezuje server na 100% a protoze sem musel urgentne
+//vypadnout tak jsem tam pred tema lahvema umazal type aby to nepoustelo a nelagoval server.
+if ((type==t_container)&&(safe rescount))
+  if (<eval src.tag(level)> > 56) //vezmeme maximalne 56. lvl hrace. Dal bude cena / 1 exp stejna
+  	arg(priceLvl,56)
+  else
+    arg(priceLvl,<eval src.tag(level)>)
+  endif
+  src.newitem <baseid>
+  arg(thisbag,<lastnew>)
+  lastnew.name="<name> (<rescount> ks)"
+  lastnew.dispid=<dispid>
+  lastnew.cont=<src.findid(i_buyer_tag_box)>
+  lastnew.tag.expforthis=<getitemexp>
+  lastnew.tag.price=<eval((lastnew.tag(expforthis)*nastaveni_craftexp_gold*(<arg(priceLvl)>+1))/1000)>
+  contents2(f_tryexpit(<lastnew>))
+  arg(thisbag).tag(expforthis,<eval (arg(thisbag).f_tryexpit)+var(exps)>)
+  arg(thisbag).tag.price=<eval((arg(thisbag).tag(expforthis)*nastaveni_craftexp_gold*(<arg(priceLvl)>+1))/1000)>
+  if !(arg(thisbag).tag(expforthis))//nulova cena, nechtit.
+    arg(thisbag).remove
+  endif
+else
+  f_tryexpit(<src.findid(i_buyer_tag_box)>)
+endif
+//endif
+
+[function f_tryexpit]//kontejner kam to hodit
+if (<attr>&0b0d4)
+  return 0
+endif
+arg(thisexp,<getitemexp>)
+if (arg(thisexp))
+  if (<eval src.tag(level)> > 56) //vezmeme maximalne 56. lvl hrace. Dal bude cena / 1 exp stejna
+  	arg(priceLvl,56)
+  else
+    arg(priceLvl,<eval src.tag(level)>)
+  endif
+  src.newitem i_vendor_item
+  lastnew.name="<?qval(<amount>>1,"<amount> ","")?><?name?>"
+  lastnew.link=<uid>
+  lastnew.dispid=<dispid>
+  lastnew.color=<color>
+  if (argvcount)
+    lastnew.cont=<args>
+  endif
+  lastnew.tag(expforthis,<arg(thisexp)>)
+  lastnew.tag.price=<eval((lastnew.tag(expforthis)*nastaveni_craftexp_gold*(<arg(priceLvl)>+1))/1000)>
+  var(exps,#+<arg(thisexp)>)
+endif
+return <arg(thisexp)>
+
+[function getitemexp]
+if (tag(CRAFTEDBY))
+ if (tag(CRAFTEDBY)==src)||(src.isgm)
+ //src.smsg itemis mine:<name>
+  if (eval(typedef.skillmake))&&(eval(typedef.resources))
+   //src.smsg <name>:
+   var(itemvalue,<eval ((f_skillmakesum(<typedef.skillmake>,)+50)/100)*((f_resourcesum(<baseid>,<typedef.resources>,)+50)/100)>)
+   var(itemvalue,<eval ((var(itemvalue)*quality*amount)+5000)/10000>)
+   var(itemvalue,<eval ((var(itemvalue)*nastaveni_craftexp_factor)+5000)/10000>)
+   //src.smsg <name>:<eval var(itemvalue)/10000>
+   return"<var(itemvalue)>"
+  endif
+ endif
+endif
+return 0
+
+[function f_skillmakesum]
+//src.smsg skillmake:
+var.skillmakesum=0
+var.skillmakenumb=0
+while (skillmakenumb<argvcount-1)//(strcmpi(<argv(skillmakenumb)>,<argv(skillmakenumb-1)>)
+  //src.smsg <argv(skillmakenumb)>
+ singleparse(<argv(skillmakenumb)>)
+ if (<firstnumb>>1)
+  if (safe <?nastaveni_craftexp_<secondnumb>?>)
+   var(skillmakesum,<eval var(skillmakesum)+(firstnumb*nastaveni_craftexp_<secondnumb>)>)
+  endif
+ endif
+ var(skillmakenumb,#+1)
+endwhile
+//src.smsg hodnota za skilly: <var(skillmakesum)>
+return"<var(skillmakesum)>"
+
+[function f_resourcesum]
+//src.smsg resource:
+var(resourcecountsum,0)
+arg(resourcecountnumb,1)
+while (arg(resourcecountnumb)<argvcount-1)//(strcmpi(<argv(skillmakenumb)>,<argv(skillmakenumb-1)>)
+ singleparse(<argv(arg(resourcecountnumb))>)
+ //var(resourcecounttype_<resourcecountnumb>,<finduid(<secondnumb>).type>)
+ //var(resource_type,<eval <secondnumb>.type>)
+ //if (<resource_type>==t_ingot)||(<resource_type>==t_log)
+ var(resource_value,<eval <secondnumb>.value>)
+ //endif
+ var(resourcecountsum,#+<eval firstnumb*resource_value>)
+ //src.smsg <argv(resourcecountnumb)>
+ arg(resourcecountnumb,#+1)
+endwhile
+//src.smsg hodnota za resources: <var(resourcecountsum)>
+return"<var(resourcecountsum)>"
+//singleparse(<argv(0)>)
+
+[DIALOG d_craftmistr]
+SetLocation=10,10
+argo.tag(firsti,<eval argv(0)>)//<eval argv(1)>
+if (argo.tag(firsti)<0)
+ argo.tag(firsti,0)
+endif
+argo.cv_radku(<rescount>)
+argo.tag(sirka,<cv_dialog_sirka>)
+argo.tag(vyska,<eval 23+(2*<d_def_radek_vyska>)+(argo.tag(radku)*cv_dialog_radek_vyska)+(4*<d_def_skvira>)+(2*<d_def_okraj>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+var(d_def_radek_vyska,<cv_dialog_radek_vyska>)
+var(sloupec_noback[0],1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,20,60,330,100)
+var(sloupec_noback[0],"")
+//var(d_def_radek_vyska,"")
+//argo.dialog_pozadi(<argo.tag(nexty)>,1)
+//var(d_def_radek_vyska,<cv_dialog_radek_vyska>)
+argo.dialog_zpruhledni
+
+//texta(<argo.dialog_textpos(1,0,1)>,2301,kup)
+textA(<argo.dialog_textpos(1,2)>,2301,Nazev itemu)
+textA(<argo.dialog_textpos(1,3)>,2301,Cena za lekci)
+textA(<argo.dialog_textpos(1,4,1)>,2301,zkusenosti)
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,9)//cancel
+
+if (argo.tag(firsti))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<argo.tag(firsti)>+<cv_dialog_maxradku>)
+if (imax>rescount)
+ arg(imax,<rescount>)
+else
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[3])>-24,0fc,0fd,1,0,2) // next
+endif
+
+arg(ypos,<argo.tag(obj_y[2])>)
+arg(index,<argo.tag(firsti)>)
+while (index<imax)
+ arg(item,<findcont(index)>)
+ //argo.button(<argo.tag(sloupec_x[0])>,ypos,9905,9904,1,0,index+100)
+ argo.checkbox(<argo.tag(sloupec_x[0])>,ypos,9904,9903,0,index+100)
+ argo.tilepic(<argo.tag(sloupec_x[1])>,ypos,<arg(item).dispiddec)>)
+ argo.textA(<argo.tag(sloupec_x[2])>+<d_def_odsazeni>,ypos,2301,"<arg(item).name>")
+ argo.textA(<argo.tag(sloupec_x[3])>+<d_def_odsazeni>,ypos,2301,<arg(item).tag(price)>)
+ argo.textA(<argo.tag(sloupec_x[4])>+<d_def_odsazeni>,ypos,2301,<arg(item).tag(expforthis)>) 
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+
+ //argo.dialog_textpos(3,0,1)
+ //argo.button(lastxpos,lastypos-1,9905,9904,1,0,3)
+ //argo.textA(lastxpos+30,lastypos,2301,Ok)
+ argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+var(d_def_radek_vyska,"")
+
+
+
+
+[DIALOG d_craftmistr BUTTON]
+on=0
+on=1
+arg(index,0)
+//src.sysmessage("tato feature je jen v testovacim modu.")
+while (index<rescount)
+    if (argchk(index+100))
+        arg(item,<findcont(index)>)
+        var(expstoadd,0)
+        if (arg(item).type==t_container)&&(safe arg(item).rescount)
+            arg(item).contents2(changeforexp)
+        endif
+        arg(item).changeforexp
+        src.addexp(<var(expstoadd)>)
+    endif
+    arg(index,#+1)
+endwhile
+
+
+
+[function changeforexp]
+if (link)
+    if (src.pay(<tag(price)>))
+    	var(expstoadd,#+<tag(expforthis)>)
+        link.tag(craftedby,<hval(link.tag(craftedby)|craftexp_gotexp)>)
+        remove
+    endif
+//    src.sysmessage("Zaplatil bys <tag(price)> gp a dostal bys <tag(expforthis)> xp.")
+endif
+
+[defnames]
+craftexp_gotexp		010000000
+
+
+////////////////////////////////////////MISTR REMESEL LOG
+[speech spk_mistr_craft_log]
+on=*sell*
+on=*hi*
+on=*hello*
+on=*prod*
+on=*exp*
+on=*ahoj*
+on=*zdravim*
+on=*odevzdat*
+if (src.isdead)
+  return(0)
+endif
+if (<distance> > 6)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)//treba na vypocet poctu lodi vediet spawn
+  if (<baseid>==c_mistr_craft_log_gondor)
+    if (<src.tag.realm>)
+      if (<src.tag.realm>==1)||(src.isgm)
+        dialog(d_craftmistrlog_gondor,<my_spawn>)
+      else
+        say("Tahni!")
+      endif
+    elseif (src.isgm)
+      dialog(d_craftmistrlog_gondor,<my_spawn>)
+    else
+      say("Sluzby poskytuju jen gondorum!")
+    endif
+  elseif (<baseid>==c_mistr_craft_log_mordor)
+    if (<src.tag.realm>)
+      if (<src.tag.realm>==2)||(src.isgm)
+        dialog(d_craftmistrlog_mordor,<my_spawn>)
+      else
+        say("Tahni!")
+      endif
+    elseif (src.isgm)
+      dialog(d_craftmistrlog_mordor,<my_spawn>)
+    else
+      say("Sluzby poskytuju jen mordorum!")
+    endif
+  endif
+  //f_mistr_craft_log
+endif
+return(1)
+
+[function f_mistr_craft_log]
+if (<distance> > 6)
+  src.sysMessage("Prilis si se vzdalil...")
+  return(0)
+endif
+if (src.ismagic)&&(!src.isgm)  //itemy na lumber
+ src.redMessage("Nesmis byt pod zadnym magickym vlivem...")
+ return(0)
+endif
+if !(<src.isevent(e_MRdialogClose)>)
+  src.events +e_MRdialogClose
+endif
+
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+if (src.profession==class_craft)||(src.isgm)
+  src.findid(i_buyer_tag_box).remove
+  src.newitemsafe(i_buyer_tag_box)
+  lastnew.equip
+  lastnew.link=<uid>
+  src.findlayer(21).contents(tryexpitlog)
+  //src.dialogclose(d_craftmistrlog,0)
+  src.findid(i_buyer_tag_box).dialog(d_craftmistrlog)
+else
+  say Nemohu slouzit...
+endif
+
+if (src.isgm)
+  dialog(d_craftmistrlog_stats,<my_spawn>)
+  src.tag.dialogPage(0)
+endif
+
+[function tryexpitlog]
+src.newitem <baseid>
+lastnew.name="<name> (<amount> ks)"
+lastnew.dispid=<dispid>
+lastnew.cont=<src.findid(i_buyer_tag_box)>
+lastnew.tag.expforthis=<getitemexp_log>
+lastnew.link=<uid>  //uid logov u krafta
+lastnew.tag.log_amount=<amount> //pocet logov u krafta (na kontrolu na konci)
+lastnew.tag.log_cont=<cont> //kontajner v ktorom su logy(na kontrolu, pre istotu)
+if !(lastnew.tag(expforthis))
+  lastnew.remove
+endif
+
+//dialog na logy/expy (skopirovany a prerobeny dialog d_craftmistr)
+[DIALOG d_craftmistrlog]
+SetLocation=10,10
+argo.tag(firsti,<eval argv(0)>)
+if (argo.tag(firsti)<0)
+  argo.tag(firsti,0)
+endif
+argo.cv_radku(<rescount>)
+argo.tag(sirka,<cv_dialog_sirka>)
+argo.tag(vyska,<eval 23+(2*<d_def_radek_vyska>)+(argo.tag(radku)*cv_dialog_radek_vyska)+(4*<d_def_skvira>)+(2*<d_def_okraj>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+var(d_def_radek_vyska,<cv_dialog_radek_vyska>)
+var(sloupec_noback[0],1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,20,60,430)
+var(sloupec_noback[0],"")
+argo.dialog_zpruhledni
+
+textA(<argo.dialog_textpos(1,2)>,2301,"Nazev itemu")
+textA(<argo.dialog_textpos(1,3)>,2301,"Zkusenosti")
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,9)
+
+if (argo.tag(firsti))
+  argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<argo.tag(firsti)>+<cv_dialog_maxradku>)
+if (imax>rescount)
+  arg(imax,<rescount>)
+else
+  argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[3])>-24,0fc,0fd,1,0,2) // next
+endif
+
+arg(ypos,<argo.tag(obj_y[2])>)
+arg(index,<argo.tag(firsti)>)
+while (index<imax)
+  arg(item,<findcont(index)>)
+  argo.checkbox(<argo.tag(sloupec_x[0])>,ypos,9904,9903,0,index+100)
+  argo.tilepic(<argo.tag(sloupec_x[1])>,ypos,<arg(item).dispiddec)>)
+  argo.textA(<argo.tag(sloupec_x[2])>+<d_def_odsazeni>,ypos,2301,"<arg(item).name>")
+  argo.textA(<argo.tag(sloupec_x[3])>+<d_def_odsazeni>,ypos,2301,"<arg(item).tag(expforthis)>")
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+endwhile
+
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+var(d_def_radek_vyska,"")
+
+
+[DIALOG d_craftmistrlog BUTTON]
+on=0
+on=1
+arg(index,0)
+while (index<rescount)
+if (argchk(index+100))
+  arg(item,<findcont(index)>)
+  //src.say(<item.tag.my_spawn>)
+  if (<item.link>)  //existuju tie logy/ore/ing? (existuje toto uid?)
+    arg(logy,<item.link>)
+    if (<logy.type>==t_log)||(<logy.type>==t_ingot)  //t_log | 02B  t_ingot(ore,ing) | 03F//je to log/ore/ing?
+      if (<item.baseid>==<logy.baseid>)
+        if (<logy.cont>)  //maju logy kontajner (su v niecom?)
+          if (<logy.amount>==<item.tag.log_amount>)&&(<logy.cont>==<item.tag.log_cont>) //ich pocet je rovnaky ako bol na zaciatku aj ich kontajner
+            if (<item.tag(expforthis)>) //tak ked uz je tu tolko podmienok jedna navyse neuskodi
+              src.addexp(<eval(item.tag(expforthis))>)
+              //src.say("ziskal jsi <eval(item.tag(expforthis))> zkusenosti")
+              finduid(<uid.link>).craftMistrLogAddRecord(<src.uid>,<logy>,<eval(item.tag(expforthis))>)  //<uid>=i_buyer_tag_box <uid.link> = mistr
+              src.accmsg("hrac <src.name> odevzdal MR2 <logy.amount> <logy.name> a ziskal <eval(item.tag(expforthis))> zkusenosti")
+              logy.remove
+            endif
+          endif
+        endif
+      endif
+    endif
+  endif
+endif
+arg(index,#+1)
+endwhile
+
+[function getitemexp_log]
+arg(itemvalue,0)
+arg(i,0)
+arg(craft_skill,0)
+while (<i> < <def_expcraft_number>)
+  if (<baseid>==<return_nth(1,<def_expcraft[<i>]>)>)//aku mas vec (log,ore,...)
+    if (<type>==t_log)//t_log | 02B  t_ingot(ore,ing) | 03F
+      arg(craft_skill,<src.lumberjacking>)
+      if (<baseid>==i_log_mithril)
+        arg(craft_skill,#+100)
+      endif
+    elseif (<type>==t_ingot)
+      arg(craft_skill,<src.mining>)
+      if (<baseid>==i_ore_mithril)||(<baseid>==i_ingot_mithril)
+        arg(craft_skill,#+100)
+      endif
+    endif
+    if (<craft_skill>>=<return_nth(1,<nastaveni_miningskill_<return_nth(2,<def_expcraft[<i>]>)>>)>) //mas na to skill?
+      arg(itemvalue,<eval (amount*nastaveni_craftexp_<baseid>)>)
+    endif
+    arg(i,50)//skoncime cyklus netreba dalej
+  endif
+  arg(i,#+1)
+endwhile
+//if ((<baseid>==i_log_valorite)&&(<src.lumberjacking>>64.9)) || ((<baseid>==i_log_obsidian)&&(<src.lumberjacking>>89.9)) || ((<baseid>==i_log_adamantinum)&&(<src.lumberjacking>>98.9)) || ((<baseid>==i_ore_obsidian)&&(<src.mining>>89.9)) || ((<baseid>==i_ingot_obsidian)&&(<src.mining>>89.9)&&(<src.blacksmithing>>79.9))
+//  arg(itemvalue, <eval (amount*nastaveni_craftexp_<baseid>)>)
+//endif
+return(<eval(arg(itemvalue))>)
+
+//mistr remesel log - statistika
+[DIALOG d_craftmistrlog_stats]
+argo.SetLocation=205,150
+
+arg(i,0)
+while (<i> < 14)//def_expcraft_number-7 lebo ingy a ore pocitame spolu
+  if (<argv(0).tag(<return_nth(2,<def_expcraft[<i>]>)>Total)>!=0)
+    arg(hlavicka,<arg(hlavicka)>/<return_nth(3,<def_expcraft[<i>]>)>)
+    arg(celkovo,<arg(celkovo)>/<argv(0).tag(<return_nth(2,<def_expcraft[<i>]>)>Total)>)
+  endif
+  arg(i,#+1)
+endwhile
+arg(hlavicka,<arg(hlavicka)>/Exp)
+arg(celkovo,<arg(celkovo)>/<argv(0).tag.expTotal>)
+
+//argo.tag(sirka,409)
+argo.tag(sirka,180+<strlen(<hlavicka>)>*10)
+argo.tag(vyska,400)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180)
+argo.dialog_pozadi(<argo.tag(nexty)>,16,180)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+arg(sloupec_prvni_x,<d_def_okraj>+<d_def_skvira>+<d_def_odsazeni>)
+arg(sloupec_prvni_y,<d_def_okraj>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*(<d_def_radek_vyska>+<d_def_skvira>),42,"Statistika - expy")
+argo.button(sloupec_prvni_x+150,sloupec_prvni_y-3,0fb1,0fb3,1,0,0)		//cancel
+
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+1*(<d_def_radek_vyska>+<d_def_skvira>),52,"Kraft")
+argo.texta(sloupec_prvni_x+183,sloupec_prvni_y+1*(<d_def_radek_vyska>+<d_def_skvira>),52,"<arg(hlavicka)>")
+
+arg(my_spawn,<argv(0)>)
+arg(kraftov,<eval(my_spawn.tag.craftAmount)>)
+src.tag(dialogLast,<my_spawn>)
+
+arg(start,<eval(src.tag.dialogPage)>)
+arg(stop,<start>+15)
+
+arg(i,<start>)
+arg(sloupec_prvni_y,#+2*<d_def_radek_vyska>+<d_def_skvira>)
+arg(ypos,0)
+while (<i> < <stop>)
+  if (<return_nth(1,<my_spawn.tag(craft_<i>)>)>)
+    if (<finduid(<my_spawn.tag(craft_<i>)>).isplayer>)
+      arg(kraft,<my_spawn.tag(craft_<i>)>)
+      argo.texta(sloupec_prvni_x,sloupec_prvni_y+<arg(ypos)>*<d_def_radek_vyska>,<d_def_writecolor>,"<my_spawn.tag(craft_<i>).name> (<my_spawn.tag(craft_<i>)>)")
+      arg(vypis,"")
+      arg(j,0)
+      while (<j> < 14)
+        if (<argv(0).tag(<return_nth(2,<def_expcraft[<j>]>)>Total)>!=0)
+          arg(vypis,<arg(vypis)>/<return_nth(<j>+1,<kraft.tag.mistrremesel2>)>)
+        endif
+        arg(j,#+1)
+      endwhile
+      arg(vypis,<arg(vypis)>/<return_nth(15,<kraft.tag.mistrremesel2>)>)
+      argo.texta(sloupec_prvni_x+186,sloupec_prvni_y+<arg(ypos)>*<d_def_radek_vyska>,<d_def_writecolor>,"<vypis>")
+    else
+      argo.texta(sloupec_prvni_x,sloupec_prvni_y+<arg(ypos)>*<d_def_radek_vyska>,<d_def_writecolor>,"SMAZAN (<my_spawn.tag(craft_<i>)>)")
+      argo.texta(sloupec_prvni_x+186,sloupec_prvni_y+<arg(ypos)>*<d_def_radek_vyska>,<d_def_writecolor>,"NEZNAMY")
+    endif
+    arg(ypos,#+1)
+  endif
+  arg(i,#+1)  
+endwhile  
+
+if (<kraftov>>15)
+  if (<eval(<start>+15)><<eval(<kraftov>))>))
+    argo.button(325,10,4005,4007,1,0,1)
+  endif
+endif
+if (<start>>0)
+    argo.button(300,10,4014,4015,1,0,2)
+endif
+
+arg(sloupec_prvni_y,#+(16*<d_def_radek_vyska>)+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,52,"Celkem:")
+
+argo.texta(sloupec_prvni_x+186,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,"<arg(celkovo)>")
+
+[DIALOG d_craftmistrlog_stats button]
+on=0
+src.tag.remove(dialogPage)
+src.events -e_MRdialogClose
+on=1
+src.tag.dialogPage=<src.tag.dialogPage>+15
+dialog(d_craftmistrlog_stats,<src.tag.dialogLast>)
+on=2
+src.tag.dialogPage=<src.tag.dialogPage>-15
+if (<src.tag.dialogPage><0)
+  src.tag.dialogPage=0
+endif
+dialog(d_craftmistrlog_stats,<src.tag.dialogLast>)
+
+
+[function craftMistrLogAddRecord] //craft_uid, logy/ore/ing uid, expy
+arg(my_spawn,<memoryfindtype(Memory_ISpawned).link>)
+if !(my_spawn.tag(expTotal))//prvykrat dame vsetko na 0
+  my_spawn.tag(expTotal,0)
+  my_spawn.tag(l_copperTotal,0)
+  my_spawn.tag(l_ironTotal,0)
+  my_spawn.tag(l_veriteTotal,0)
+  my_spawn.tag(l_valoriteTotal,0)
+  my_spawn.tag(l_obsidianTotal,0)
+  my_spawn.tag(l_adamantinumTotal,0)
+  my_spawn.tag(l_mithrilTotal,0)
+  my_spawn.tag(o_copperTotal,0)
+  my_spawn.tag(o_ironTotal,0)
+  my_spawn.tag(o_veriteTotal,0)
+  my_spawn.tag(o_valoriteTotal,0)
+  my_spawn.tag(o_obsidianTotal,0)
+  my_spawn.tag(o_adamantinumTotal,0)
+  my_spawn.tag(o_mithrilTotal,0)
+  my_spawn.tag(craftAmount,0)
+endif
+if (src.isplayer)//&&!(src.isgm))
+  arg(i,0)
+  arg(pocet,<eval(<my_spawn.tag(craftAmount)>)>)
+  //src.say(<my_spawn.tag(<return_nth(2,<def_expcraft[4]>)>Total)>+<argv(1).amount>)
+  while (<arg(i)><<pocet>)
+    if (<src.uid>==<my_spawn.tag(craft_<i>)>)//uz tam je
+      arg(j,0)
+      while (<j> < <def_expcraft_number>)
+        if (<argv(1).baseid>==<return_nth(1,<def_expcraft[<j>]>)>)
+          if (<j>>13)//aby sa ingy pocitali spolu s ore
+            arg(j,#-7)
+          endif
+          arg(nova_hodnota,<eval(<argv(1).amount>+<return_nth(<j>+1,<src.tag.mistrremesel2>)>)>)
+          src.change_nth(<j>+1,mistrremesel2,<nova_hodnota>,<src.tag.mistrremesel2>)
+          arg(nova_hodnota,<my_spawn.tag(<return_nth(2,<def_expcraft[<j>]>)>Total)>+<argv(1).amount>)
+          my_spawn.tag(<return_nth(2,<def_expcraft[<j>]>)>Total,<nova_hodnota>)
+          arg(j,50)
+        endif 
+        arg(j,#+1)
+      endwhile
+      arg(nova_hodnota,<eval(<argv(2)>+<return_nth(15,<src.tag.mistrremesel2>)>)>)
+      src.change_nth(15,mistrremesel2,<nova_hodnota>,<src.tag.mistrremesel2>)
+      my_spawn.tag.expTotal=<eval(my_spawn.tag(expTotal)+argv(2))>
+      return(1)
+    endif
+    arg(i,#+1)
+  endwhile
+  src.tag(mistrremesel2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)//15 -> spruce-elven(7), copper-mithril(2x7), expy
+  arg(j,0)
+  while (<j> < <def_expcraft_number>)
+    if (<argv(1).baseid>==<return_nth(1,<def_expcraft[<j>]>)>)
+      if (<j>>13)//aby sa ingy pocitali spolu s ore
+        arg(j,#-7)
+      endif
+      src.change_nth(<j>+1,mistrremesel2,<argv(1).amount>,<src.tag.mistrremesel2>)
+      arg(nova_hodnota,<my_spawn.tag(<return_nth(2,<def_expcraft[<j>]>)>Total)>+<argv(1).amount>)
+      my_spawn.tag(<return_nth(2,<def_expcraft[<j>]>)>Total,<nova_hodnota>)
+      arg(j,50)
+    endif 
+    arg(j,#+1)
+  endwhile
+  src.change_nth(15,mistrremesel2,<argv(2)>,<src.tag.mistrremesel2>)//expy
+  my_spawn.tag(craft_<i>,<argv(0)>)
+  my_spawn.tag.expTotal=<eval(my_spawn.tag(expTotal)+argv(2))>
+  my_spawn.tag.craftAmount=<eval(my_spawn.tag(craftAmount)+1)>
+endif
+
+[DIALOG d_craftmistrlog_gondor]
+argo.setlocation=5,5
+argv(0).f_spocitajLode(1500,300,50)
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03123)
+
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,1,0)
+argo.text(220,332,1152,1)	//Zdravim
+
+argo.button(325,330,0988,0988,0,2,0)
+argo.text(350,331,1152,2)	//Jak muzu pomoci?
+
+argo.button(490,330,0988,0988,0,3,0)
+argo.text(540,331,1152,3)	//Prohlednout
+
+argo.button(160,360,0988,0988,1,0,1)//Odevzdat
+argo.text(220,360,1152,15)
+
+
+argo.page(1)
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+argo.button(25,395,0fa5,0fa7,0,5,0)
+argo.text(60,395,152,5)	//O Co jde?
+argo.button(25,415,0fa5,0fa7,0,7,0)
+argo.text(60,415,152,9)	//Kolik jiz mame lodi?
+argo.button(25,435,0fa5,0fa7,0,8,0)
+argo.text(60,435,152,13)	//Najmi me do posadky!
+
+argo.page(2)//->Jak muzu pomoci?
+if (src.profession==class_craft)
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,16,0,36)
+endif
+
+argo.page(3)//->Prohlednout
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+
+argo.page(4)
+argo.HTMLGUMP(170,230,440,100,17,0,36)
+
+argo.page(5)//<-O Co jde?
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+argo.button(25,395,0fa5,0fa7,0,6,0)
+argo.text(60,395,152,7)	//Co je treba?
+
+argo.page(6)//<-Co je treba?
+argo.HTMLGUMP(170,230,440,100,8,0,36)
+
+argo.page(7)//<-Kolik jiz mame lodi?
+argo.HTMLGUMP(170,230,440,100,12,0,36)
+
+argo.page(8)//<-Najmi me do posadky!
+argo.HTMLGUMP(170,230,440,100,14,0,36)
+
+
+[DIALOG d_craftmistrlog_gondor text]
+Stavitel Lodi//0
+Zdravim	//1
+Jak muzu pomoci?//2
+Prohlednout//3
+Bud zdrav - jsi pripraven pomoci svemu krali?//4
+O co jde?//5
+Kral Elessar Telcontar rozhodl, ze  bude neprodlene v Dol Amrothu zahajena vystavba valecnych lodi, aby nas ochranily pred Umberskou hrozbou.. Korzari jiz nesmi nikdy plenit nase pobrezi. Je treba je silou odradit nebo porazit. Vystavba takove flotily vsak je velmi nakladna a predevsim materialove narocna, nebot vhodneho dreva je nedostatek a po velkych povalecnych opravach je jeho cena vysoka.//6
+Co je treba?//7
+Drevorubci potrebneho dreva, predevsim stredne tvrdeho tykoveho dreva ci cennejsich drev ebenu a mahagonu, se vyzyvaji, aby postradatelne mnozstvi odevzdali staviteli lodi v Dol Amrothu. Nejedna se o valecnou dan. Prispevek je dobrovolny a jeho vyse neni podstatna. Ti, kdo pomohou s vystavbou lodstva, budou v Gondoru cteni a odmeneni.//8
+Kolik jiz mame lodi?//9
+Sbiram tykove, mahagonove a ebenove drevo pro kralovskou flotilu, muzes mi nejake prinest. Take budeme potrebovat obsidian.//10
+Vidis zamyslesneho muze, ktery se pravdepodobne soustredi na velky ukol pred sebou. Budi v tobe prirozeny respekt.//11
+Do teto chvile bylo postaveno <?eval(memoryfindtype(Memory_ISpawned).link.tag(pocetLodi))?> lodi. A na dalsi lod je treba <?eval(memoryfindtype(Memory_ISpawned).link.tag(teakNeed))?> Teaku, <?eval(memoryfindtype(Memory_ISpawned).link.tag(mahagonNeed))?> Mahagonu a <?eval(memoryfindtype(Memory_ISpawned).link.tag(ebenNeed))?> Ebenu//12
+Najmi me do posadky!//13
+Zatim neni termin namorni bitvy urcen, ale blizi se...//14
+Odevzdat//15
+Nejsi remeslnik, ty najdes uplatneni leda v namorni bitve.//16
+
+
+[DIALOG d_craftmistrlog_gondor button]
+on=0
+on=1
+if (src.profession==class_craft)||(src.isgm)
+  f_mistr_craft_log
+else
+  say("Nemohu slouzit...")
+endif
+
+[DIALOG d_craftmistrlog_mordor]
+argo.setlocation=5,5
+argo.page(0)
+argv(0).f_spocitajLode(1200,250,40)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+argo.gumppic(40,215,03146)
+
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,1,0)
+argo.text(220,332,1152,1)	//Zdravim
+
+argo.button(325,330,0988,0988,0,2,0)
+argo.text(350,331,1152,2)	//Jak muzu pomoci?
+
+argo.button(490,330,0988,0988,0,3,0)
+argo.text(540,331,1152,3)	//Prohlednout
+
+argo.button(160,360,0988,0988,1,0,1)
+argo.text(220,360,1152,15)//odevzdat
+
+
+argo.page(1)
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+argo.button(25,395,0fa5,0fa7,0,5,0)
+argo.text(60,395,152,5)	//O Co jde?
+argo.button(25,415,0fa5,0fa7,0,7,0)
+argo.text(60,415,152,9)	//Kolik jiz mame lodi?
+argo.button(25,435,0fa5,0fa7,0,8,0)
+argo.text(60,435,152,13)	//Najmi me do posadky!
+
+argo.page(2)//->Jak muzu pomoci?
+if (src.profession==class_craft)
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,16,0,36)
+endif
+
+argo.page(3)//->Prohlednout
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+
+argo.page(4)
+argo.HTMLGUMP(170,230,440,100,17,0,36)
+
+argo.page(5)<-O Co jde?
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+argo.button(25,395,0fa5,0fa7,0,6,0)
+argo.text(60,395,152,7)	//Co je treba?
+
+argo.page(6)//<-Co je treba?
+argo.HTMLGUMP(170,230,440,100,8,0,36)
+
+argo.page(7)//<-Kolik jiz mame lodi?
+argo.HTMLGUMP(170,230,440,100,12,0,36)
+
+argo.page(8)//<-Najmi me do posadky!
+argo.HTMLGUMP(170,230,440,100,14,0,36)
+
+
+[DIALOG d_craftmistrlog_mordor text]
+Stavitel Lodi//0
+Nazdar	//1
+Jak muzu pomoci?//2
+Prohlednout//3
+Stat, vydrz chvili a poslechni si vuli Marghula//4
+O co jde?//5
+Z vule Marghula pana Mordoru je Umbaru ulozeno vystavet flotilu lodi pro valku na mori, protoze tradice korzaru je znama a jejich hlad po krvi gondorskych je velky. Drevo na stavbu lodi je vsak nutno dovazet az z Rhunu, a jelikoz je Velka reka uzavrena, je jeho doprava pres pouste narocna a pomala.
+Co je treba?//7
+Vyzyvame vsechny, kdo jsou schopni tezit drevo ze stromu mahagonu, ebenu ci tyku, aby je poskytli stavitelum lodi v Umbaru. Neni to rozkaz, prozatim, nebot Pan podporuje rozsirovani mordorskych drzav, avsak pokud nebude flotila pripravena vcas, bude Marghuluv hnev straslivy.//8
+Kolik jiz mame lodi?//9
+Nas pan mne poveril vybrat od poddanych tykove, mahagonove a ebenove drevo pro Umbarskou flotilu. Take budeme potrebovat obsidian. Prines mi to drevo!//10
+Vidis skreta, ktery se na prvni pohled lisi od ostatnich. V ruce drzi uhelnik a misto spiny ma na sobe trisky. I jeho pohled se zda ponekud bystrejsi.//11
+Do teto chvile bylo postaveno <?eval(memoryfindtype(Memory_ISpawned).link.tag(pocetLodi))?> lodi. A na dalsi lod je treba <?eval(memoryfindtype(Memory_ISpawned).link.tag(teakNeed))?> Teaku, <?eval(memoryfindtype(Memory_ISpawned).link.tag(mahagonNeed))?> Mahagonu a <?eval(memoryfindtype(Memory_ISpawned).link.tag(ebenNeed))?> Ebenu//12
+Najmi me do posadky!//13
+Vydrz! Napijes se jiz brzy krve z zil nepritele!//14
+Odevzdat//15
+Nejsi remeslnik, radsi zabij par Gondoru a nebo se nech naverbovat!//16
+
+[DIALOG d_craftmistrlog_mordor button]
+on=0
+on=1
+if (src.profession==class_craft)||(src.isgm)
+  f_mistr_craft_log
+else
+  say("Nemohu slouzit...")
+endif  
+
+[function f_spocitajLode]//teaku,mahagonu,ebenu na lod
+arg(te,<eval(tag(l_valoriteTotal))>)
+arg(ma,<eval(tag(l_obsidianTotal))>)
+arg(eb,<eval(tag(l_adamantinumTotal))>)
+//if ((<eval(arg(te)/<argv(0)>)>>=<eval(arg(ma)/<argv(1)>)>)&&(<eval(arg(ma)/<argv(1)>)>>=<eval(arg(eb)/<argv(2)>)>))
+arg(min,<eval(arg(te)/<argv(0)>)>)
+if (<min> > <eval(arg(ma)/<argv(1)>)>)
+  arg(min,<eval(arg(ma)/<argv(1)>)>)
+endif
+if (<min> > <eval(arg(eb)/<argv(2)>)>)
+  arg(min,<eval(arg(eb)/<argv(2)>)>)
+endif
+tag.pocetLodi=<arg(min)>
+//say(<tag.pocetLodi>)
+//  tag.pocetLodi=<eval(arg(te)/<argv(0)>)>
+//  while (<arg(pom)>>=1500)
+//    tag.pocetLodi=<tag(pocetLodi)>+1
+//    arg(pom,#-1500)
+//  endwhile
+//endif
+tag(teakNeed,<eval((1+<tag.pocetLodi>)*argv(0) - arg(te))>)
+tag.teakNeed=((<tag.pocetLodi>+1)*<argv(0)>)-<arg(te)>
+tag.mahagonNeed=((<tag.pocetLodi>+1)*<argv(1)>)-<arg(ma)>
+tag.ebenNeed=((<tag.pocetLodi>+1)*<argv(2)>)-<arg(eb)>
+if (<tag.teakNeed> < 0)
+  tag.teakNeed=0
+endif
+if (<tag.mahagonNeed> < 0)
+  tag.mahagonNeed=0
+endif
+if (<tag.ebenNeed> < 0)
+  tag.ebenNeed=0
+endif
+return(1)
+
+[events e_MRdialogClose]
+on=@step
+f_MRdialogClose
+
+on=@itemuserdclick
+f_MRdialogClose
+
+on=@SkillMakeItem
+f_MRdialogClose
+
+on=@SpellCast
+f_MRdialogClose
+
+[function f_MRdialogClose]
+if !(src.isGM)
+  src.dialogclose(d_craftmistrlog,0)
+  src.dialogclose(d_craftmistrlog_gondor,0)
+  src.dialogclose(d_craftmistrlog_mordor,0)
+endif
+events -e_MRdialogClose
+
+[defnames def_expcraft]//ingy ne
+def_expcraft_number  21
+def_expcraft[0]  i_log_copper,l_copper,Spruce
+def_expcraft[1]  i_log_iron,l_iron,Chestnut
+def_expcraft[2]  i_log_verite,l_verite,Oak
+def_expcraft[3]  i_log_valorite,l_valorite,Teak
+def_expcraft[4]  i_log_obsidian,l_obsidian,Mahagon
+def_expcraft[5]  i_log_adamantinum,l_adamantinum,Eben
+def_expcraft[6]  i_log_mithril,l_mithril,Elven
+def_expcraft[7]  i_ore_copper,o_copper,Copper
+def_expcraft[8]  i_ore_iron,o_iron,Iron
+def_expcraft[9]  i_ore_verite,o_verite,Verite
+def_expcraft[10]  i_ore_valorite,o_valorite,Valorite
+def_expcraft[11]  i_ore_obsidian,o_obsidian,Obsidian
+def_expcraft[12]  i_ore_adamantinum,o_adamantinum,Adamantinum
+def_expcraft[13]  i_ore_mithril,o_mithril,Mithril
+def_expcraft[14]  i_ingot_copper,o_copper,Copper
+def_expcraft[15]  i_ingot_iron,o_iron,Iron
+def_expcraft[16]  i_ingot_verite,o_verite,Verite
+def_expcraft[17]  i_ingot_valorite,o_valorite,Valorite
+def_expcraft[18]  i_ingot_obsidian,o_obsidian,Obsidian
+def_expcraft[19]  i_ingot_adamantinum,o_adamantinum,Adamantinum
+def_expcraft[20]  i_ingot_mithril,o_mithril,Mithril
+
+[eof]
+
+[comment]
+Spurce		10	//copper
+Chestnut	30	//iron
+Oak		100	//verite
+Teak		200	//valorite
+Mahagon		350	//obisidi
+Eben		550	//adami
+Elven		900	//mith
+
+Copper		10
+Iron		12
+Silver		30
+Gold		60
+Verite		120
+Valorite	250
+Obsidian	450
+Adamium		750
+Shadow		900
+Mithril		1000

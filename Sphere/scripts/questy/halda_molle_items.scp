@@ -1,0 +1,469 @@
+[ITEMDEF i_hm_prisada_1]
+ID=i_reag_ginseng
+NAME=Cast Maraliho korene
+TYPE=t_normal
+
+ON=@Create
+color=044c
+
+[ITEMDEF i_hm_prisada_2]
+ID=0102c
+NAME=Kura z lekorice
+TYPE=t_normal
+
+ON=@Create
+color=00840
+
+[ITEMDEF i_hm_prisada_3]
+ID=01783
+NAME=Lisejnik
+TYPE=t_normal
+
+ON=@Create
+color=00988
+
+on=@dropon_ground
+src.sysmessage("Prisada se rozpadla.")
+remove
+
+[ITEMDEF i_hm_prisada_4]
+ID=i_reag_black_pearl
+NAME=Prisada
+TYPE=t_normal
+WEIGHT=18
+
+ON=@Create
+color=00988
+
+ON=@UserClick
+if (<amount> > 1)
+  message("Kulicky ruliku")
+else
+  message("Kulicka ruliku")
+endif
+return 0
+
+[ITEMDEF i_hm_prisada_5_crop]
+ID=i_crop_turnip
+NAME=Podivny turin
+TYPE=t_normal
+
+ON=@Create
+attr=010
+color=00981
+tag(ready,1)
+
+ON=@Timer
+if(!<tag(ready)>)
+  tag(ready,1)
+  color=00981
+  attr=02
+  updatex
+endif
+return 1
+
+ON=@UserDclick
+if(<tag(ready)>)
+  if (chance(600,3)))
+    src.f_poison_doPoison(100,2)
+    src.sysmessage("<src.sex(Rizl,Rizla)> si se o turin.")
+  endif
+  scylla.delayedmessage("HM: Podivny Turin: <src.name> utrhl turin.")
+  src.newitemsafe(i_hm_prisada_5)
+  lastnew.equip
+  tag(ready,0)
+  timer=3600
+  attr=082
+  color=020
+  updatex
+endif
+return 1
+
+[ITEMDEF i_hm_prisada_5]
+ID=i_fruit_turnip
+NAME=Podivny turin
+TYPE=t_normal
+
+ON=@Create
+color=00981
+
+ON=@UserDclick
+scylla.delayedmessage("HM: Podivny Turin: <src.name> snedl turin. ZEMRE!")
+src.redmessage("Je ti nejak divne.")
+src.newitemsafe(i_hm_die)
+lastnew.equip
+lastnew.timer = 5
+remove
+return 1
+
+ON=@Equip
+if({1 100}<81)
+  src.f_poison_doPoison(49,4)
+  src.message(<src.sex(Porezal,Porezala)> si se o rostlinu. Citis mravenceni v ruce.)
+endif
+
+[ITEMDEF i_hm_jidlo_bonus]
+ID=0971
+NAME=Podivne jidlo
+TYPE=t_normal
+
+ON=@Create
+color=00981
+
+ON=@UserDClick
+src.sysmessage(Tohle je pouze pro Malicu, carodejku.)
+scylla.delayedmessage("HM: Podivne jidlo: <src.name> se snazi snist jidlo pro Malicu.")
+return 1
+
+[ITEMDEF i_hm_lekorice]
+ID=030A9
+NAME=Lekorice
+TYPE=t_normal
+
+ON=@Create
+ATTR=010|04
+tag(timer,<serv.time>)
+tag(spawn,0)
+tag(pocet_spawnu,0)
+
+ON=@UserDclick
+if(src.isGm)
+  scylla.delayedmessage("HM: Strom Lekorice: GM <src.name> rozklikal strom.")
+  message("Nesahat! Specialni strom!")
+  message("tag(pocet_spawnu,'napr 5')")
+  message("tag(spawn_'cislo spawnu',uidspawnu)")
+  return 1
+endif
+if(tag(spawn))
+  arg(i,1)
+  arg(pocet,0)
+  while(i <= <tag(pocet_spawnu)>)
+    arg(pocet,<arg(pocet)>+<finduid(tag(spawn_<i>)).more2>)
+    arg(i,#+1)
+  endwhile
+  if(<arg(pocet)> > 0)
+    scylla.delayedmessage("HM: Strom Lekorice: <src.name> - strom je stale hlidan.")
+    src.sysmessage("Strom je stale hlidan.")
+  else
+    src.newitemsafe(i_hm_prisada_2)
+    lastnew.bounce
+    tag(spawn,0)
+    
+    arg(i,1)
+    while(i <= <tag(pocet_spawnu)>)
+      finduid(tag(spawn_<i>)).type=t_negated_spawn_char  
+      arg(i,#+1)
+    endwhile
+    scylla.delayedmessage("HM: Strom Lekorice: <src.name> ziskal prisadu Lekorice.")    
+  endif
+else
+  if(<tag(timer)> < <serv.time>)
+    tag(timer,<serv.time>+(10*60*30))
+    arg(i,1)
+    while(i <= <tag(pocet_spawnu)>)
+      finduid(<tag(spawn_<i>)>).type = t_spawn_char
+      finduid(<tag(spawn_<i>)>).more1 = <tag(spawn_<i>_body)>  
+      finduid(<tag(spawn_<i>)>).timer = 1
+      arg(i,#+1)
+    endwhile
+    tag(spawn,1)
+    src.sysmessage("Slo te moc slyset, probudil si strazce.")
+    scylla.delayedmessage("HM: Strom Lekorice: <src.name> probudil strazce.")  
+  else
+    src.message("Nevidis zde zadnou kuru ktera by sla utrhnout.")
+    scylla.delayedmessage("HM: Strom Lekorice: <src.name> se snazi utrhnout kuru ktera tam neni.") 
+  endif
+endif
+return 1 
+
+[ITEMDEF i_hm_npc_remove]
+ID=i_memory
+NAME=mazatko potvory
+TYPE=T_EQ_SCRIPT
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+
+ON=@TIMER
+if(cont.isChar)                                                 
+  cont.remove
+endif
+return 1
+
+[ITEMDEF i_hm_die]
+ID=i_memory
+NAME=zabijatko
+TYPE=T_EQ_SCRIPT
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+more1=1
+
+ON=@TIMER
+if (cont.isPlayer)
+  if(<more1>==1)
+    cont.say("*Snedl podivny turin.*")
+    cont.redmessage("Je ti nejak divne.")
+    timer=2
+    more1 = 0
+  else
+    cont.hits = 0
+  endif
+endif
+return 1
+
+///////////////////////////////////////////////
+////  KOTLIK
+/////////////////////////////////////////////
+
+[ITEMDEF i_hm_kotlik]
+ID=0974
+NAME=Varici kotel
+TYPE=t_normal
+
+ON=@Create
+ATTR=010
+tag(ruliku,0)
+tag(turin,0)
+tag(time,<serv.time>)
+
+ON=@Timer
+if(tag(time) < <serv.time>)
+  tag(ruliku,0)
+  tag(turin,0)
+  tag.remove(i_hm_prisada_1)
+  tag.remove(i_hm_prisada_2)
+  tag.remove(i_hm_prisada_3) 
+else
+  timer = 5
+  if(!hm_kotlik_isfull)
+    emote("chybi suroviny.")
+  endif 
+endif
+return 1
+
+ON=@UserDclick
+if(!hm_kotlik_isfull)
+  if(<src.cooking> >= 500)
+    target("Jakou surovinu chces pridat?")
+  else
+    src.sysmessage("Nevis jak kotlik pouzit.")
+  endif
+else
+  if(<eval tag(fire)>)
+    if(<src.cooking> < 700)
+      dialog d_YesNo_hm_priprava_jidla
+    elseif (<src.cooking> < 900)
+      dialog d_YesNo_hm_priprava_jidla // ANO NE
+    else
+      dialog d_YesNo_hm_priprava_jidla
+    endif
+  else
+    scylla.delayedmessage("HM: Kotlik: <src.name> nezapalil ohen u kotliku.")
+    src.redmessage("Bez ohne to nepujde.")
+  endif
+endif
+return 1
+
+ON=@Targon_Char
+scylla.delayedmessage("HM: Kotlik: <src.name> se snazi uvarit jineho hrace.")
+src.sysmessage("A sup s <src.targ.sex(nim,ni)> do kotle!")
+src.targ.sysmessage("<src.name> te chce uvarit v kotli!")
+return 1
+                                                                                                
+ON=@Targon_Item
+arg(change,0)
+if(src.targ.baseid == i_hm_prisada_1) || (src.targ.baseid == i_hm_prisada_2) || (src.targ.baseid == i_hm_prisada_3)  
+  src.sysmessage(<src.sex(Pridal,Pridala)> si <src.targ.name> do kotle.)
+  tag(<src.targ.baseid>,1)
+  src.targ.remove
+  arg(change,1)
+elseif (src.targ.baseid == i_hm_prisada_4)
+  tag(ruliku,<eval(tag(ruliku)+<src.targ.amount>)>)
+  if (tag(ruliku)==1)
+    src.sysmessage(<src.sex(Pridal,Pridala)> si rulik do kotle. Uz v nem mas <tag(ruliku)> kulicka ruliku.) 
+  elseif(tag(ruliku) < 5)
+    src.sysmessage(<src.sex(Pridal,Pridala)> si rulik do kotle. Uz v nem mas <tag(ruliku)> kulicky ruliku.)
+  else
+    src.sysmessage(<src.sex(Pridal,Pridala)> si rulik do kotle. Uz v nem mas <tag(ruliku)> kulicek ruliku.)
+  endif
+  src.targ.remove
+  arg(change,1)
+elseif (src.targ.baseid == i_hm_prisada_5)
+  tag(turin,<eval(tag(turin)+<src.targ.amount>)>)
+  if (tag(turin)==1)
+    src.sysmessage(<src.sex(Pridal,Pridala)> si turin do kotle. Uz v nem mas <tag(turin)> kousek.) 
+  elseif(tag(turin) < 5)
+    src.sysmessage(<src.sex(Pridal,Pridala)> si turin do kotle. Uz v nem mas <tag(turin)> kousky.)
+  else
+    src.sysmessage(<src.sex(Pridal,Pridala)> si turin do kotle. Uz v nem mas <tag(turin)> kousku.)
+  endif
+  src.targ.remove
+  arg(change,1)
+else
+  src.sysmessage("Tohle tam nepatri.")
+endif
+if(<change>==1)
+  if (tag(time) < <serv.time>)
+    tag(time,<serv.time>+3600)
+  endif
+  if (hm_kotlik_isfull)
+    color = 098c
+  endif 
+endif
+return 1
+
+[dialog d_YesNo_hm_priprava_jidla]
+if(<src.cooking> < 500) 
+  argo.f_dialog_YesNo("Radeji na to nesahej!")
+elseif (<src.cooking> < 900)
+  argo.f_dialog_YesNo("Opravdu s tim chces zkusit neco udelat?")
+else
+  argo.f_dialog_YesNo("Chces se pokusit tu smes uvarit?")
+endif
+
+[dialog d_YesNo_hm_priprava_jidla Button]
+on=1
+if(src.hm_dokoncit_jidlo)
+  src.sysmessage(Jidlo se ti povedlo.)
+  src.newitemsafe(i_hm_jidlo_bonus)
+  lastnew.bounce <src>
+  scylla.delayedmessage("HM: Kotlik: <src.name> uvaril jidlo pro Malicu.")
+else
+  src.sysmessage(Jidlo se ti nepodarilo pripravit.)
+  scylla.delayedmessage("HM: Kotlik: <src.name> se nepovedlo uvarit jidlo pro Malicu.")
+endif
+src.cooking = <eval(<src.cooking>)>+1
+tag(ruliku,0)
+tag(turin,0)
+tag.remove(i_hm_prisada_1)
+tag.remove(i_hm_prisada_2)
+tag.remove(i_hm_prisada_3)
+color=0 
+
+[function hm_dokoncit_jidlo]
+if(<cooking> < 500)
+  return <chance(<cooking>/2,3)>
+else (<cooking> < 900)
+  return <chance(<cooking>,3)>
+endif
+
+[function hm_kotlik_isfull]
+if(tag(i_hm_prisada_1)) && (tag(i_hm_prisada_2)) && (tag(i_hm_prisada_3)) && (tag(turin) > 4) && (tag(ruliku) > 19)   
+  return 1
+endif
+return 0
+
+[itemdef i_hm_drevonaohen]
+id=i_kindling
+type=0
+name=Drevo na ohen
+
+ON=@UserDclick
+name=Ohen
+if (link.isItem)
+  src.newitemsafe(i_hm_ohen)
+  lastnew.tag(creator,<src.uid>)
+  lastnew.p = <p>
+  lastnew.link = <link>
+  link.tag(fire,1)            
+else
+  src.redmessage("Spatne nastaven, mazu.")
+endif
+remove
+return 1
+
+[itemdef i_hm_ohen]
+id=i_campfire
+type=0
+name=Ohen
+
+ON=@Create
+timer=1800
+
+ON=@Timer
+tag(creator).newitemsafe(i_hm_drevonaohen)
+lastnew.p = <p>
+lastnew.link = <link>
+link.tag.remove(fire)
+remove        
+
+/////////////////////////////////////////////
+////// WARNACI VEJCE ////////////////////////
+/////////////////////////////////////////////
+
+[itemdef i_hm_warniak_egg]
+id=i_virtstone_1
+type=0
+name=Vejce
+
+ON=@Create
+attr=010
+color=0481
+tag(warniak_type,1)
+timer=60
+
+ON=@Step
+if(!<eval tag(rozslaple)>)
+  if(src.isgm)
+    return 1
+  endif
+  if(<src.weight> > 4000)
+    tag(rozslaple,1)
+    timer=60
+    src.sysmessage("Rozslapl si vejce.")
+  else
+    src.sysmessage("Nedokazes rozeslapnout vejce.")
+  endif
+endif
+
+ON=@Timer
+if(!<eval tag(rozslaple)>)
+  link.type = t_spawn_char
+  link.timer = 1
+  sfx(780) 
+endif
+remove
+return 1
+
+[itemdef i_hm_spawn_remove]
+id=i_worldgem_bit
+type=0
+name=Spawn delete
+
+ON=@Create
+Timer=700
+
+ON=@Timer
+if(link.isItem)
+  link.remove
+endif
+  
+[ITEMDEF i_hm_bow_malica]
+ID=i_memory
+NAME=malica gate cast
+TYPE=T_EQ_SCRIPT
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+timer=1
+
+ON=@TIMER
+if(itemExists(<link>))
+  cont.bow
+  timer={1 3}
+  dorand 5
+    cont.say("Pospeste! Dlouho tu branu neudrzim.")
+    cont.say("Snazim se udrzet branu otevrenou!")
+    cont.say("Rychle!!")
+    cont.say("Nemate na to mnoho casu!")
+    cont.say("Pospeste!")
+  enddo
+  sfx(482)
+else
+  remove
+endif
+return 1
+
+
+[eof]

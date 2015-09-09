@@ -1,0 +1,163 @@
+///////////////////////////////////////////////////////////////
+//////////// QUESTY MURLAY NAMORNIK - NAPISAL PETO ////////////
+///////////////////////////////////////////////////////////////
+/// tagy:
+/// (src.qtag(q029_murlay_namornik,0) = nema nic dociennia s questom
+/// (src.qtag(q029_murlay_namornik,1) = prijal ukol od murlaya
+/// (src.qtag(q029_murlay_namornik,6) = splnil ukol od murlaya
+/// (src.qtag(q029_murlay_namornik,2) = prijal ukol od etirasa
+/// (src.qtag(q029_murlay_namornik,3) = splnil ukol od etirasa
+/// (src.qtag(q029_murlay_namornik,4) = prijal ukol od sevedia
+/// (src.qtag(q029_murlay_namornik,5) = splnil ukol od sevedia
+///////////////////////////////////////////////////////////////
+
+
+///// NPC MURLAY NAMORNIK
+
+[chardef c_q029_murlay_namornik]
+id=c_man
+name=Namornik Murlay
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+TSPEECH=spk_q029_murlay_namornik
+
+CATEGORY=Moria Questy
+SUBSECTION=q029_murlay_namornik
+DESCRIPTION=Namornik Murlay
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+STR=1000
+DEX=1000
+INT=1000
+
+ANATOMY={55.0 78.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+RESIST={30.0 40.0}
+
+tag(noanimate,1)
+
+maxhits=1500
+maxstam={100 150}
+maxmana=40
+
+tag.resist_para=550
+tag.resist_poison=650
+
+ITEMNEWBIE=i_hair_long
+COLOR=0025
+ITEMNEWBIE=i_beard_long
+COLOR=0025
+
+ITEMnewbie=i_boots_thigh
+COLOR=0000
+ITEMnewbie=i_pants_long
+COLOR=0008
+ITEMnewbie=i_shirt_plain
+COLOR=0000
+
+SELL=vendor_s_mapmaker
+
+ON=@userDClick
+f_qDClick(f_q029_murlay_namornik)
+
+///// NPC ETIRAS
+
+[CHARDEF c_q029_murlay_etiras]
+NAME=Etiras
+ID=C_MAN
+
+TSPEECH=spk_q029_murlay_etiras
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+TITLE=Podivny tulak
+
+COOKING={55.0 78.0}
+TasteID={50.0 70.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@UserDClick
+f_qDClick(f_q029_murlay_etiras)
+
+ON=@NPCRestock
+ITEMnewbie=i_robe
+COLOR=00000
+ITEMnewbie=i_sandals
+color=00000
+
+
+
+CATEGORY=Moria Questy
+SUBSECTION=q029 - murlay namornik
+DESCRIPTION=Murlay - Etiras
+
+///// NPC SEVEDIA
+
+[CHARDEF c_q029_murlay_sevedia]
+NAME=Sevedia
+ID=C_WOMAN
+
+TSPEECH=spk_q029_murlay_sevedia
+
+TEVENTS=e_character
+TEVENTS=e_item_refuser
+
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+STR=150
+DEX=150
+INT=100
+TITLE=Zvlastna zena
+
+COOKING={55.0 78.0}
+TasteID={50.0 70.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 38.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@UserDClick
+f_qDClick(f_q029_murlay_sevedia)
+
+
+ON=@NPCRestock
+ITEMnewbie=i_skirt_long
+COLOR=00000
+ITEMnewbie=i_doublet
+COLOR=00000
+ITEMnewbie=i_sandals
+color=00201
+
+
+
+CATEGORY=Moria Questy
+SUBSECTION=q029 - murlay namornik
+DESCRIPTION=Murlay - Sevedia
+
+[eof]

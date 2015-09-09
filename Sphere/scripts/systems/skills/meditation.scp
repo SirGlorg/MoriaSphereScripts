@@ -1,0 +1,98 @@
+[events e_meditation]
+on=@step
+if (action==skill_meditation)
+ sysmessage(Pohybem jsi ztratil soustredeni)
+ skill=-1
+endif
+events=-e_meditation
+
+//the rest is momentally unused
+
+
+//if (findid(i_medit_timer))
+// findid(i_medit_timer).morex=0//preruseni meditace
+// findid(i_medit_timer).timer=0
+//else
+// events=-e_meditation
+//endif
+
+
+[function f_meditate]
+action=-1
+sysmessage(Medit start)
+if (findid(i_medit_timer))
+ findid(i_medit_timer).morex=1
+ findid(i_medit_timer).timer=1
+ sysmessage You must wait to perform another action
+ action=-1
+ return 1
+endif
+if (findid(i_a_mana_shield))
+ findid(i_medit_timer).morex=1
+ findid(i_medit_timer).timer=1 
+ sysmessage(Tva mysl se soustredi na udrzeni ochranne bariery...)
+ action=-1 
+ return 1
+endif
+if (mana==int)
+ sysmessage You are at peace.
+else
+ sysmessage You attempt a meditative trance.
+ newitem i_medit_timer
+ act.equip
+endif
+return 1
+
+[itemdef i_medit_timer]
+ID=i_memory
+TYPE=t_eq_script
+name=Meditace
+
+ON=@Equip
+more1=0
+more2h=<promilerange((<cont.meditation>),<SKILL_MEDITATION.effect>)>//mnozstvi many pridane za 10 sekund
+if (more2h==0)
+more2h=1
+endif
+more2l=1 
+morex=0
+timer=1
+cont.tag.mi_manareg=<eval <cont.tag.mi_manareg>>+<more2h>
+cont.regenrefresh
+
+on=@timer
+if (<cont.meditation>>{0 1020})&&(more1==0)
+ cont.sysmessage Your attempt was succesfull.
+ cont.events=+e_meditation
+ sfx snd_spell_incognito
+ more1=1
+//elseif (more1==0)
+ morex=1
+endif
+if (morex)
+ if (<cont.mana><<cont.maxmana>)
+ //nic?
+ else
+  cont.mana=<cont.maxmana>
+  cont.sysmessage You are at peace.
+  cont.sfx snd_spell_telekinesis
+  remove
+ endif
+else
+ cont.sysmessage You have lost your concentration.
+ remove
+ return 1
+endif
+more1=<more1>+1
+timer 1
+return 1
+
+on=@unequip
+cont.events=-e_meditation
+cont.tag.mi_manareg=<cont.tag.mi_manareg>-<more2h>
+return 0
+
+
+
+
+[eof]

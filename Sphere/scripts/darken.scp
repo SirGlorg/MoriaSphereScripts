@@ -1,0 +1,965 @@
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//// Brana zapisujici aktualni cas. Staci porovnat velikost cisel mezi hraci //// 
+/////////////////////////////////////////////////////////////////////////////////
+[itemdef i_brana_cas]
+NAME=Brana
+ID=i_moongate_blue
+TYPE=T_telepad
+CATEGORY=Questy	
+SUBSECTION=Brana zapisujici aktualni cas
+DESCRIPTION=Brana
+
+ON=@step
+if <src.restest i_svitek_cas>
+src.syssmesage(Uz mas svitek)
+ELSE
+src.newitem=i_svitek_cas
+src.act.bounce
+src.go=MOREP
+return 1
+
+[itemdef i_svitek_cas]
+NAME=Svitek casu
+ID=i_scroll_blank
+TYPE=T_floor
+CATEGORY=Kvesty
+SUBSECTION=Svitek casu
+DESCRIPTION=Svitek casu
+
+ON=@Create
+name=<serv.time>
+attr=attr_newbie
+attr=attr_move_never 
+
+
+
+//////////////////////////////////////////////////////////////////////
+/////  Brana odebirajici urcenou sumu GP- sumu urcujeme v more2  /////
+//////////////////////////////////////////////////////////////////////
+
+[itemdef i_branka_poplatek]
+NAME=Brana
+ID=i_moongate_blue
+TYPE=T_telepad
+CATEGORY=Questy	
+SUBSECTION=Brana odebirajici urcity obnos
+DESCRIPTION=Brana
+
+on=@create
+more2=5000
+
+on=@step
+if <src.restest <MORE2> i_gold>
+SRC.CONSUME <MORE2> i_gold
+SRC.redMESSAGE(Prosil jsi branou a s batohu ti byla odebrana patricna suma.)
+SRC.GO=<MOREP>
+ELSE
+SRC.redMESSAGE(Nemas dostatecny obnos! Vem si do batohu vice zlataku!)
+SRC.GO=<P>
+ENDIF
+
+
+on=@userdclick
+if (src.isgm)
+ src.redmessage(V MoreP nastavime pozici kam to hrace ma hodit, v more2 nastavujeme sumu kterou mu to ma odebrat. Do jmena brany pridejte take castku kterou bere pr. Brana odebirajici 500gp. Enjoy.)
+ ENDIF
+ 
+ 
+// Zavodni brana pridava pri projiti svitek barvy nastavene v morep2
+// doporucuji nastavit stejnou barvu na branku. (kontroluje a pridava pouze jeden)
+// svitej je newbie a nevermovable, vsechny svitky by meli byt odebrany odchozi branou.
+// odchozi brana odebere svitky, a hrace posle home.
+// Vyuziti: Dostihy, a jine zavody.
+
+[itemdef i_svitek_brany]
+NAME=Svitek
+ID=i_scroll_blank
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=Svitek brany
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never 
+
+on=@userdclick 
+return 1
+
+[itemdef i_zavodni_branka]
+NAME=Zavodni Branka
+ID=04f3
+TYPE=T_floor
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=Zavodni brana
+
+on=@step
+if (<src.tag.zavody_dlazka_<eval <more2>>> < 1)
+  datsvitek(<more2>)
+  src.tag.zavody_dlazka_<eval <more2>>=1
+else
+src.sysmessage(Touto branou jsi jiz prosel)
+endif
+
+[itemdef i_odchozi_brana]
+NAME=Exit Brana
+ID=04f3
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=Exit brana
+
+on=@create
+COLOR=00980
+
+on=@step
+zrusit_tagy_zavodu
+src.consume(<src.rescount(i_svitek_brany)> i_svitek_brany)
+src.consume(<src.rescount(i_svitek_cile)> i_svitek_cile)
+src.consume(<src.rescount(i_svitek_neuspel)> i_svitek_neuspel)
+src.redmessage(Odesel jsi ze zavodu, pokud ti zustaly svitky, kontaktuj gm)
+src.gohome
+return 1
+
+[ITEMDEF i_hulka_na_zavody]
+NAME=Magicka hulka
+ID=0df2
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=Magicka hulka
+
+ON=@userDClick
+if (<src.account.plevel> >= 2)
+  DIALOG(d_hulka_na_zavody)
+else
+  remove
+  src.redmessage(Toto se Ti nemelo dostat do ruky !!!)
+endif
+ENDIF
+
+
+[itemdef i_cilova_branka]
+NAME=Cilova Branka
+ID=04f3
+TYPE=T_floor
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=Cilova brana
+
+on=@create
+more2=10
+
+
+on=@step
+IF (<src.rescount(i_svitek_brany)> >= <more2>)
+  src.newitem=i_svitek_cile
+  src.act.bounce 
+  src.go=5838,3731,-80
+else
+  src.newitem=i_svitek_neuspel  
+  src.act.bounce
+  src.go=5838,3731,-80
+  return 0
+endif
+
+
+[itemdef i_svitek_cile]
+NAME=Svitek cile
+ID=i_scroll_blank
+TYPE=T_floor
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=Svitek cile
+
+ON=@Create
+name=<eval serv.time>
+attr=attr_newbie
+attr=attr_move_never 
+
+[itemdef i_bonusova_branka_xp]
+NAME=Bonusova brana
+ID=i_moongate_blue
+TYPE=T_floor
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=Bonusovka xp
+
+on=@create
+more2=100
+
+on=@step
+if (src.isdead)
+  src.sysmessage musis byt nazivu
+  return 1
+else
+  src.addexp(<more2>)
+  remove
+endif
+
+[itemdef i_bonusova_branka_itemek]
+NAME=Bonusova brana
+ID=i_moongate_blue
+TYPE=T_floor
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=Bonusovka itemek
+
+on=@step
+if (src.isdead)
+  src.sysmessage musis byt nazivu
+  return 1
+else
+  src.newitem=i_mi_bag
+  src.act.bounce
+  remove
+endif
+
+[itemdef i_bonusova_branka_gp]
+NAME=Bonusova brana
+ID=i_moongate_blue
+TYPE=T_floor
+CATEGORY=Kvesty
+SUBSECTION=Zavody
+DESCRIPTION=bonusovka gp
+
+on=@create
+more2=1000
+
+on=@step
+if (src.isdead)
+  src.sysmessage musis byt nazivu
+  return 1
+else
+  src.newITEM=i_gold,(<more2>)
+  src.act.bounce
+  remove
+endif
+
+[function zrusit_tagy_zavodu]
+src.tag.remove(zavody_dlazka_1)
+src.tag.remove(zavody_dlazka_2)
+src.tag.remove(zavody_dlazka_3)
+src.tag.remove(zavody_dlazka_4)
+src.tag.remove(zavody_dlazka_5)
+src.tag.remove(zavody_dlazka_6)
+src.tag.remove(zavody_dlazka_7)
+src.tag.remove(zavody_dlazka_8)
+src.tag.remove(zavody_dlazka_9)
+src.tag.remove(zavody_dlazka_10)
+src.tag.remove(zavody_dlazka_11)
+src.tag.remove(zavody_dlazka_12)
+src.tag.remove(zavody_dlazka_13)
+src.tag.remove(zavody_dlazka_14)
+src.tag.remove(zavody_dlazka_15)
+src.tag.remove(zavody_dlazka_16)
+src.tag.remove(zavody_dlazka_17)
+src.tag.remove(zavody_dlazka_18)
+src.tag.remove(zavody_dlazka_19)
+src.tag.remove(zavody_dlazka_20)
+src.tag.remove(zavody_dlazka_21)
+
+
+
+[function datdlazku]
+src.newitem(tm_dlazka_barva_<args>) 
+src.act.bounce
+
+[template tm_dlazka_barva_1]
+ITEM=i_zavodni_branka
+COLOR=0097f
+more2=1
+
+[template tm_dlazka_barva_2]
+ITEM=i_zavodni_branka
+COLOR=00980
+more2=2
+
+[template tm_dlazka_barva_3]
+ITEM=i_zavodni_branka
+COLOR=0099d
+more2=3
+
+[template tm_dlazka_barva_4]
+ITEM=i_zavodni_branka
+COLOR=00981
+more2=4
+
+[template tm_dlazka_barva_5]
+ITEM=i_zavodni_branka
+COLOR=00986
+more2=5
+
+[template tm_dlazka_barva_6]
+ITEM=i_zavodni_branka
+COLOR=00988
+more2=6
+
+[template tm_dlazka_barva_7]
+ITEM=i_zavodni_branka
+COLOR=0098e
+more2=7
+
+[template tm_dlazka_barva_8]
+ITEM=i_zavodni_branka
+COLOR=00989
+more2=8
+
+[template tm_dlazka_barva_9]
+ITEM=i_zavodni_branka
+COLOR=0098a
+more2=9
+
+[template tm_dlazka_barva_10]
+ITEM=i_zavodni_branka
+COLOR=00983
+more2=10
+
+[template tm_dlazka_barva_11]
+ITEM=i_zavodni_branka
+COLOR=00984
+more2=11
+
+[template tm_dlazka_barva_12]
+ITEM=i_zavodni_branka
+COLOR=00987
+more2=12
+
+[template tm_dlazka_barva_13]
+ITEM=i_zavodni_branka
+COLOR=0098f
+more2=13
+
+[template tm_dlazka_barva_14]
+ITEM=i_zavodni_branka
+COLOR=0098c
+more2=14
+
+[template tm_dlazka_barva_15]
+ITEM=i_zavodni_branka
+COLOR=0098d
+more2=15
+
+[template tm_dlazka_barva_16]
+ITEM=i_zavodni_branka
+COLOR=00982
+more2=16
+
+[template tm_dlazka_barva_17]
+ITEM=i_zavodni_branka
+COLOR=0098b
+more2=17
+
+[template tm_dlazka_barva_18]
+ITEM=i_zavodni_branka
+COLOR=00990
+more2=18
+
+[template tm_dlazka_barva_19]
+ITEM=i_zavodni_branka
+COLOR=00995
+more2=19
+
+[template tm_dlazka_barva_20]
+ITEM=i_zavodni_branka
+COLOR=00999
+more2=20
+
+[template tm_dlazka_barva_21]
+ITEM=i_zavodni_branka
+COLOR=0099b
+more2=21
+
+
+[function datsvitek]
+src.newitem(tm_svitek_barva_<eval <args>>) 
+src.act.bounce
+
+[template tm_svitek_barva_1]
+ITEM=i_svitek_brany
+COLOR=0097f
+more2=0097f
+
+[template tm_svitek_barva_2]
+ITEM=i_svitek_brany
+COLOR=00980
+more2=00980
+
+[template tm_svitek_barva_3]
+ITEM=i_svitek_brany
+COLOR=0099d
+more2=0099d
+
+[template tm_svitek_barva_4]
+ITEM=i_svitek_brany
+COLOR=00981        
+more2=00981        
+                   
+[template tm_svitek_barva_5]
+ITEM=i_svitek_brany
+COLOR=00986          
+more2=00986          
+                     
+[template tm_svitek_barva_6]
+ITEM=i_svitek_brany      
+COLOR=00988               
+more2=00988               
+                          
+[template tm_svitek_barva_7]
+ITEM=i_svitek_brany      
+COLOR=0098e               
+more2=0098e               
+                          
+[template tm_svitek_barva_8]
+ITEM=i_svitek_brany      
+COLOR=00989               
+more2=00989               
+                          
+[template tm_svitek_barva_9]
+ITEM=i_svitek_brany      
+COLOR=0098a               
+more2=0098a               
+                          
+[template tm_svitek_barva_10]
+ITEM=i_svitek_brany
+COLOR=00983          
+more2=00983          
+                     
+[template tm_svitek_barva_11]
+ITEM=i_svitek_brany      
+COLOR=00984               
+more2=00984               
+                          
+[template tm_svitek_barva_12]
+ITEM=i_svitek_brany      
+COLOR=00987               
+more2=00987               
+                          
+[template tm_svitek_barva_13]
+ITEM=i_svitek_brany      
+COLOR=0098f               
+more2=0098f               
+                          
+[template tm_svitek_barva_14]
+ITEM=i_svitek_brany      
+COLOR=0098c               
+more2=0098c               
+                          
+[template tm_svitek_barva_15]
+ITEM=i_svitek_brany
+COLOR=0098d          
+more2=0098d          
+                     
+[template tm_svitek_barva_16]
+ITEM=i_svitek_brany      
+COLOR=00982               
+more2=00982               
+                          
+[template tm_svitek_barva_17]
+ITEM=i_svitek_brany      
+COLOR=0098b               
+more2=0098b               
+                          
+[template tm_svitek_barva_18]
+ITEM=i_svitek_brany      
+COLOR=00990               
+more2=00990               
+                          
+[template tm_svitek_barva_19]
+ITEM=i_svitek_brany      
+COLOR=00995               
+more2=00995               
+                          
+[template tm_svitek_barva_20]
+ITEM=i_svitek_brany
+COLOR=00999        
+more2=00999        
+                   
+[template tm_svitek_barva_21]
+ITEM=i_svitek_brany
+COLOR=0099b
+more2=0099b
+
+
+[dialog d_hulka_na_zavody]
+5,5
+page 0
+resizepic 140 190 2620 535 370 
+text 180 210 52 0
+
+button 160 240 0988 0988 1 0 25
+text 185 242 1152 25
+button 325 240 0988 0988 1 0 26
+text 345 242 1152 26
+button 490 240 0988 0988 1 0 27
+text 515 242 1152 27
+
+button 160 270 0988 0988 1 0 22
+text 185 272 1152 22
+button 325 270 0988 0988 1 0 23
+text 345 272 1152 23
+button 490 270 0988 0988 1 0 24
+text 515 272 1152 24
+
+button 160 330 0988 0988 1 0 1
+text 185 332 1152 1
+button 325 330 0988 0988 1 0 2
+text 345 332 1152 2
+button 490 330 0988 0988 1 0 3
+text 515 332 1152 3
+
+button 160 360 0988 0988 1 0 4
+text 185 362 1152 4          
+button 325 360 0988 0988 1 0 5
+text 345 362 1152 5          
+button 490 360 0988 0988 1 0 6
+text 515 362 1152 6
+
+button 160 390 0988 0988 1 0 7
+text 185 392 1152 7          
+button 325 390 0988 0988 1 0 8
+text 345 392 1152 8          
+button 490 390 0988 0988 1 0 9
+text 515 392 1152 9
+
+button 160 420 0988 0988 1 0 10
+text 185 422 1152 10         
+button 325 420 0988 0988 1 0 11
+text 345 422 1152 11         
+button 490 420 0988 0988 1 0 12
+text 515 422 1152 12
+
+button 160 450 0988 0988 1 0 13
+text 185 452 1152 13         
+button 325 450 0988 0988 1 0 14
+text 345 452 1152 14         
+button 490 450 0988 0988 1 0 15
+text 515 452 1152 15
+
+button 160 480 0988 0988 1 0 16
+text 185 482 1152 16         
+button 325 480 0988 0988 1 0 17
+text 345 482 1152 17         
+button 490 480 0988 0988 1 0 18
+text 515 482 1152 18
+
+button 160 510 0988 0988 1 0 19
+text 185 512 1152 19         
+button 325 510 0988 0988 1 0 20
+text 345 512 1152 20         
+button 490 510 0988 0988 1 0 21
+text 515 512 1152 21
+
+text 220 310 80 28
+text 400 210 11 29
+
+[dialog d_hulka_na_zavody text]
+Hulka pro zavody
+Verit		// 0097f	
+Fialova 1	// 00980	
+Fialova 2	// 0099d	
+Ohniva 1	// 00981	
+Ohniva 2	// 00986	
+Ohniva 3	// 00988	
+Ohniva 4	// 0098e	
+Obsid 1		// 00989	
+Obsid 2		// 0098a	
+Ice 1		// 00983	
+Ice 2		// 00984	
+Ice 3		// 00987	
+Ice 4		// 0098f	
+Ruda 1		// 0098c	
+Ruda 2		// 0098d	
+Blood		// 00982	
+Mithril		// 0098b	
+Domodra		// 00990	
+Zlata		// 00995	
+Ada		// 00999	
+Piskova		// 0099b	
+Odchozi brana
+Cilova brana
+HELP
+Item Bonus
+XP Bonus
+GP Bonus
+Pridat dlazdici barvy:
+Darken & Vohryzek (Moria)
+
+[dialog d_hulka_na_zavody button]
+on=0
+return 1
+on=1
+datdlazku(1)
+on=2
+datdlazku(2)
+on=3
+datdlazku(3)
+on=4
+datdlazku(4)
+on=5
+datdlazku(5)
+on=6
+datdlazku(6)
+on=7
+datdlazku(7)
+on=8
+datdlazku(8)
+on=9
+datdlazku(9)
+on=10
+datdlazku(10)
+on=11
+datdlazku(11)
+on=12         
+datdlazku(12)
+on=13         
+datdlazku(13)
+on=14         
+datdlazku(14)
+on=15         
+datdlazku(15)
+on=16         
+datdlazku(16)
+on=17         
+datdlazku(17)
+on=18         
+datdlazku(18)
+on=19         
+datdlazku(19)
+on=20
+datdlazku(20)
+on=21
+datdlazku(21)
+on=22
+  src.newitem=i_odchozi_brana
+  src.act.bounce
+on=23
+  src.newitem=i_cilova_branka
+  src.act.bounce
+on=24
+  dialog(d_hulka_help)
+on=25
+  src.newitem=i_bonusova_branka_itemek
+  src.act.bounce
+on=26
+  src.newitem=i_bonusova_branka_xp
+  src.act.bounce
+on=27
+  src.newitem=i_bonusova_branka_gp
+  src.act.bounce
+  
+[dialog d_hulka_help]
+5,5
+page 0
+resizepic 200 200 2620 580 300
+text 220 220 52 0
+text 220 250 1152 1
+text 220 280 1152 2
+text 220 310 1152 3
+text 220 340 1152 4
+text 220 380 1152 5
+text 220 400 1152 6
+text 220 420 1152 7
+text 220 450 1152 8
+text 500 220 11 9
+
+[dialog d_hulka_help text]
+Help k hulce:
+Cilova branka da svitek se server time, pokud ma hrac more2 "Svitku bran"
+Odchozi branka smaze vsechny svitky a zrusi tagy.
+Bonus XP gata prida more2 expu, pouze jendomu hraci.. pritom zmizi.
+Bonus GP gata prida more2 gp, pouze jendomu hraci.. pritom zmizi.
+Kazda branka pridava on@step "Svitek brany" sve barvy a zaroven tag,
+pokud do parametru more2 Cilove branky nastavite pocet bran (default je 10)
+dostane hrac svitek s casem teprve ma-li 10 libovolnych svitku.
+Script je primarne urcen pro orientacni zavody, dostihy atp.
+Darken & Vohryzek (Moria)
+
+[ITEMDEF i_darken_dlazdicesmrti]
+ID=i_floor_marble
+NAME=Smrt
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+src.hits=0
+
+
+[ITEMDEF i_darken_dlazdicex]
+ID=i_floor_marble
+NAME=Ostatni pismena
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.abchadanka>==10)
+src.tag.remove(abchadanka)
+SAY Cvak
+else
+src.tag.abchadanka=10
+endif
+
+
+
+
+
+
+[ITEMDEF i_darken_dlazdicet]
+ID=i_floor_marble
+NAME=T
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag(abchadanka)> == 10)
+src.tag.abchadanka=1
+SAY Cvak
+elseIF (<src.tag(abchadanka)> == 0)
+src.tag.abchadanka=1
+SAY Cvak
+elseif (<src.tag.abchadanka> == 6)
+src.tag.abchadanka=7
+SAY Cvak
+ELSEIF (<src.tag.abchadanka> ==1)
+src.tag.abchadanka=1
+ELSEIF (<src.tag.abchadanka> ==7)
+src.tag.abchadanka=7
+else
+src.tag.remove(abchadanka)
+SAY Cvak
+ENDIF
+
+[ITEMDEF i_darken_dlazdicea]
+ID=i_floor_marble
+NAME=A
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.abchadanka> == 1 )
+src.tag.abchadanka=2
+SAY Cvak
+ELSEIF (<src.tag.abchadanka> ==2)
+src.tag.abchadanka=2
+else
+src.tag.remove(abchadanka)
+SAY Cvak
+ENDIF
+
+
+[ITEMDEF i_darken_dlazdicej]
+ID=i_floor_marble
+NAME=J
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.abchadanka> == 2)
+src.tag.abchadanka=3
+SAY Cvak
+ELSEIF (<src.tag.abchadanka> ==3)
+src.tag.abchadanka=3
+else
+src.tag.remove(abchadanka)
+SAY Cvak
+ENDIF
+
+
+[ITEMDEF i_darken_dlazdicee]
+ID=i_floor_marble
+NAME=E
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.abchadanka> == 3)
+src.tag.abchadanka=4
+SAY Cvak
+ELSEIF (<src.tag.abchadanka> ==4)
+src.tag.abchadanka=4
+else
+src.tag.remove(abchadanka)
+SAY Cvak
+ENDIF
+
+
+[ITEMDEF i_darken_dlazdicem]
+ID=i_floor_marble
+NAME=M
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.abchadanka> == 4)
+src.tag.abchadanka=5
+SAY Cvak
+ELSEIF (<src.tag.abchadanka> ==5)
+src.tag.abchadanka=5
+else
+src.tag.remove(abchadanka)
+SAY Cvak
+ENDIF
+
+
+[ITEMDEF i_darken_dlazdices]
+ID=i_floor_marble
+NAME=S
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.abchadanka> == 5)
+src.tag.abchadanka=6
+SAY Cvak
+ELSEIF (<src.tag.abchadanka> ==6)
+src.tag.abchadanka=6
+else
+src.tag.remove(abchadanka)
+SAY Cvak
+ENDIF
+
+
+
+[ITEMDEF i_darken_dlazdicev]
+ID=i_floor_marble
+NAME=V
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.abchadanka> == 7)
+src.tag.abchadanka=8
+SAY Cvak
+ELSEIF (<src.tag.abchadanka> ==8)
+src.tag.abchadanka=8
+else
+src.tag.remove(abchadanka)
+SAY Cvak
+ENDIF
+
+
+
+[ITEMDEF i_darken_dlazdicei]
+ID=i_floor_marble
+NAME=I
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.abchadanka> == 8)
+src.tag.remove(abchadanka)
+src.go 5959,135
+else
+src.tag.remove(abchadanka)
+SAY Cvak
+ENDIF
+
+/////////////
+
+[ITEMDEF i_darken_dlazdice2]
+ID=i_floor_marble
+NAME=-2
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.interval> == 0 )
+src.tag.interval=1
+ELSEIF (<src.tag.interval> == 1)
+src.tag.interval=1
+else
+src.hits=0
+Endif
+
+[ITEMDEF i_darken_dlazdice01]
+ID=i_floor_marble
+NAME=-1
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.interval> == 1 )
+src.tag.interval=2
+ELSEIF (<src.tag.interval> == 2)
+src.tag.interval=2
+else
+src.hits=0
+Endif
+
+[ITEMDEF i_darken_dlazdice0]
+ID=i_floor_marble
+NAME=0
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+IF (<src.tag.interval> == 2 )
+src.tag.interval=3
+ELSEIF (<src.tag.interval> == 3)
+src.tag.interval=3
+else
+src.hits=0
+Endif
+
+[ITEMDEF i_darken_dlazdice1]
+ID=i_floor_marble
+NAME=1
+
+
+ON=@Create
+COLOR=0985
+ATTR=080
+
+ON=Step
+IF (<src.tag.interval> == 3)
+src.go 5971,148
+else
+src.hits=0
+Endif
+
+[ITEMDEF i_darken_dlazdicepryc]
+ID=i_floor_marble
+NAME=Cesta ven
+
+
+ON=@Create
+COLOR=0985
+
+ON=Step
+src.tag.remove(abchadanka)
+src.tag.remove(interval)
+src.go Severni spoust
+
+
+
+
+
+[EOF]

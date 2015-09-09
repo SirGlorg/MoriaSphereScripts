@@ -1,0 +1,917 @@
+//info
+[function nazgul_info]
+sysmessage(Prvni nazgul: <var(lordnazgul)> - <var(lordnazgul).name>)
+sysmessage(Leadring: <var(leading_shrine_power).link> - nositel: <var(leading_shrine_power).link.topobj.name>)
+sysmessage(Gate: <var(lordnazgulgate)> na pozici <var(lordnazgulgate).p>)
+
+//nazguls:
+[function isnazgul]
+if(<findlayer(8)>)
+ if(!strcmpi(<findlayer(8).baseid>,i_ring_power))||(!strcmpi(<findlayer(8).baseid>,i_leading_ring_power))
+  return 1
+ else
+  return 0
+ endif
+else
+ return 0
+endif
+
+[function prsten]
+findlayer(8).<args>
+
+[events e_ring_power]
+on=@userclick
+//messagecol(03c2,NAZGUL)
+
+on=@death //opatreni proti resskillum - je potreba pet jinych unikatnich zabiti nez se bude pocitat dalsi zabiti od puvodni postavy
+act=<tag(lastmurderbyf)>
+if(findid(i_checkstats_timer))
+ //nedelame nicehoz nic, nazguli jsou hajeni
+else
+ if(act.isplayer) //jen od hracu se pocita kill, at muzou chudaci do PvM 
+  findlayer(8).tag.deaths=<eval findlayer(8).tag.deaths>+1
+ endif
+endif
+
+//kermel.redmessage(Umrel, kym: <act>)
+//arg(i,0)
+//var(zabil_ho,0)
+//while(<arg(i)> < 5) //pozice 0-4 (5)
+// if(!<var(zabil_ho)>)
+//  if(strlen(<findlayer(8).tag(killedby_<arg(i)>)>))
+//   if(!strcmpi(<findlayer(8).tag(killedby_<arg(i)>)>,<act>))          
+//    var(zabil_ho,1) //uz driv nez pred peti killy
+//   endif
+//  else //jeste nic neulozeno, ulozime si ho
+//   findlayer(8).tag(killedby_<arg(i)>,<act>)
+//   var(zabil_ho,2) //ulozen do prazdneho mista
+//  endif
+// endif
+// arg(i,#+1)
+//endwhile
+//if(<var(zabil_ho)>==2)
+// //kermel.sysmessage(bylo jeste volno)
+// findlayer(8).tag.deaths=<eval findlayer(8).tag.deaths>+1
+//else
+// if(<var(zabil_ho)>)==0) //zabil nejdrive pred sedmi killy a v poli je plno
+//  //kermel.sysmessage(posouvame pole a neco dostanem)
+//  arg(j,0)
+//  while(<arg(j)> < 4) //pozice 0-3 (4)posunout o jedno nahoru (0. vyhodit - mozno ho uz zabit znova)
+//  arg(k,<eval (<arg(j)>+1)>)
+//   findlayer(8).tag(killedby_<arg(j)>,<findlayer(8).tag(killedby_<arg(k)>)>)
+//   arg(j,#+1)
+//  endwhile 
+//  findlayer(8).tag(killedby_4,<act>) //nova 5. pozice (4)
+//  findlayer(8).tag.deaths=<eval findlayer(8).tag.deaths>+1
+// else
+//  //kermel.sysmessage(jeste nic)
+//  //var=1 - jeste za nej nic nedostane
+// endif 
+//endif
+//var(zabil_ho,"")
+
+[itemdef i_ring_power]
+id=i_ring_gold
+name=Ring of Power
+type=t_eq_script
+
+on=@create
+color=color_o_gold
+attr=attr_static|attr_move_never
+events +t_uniform
+tag(uni_layer[1],"22,def.dispid==i_robe,1,blank,i_deathshroud")
+tag(uni_layer[2],"20,def.dispid==i_cape,0692,blank,i_cape")
+tag(uni_layer[3],"7,isitem,1,blank")
+tag(uni_layer[4],"3,isitem,1,blank,i_boots_calf")
+tag(uni_layer[5],"25,isitem,0690,blank,i_mt_horse_tan")
+tag(uni_needed,5)
+
+tag.state=0
+tag(leading,0)
+
+on=@equip
+if (cont.isEvent(e_uniform_realm))
+ cont.f_uniformRealm_ColorAllLayers(0)
+endif
+attr=attr_static|attr_move_never
+if(<layer>!=8)
+ layer=8 
+endif
+if(<src.tag(level)> < 30)||(<src.profession>==class_craft)|| (<src.tag(realm)>!=2) //kterej jeliman tu posledni podminku vyhodil OMG!!!
+ src.sysmessage("Nejsi <src.sex(zpusobily,zpusobila)> byt vlastnikem prstenu moci")
+ p=<link.p>
+ drop
+ return 1
+endif 
+src.racemessage("<src.sex("Stal jsi se Nositelem","Stala jsi se Nositelkou")> Prstenu, Nazgulem. Mas nyni ve sprave mesto <link.tag(jmeno_mesta)>")
+src.tag(mesto,<link.tag(jmeno_mesta)>)
+timer=60
+link.timer=7*24*60*60
+tag.baseplayerkills=<eval src.tag.playerkillstotal>
+tag.onlineminutes=0
+tag.basetime=<serv.time>
+tag.deaths=0
+arg(i,0)
+while(<arg(i)> < 7)
+ tag.remove(killed_<arg(i)>) 
+ arg(i,#+1)
+endwhile
+src.events +e_ring_power
+src.findid(i_nazgul_quest).remove
+
+on=@unequip
+topobj.events=-e_ring_power
+topobj.zrus_souvislosti_s_prstenem
+if(<topobj.tag(realm)>==2)&&(<topobj.tag(skillrank)>==3) //mohl ho vubec mit - ztratil ho, jinak nehlasit
+ topobj.evch(Muj pan z mesta <link.tag(jmeno_mesta)> si me nezaslouzi.Muzete me hledat)
+endif
+return 0
+
+on=@userclick
+src.sysmessage(Prsten)
+return 0
+
+on=@pickup_ground
+return 1
+
+on=@userdclick
+if(<layer>!=8) //pouze kdyz ho nekdo nema oblecenej, ze ... 
+  if (src.findid(i_nazgul_quest))
+    if (<src.findid(i_nazgul_quest).tag.killed> >= 5)
+      equip
+      updatex
+    else
+      src.classMessage("Musis se vic snazit")
+      return 1
+    endif
+  else
+    src.newequip(i_nazgul_quest)
+  endif
+endif
+return 1
+
+on=@dropon_ground
+timer=24*60*60
+f_ring_column(2,0)
+f_ring_column(0,2)
+f_ring_column(-2,0)
+f_ring_column(0,-2)
+return 1
+
+on=@timer
+if (layer>0)
+ timer=60
+ tag.onlineminutes=<eval tag.onlineminutes>+1
+else
+ p=<link.p>
+ src=<serv.clientsenum(1)> //prostì nìkdo :), aby se objevily ohnì
+ trigger(dropon_ground)
+endif
+return 1
+
+on=@userdeath
+if !(mayhavering)
+ drop
+endif
+
+[itemdef i_leading_ring_power]
+id=i_ring_gold
+name=Leading Ring of Power
+type=t_eq_script
+
+on=@create
+color=color_o_mithril
+attr=attr_static|attr_move_never
+events +t_uniform
+tag(uni_layer[1],"22,def.dispid==i_robe,1,blank,i_deathshroud")
+tag(uni_layer[2],"20,def.dispid==i_cape,0689,blank,i_cape")
+tag(uni_layer[3],"7,isitem,1,blank")
+tag(uni_layer[4],"3,isitem,1,blank,i_boots_calf")
+tag(uni_layer[5],"25,isitem,0690,blank,i_mt_horse_tan")
+tag(uni_needed,5)
+
+tag.state=0
+tag(leading,1)
+var(leading_ring,<uid>)
+
+on=@equip
+if (cont.isEvent(e_uniform_realm))
+ cont.f_uniformRealm_ColorAllLayers(0)
+endif
+attr=attr_static|attr_move_never
+if(<layer>!=8)
+ layer=8 
+endif
+src.tag(playersname,<src.name>)
+src.name=Prvni Nazgul <src.name>
+if(<src.tag(realm)>!=2)||(<src.tag(skillrank)> > 29)
+ src.sysmessage(Nejsi zpusobily byt vlastnikem prstenu moci)
+ p=<link.p>
+ drop
+ return 1
+endif 
+src.racemessage("Stal jsi se Nositelem Vedouciho Prstenu, Prvnim Nazgulem")
+src.tag(lordnazgul,1)
+var(lordnazgul,<src>)
+if(var(lordnazgulgate))
+ finduid(<var(lordnazgulgate)>).color=0689
+else
+ link.tag(lordnazgulgate).color=0689
+endif
+timer=60
+link.timer=5*24*60*60 
+tag.baseplayerkills=<eval src.tag.playerkillstotal>
+tag.onlineminutes=0
+tag.basetime=<serv.time>
+tag.deaths=0
+arg(i,0)
+while(<arg(i)> < 7)
+ tag.remove(killed_<arg(i)>) 
+ arg(i,#+1)
+endwhile
+src.events(+e_ring_power)
+
+on=@unequip
+topobj.events(-e_ring_power)
+topobj.zrus_souvislosti_s_prstenem
+topobj.name=<name>
+if(<topobj.tag(realm)>==2)&&(<topobj.tag(skillrank)>==3) //mohl ho vubec mit - ztratil ho
+ topobj.evch(Muj pan,prvni Nazgul si me nezaslouzi.Muzete me nyni hledat)
+endif
+topobj.name=<topobj.tag(playersname)>
+topobj.tag.remove(playersname)
+var(lordnazgul,"")
+if(var(lordnazgulgate))
+ finduid(<var(lordnazgulgate)>).color=0692
+ finduid(<var(lordnazgulgate)>).more1=3
+else
+ link.tag(lordnazgulgate).color=0692
+ link.tag(lordnazgulgate).more1=3
+endif
+return 0
+
+on=@userclick
+src.sysmessage(Prsten prvniho Nazgula)
+return 0
+
+on=@pickup_ground
+return 1
+
+on=@userdclick
+if(<layer>!=8) //pouze kdyz ho nekdo nema oblecenej, ze ... 
+ back
+ src.racemessage(Vedouci prsten se vratil na misto sveho stvoreni)
+endif
+return 1
+
+on=@dropon_ground
+f_ring_column(2,0)
+f_ring_column(0,2)
+f_ring_column(-2,0)
+f_ring_column(0,-2)
+return 1
+
+on=@timer
+if (layer>0)
+ timer=60
+ tag.onlineminutes=<eval tag.onlineminutes>+1
+else
+ p=<link.p>
+ src=<serv.clientsenum(1)> //prostì nìkdo :), aby se objevily ohnì
+ trigger(dropon_ground)
+endif
+return 1
+
+on=@userdeath
+if !(mayhavering)
+ drop
+endif
+
+[typedef t_shrine_power]
+on=@timer
+//say ring check
+if(<link>)
+ if (link.isitem)//kontrola prstenu
+  if(link.topobj.ischar)
+   if(link.topobj.isplayer)
+    if !(f_shrinePower_chkRing)
+    else
+     if(<tag(leading)>) //prvni nazgul -7 killu za pet dni, musi se vic otacet
+      kermel.delayedmessage(Odpocet killu prvniho nazgula - nyni ma <link.topobj.tag(playerkillstotal)> killu)
+      link.topobj.tag(playerkillstotal,<eval (<link.topobj.tag(playerkillstotal)>-7)>)
+      kermel.delayedmessage(Po odectu zbyva <link.topobj.tag(playerkillstotal)> killu)
+      timer=5*24*60*60
+     else //normalni nazgul -7 killy za tyden 
+      link.topobj.tag(playerkillstotal,<eval (<link.topobj.tag(playerkillstotal)>-7)>)
+      timer=7*24*60*60
+     endif 
+     if(<link.topobj.tag(playerkillstotal)> < 0)
+      link.topobj.tag(playerkillstotal,0)
+     endif
+    endif
+   endif
+  endif
+ endif
+endif
+return 1
+
+
+on=@userdclick
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+if(tag(leading))
+ var(leading_shrine_power,<uid>)
+ tag(lordnazgulgate,<var(lordnazgulgate)>)
+else
+ var(townstone_<region.tag(jmeno_mesta)>,<uid>)
+endif
+if(!<tag(leading)>) //leading stone nema zadny mesto
+ if(src.isnazgul)||(src.isgm)
+  if(!src.isgm)
+   if(!strcmpi(<src.tag(mesto)>,<tag(jmeno_mesta)>)) //nazgul jen svoje mesto
+    f_nazgmenu
+   endif
+   if(<src.tag(lordnazgul)>) //lordnazgul vsechna mesta
+    f_nazgmenu
+   endif
+  else //gmka vzdy
+   f_nazgmenu
+  endif   
+ endif 
+endif
+if(strlen(<tag(jmeno_mesta)>))||(<tag(leading)>) //jen v nastavenem meste nebo leading stonu to pujde
+ if(<link>)&&(<link.isitem>)  
+  if(<link.layer>==8)
+   if(<link.topobj>!=<src>)
+    src.racemessage(Nositelem prstenu je <link.topobj.name>.)
+   endif
+   if (src.isgm)
+    src.smsg Uplynulo <link.timefromequip> minut od doby kdy byl prsten equipnut soucasnym majitelem.
+    src.smsg Od te doby tento hrac: 
+    src.smsg byl <link.tag.onlineminutes> minut online.
+    src.smsg (spolu)zabil <link.doneplayerkills> hracu
+    src.smsg <link.tag.deaths> krat zemrel.
+    src.smsg prikaz k vraceni prstenu je .x link.back
+   endif 
+  else //neni u chlapa
+   if(!src.isnazgul)
+    if(<src.tag(realm)>==2)         
+     if(<tag(leading)>)&&(!src.isgm)
+      src.racemessage(Nejsi hoden vedouciho prstenu, nejsi Nazgulem)
+     else
+      link.equip
+      link.updatex
+     endif
+    else
+     src.sysmessage(Nejsi hoden stat se nositelem prstenu)
+    endif
+   else //je nazgul    
+    if(<tag(leading)>) //vladnouci prsten jen pro nazguly
+     src.findlayer(8).back
+     link.equip
+     link.updatex
+    else
+     src.sysmessage(Jeden prsten uz mas)
+    endif
+   endif
+  endif  
+ else
+  src.newitemsafe(<qval(<tag(leading)>,i_leading_ring_power,i_ring_power)>) 
+  lastnew.link=<uid>
+  link=<lastnew>
+  if(src.isnazgul) 
+   if(<tag(leading)>)
+    src.findlayer(8).back
+    lastnew.equip
+   else	
+    link.back
+   endif
+  else
+   if(<tag(leading)>)&&(!src.isgm) 
+    src.racemessage(Nejsi hoden vedouciho prstenu, nejsi Nazgulem)
+    link.back
+   else		
+    lastnew.equip
+   endif
+  endif
+ endif
+else
+ src.sysmessage(Mesto neni pripraveno, kontaktuj GM)
+endif
+//if(!src.isnazgul)&&(!src.isgm)&&(!<tag(leading)>)
+if(!src.isgm)
+ input("Chces-li zadej castku kterou prispejes do pokladny",f_nazg_prihod,0) 
+ if(<src.tag(realm)>==2)&&(!<tag(leading)>)
+  zobraz_novinky    
+ endif
+endif
+return 1
+
+[typedef t_lordnazgulboard]
+on=@UserDClick
+if !(<link>)
+  if (src.isGM)
+    target("Nejprve nastav link na i_leading_shrine_power")
+  endif
+elseif (<link.link>)&&(<link.link.isitem>)
+  if(<link.link.layer>==8)
+    link.f_shrinePower_chkRing // zkontrolujeme zda ma mit prsten
+    arg(sluzbaDni,<eval <link.link.timefromequip>/1440>)
+    src.sysMessage("Marghulovym vudcem vojsk je <link.link.topobj.correctProfName> <link.link.topobj.name>.")
+    src.sysMessage("Ve sluzbe je <eval arg(sluzbaDni)> dni a od te doby ziskal tyto zasluhy:")
+    src.sysMessage("(spolu)zabil <eval link.link.doneplayerkills> bojovniku druhe strany.")
+    src.sysMessage("Byl <eval link.link.tag(deaths)>x smrtelne ranen.")
+    timer=80000 //resetujeme dalsi autokontrolu
+    if (src.isGM)
+      src.sysMessage("GM Info:")
+      src.sysMessage("Byl <link.link.tag.onlineminutes> minut online.")
+      src.sysMessage("prikaz k vraceni prstenu je .x link.link.back")
+    endif
+  else
+    src.sysMessage("V tuto chvili nevladne Prvni Nazgul.")
+  endif
+endif
+return 1
+
+on=@timer
+//say ring check
+if (<link.link>)&&(<link.link.isitem>)
+  if(<link.layer>==8)
+    link.f_shrinePower_chkRing // zkontrolujeme zda ma mit prsten
+  endif
+endif
+timer=80000 // Pokud nikdo nepoklika, zkontrolujeme nazghula 1x denne
+return 1
+
+on=@TargOn_Item
+if (<src.targ.id>==i_leading_shrine_power)
+  link=<src.targ>
+  src.sysMessage("Link na <src.targ.name> nastaven !")
+else
+  src.sysMessage("Tohle neni First Nazgul's shrine !")
+endif
+return 1
+
+[function f_shrinePower_chkRing]
+//kontrola prstenu
+if !(link.mayhavering)
+  link.topobj.redmessage(Prsten te opustil)
+  link.p=<p>
+  link.update
+  link.trigger(dropon_ground)
+  return 0
+endif
+return 1
+
+[function zobraz_novinky]
+arg(newscont,<finduid(<tag(newscont)>)>)
+arg(obsah,<arg(newscont).rescount>)
+arg(i,0)
+while(<arg(i)> < <arg(obsah)>)
+ arg(newscont).findcont(<arg(i)>).dialog(d_news_read,30*<arg(i)>,30*<arg(i)>,<arg(i)>+1) //xpos,ypos,cislo novinky
+ arg(i,#+1)
+endwhile
+
+[function f_nazg_prihod] //argv0 - zadana castka
+arg(castka,fixNumber(<argv(0)>))
+if(<castka> < 0)
+ src.sysmessage(Jiste zertujes)
+ return 1
+endif
+if(src.pay(<castka>))
+ tag(pokladna,<eval (<tag(pokladna)>+<castka>)>) //autorem je porad ten worldgem t_vendorplac
+ src.sysmessage(Zaplatil jsi <castka>gp.)
+else
+ src.sysmessage(Nemas dost penez na prihozeni, potrebujes aspon <castka>gp.)
+endif
+
+[function back]
+p=<link.p>
+drop
+update
+
+[function mayhavering]
+//ak nelogol viac ako 10 dni pride o prsten
+if (<topobj.tag(lastlogoutedAt)>)
+  if (<eval(<serv.time>-<topobj.tag(lastlogoutedAt)>)>>6048000)
+    return 0
+  endif
+endif
+//kontroluje jestli nositel prstenu ma pravo ho nosit
+arg(cas,<timefromequip>)
+if(<arg(cas)> < 1440) //jeden den v minutach
+ return 1 //to o nej jeste prijit nemuze
+endif
+if(<cont>)
+ if (<cont.isitem>)
+  return 0
+ endif
+endif
+if(<topobj>)
+ if(<topobj.ischar>)
+  if !(<topobj.isplayer>)
+   return 0
+  endif
+ else
+  return 0
+ endif
+endif
+//prsten ma na ruce hrac:
+//kontrola casu od posledniho logoutu
+//arg(logouttime,<eval (<serv.time>-<topobj.tag(lastlogoutedAt)>)>)
+//arg(kolik_off,<eval (5*<den>)>)
+//kermel.sysmessage(logoff: <logouttime>, mozno: <kolik_off>)
+//if(<arg(logouttime)> >= <arg(kolik_off)>)
+// if(!<topobj.isonline>) //treba je uz 5 dni nalogovanej zejo
+//  topobj.delayedredmessage(Prsten te opustil, moc dlouho jsi spal)  
+//  return 0
+// endif
+//endif
+//pomer online/offline > 1/11 (2/22 - dve hodiny denne online)
+arg(offwas,<eval (<timefromequip>-<tag(onlineminutes)>)>)
+arg(kolik_on,<eval (11*<tag(onlineminutes)>)>)
+//kermel.sysmessage(ofbyl: <offwas>, limit: <kolik_on>)
+if(<offwas> >= <kolik_on>)
+ topobj.delayedredmessage(Prsten te opustil, ma rad vzruseni z akce a tvoje pasivita nebyla pro nej)
+ return 0
+endif
+if(<tag(leading)>)
+ // Prvni Nazgul pomer smrti killy/smrti > 7/4 - musi se vic ohanet
+ arg(kolik_death,<eval (7*<tag(deaths)>)>)
+ arg(kolik_kill,<eval (4*<doneplayerkills>)>)
+ //kermel.sysmessage(zabil: <doneplayerkills>, umrel: <tag(deaths)>, potreboval zabit: <kolik_death>)
+ if(<kolik_death> >= <kolik_kill>)
+  topobj.delayedredmessage(Prsten te opustil, tve bojove schopnosti neodpovidaji jeho narokum)
+  return 0
+ endif
+else
+ // normalni Nazgul pomer smrti killy/smrti > 7/5
+ arg(kolik_death,<eval (7*<tag(deaths)>)>)
+ arg(kolik_kill,<eval (5*<doneplayerkills>)>)
+ //kermel.sysmessage(zabil: <kolik_kill>, umrel: <tag(deaths)>, potreboval zabit: <kolik_death>)
+ if(<kolik_death> >= <kolik_kill>)
+  topobj.delayedredmessage(Prsten te opustil, tve bojove schopnosti neodpovidaji jeho narokum)
+  return 0
+ endif
+endif
+return 1
+
+[function zrus_souvislosti_s_prstenem]
+tag.remove(mesto) 
+tag.remove(lordnazgul)
+
+[function isonline]
+if(<account.privflags> & priv_Connected) //connected 
+ return 1
+else
+ return 0
+endif
+
+[function timefromequip]
+return <eval (<serv.time>-<tag.basetime>)/600>
+
+[function donemonsterkills]
+return <eval <topobj.tag.monsterkillstotal>-<tag.basemonsterkills>>
+
+[function doneplayerkills]
+return <eval <topobj.tag.playerkillstotal>-<tag.baseplayerkills>>
+
+[function f_ring_column]
+src.newitemsafe(i_column_ring)
+lastnew.morep=<P>
+lastnew.p=<P>
+lastnew.move=<argv(0)>,<argv(1)>
+lastnew.link=<uid>
+lastnew.timer=10
+lastnew.attr=<attr>|attr_static
+lastnew.color=1
+
+[itemdef i_column_ring]
+id=i_fire_column
+type=t_script
+
+on=@timer
+if (link.p_x!=morex)
+else
+ if (link.p_y!=morey)
+ else
+  if (<eval link>==0)
+  else
+   timer=10
+   return 1
+  endif
+ endif 
+endif
+remove
+return 1
+
+[function zobrazbody]
+arg(krystal,<f_return_crystal_id>)
+if (safe.findid(i_dovedbod))
+ if (safe.findid(i_dovedbod).attr_invis==1)
+  findid(i_dovedbod).attr_invis=0
+  findid(krystal).attr_invis=0
+ else
+  findid(i_dovedbod).attr_invis=1
+  findid(krystal).attr_invis=1
+ endif
+else
+ if findid(krystal).attr_invis==1
+  findid(krystal).attr_invis=0
+ else
+  findid(krystal).attr_invis=1
+ endif
+endif
+
+[function f_return_crystal_id]
+if (profession==class_war)
+ return i_Crystal_war
+elseif (profession==class_necro)
+ return i_Crystal_necro
+elseif (profession==class_mystik)
+ return i_Crystal_Mystik
+elseif (profession==class_mag)
+ return i_Crystal_mag
+elseif (profession==class_priest)
+ return i_Crystal_priest
+elseif (profession==class_shaman)
+ return i_Crystal_shaman
+elseif (profession==class_ranger)
+ return i_Crystal_ranger
+elseif (profession==class_thief)
+ return i_Crystal_thief
+elseif (profession==class_craft)
+ return i_Crystal_craft
+endif
+return 0
+
+// recognizes the player class and returns 0/1 value telling whether the item can be equipped
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip]
+if (profession==class_war)
+  return f_player_canEquip_war(<argv(0)>)
+elseif (profession==class_necro)
+  return f_player_canEquip_necro(<argv(0)>)
+elseif (profession==class_mystik)
+  return f_player_canEquip_mystik(<argv(0)>)
+elseif (profession==class_mag)
+  return f_player_canEquip_mag(<argv(0)>)
+elseif (profession==class_priest)
+  return f_player_canEquip_priest(<argv(0)>)
+elseif (profession==class_shaman)
+  return f_player_canEquip_shaman(<argv(0)>)
+elseif (profession==class_ranger)
+  return f_player_canEquip_ranger(<argv(0)>)
+elseif (profession==class_thief)
+  return f_player_canEquip_thief(<argv(0)>)
+elseif (profession==class_craft)
+  return f_player_canEquip_craft(<argv(0)>)
+endif
+return 1
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_war]
+if (isGM)
+  return 1
+elseif (act.isarmor)
+  if !(act.isbone)
+    return 1
+  endif
+elseif (act.isshield)
+  if (act.typedef.tdata3==armortype_plate) || (act.dispid==i_shield_heater)
+    return 1
+  endif
+else
+  if (act.typedef.dispid==i_scimitar)
+  elseif (act.typedef.dispid==i_cutlass)
+  elseif (act.typedef.dispid==i_kryss)
+  elseif (act.typedef.dispid==i_hammer_pick)
+  elseif (act.typedef.dispid==i_mace)
+  elseif (act.typedef.dispid==i_maul)
+  elseif (act.typedef.dispid==i_war_fork)
+  elseif (act.isbow)
+  else
+    return 1
+  endif
+endif
+return 0
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_necro]
+if (isGM)
+  return 1
+elseif (act.isshield)
+elseif (act.isarmor)||(act.isshield)
+  if (act.isplate)
+  elseif (act.ischain)
+  elseif (act.isring)
+  elseif (act.isstudded)
+  elseif (act.isleather)
+  else
+    return 1
+  endif
+elseif (act.isweapon)
+  if (act.isfencing)
+  elseif (act.issword)
+  elseif (act.ismace)
+  elseif (act.isbow)
+  else
+    return 1
+  endif
+else
+  return 1
+endif
+return 0
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_mystik]
+if (isGM)
+  return 1
+elseif (act.canbeweapon)
+  if (act.isstaff)
+    return 1
+  elseif (!act.isweapon)
+    return 1
+  elseif (act.typedef.dispid==i_dagger)||(act.id==i_knife_skinning)
+    return 1
+  elseif (act.typedef.dispid==i_hatchet)||(act.typedef.dispid==i_pickaxe)
+    return 1
+  endif
+elseif (act.isarmor)||(act.isshield)
+  if (act.isplate)
+  elseif (act.isring)
+  elseif (act.ischain)
+  else
+    return 1
+  endif
+else
+  return 1
+endif
+return 0
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_mag]
+if (isGM)
+  return 1
+elseif (act.isshield)
+elseif (act.isarmor)||(act.isshield)
+  if (act.isbone)
+  elseif (act.isplate)
+  elseif (act.ischain)
+  elseif (act.isring)
+  else
+    return 1
+  endif
+elseif (act.canbeweapon)
+  if (act.isfencing)
+  elseif (act.issword)
+  elseif (act.ismace)
+  elseif (act.isbow)
+  else
+    return 1
+  endif
+else
+  return 1
+endif
+return 0
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_priest]
+if (isGM)
+  return 1
+elseif (act.isarmor)
+  if !(act.isbone)
+    return 1
+  endif
+elseif (act.isshield)
+  if (act.typedef.tdata3==armortype_plate)
+    return 1
+  endif
+elseif (act.canbeweapon)
+  if (act.isfencing)
+  elseif (act.issword)
+  elseif (act.isbow)
+  else
+    return 1
+  endif
+else
+  return 1
+endif
+return 0
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_shaman]
+if (isGM)
+  return 1
+elseif (act.canbeweapon)
+  if (act.isshield) && (act.isplate)
+  elseif (act.isfencing)
+  elseif (act.issword)
+  elseif (act.isbow)
+  elseif (act.istwohandmace)
+  else
+    return 1
+  endif
+elseif (act.isarmor)
+  if (act.isplate)
+  elseif (act.isbone)
+  else
+    return 1
+  endif
+else
+  return 1
+endif
+return 0
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_ranger]
+if (isGM)
+  return 1
+elseif (act.isarmor)||(act.isshield)
+  if (act.isbone)
+  //elseif (act.ischain)
+  elseif (act.isplate)
+  else
+    return 1
+  endif
+elseif (act.canbeweapon)
+  if (act.ismace)
+  elseif (act.isstaff)
+  elseif (act.issword)
+  elseif (act.typedef.dispid==i_scimitar)
+  elseif (act.typedef.dispid==i_cutlass)
+  elseif (act.typedef.dispid==i_kryss)
+  else
+    return 1
+  endif
+else
+  return 1
+endif
+return 0
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_thief]
+if (isGM)
+  return 1
+elseif (act.isarmor)||(act.isshield)
+  if (act.isbone)
+  elseif (act.isplate)
+  elseif (act.isring)
+  else
+    return 1
+  endif
+elseif (act.canbeweapon)
+  if (act.issword)
+  elseif (act.ismace)
+  elseif (act.isstaff) 
+  elseif (act.typedef.dispid==i_crossbow_heavy)
+  elseif (act.isfencing)
+    if (act.typedef.dispid==i_war_fork)||(act.typedef.dispid==i_scimitar)||(act.typedef.dispid==i_cutlass)||(act.typedef.dispid==i_dagger)||(act.typedef.dispid==i_kryss)||(act.typedef.dispid==i_katana)||(act.id==i_knife_skinning)
+      return 1
+    endif
+  else
+    return 1
+  endif
+else
+  return 1
+endif
+return 0
+
+// argv(0) item UID to test equip
+// function should be run on an instance of a player
+// @returns 1 on success; 0 on player's unability to equip the item
+[function f_player_canEquip_craft]
+if (isGM)
+  return 1
+elseif (act.typedef.dispid==i_scimitar)
+elseif (act.typedef.dispid==i_cutlass)
+elseif (act.typedef.dispid==i_kryss)
+elseif (act.typedef.dispid==i_hammer_pick)
+elseif (act.typedef.dispid==i_mace)
+elseif (act.typedef.dispid==i_maul)
+elseif (act.typedef.dispid==i_war_fork)
+else
+  return 1
+endif
+return 0
+
+[eof]

@@ -1,0 +1,174 @@
+/////////////////////////////////////
+//      A C I D   D A M A G E      //
+//         (c)-Sir Glorg-          //
+/////////////////////////////////////
+
+// armor layer number:
+//  stit - 2
+//  legs - 4
+//  helma - 6
+//  rukavice - 7
+//  krk - 10
+//  hrud - 13
+//  ramena - 19
+
+[events e_acid_damage]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+newitem(i_acid)
+arg(AciDropItem,<lastnew>)
+AciDropItem.p=<p>
+AciDropItem.tag.acid_dmg=<tag.acid_dmg>
+AciDropItem.tag.acid_ppst=<tag.acid_ppst>
+
+on=@beforedoeffect
+on=@aftergetswing
+on=@beforegeteffect
+
+[ITEMDEF i_fx_acid]
+//sparkle
+ID=0374a
+Name=Acid Splash
+TYPE=t_spell
+CATEGORY=Animations
+SUBSECTION=Acid Sparkle
+DESCRIPTION=@
+DUPELIST=0374b,0374c,0374d,0374e,0374f,03750,03751,03752,03753,03754,03755,03756,03757,03758,03759
+
+on=@create
+color=0442
+timer = 1
+
+[itemdef i_acid]
+NAME=Acid Keg
+ID=i_KEG_WOOD
+TYPE=t_script
+
+on=@Create
+timer=0
+
+on=@Timer
+if (tag.acid_ppst == 0)
+  if (100 > <eval {0 1000}>)
+    VAR.AcidDistanceUID=<uid>
+    sector.allchars(f_acid(<uid.tag.acid_dmg>))
+  endif
+elseif (<tag.acid_ppst>) > (<eval {0 1000}>)
+  VAR.AcidDistanceUID=<uid>
+  sector.allchars(f_acid(<uid.tag.acid_dmg>))
+endif
+
+[function f_acid]
+if (npc) || (isgm)|| (<distancefrom(<var(AcidDistanceUID)>)> > 4) || (f_canseelos(<var(AcidDistanceUID)>) == 0)
+  return 0
+endif
+
+if (<eval ((<eval tag(mi_meleeblock)>*10)+(<eval tag(ra_weapdodge)>*10))> ) > <eval {0 1000}> //test uhnuti
+  SysMessage("<sex Uhnul Uhla> jsi proudu kyseliny.")
+  return 0
+endif
+
+sound=868
+EFFECT(3,i_fx_curse,6,20,2)
+if (<findlayer(2)>)
+  if (<findlayer(2).type>==t_shield) && (<eval {0 100}> <= 50)
+    arg(Give_ArDmg,<eval (<argv(0)>*<eval {4 10}>)/(<DurMat_Type(2)>)> )  // vzorec ubrani durability stitu
+    if (<findlayer(2).More1L> > <Give_ArDmg>)
+      AcidLayer_Name(2,1) // hlaska o poleptani dany zbroje - STIT
+      findlayer(2).More1L = <eval (<findlayer(2).more1L>-<Give_ArDmg>)> //snizeni durability stitu
+      return 1
+    else
+      findlayer(2).remove
+      RedMessage("Tvuj stit se rozpadl !")
+      return 1
+    endif
+  endif
+endif
+
+arg(layer_choose,<eval {4 17 6 17 7 17 10 13 13 17 19 17}> ) // vyber casti zbroje mimo stitu
+if (<findlayer(<layer_choose>)>)
+  if (findlayer(<layer_choose>).type==t_armor) || (findlayer(<layer_choose>).type==t_armor_leather)
+    arg(Give_ArDmg,<eval (<argv(0)>*10)/(<DurMat_Type(<layer_choose>)>)>) // vzorec ubrani durability
+    if (<findlayer(<layer_choose>).More1L> > <Give_ArDmg>)
+      AcidLayer_Name(<layer_choose>,1) // hlaska o poleptani dany casti zbroje
+      findlayer(<layer_choose>).More1L = <eval (<findlayer(<layer_choose>).more1L>-<Give_ArDmg>)> //snizeni durability zbroje
+      return 1
+    else
+      findlayer(<layer_choose>).remove
+      RedMessage("Cast tve zbroje se rozpadla!")
+      return 1
+    endif
+  endif
+endif
+// dana cast tela neni kryta a kyselina zpusobi dmg.
+AcidLayer_Name(<layer_choose>,2) // hlaska o poleptani dany casti tela
+damage_noresponse(<argv(0)>,dam_acidic)
+return 2
+
+[function DurMat_Type]
+arg(MatType,<findlayer(argv(0)).tdata1>)
+if MatType==1
+  return <nastaveni_durability_copper>
+elseif MatType==2
+  return <nastaveni_durability_iron>
+elseif MatType==3
+  return <nastaveni_durability_silver>
+elseif MatType==4
+  return <nastaveni_durability_golden>
+elseif MatType==5
+  return <nastaveni_durability_verite>
+elseif MatType==6
+  return <nastaveni_durability_valorite>
+elseif MatType==7
+  return <nastaveni_durability_obsidian>
+elseif MatType==8 //stit ochrance - klerik
+  return <nastaveni_durability_adamantinum>
+elseif MatType==9
+  return <nastaveni_durability_mithril>
+else
+  return 1
+endif
+
+
+[function AcidLayer_Name]
+if argv(1) == 1 // byla poleptana zbroj
+  IF argv(0) == 2
+    sysmessage("Podarilo se ti vykryt proud kyseliny stitem.")
+  elseif argv(0) == 4
+    sysmessage("Kyselina ti rozezira nohy.")
+  elseif argv(0) == 6
+    sysmessage("Kyselina ti rozezira helmu.")
+  elseif argv(0) == 7
+    sysmessage("Kyselina ti rozezira rukavice.")
+  elseif argv(0) == 10
+    sysmessage("Kyselina ti rozezira limec.")
+  elseif argv(0) == 13
+    sysmessage("Kyselina ti rozezira hrud.")
+  elseif argv(0) == 19
+    sysmessage("Kyselina ti rozezira paze.")
+  else
+    sysmessage("Chyba hlasky acid_damage - napis page")
+    return 0
+  endif
+else  // na miste poleptani zadna zbroj neni
+  IF argv(0) == 4
+    sysmessage("Kyselina ti popalila nohy.")
+  elseif argv(0) == 6
+    sysmessage("Kyselina te bolestive zasahla do obliceje.")
+  elseif argv(0) == 7
+    sysmessage("Kyselina ti poleptala ruce.")
+  elseif argv(0) == 10
+    sysmessage("Kyselina ti popalila krk.")
+  elseif argv(0) == 13
+    sysmessage("Kyselina te spalila na hrudi.")
+  elseif argv(0) == 19
+    sysmessage("Kyselina ti poleptala paze.")
+  else
+    sysmessage("Chyba hlasky acid_damage - napis page")
+    return 0
+  endif
+endif
+return 1
+
+[eof]

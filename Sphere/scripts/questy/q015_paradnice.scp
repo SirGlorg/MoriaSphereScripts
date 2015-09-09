@@ -1,0 +1,179 @@
+///:::::ITEMS:::::///
+[ITEMDEF i_q015_paradnice_kolektor]
+ID=i_necklace_silver_beads
+NAME=Koralky na pirka z Poison Phoenixu
+TYPE=t_collector
+WEIGHT=3
+
+ON=@CREATE
+COLOR=037
+ATTR=010|04
+tag.contentsinfo="Na koralcich je navleceno"
+tag.contentstype="pirek z Poison Phoenixe"
+tag.contentsamount=0
+tag.maxcontents=12
+tag.target_remove=0
+tag.target_desc="Kteremu Poison Phoenixovi vytrhnes pirko? "
+tag.target_id="Body of Phoenix"
+tag.color=097F
+tag.absolute_success=200
+tag.value_to_check=175
+tag.contentscount=0
+tag.fail_msg="Tak tohle pirko by se asi Minny nelibilo..."
+
+ON=@CollectorCheck
+f_collectorFixTargetId("Body of Phoenix",097F)
+
+
+[speech spk_q015_paradnice]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q015_paradnice
+endif
+
+[FUNCTION f_q015_paradnice]
+IF (<src.tag.realm>==2)
+  say "Jdi pryc Ty stvuro !"
+  return 1
+endif
+IF (<src.tag(q015_neuspel)> !=0)
+  SAY("Jak se opovazujete za mnou jeste chodit! Takova urazka. *Pche*")
+  return 1
+else
+  DIALOG(d_q015_paradnice)
+endif
+
+[dialog d_q015_paradnice]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03023 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Drby?
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+page 1
+IF (<src.tag.q015_paradnice> !=0)
+argo.HTMLGUMP(170,230,440,100,18,0,36)
+else
+argo.HTMLGUMP(170,230,440,100,7,0,36)
+ENDIF
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+IF (<src.tag.q015_paradnice>==1)
+argo.HTMLGUMP(170,230,440,100,19,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 3  //      uz to bude...
+argo.text 60 395 152 20
+argo.button 25 415 0fa5 0fa7 1 0 1  //        nechci to delat, tahni nech me byt.
+argo.text 60 415 152 21
+elseif (<src.tag.q015_paradnice>==2)
+argo.HTMLGUMP(170,230,440,100,25,0,36)
+else
+argo.HTMLGUMP(170,230,440,100,10,0,36)
+argo.button 25 395 0fa5 0fa7 0 7 0  //     hmno Minny nejdriv mi rekni co chces
+argo.text 60 395 152 13
+argo.button 25 415 0fa5 0fa7 1 0 1  //        Ne dekuji nechci - tag.neuspel
+argo.text 60 415 152 14
+endif
+
+page 5
+IF (<src.tag.q015_paradnice>==1)
+argo.HTMLGUMP(170,230,440,100,22,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 4  //     mam to!
+argo.text 60 395 152 23
+argo.button 25 415 0fa5 0fa7 1 0 3  //      zatim nic..
+argo.text 60 415 152 24
+else
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+ENDIF
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 1 0 2  //    beru krasko
+text 60 395 152 16
+button 25 415 0fa5 0fa7 1 0 1  //        Ne dekuji nechci - tag.neuspel
+text 60 415 152 17
+
+[dialog d_q015_paradnice text]
+Paradnice Minny
+Kdo jsi?
+Drby?
+Obchodovat
+Hledam praci
+Nesu ti...
+Prohlednout...
+Zdravicko ! Ja jsem Minny. Klidne mi muzes drobet zalichotit, hihihi. Jsem opravdu krasna, ze?
+Jaaasne! VIs o tom, ze ta hloupa vdova po panu Brevdovi ma asi milence? Hihihi ... to je ale husicka, co? Ma kamaradka rikala, ze je o 10 let mladsi nez ona. No fuj!
+Nic nechci, vsechno mi koupi muj manzel, je andilek... vsechno mi dovoli hihihi... 
+Hm pockej popremyslim... mohl bys mi neco sehnat! Ano, urcite bys mi mohl neco sehnat. Tak co, chces mi neco sehnat? 
+Copak mi neses? Nejaky darecek?
+Minny je opravdu pekna avsak jen do okamziku, nez otevre pusu...
+Jiste! A co by to melo byt?
+Nene, to opravdu nechci...
+Hmno, chtela bych nahrdelnik s pirky Poison Phoenixe. Byla bych vyjmecna a urcite by mi moc slusel... hihi... tak 12, vzdy to nejdelsi z kazdeho Phoenixe ano? Navleces je na tyhle koralky
+Dobre, udelam to pro tebe. Dej mi ty koralky.
+Nene na to nemam cas.
+Ahoj, tak co? Jak dnes vypadam?
+Tak pospes si prece! Mas uz ty korale?!
+Ano ano, snazim se..
+Ne, vem si ty koralky zpatky, nechci ti schanet paradu.
+Tak co? Mas pro me moje koralky?
+Ano, tady jsou!
+Ne, zatim ne...
+Zrovna ted nic nepotrebuji, dekuju za optani... ale muzes mi nekdy prinest nejaky darecek, hihihi. Rada dostavam darecky.
+
+
+[dialog d_q015_paradnice button]
+on=1
+SAY("Ty jeden burane! Ty krupane! Ty chasniku! Ksc!")
+src.tag.remove(q015_paradnice)
+src.tag.q015_neuspel=1
+SRC.CONSUME i_q015_paradnice_kolektor
+
+on=2
+SAY("Tak do toho a pospes si. Minny chce byt hezka, hihihi")
+src.tag.q015_paradnice=1
+src.newitemsafe(i_q015_paradnice_kolektor)
+lastnew.bounce
+
+on=3
+SAY("Asi se nesnazis dost! Copak jsem ti nerekla jak je to dulezite?")
+
+on=4
+if <src.restest i_q015_paradnice_kolektor> && (<src.findid(i_q015_paradnice_kolektor).tag.contentscount>==12) 
+src.tag.q015_paradnice=2
+SAY("Vyborne, dekuji ti mnohokrat, tady je tvoje odmena")
+src.addexp(1000)
+SRC.CONSUME i_q015_paradnice_kolektor
+src.givegold(2500)
+f_quest_complete(13)  // splnenie questu "Paradnice Minny"
+else
+SAY("Jeste nemas to co jsem po tobe chtel!")
+ENDIF

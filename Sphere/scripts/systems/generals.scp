@@ -1,0 +1,1237 @@
+[function honor] //+5 na staty
+if((tag(general))&&(hasuniform))||(isgm)
+ if(findid(i_honor_delay))&&(!isgm)
+  src.sysmessage(Jsi jeste vycerpan z predchoziho pouziti sve schopnosti)
+ else
+  newitemsafe(i_honor4every1)
+  var(whos_honouring,<uid>)
+  lastnew.p=<p>
+  lastnew.z=-100
+  lastnew.link=<uid>
+  lastnew.timerd=1  
+  newitemsafe(i_honor_delay)
+  lastnew.timer=<nastaveni_honor_delay_counter>
+  lastnew.equip
+ endif
+else
+ sysmessage(Nejsi schopen jakkoliv povzbudit sve bojovniky)
+endif
+
+[function makeme_encouraged]
+if(isplayer)
+ kermel.sysmessage(Honor pro <name>)
+ if(findid(i_honorcounter))||(tag(realm)==2)||(!isonline)
+  return 0
+ endif
+ //src.sysmessage(jedem: <uid.name>, src: <src.name>)
+ if(distancefrom(var(whos_honouring)) < nastaveni_generals_honor_distance)
+  kermel.sysmessage(Hrac <name> dostava honor)
+  //src.sysmessage(dist: <distancefrom(<src>)>, nast: <nastaveni_<qval(<src.prsten.tag(leading)>,lord,)>nazguls_fear_distance>)
+  newitemsafe(i_honorcounter)
+  lastnew.more1=5 //o kolik srazit staty
+  lastnew.timer=<nastaveni_honor_effect_counter>
+  lastnew.cont=<uid>
+  lastnew.update
+ endif  
+endif
+
+[itemdef i_honor4every1]
+id=i_memory
+layer=77
+type=t_eq_script
+name=Honor pro vse v okoli
+
+on=@timer
+sector.allchars(makeme_encouraged)
+var(whos_honouring,"")
+remove
+return 1
+
+[itemdef i_honor_delay]
+id=i_memory
+type=t_eq_script
+name=Generals Honor delay
+
+on=@create
+attr=attr_invis|attr_move_never
+
+on=@timer
+remove
+
+[itemdef i_honorcounter]
+id=i_memory
+type=t_eq_script
+name=Generals Honor counter
+
+on=@create
+attr=attr_invis|attr_move_never
+
+on=@equip
+src.classmessage(Citis se <qval(src.tag(general),take,)> povzbuzen)
+src.str=<src.str>+<more1>
+src.int=<src.int>+<more1>
+src.dex=<src.dex>+<more1>
+src.vit=<src.vit>+<more1>
+
+on=@unequip
+src.classmessage(Moc povzbuzeni vyprchala)
+src.str=<src.str>-<more1>
+src.int=<src.int>-<more1>
+src.dex=<src.dex>-<more1>
+src.vit=<src.vit>-<more1>
+
+on=@timer
+remove
+
+[itemdef i_generals_bracelet]
+id=i_bracelet_gold
+name=Generals bracelet
+type=t_eq_script
+
+on=@create
+color=color_o_gold
+attr=attr_static|attr_move_never
+events(+t_uniform)
+tag(uni_layer[1],"22,def.dispid==i_robe,0481,blank,i_robe")
+tag(uni_layer[2],"20,def.dispid==i_cape,0481,blank,i_cape")
+tag(uni_layer[3],"7,isitem,0481,blank")
+tag(uni_layer[4],"3,isitem,0481,blank,i_boots_calf")
+tag(uni_layer[5],"25,isitem,0481,blank,i_mt_horse_tan")
+tag(uni_layer[6],"6,isitem,0481,blank,i_hat_floppy")
+tag(uni_needed,6)
+
+[function general_gondoru] //src. - to GM, uid - ten hrac
+src.newitemsafe(i_targ_gen_make)
+lastnew.timer=45
+lastnew.equip
+
+[itemdef i_targ_gen_make]
+id=i_memory
+name=Zamerovac noveho generala
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target
+src.sysmessage(Zamer budouciho generala Gondoru)
+
+on=@targon_char
+if(<src.targ.tag(realm)>!=1)
+ src.sysmessage(Zameruj pouze hrace Gondorskeho realmu!) 
+ remove
+ return 1
+endif
+if(<src.targ.isgm>)
+ src.sysmessage(GM nepotrebuji byt generalove)
+ remove
+ return 1
+endif
+src.sesad_generala
+if(<src.targ.tag(captain)>)
+ src.targ.name=<src.targ.tag(real_name)>
+ src.targ.tag.remove(captain)
+ src.targ.tag.remove(real_name)
+ finduid(<src.targ.tag(keep)>).link=""
+ src.targ.tag.remove(keep)
+endif
+src.targ.tag(real_name,<src.targ.name>)
+src.targ.tag(general,1)
+src.targ.newitemsafe(i_generals_bracelet)
+src.targ.equip(<lastnew>)
+lastnew.update
+//src.sysmessage(jmeno: <src.name>)
+src.targ.name="General <src.targ.name>"
+src.targ.classmessage(Stal jsi se generalem Gondoru)
+var(general_gondoru,<src.targ>)
+src.sysmessage(Novy general uspesne jmenovan)
+
+on=@targon_item
+src.sysmessage(Zameruj lidi)
+remove
+return 1
+
+on=@targon_ground
+trigger(targon_item)
+return 1
+
+[function sesad_generala]
+if(strlen(<var(general_gondoru)>))
+ finduid(<var(general_gondoru)>).name=<finduid(<var(general_gondoru)>).tag(real_name)>
+ finduid(<var(general_gondoru)>).tag.remove(real_name)
+ finduid(<var(general_gondoru)>).tag.remove(general)
+ finduid(<var(general_gondoru)>).consume(i_generals_bracelet)
+endif
+var(general_gondoru,"")
+src.nukeall(generalout)
+
+[function generalout]
+if(<baseid>==i_generalstone)
+ link=""
+endif
+
+[function regiontest]
+src.sysmessage(realm: <region.tag(realm)>, regionname: <region.tag(jmeno_mesta)>, townstone: <var(townstone_<region.tag(jmeno_mesta)>)>,generalstone: <var(generalstone_<region.tag(jmeno_mesta)>)>,keep: <var(keep_<getNearestKeepName(<tag(realm)>)>)>)
+
+[function nastavvar]
+if(baseid==i_townstone)||(baseid==i_shrine_power)
+ var(townstone_<region.tag(jmeno_mesta)>,<uid>)
+ src.sysmessage(Promenna nastavena, overis pouzitim funkce "regiontest")
+ return 1
+endif
+if(baseid==i_generalstone)||(baseid==i_lordnazgulsstone)
+ var(generalstone_<region.tag(jmeno_mesta)>,<uid>)
+ src.sysmessage(Promenna nastavena, overis pouzitim funkce "regiontest")
+ return 1
+endif
+if(baseid==i_captainstone)||(baseid==i_mordorcaptainstone)
+ var(keep_<getNearestKeepName(<src.tag(realm)>)>,<uid>) //keep jmeno nebereme z regionu ale z nejblizsiho kamene
+ src.sysmessage(Promenna nastavena, overis pouzitim funkce "regiontest")
+ return 1
+else
+ src.sysmessage(Neni to zadny z kamenu. Nauc se pouzivat tu funkci!)
+ return 1
+endif
+
+[typedef t_generalmenu]
+on=@userdclick
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+//if(!strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+ //nastavime kaminek
+ var(generalstone_<region.tag(jmeno_mesta)>,<uid>) //radsi vzdy, nejak to hloupne
+//endif
+if(strlen(<link>))
+ src.classmessage(Generalem je <link.name>)
+ if(<src.isgm>)
+  potvrdit(sesad_generala,"Opravdu si prejes sesadit z funkce generala Gondoru?")
+ endif
+else
+ if(strlen(<var(general_gondoru)>))
+  link=<var(general_gondoru)> 
+ else
+  src.classmessage(General Gondoru neni urcen)
+  if(<src.isgm>)
+   potvrdit(general_gondoru,"Prejes si uvest do funkce noveho generala Gondoru?")
+  endif
+ endif
+endif
+if(<region.tag(realm)>==1)
+ if(src.isgm)  
+  src.sysmessage(Realm Gondorsky)
+ endif
+ if(<src.tag(general)>)||(<src.isgm>)
+  f_generalmenu 
+  return 1
+ else
+  finduid(<var(realmbancont)>).dialog(d_general_executioner,0,1)
+  return 1
+ endif
+else 
+ src.redmessage(Realm nevhodny pro mesto, kontaktuj GM, kamen by zde nemel byt!)
+ return 1
+endif
+
+
+/////////////////////
+//funkce general only
+/////////////////////
+[function guardscontrol]
+if(isgm)||(<isgeneralintown>)  
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen)
+  return 1
+ endif
+ if(<region.tag(realm)> != 1)
+  src.sysmessage(Straze te poslechnou jen na Kralovskem uzemi!)
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>)) //pro gm  
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   finduid(<var(generalstone_<region.tag(jmeno_mesta)>)>).dialog d_general_major //- rozmistit straze po meste
+   finduid(<var(generalstone_<region.tag(jmeno_mesta)>)>).dialog d_general_captain //ovladani strazi 
+   return 1 
+  else
+   sysmessage(Neni zde zadny kamen pro ovladani kralovskych strazi)
+   return 1
+  endif
+ else
+  sysmessage(Neni zde zadny kamen pro ovladani kralovskych strazi)
+  return 1
+ endif
+else 
+ if(<tag(general)>)
+  sysmessage(Musis byt ve meste!)  
+ endif
+ return 1
+endif
+
+[function kingguardskill]
+if(<tag(general)>)||(isgm)
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen)
+  return 1
+ endif
+ if(<region.tag(realm)> != 1)
+  src.sysmessage(Straze te poslechnou jen na Kralovskem uzemi!)
+  return 1
+ endif
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))   
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).rescount>)
+    newitemsafe(i_kingguard_targ) 
+    lastnew.tag(mesto,<var(generalstone_<region.tag(jmeno_mesta)>)>) //mesto i pevnost - proste ten stone
+    lastnew.equip 
+   else
+    sysmessage(Nemas k dispozici zadne kralovske straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function kingguardsstop]
+if(<tag(general)>)||(isgm)
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen)
+  return 1
+ endif
+ if(<region.tag(realm)> != 1)
+  src.sysmessage(Straze te poslechnou jen na Kralovskem uzemi!)
+  return 1
+ endif
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>)) 
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).rescount>)
+    finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).contents(stop_guard(1)) //1 stop
+   else
+    sysmessage(Nemas k dispozici zadne kralovske straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function kingguardscontinue]
+if(<tag(general)>)||(isgm)
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen)
+  return 1
+ endif
+ if(<region.tag(realm)> != 1)
+  src.sysmessage(Straze te poslechnou jen na Kralovskem uzemi!)
+  return 1
+ endif
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>)) 
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).rescount>)
+    finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).contents(stop_guard(0)) 
+   else
+    sysmessage(Nemas k dispozici zadne kralovske straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function kingguardsflee]
+if(<tag(general)>)||(isgm)
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen)
+  return 1
+ endif
+ if(<region.tag(realm)> != 1)
+  src.sysmessage(Straze te poslechnou jen na Kralovskem uzemi!)
+  return 1
+ endif
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>)) 
+  if(strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).rescount>)
+    finduid(<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>).contents(home_run) 
+   else
+    sysmessage(Nemas k dispozici zadne kralovske straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function kingguardscome]
+if(<tag(general)>)||(isgm)
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen)
+  return 1
+ endif
+ if(<region.tag(realm)> != 1)
+  src.sysmessage(Straze te poslechnou jen na Kralovskem uzemi!)
+  return 1
+ endif
+ reveal
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strlen(<var(generalstone_<region.tag(jmeno_mesta)>)>))
+   sysmessage(Kralovske straze prijdou jen v ramci mesta)
+   return 1 
+  endif
+ else
+  sysmessage(Kralovske straze prijdou jen v ramci mesta)
+  return 1 
+ endif
+ arg(kingguardcont,<var(generalstone_<region.tag(jmeno_mesta)>).tag(kingguardcont)>)
+ if(<finduid(<arg(kingguardcont)>).rescount>)
+  arg(pocet_strazi,<finduid(<arg(kingguardcont)>).rescount>)  
+  arg(i,0)
+  while(i < pocet_strazi)
+   //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+   if(<finduid(<arg(kingguardcont)>).findcont(i).link>) //umisteny spawngem
+    arg(guard,<finduid(<arg(kingguardcont)>).findcont(i).link.tag(lastspawned)>)
+    if(<finduid(guard).npc>) //spawnuta straz
+     if(<src.distancefrom(<finduid(guard)>)> <= 15)     
+      finduid(guard).events=-e_guard_stopped 
+      finduid(guard).paralyze_remove
+      finduid(guard).go(<src.p>) 
+     endif
+    endif
+   endif 
+   arg(i,#+1)
+  endwhile
+ else
+  sysmessage(Nemas k dispozici zadne kralovske straze)
+ endif 
+endif
+
+[function realm_blacklist]
+if(<tag(general)>)||(isgm)
+ newitemsafe(i_target_ban)
+ lastnew.link=<finduid(<var(realmbancont)>)>
+ lastnew.timer=60
+ lastnew.name=Gondor
+ lastnew.equip 
+else
+ return 1
+endif
+
+[itemdef i_target_ban]
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target
+src.classmessage(Koho chces pridat na blacklist?)
+
+on=@targon_char
+if(!strlen(<src.targ.tag(realm)>))
+ src.sysmessage(To co jsi zameril neni vhodne pro blacklist)
+ remove
+ link.dialog(d_general_executioner,0,<src.tag(realm)>)
+ return 1
+endif
+if(<src.targ.isgm>) 
+ src.sysmessage(GMka ne!)
+ remove
+ link.dialog(d_general_executioner,0,<src.tag(realm)>)
+ return 1
+endif
+if(!src.isgm)&&(<src.targ.tag.realm>!=<src.tag(realm)>)
+ src.sysmessage(Tohoto neni potreba blacklistovat)
+ remove
+ link.dialog(d_general_executioner,0,<src.tag(realm)>)
+ return 1
+endif
+if(src.isgm)
+ if(<src.targ.tag(general)>) 
+  src.sysmessage(Generala Gondoru nemuzes pridat na blacklist) //v gondoru ne a v mordoru to nebude treba
+  remove
+  link.dialog(d_general_executioner,0,<src.tag(realm)>)
+  return 1
+ endif
+ if(<src.targ.tag(lordnazgul)>)
+  src.sysmessage(Prvniho Nazgula nemuzes pridat na blacklist) //v mordoru ne a v gondoru to nebude treba
+  remove
+  link.dialog(d_general_executioner,0,<src.tag(realm)>)
+  return 1
+ endif
+endif
+if(src.targ.realmbanned(<uid>))
+ src.sysmessage(<src.targ.name> uz jednou byl pridan na globalni blacklist)
+ remove
+ link.dialog(d_general_executioner,0,<src.tag(realm)>)
+ return 1
+else
+ input("Udej duvod pro blacklist:",realmban_him,"")
+ return 1
+endif
+
+on=@targon_item
+if ((src.targ.baseid==i_flesh_head)||(src.targ.baseid==i_flesh_head_2))	// je to hlava? muzska / zenska
+	if (<src.targ.link.isplayer>)	// a je to hlava hraca?
+		src.targ=<src.targ.link>	//zameraj majitela hlavy
+		trigger(targon_char)	//zavolaj trigger targon_char
+		return 1
+	else
+		src.sysmessage("To neni hlava hrace")
+	endif
+	return 1
+else
+	src.sysmessage("Zameruj lidi, nebo jejich hlavy")
+	remove
+	return 1
+endif
+
+on=@targon_ground
+src.sysmessage(Zameruj lidi.)
+remove
+return 1
+
+[function realmban_him]//Args- duvod
+src.newitemsafe(i_town_crystal)
+if(<src.tag(rememberuid)>) //ma ulozeno  - mozna navrhuje z pameti
+ if(!strcmpi(<src.tag(rememberuid)>,<src.targ>)) //- navrhuje toho co ma v pameti
+  lastnew.name=<src.tag(remembername)>
+ else //nenavrhuje toho z pameti
+  lastnew.name=<src.targ.name>
+ endif
+else //nema vubec nikoho v pameti
+ lastnew.name=<src.targ.name>
+endif
+lastnew.cont=<link> 
+lastnew.tag(duvod,<args>)
+lastnew.link=<src.targ> //linknout na playera
+src.accmsg("Pridal uid=<src.targ> (<src.targ.name>) na globalni blacklist")
+src.classmessage(<src.targ.name> uspesne pridan na globalni cernou listinu)
+src.targ.delayedredmessage(Byl jsi dan na globalni cernou listinu) 
+if(<src.targ.tag(realmbanned_<name>)>) //uz je bl. s jinym jmenem
+ src.targ.tag(realmbanned_<name>,#+1)
+else
+ src.targ.tag(realmbanned_<name>,1) //poprve
+endif
+link.dialog(d_general_executioner,0,<src.tag(realm)>)
+remove
+return 1
+
+[function realmbanned]//Argv0 - uid toho zamerovace kterej ma link na danej bancont
+var(rbd,0)
+finduid(<argv(0)>).link.contents(rlmbnd(<src.targ.name>))
+if(<var(rbd)>)
+ var(rbd,"")
+ return 1
+else
+ var(rbd,"")
+ return 0
+endif
+
+[function rlmbnd]
+if(<var(rbd)>) //nasel ho uz v nejakem krystalu., nebudeme uz porovnavat
+ return 1
+endif
+if(strcmpi(<name>,<args>))
+ return 1
+else
+ var(rbd,1)
+ return 1
+endif
+///////////////////////////
+//konec funkci general only
+///////////////////////////
+[function f_generalmenu]
+if(<src.region>!=<region>)
+  src.sysmessage(Musis byt v prostoru mesta!)
+  return 0
+endif
+if(!<tag(allowhire[0])>) 
+ if(<src.isgm>)
+  src.sysmessage(Nastav dostupne kralovske straze!)
+  src.sysmessage(Pouziti: ".x kingguards(jmeno_mesta), viceslovne nazvy provaz podtrzitkem")
+  src.sysmessage(Napriklad: Minas_Tirith, Minas_Morgul atd.)
+  return 1
+ else
+  src.sysmessage(Mesto neni zatim pripraveno na kralovske straze) 
+  return 1
+ endif
+endif
+
+var(generalstone_<region.tag(jmeno_mesta)>,<uid>)
+
+//nasledujici blok se provede jen pri prvnim kliknuti na generalsstone
+if !(<tag(kingguardcont)>)
+ //if (myrepregion)
+ // tag(jmeno_mesta,<var(lastrepregion).name>)
+ //else
+ // tag(jmeno_mesta,<region.name>)
+ //endif
+ var(generalstone_<region.tag(jmeno_mesta)>,<uid>)
+
+ src.newitemsafe(i_pouch) //kingsguards
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(23)
+ lastnew.more1=0
+ lastnew.link=<uid>
+ lastnew.name=Kralovskych strazi
+ tag(kingguardcont,<lastnew>) 
+ 
+ if(!(strlen(<var(realmbancont)>)))
+  src.newitemsafe(i_chest_metal_brass) //blacklisted 
+  lastnew.attr_movenever=1
+  lastnew.color=colors_blue
+  lastnew.name=Gondor
+  lastnew.p=5938 107 //start povolani, prizemi
+  lastnew.update
+  var(realmbancont,<lastnew>)
+ endif
+ tag(guardu,0)
+endif
+if(strlen(<var(realmbancont)>)) //vraceni pripadne zmizele truhly
+ if(!<finduid(<var(realmbancont)>)>)
+  src.newitemsafe(i_chest_metal_brass) //blacklisted 
+  lastnew.attr_movenever=1
+  lastnew.color=colors_blue
+  lastnew.name=Gondor
+  lastnew.p=5938 107 //start povolani, prizemi
+  lastnew.update
+  var(realmbancont,<lastnew>)
+ endif
+endif
+
+dialog d_general_captain
+dialog d_general_recruiter
+dialog d_general_major
+finduid(<var(realmbancont)>).dialog(d_general_executioner,0,1)
+return 1
+
+[dialog d_general_captain]//PRIKAZY STRAZIM
+20,20
+argo.tag(sirka,255)
+argo.tag(vyska,<eval (6*d_def_radek_vyska)+(2*d_def_skvira)+(2*d_def_okraj)>)
+var(lastvyska,<argo.tag(vyska)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,Rozkaz kralovskym strazim:)
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(ypos,<argo.tsc_section(<ypos>,1,Guards Kill)>)
+arg(ypos,<argo.tsc_section(<ypos>,2,Guards Stop)>)
+arg(ypos,<argo.tsc_section(<ypos>,3,Guards Continue)>)
+arg(ypos,<argo.tsc_section(<ypos>,4,Guards Flee)>)
+arg(ypos,<argo.tsc_section(<ypos>,5,Guards Come)>)
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+//argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+//argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+//argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_general_captain button]
+on=0
+on=1 //kill - jen nekolik !
+src.redmessage("Tento povel byl zrusen, straze si samy vyberou cil")
+return 1
+
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ reveal
+ src.newitemsafe(i_kingguard_targ) 
+ lastnew.tag(mesto,<uid>) //mesto i pevnost - proste ten stone
+ lastnew.equip 
+else
+ src.sysmessage(Nemas k dispozici zadne kralovske straze)
+endif
+dialog d_general_captain
+
+on=2 //stop
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ src.reveal
+ finduid(<tag(kingguardcont)>).contents(stop_guard(1)) //1 stop
+else
+ src.sysmessage(Nemas k dispozici zadne kralovske straze)
+endif
+dialog d_general_captain
+
+on=3 //go on
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ src.reveal
+ finduid(<tag(kingguardcont)>).contents(stop_guard(0)) //0 release
+else
+ src.sysmessage(Nemas k dispozici zadne kralovske straze)
+endif
+dialog d_general_captain
+
+on=4 //flee
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ src.reveal
+ finduid(<tag(kingguardcont)>).contents(home_run)
+else
+ src.sysmessage(Nemas k dispozici zadne kralovske straze)
+endif
+dialog d_general_captain
+
+on=5 //come - jen nekolik !
+if(baseid==i_generalstone) //generals stone
+ if(strcmpi(<src.region>,<var(townstone_<region.tag(jmeno_mesta)>).region>)) //region kde stoji hrac je stejny jako tag na pripadnem nalezenem townstonu /0 pokud stejne, pak nic nehlasi
+  src.sysmessage(Kralovske straze prijdou jen v ramci mesta)
+  return 1
+ endif
+endif
+if(baseid==i_captainstone) //captains stone
+ if(<src.tag(general)>)||(<src.isgm>)
+  if(strcmpi(<src.region>,<var(keep_<tag(jmeno_mesta)>).region>)) //totez s pripadnym captainstonem
+   src.sysmessage(Kralovske straze muzes povolat jen v ramci pevnosti)
+   return 1
+  endif
+ endif
+ if(<src.tag(captain)>)
+  if(strcmpi(<src.region>,<finduid(<src.tag(keep)>).region>))
+   src.sysmessage(Kralovske straze muzes povolat jen v ramci sve pevnosti)
+   return 1
+  endif
+ endif
+endif
+src.reveal
+if(<finduid(<tag(kingguardcont)>).rescount>)
+ arg(pocet_strazi,<finduid(<tag(kingguardcont)>).rescount>) 
+ arg(i,0)
+ while(i < pocet_strazi)
+  //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+  if(<finduid(<tag(kingguardcont)>).findcont(i).link>) //umisteny spawngem
+    arg(guard,<finduid(<tag(kingguardcont)>).findcont(i).link.tag(lastspawned)>)
+    if(<finduid(guard).npc>) //spawnuta straz
+     if(<src.distancefrom(<finduid(guard)>)> <= 15)
+      finduid(guard).events=-e_guard_stopped 
+      finduid(guard).paralyze_remove
+      finduid(guard).go(<src.p>) 
+     endif
+    endif
+  endif 
+  arg(i,#+1)
+ endwhile
+else
+ src.sysmessage(Nemas k dispozici zadne kralovske straze)
+endif
+dialog d_general_captain
+
+[itemdef i_kingguard_targ]
+id=i_memory
+type=t_eq_script
+name=Zamerovac cile strazi
+
+on=@equip
+target Na koho maji zautocit kralovske straze?
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targon_item
+return 1
+
+on=@targon_ground
+return 1
+
+on=@targon_char
+if(<src>==<src.targ>)
+ src.sysmessage(Proc povolavat straze sam na sebe, ze?)
+ remove
+ return 1
+endif
+if(!src.targ.isplayer && !src.targ.issumon)
+ src.sysmessage(Straze lze poslat jen na hrace a jejich summony)
+endif
+if(strcmpi(<src.region>,<finduid(<tag(mesto)>).region>))
+ src.sysmessage(Straze te neslysi, jsi moc daleko od hranic jejich uzemi)
+ remove
+ return 1
+else
+ arg(jmeno_mesta,<finduid(<tag(mesto)>).region>)
+endif
+if(strcmpi(<arg(jmeno_mesta)>,<src.targ.region>)) //0 pokud stejne, pak nic nehlasi
+ src.sysmessage(Kralovske straze nemohou zautocit mimo jejich uzemi)
+ remove
+ return 1
+endif
+arg(pocet_strazi,<finduid(<finduid(<tag(mesto)>).tag(kingguardcont)>).rescount>)
+arg(guardcont,<finduid(<tag(mesto)>).tag(kingguardcont)>)
+arg(i,0)
+while(i < pocet_strazi)
+ //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+ if(<finduid(<arg(guardcont)>).findcont(i).link>) //umisteny spawngem
+  arg(guard,<finduid(<arg(guardcont)>).findcont(i).link.tag(lastspawned)>)
+  if(safe <finduid(guard).npc>) //spawnuta straz
+   if(<src.distancefrom(<finduid(guard)>)> <= 15)
+    finduid(guard).events=-e_guard_stopped 
+    finduid(guard).paralyze_remove
+    finduid(guard).go(<src.p>)
+    if(<src.targ.tag(general)>)
+     dorand 3
+      finduid(guard).say(Muj pane <src.targ.tag(real_name)>! Nas pan nam prikazal na tebe zautocit, odpust mu)
+      finduid(guard).say(Zblaznil jste se kapitane?)
+      finduid(guard).say(To je prece sam general <src.targ.tag(real_name)>. Co vas k nam privadi pane?)
+     enddo
+    else
+     if(<src.targ.isgm>) 
+      dorand 2
+       finduid(guard).say(O veliky, smiluj se a odpust tomuhle nevedomci jenz nam prikazal na tebe zautocit)
+       finduid(guard).say(Odpust o mocny nasemu kapitanu neb on nevi co ucinil)
+      enddo
+     else
+      if(<src.targ.tag(starosta)>)
+       dorand 2
+        finduid(guard).say(Ctihodnosti, bud pozdraven!)
+        finduid(guard).say(Kapitane to je prece starosta <src.targ.name>!)
+       enddo
+      else     
+       finduid(guard).attack(<src.targ>)
+      endif
+     endif
+    endif
+   endif
+  endif
+ endif
+ arg(i,#+1)
+endwhile
+remove
+return 1
+
+[dialog d_general_major]//rozmisteni strazi generalem/kapitanem/prvnim nazgulem
+argo.SetLocation(20,var(lastvyska)+100)
+argo.tag(sirka,475)
+var(lastsirka,<argo.tag(sirka)>)
+argo.tag(vyska,<eval (15*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,13,39,39,70,175)//,95)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,"Seznam + rozmisteni neplacenych strazi:")
+
+argo.texta(<argo.dialog_textpos(1,0)>,0481,"Zmen")
+argo.texta(<argo.dialog_textpos(1,1)>,0481,"Zrus")
+argo.texta(<argo.dialog_textpos(1,2)>,0481,"Jmeno")
+argo.texta(<argo.dialog_textpos(1,3,1)>,0481,"Typ")
+argo.texta(<argo.dialog_textpos(1,4)>,0481,"Pozice")
+//argo.texta(<argo.dialog_textpos(1,5)>,0481,"Vysluzba")
+
+argo.tag(firsti,<eval argv(0)>)
+arg(index,<argo.tag(firsti)>)
+arg(ypos,<argo.tag(obj_y[2])>)
+if (<arg(index)>)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(maxi,<eval index+13>)
+while (tag(kingguardcont).findcont(index))&&(<arg(index)> < <arg(maxi)>)
+ arg(thisitem,<tag(kingguardcont).findcont(index)>)
+ //arg(uplynulo,<eval (<serv.time>-<finduid(<arg(thisitem)>).tag(lastcheck)>)>)
+ //src.sysmessage(bylo:<arg(thisitem).more2>)
+ //arg(thisitem).more2=<eval (<arg(thisitem).more2>-<arg(uplynulo)>)>
+ //src.sysmessage(last: <finduid(<arg(thisitem)>).tag(lastcheck)>, uplyn: <arg(uplynulo)>, zbylo: <arg(thisitem).more2>)
+ //if (<arg(thisitem).more2> > 0) //jeste mame zaplaceno 
+  arg(guarddefname,<findres(chardef,arg(thisitem).more).defname>)
+  argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,index+1000)
+  argo.button(<argo.tag(sloupec_x[1])>,ypos,4005,4007,1,0,index+2000)
+  argo.texta(argo.tag(sloupec_x[3])+d_def_odsazeni,ypos,955,"<arg(thisitem).name>")
+  //argo.texta(argo.tag(sloupec_x[5])+d_def_odsazeni,ypos,955,<vysluzba(<arg(thisitem).more2>)>)
+  if (arg(thisitem).tag(guardspawn))
+   if (strlen(<finduid(<finduid(<arg(thisitem)>).tag(guardspawn)>).tag(lastspawned)>))
+    argo.texta(argo.tag(sloupec_x[2])+d_def_odsazeni,ypos,955,"<finduid(<finduid(<finduid(<arg(thisitem)>).tag(guardspawn)>).tag(lastspawned)>).name>")
+    argo.texta(argo.tag(sloupec_x[4])+d_def_odsazeni,ypos,955,"<finduid(<finduid(<finduid(<arg(thisitem)>).tag(guardspawn)>).tag(lastspawned)>).p>")
+   endif
+  endif
+  //arg(thisitem).tag(lastcheck,<serv.time>)
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+ //else //nezaplaceno, odstranit strazce, spawngem a krystal
+ // src.redmessage(Nedostatecne odmenovana straz)
+ // if (arg(thisitem).tag(guardspawn))
+ //  if (<finduid(<arg(thisitem).tag(guardspawn)>)>)
+ //   arg(thisitem).timer=<finduid(<arg(crystal).tag(guardspawn)>).timer>      
+ //   arg(thisitem).tag(guardspawn).remove    
+ //  endif
+ // endif
+ // arg(thisitem).remove
+ //endif 
+endwhile
+if (tag(kingguardcont).findcont(index))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+endif
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+//argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+//argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+//argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_general_major button]
+on=0
+on=1//prev
+DIALOG(d_general_major,<argo.tag(firsti)>-13)
+on=2//next
+DIALOG(d_general_major,<argo.tag(firsti)>+13)
+
+on=@anybutton
+if (argn<2000)
+  //src.smsg zmen:<tag(guardcont).findcont(<eval argn-1000>).name>
+  src.newitemsafe(i_kingguard_setp)
+  lastnew.equip
+  lastnew.link=<uid> //ten stone
+  lastnew.tag(crystal,<finduid(<tag(kingguardcont)>).findcont(<eval argn-1000>)>)
+else
+  //src.smsg zrus:<tag(guardcont).findcont(<eval argn-2000>).name>
+  arg(crystal,<tag(kingguardcont).findcont(<eval argn-2000>)>)  
+  if (arg(crystal).tag(guardspawn))
+   if (<finduid(<arg(crystal).tag(guardspawn)>)>)
+    arg(crystal).timer=<finduid(<arg(crystal).tag(guardspawn)>).timer>
+    if (arg(crystal).tag(guardspawn).more2)
+     arg(crystal).timer=1
+    endif
+    arg(crystal).tag(guardspawn).remove
+    arg(crystal).tag(guardspawn,"")
+    dialog d_general_major
+   endif
+  else //neumistena straz
+   potvrdit(propustit_general(<arg(crystal)>),"Chces skutecne propustit strazce?")
+  endif
+endif
+
+[itemdef i_kingguard_setp]
+name=Set king guard position
+id=i_memory
+type=t_eq_script
+
+on=@equip
+targetg Kam chces umistit strazce?
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targon_item
+trigger(targon_ground)
+return 1
+
+on=@targon_char
+trigger(targon_ground)
+return 1
+
+on=@targon_ground
+if((link.baseid == i_captainstone) || (link.baseid == i_mordorcaptainstone)) //pevnostni straze kontrolujeme jinak
+ if(isnearKeepGuardspawn(<src.targp>))
+  src.sysmessage(Nemuzes umistit guarda tak blizko jineho)
+  trigger(equip)
+  return 1
+ endif
+else
+ if(isnearguardspawn(<src.targp>))
+  src.sysmessage(Nemuzes umistit guarda tak blizko jineho)
+  trigger(equip)
+  return 1
+ endif
+endif
+arg(vytvorit,1)
+if (tag(crystal).tag(guardspawn))
+  if (<finduid(<tag(crystal)>).tag(guardspawn)>)
+    arg(vytvorit,0)
+  endif
+endif
+if (arg(vytvorit))
+  kermel.smsg(Vytvarim guardspawn)
+  src.NEWITEMsafe(01ea7)
+  arg(newguardspawn,<lastnew>)
+  newguardspawn.P=<src.targP>
+  newguardspawn.TYPE=34
+  newguardspawn.AMOUNT=1
+  newguardspawn.MOREp=<nastaveni_weapdam_guardspawntime>
+  newguardspawn.MOREZ=5
+  newguardspawn.ATTR=0b0  
+  newguardspawn.timer=<eval {600 900}>
+//  lastnew.timer=<eval (<finduid(<tag(crystal)>).timer>+2)>
+  finduid(<tag(crystal)>).tag(guardspawn,<newguardspawn>)
+  finduid(<tag(crystal)>).link=<newguardspawn>
+endif
+
+//je-li to pevnost, zkontroluj jestli to muze tam umistit
+if((link.baseid == i_captainstone)||(link.baseid == i_mordorcaptainstone))
+ kermel.smsg(umistuji k pevnosti)
+ src.newitemsafe(i_pouch)
+ lastnew.p = <src.targp>
+ arg(ctrlpouch,<lastnew>)
+ if(ctrlpouch.distancefrom(<link>) > <nastaveni_pevnosti_vzdal_guard_pevnost>)
+  src.redmessage("Pevnostniho strazce nelze umistit tak daleko od pevnosti")
+  if(arg(vytvorit))
+   kermel.smsg(odstranuji newguardspawn)
+   newguardspawn.remove
+   finduid(<tag(crystal)>).tag(guardspawn,"")
+  else
+   finduid(<tag(crystal)>).tag(guardspawn).p=<finduid(<tag(crystal)>).tag(guardspawn).tag(lastp)>
+   finduid(<tag(crystal)>).tag(guardspawn).tag.remove(lastp)
+  endif
+  ctrlpouch.remove
+  return 1
+ endif
+ ctrlpouch.remove
+endif
+
+finduid(<tag(crystal)>).tag(guardspawn).MORE=<finduid(<tag(crystal)>).tag(guarddefname)>
+if(!<arg(vytvorit)>)
+ finduid(<tag(crystal)>).tag(guardspawn).p=<src.targp>
+ finduid(<tag(crystal)>).tag(guardspawn).tag(lastp,<finduid(<tag(crystal)>).tag(guardspawn).p>)
+endif
+arg(jmeno_mesta,<link.tag(jmeno_mesta)>)
+if((link.baseid == i_generalstone)||(link.baseid == i_lordnazgulsstone))
+ arg(spawn_jmeno_mesta,<finduid(<tag(crystal)>).tag(guardspawn).region.tag(jmeno_mesta)>)
+endif
+if((link.baseid == i_captainstone)||(link.baseid == i_mordorcaptainstone))
+ arg(spawn_jmeno_mesta,<finduid(<tag(crystal)>).tag(guardspawn).getNearestKeepName(<src.region.tag(realm)>)>)>)
+endif
+  kermel.smsg(porovnavam mesta - pevnost: <jmeno_mesta> spawns - <spawn_jmeno_mesta>)
+if (<strcmpi(<jmeno_mesta>,<spawn_jmeno_mesta>)>!=0)
+  src.redmessage("Tam nemuzes strazce umistit")
+  //if (<finduid(<tag(crystal)>).tag(guardspawn).more2>)
+  //  finduid(<tag(crystal)>).timer=1
+  //endif
+  if(<arg(vytvorit)>)
+   finduid(<tag(crystal)>).link.remove
+   finduid(<tag(crystal)>).tag(guardspawn,"")
+  else
+   finduid(<tag(crystal)>).tag(guardspawn).p=<finduid(<tag(crystal)>).tag(guardspawn).tag(lastp)>
+   finduid(<tag(crystal)>).tag(guardspawn).tag.remove(lastp)
+  endif
+else
+  if (<finduid(<tag(crystal)>).tag(guardspawn).more2>) //presunuti spawnnuteho strazce
+   arg(spawnedchar,<finduid(<finduid(<tag(crystal)>).tag(guardspawn)>).tag(lastspawned)>)
+   arg(spawnedchar).remove
+   finduid(<tag(crystal)>).tag(guardspawn).timer=<eval {600 900}>
+   //arg(spawnedchar).home=<finduid(<finduid(<tag(crystal)>).tag(guardspawn)>).p>
+   //arg(spawnedchar).homedist=<finduid(<finduid(<tag(crystal)>).tag(guardspawn)>).morez>   
+  endif
+  finduid(<tag(crystal)>).tag(guardspawn).updatex
+endif
+link.dialog d_general_major
+remove
+return 1
+
+[function propustit_general]
+finduid(<argv(0)>).remove
+dialog d_general_major
+
+[dialog d_general_recruiter]
+argo.SetLocation(var(lastsirka)+20,var(lastvyska)+100)
+argo.tag(sirka,400)
+argo.tag(vyska,<eval (12*d_def_radek_vyska)+(5*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29,140)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29,170)//,80,80)
+argo.dialog_zpruhledni
+
+arg(guardu,<finduid(<tag(kingguardcont)>).rescount>)
+argo.tag(k_najmuti,<eval (<max_guards_<tag(jmeno_mesta)>>-<arg(guardu)>)>)
+argo.texta(<argo.dialog_textpos(0,0)>,0481,"Mozno najmout: <argo.tag(k_najmuti)> neplacenych strazi")
+//argo.texta(<argo.dialog_textpos(1,0)>,0481,"Navysit o: ")
+//argo.texta(100,"0")
+//argo.textentrya(lastxpos+80,lastypos,150,20,0481,1,100)
+
+//argo.button(<argo.dialog_textpos(1,2,1)>,0fb7,0fb9,1,0,5)//ok
+
+//argo.textentry(x,y,sirka,vyska,0481,1,101)
+
+argo.tag(firsthirei,<eval argv(0)>)
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,<argo.tag(firsthirei)>)
+if (index)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(maxi,<eval index+5>)
+while (tag(allowhire[index]))&&(index<maxi)
+  argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,index+1000)
+  argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,ypos,955,"<?<tag(allowhire[index])>.name?>")
+  argo.texta(argo.tag(sloupec_x[3])+d_def_odsazeni-35,ypos,955,"<?argo.tag(k_najmuti)?>")
+  //argo.texta(argo.tag(sloupec_x[4])+d_def_odsazeni-15,ypos,955,"<?<tag(allowhire[index])>.tag(guardhire)?>")
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+endwhile
+if (tag(allowhire[index]))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[3])>-25,0fc,0fd,1,0,2) // next
+endif
+
+argo.tag(firstseei,<eval argv(1)>)
+arg(ypos,<argo.tag(obj_y[3])>)
+arg(index,<argo.tag(firstseei)>)
+if (index)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[3])>+1,0fa,0fb,1,0,3) // prev
+endif
+arg(maxi,<eval index+5>)
+while (tag(kingguardcont).findcont(index))&&(index<maxi)
+  arg(thisitem,<tag(kingguardcont).findcont(index)>) //krystal  
+  arg(thatitem,<tag(kingguardcont).findcont(index).link>) //spawngem guarda  
+  arg(guarddefname,<findres(chardef,arg(thatitem).more1)>)
+  //argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,index+2000)
+  argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,ypos,955,"<arg(thisitem).name>")
+  if (<arg(thisitem).link>)    
+    if (<finduid(<arg(thisitem)>).link.tag(lastspawned)>) //lastspawned - ten guard
+      if (<finduid(<finduid(<arg(thisitem)>).link.tag(lastspawned)>).npc>)
+        argo.texta(argo.tag(sloupec_x[2])+50+d_def_odsazeni,ypos,955,"<arg(thisitem).link.tag(lastspawned).name>")
+      endif        
+    endif
+  endif
+  //argo.texta(argo.tag(sloupec_x[3])+d_def_odsazeni,ypos,955,"<findres(chardef,arg(thatitem).more1).tag(guardhire)>")
+  //argo.texta(argo.tag(sloupec_x[4])+d_def_odsazeni,ypos,955,<vysluzba(<arg(thisitem).more2>)>)
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+endwhile
+if (tag(kingguardcont).findcont(index))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,4) // next
+endif
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_general_recruiter button]
+on=0
+
+on=1//prev
+DIALOG(d_general_recruiter,<argo.tag(firsthirei)>-5,<argo.tag(firstseei)>)
+on=2//next
+DIALOG(d_general_recruiter,<argo.tag(firsthirei)>+5,<argo.tag(firstseei)>)
+on=3//prev
+DIALOG(d_general_recruiter,<argo.tag(firsthirei)>,<argo.tag(firstseei)>-5)
+on=4//next
+DIALOG(d_general_recruiter,<argo.tag(firsthirei)>,<argo.tag(firstseei)>+5)
+//on=5//pridej penize
+//arg(pridat,<fixnumber(<argtxt(1)>)>)
+//if (arg(pridat)>0)
+//  if (src.pay(<arg(pridat)>))
+//    tag(pokladna,#+<arg(pridat)>)
+//  endif
+//endif
+DIALOG(d_town_recruiter,<argo.tag(firsthirei)>,<argo.tag(firstseei)>)
+
+on=@anybutton
+//if (argn<2000)
+  arg(guarddefname,<tag(allowhire[argn-1000])>)
+  //arg(price,<eval <arg(guarddefname)>.tag(guardhire)>)
+  arg(guardu,<finduid(<tag(kingguardcont)>).rescount>)
+  if (<max_guards_<tag(jmeno_mesta)>> > <arg(guardu)>)    
+    src.newitemsafe(i_relating_crystal)
+    lastnew.name=<?<arg(guarddefname)>.name?>
+    lastnew.cont=<tag(kingguardcont)>
+    lastnew.tag(guarddefname,<arg(guarddefname)>)
+    //lastnew.tag(lastcheck,<serv.time>) //kontrola casu !!!
+    //lastnew.more2=<eval (<lastnew.more2>+(7*<den>))>
+  else
+    src.sysmessage("Prilis mnoho najatych neplacenych strazi")
+  endif
+//else
+//  arg(thisitem,<tag(kingguardcont).findcont(argn-2000)>)  
+//  arg(price,<eval (<findres(chardef,arg(thisitem).tag(guarddefname)).tag(guardhire)>)>)
+//  if (tag(pokladna) >= arg(price))    
+//   tag(pokladna,#-<arg(price)>)
+//   arg(thisitem).more2=<eval (<finduid(<arg(thisitem)>).more2>+(7*<den>))>
+//  else
+//   src.sysmessage("V pokladne neni dost penez")
+//  endif
+//endif
+DIALOG(d_general_recruiter,<argo.tag(firsthirei)>,<argo.tag(firstseei)>)
+
+[dialog d_general_executioner]//blacklist, argv1 - realm volace
+argo.SetLocation(var(lastsirka)+20,var(lastvyska)-90)
+argo.tag(sirka,550)
+argo.tag(vyska,<eval (10*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval(((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))-<d_def_radek_vyska>)/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,29)
+argo.dialog_zpruhledni
+
+argo.settext(10,Vyvrzencu z <name>skeho realmu : <rescount>)
+argo.text(<argo.dialog_textpos(0,0)>,0481,10)
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)
+argo.tag(firsti,<eval argv(0)>)
+argo.tag(realm,<argv(1)>)
+if (argo.tag(firsti))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval argo.tag(firsti)+argo.tag(radku)>)
+if (imax>rescount)
+ arg(imax,<rescount>)
+endif
+if (rescount>imax)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+endif
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,<argo.tag(firsti)>)
+while (index<imax)
+ if(<src.tag(general)>)||(src.isgm)||(<src.tag(lordnazgul)>)
+  if(<src.tag(realm)>==<argv(1)>) //jen na svem kameni bude mit cudlicky
+   argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,(index)+100)
+  endif
+ endif
+ argo.textA(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,2301,"<findcont(index).name>")
+ argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+360),ypos,2301,"Duvod: <findcont(index).tag(duvod)>")  
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+
+if(<src.tag(general)>)||(src.isgm)||(<src.tag(lordnazgul)>)
+ if(<src.tag(realm)>==<argv(1)>) //jen na svem kameni bude mit cudlicky
+  argo.button(argo.tag(sloupec_x[0]),argo.tag(vyska)-(d_def_okraj+d_def_radek_vyska),4005,4007,1,0,3)//ban target
+  argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,argo.tag(vyska)-(d_def_okraj+d_def_radek_vyska),955,"Pridat cloveka")
+ endif
+endif
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_general_executioner button]
+on=0
+
+on=1
+dialog(d_general_executioner,<eval <argo.tag(firsti)>-<argo.tag(radku)>>,<argo.tag(realm)>)
+on=2
+dialog(d_general_executioner,<eval <argo.tag(firsti)>+<argo.tag(radku)>>,<argo.tag(realm)>)
+on=3
+src.newitemsafe(i_target_ban)
+lastnew.link=<uid> //banconty 
+lastnew.name=<name>
+lastnew.timer=60
+lastnew.equip 
+
+on=@anybutton
+arg(radek,<argn>-100)
+findcont(radek).link.delayedmessage(<findcont(radek).name> byl odstranen z globalni cerne listiny)
+findcont(radek).link.tag(realmbanned_<name>,#-1) //jedno jeho jmeno z blacklistu zmizelo
+if(<findcont(radek).link.tag(realmbanned_<name>)>==0) //uz zadne na bl nema
+ findcont(radek).link.tag.remove(realmbanned_<name>)
+endif
+
+findcont(radek).remove
+dialog(d_general_executioner,0,<src.tag(realm)>) 
+
+[eof]

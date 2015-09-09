@@ -1,0 +1,160 @@
+///////////////////////////////////////////////////
+/////////////////////NPC NAMESTEK GONDOR////////////
+////////////////////////////////////////////////////
+[CHARDEF c_namestek_valky_g]
+NAME=Norbert namestek valky 
+ID=C_MAN
+attack=90
+ARMOR=60
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+tag.guardopposite=c_m_guard_red_pesak
+tag.guardhire=500000
+
+TSPEECH=spk_namestek_valky_g
+TEVENTS=e_character
+TEVENTS=e_monster
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=namestek valky gondor
+
+ON=@Create
+brain=6//teleportuje se domu
+COLOR=colors_skin
+karma=1000
+STR=1000
+DEX=1000
+INT=2000
+tag.experience=<eval {40.0 60.0}>
+DETECTINGHIDDEN={90.0 100.0}
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+WRESTLING={150.0 200.0}
+MACEFIGHTING={150.0 200.0}
+Resist={120.0 150.0}
+TACTICS={150.0 200.0}
+
+tag(noanimate,1)
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=random_male_hair
+COLOR=0481
+ITEMNEWBIE=i_platemail_chest
+COLOR=0482
+ITEMNEWBIE=i_platemail_gloves
+COLOR=0482
+ITEMNEWBIE=i_platemail_gorget
+COLOR=0482
+ITEMNEWBIE=i_platemail_leggings
+COLOR=0482
+ITEMNEWBIE=i_platemail_arms
+COLOR=0482
+ITEMNEWBIE=i_cape
+COLOR=0481
+ITEMNEWBIE=i_halberd
+COLOR=0
+
+ON=@NPCRestock
+ITEM=i_gold,{0 100}
+
+ON=@NPCRefuseItem
+SAY("Jsem verny krali!")
+return 1
+
+ON=@userDCLICK
+f_namestek_valky_g
+
+
+///////////////////////////////////////////////////
+/////////////////////NPC NAMESTEK MORDOR////////////
+////////////////////////////////////////////////////
+
+[CHARDEF c_namestek_valky_m]
+NAME=Urdak namestek valky
+ID=C_MAN
+attack=90
+ARMOR=60
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+tag.guardopposite=c_m_guard_red_pesak
+tag.guardhire=500000
+
+
+TSPEECH=spk_namestek_valky_m
+TEVENTS=e_character
+TEVENTS=e_monster
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=namestek valky Mordor
+
+ON=@Create
+brain=6//teleportuje se domu
+COLOR=colors_skin
+karma=1000
+STR=1000
+DEX=1000
+INT=2000
+maxhits=30000
+maxstam={810 830}
+maxmana=200
+
+tag.resist_para=990
+tag.resist_poison=990
+tag.experience=<eval {90.0 100.0}>
+
+DETECTINGHIDDEN={90.0 100.0}
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+WRESTLING={150.0 200.0}
+MACEFIGHTING={150.0 200.0}
+Resist={120.0 150.0}
+TACTICS={150.0 200.0}
+ 
+ITEMNEWBIE=random_male_hair
+COLOR=1
+ITEMNEWBIE=i_shirt_plain
+COLOR=0455
+ITEMNEWBIE=random_pants
+COLOR=0455
+ITEMNEWBIE=i_platemail_chest
+COLOR=0455
+ITEMNEWBIE=i_platemail_gloves
+COLOR=0455
+ITEMNEWBIE=i_platemail_gorget
+COLOR=0455
+ITEMNEWBIE=i_platemail_leggings
+COLOR=0455
+ITEMNEWBIE=i_platemail_arms
+COLOR=0455
+ITEMNEWBIE=i_sash
+COLOR=1
+ITEMNEWBIE=i_cape
+COLOR=1
+ITEMNEWBIE=i_sword_long
+ITEMNEWBIE=i_shield_kite_metal
+COLOR=076B
+
+ON=@NPCRefuseItem
+SAY("Jsem verny svemu panu!")
+return 1
+
+ON=@NPCRESTOCK 
+ITEM=i_gold,{0 100}
+item=random_coin_purse
+itemnewbie=i_spellbook
+addspell=s_flamestrike
+color=0036
+
+
+ON=@userDCLICK
+f_namestek_valky_m
+
+

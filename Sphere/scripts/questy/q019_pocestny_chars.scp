@@ -1,0 +1,84 @@
+[CHARDEF c_q019_pocestny]
+NAME=Pocestny
+
+ID=C_MAN
+CAN=MT_WALK|mt_run|MT_fire_immune
+ARMOR=150
+attack=120
+moverate=3
+
+TSPEECH=spk_q019_pocestny
+
+TEVENTS=e_character
+TEVENTS=e_q019_pocestny
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-019 Potulny Pocestny
+DESCRIPTION=Pocestny
+
+ON=@UserDClick
+if (SRC.TARG.distance > 3)
+  src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+  f_q019_pocestny_DClick
+endif
+
+ON=@Create
+color=0909
+NPC=brain_human
+STR=8000
+DEX=400
+INT=400
+
+maxhits={10000 11000}
+maxstam={350 390}
+maxmana={5000 6000}
+
+tag.experience=<eval {30.0 40.0}>
+tag(hypnotizable,2)
+tag.weapflag=dam_physical
+tag.resist_poison=<eval {850 995}>
+tag.resist_para=<eval {700 750}>
+tag.resist_summon=<eval {750 850}>
+tag.resist_fire=<eval {350 750}>
+
+PEACEMAKING=100.0
+PROVOCATION=100.0
+POISONING=250.0
+MEDITATION=10
+INSCRIPTION=100.0
+MAGERY=120.1
+EI=150.0
+WRESTLING=120.0
+RESIST=250
+TACTICS=30.0
+
+tag(noanimate,1)
+
+itemNewbie=i_spellbook
+addspell=s_mass_dispel
+addspell=s_mass_curse
+addspell=s_magic_reflection
+addspell=s_lightning
+addspell=s_mana_drain
+addspell=s_blade_spirits
+addspell=s_dispel
+addspell=s_paralyze
+addspell=s_flamestrike
+
+itemNewbie=i_monster_create
+
+itemNewbie=i_hair_long
+color=067
+itemNewbie=i_beard_long_med
+
+ON=@NPCRestock
+itemNewbie=i_boots_calf
+color=072C
+itemNewbie=i_hat_cape_2
+color=067
+itemNewbie=i_dress_full
+color=067
+itemNewbie=i_shirt_fancy
+color=067
+itemNewbie=i_staff_black_mithril

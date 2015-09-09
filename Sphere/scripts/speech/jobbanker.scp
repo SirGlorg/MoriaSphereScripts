@@ -1,0 +1,174 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Friday, April 28, 2000
+[SPEECH spk_banker_ok]
+ON=*bank*
+ON=*sek*
+ON=*hi*
+ON=*zdravym*
+ON=*ahoj*
+ON=*dobry*
+
+if (DISTANCE > 5)
+	SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+	return 1
+endif
+f_banker_ok
+
+[SPEECH spk_jobbanker]
+ON=*sek*
+arg(sek,<src.findid(i_cashiers_check)>)
+if(<arg(sek)>)
+ if (<finduid(<arg(sek)>).topobj>==<src>)
+  if (<finduid(<arg(sek)>).more> <= 0)
+   finduid(<arg(sek)>).remove
+   say(Bohuzel, sek nebyl kryty zadnym zlatem)
+  else
+   src.findlayer(29).givegold(<finduid(<arg(sek)>).more>)
+   src.sound=037
+   src.sysmessage(Bylo ti proplaceno <finduid(<arg(sek)>).more> gp.)
+   finduid(<arg(sek)>).remove
+  endif 
+  say(Rad jsem poslouzil)
+ endif
+else
+ say(Nemas u sebe zadny sek)
+endif
+
+
+ON=*job*
+ON=*work*
+ON=*what*do*do*
+ON=*profession*
+ON=*occupation*
+ 
+	IF ( <COMPLEXITY.HIGH> || <COMPLEXITY.MEDIUM> )
+		DORAND 3
+			SAY="Jsem banker, <SRC.SEX milord milady>."
+			SAY="Zastupuji banku v  <REGION.NAME>, <SRC.SEX milord milady>."
+			
+		ENDDO
+	ELSE
+		DORAND 3
+			SAY="Zde je banka, <SRC.SEX milord milady>."
+			SAY="Radi Vam zde <REGION.NAME>, <SRC.SEX milord milady> poskytneme nase sluzby."
+			
+		ENDDO
+	ENDIF
+
+ON=*Balance*
+
+	SAY=Na vasich depozitnich uctech je <SRC.BANKBALANCE> zlatych.
+
+ON=*Bank*
+	src.BANKSELF
+
+
+ON=hi
+ON=hello*
+ON=greetings*
+ON=good*see*thee*
+ON=Hail*
+ON=Greet
+
+	SAY=Zdravim Vas, nase penezni sluzby Vam jsou k dispozici?
+
+ON=*rob*
+ON=*steal*
+ON=*hold up*
+
+	DORAND 4
+		SAY Straze, pomoooc bankovni prepadeni.
+	ENDDO
+
+ON=*coin*
+ON=*money*
+ON=*currency*
+ON=*deposit*
+ON=*transaction*
+ON=*account*
+
+	IF ( <COMPLEXITY.HIGH> || <COMPLEXITY.MEDIUM> )
+		DORAND 4
+			SAY Jiste radi vam uschovame bezpecne vase cennosti, ci provedeme financni transakce.
+		ENDDO
+	ELSE
+		DORAND 4
+			SAY Jiste radi vam uschovame bezpecne vase cennosti, ci provedeme financni transakce.
+		ENDDO
+	ENDIF
+
+ON=*account*
+
+	IF ( <COMPLEXITY.HIGH> )
+		DORAND 2
+			SAY If thou dost need to withdraw money from thy account, just say withdraw and the amount that thou dost need.
+			SAY To find thy balance, ask for a statement or for thy balance.
+		ENDDO
+	ELIF ( <COMPLEXITY.MEDIUM> )
+		DORAND 2
+			SAY If thou dost need some of thy money, just ask to withdraw whatever amount thou needs.
+			SAY To check how much money thou dost have in thy account, ask for a statement or for thy balance.
+		ENDDO
+	ELSE
+		DORAND 2
+			SAY To get some money out of thy account, ask to withdraw X. X bein' how much thou needs.
+			SAY To check thy statement balance, ask for a statement or for thy balance. Easy as that.
+		ENDDO
+	ENDIF
+
+ON=*gold*
+ON=*silver*
+ON=*copper*
+
+	DORAND 3
+		SAY Penize, si u nas muzete kdykoli uschovat i vyzvednout, i jine cennosti
+	ENDDO
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+
+	SAY=Dekujeme ze jste vyuzily nasich sluzeb ci se k tomu brzy odhodlate.
+	BYE
+	return 1
+
+ON=ACCOUNT
+
+	SAY=Sorry tyto informace jsou provatni.
+
+ON=COIN
+
+	SAY=We accept only the coin of the realm.
+
+ON=COPPER
+
+	SAY=A copper piece is the smallest coin we accept.
+
+ON=CURRENCY
+
+	SAY=We deal in gold, silver and copper.
+
+ON=Bank
+ON=DEPOSIT
+ON=GOLD
+ON=MONEY
+ON=SILVER
+ON=TRANSACTION
+	src.BANKSELF
+
+
+ON=HOLD UP
+	SAY=Pomooc! Pomooc!
+
+//RANDOM=Greenspan, that rogue!  Ah... I remember the lovely days of Volker...
+//DEFAULT=Pardon me?
+
+[EOF]

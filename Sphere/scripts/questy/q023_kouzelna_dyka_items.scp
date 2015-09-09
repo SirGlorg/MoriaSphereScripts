@@ -1,0 +1,113 @@
+//////////
+// Qworetova kouzelna dyka
+/////
+[ITEMDEF i_q023_Kouzelna_Dyka]
+ID = i_dagger
+NAME = Qworetova Kouzelna Dyka
+TYPE = t_normal
+
+ON = @Create
+	Color = 095
+	Attr = attr_move_never
+
+ON = @UserDClick
+	Src.SysMessage("Dyku nemuzes vzit do ruky.")
+	return 1
+
+	
+//////////
+// Zmrznuta Qworetova kouzelna dyka
+/////
+[ITEMDEF i_q023_Kouzelna_Dyka_Z]
+ID = i_dagger
+NAME = Zmrzla Kouzelna Dyka
+TYPE = t_normal
+
+ON = @Create
+	Color = color_ice
+	Attr = attr_move_never
+
+ON = @UserDClick
+	Src.SysMessage("Dyka je prilis studena nato, aby jsi ji <src.sex(mohl,mohla)> vzit do ruky")
+	return 1
+	
+//////////
+// List od Qworeta -> Unas
+/////
+[ITEMDEF i_q023_List]
+ID = i_scroll_blank
+NAME = List pro Unase
+TYPE = t_normal
+
+ON = @Create
+	Color = 999
+	Attr = attr_move_never
+	
+ON = @UserDClick
+	Src.SysMessage("List je chranen magickym zamkem.")
+	return 1
+	
+//////////
+// Pozustatky Ledoveho Elementala	1560,312
+/////
+[ITEMDEF i_q023_Pozustatky]
+ID = 6004
+NAME = Pozustatky Ledoveho Elementala
+TYPE = t_normal
+
+ON = @Create
+	Color = color_ice
+	Attr = attr_move_never
+	
+ON = @UserDClick
+	if (src.isgm)
+		target("Zamer spawn strazce pozustatku.")
+		return 1	
+	else
+		if (link.more2)
+			src.sysmessage("Nepritlel te nenecha do toho tela jen tak vlezt.")
+		else
+			if (src.qtag(q023) == 2)
+				Src.NewItem(i_q023_Kouzelna_Dyka_Z).Bounce
+				Src.qtag(q023, 3,17)
+			elseif (src.qtag(q023) == 5)
+				Src.NewItem(i_q023_Pozustatky_Kus).Bounce
+				src.qtag(q023, 6,17)
+			else
+				src.sysmessage("Nic zajimaveho jsi <src.sex(nenasel,nenasla)>.")
+			endif
+		endif
+	endif	
+	return 1
+	
+ON = @TargOn_Char
+	target("To neni spawn. Zkus to znovu.")
+	return 1
+
+ON = @TargOn_Ground
+	target("To neni spawn. Zkus to znovu.")
+	return 1
+
+ON = @TargOn_Item
+	if (src.targ.type == t_spawn_char)
+		link = <src.targ>
+	else
+	 target("To neni spawn. Zkus to znovu.")
+	endif
+return 1
+	
+//////////
+// Kus z pozustatkov
+/////
+[ITEMDEF i_q023_Pozustatky_Kus]
+ID = 3985
+NAME = Kus z Ledoveho Elementala
+TYPE = t_normal
+
+ON = @Create
+	Color = color_ice
+	Attr = attr_move_never
+	
+ON = @UserDClick
+	Src.SysMessage("Nenapada te zpusob, jak to pouzit.")
+	return 1

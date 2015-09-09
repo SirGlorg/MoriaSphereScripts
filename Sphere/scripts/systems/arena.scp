@@ -1,0 +1,1020 @@
+////////////////////////////////////////////// arena /////////////////////////////////
+
+[SPEECH spk_go_arena_Mordor]
+//   Umisteni NPC  ve svete...     je V Barad Dur..
+//  NPC   ve skriptu  specnpc  // uplne dole.
+
+ON=*buy*
+SAY "U mne skrete muzes koupit jen cest  nebo smrt. Oboji se skryva za slovem "ARENA"  "
+
+ON=*sell*
+SAY "skrete chces si vykoupit kuzi ? Takove jako ty *ARENA* snad nauci.."
+
+ON=*hi*
+SAY "Zda se ti na me mne neco smesneho ?  Jestli jo  tak *Arena* ten problem vyresi.." 
+
+ON=*ahoj*
+SAY" jejda obludo tebe jsem dlouho nevidel.jak te znam  tak  chces jit "do areny"
+
+ON=*arena*
+ON=*do*areny*
+
+
+SRC.NEWITEM i_delay_arena
+SRC.ACT.EQUIP
+
+
+[SPEECH spk_go_arena]
+
+//   Umisteni NPC  ve svete...     je V Minas Tirith..
+//  NPC   ve skriptu  specnpc  // uplne dole.
+
+ON=*buy*
+SAY "Co blbnes ?  Do areny  te pustim zadarmo...    staci jen  rict "ARENA"  a jsi tam.."
+
+ON=*sell*
+SAY "CHces si srabe   vykoupit kuzi ? Takove jako ty *ARENA* snad nauci.."
+
+ON=*hi*
+SAY "Zda se ti na me mne neco smesneho ?  Jestli jo  tak *Arena* ten problem vyresi.." 
+
+ON=*ahoj*
+SAY" Jejda <src.name>  tebe jsem dlouho nevidel.jak te znam  tak  chces jit "do areny"
+
+ON=*arena*
+ON=*do*areny*
+
+
+SRC.NEWITEM i_delay_arena
+SRC.ACT.EQUIP
+
+
+[ITEMDEF i_delay_arena]
+ID=i_memory
+Name=Teleport Delay Timer arena
+TYPE=T_EQ_SCRIPT
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+MORE1=30
+MOREP=5521, 3701, 35
+
+ON=@EQUIP
+TIMER=1
+
+on=@unequip
+if (link.isitem)
+  link.link=-1
+endif
+
+ON=@Timer
+if (more1)
+  cont.sysmessage cas do presunu:<eval <more1>>
+  more1=<eval <more1>-1>
+  TIMER=1
+  return 1
+else
+  src.racemessage("<src.sex("Vstoupil","Vstoupila")> jsi do areny - pro jeji opusteni pouzij prislusnou gate a bude ti vracena karma.") // a killy)
+  src.tag(karmapits,<src.karma>)
+  src.tag(murderpits,<src.kills>)
+  src.tag(famepits,<src.fame>)
+  src.tag(realmpits,<src.tag(realm)>)
+  src.tag(playerkillstotal_bk,<eval(<src.tag(playerkillstotal)>)>)
+  src.tag(monsterkillstotal_bk,<eval(<src.tag(monsterkillstotal)>)>)
+  SRC.EVENTS(+e_arena)
+  SRC.TAG(ARENA,1)
+  cont.GO <MOREP>
+  remove
+  return 1
+endif
+
+
+[ITEMDEF i_murdoc_arenagate]
+NAME=Murdoc PVP
+ID=i_moongate_blue
+
+on=@create
+attr=attr_newbie
+attr=attr_move_never
+
+ON=@STEP
+src.findlayer(21).contents2(f_smazat_murdoc_pvp)
+src.findlayer(25).remove //maze kone
+src.consume i_robe
+src.consume i_cape
+src.newitem i_bottle_empty
+lastnew.amount=20
+lastnew.bounce
+src.newitem i_bandage
+lastnew.amount=40
+lastnew.bounce
+src.events(+e_murdoc_general_pvp)
+src.tag(murdoc, <tag(murdoc)>)
+src.go <morep>
+RETURN 1
+
+[ITEMDEF i_murdoc_arenagate_pryc]
+NAME=Murdoc PVP Pryc
+ID=i_moongate_blue
+
+on=@create
+attr=attr_newbie
+attr=attr_move_never
+
+ON=@STEP
+src.events(-e_murdoc_general_pvp)
+src.tag.remove(murdoc)
+src.consume i_robe
+src.consume i_cape
+src.hits(maxhits)
+src.findlayer(21).contents2(f_smazat_murdoc_pvp)
+src.findlayer(25).remove //maze kone		
+src.go <morep>
+RETURN 1
+
+[ITEMDEF I_gate_arena_vstup]
+NAME=To the PVP Arena
+ID=i_moongate_blue
+
+CATEGORY=Noe
+SUBSECTION=Arena
+DESCRIPTION=POUZIVEJ NPC
+
+on=@create
+morep=5521, 3701, 35
+
+ON=@STEP
+src.racemessage("<src.sex(Vstoupil,Vstoupila)> jsi do areny - pro jeji opusteni pouzij prislusnou gate a bude ti vracena karma.") // a killy)
+src.tag(karmapits,<src.karma>)
+src.tag(murderpits,<src.kills>)
+SRC.EVENTS +e_arena
+SRC.TAG(ARENA,1)
+src.tag(famepits,<src.fame>)
+src.tag(realmpits,<src.tag(realm)>)
+src.tag(playerkillstotal_bk,<eval(<src.tag(playerkillstotal)>)>)
+src.tag(monsterkillstotal_bk,<eval(<src.tag(monsterkillstotal)>)>)
+//src.tag(pozice,<region.name>)
+src.go <morep>
+RETURN 1
+
+[ITEMDEF I_gate_arena_vystup]
+NAME=Exit Arena
+ID=i_moongate_blue
+
+CATEGORY=Noe
+SUBSECTION=Arena
+DESCRIPTION=EXIT PVP Arena
+
+ON=@STEP
+src.arenaleave
+
+
+[ITEMDEF I_gate_arena_oprava]
+NAME=brana na odebrani tagu arena
+ID=i_moongate_blue
+
+CATEGORY=Noe
+SUBSECTION=Arena
+DESCRIPTION=odebrani tagu arena
+
+ON=@STEP
+SRC.EVENTS -e_arena
+SRC.TAG.ARENA=""
+
+RETURN 1
+
+
+[events e_arena]
+on=@spellcast
+if (<argn> == 32)||(<argn> == 45)||(<argn> == 52)
+ classmessage(V arene nelze pouzit.)
+ return 1
+else 
+ return 0
+endif
+
+ON=@itemPICKUP_PACK
+IF (act.topobj)
+  if (act.topobj.isitem)
+    if (act.topobj.type==t_corpse)
+      if (act.topobj.link!=uid)
+        if (act.topobj.link.ischar)
+          sysmessage Tady nesmis okradat cizi tela.
+          RETURN 1
+        endif
+      endif
+    endif
+  endif
+ENDIF
+
+on=@itemuserdclick 
+IF (argo.topobj)
+  if (argo.topobj.isitem)
+    IF (argo.topobj.type==t_corpse)
+      if (argo.topobj.link!=uid)
+        if (argo.topobj.link.ischar)
+          sysmessage Tady nesmis okradat cizi tela.
+          RETURN 1
+        endif
+      endif
+    endif
+  ENDIF 
+endif
+
+if !(region.tag(arena))
+ src.arenaleave
+endif
+
+
+on=@itemtargon_item 
+if (targ.type==t_corpse )&&((act.type==t_weapon_fence)||(act.type==t_weapon_sword))
+  if (targ.link.ischar)&&(targ.link!=UID)
+    sysmessage Tady nesmis rozrezavat cizi tela.
+    return 1
+  endif
+endif
+
+
+[function arenaleave]
+racemessage("<src.sex(Odesel,Odesla)> jsi z areny - byla ti vracena karma.") // a killy.)
+flags=<flags>&~statf_criminal
+if (TAG(MURDERPITS))
+ KILLS=<TAG(MURDERPITS)>
+endif
+if (TAG(KARMAPITS))
+ KARMA=<TAG(KARMAPITS)>
+endif
+if (tag(famepits))
+ FAME=<tag(famepits)>
+endif
+if (tag(realmpits))
+ tag(realm,<tag(realmpits)>)
+endif
+if(tag(deathspits))
+  deaths = <tag(deathspits)>
+  tag.remove(deathspits)
+endif
+if (<eval tag(playerkillstotal_bk)>)
+  tag(playerkillstotal,<eval tag(playerkillstotal_bk)>)
+  tag.remove(playerkillstotal_bk)
+endif
+if (<eval tag(monsterkillstotal_bk)>)
+  tag(monsterkillstotal,<eval tag(monsterkillstotal_bk)>)
+  tag.remove(monsterkillstotal_bk)
+endif
+TAG.remove(MURDERPITS)
+TAG.remove(KARMAPITS)
+tag.remove(famepits)
+tag.remove(realmpits)
+EVENTS(-e_arena)
+TAG.remove(ARENA)
+gohome
+RETURN 1
+
+
+[function pvpturnaj_arena]
+DIALOG d_pvpturnaj_hlavni_vyber
+
+[defnames pvpturnaj]
+
+nastaveni_vybavy_pvpturnaj_102	craft_muz
+nastaveni_vybavy_pvpturnaj_103	mag_muz
+nastaveni_vybavy_pvpturnaj_104	mystik_muz
+nastaveni_vybavy_pvpturnaj_105	necro_muz
+nastaveni_vybavy_pvpturnaj_106	priest_muz
+nastaveni_vybavy_pvpturnaj_107	ranger_muz
+nastaveni_vybavy_pvpturnaj_108	shaman_muz
+nastaveni_vybavy_pvpturnaj_109	thief_muz
+nastaveni_vybavy_pvpturnaj_110	war_muz
+nastaveni_vybavy_pvpturnaj_112	craft_zena
+nastaveni_vybavy_pvpturnaj_113	mag_zena
+nastaveni_vybavy_pvpturnaj_114	mystik_zena
+nastaveni_vybavy_pvpturnaj_115	necro_zena
+nastaveni_vybavy_pvpturnaj_116	priest_zena
+nastaveni_vybavy_pvpturnaj_117	ranger_zena
+nastaveni_vybavy_pvpturnaj_118	shaman_zena
+nastaveni_vybavy_pvpturnaj_119	thief_zena
+nastaveni_vybavy_pvpturnaj_120	war_zena
+
+nastaveni_hraci_pvpturnaj_102	team_1_hrac_1
+nastaveni_hraci_pvpturnaj_103	team_1_hrac_2
+nastaveni_hraci_pvpturnaj_104	team_1_hrac_3
+nastaveni_hraci_pvpturnaj_105	team_1_hrac_4
+nastaveni_hraci_pvpturnaj_106	team_1_hrac_5
+nastaveni_hraci_pvpturnaj_107	team_1_hrac_6
+nastaveni_hraci_pvpturnaj_108	team_1_hrac_7
+nastaveni_hraci_pvpturnaj_110	team_2_hrac_1
+nastaveni_hraci_pvpturnaj_111	team_2_hrac_2
+nastaveni_hraci_pvpturnaj_112	team_2_hrac_3
+nastaveni_hraci_pvpturnaj_113	team_2_hrac_4
+nastaveni_hraci_pvpturnaj_114	team_2_hrac_5
+nastaveni_hraci_pvpturnaj_115	team_2_hrac_6
+nastaveni_hraci_pvpturnaj_116	team_2_hrac_7
+nastaveni_hraci_pvpturnaj_118	team_3_hrac_1
+nastaveni_hraci_pvpturnaj_119	team_3_hrac_2
+nastaveni_hraci_pvpturnaj_120	team_3_hrac_3
+nastaveni_hraci_pvpturnaj_121	team_3_hrac_4
+nastaveni_hraci_pvpturnaj_122	team_3_hrac_5
+nastaveni_hraci_pvpturnaj_123	team_3_hrac_6
+nastaveni_hraci_pvpturnaj_124	team_3_hrac_7
+nastaveni_hraci_pvpturnaj_126	team_4_hrac_1
+nastaveni_hraci_pvpturnaj_127	team_4_hrac_2
+nastaveni_hraci_pvpturnaj_128	team_4_hrac_3
+nastaveni_hraci_pvpturnaj_129	team_4_hrac_4
+nastaveni_hraci_pvpturnaj_130	team_4_hrac_5
+nastaveni_hraci_pvpturnaj_131	team_4_hrac_6
+nastaveni_hraci_pvpturnaj_132	team_4_hrac_7
+nastaveni_hraci_pvpturnaj_134	team_5_hrac_1
+nastaveni_hraci_pvpturnaj_135	team_5_hrac_2
+nastaveni_hraci_pvpturnaj_136	team_5_hrac_3
+nastaveni_hraci_pvpturnaj_137	team_5_hrac_4
+nastaveni_hraci_pvpturnaj_138	team_5_hrac_5
+nastaveni_hraci_pvpturnaj_139	team_5_hrac_6
+nastaveni_hraci_pvpturnaj_140	team_5_hrac_7
+nastaveni_hraci_pvpturnaj_142	team_6_hrac_1
+nastaveni_hraci_pvpturnaj_143	team_6_hrac_2
+nastaveni_hraci_pvpturnaj_144	team_6_hrac_3
+nastaveni_hraci_pvpturnaj_145	team_6_hrac_4
+nastaveni_hraci_pvpturnaj_146	team_6_hrac_5
+nastaveni_hraci_pvpturnaj_147	team_6_hrac_6
+nastaveni_hraci_pvpturnaj_148	team_6_hrac_7
+
+
+pvpturnaj_rows		3
+pvpturnaj_1_arena[0]	iflag_button|iflag_rename|iflag_notext			,blank	,Vybavy,Vybavy
+pvpturnaj_1_arena[1]	iflag_button|iflag_rename|iflag_notext			,blank	,Teamy,Teamy
+pvpturnaj_1_arena[2]	iflag_button|iflag_rename|iflag_notext			,blank	,Codal,Codal
+
+pvpturnaj_vybavy_rows	38
+pvpturnaj_1_arena_vybavy[0]	iflag_string						,Muzi,					,
+pvpturnaj_1_arena_vybavy[1]	iflag_button|iflag_rename|iflag_notext			,blank	,Craft,Craft
+pvpturnaj_1_arena_vybavy[2]	iflag_button|iflag_rename|iflag_notext			,blank	,Mag,Mag
+pvpturnaj_1_arena_vybavy[3]	iflag_button|iflag_rename|iflag_notext			,blank	,Mystik,Mystik
+pvpturnaj_1_arena_vybavy[4]	iflag_button|iflag_rename|iflag_notext			,blank	,Necro,Necro
+pvpturnaj_1_arena_vybavy[5]	iflag_button|iflag_rename|iflag_notext			,blank	,Priest,Priest
+pvpturnaj_1_arena_vybavy[6]	iflag_button|iflag_rename|iflag_notext			,blank	,Ranger,Ranger
+pvpturnaj_1_arena_vybavy[7]	iflag_button|iflag_rename|iflag_notext			,blank	,Shaman,Shaman
+pvpturnaj_1_arena_vybavy[8]	iflag_button|iflag_rename|iflag_notext			,blank	,Thief,Thief
+pvpturnaj_1_arena_vybavy[9]	iflag_button|iflag_rename|iflag_notext			,blank	,War,War
+pvpturnaj_1_arena_vybavy[10]	iflag_string						,Zeny					,
+pvpturnaj_1_arena_vybavy[11]	iflag_button|iflag_rename|iflag_notext			,blank	,Craft,Craft
+pvpturnaj_1_arena_vybavy[12]	iflag_button|iflag_rename|iflag_notext			,blank	,Mag,Mag
+pvpturnaj_1_arena_vybavy[13]	iflag_button|iflag_rename|iflag_notext			,blank	,Mystik,Mystik
+pvpturnaj_1_arena_vybavy[14]	iflag_button|iflag_rename|iflag_notext			,blank	,Necro,Necro
+pvpturnaj_1_arena_vybavy[15]	iflag_button|iflag_rename|iflag_notext			,blank	,Priest,Priest
+pvpturnaj_1_arena_vybavy[16]	iflag_button|iflag_rename|iflag_notext			,blank	,Ranger,Ranger
+pvpturnaj_1_arena_vybavy[17]	iflag_button|iflag_rename|iflag_notext			,blank	,Shaman,Shaman
+pvpturnaj_1_arena_vybavy[18]	iflag_button|iflag_rename|iflag_notext			,blank	,Thief,Thief
+pvpturnaj_1_arena_vybavy[19]	iflag_button|iflag_rename|iflag_notext			,blank	,War,War
+pvpturnaj_1_arena_vybavy[20]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(craft_muz)	,ID
+pvpturnaj_1_arena_vybavy[21]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(mag_muz)	,ID
+pvpturnaj_1_arena_vybavy[22]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(mystik_muz)	,ID
+pvpturnaj_1_arena_vybavy[23]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(necro_muz)	,ID
+pvpturnaj_1_arena_vybavy[24]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(priest_muz)	,ID
+pvpturnaj_1_arena_vybavy[25]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(ranger_muz)	,ID
+pvpturnaj_1_arena_vybavy[26]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(shaman_muz)	,ID
+pvpturnaj_1_arena_vybavy[27]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(thief_muz)	,ID
+pvpturnaj_1_arena_vybavy[28]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(war_muz)	,ID
+pvpturnaj_1_arena_vybavy[29]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(craft_zena)	,ID
+pvpturnaj_1_arena_vybavy[30]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(mag_zena)	,ID
+pvpturnaj_1_arena_vybavy[31]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(mystik_zena),ID
+pvpturnaj_1_arena_vybavy[32]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(necro_zena)	,ID
+pvpturnaj_1_arena_vybavy[33]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(priest_zena),ID
+pvpturnaj_1_arena_vybavy[34]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(ranger_zena),ID
+pvpturnaj_1_arena_vybavy[35]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(shaman_zena),ID
+pvpturnaj_1_arena_vybavy[36]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(thief_zena)	,ID
+pvpturnaj_1_arena_vybavy[37]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_vybavy_pvpturnaj(war_zena)	,ID
+
+pvpturnaj_teamy_rows	62
+pvpturnaj_1_arena_teamy[0]	iflag_string						,Team 1,					,
+pvpturnaj_1_arena_teamy[1]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 1,
+pvpturnaj_1_arena_teamy[2]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 2,
+pvpturnaj_1_arena_teamy[3]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 3,
+pvpturnaj_1_arena_teamy[4]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 4,
+pvpturnaj_1_arena_teamy[5]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 5,
+pvpturnaj_1_arena_teamy[6]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 6,
+pvpturnaj_1_arena_teamy[7]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 7,
+pvpturnaj_1_arena_teamy[8]	iflag_string						,Team 2					,
+pvpturnaj_1_arena_teamy[9]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 1,
+pvpturnaj_1_arena_teamy[10]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 2,
+pvpturnaj_1_arena_teamy[11]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 3,
+pvpturnaj_1_arena_teamy[12]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 4,
+pvpturnaj_1_arena_teamy[13]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 5,
+pvpturnaj_1_arena_teamy[14]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 6,
+pvpturnaj_1_arena_teamy[15]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 7,
+pvpturnaj_1_arena_teamy[16]	iflag_string						,Team 3,					,
+pvpturnaj_1_arena_teamy[17]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 1,
+pvpturnaj_1_arena_teamy[18]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 2,
+pvpturnaj_1_arena_teamy[19]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 3,
+pvpturnaj_1_arena_teamy[20]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 4,
+pvpturnaj_1_arena_teamy[21]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 5,
+pvpturnaj_1_arena_teamy[22]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 6,
+pvpturnaj_1_arena_teamy[23]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 7,
+pvpturnaj_1_arena_teamy[24]	iflag_string						,Team 4					,
+pvpturnaj_1_arena_teamy[25]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 1,
+pvpturnaj_1_arena_teamy[26]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 2,
+pvpturnaj_1_arena_teamy[27]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 3,
+pvpturnaj_1_arena_teamy[28]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 4,
+pvpturnaj_1_arena_teamy[29]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 5,
+pvpturnaj_1_arena_teamy[30]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 6,
+pvpturnaj_1_arena_teamy[31]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 7,
+pvpturnaj_1_arena_teamy[32]	iflag_string						,Team 5,					,
+pvpturnaj_1_arena_teamy[33]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 1,
+pvpturnaj_1_arena_teamy[34]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 2,
+pvpturnaj_1_arena_teamy[35]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 3,
+pvpturnaj_1_arena_teamy[36]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 4,
+pvpturnaj_1_arena_teamy[37]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 5,
+pvpturnaj_1_arena_teamy[38]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 6,
+pvpturnaj_1_arena_teamy[39]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 7,
+pvpturnaj_1_arena_teamy[40]	iflag_string						,Team 6					,
+pvpturnaj_1_arena_teamy[41]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 1,
+pvpturnaj_1_arena_teamy[42]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 2,
+pvpturnaj_1_arena_teamy[43]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 3,
+pvpturnaj_1_arena_teamy[44]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 4,
+pvpturnaj_1_arena_teamy[45]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 5,
+pvpturnaj_1_arena_teamy[46]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 6,
+pvpturnaj_1_arena_teamy[47]	iflag_button|iflag_rename|iflag_notext			,blank	,Hrac 7,
+
+pvpturnaj_hraci_rows	42
+pvpturnaj_1_arena_hraci[0]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_1_hrac_1),J:
+pvpturnaj_1_arena_hraci[1]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_1_hrac_2),J:
+pvpturnaj_1_arena_hraci[2]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_1_hrac_3),J:
+pvpturnaj_1_arena_hraci[3]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_1_hrac_4),J:
+pvpturnaj_1_arena_hraci[4]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_1_hrac_5),J:
+pvpturnaj_1_arena_hraci[5]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_1_hrac_6),J:
+pvpturnaj_1_arena_hraci[6]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_1_hrac_7),J:
+pvpturnaj_1_arena_hraci[7]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_2_hrac_1),J:
+pvpturnaj_1_arena_hraci[8]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_2_hrac_2),J:
+pvpturnaj_1_arena_hraci[9]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_2_hrac_3),J:
+pvpturnaj_1_arena_hraci[10]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_2_hrac_4),J:
+pvpturnaj_1_arena_hraci[11]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_2_hrac_5),J:
+pvpturnaj_1_arena_hraci[12]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_2_hrac_6),J:
+pvpturnaj_1_arena_hraci[13]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_2_hrac_7),J:
+pvpturnaj_1_arena_hraci[14]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_3_hrac_1),J:
+pvpturnaj_1_arena_hraci[15]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_3_hrac_2),J:
+pvpturnaj_1_arena_hraci[16]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_3_hrac_3),J:
+pvpturnaj_1_arena_hraci[17]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_3_hrac_4),J:
+pvpturnaj_1_arena_hraci[18]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_3_hrac_5),J:
+pvpturnaj_1_arena_hraci[19]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_3_hrac_6),J:
+pvpturnaj_1_arena_hraci[20]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_4_hrac_7),J:
+pvpturnaj_1_arena_hraci[21]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_4_hrac_1),J:
+pvpturnaj_1_arena_hraci[22]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_4_hrac_2),J:
+pvpturnaj_1_arena_hraci[23]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_4_hrac_3),J:
+pvpturnaj_1_arena_hraci[24]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_4_hrac_4),J:
+pvpturnaj_1_arena_hraci[25]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_4_hrac_5),J:
+pvpturnaj_1_arena_hraci[26]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_4_hrac_6),J:
+pvpturnaj_1_arena_hraci[27]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_4_hrac_7),J:
+pvpturnaj_1_arena_hraci[28]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_5_hrac_1),J:
+pvpturnaj_1_arena_hraci[29]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_5_hrac_2),J:
+pvpturnaj_1_arena_hraci[30]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_5_hrac_3),J:
+pvpturnaj_1_arena_hraci[31]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_5_hrac_4),J:
+pvpturnaj_1_arena_hraci[32]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_5_hrac_5),J:
+pvpturnaj_1_arena_hraci[33]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_5_hrac_6),J:
+pvpturnaj_1_arena_hraci[34]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_6_hrac_7),J:
+pvpturnaj_1_arena_hraci[35]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_6_hrac_1),J:
+pvpturnaj_1_arena_hraci[36]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_6_hrac_2),J:
+pvpturnaj_1_arena_hraci[37]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_6_hrac_3),J:
+pvpturnaj_1_arena_hraci[38]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_6_hrac_4),J:
+pvpturnaj_1_arena_hraci[39]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_6_hrac_5),J:
+pvpturnaj_1_arena_hraci[40]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_6_hrac_6),J:
+pvpturnaj_1_arena_hraci[41]	iflag_rename|iflag_pc|iflag_nowrite			,nastaveni_hraci_pvpturnaj(team_6_hrac_7),J:
+
+
+
+[DIALOG d_pvpturnaj_hlavni_vyber]
+30,55
+argo.tag(sirka,300)
+argo.tag(vyska,300)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>)
+
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,Turnaj - Hlavni Vyber)
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (index<pvpturnaj_rows)
+ argo.f_inforow(<ypos>,50,10,0,<pvpturnaj_1_arena[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+argo.page(0)
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[DIALOG d_pvpturnaj_hlavni_vyber BUTTON]
+on=1
+src.sysmessage(OK)
+on=101
+DIALOG d_pvpturnaj_nastaveni_vybavy
+on=102
+DIALOG d_pvpturnaj_nastaveni_teamy
+on=103
+
+
+[DIALOG d_pvpturnaj_nastaveni_vybavy]
+30,55
+argo.tag(sirka,500)
+argo.tag(vyska,300)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>)
+
+argo.dialog_zpruhledni
+
+argo.tag(from,<uid>)
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,Turnaj - Vybava Hracu)
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (index<pvpturnaj_vybavy_rows)
+if (index<10)
+  argo.f_inforow(<ypos>,50,10,0,<pvpturnaj_1_arena_vybavy[index]>)
+  arg(ypos,#+<d_def_radek_vyska>) 
+  arg(index,#+1) 
+elseif (index==10)
+  arg(ypos,<argo.tag(obj_y[1])>)
+  argo.f_inforow(<ypos>,300,260,0,<pvpturnaj_1_arena_vybavy[index]>)
+  arg(ypos,#+<d_def_radek_vyska>) 
+  arg(index,#+1) 
+elseif (index<20)
+  argo.f_inforow(<ypos>,300,260,0,<pvpturnaj_1_arena_vybavy[index]>)
+  arg(ypos,#+<d_def_radek_vyska>) 
+  arg(index,#+1) 
+elseif (index==20)
+  arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+  argo.f_inforow(<ypos>,100,160,130,<pvpturnaj_1_arena_vybavy[index]>)
+  arg(ypos,#+<d_def_radek_vyska>) 
+  arg(index,#+1) 
+elseif (index<29)
+ argo.f_inforow(<ypos>,100,160,130,<pvpturnaj_1_arena_vybavy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1)
+elseif (index==29)
+ arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+ argo.f_inforow(<ypos>,350,360,380,<pvpturnaj_1_arena_vybavy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1)
+else
+ argo.f_inforow(<ypos>,350,360,380,<pvpturnaj_1_arena_vybavy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1)
+endif
+endwhile
+
+argo.page(0)
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[DIALOG d_pvpturnaj_nastaveni_vybavy BUTTON]
+on=1
+DIALOG d_pvpturnaj_hlavni_vyber
+
+on=@anybutton
+if (argn>=100)
+ var(button_pvpvyber,<argn>)
+ newitem i_zamerit_bednu
+ act.equip
+ act.timer 20
+endif
+
+[DIALOG d_pvpturnaj_nastaveni_teamy]
+30,55
+argo.tag(sirka,650)
+argo.tag(vyska,240)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+23+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>)
+
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,Turnaj - Teamy)
+
+arg(index,0)
+arg(ipage,0)
+while (index<pvpturnaj_teamy_rows)
+if !(index%argo.tag(radku))
+  if (index==(2*argo.tag(radku)*arg(ipage)))//na zacatku stranky
+   arg(ipage,#+1)
+   argo.page(<ipage>)
+   arg(ypos,<argo.tag(obj_y[1])>)
+   if (index)
+    argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,0,<ipage>-1) // prev
+   endif
+   if (pvpturnaj_teamy_rows>(index+(2*argo.tag(radku))))
+    argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,0,<ipage>+1) // next
+   endif
+   //arg(popisx,2)
+   //arg(buttx,3)
+   //arg(valuex,4)                 
+  else
+   //arg(ypos,<argo.tag(obj_y[1])>)
+   //arg(popisx,5)
+   //arg(buttx,6)
+   //arg(valuex,7)
+  endif
+ endif
+if (index<8)
+  argo.f_inforow(<ypos>,50,10,0,<pvpturnaj_1_arena_teamy[index]>)
+  arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index==8)
+  arg(ypos,<argo.tag(obj_y[1])>)
+  argo.f_inforow(<ypos>,350,310,0,<pvpturnaj_1_arena_teamy[index]>)
+  arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index<16)
+ argo.f_inforow(<ypos>,350,310,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index==16)
+ //arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+ argo.f_inforow(<ypos>,50,10,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index<24)
+ argo.f_inforow(<ypos>,50,10,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index==24)
+ arg(ypos,<argo.tag(obj_y[1])>)
+ argo.f_inforow(<ypos>,350,310,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index<32)
+ argo.f_inforow(<ypos>,350,310,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index==32)
+ argo.f_inforow(<ypos>,50,10,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>)
+elseif (index<40)
+ argo.f_inforow(<ypos>,50,10,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>)
+elseif (index==40)
+ arg(ypos,<argo.tag(obj_y[1])>)
+ argo.f_inforow(<ypos>,350,210,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index<48)
+ argo.f_inforow(<ypos>,350,310,0,<pvpturnaj_1_arena_teamy[index]>)
+ arg(ypos,#+<d_def_radek_vyska>)
+endif
+arg(index,#+1) 
+endwhile
+
+argo.tag(from,<uid>)
+
+arg(index,0)
+arg(ipage,0)
+argo.tag(radku,<argo.tag(radku)>-1)
+while (index<pvpturnaj_hraci_rows)
+if !(index%argo.tag(radku))
+  if (index==(2*argo.tag(radku)*arg(ipage)))//na zacatku stranky
+   arg(ipage,#+1)
+   argo.page(<ipage>)
+   arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+   if (index)
+    argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,0,<ipage>-1) // prev
+   endif
+   if (pvpturnaj_hraci_rows>(index+(2*argo.tag(radku))))
+    argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,0,<ipage>+1) // next
+   endif
+   //arg(popisx,2)
+   //arg(buttx,3)
+   //arg(valuex,4)                 
+  else
+   //arg(ypos,<argo.tag(obj_y[1])>)
+   //arg(popisx,5)
+   //arg(buttx,6)
+   //arg(valuex,7)
+  endif
+ endif
+if (index<7)
+  //arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+  argo.f_inforow(<ypos>,100,100,110,<pvpturnaj_1_arena_hraci[index]>)
+  arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index==7)
+  arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+  argo.f_inforow(<ypos>,400,400,410,<pvpturnaj_1_arena_hraci[index]>)
+  arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index<14)
+ argo.f_inforow(<ypos>,400,400,410,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index==14)
+ //arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+ argo.f_inforow(<ypos>,100,100,110,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index<21)
+ argo.f_inforow(<ypos>,100,100,110,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index==21)
+ arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+ argo.f_inforow(<ypos>,400,400,410,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index<28)
+ argo.f_inforow(<ypos>,400,400,410,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index==28)
+ argo.f_inforow(<ypos>,100,100,110,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>)
+elseif (index<35)
+ argo.f_inforow(<ypos>,100,100,110,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>)
+elseif (index==35)
+ arg(ypos,<argo.tag(obj_y[1])>+<d_def_radek_vyska>)
+ argo.f_inforow(<ypos>,400,400,410,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+elseif (index<42)
+ argo.f_inforow(<ypos>,400,400,410,<pvpturnaj_1_arena_hraci[index]>)
+ arg(ypos,#+<d_def_radek_vyska>)
+endif
+arg(index,#+1) 
+endwhile
+
+argo.page(0)
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[DIALOG d_pvpturnaj_nastaveni_teamy BUTTON]
+on=1
+DIALOG d_pvpturnaj_hlavni_vyber
+
+on=@anybutton
+if (argn>=100)
+ var(button_pvpvyber,<argn>)
+ newitem i_zamerit_hrace
+ act.equip
+ act.timer 20
+endif
+
+[DIALOG d_arena_vyber_zbrane]
+30,55
+argo.tag(sirka,300)
+argo.tag(vyska,300)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>)
+
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,Turnaj - Vyber Zbrane)
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,101)
+while (index<=arena_pocet_zbrani)
+ argo.f_inforow(<ypos>,50,10,0,iflag_button|iflag_rename|iflag_notext,blank,<arena_zbran_<index>>,Zbran)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+argo.page(0)
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[DIALOG d_arena_vyber_zbrane BUTTON]
+on=1
+if (src.tag(arena_pocet_zbrani)<2)
+ DIALOG d_arena_vyber_zbrane
+else
+ arena_vybavit
+endif
+
+on=@anybutton
+if (argn>=100)
+ if (src.tag(arena_pocet_zbrani)<2)
+  src.sysmessage(Vybrana zbran <arena_zbran_<argn>>)
+  src.tag(arena_pocet_zbrani,<src.tag(arena_pocet_zbrani)>+1)
+  src.tag(arena_vybrana_zbran_<src.tag(arena_pocet_zbrani)>,<arena_zbran_<argn>>)
+  DIALOG d_arena_vyber_zbrane
+ else
+  arena_vybavit
+ endif
+endif
+
+[function arena_vybavit]
+src.findlayer(21).contents(inventobank)
+src.eqlayers(inventobank)
+//src.sysmessage(<nastaveni_vybavy_pvpturnaj_<var(kdokliknul)>>)
+finduid(<nastaveni_vybavy_pvpturnaj_<var(kdokliknul)>>).contents(f_move_all_to_player)
+src.go 2202 1794 45
+src.tag.remove(pvp_stone_opened)
+src.tag.remove(arena_pocet_zbrani)
+src.tag.remove(arena_vybrana_zbran_1)
+src.tag.remove(arena_vybrana_zbran_2)
+
+[function nastaveni_vybavy_pvpturnaj]
+if !(<var.nastaveni_vybavy_pvpturnaj_<args>>)
+  var(nastaveni_vybavy_pvpturnaj_<args>,1)
+endif
+return <var.nastaveni_vybavy_pvpturnaj_<args>>
+
+[function nastaveni_hraci_pvpturnaj]
+if !(<var.nastaveni_hraci_pvpturnaj_<args>>)
+  var(nastaveni_hraci_pvpturnaj_<args>,1)
+endif
+return <finduid(<var.nastaveni_hraci_pvpturnaj_<args>>).name>
+
+[itemdef i_zamerit_bednu]
+id=i_memory
+name=Zamerit Bednu
+type=t_eq_script
+layer=30 
+
+on=@timer
+remove
+return 0
+
+on=@equip 
+target Zamer bednu?
+
+on=@targon_item
+if (<src.targ.type>!=t_container)
+ src.sysmessage toto neni kontejner!
+ remove
+ return 1
+else
+ var(nastaveni_vybavy_pvpturnaj_<nastaveni_vybavy_pvpturnaj_<button_pvpvyber>>,<src.targ.uid>)
+ remove
+ return 1
+endif
+
+[itemdef i_zamerit_hrace]
+id=i_memory
+name=Zamerit Hrace
+type=t_eq_script
+layer=30 
+
+on=@timer
+remove
+return 0
+
+on=@equip 
+target Zamer Hrace?
+
+on=@targon_char
+ var(nastaveni_hraci_pvpturnaj_<nastaveni_hraci_pvpturnaj_<button_pvpvyber>>,<src.targ.uid>)
+ src.targ.tag(pvp_team,<strright(<strleft(<nastaveni_hraci_pvpturnaj_<button_pvpvyber>>,6)>,1)>)
+ remove
+ return 1
+endif
+
+[itemdef i_stone_pvp_turnaj
+ID=01174
+Name=Cesta na turnaj
+
+ON=@Create
+attr=attr_move_never
+COLOR=00999
+
+on=@userclick
+return 1
+
+on=@userdclick
+//if (<src.tag(pvp_stone_opened)>)
+ //src.redmessage(Zadny podvadeni!)
+ //return 1
+//else
+ //src.tag(pvp_stone_opened,1)
+//endif
+
+if (StrLen(<src.tag(pvp_team)>)==0)
+ src.redmessage(Nejsi clenem zadneho teamu!)
+ return 1
+else
+ var(kdokliknul,)
+ if (<src.body>==c_man)
+  arg(muz_zena,"muz")
+ else
+  arg(muz_zena,"zena")
+ endif
+ 
+ if (<src.class>==class_craft)
+  var(kdokliknul,<var(kdokliknul)>craft_<arg(muz_zena)>)
+ elseif (<src.class>==class_mag)
+  var(kdokliknul,<var(kdokliknul)>mag_<arg(muz_zena)>)
+ elseif (<src.class>==class_mystik)
+  var(kdokliknul,<var(kdokliknul)>mystik_<arg(muz_zena)>) 
+ elseif (<src.class>==class_necro)
+  var(kdokliknul,<var(kdokliknul)>necro_<arg(muz_zena)>)
+ elseif (<src.class>==class_priest)
+  var(kdokliknul,<var(kdokliknul)>priest_<arg(muz_zena)>)
+ elseif (<src.class>==class_ranger)
+  var(kdokliknul,<var(kdokliknul)>ranger_<arg(muz_zena)>)
+ elseif (<src.class>==class_shaman)
+  var(kdokliknul,<var(kdokliknul)>shaman_<arg(muz_zena)>)
+ elseif (<src.class>==class_thief)
+  var(kdokliknul,<var(kdokliknul)>thief_<arg(muz_zena)>)
+ elseif (<src.class>==class_war)
+  var(kdokliknul,<var(kdokliknul)>war_<arg(muz_zena)>)
+ endif
+ //src.sysmessage(<var(kdokliknul)>)
+ //src.sysmessage(<nastaveni_vybavy_pvpturnaj_<var(kdokliknul)>>)
+ if (<nastaveni_vybavy_pvpturnaj_<var(kdokliknul)>>==1)
+  src.redmessage(Nemuzes vstoupit!)
+  return 1
+ else
+  //src.sysmessage(<finduid(<nastaveni_vybavy_pvpturnaj_<var(kdokliknul)>>).name>)
+  var(arena_pocet_zbrani,100)
+  finduid(<nastaveni_vybavy_pvpturnaj_<var(kdokliknul)>>).contents(f_arena_findweapons)
+  if (<arena_pocet_zbrani>>102)
+   arena_vybavit
+   //DIALOG d_arena_vyber_zbrane
+   return 1
+  else
+   arena_vybavit
+   return 1
+  endif
+  //src.sysmessage(<var(arena_pocet_zbrani)>)
+  //finduid(<nastaveni_vybavy_pvpturnaj_<var(kdokliknul)>>).contents(f_move_all_to_player)
+ endif
+ return 1
+endif
+
+[function f_arena_findweapons]
+if (type==t_weapon_fence)||(type==t_weapon_sword)
+ var(arena_pocet_zbrani,#+1)
+ var(arena_zbran_<arena_pocet_zbrani>,<name>)
+endif
+
+[function f_move_all_to_player]
+if (type==t_bandage)
+ src.newitem (i_bandage)
+ lastnew.amount=<amount>
+ lastnew.bounce
+elseif (type==t_weapon_bolt)
+ src.newitem (<baseid>)
+ lastnew.bounce
+ lastnew.amount=<amount>
+//elseif (<arena_pocet_zbrani>>102)
+ //if (type==t_weapon_fence)||(type==t_weapon_sword)
+  //if (<uid.name>==<src.tag(arena_vybrana_zbran_1)>)||(<uid.name>==<src.tag(arena_vybrana_zbran_2)>)
+   //uid.dupe
+   //lastnew.bounce
+  //endif
+ //endif
+elseif (baseid==i_robe)||(more1==c_horse_tan)
+ if (<src.tag(pvp_team)>==1)
+  uid.dupe
+  lastnew.color=0982
+  lastnew.bounce
+ elseif (<src.tag(pvp_team)>==2)
+  uid.dupe
+  lastnew.color=0480
+  lastnew.bounce
+ elseif (<src.tag(pvp_team)>==3)
+  uid.dupe
+  lastnew.color=0A6F
+  lastnew.bounce
+ elseif (<src.tag(pvp_team)>==4)
+  uid.dupe
+  lastnew.color=0481
+  lastnew.bounce
+ elseif (<src.tag(pvp_team)>==5)
+  uid.dupe
+  lastnew.color=062A
+  lastnew.bounce
+ elseif (<src.tag(pvp_team)>==6)
+  uid.dupe
+  lastnew.color=044C
+  lastnew.bounce
+ endif
+else
+ src.sysmessage(<uid>)
+ uid.dupe
+ lastnew.bounce
+endif
+
+[itemdef i_timer_anim]
+id=i_memory
+type=t_eq_script
+layer=30
+name=animator npc
+
+on=@timer
+if (cont)
+	cont.anim(<more1>)
+	timer=<more2>
+	return 1
+endif
+remove
+return 1
+
+[function makeperform]
+src.newitem(i_timer_anim)
+equip(lastnew)
+lastnew.more1=<eval argv(0)>
+lastnew.more2=<eval argv(1)>
+lastnew.timer 1
+
+[itemdef i_port_home]
+name=Portal do domovskeho mesta
+id=i_moongate_blue
+
+on=@step
+src.gohome
+return 1
+
+
+[eof]
+ 

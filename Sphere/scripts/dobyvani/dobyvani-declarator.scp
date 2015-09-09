@@ -1,0 +1,560 @@
+[itemdef i_war_declarator]
+id=i_gravestone_5
+name=vyhlasovac valky
+type=t_script
+
+on=@create
+attr=attr_move_never
+more2=0
+tag(conquered,0)
+tag(war_declared_on,0)
+tag(war_begins_day,0)
+tag(war_begins_month,0)
+tag(war_begins_hour,0)
+tag(war_lord,0)
+tag(my_realm,0)
+
+on=@userdclick
+var(war_declarator_<region.tag(realm)>,<uid>)
+if(src.isgm) 
+  tag(my_realm,<region.tag(realm)>)
+  if(strlen(<tag(realmname)>)==0)
+    tag(realmname,<qval <eval tag(my_realm)-1>,"Mordor","Gondor">)
+    name=<tag(realmname)>sky <name>
+  endif
+  src.sysmessage("<name> nastaven.")
+else
+  if(<src.tag(can_declare_war_on_<qval <eval tag(my_realm)-1>,"Gondor","Mordor">)>)
+    dialog(dialog_declare_war)
+  else
+    src.redMessage("Nejsi <src.sex(opravnen,opravnena)> vyhlasit <qval <eval tag(my_realm)-1>,"Gondor","Mordor">u valku.")
+  endif
+endif
+return 1
+
+on=@timer //pocitadlo bude kontrolovat stav dobyvani pevnosti
+
+//VYNULOVANI
+if(!strcmpi(<tag(war_declared_on)>,0)) //valka neni, konec pocitani
+  say(rusim pocitani - valka neni)
+  scylla.delayedmessage("Dobyvani: <serverTime> Na deklaratoru <tag(my_realm)> dobehlo pocitani - valka je ukoncena.")
+  more1=0
+  timer=-1
+  return 1
+endif
+
+////HLASENI
+if (<more1> > 0) // Uz jsme zacali pocitat?
+  more1 = <eval (<more1>-10)> // Snizit cas
+  if (<eval(more1 % 10)>==0) // Kazdych deset sekund informovat
+    finduid(<tag(war_lord)>).redmessage("Na uspesne dobyti zbyva <more1l> s.")
+    if(<eval(more1 % 60)>==0) // Kazdou minutu informovat
+      scylla.delayedmessage("Dobyvani: <serverTime> Na uspesne dobyti <tag(war_declared_on)> zbyva <more1l> s.")
+    endif 
+    var(palantir_<tag(war_declared_on)>).say("Na uspesne dobyti zbyva <more1l> s.")
+  endif
+  if ((<getMinute> % 10) ==0)
+    if(<region.tag(realm)>==1) // hlasi gondorsky kamen
+      arg(gondr_msg,"Dobyvani pevnosti")
+      arg(mordr_msg,"Brante pevnost")
+    else
+      arg(gondr_msg,"Brante pevnost")
+      arg(mordr_msg,"Dobyvani pevnosti") 
+    endif
+    var(chatmessage,"*Gondorsky herold* <gondr_msg> <d_area_<tag(war_declared_on)>_1> - jeste <eval more1> s!")
+    serv.allclients(warmessage(1,<chatmessage>))  
+    var(chatmessage,"*Mordorsky herold* <mordr_msg> <d_area_<tag(war_declared_on)>_1> - jeste <eval more1> s!")
+    serv.allclients(warmessage(2,<chatmessage>))
+  endif
+  if(<more1>==0)
+    endWar
+  else 
+    timer=10
+  endif
+  return 1 
+endif
+
+// VALKA JESTE NEZACALA, ZACATEK POCITANI
+if (<getMonth> >= <eval tag(war_begins_month)>)&&(<getDay> >= <eval tag(war_begins_day)>)&&(<getHour> >= <eval tag(war_begins_hour)>)
+  // Cas jiz pokrocil, muzeme zacit pocitat cas na dobyti pevnosti
+  finduid(<tag(war_lord)>).delayedredmessage("Valka muze zacit!")
+  scylla.delayedmessage("Dobyvani: <serverTime> Dobyvani <tag(war_declared_on)> prave zacina.") 
+  // jednorazova hlaska na chat
+  if(<region.tag(realm)>==1) //hlasi Gondorsky kamen
+    arg(gondr_msg,"Dobyvani pevnosti")
+    arg(mordr_msg,"Braneni nasi pevnosti")
+  else
+    arg(gondr_msg,"Braneni nasi pevnosti")
+    arg(mordr_msg,"Dobyvani pevnosti") 
+  endif
+  var(chatmessage,"*Gondorsky herold* <gondr_msg> <d_area_<tag(war_declared_on)>_1> prave zacalo")
+  serv.allclients(warmessage(1,<chatmessage>))    
+  var(chatmessage,"*Mordorsky herold* <mordr_msg> <d_area_<tag(war_declared_on)>_1> prave zacalo")
+  serv.allclients(warmessage(2,<chatmessage>))
+ 
+  var(palantir_<tag(war_declared_on)>).respawnGuards
+  more1=<nastaveni_pevnosti_cas_na_dobyti>
+  timer=10
+  return 1
+else //jenom posunout timer a pocitame znova
+  if((<getMinute> % 59) ==0) //kazdou 59. minutu
+    if(<getSecond> > 45) //az uplne naposled :) (jednou-dvakrat)
+      if(<region.tag(realm)>==1) //hlasi Gondorsky kamen
+        arg(gondr_msg,"Dobyvani pevnosti")
+        arg(mordr_msg,"Braneni nasi pevnosti")
+      else
+        arg(gondr_msg,"Braneni nasi pevnosti")
+        arg(mordr_msg,"Dobyvani pevnosti") 
+      endif 
+      var(chatmessage,"*Gondorsky herold* <gondr_msg> <d_area_<tag(war_declared_on)>_1> zacne <eval tag(war_begins_day)>.<eval tag(war_begins_month)> v <eval tag(war_begins_hour)>h")
+      serv.allclients(warmessage(1,<chatmessage>))    
+      var(chatmessage,"*Mordorsky herold* <mordr_msg> <d_area_<tag(war_declared_on)>_1> zacne <eval tag(war_begins_day)>.<eval tag(war_begins_month)> v <eval tag(war_begins_hour)>h")
+      serv.allclients(warmessage(2,<chatmessage>))
+    endif
+  endif 
+  timer=10
+  return 1
+endif
+
+[function endWar] //ukoncit valku - vynulovat tagy, pocitadla a informovat warlorda.
+finduid(<tag(war_lord)>).redmessage("Cas na dobyti pevnosti vyprsel. Pevnost byla ubranena!")
+finduid(<tag(war_lord)>).redmessage("Cas na dobyti pevnosti vyprsel. Pevnost byla ubranena!")
+var(palantir_<tag(war_declared_on)>).say("Cas na dobyti pevnosti vyprsel. Pevnost byla ubranena!")
+var(palantir_<tag(war_declared_on)>).say("Cas na dobyti pevnosti vyprsel. Pevnost byla ubranena!")
+scylla.delayedmessage("Dobyvani: <serverTime> EndWar. Cas na uspesne dobyti pevnosti vypsel, pevnost byla ubranena.") 
+if(<region.tag(realm)>==1) //hlasi gondorsky kamen
+    arg(gondr_msg,"Nepritel pevnost <d_area_<tag(war_declared_on)>_1> ubranil!")
+    arg(mordr_msg,"Ubranili jsme pevnost <d_area_<tag(war_declared_on)>_1>!")
+  else
+    arg(gondr_msg,"Ubranili jsme pevnost <d_area_<tag(war_declared_on)>_1>!")
+    arg(mordr_msg,"Nepritel pevnost <d_area_<tag(war_declared_on)>_1> ubranil!") 
+  endif
+  var(chatmessage,"*Gondorsky herold* <gondr_msg>")
+  serv.allclients(warmessage(1,<chatmessage>))    
+  var(chatmessage,"*Mordorsky herold* <mordr_msg>")
+  serv.allclients(warmessage(2,<chatmessage>))
+more1=0
+tag(war_begins_day,0)
+tag(war_begins_month,0)
+tag(war_begins_hour,0)
+tag(war_lord,0)
+callOtherWarlord
+
+[function callOtherWarlord] // jsou-li v poradi dalsi vyhlasovatele na tu samou pevnost, pak se warlord presune na dalsiho
+if(array_size(tag.warlords) > 0) //nejaky warlord tam je
+  //nastavit dalsiho
+  tag(war_begins_day,<array_getremove(tag.begins_day,0)>)
+  tag(war_begins_month,<array_getremove(tag.begins_month,0)>)
+  tag(war_begins_hour,<array_getremove(tag.begins_hour,0)>)
+  tag(war_lord,<array_getremove(tag.warlords,0)>)
+  finduid(<tag(war_lord)>).delayedmessage(Tvuj utok na pevnost <d_area_<tag(war_declared_on)>_1> zacne <tag(war_begins_day)>.<tag(war_begins_month)> v <tag(war_begins_hour)>h)
+  timer=10 //zacneme pocitat a kontrolovat cas na dobyvani 
+  scylla.delayedmessage("Dobyvani: <serverTime> Valka skoncila. Nastavuje se dalsi valka.")
+else //proste dokoncit to zruseni
+  scylla.delayedmessage("Dobyvani: <serverTime> Valka skoncila, zadna dalsi nenasleduje.")
+  tag(war_declared_on,0)
+endif
+
+[function addNextWarlord] // zaznamenat do poradniku dalsiho vyhlasovatele (argv(0)); den, mesic, hodina (argv(1),(2),(3))
+//src.sysmessage(pridavam <argv(0)> na <argv(1)>.<argv(2)> - <argv(3)>h)
+array_add(tag.begins_day,<argv(1)>)
+array_add(tag.begins_month,<argv(2)>)
+array_add(tag.begins_hour,<argv(3)>)
+array_add(tag.warlords,<argv(0)>)
+
+[function removeSelectedWarlord] // odstranit vyhlasovatele (argv(0)) a jeho zaznamy z poli
+arg(poradi,<array_find(tag.warlords,<argv(0)>)>)
+//src.sysmessage("Odstranuji <argv(0)> z poradi - <poradi>")
+//src.sysmessage("Vypis pole:")
+array_remove(tag.warlords,<poradi>)
+array_remove(tag.begins_day,<poradi>)
+array_remove(tag.begins_month,<poradi>)
+array_remove(tag.begins_hour,<poradi>)
+
+[function forts_list]//y,index,text
+arg(text,<argv(2)>)
+arg(i,3)
+while(i < argvcount) //pospojovat nespojeny text :)
+ arg(text,"<arg(text)> <argv(i)>")
+ arg(i,#+1)
+endwhile
+texta(<tag(sloupec_x[0])>+<d_def_odsazeni>,argv(0),955,<arg(text)>)
+checkbox(<tag(sloupec_x[1])>,argv(0),210,211,1,argv(1)) //zvolit pevnost
+
+return <eval argv(0)+d_def_radek_vyska> 
+
+[dialog dialog_declare_war]
+argo.SetLocation(20,30)
+arg(sirka_text,370)
+argo.tag(sirka,<eval (2*<d_def_okraj>+2*<d_def_skvira>)+<sirka_text>>)
+//argo.tag(vyska,<eval ((5+<d_fortcount>)*<d_def_radek_vyska>)+(3*d_def_okraj)+(2*d_def_skvira)>)
+arg(more_lines,0)
+if(war_declared) //jeste dva radky pro aktualniho vyhlasovatele (+nadpis)
+ arg(more_lines,2)
+endif
+if(array_size(tag.warlords) > 0)
+ arg(more_lines,#+<eval <eval array_size(tag.warlords)>+1>)//dalsi vyhlasovatele, jsou-li  (+nadpis)
+endif
+
+argo.tag(vyska,<eval ((5+<more_lines>)*<d_def_radek_vyska>)+(4*d_def_okraj)+(3*d_def_skvira)>)
+
+argo.dialog_prvni 
+//if(!war_declared)
+// argo.dialog_pozadi(<argo.tag(nexty)>,1) //nadpis
+//else
+// argo.dialog_pozadi(<argo.tag(nexty)>,1,(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>))-<d_def_button_sirka>) //nadpis + button na zruseni
+//endif
+argo.dialog_pozadi(<argo.tag(nexty)>,1) //nadpis
+//				      pocet pevnosti  
+//argo.dialog_pozadi(<argo.tag(nexty)>,<d_fortcount>,<sirka_text>-17) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,<sirka_text>-17) //vyska jen jedne pevnosti
+argo.dialog_zpruhledni
+
+//text o pevnostech nutno vkladat ted, dokud je v tagu sloupce ulozeno to co tam je ulozeno z tohoto pozadi!
+arg(ypos,<argo.tag(obj_y[1])>) //seznam pevnosti
+arg(u,1)
+//while(u <= <d_fortcount>)
+// arg(ypos,<argo.forts_list(<ypos>,<u>+100,<d_area_<qval <eval tag(my_realm)-1>,"Gondor","Mordor">_<u>_1>)>)
+// arg(u,#+1)
+//endwhile
+
+//zjistit cislo posledne dobyte pevnosti co dobyvatel ztratil
+if(<eval tag(my_realm)>==1)
+ arg(fort_to_conquer,<eval <eval tag(conquered)>-1>) //Gondor dobyva pevnost -1
+else
+ arg(fort_to_conquer,<eval <eval tag(conquered)>+1>) //Mordor dobyva pevnost +1
+endif
+
+if(fort_to_conquer < 0) //zjistit jaky region je na poradi (mohli jsme ztratit i vlastni region...)
+ arg(realm_to_conquer,"Mordor")
+else
+ arg(realm_to_conquer,"Gondor")
+endif
+
+arg(ypos,<argo.forts_list(<ypos>,101,<d_area_<realm_to_conquer>_<abs(<fort_to_conquer>)>_1>)>)
+
+//button jakbysmet
+//if(war_declared)
+// argo.button((<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>))-<d_def_button_sirka>,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,2) //Zrusit //hned ho tam frkni
+//endif
+
+argo.dialog_pozadi(<argo.tag(nexty)>,1) //pouceni
+//				 2 radky, den, mesic, hodina	 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,80,100)
+argo.dialog_pozadi(<argo.tag(nexty)>,1) //cudlik na potvrzeni
+//zpruhlednit zbytek (nelze delat pro cele jinak to rozmaze jiz vlozeny text o pevnostech
+argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[2])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),3*<d_def_radek_vyska>+<d_def_skvira>) 
+//if(war_declared)
+// argo.texta(<argo.dialog_textpos(0,0)>,0481,"Zrusit valku s pevnosti <d_area_<tag(war_declared_on)>_1>")    
+//else
+// argo.texta(<argo.dialog_textpos(0,0)>,0481,"Vyhlasit valku pevnosti v <qval <eval tag(my_realm)-1>,"Gondor","Mordor">u")
+//endif 
+argo.texta(<argo.dialog_textpos(0,0)>,0481,"Vyhlaseni valky <qval <eval tag(my_realm)-1>,"Gondor","Mordor">ske pevnosti")
+
+argo.texta(<argo.dialog_textpos(2,0)>,0481,"Mozne casy dobyvani: <d_fort_warFrom>-<d_fort_warTo>, vikend: <d_fort_weekend_warFrom>-<d_fort_weekend_warTo>")
+argo.texta(<argo.dialog_textpos(3,0)>,0481,"Den:")
+if(strlen(<argv(0)>) > 0)
+ argo.settext(1000,<argv(0)>)
+else
+ argo.settext(1000,<getDay>+1)
+endif
+argo.texta(<argo.dialog_textpos(3,1)>,0481,"Mesic:")
+if(strlen(<argv(1)>) > 0)
+ argo.settext(2000,<argv(1)>)
+else
+ argo.settext(2000,<getMonth>)
+endif
+argo.texta(<argo.dialog_textpos(3,2)>,0481,"Hodina:")
+arg(sirka_last_sloup,<eval ((<sirka_text>-<argo.tag(sirkasloupce[0])>)-<argo.tag(sirkasloupce[1])>)>)
+if(strlen(<argv(2)>) > 0)
+ argo.settext(3000,<argv(2)>)
+else
+ argo.settext(3000,17)
+endif
+
+//if(!war_declared)
+ argo.textentrya(<argo.tag(sloupec_x[0])>+6*7,<argo.tag(obj_y[3])>,<argo.tag(sirkasloupce[0])>-4*7,20,955,201,1000)
+ argo.textentrya(<argo.tag(sloupec_x[1])>+8*7,<argo.tag(obj_y[3])>,<argo.tag(sirkasloupce[1])>-6*7,20,955,202,2000)
+ argo.textentrya(<argo.tag(sloupec_x[2])>+9*7,<argo.tag(obj_y[3])>,<sirka_last_sloup>-7*7,20,955,203,3000)
+//endif
+argo.button(<d_def_okraj>,<argo.tag(obj_y[4])>,0fb7,0fb9,1,0,1) //OK
+
+//-----------informace o vyhlasenych valkach------------------
+if(war_declared)
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,340)//aktualne vyhlasena valka + cas
+ argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[5])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),<d_def_radek_vyska>+<d_def_skvira>)   
+ argo.texta(<argo.dialog_textpos(5,0)>,044,"Aktualni vyhlasovatel")
+ argo.texta(<argo.dialog_textpos(5,1)>,044,"Cas")
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,240,<argo.tag(sirka)>-240+<d_def_button_sirka>)//<jmeno> + <cas> + <zrusit button>
+ argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[6])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),<d_def_radek_vyska>+<d_def_skvira>)  
+ argo.texta(<argo.dialog_textpos(6,0)>,052,"<tag(war_lord).name>")
+ argo.texta(<argo.dialog_textpos(6,1)>,052,"<tag(war_begins_day)>.<tag(war_begins_month)> - <tag(war_begins_hour)>h")
+ if(src==<tag(war_lord)>) //cudlik na zruseni pro warlorda
+  argo.button((<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>))-<d_def_button_sirka>,<argo.tag(obj_y[6])>,0fb1,0fb3,1,0,2) //Zrusit
+ endif
+endif
+if(array_size(tag.warlords) > 0) //jsou jeste dalsi vyhlasovatele
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,340)//dalsi valky + cas
+ argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[7])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),<d_def_radek_vyska>+<d_def_skvira>)   
+ arg(y_nextwarlords,<argo.tag(nexty)>)
+ argo.texta(<argo.dialog_textpos(7,0)>,02e,"Dalsi vyhlasovatel(e)")
+ argo.texta(<argo.dialog_textpos(7,1)>,02e,"Cas")
+ argo.dialog_pozadi(<argo.tag(nexty)>,<array_size(tag.warlords)>,240,<argo.tag(sirka)>-240+<d_def_button_sirka>)//<jmeno> + <cas> + <zrusit button>
+ argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[8])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),(<array_size(tag.warlords)>*<d_def_radek_vyska>)+<d_def_skvira>)  
+ arg(u,0)
+ arg(x_names,<argo.tag(sloupec_x[0])>)
+ arg(x_times,<argo.tag(sloupec_x[1])>)
+ while(u < array_size(tag.warlords))
+  argo.texta(<x_names>+<d_def_odsazeni>,<y_nextwarlords>+u*<d_def_radek_vyska>,031,"<array_get(tag.warlords,<u>).name>")
+  argo.texta(<x_times>+<d_def_odsazeni>,<y_nextwarlords>+u*<d_def_radek_vyska>,031,"<array_get(tag.begins_day,<u>)>.<array_get(tag.begins_month,<u>)> - <array_get(tag.begins_hour,<u>)>h") 
+  if(src==array_get(tag.warlords,<u>)) //cudlik na zruseni pro warlorda z pole (jen u toho kdo zrovna klika)
+   argo.button((<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>))-<d_def_button_sirka>,<y_nextwarlords>+u*<d_def_radek_vyska>,0fb1,0fb3,1,0,2) //Zrusit
+  endif
+  arg(u,#+1)
+ endwhile
+endif
+
+
+[dialog dialog_declare_war button]
+//argchkenum(i) - cislo i-teho zaskrtleho checkboxu (i pocitano od nuly)
+//argchk(j) - kolikaty zaskrtly je checkbox cislo j (pocitano v poradi jak byly umistovany na dialog)
+
+on=1
+//if(war_declared)
+//  src.redmessage("Nejprve dobyj <d_area_<tag(war_declared_on)>_1>!")
+//  dialog(dialog_declare_war)
+//  return 1
+//endif
+if(strlen(<argtxt(201)>)==0)||(strlen(<argtxt(202)>)==0)||(strlen(<argtxt(203)>)==0)
+  src.redmessage("Zadej vsechno: den, mesic i hodinu zacatku valky.")
+  dialog(dialog_declare_war,<argtxt(201)>,<argtxt(202)>,<argtxt(203)>)
+  return 1
+endif
+//arg(which_to_check,<eval <tag(conquered)>+1>) //je-li dobyta pevnost cislo 1, kontroluji zaskrtnuti dvojky ze...
+arg(which_to_check,1)
+if(argchk(which_to_check+100)==1)//cislo "10x" je prvni zaskrtnute (dalsi nas nezajimaj, ani nic predtim) 
+  if(warTimePasses(<fixnumber(<argtxt(201)>)>,<fixnumber(<argtxt(202)>)>,<fixnumber(<argtxt(203)>)>))
+    if(tag(war_lord)==0) //jeste nebyla valka vyhlasena 
+      //zjistit cislo posledne dobyte pevnosti co dobyvatel ztratil
+      if(<eval tag(my_realm)>==1)
+        arg(fort_to_conquer,<eval <eval tag(conquered)>-1>) //Gondor dobyva pevnost -1
+      else
+        arg(fort_to_conquer,<eval <eval tag(conquered)>+1>) //Mordor dobyva pevnost +1
+      endif
+      if(fort_to_conquer < 0) //zjistit jaky region je na poradi (mohli jsme ztratit i vlastni region...)
+        arg(realm_to_conquer,"Mordor")
+      else
+        arg(realm_to_conquer,"Gondor")
+      endif
+      tag(war_declared_on,<realm_to_conquer>_<abs(<fort_to_conquer>)>)
+      if(!checkDateCorrectness(<fixnumber(<argtxt(201)>)>,<fixnumber(<argtxt(202)>)>) //day, month - zkontrolovat jestli datum dava smysl (treba 29.2 32.11 atd)
+        return 1
+      endif
+      tag(war_begins_day,<fixnumber(<argtxt(201)>)>)
+      tag(war_begins_month,<fixnumber(<argtxt(202)>)>)
+      tag(war_begins_hour,<fixnumber(<argtxt(203)>)>)
+      if(<eval tag(war_begins_hour)> >= 0 && <eval tag(war_begins_hour)> <= <d_fort_warTo>) //po pulnoci asi
+        tag(war_begins_day,<eval <tag(war_begins_day)>+1>) //posunout den :)
+        if(<eval tag(war_begins_day)> > <d_month_days_<tag(war_begins_month)>>) //neprekrocili jsme mesic?
+          tag(war_begins_month,<eval <tag(war_begins_month)>+1>) //posuneme mesic 
+          tag(war_begins_day,1) //a vynulujem dny     
+          if(<eval tag(war_begins_month)> > 12)
+            tag(war_begins_month,1) //prekrocili jsme 12 mesicku
+          endif
+        endif
+      endif
+      tag(war_lord,<src>)
+      src.sysmessage("Valka pevnosti <d_area_<tag(war_declared_on)>_1> vyhlasena na den <tag(war_begins_day)>. <tag(war_begins_month)>. - <tag(war_begins_hour)> hod.")
+      scylla.delayedmessage("Dobyvani: <serverTime> Valka pevnosti <d_area_<tag(war_declared_on)>_1> vyhlasena na den <tag(war_begins_day)>. <tag(war_begins_month)>. - <tag(war_begins_hour)> hod. Player <src> (<src.name>)")
+      //src.tag.remove(can_declare_war_on_<qval <eval tag(my_realm)-1>,"Gondor","Mordor">)
+      timer=10 //zacneme pocitat a kontrolovat cas na dobyvani
+    else //uz je vyhlasena - vyhlasujeme novou na tu samou pevnost
+      if((array_find(tag.warlords,<src>) != -1) || (strcmpi(<tag(war_lord)>,<src>)==0)) //je v poradi nebo je to dokonce sam aktualni warlord 
+        src.redmessage("Ty jiz jsi valku teto pevnosti <src.sex(vyhlasil,vyhlasila)>!")
+      else
+        if (timeAfterLastWarlord(<fixnumber(<argtxt(201)>)>,<fixnumber(<argtxt(202)>)>,<fixnumber(<argtxt(203)>)>)) //zkontrolovat den a hodinu vyhlaseni - musi byt PO aktualnim warlordovi
+          addNextWarlord(<src>,<fixnumber(<argtxt(201)>)>,<fixnumber(<argtxt(202)>)>,<fixnumber(<argtxt(203)>)>)
+        endif
+      endif
+    endif
+  else
+    dialog(dialog_declare_war,<fixnumber(<argtxt(201)>)>,<fixnumber(<argtxt(202)>)>,<fixnumber(<argtxt(203)>)>) //repete, spatne zadano
+  endif
+else
+  src.redmessage("Musis vybrat pevnost k dobyvani.") 
+  dialog(dialog_declare_war,<fixnumber(<argtxt(201)>)>,<fixnumber(<argtxt(202)>)>,<fixnumber(<argtxt(203)>)>) //repete, spatne zadano
+endif
+
+on=2 //zrusit valku
+if(array_size(tag.warlords) == 0) //valku rusi ten jediny, kdo ji vyhlasil
+  src.sysmessage("S pevnosti <d_area_<tag(war_declared_on)>_1> byl podepsan docasny mir.")
+  tag(war_declared_on,0)
+  tag(war_begins_month,0)
+  tag(war_begins_day,0)
+  tag(war_begins_hour,0)
+  tag(war_lord,0) 
+else
+  if(!strcmpi(<tag(war_lord)>,<src>)) //rusi aktualni warlord - presuneme obsah pole a udelame noveho warlorda
+    callOtherWarlord
+    src.sysmessage("<src.sex(Zrusil,Zrusila)> jsi svuj utok na pevnost <d_area_<tag(war_declared_on)>_1>. Nyni je na rade <finduid(<tag(war_lord)>).name>")
+  else //rusi nekdo z nahradniku - jen ho odstranime z pole
+    removeSelectedWarlord(<src>)
+    src.sysmessage("<src.sex(Zrusil,Zrusila)> jsi svuj utok na pevnost <d_area_<tag(war_declared_on)>_1>.")
+  endif
+endif
+src.tag.remove(can_declare_war_on_<qval <eval tag(my_realm)-1>,"Gondor","Mordor">)
+
+[function warTimePasses]//den, mesic, hodina
+if(<argv(1)> > <getMonth>) //pristi mesic - rovnou OK
+ //neni na tejnou dobu vyhlasena valka od sousedu?
+ if(enemyHasDeclaredSameTime(<argv(0)>,<argv(1)>,<argv(2)>))
+  return 0
+ endif
+ //nevyhlasil na ten samy den uz nejaky muj kolega?
+ if(fellowHasDeclaredSameTime(<argv(0)>,<argv(1)>,<argv(2)>))
+  return 0
+ endif
+ return 1
+else //proverime den
+ arg(checkdays,1)
+ if(<argv(1)> < <getMonth>) //minuly mesic - WTF? 
+  src.redmessage("POZOR: zadany mesic je mensi nez aktualni - valka takto probehne az v pristim roce.")  
+  arg(checkdays,0)
+  return 0 // ZATIM ZRUSIT, BUGUJE!
+ endif
+ if(checkdays) //dny kontrolujeme pouze v pripade, ze mesi neni mensi nez aktualni (pak jde o pristi rok a dny jsou tudiz vsechny pozdeji)
+  if(<argv(0)> > <getDay>)
+   if(isHourOK(<argv(2)>,<d_fort_warFrom>,<d_fort_warTo>)) //trefi se hodina do vymezeneho casu valky?
+    if(enemyHasDeclaredSameTime(<argv(0)>,<argv(1)>,<argv(2)>))
+     return 0
+    endif
+    if(fellowHasDeclaredSameTime(<argv(0)>,<argv(1)>,<argv(2)>))
+     return 0
+    endif
+   else
+    src.redmessage("Boj muze probihat pouze mezi <d_fort_warFrom> a <d_fort_warTo> hod.")
+    return 0
+   endif
+  else
+   src.redmessage("Valku lze vyhlasit nejdrive na zitrek.")
+   return 0
+  endif
+ endif
+endif
+return 1
+
+
+[function timeAfterLastWarlord]//zadany den, mesic a hodina
+if(array_size(tag.warlords) == 0)
+ arg(actual_day,<eval tag(war_begins_day)>)
+ arg(actual_hour,<eval tag(war_begins_hour)>)
+ arg(actual_month,<eval tag(war_begins_month)>)
+ if(<argv(1)> < <actual_month>) //mensi mesic - pozor na blbost
+  if((<argv(1)> == 1) && (<actual_month> == 12)) //vyhlasil to na leden a je prosinec - to je asi OK
+   return 1
+  endif
+  src.redmessage("Dalsi valku lze vyhlasit jen na mesic <d_month_name_<actual_month>> nebo pozdeji.")
+  return 0    
+ endif
+ if(<argv(1)> == <actual_month>) // je li mesic stejny, zkontroluj dny
+  if(<argv(0)> < <actual_day>) // mensi den - blbost
+   src.redmessage("Dalsi valku lze vyhlasit nejdrive na <actual_day>. <actual_month>.")
+   return 0
+  endif
+  if(<argv(0)> == <actual_day>) //zadany den je stejny (mensi byt nemuze a vetsi nas nezajima, ten by byl v poradku)
+   if(<argv(2)> <= <actual_hour>) //zadana hodina je mensi nebo rovna - nelze !
+    src.redmessage("Dalsi valku lze vyhlasit jen na pozdejsi dobu, nez je <actual_day>. <actual_month>. - <actual_hour> hod.")
+    return 0
+   endif
+  endif
+ endif 
+else //zkontrolujeme cas posledniho warlorda
+ arg(last_pos,<eval array_size(tag.warlords)-1>) //cisluje se totiz od nuly
+ arg(actual_day,<eval array_get(tag.begins_day,<last_pos>)>)
+ arg(actual_hour,<eval array_get(tag.begins_hour,<last_pos>)>)
+ arg(actual_month,<eval array_get(tag.begins_month,<last_pos>)>)
+ if(<argv(1)> < <actual_month>) //mensi mesic - rovnou blbost
+  if((<argv(1)> == 1) && (<actual_month> == 12)) //vyhlasil to na leden a je prosinec - to je asi OK
+   return 1
+  endif
+  src.redmessage("Dalsi valku lze vyhlasit jen na mesic <d_month_name_<actual_month>> nebo pozdeji.")
+  return 0    
+ endif
+ if(<argv(1)> == <actual_month>) //je li mesic stejnej, zkontroluj dny
+  if(<argv(0)> < <actual_day>) //mensi den - blbost
+   src.redmessage("Dalsi valku lze vyhlasit nejdrive na <actual_day>. <actual_month>.")
+   return 0
+  endif
+  if(<argv(0)> == <actual_day>) //zadany den je stejny (mensi byt nemuze a vetsi nas nezajima, ten by byl v poradku)
+   if(<argv(2)> <= <actual_hour>) //zadana hodina je mensi nebo rovna - nelze !
+    src.redmessage("Dalsi valku lze vyhlasit jen na pozdejsi dobu, nez je <actual_day>. <actual_month>. - <actual_hour> hod.")
+    return 0
+   endif
+  endif
+ endif 
+endif
+return 1  //vse OK
+
+[function enemyHasDeclaredSameTime] //den, mesic, hodina
+if(<eval tag(my_realm)>==1)
+ arg(enemys_realm,2)
+else
+ arg(enemys_realm,1)
+endif
+arg(enemy_decl,<var(war_declarator_<enemys_realm>)>)
+//ocekuj vsechny casy, pokud byla vyhlasena valka
+if(strcmpi(<enemy_decl.tag(war_declared_on)>,0)) //byla vubec vyhlasena valka?
+ if(<eval enemy_decl.tag(war_begins_month)> == <eval argv(1)>)
+  if(<eval enemy_decl.tag(war_begins_day)> == <eval argv(0)>)
+   if(<eval enemy_decl.tag(war_begins_hour)> == <eval argv(2)>)    
+    src.sysmessage("Na tento cas ti valku jiz vyhlasil nepritel.")
+    return 1 //vse stejne
+   endif
+  endif
+ endif
+endif
+return 0 //nekde se to lisilo
+
+[function fellowHasDeclaredSameTime] //den, mesic, hodina
+//musime zjistit pozici (if any) zadanych hodnot v nasich polich - pokud vsechny tri pozice stejne, pak je to jasny
+//v zadnem jinem pripade to pak vadit nebude
+arg(day_pos,<array_find(tag.begins_day,<argv(0)>)>)
+arg(month_pos,<array_find(tag.begins_month,<argv(1)>)>)
+arg(hour_pos,<array_find(tag.begins_hour,<argv(2)>)>)
+if((day_pos == month_pos) && (month_pos == hour_pos) && (day_pos != -1)) //vse stejne (a nejsou to -1 :))
+ src.sysmessage("Na tento cas jiz valku <finduid(<array_get(tag.warlords,<day_pos>)>).sex(naplanoval,naplanovala)> <finduid(<array_get(tag.warlords,<day_pos>)>).name>.")
+ return 1
+else
+ //jeste zkontrolovat aktualniho warlorda (toho jemuz bezi timer)
+ if(!strcmpi(<tag(war_begins_day)>,<argv(0)>))
+  if(!strcmpi(<tag(war_begins_month)>,<argv(1)>))
+   if(!strcmpi(<tag(war_begins_hour)>,<argv(2)>)) 
+    src.sysmessage("Na tento cas jiz je valka vyhlasena.")
+    return 1
+   endif
+  endif
+ endif
+endif
+return 0
+
+[function war_declared]
+if(<eval tag(war_begins_day)> > 0)
+ return 1
+else
+ return 0
+endif
+
+[function resetWars]
+array_clear(tag.warlords)
+array_clear(tag.begins_day)
+array_clear(tag.begins_hour)
+array_clear(tag.begins_month)
+tag(war_lord,0)
+tag(war_begins_hour,0)
+tag(war_begins_month,0)
+tag(war_begins_day,0)
+tag(war_declared_on,0)
+
+[function allowmedeclarator]
+tag(can_declare_war_on_Gondor,1)
+tag(can_declare_war_on_Mordor,1)

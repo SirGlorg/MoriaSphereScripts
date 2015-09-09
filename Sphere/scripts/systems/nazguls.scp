@@ -1,0 +1,1067 @@
+[itemdef i_nazgulsonly_gate]
+ID=i_moongate_blue
+TYPE=t_normal
+name=Brana jen pro vyvolene
+
+ON=@Create
+attr=attr_newbie|attr_move_never
+morep=1001 1001
+color=0692 //nazguli temna
+
+on=@step
+if(src.isgm)||(src.isnazgul)
+ src.go(<morex> <morey> <morez> <morem>)
+else
+ src.sysmessage(Jen pro vyvolene!)
+endif
+
+[function f_nazgmenu]
+if(<src.region>!=<region>)
+ src.sysmessage(Musis byt v prostoru mesta!)
+ return 0
+endif
+if(!strlen(<tag(jmeno_mesta)>)) 
+ if(<src.isgm>)
+  src.sysmessage(Nastav dostupne mestske straze!)
+  src.sysmessage(Pouziti: ".x townguards(jmeno_mesta), viceslovne nazvy provaz podtrzitkem")
+  src.sysmessage(Napriklad: Minas_Morgul atd.)
+  return 1
+ else
+  src.sysmessage(Mesto neni zatim pripraveno, kontaktuj GM)
+  return 1
+ endif
+endif
+
+//nasledujici blok se provede jen pri prvnim kliknuti na townstone
+if !(<tag(enemyscont)>)
+ var(townstone_<region.tag(jmeno_mesta)>,<uid>)
+
+ src.newitemsafe(i_pouch)//Nepratele
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(22)
+ lastnew.more1=0
+ lastnew.link=<uid>
+ lastnew.name=Nepratel
+ tag(enemyscont,<lastnew>)
+
+ src.newitemsafe(i_pouch)//Navrzeni Nepratele
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(24)
+ lastnew.more1=24
+ lastnew.link=<uid>
+ lastnew.name=Navrzenych na blacklist
+ tag(suggestedenemyscont,<lastnew>)
+  
+ src.newitemsafe(i_pouch) //Novinky
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(25)
+ lastnew.more1=25
+ lastnew.link=<uid>
+ lastnew.name=Novinky
+ tag(newscont,<lastnew>) 
+ 
+ src.newitemsafe(i_pouch) //guards
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(23)
+ lastnew.more1=0
+ lastnew.link=<uid>
+ lastnew.name=Strazi
+ tag(guardcont,<lastnew>)
+
+ tag(pokladna,0)
+endif
+
+//guardi
+tag(guardcont).contents(hasbeenpaid)
+
+DIALOG d_nazg_menu
+return 1
+
+[function islordnazgulintown]
+if(<tag(lordnazgul)>)
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(<region.tag(realm)>==2)
+   if(strcmpi(<region>,<var(townstone_<region.tag(jmeno_mesta)>).region>)) //0 pokud stejne   
+    return 0
+   else //byly stejne  
+    return 1
+   endif
+  else
+   return 0
+  endif
+ else
+  return 0
+ endif
+else
+ return 0
+endif
+////////////////////
+//funkce nazgul only
+////////////////////
+[function mordortowncontrol]
+if(isnazgul)||(isgm) 
+ if(<islordnazgulintown>)||(isgm)   //prvni nazgul nebo gm ve meste (nemusi mit linknutej prsten)
+  if(<region.tag(realm)> != 2)
+   src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+   return 1
+  endif
+  if(<flags>&statf_dead)
+   sysmessage(Ve svem stavu nejsi niceho schopen) 
+   return 1
+  endif
+  if(strlen(<region.tag(jmeno_mesta)>))
+   if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>)>).dialog d_town_major //- rozmistit straze po meste   
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>)>).dialog d_town_captain //ovladani strazi 
+    return 1
+   else
+    sysmessage(Nenalezl jsem mestsky oltar)
+    return 1
+   endif  
+  else
+   sysmessage(Musis byt ve meste)
+   return 1 
+  endif 
+ else //jeste zkus jestli to neni obyc nazgul ve meste
+  if(strlen(<region.tag(jmeno_mesta)>)) 
+   if(!strcmpi(<region.tag(jmeno_mesta)>,<tag(mesto)>)) //pro nazguly
+    findlayer(8).link.dialog d_town_major //- rozmistit straze po meste  
+    findlayer(8).link.dialog d_town_captain //ovladani strazi 
+   else
+    sysmessage(Musis byt ve svem meste!)
+    return 1
+   endif
+  else
+   sysmessage(Ovladat mesto muzes pouze z mesta)
+   return 1
+  endif
+ endif
+else //pouze pro nazguly 
+ return 1
+endif
+
+[function mordortownguardskill]
+//if(src.isnazgul)&&(!<src.tag(lordnazgul)>) //nizsi nazgul
+// if(strlen(<src.region.tag(townstone)>))
+//  if(!strcmpi(<src.tag(mesto)>,<finduid(<src.region.tag(townstone)>).tag(jmeno_mesta)>))
+//   if(<finduid(<src.findlayer(8).link.tag(guardcont)>).rescount>)
+//    src.newitemsafe(<i_nazg_guard_targ>) 
+//    lastnew.equip
+//    lastnew.tag(mesto,<src.findlayer(8).link>)
+//   else
+//    src.sysmessage(Mesto nevlastni zadne straze)
+//   endif
+//  else
+//   src.sysmessage(Musis byt ve svem meste)
+//  endif
+// else
+//  src.sysmessage(Musis byt ve meste)
+// endif
+//endif
+if(isgm)||(isnazgul)//(<tag(lordnazgul)>)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).rescount>)
+    newitemsafe(i_nazg_guard_targ) 
+    lastnew.equip
+    lastnew.tag(mesto,<var(townstone_<region.tag(jmeno_mesta)>)>)
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function mordortownguardsstop]
+//if(src.isnazgul)&&(!<src.tag(lordnazgul)>)
+// if(strlen(<src.region.tag(townstone)>))
+//  if(!strcmpi(<src.tag(mesto)>,<finduid(<src.region.tag(townstone)>).tag(jmeno_mesta)>))
+//   if(<finduid(<src.findlayer(8).link.tag(guardcont)>).rescount>)
+//    finduid(<src.findlayer(8).link.tag(guardcont)>).contents(stop_guard(1)) //1 stop
+//   else
+//    src.sysmessage(Mesto nevlastni zadne straze)
+//   endif
+//  else
+//   src.sysmessage(Musis byt ve svem meste)
+//  endif
+// endif
+//endif
+if(isgm)||(isnazgul)//(<tag(lordnazgul)>)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).rescount>)
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).contents(stop_guard(1)) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function mordortownguardscontinue]
+//if(src.isnazgul)&&(!<src.tag(lordnazgul)>)
+// if(strlen(<src.region.tag(townstone)>))
+//  if(!strcmpi(<src.tag(mesto)>,<finduid(<src.region.tag(townstone)>).tag(jmeno_mesta)>))
+//   if(<finduid(<src.findlayer(8).link.tag(guardcont)>).rescount>)
+//    finduid(<src.findlayer(8).link.tag(guardcont)>).contents(stop_guard(0)) //1 stop
+//   else
+//    src.sysmessage(Mesto nevlastni zadne straze)
+//   endif
+//  else
+//   src.sysmessage(Musis byt ve svem meste)
+//  endif
+// endif
+//endif
+if(isgm)||(isnazgul)//(<tag(lordnazgul)>)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).rescount>)
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).contents(stop_guard(0)) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function mordortownguardsflee]
+//if(src.isnazgul)&&(!<src.tag(lordnazgul)>)
+// if(strlen(<src.region.tag(townstone)>))
+//  if(!strcmpi(<src.tag(mesto)>,<finduid(<src.region.tag(townstone)>).tag(jmeno_mesta)>))
+//   if(<finduid(<src.findlayer(8).link.tag(guardcont)>).rescount>)
+//    finduid(<src.findlayer(8).link.tag(guardcont)>).contents(home_run) //1 stop
+//   else
+//    src.sysmessage(Mesto nevlastni zadne straze)
+//   endif
+//  else
+//   src.sysmessage(Musis byt ve svem meste)
+//  endif
+// endif
+//endif
+if(isgm)||(isnazgul)//(<tag(lordnazgul)>)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   if(<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).rescount>)
+    finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>).contents(home_run) //1 stop
+   else
+    sysmessage(Mesto nevlastni zadne straze)
+   endif
+  else
+   sysmessage(Musis byt ve meste)
+  endif
+ else
+  sysmessage(Musis byt ve meste)
+ endif
+endif
+
+[function mordortownguardscome]
+//if(src.isnazgul)&&(!<src.tag(lordnazgul)>) //kontroluje pouze nazguly,vrchniho nazgula ne !
+// if(strcmpi(<src.region>,<src.findlayer(8).link.region>)) //0 pokud stejne, pak nic nehlasi
+//  src.sysmessage(Straze prijdou jen v ramci tveho mesta)
+//  return 1
+// endif
+//endif
+if(isgm)||(isnazgul)//(<tag(lordnazgul)>)
+ if(<region.tag(realm)> != 2)
+  src.sysmessage(Straze te poslechnou jen na Marghulove uzemi!)
+  return 1
+ endif
+ reveal
+ if(<flags>&statf_dead)
+  sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ if(strlen(<region.tag(jmeno_mesta)>))
+  if(!strlen(<var(townstone_<region.tag(jmeno_mesta)>)>))
+   sysmessage(Straze prijdou jen v ramci mesta)
+   return 1 
+  endif
+ else
+  sysmessage(Straze prijdou jen v ramci mesta)
+  return 1 
+ endif
+endif
+if(isnazgul)||(<isgm>)
+ arg(guardcont,<finduid(<var(townstone_<region.tag(jmeno_mesta)>).tag(guardcont)>)>)
+ if(<arg(guardcont).rescount>)
+  arg(pocet_strazi,<arg(guardcont).rescount>)  
+  arg(i,0)
+  while(i < pocet_strazi)
+   //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+   if(<arg(guardcont).findcont(i).link>) //umisteny spawngem
+     arg(guard,<arg(guardcont).findcont(i).link.tag(lastspawned)>)
+     if(<finduid(guard).npc>) //spawnuta straz
+      if(<src.distancefrom(<finduid(guard)>)> <= 15)
+       finduid(guard).events=-e_guard_stopped 
+       finduid(guard).paralyze_remove
+       finduid(guard).go(<src.p>) 
+      endif
+     endif
+   endif 
+   arg(i,#+1)
+  endwhile
+ else
+  sysmessage(Mesto nevlastni zadne straze)
+ endif
+endif
+
+[function mordorblacklist]
+if (isnazgul)&&(!<tag(lordnazgul)>)
+ newitemsafe(i_target_nazg)
+ lastnew.link=<src.findlayer(8).link>
+ lastnew.more1=2
+ lastnew.equip
+ return 1
+endif
+//////////////////////////
+//konec funkci nazgul only
+//////////////////////////
+[function nm_findrank] //0 nepritel, 1 nazgul, 2 prvni nazgul, 3 gm
+var(nm_rank,1) //default je nazgul (nikdo jinej krome nej a GM se tam nedostane :) )
+safe finduid(<tag(enemyscont)>).contents(nm_findrankloop(<args>)) 
+if(<link.isitem>) 
+ if (<link.topobj>==<args>) //link na kameni - prsten, pro jistotu kontrola
+  var(nm_rank,1)
+ else
+  if(<finduid(<args>).tag(lordnazgul)>)
+   var(nm_rank,2)
+  endif
+ endif
+endif
+if (finduid(<args>).isgm)
+ var(nm_rank,3) 
+endif 
+return <var(nm_rank)>
+
+[function nm_findrankloop]
+if (<link>==<args>) //krystaly jsou linknuty na playera 
+ if(!strcmpi(<name>,<finduid(<argv(0)>).name>)) //je to totez jmeno ! (neni maska, mystik morf atd)
+  var(nm_rank,0) //nepritel
+ endif
+endif
+
+[function nm_namerank]
+doswitch <args>
+ var(namestr,Nepritel)
+ var(namestr,Nazgul)
+ var(namestr,Prvni Nazgul)
+ var(namestr,GM)
+enddo
+return"<var(namestr)>"
+
+[function nm_section]//y,index,rank,text
+if (<var(nm_rank)> >= <argv(2)>)
+ texta(<tag(sloupec_x[1])>+<d_def_odsazeni>,argv(0),955,<argv(3)>)//ban
+ button(<tag(sloupec_x[0])>,argv(0),4005,4007,1,0,argv(1))
+ return <eval argv(0)+d_def_radek_vyska>
+endif
+return <argv(0)>
+
+[DIALOG d_nazg_menu]
+30,0
+nm_findrank(<src>)
+nm_namerank(<var(nm_rank)>)
+//src.smsg nm_rank:<nm_rank> 
+argo.settext(100,"Mesto <tag(jmeno_mesta)>")
+
+doswitch var(nm_rank)
+ argo.tag(radku,0) //0 nepritel
+ argo.tag(radku,9)//2 nazgul
+ argo.tag(radku,9)//2 prvni nazgul
+ argo.tag(radku,11)//3 gm 
+enddo
+argo.tag(sirka,280) 
+argo.tag(vyska,<eval 100+((1+<argo.tag(radku)>)*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//nazgul
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//nazgul
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname
+arg(vedleX,<argo.tag(sloupec_x[1])>+<d_def_odsazeni>)
+argo.dialog_pozadi(114+d_def_skvira,1)//pokladna
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,28)//tlacitka
+argo.dialog_zpruhledni
+argo.gumppic(<argo.dialog_textpos(0,0,1)>,100)
+argo.htmlgump(lastxpos+20,lastypos+20,100,60,100,0,0)
+argo.texta(vedleX,argo.tag(obj_y[0]),0481,Nazgul:)
+argo.texta(vedleX,argo.tag(obj_y[1]),955,<link.topobj.name>)
+argo.texta(vedleX,argo.tag(obj_y[2]),0481,Tvuj status:)
+argo.texta(vedleX,argo.tag(obj_y[3]),955,<var(namestr)>)  
+argo.texta(<argo.dialog_textpos(4,0)>,0481,Stav pokladny: <tag(pokladna)> gp)
+
+arg(ypos,lastypos+d_def_radek_vyska)
+arg(ypos,<argo.nm_section(<ypos>,1,1,Blacklist)>) 
+arg(ypos,<argo.nm_section(<ypos>,8,1,Hraci navrzeni na blacklist)>) 
+arg(ypos,<argo.nm_section(<ypos>,2,1,Pridat hrace na blacklist)>) 
+arg(ypos,<argo.nm_section(<ypos>,9,1,Novinky)>) 
+arg(ypos,<argo.nm_section(<ypos>,10,1,Najemni informace)>) 
+arg(ypos,<argo.nm_section(<ypos>,3,3,Zbavit nazgula prstenu)>) 
+arg(ypos,<argo.nm_section(<ypos>,4,3,Udelat nazgulem)>)
+arg(ypos,<argo.nm_section(<ypos>,5,1,Pokyny strazim)>) 
+arg(ypos,<argo.nm_section(<ypos>,6,1,Rozmistit straze)>) 
+arg(ypos,<argo.nm_section(<ypos>,7,1,Najimat straze)>) 
+arg(ypos,<argo.nm_section(<ypos>,11,1,Zmenit home)>) 
+
+
+[DIALOG d_nazg_menu BUTTON]
+on=1//blacklist
+if (f_nazg_checkrightsmes(1))
+ tag(enemyscont).dialog(d_nmseznam,0,1)
+endif
+
+on=2//pridat hrace na blacklist
+if (f_nazg_checkrightsmes(1))
+ src.newitemsafe(i_target_nazg)
+ lastnew.link=<uid>
+ lastnew.more1=2
+ lastnew.equip
+endif
+
+on=3//zbavit nazgula prstenu
+if (f_nazg_checkrightsmes(3))
+ potvrdit(vyhod_nazgula,"Opravdu chces odstranit nazgula?")   
+endif
+
+on=4//Udelat nazgulem
+if (f_nazg_checkrightsmes(3))
+ src.newitemsafe(i_target_nazg)
+ lastnew.link=<uid> //townstone
+ lastnew.more1=4
+ lastnew.equip
+endif
+
+on=5//pokyny strazim
+if (f_nazg_checkrightsmes(1))
+ dialog d_nazg_captain
+endif
+
+on=6//Rozmistit straze
+if (f_nazg_checkrightsmes(1))
+ dialog d_town_major
+endif
+
+on=7//Najimat straze
+if (f_nazg_checkrightsmes(1))
+ dialog d_town_recruiter
+endif
+
+on=8//Hraci navrzeni na blacklist
+if (f_nazg_checkrightsmes(1))
+ tag(suggestedenemyscont).dialog(d_nmseznam,0,8)
+endif
+
+on=9//Novinky
+if (f_nazg_checkrightsmes(1))
+ tag(newscont).dialog(d_nmseznam,0,9)
+endif
+
+on=10//Najemni informace
+if (f_nazg_checkrightsmes(1))
+ src.rentalinfo(<src.region.tag(jmeno_mesta)>)
+endif
+
+on=11//Zmena home
+if (f_nazg_checkrightsmes(1))
+ potvrdit(nazgul_zmen_home,"Opravdu chces nastavit toto mesto jako domovske?")   
+endif
+
+
+[function f_nazg_checkrightsmes]
+if (f_nazg_checkrights(<args>))
+ return 1
+else
+ src.redmessage(Nemas na to pravo.)
+ return 0
+endif
+
+[function f_nazg_checkrights]
+nm_findrank(<src>)
+if (<var(nm_rank)> >= <args>)
+ return 1
+else
+ return 0
+endif
+
+[DIALOG d_nmseznam]
+100,100  
+if(<argv(1)>==1)||(<argv(1)>==8) 
+ if(<argv(1)>==8) //navrzenci na BL.
+  argo.tag(sirka,650)
+ else
+  argo.tag(sirka,550)
+ endif
+else
+ argo.tag(sirka,260)
+endif
+if(<argv(1)>==9) //novinky
+ argo.tag(vyska,<eval (5*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+else
+ argo.tag(vyska,300)
+endif
+argo.tag(cislo,<argv(1)>) //kterym tlacitkem seznam volam - lisi se funkcnost
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29)
+argo.dialog_zpruhledni
+
+if(<argv(1)>==9) //novinky
+ argo.settext(10,Novinky)
+else
+ argo.settext(10,<name> : <rescount>)
+endif
+argo.text(<argo.dialog_textpos(0,0)>,0481,10)
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)
+argo.tag(firsti,<eval argv(0)>)
+if (argo.tag(firsti))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval argo.tag(firsti)+argo.tag(radku)>)
+if (imax>rescount)
+ arg(imax,<rescount>)
+endif
+if (rescount>imax)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+endif
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,<argo.tag(firsti)>)
+while (index<imax)
+ //seznam obcanu s cudliky (blacklisty)
+ if(<argv(1)>==1)||(<argv(1)>==8)||(<argv(1)>==9) //bl, navrhy na bl,novinky
+  argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,(index)+100) 
+ endif
+ argo.textA(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,2301,"<findcont(index).name>")
+ if(<argv(1)>==1)||(<argv(1)>==8) //navrzeni na bl.
+  if(<argv(1)>==8) //navrhovatel - pouze seznam navrzenych
+   argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+520),ypos,2301,"Navrhl: <findcont(index).tag(navrhovac)>")
+   argo.button((<argo.tag(sirka)>-<d_def_okraj>)-33,ypos,0fb1,0fb3,1,0,(index)+1000) //zamitnuto
+  endif
+  argo.textA(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+360),ypos,2301,"Duvod: <findcont(index).tag(duvod)>")  
+ endif
+ if(<argv(1)>==9)&&((src.isnazgul)||(src.isgm))
+  argo.button((<argo.tag(sirka)>-<d_def_okraj>)-33,ypos,0fb1,0fb3,1,0,(index)+1000) //rusit novinku   
+ endif
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+if(<argv(1)>==9)&&((src.isnazgul)||(src.isgm))
+ argo.button(argo.tag(sloupec_x[0]),argo.tag(vyska)-(d_def_okraj+d_def_radek_vyska),4005,4007,1,0,3)//nova novinka
+ argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,argo.tag(vyska)-(d_def_okraj+d_def_radek_vyska),955,"Nova novinka")
+endif
+
+[DIALOG d_nmseznam BUTTON]
+on=0
+link.dialog d_nazg_menu
+on=1
+dialog(d_nmseznam,(<argo.tag(firsti)>-<argo.tag(radku)>),<argo.tag(cislo)>)
+on=2
+dialog(d_nmseznam,(<argo.tag(firsti)>+<argo.tag(radku)>),<argo.tag(cislo)>)
+on=3 //nova novinka
+if(<rescount>==3) 
+ src.redmessage(Nejdrive odstran nekterou ze starych novinek) 
+ dialog(d_nmseznam,0,9) 
+else
+ input("Zapis novinku (bez carek ve vete):",novinkain,"")
+ return 1
+endif
+
+on=@anybutton
+if(<argn> > 999) //zamitani navrhu na bl, ruseni novinek
+ arg(radek,<argn>-1000)
+else
+ arg(radek,<argn>-100)
+endif
+//src.smsg( tlacitko <argn>, cislo: <argo.tag(cislo)>)
+if(<argo.tag(cislo)>==1) //blacklist
+ if (link.f_nazg_checkrightsmes(1))
+  findcont(radek).link.classmessage(<findcont(radek).name> byl odstranen z cerne listiny ve meste <link.tag(jmeno_mesta)>)
+  findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>,#-1) //jedno jeho jmeno z blacklistu zmizelo
+  if(<findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>)>==0) //uz zadne na bl nema
+   findcont(radek).link.tag.remove(bl_town_<link.tag(jmeno_mesta)>)
+   findcont(radek).link.tag.remove(blacklisted_<link.tag(jmeno_mesta)>)
+  endif
+  findcont(radek).remove
+  dialog(d_nmseznam,0,1)
+ endif
+endif
+if(<argo.tag(cislo)>==8) //prijimani navrhu na bl
+ if(link.f_nazg_checkrightsmes(1))
+  if(argn > 999) //zamitani
+   src.classmessage(Zamitl jsi navrzeni hrace <findcont(radek).name> na cernou listinu)
+   findcont(radek).remove
+  else
+   link.nm_findrank(<findcont(radek).link>)//rank targetnuteho
+   if(<var(nm_rank)>==0)
+     src.sysmessage(<findcont(radek).name> jiz na blacklistu je) 
+     findcont(radek).remove
+   else
+    findcont(radek).tag.remove(navrhovac)
+    src.classmessage(<findcont(radek).name> uspesne pridan na cernou listinu)
+    findcont(radek).link.redmessage(Byl jsi dan na cernou listinu mesta <link.tag(jmeno_mesta)>) 
+    if(<findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>)>) //uz je bl. s jinym jmenem
+     findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>,#+1)
+    else
+     findcont(radek).link.tag(blacklisted_<link.tag(jmeno_mesta)>,1) //poprve
+     findcont(radek).link.tag(bl_town_<link.tag(jmeno_mesta)>,<link>)  
+    endif
+    findcont(radek).cont=<link.tag(enemyscont)>
+   endif
+  endif
+  dialog(d_nmseznam,0,8)  
+ endif
+endif
+if(<argo.tag(cislo)>==9) //novinky
+ if(argn > 999) //mazani
+  src.classmessage(Smazal jsi novinku cislo <radek+1>)
+  findcont(radek).remove 
+ else //cist novinku
+  findcont(radek).dialog(d_news_read,0,0,<radek>+1)  
+ endif
+ dialog(d_nmseznam,0,9)  
+endif
+
+[dialog d_news_read]
+argo.setlocation(20+<argv(0)>,20+<argv(1)>)
+argo.tag(sirka,400)
+argo.tag(vyska,<eval 23+(4*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,4)
+argo.dialog_zpruhledni
+
+argo.settext(101,Novinka cislo <eval (4-<argv(2)>)>)
+argo.text(<argo.dialog_textpos(0,0)>,0481,101) 
+argo.settext(100,"<tag(text)>") //vlastni novinka
+argo.htmlgump(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),3*d_def_radek_vyska,100,0,1)
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_news_read button]
+on=0
+//smytec
+
+[function novinkain]
+src.newitemsafe(i_town_crystal)
+lastnew.name=Novinka <eval (<rescount>+1)>
+lastnew.cont=<uid> //newscont
+lastnew.tag(text,<args>)
+src.classmessage(Novinka uspesne pridana)
+
+
+[function nazgul_zmen_home]
+src.home=<region.p>
+
+
+[function vyhod_nazgula]
+if(<link>)
+ if(<link.layer>==8)
+  link.topobj.redmessage(Marghul rozhodl o odebrani tveho prstenu)
+  link.back
+  src.accmsg("Zbavil uid=<link.topobj> (<link.topobj.name>) prstenu ve meste uid=<uid> (<tag(jmeno_mesta)>)")
+ endif
+else
+ src.sysmessage(Neni Nazgul, ktery by vladl tomuto mestu)
+endif
+
+
+
+[itemdef i_target_nazg]
+id=i_memory
+type=t_eq_script
+name=Zamerovac mordorskych mest
+
+on=@timer
+remove
+return 0
+
+on=@equip
+if(<more1>==2)
+ target
+ src.classmessage(Koho chces pridat na blacklist?)
+endif
+if(<more1>==4)
+ target
+ src.classmessage(Koho chces udelat nazgulem?)
+endif
+timer 60
+
+on=@targon_char
+link.nm_findrank(<src.targ>)//rank targetnuteho
+if(<more1>==2) //blacklistovani
+ if(<src.targ.tag(realm)>!=2)
+  src.sysmessage(Neni to Mordoran, neni treba blacklistovat)
+  remove
+  return 1
+ endif
+ if(<var(nm_rank)>==0)
+  src.sysmessage(<src.targ.name> jiz na blacklistu je) 
+  remove
+  return 1
+ else
+  if(<src.targ.tag(lordnazgul)>)
+   src.sysmessage(Prvniho Nazgula nemuzes pridat na blacklist)
+   remove
+   return 1
+  else
+   input("Udej duvod blacklistnuti:",blacklist_him,"")
+   return 1
+  endif
+ endif
+endif  
+if(<more1>==4) //GM pridava nazgula
+ if(<link>)
+  if(<link.isitem>)
+   if(<link.layer>==8)
+    src.sysmessage(Mesto <link.tag(jmeno_mesta)> jiz Nazgula ma) 
+    remove
+    return 1
+   endif
+  endif
+ endif
+ if(<var(nm_rank)>==0)
+  src.sysmessage(<src.targ.name> je na cerne listine!)
+  remove
+  return 1
+ endif
+ if(<src.targ.isnazgul>) //uz nejakym nazgulem je
+  src.sysmessage(<src.targ.name> jiz je Nazgulem)
+  remove
+  return 1
+ endif
+ if(<src.targ.tag(realm)>!=2)
+  src.sysmessage(Nazgulem se muze stat jen Mordoran!)
+  remove
+  return 1
+ endif
+ link.cont=<src.targ>
+ link.layer=8
+ src.accmsg("Udelal uid=<src.targ> (<src.targ.name>) Nazgulem mesta uid=<link> (<link.tag(jmeno_mesta)>)")
+ src.classmessage(<src.targ.name> uspesne pridan jako starosta)
+ src.targ.classmessage(Marghul rozhodl, ze jsi vhodnym pro to byt Nazgulem mesta <link.tag(jmeno_mesta)>.)  
+ src.targ.tag(townstone,<link>)
+ remove
+ return 1
+endif
+
+
+on=@targon_item
+if(<more1>==2)	// je to navrh na bl?
+	if ((src.targ.baseid==i_flesh_head)||(src.targ.baseid==i_flesh_head_2))	// je to hlava? muzska / zenska
+		if (<src.targ.link.isplayer>)	// a je to hlava hraca?
+			src.targ=<src.targ.link>	//zameraj majitela hlavy
+			trigger(targon_char)	//zavolaj trigger targon_char
+			return 1
+		else
+			src.sysmessage("To neni hlava hrace")
+		endif
+		return 1
+	else
+		src.sysmessage("Zameruj lidi, nebo jejich hlavy")
+		remove
+		return 1
+	endif
+endif
+
+on=@targon_ground
+src.classmessage(Zameruj lidi.)
+remove
+return 1
+
+[function blacklist_him] //Args - duvod
+src.newitemsafe(i_town_crystal)
+if(<src.tag(rememberuid)>) //ma ulozeno  - mozna navrhuje z pameti
+ if(!strcmpi(<src.tag(rememberuid)>,<src.targ>)) //- navrhuje toho co ma v pameti
+  lastnew.name=<src.tag(remembername)>
+ else //nenavrhuje toho z pameti
+  lastnew.name=<src.targ.name>
+ endif
+else //nema vubec nikoho v pameti
+ lastnew.name=<src.targ.name>
+endif
+lastnew.name=<src.targ.name>
+lastnew.cont=<link.tag(enemyscont)> 
+lastnew.tag(duvod,<args>)
+lastnew.link=<src.targ> //linknout na playera
+src.accmsg("Pridal uid=<src.targ> (<src.targ.name>) na blacklist mesta uid=<link> (<link.tag(jmeno_mesta)>)")
+src.classmessage(<src.targ.name> uspesne pridan na cernou listinu)
+src.targ.redmessage(Byl jsi dan na cernou listinu mesta <link.tag(jmeno_mesta)>) 
+if(<src.targ.tag(blacklisted_<link.tag(jmeno_mesta)>)>) //uz je bl. s jinym jmenem
+ src.targ.tag(blacklisted_<link.tag(jmeno_mesta)>,#+1)
+else
+ src.targ.tag(blacklisted_<link.tag(jmeno_mesta)>,1) //poprve
+ src.targ.tag(bl_town_<link.tag(jmeno_mesta)>,<link>)  
+endif
+remove
+return 1
+
+[dialog d_nazg_captain]//PRIKAZY STRAZIM
+20,20
+argo.tag(sirka,250)
+argo.tag(vyska,<eval (6*d_def_radek_vyska)+(2*d_def_skvira)+(2*d_def_okraj)>)
+var(lastvyska,<argo.tag(vyska)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,Rozkaz strazim:)
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(ypos,<argo.tsc_section(<ypos>,1,Guards Kill)>)
+arg(ypos,<argo.tsc_section(<ypos>,2,Guards Stop)>)
+arg(ypos,<argo.tsc_section(<ypos>,3,Guards Continue)>)
+arg(ypos,<argo.tsc_section(<ypos>,4,Guards Flee)>)
+arg(ypos,<argo.tsc_section(<ypos>,5,Guards Come)>)
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+//argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+//argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+//argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_nazg_captain button]
+on=0
+on=1 //kill - jen nekolik !
+if(<finduid(<tag(guardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ src.newitemsafe(i_nazg_guard_targ) 
+ lastnew.equip
+ lastnew.tag(mesto,<uid>)
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_nazg_captain
+
+on=2 //stop
+if(<finduid(<tag(guardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(guardcont)>).contents(stop_guard(1)) //1 stop
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_nazg_captain
+
+on=3 //go on
+if(<finduid(<tag(guardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(guardcont)>).contents(stop_guard(0)) //0 release
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_nazg_captain
+
+on=4 //flee
+if(<finduid(<tag(guardcont)>).rescount>)
+ src.reveal
+ if(<src.flags>&statf_dead)
+  src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+  return 1
+ endif
+ finduid(<tag(guardcont)>).contents(home_run)
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_nazg_captain
+
+on=5 //come - jen nekolik !
+if(<src.isnazgul>)||(!<src.tag(lordnazgul)>) //kontroluje pouze starostu, generala ne !
+ if(strcmpi(<src.region>,<src.findlayer(8).link.region>)) //0 pokud stejne, pak nic nehlasi
+  src.sysmessage(Straze prijdou jen v ramci tveho mesta)
+  return 1
+ endif
+endif
+if(<src.tag(lordnazgul)>)||(<src.isgm>)
+ if(strcmpi(<src.region>,<finduid(<var(townstone_<region.tag(jmeno_mesta)>)>).region>)) //0 pokud stejne, pak nic nehlasi
+  src.sysmessage(Straze prijdou jen v ramci mesta)
+  return 1
+ endif
+endif
+src.reveal
+if(<src.flags>&statf_dead)
+ src.sysmessage(Ve svem stavu nejsi niceho schopen) 
+ return 1
+endif
+if(<finduid(<tag(guardcont)>).rescount>)
+ arg(pocet_strazi,<finduid(<tag(guardcont)>).rescount>) 
+ arg(i,0)
+ while(i < pocet_strazi)
+  //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+  if(<finduid(<tag(guardcont)>).findcont(i).link>) //umisteny spawngem
+    arg(guard,<finduid(<tag(guardcont)>).findcont(i).link.tag(lastspawned)>)
+    if(<finduid(guard).npc>) //spawnuta straz     
+     if(<src.distancefrom(<finduid(guard)>)> <= 15)
+      finduid(guard).events=-e_guard_stopped 
+      finduid(guard).paralyze_remove
+      finduid(guard).go(<src.p>) 
+     endif
+    endif
+  endif 
+  arg(i,#+1)
+ endwhile
+else
+ src.sysmessage(Mesto nevlastni zadne straze)
+endif
+dialog d_nazg_captain
+
+[itemdef i_nazg_guard_targ]
+id=i_memory
+type=t_eq_script
+name=Zamerovac cile strazi
+
+on=@equip
+target Na koho maji zautocit straze?
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targon_item
+remove
+return 1
+
+on=@targon_ground
+remove
+return 1
+
+on=@targon_char
+if(<src>==<src.targ>)
+ src.sysmessage(Proc povolavat straze sam na sebe, ze?)
+ remove
+ return 1
+endif
+if(!src.targ.isplayer && !src.targ.issumon)
+ src.sysmessage(Straze lze poslat jen na hrace a jejich summony)
+endif
+if(src.isnazgul)||(src.isgm) 
+ if(strlen(<src.region.tag(jmeno_mesta)>))
+  if(strcmpi(<src.region.tag(jmeno_mesta)>,<finduid(<tag(mesto)>).region.tag(jmeno_mesta)>)) //pripadne townstone
+   src.sysmessage(Jsi prilis daleko od uzemi strazi, straze te neslysi!)
+   remove 
+   return 1
+  else
+   arg(jmeno_mesta,<finduid(<var(townstone_<src.region.tag(jmeno_mesta)>)>).region.tag(jmeno_mesta)>)
+  endif
+ endif
+//else //nazgul
+// if(<src.region>!=<src.findlayer(8).link.region>) //pripadne townstone
+//  src.sysmessage(Stojis prilis daleko od uzemi strazi, straze te neslysi!)
+//  remove
+//  return 1
+// else
+//  arg(jmeno_mesta,<src.findlayer(8).link.region.tag(jmeno_mesta)>)
+// endif
+endif
+if(strcmpi(<arg(jmeno_mesta)>,<src.targ.region.tag(jmeno_mesta)>)) //0 pokud stejne, pak nic nehlasi
+ src.sysmessage(Straze nemohou zautocit mimo prostor mesta)
+ remove
+ return 1
+endif
+if(src.isnazgul)||(src.isgm)
+ arg(pocet_strazi,<finduid(<tag(mesto).tag(guardcont)>).rescount>)
+ arg(guardcont,<finduid(<tag(mesto)>).tag(guardcont)>)
+//else
+// arg(pocet_strazi,<finduid(<src.findlayer(8).link.tag(guardcont)>).rescount>)
+// arg(guardcont,<finduid(<src.findlayer(8).link>).tag(guardcont)>)
+endif 
+arg(i,0)
+while(i < pocet_strazi)
+ //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+ if(<finduid(<arg(guardcont)>).findcont(i).link>) //umisteny spawngem
+  arg(guard,<finduid(<arg(guardcont)>).findcont(i).link.tag(lastspawned)>)
+  if(safe <finduid(guard).npc>) //spawnuta straz
+   if(<src.distancefrom(<finduid(guard)>)> <= 15)
+    finduid(guard).events=-e_guard_stopped 
+    finduid(guard).paralyze_remove
+    finduid(guard).go(<src.p>)
+    if(<src.targ.tag(lordnazgul)>)
+     dorand 3
+      finduid(guard).say(Muj pane <src.targ.name>! Nas pan nam prikazal na tebe zautocit, netrestej ho prilis prisne)
+      finduid(guard).say(Zblaznil ses pane?)
+      finduid(guard).say(To je prece sam Prvni Nazgul <src.targ.name>. Co vas k nam privadi o mocny?)
+     enddo
+    else
+     if(<src.targ.isgm>) 
+      dorand 2
+       finduid(guard).say(O veliky, smiluj se a odpust nam, to tenhle nevedomec nam prikazal na tebe zautocit)
+       finduid(guard).say(Odpust o mocny nasemu panu neb on nevi co ucinil)
+      enddo
+     else
+      finduid(guard).attack(<src.targ>)     
+     endif
+    endif
+   endif
+  endif
+ endif
+ arg(i,#+1)
+endwhile
+remove
+return 1

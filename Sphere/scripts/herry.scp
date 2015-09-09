@@ -1,0 +1,141 @@
+//-------------Herryho efektni obevovani----------
+[PLEVEL 6]
+[function hinvis]
+VAR.FLAG=<src.flags>&~00000fff
+if <eval <VAR.FLAG>&02000>       //GM je invisible
+  src.invis=0
+
+  SRC.NEWITEM=0374a
+  SRC.ACT.TYPE=1
+  SRC.ACT.ATTR=attr_static|attr_decay
+  SRC.ACT.TIMER=3
+  SRC.ACT.P=<SRC.P>
+  SRC.ACT.NUDGEUP 8
+
+  SRC.NEWITEM=0375a   //fire column
+  SRC.ACT.TYPE=1
+  SRC.ACT.ATTR=attr_static|attr_decay
+  SRC.ACT.TIMER=7
+  SRC.ACT.P=<SRC.P>
+  //SRC.ACT.NUDGEUP 22
+
+  SRC.NEWITEM=03709   //fire column
+  SRC.ACT.TYPE=1
+  SRC.ACT.ATTR=attr_static|attr_decay
+  SRC.ACT.TIMER=2
+  SRC.ACT.P=<SRC.P>
+  SRC.ACT.MOVE SW
+
+  SRC.NEWITEM=03709   //fire column
+  SRC.ACT.TYPE=1
+  SRC.ACT.ATTR=attr_static|attr_decay
+  SRC.ACT.TIMER=2
+  SRC.ACT.P=<SRC.P>
+  SRC.ACT.MOVE SE
+
+  SRC.NEWITEM=03709   //fire column
+  SRC.ACT.TYPE=1
+  SRC.ACT.ATTR=attr_static|attr_decay
+  SRC.ACT.TIMER=2
+  SRC.ACT.P=<SRC.P>
+  SRC.ACT.MOVE NE
+
+  SRC.NEWITEM=03709   //fire column
+  SRC.ACT.TYPE=1
+  SRC.ACT.ATTR=attr_static|attr_decay
+  SRC.ACT.TIMER=2
+  SRC.ACT.P=<SRC.P>
+  SRC.ACT.MOVE NW
+
+
+  src.sfx 00fe   //sharp ----_____
+  src.sfx 00f8   //fade in-out, dlouhej
+else                                   //GM je visible
+  src.invis=1
+  src.sfx 022c   //kick  -- asi odchod
+endif
+//------------------------------------------------
+
+//----------------------------------------------------------------------------------------
+//------------------------ Teleport hul --------------------------------------------------
+//----------------------------------------------------------------------------------------
+[ITEMDEF I_herry_Staff]
+ID=i_staff_gnarled
+Name=Teleportacni hul
+TYPE=t_weapon_mace_staff
+DAM=200
+TWOHANDS=Y
+WEIGHT=0.0
+
+ON=@Create
+ATTR=ATTR_Newbie
+HITPOINTS=1000
+MORE2=0
+
+ON=@userDClick
+src.gmove
+return 1
+
+[function gmove]
+SRC.CONSUME 10 i_herry_gmove
+SRC.NEWITEM=i_herry_gmove
+SRC.ACT.EQUIP
+
+[ITEMDEF i_herry_gmove]
+ID=i_memory
+Name=Gmove pomoc
+TYPE=T_EQ_SCRIPT
+WEIGHT=0.0
+LAYER=layer_special
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+TIMER=120
+MORE2=0
+
+On=@Timer
+REMOVE
+
+ON=@EQUIP
+Target Select Target to Teleport
+More2=0
+
+ON=@TargOn_Char
+If <More2>==0
+link=<cont.targ.uid>
+targetG Where to move him?
+More2=1
+ElseIf <More2>==1
+link.p=<cont.TARGP>
+link.update
+link=
+More2=0
+SRC.CONSUME 10 i_herry_gmove
+endif
+Return 1
+
+On=@TargOn_Item
+If <More2>==0
+link=<cont.targ.uid>
+targetG Where to move it?
+More2=1
+Return 1
+ElseIf <More2>==1
+link.p=<cont.TARGP>
+link.update
+link=
+More2=0
+SRC.CONSUME 10 i_herry_gmove
+endif
+
+On=@TargOn_Ground
+If <More2>==1
+link.p=<cont.TARGP>
+link.update
+link=
+More2=0
+SRC.CONSUME 10 i_herry_gmove
+Return 1
+endif
+
+[EOF]

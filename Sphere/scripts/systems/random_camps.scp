@@ -1,0 +1,381 @@
+[itemdef i_random_camps_controller]
+id=00ED4
+name=Random Camps Controller
+type=t_normal
+
+on=@create
+attr=090
+color=098f
+tag.stones=1
+tag.timer=10
+//timer=1800 //pol hodina
+timer=10
+more1=0
+
+on=@timer
+more1=<more1>+1
+if (<more1>>=12) // 6 hodin 
+arg(i,1)  
+  while (<arg(i)><=<tag.stones>) //skontrolovat kazdy stone
+    if (<strlen(<tag(stone_<i>)>)>) //ak je definovane
+      if (<finduid(<tag(stone_<i>)>)>)
+        if (<finduid(<tag(stone_<i>)>).baseid>==i_random_camp_stone)
+          //say("lastNumberOfAlive_<?arg(i)?>=<?tag(lastNumOfAlive_<arg(i)>)?>")
+          //say("stoneAlive=<?finduid(<tag(stone_<i>)>).tag(alive)?>")
+          if (!strlen(<tag(lastNumOfAlive_<arg(i)>)>))
+            tag(lastNumOfAlive_<arg(i)>,-1)
+          endif
+          if (<tag(lastNumOfAlive_<arg(i)>)>==<finduid(<tag(stone_<i>)>).tag(alive)>)//ak pri minulej kontrole bolo rovnako
+            more1=0
+            //say("rovnake <?i?>")
+            finduid(<tag(stone_<i>)>).f_random_camp_stone_restart
+          else
+            //say("rozdiel <?i?>")
+          endif
+        
+          tag(lastNumOfAlive_<arg(i)>,<finduid(<tag(stone_<i>)>).tag(alive)>)
+        else
+          //say("stone <?i?> - spatne id")
+        endif
+      endif      
+    else
+      //say("stone <?i?> neni definovany")
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+//timer=1800
+timer=<tag.timer>
+return(1)
+
+on=@userdclick
+if (src.isgm)
+  dialog(d_random_camps_controller)
+endif
+return(1)
+
+[dialog d_random_camps_controller]
+argo.SetLocation=5,5
+
+argo.tag(sirka,360)
+argo.tag(vyska,44+22*<tag.stones>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,30,90,30)
+
+arg(i,0)
+while (<i><<tag.stones>)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,180,30,90,30)
+  arg(i,#+1)
+endwhile
+
+argo.dialog_zpruhledni
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Random Camps Controller")
+argo.textA(<argo.dialog_textpos(0,1)>,42,"Stone")
+argo.textA(<argo.dialog_textpos(0,2)>,42,"   Position")
+argo.textA(<argo.dialog_textpos(0,3)>,42,"GoTo")
+
+arg(curr,1)
+arg(line,1)
+while (<curr> <= <tag(stones)>)
+  arg(line,<eval(<curr>)>)
+  if (<strlen(<tag.stone_<eval(<curr>)>>)> > 0)
+    argo.textA(<argo.dialog_textpos(<line>,0)>,152,"<?tag.stone_<curr>?>") 
+    argo.textA(<argo.dialog_textpos(<line>,2)>,152,"<?finduid(tag.stone_<curr>).p?>")
+    argo.button(<argo.dialog_textpos(<line>,3)>,0fa5,0fa7,1,0,200+<curr>)
+  else
+    argo.textA(<argo.dialog_textpos(<line>,0)>,152,"undefined")
+  endif
+  argo.button(<argo.dialog_textpos(<line>,1)>,0fa5,0fa7,1,0,100+<curr>)
+  arg(curr,#+1)
+endwhile
+
+[dialog d_random_camps_controller button]
+on=0
+
+on=@anybutton
+if ((argn>99) && (argn<200))
+  src.newequip(i_target_random_camps_controller)
+  lastnew.tag(Stone,<uid>)
+  lastnew.tag(childStone,<eval(<argn>-100)>)
+  src.sysmessage("Zameraj Stone <?eval(<argn>-100)?>")  
+endif
+
+if ((argn>=200) && (argn<300))
+  arg(number,<eval(<argn>-200)>)
+  arg(stone,<finduid(<tag.stone_<arg(number)>>)>)
+  src.go <stone.p>
+endif
+
+
+[itemdef i_target_random_camps_controller]
+id=i_memory
+type=t_eq_script
+name=i_target_random_camps_controller
+
+on=@timer
+remove
+return(0)
+
+on=@equip
+target()
+timer=10
+
+on=@targon_char
+return(1)
+
+on=@targon_item
+if (<strlen(<tag.Stone>)> > 0)
+  if (<src.targ.baseid>==i_random_camp_stone)
+    src.targ.link=<tag.Stone>
+    finduid(<tag.Stone>).tag(stone_<tag(childStone)>,<src.targ>)
+    src.targ.link.dialog(d_random_camps_controller)
+  endif
+endif
+
+return(1)
+
+on=@targon_ground
+return(1)
+
+[itemdef i_random_camp_stone]
+id=0aec
+name=Random Camp Stone
+type=t_normal
+
+on=@create
+attr=090
+color=098f
+tag.spawnPoints=6
+tag.timer=5
+more1=0
+timer=5
+
+on=@timer//tento timer bude kontrolovat ci su monstra zive
+if (<more2>>0)
+  if (<more2>==1)
+    arg(lvl,<eval(<rand(1)>+1)>)
+//    say("Level <?lvl?>")
+    tag.level=<arg(lvl)>
+    tag.amountOfMonsters=0
+
+    arg(curr,1)
+    while (<curr> <= <tag(spawnPoints)>)
+      if (<strlen(<tag.spawn_<eval(<curr>)>>)> > 0)
+        arg(randomMonster,<random_camp_monsters_level_<arg(lvl)>[<eval({0 4})>]>) //vyberieme monstrum(nahodne) z defnames podla levelu
+        arg(monsterMax,<return_nth(1,<arg(randomMonster)>)>)
+        
+        arg(monsterId,<return_nth(2,<arg(randomMonster)>)>)
+        arg(monsterAmount,<eval {1 <arg(monsterMax)>}>)
+        tag(amountOfMonsters,#+<arg(monsterAmount)>)
+        
+        arg(spawnPoint,<finduid(<tag.spawn_<eval(<curr>)>>)>)
+        
+        finduid(02b9).say(<arg(monsterAmount)> <arg(monsterId)>)
+        spawnPoint.amount=<arg(monsterAmount)>
+        spawnPoint.more1=<arg(monsterId)>
+        //say("<?arg(monsterAmount)?> = <?arg(monsterId)?>")
+      else
+      endif
+      arg(curr,#+1)
+    endwhile
+  endif
+  
+  arg(curr,1)
+  while (<curr> <= <tag(spawnPoints)>)
+    if (<strlen(<tag.spawn_<eval(<curr>)>>)> > 0)
+      arg(spawnPoint,<finduid(<tag.spawn_<eval(<curr>)>>)>)
+      spawnPoint.type=t_spawn_char
+      spawnPoint.timer=1  //SPAWNING
+    else
+    endif
+    arg(curr,#+1)
+  endwhile
+
+  more2=<more2>+1  
+  if (<more2> > 10) //ak je viac amount tak aby ich to pospawnovalo (max 10)
+    more2=0
+    arg(curr,1)
+    while (<curr> <= <tag(spawnPoints)>)
+    if (<strlen(<tag.spawn_<eval(<curr>)>>)> > 0)
+      arg(spawnPoint,<finduid(<tag.spawn_<eval(<curr>)>>)>)
+      spawnPoint.type=t_spawn_char
+      spawnPoint.timer=32000  //NOT SPAWNING
+    endif
+    arg(curr,#+1)
+  endwhile
+
+  endif
+  timer=<tag.timer>/2
+  return 1
+endif
+
+more1=<more1>+1
+//timer=15
+tag(alive,<f_random_camps_stone_getNumOfAlive>)
+timer=<tag.timer>
+return(1)
+
+on=@userdclick
+if (src.isgm)
+  dialog(d_random_camp_stone)
+endif
+return(1)
+
+[dialog d_random_camp_stone]
+argo.SetLocation=5,5
+
+argo.tag(sirka,240)
+argo.tag(vyska,240)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,30)
+
+arg(i,0)
+while (<i><=<tag.spawnPoints>)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,180,30)
+  //argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+  arg(i,#+1)
+endwhile
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Random Camp Stone")
+
+//spawn points
+//argo.textA(<argo.dialog_textpos(1,1)>,42,"Add spawn points") 
+//argo.button(<lastxpos>+110,<lastypos>,0fa5,0fa7,1,0,9)  //add spawn points
+//argo.textA(<lastxpos>+150,<lastypos>,42,"<?tag.spawnPoints?>") 
+
+arg(curr,1)
+arg(line,1)
+while (<curr> <= <tag(spawnPoints)>)
+  arg(line,<eval(<curr>)>)
+  if (<strlen(<tag.spawn_<eval(<curr>)>>)> > 0)
+    argo.textA(<argo.dialog_textpos(<line>,0)>,152,"<?tag.spawn_<curr>?>")  
+  else
+    argo.textA(<argo.dialog_textpos(<line>,0)>,152,"undefined")
+  endif
+  argo.button(<argo.dialog_textpos(<line>,1)>,0fa5,0fa7,1,0,100+<curr>)
+  arg(curr,#+1)
+endwhile
+
+//arg(line,#+1)
+//argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Auto Level Up")  
+//argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.autoLevelUp?>")  
+//argo.button(<argo.dialog_textpos(<line>,2)>,0fa5,0fa7,1,0,402)
+
+
+[dialog d_random_camp_stone text]
+
+[dialog d_random_camp_stone button]
+on=0
+
+on=@anybutton
+
+if ((argn>99) && (argn<200))
+  src.newequip(i_target_random_camp_stone)
+  lastnew.tag(Stone,<uid>)
+  lastnew.tag(spawn,<eval(<argn>-100)>)
+  src.sysmessage("Zameraj Spawn <?eval(<argn>-100)?>")  
+endif
+
+[itemdef i_target_random_camp_stone]
+id=i_memory
+type=t_eq_script
+name=i_target_random_camp_stone
+
+on=@timer
+remove
+return(0)
+
+on=@equip
+target()
+timer=10
+
+on=@targon_char
+return(1)
+
+on=@targon_item
+if (<strlen(<tag.Stone>)> > 0)
+  if (<src.targ.baseid>==i_worldgem_bit)
+    src.targ.timer=32000
+    src.targ.link=<tag.Stone>
+    finduid(<tag.Stone>).tag(spawn_<tag(spawn)>,<src.targ>)
+    src.targ.link.dialog(d_random_camp_stone)
+  endif
+endif
+
+return(1)
+
+on=@targon_ground
+return(1)
+
+[function f_random_camps_getcoords]
+arg(coords,"")
+dorand 2
+  arg(coords,"5611,847,0,100") 
+  arg(coords,"5621,847,0,100") 
+enddo
+return <arg(coords)>
+
+[function f_random_camps_stone_getNumOfAlive]
+arg(numOfAlive,0)
+arg(i,0)
+while (<arg(i)><<tag.spawnPoints>)
+
+  if (<strlen(<tag.spawn_<eval(<i>)>>)> > 0)
+    //argo.textA(<argo.dialog_textpos(<line>,0)>,152,"<?tag.spawn_<i>?>")  
+    if (<finduid(<tag.spawn_<eval(<i>)>>).more2> > 0)
+      arg(numOfAlive,#+1)
+    endif
+  else
+
+  endif
+  arg(i,#+1)
+endwhile
+//say("Zivich: <?arg(numOfAlive)?>")
+return <arg(numOfAlive)>
+
+
+[function f_random_camp_stone_restart]
+//zmenit poziciu
+p=<f_random_camps_getcoords>
+//say("nova pozicia: <?p?>")
+//prejst vsetky spawny a vynulovat
+arg(i,0)
+while (<arg(i)><<tag.spawnPoints>)
+  if (<strlen(<tag.spawn_<eval(<i>)>>)> > 0)
+    arg(spawnPoint,<finduid(<tag.spawn_<eval(<i>)>>)>)
+    arg(j,0)
+    while (j < spawnPoint.amount)//lebo ked je remove tak sa to zastavi
+      sector.allchars(f_random_camp_remove_monsters(<arg(spawnPoint)>))
+      arg(j,#+1)
+    endwhile
+    //finduid(02B9).spawnPoint.trigger(@userdclick)
+    spawnPoint.p=<p>//presun spawnov
+    spawnPoint.type=t_negated_spawn_char
+    spawnPoint.timer=0fffffff
+    more2=1 //resetujem ho
+  endif
+  arg(i,#+1)
+endwhile
+
+[function f_random_camp_remove_monsters]
+if (!isplayer)
+  if (<argv(0)>==<memoryfindtype(Memory_ISpawned).link>)
+    remove
+  endif
+endif
+
+//pocet(max),monstrum
+[defnames random_camp_monsters]
+random_camp_monsters_level_1[0] 6,c_skeleton_nb
+random_camp_monsters_level_1[1] 5,c_skeleton_axe_nb
+random_camp_monsters_level_1[2] 4,c_skeleton_archer_nb
+random_camp_monsters_level_1[3] 3,c_skeleton_mage_nb
+random_camp_monsters_level_1[4] 3,c_liche_nb
+random_camp_monsters_level_2[0] 6,c_troll
+random_camp_monsters_level_2[1] 5,c_gargoyle
+random_camp_monsters_level_2[2] 4,c_gargoyle_stone
+random_camp_monsters_level_2[3] 3,c_ettin
+random_camp_monsters_level_2[4] 2,c_ettin_lord

@@ -1,0 +1,112 @@
+////////////////////////////////////
+//       the Priority QUEUE       //
+//      (c) GM Yavanna 2012       //
+////////////////////////////////////
+
+// uses tags as a data holders
+// all the functions should be triggered upon an object
+// the queue is represented as a sorted queue. 
+// ! EACH 'pqueue_push' MAY MOVE THE WHOLE QUEUE ONE FIELD FORWARD !
+// -> the max. queue size is 1000
+
+
+//MANIPULATE QUEUE FUNCTIONS:
+//the queue interface functions
+
+//removes all the pqueue tags for the given name
+//argv(0) pqueue name
+[function pqueue_remove]
+f_pqueue_beginWork(<argv(0)>)
+arg(i,0)
+while (arg(i) < <f_pqueue_size>)
+  arg(element,<eval (<f_pqueue_head>+<arg(i)>)%1000>)
+  tag.remove(<pqueue_name>[<eval arg(element)>])
+  arg(i,#+1)
+endwhile
+f_pqueue_clearTags
+f_pqueue_endWork
+
+//argv(0) pqueue name
+//argv(1) the priority value
+//argv(2) the string to be stored
+[function pqueue_push]
+f_pqueue_beginWork(<argv(0)>)
+arg(size,<f_pqueue_size>)
+if (size < 10)
+  arg(next,1)
+  arg(i,0)
+  while (next && (<arg(i)> < <arg(size)>))
+    if (f_pqueue_getPriority(<eval (<f_pqueue_head>+<arg(i)>)%1000>) >= <argv(1)>)
+      arg(i,#+1)
+    else
+      arg(next,0)
+    endif
+  endwhile
+  arg(elemToStore,"<eval argv(1)>,<argv(2)>")
+  while (<arg(i)> <= <arg(size)>) // move all the elements with lower priority
+    arg(currentIndex,<eval (<f_pqueue_head>+<arg(i)>)%1000>)
+    arg(sideStore,<tag(<pqueue_name>[<arg(currentIndex)>])>)
+    tag(<pqueue_name>[<arg(currentIndex)>],<arg(elemToStore)>)
+    arg(elemToStore,<arg(sideStore)>)
+    arg(i,#+1)
+  endwhile
+  f_pqueue_inc
+else
+  src.accmsg("CRITICAL: the push_queue function called upon an element that is full! Value not saved!")
+endif
+f_pqueue_endWork
+
+//argv(0) pqueue name
+[function pqueue_pop]
+f_pqueue_beginWork(<argv(0)>)
+arg(size,<f_pqueue_size>)
+if (size > 0)
+  arg(result,<tag(<pqueue_name>[<f_pqueue_head>])>)
+  tag.remove(<pqueue_name>[<f_pqueue_head>])
+  f_pqueue_dec
+else
+  f_pqueue_clearTags
+endif
+f_pqueue_endWork
+return<arg(result)>
+
+
+//SUPPORT FUNCTIONS : 
+//approach these as if PRIVATE in OOP object
+
+//initialises global variables
+//argv(0) pqueue name
+[function f_pqueue_beginWork]
+var(pqueue_name,pqueue_<argv(0)>)
+
+//removes all the global variables
+[function f_pqueue_endWork]
+var(pqueue_name,)
+
+//returns the pointer to the Head element (leftmost)
+[function f_pqueue_head]
+return <eval (tag(<pqueue_name>_Head))>
+
+//works only after calling beginWork
+[function f_pqueue_size]
+return <eval tag(<pqueue_name>_Size)>
+
+//increases the size counter
+//works only after calling beginWork
+[function f_pqueue_inc]
+tag(<pqueue_name>_Size,<eval (<f_pqueue_size>+1)>)
+
+//decreases the size counter
+//works only after calling beginWork
+[function f_pqueue_dec]
+tag(<pqueue_name>_Size,<eval (<f_pqueue_size>-1)>)
+tag(<pqueue_name>_Head,<eval (<tag(<pqueue_name>_Head)>+1)%1000>)
+
+[function f_pqueue_clearTags]
+tag.remove(<pqueue_name>_Size)
+tag.remove(<pqueue_name>_Head)
+
+//returns the priority of an element wit the given index
+//argv(0) index of an element
+[function f_pqueue_getPriority]
+return<eval return_nth(1,<tag(<pqueue_name>[<argv(0)>])>)>

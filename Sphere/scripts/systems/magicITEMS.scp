@@ -1,0 +1,1291 @@
+//tag.imi_value[<typ>]
+//tag.imi_present		seznam vsech preftypu na zbrani
+//tag.imi_sum			pocet ^^
+//tag.imi_sum			^^
+
+//type: tmi_preftype_50
+//type: tmi_suftype_50
+
+[function hasfivemagicals]//argv0 - kdo
+tag(srcmagicals,0)
+src.findlayer(21).contents(markmagical(<uid>))
+if(<tag(srcmagicals)> >= 5)
+  arg(i,1)
+  while(i <= 5)
+    finduid(<tag(magic_<arg(i)>)>).remove
+    tag.remove(magic_<arg(i)>)
+    arg(i,#+1)
+  endwhile
+  //tag(kolik_vybral,<eval (<tag(kolik_vybral)>+5)>)
+  finduid(#0402D472F).tag(collected_items,#+5)
+  tag.remove(srcmagicals)
+  return 1
+else
+  arg(i,1)
+  while (i <= <tag(srcmagicals)>)
+    tag.remove(magic_<arg(i)>)
+    arg(i,#+1)
+  endwhile
+  tag.remove(srcmagicals)
+  return 0
+endif
+
+[function markmagical] //argv(0) - uid toho npcèka
+if (<argv(0).tag(srcmagicals)> >= 5)
+  return 1
+endif
+if (isrealmagicitem)
+  argv(0).tag(srcmagicals,<argv(0).tag(srcmagicals)>+1)
+  argv(0).tag(magic_<argv(0).tag(srcmagicals)>,<uid>)
+endif
+
+[function isrealmagicitem]//real tj. neni to podepsana vec, i kdyz to tak muze vypadat :) tj nema tag craftedby
+if (tag(craftedby))
+elseif (isevent(tmi_info))
+  return 1
+endif
+return 0
+
+[typedef tmi_skills]
+on=@equip
+mif_skilladd(<tag.imi_skill_present>)
+return 0
+
+on=@unequip
+mif_skillremove(<tag.imi_skill_present>)
+return 0
+
+[function mif_skilladd]
+arg(v,0)
+while (arg(v)<ARGVCOUNT-1)
+  arg(type,<?argv(<arg(v)>)?>)
+  arg(skillname,<?findres(skill,<arg(type)>).name?>)
+  src.<?arg(skillname)?>=<?src.<arg(skillname)>?>+(<?tag(imi_value[<arg(type)>])?>*10)
+  arg(v,<arg(v)>+1)
+endwhile
+
+[function mif_skillremove]
+arg(v,0)
+while (arg(v)<ARGVCOUNT-1)
+  arg(type,<?argv(<arg(v)>)?>)
+  arg(skillname,<?findres(skill,<arg(type)>).name?>)
+  src.<?arg(skillname)?>=<?src.<arg(skillname)>?>-(<?tag(imi_value[<arg(type)>])?>*10)
+  arg(v,<arg(v)>+1)
+endwhile 
+
+[typedef tmi_51]
+on=@equip
+src.swordsmanship=	<src.swordsmanship>+(<tag(imi_value[51])>*10)
+src.fencing=		<src.fencing>+(<tag(imi_value[51])>*10)
+src.archery=		<src.archery>+(<tag(imi_value[51])>*10)
+src.wrestling=		<src.wrestling>+(<tag(imi_value[51])>*10)
+src.macefighting=	<src.macefighting>+(<tag(imi_value[51])>*10)
+return 0
+on=@unequip
+src.swordsmanship=	<src.swordsmanship>-(<tag(imi_value[51])>*10)
+src.fencing=		<src.fencing>-(<tag(imi_value[51])>*10)
+src.archery=		<src.archery>-(<tag(imi_value[51])>*10)
+src.wrestling=		<src.wrestling>-(<tag(imi_value[51])>*10)
+src.macefighting=	<src.macefighting>-(<tag(imi_value[51])>*10)
+return 0 
+[typedef tmi_52]
+on=@equip
+src.swordsmanship=	<src.swordsmanship>+(<tag(imi_value[52])>*10)
+src.tactics=		<src.tactics>+(<tag(imi_value[52])>*10)
+return 0
+on=@unequip
+src.swordsmanship=	<src.swordsmanship>-(<tag(imi_value[52])>*10)
+src.tactics=		<src.tactics>-(<tag(imi_value[52])>*10)
+return 0 
+[typedef tmi_53]
+on=@equip
+src.fencing=		<src.fencing>+(<tag(imi_value[53])>*10)
+src.tactics=		<src.tactics>+(<tag(imi_value[53])>*10)
+return 0
+on=@unequip
+src.fencing=		<src.fencing>-(<tag(imi_value[53])>*10)
+src.tactics=		<src.tactics>-(<tag(imi_value[53])>*10)
+return 0 
+[typedef tmi_54]
+on=@equip
+src.archery=		<src.archery>+(<tag(imi_value[54])>*10)
+src.tactics=		<src.tactics>+(<tag(imi_value[54])>*10)
+return 0
+on=@unequip
+src.archery=		<src.archery>-(<tag(imi_value[54])>*10)
+src.tactics=		<src.tactics>-(<tag(imi_value[54])>*10)
+return 0
+[typedef tmi_55]
+on=@equip
+src.wrestling=		<src.wrestling>+(<tag(imi_value[55])>*10)
+src.tactics=		<src.tactics>+(<tag(imi_value[55])>*10)
+return 0
+on=@unequip
+src.wrestling=		<src.wrestling>-(<tag(imi_value[55])>*10)
+src.tactics=		<src.tactics>-(<tag(imi_value[55])>*10)
+return 0
+[typedef tmi_56]
+on=@equip
+src.macefighting=	<src.macefighting>+(<tag(imi_value[56])>*10)
+src.tactics=		<src.tactics>+(<tag(imi_value[56])>*10)
+return 0
+on=@unequip
+src.macefighting=	<src.macefighting>-(<tag(imi_value[56])>*10)
+src.tactics=		<src.tactics>-(<tag(imi_value[56])>*10)
+return 0
+[typedef tmi_57]
+on=@equip
+src.swordsmanship=	<src.swordsmanship>+(<tag(imi_value[57])>*10)
+src.fencing=		<src.fencing>+(<tag(imi_value[57])>*10)
+src.archery=		<src.archery>+(<tag(imi_value[57])>*10)
+src.wrestling=		<src.wrestling>+(<tag(imi_value[57])>*10)
+src.macefighting=	<src.macefighting>+(<tag(imi_value[57])>*10)
+src.tactics=		<src.tactics>+(<tag(imi_value[57])>*10)
+return 0
+on=@unequip
+src.swordsmanship=	<src.swordsmanship>-(<tag(imi_value[57])>*10)
+src.fencing=		<src.fencing>-(<tag(imi_value[57])>*10)
+src.archery=		<src.archery>-(<tag(imi_value[57])>*10)
+src.wrestling=		<src.wrestling>-(<tag(imi_value[57])>*10)
+src.macefighting=	<src.macefighting>-(<tag(imi_value[57])>*10)
+src.tactics=		<src.tactics>-(<tag(imi_value[57])>*10)
+return 0 
+
+[typedef tmi_58]
+on=@equip
+src.magery=	<src.magery>+(<tag(imi_value[58])>*10)
+src.EI=		<src.EI>+(<tag(imi_value[58])>*10)
+return 0
+on=@unequip
+src.magery=	<src.magery>-(<tag(imi_value[58])>*10)
+src.EI=		<src.EI>-(<tag(imi_value[58])>*10)
+return 0
+[typedef tmi_60]
+on=@equip
+src.str=<src.str>+(<tag(imi_value[60])>)
+return 0
+on=@unequip
+src.str=<src.str>-(<tag(imi_value[60])>)
+return 0
+[typedef tmi_61]
+on=@equip
+src.dex=<src.dex>+(<tag(imi_value[61])>)
+return 0
+on=@unequip
+src.dex=<src.dex>-(<tag(imi_value[61])>)
+return 0
+[typedef tmi_62]
+on=@equip
+src.intel=<src.intel>+(<tag(imi_value[62])>)
+return 0
+on=@unequip
+src.intel=<src.intel>-(<tag(imi_value[62])>)
+return 0
+
+[typedef tmi_63]
+on=@equip
+src.vit=<src.vit>+(<tag(imi_value[63])>)
+return 0
+on=@unequip
+src.vit=<src.vit>-(<tag(imi_value[63])>)
+return 0
+
+[typedef tmi_64]
+on=@equip
+changeallstats(<tag(imi_value[64])>)
+return 0
+on=@unequip
+changeallstats(-<tag(imi_value[64])>)
+return 0
+
+[typedef tmi_70]
+on=@equip
+src.tag(mi_hitsreg,<eval <src.tag.mi_hitsreg>>+<tag(imi_value[70])>)
+src.regenrefresh
+return 0
+on=@unequip
+src.tag(mi_hitsreg,<eval <src.tag.mi_hitsreg>>-<tag(imi_value[70])>)
+src.regenrefresh
+src.freetag(mi_hitsreg)
+return 0
+
+[typedef tmi_71]
+on=@equip
+src.tag(mi_stamreg,<eval <src.tag.mi_stamreg>>+<tag(imi_value[71])>)
+src.regenrefresh
+return 0
+on=@unequip
+src.tag(mi_stamreg,<eval <src.tag.mi_stamreg>>-<tag(imi_value[71])>)
+src.regenrefresh
+src.freetag(mi_stamreg)
+return 0
+
+[typedef tmi_72]
+on=@equip
+src.tag(mi_manareg,<eval <src.tag.mi_manareg>>+<tag(imi_value[72])>)
+src.regenrefresh
+return 0
+on=@unequip
+src.tag(mi_manareg,<eval <src.tag.mi_manareg>>-<tag(imi_value[72])>)
+src.regenrefresh
+src.freetag(mi_manareg)
+return 0
+
+[typedef tmi_73]
+on=@equip
+src.tag(mi_manareg,<eval <src.tag.mi_manareg>>+<tag(imi_value[73])>)
+src.tag(mi_stamreg,<eval <src.tag.mi_stamreg>>+<tag(imi_value[73])>)
+src.tag(mi_hitsreg,<eval <src.tag.mi_hitsreg>>+<tag(imi_value[73])>)
+src.regenrefresh
+return 0
+on=@unequip
+src.tag(mi_manareg,<eval <src.tag.mi_manareg>>-<tag(imi_value[73])>)
+src.tag(mi_stamreg,<eval <src.tag.mi_stamreg>>-<tag(imi_value[73])>)
+src.tag(mi_hitsreg,<eval <src.tag.mi_hitsreg>>-<tag(imi_value[73])>)
+src.regenrefresh
+src.freetag(mi_manareg)
+src.freetag(mi_stamreg)
+src.freetag(mi_hitsreg)
+return 0
+
+[typedef tmi_101]
+on=@equip
+src.tag(daemonbonus,<eval src.tag(daemonbonus)+tag(imi_value[101])>)
+src.events +e_daemonbonus
+return 0
+on=@unequip
+src.tag(daemonbonus,<eval src.tag(daemonbonus)-tag(imi_value[101])>)
+if !(src.tag(daemonbonus))
+ src.events -e_daemonbonus 
+ src.tag.remove(daemonbonus)
+endif
+return 0
+[events e_daemonbonus]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (is_physical)//jinak uz se o to postaral @beforedoeffect
+  var(ubrano,<eval (var(ubrano)*(100+thisdaemonbonus))/100>)
+endif
+return 0
+on=@beforedoeffect
+var(spellpower,<eval (var(spellpower)*(100+thisdaemonbonus))/100>)
+return 0
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+[function thisdaemonbonus]
+if (act.ischar)
+  if (act.npc)
+    arg(monstertypebonus,<eval(getmonstertypebonus(<act>,"undead",<tag(daemonbonus)>))>)
+    if(<arg(monstertypebonus)>==0) //pretoze na m.predmetoch su undead a daemon spolu | no bude fungovat sucasne len jedno - bud je undead alebo daemon
+      arg(monstertypebonus,<eval(getmonstertypebonus(<act>,"daemon",<tag(daemonbonus)>))>)
+    endif
+    if(<arg(monstertypebonus)>!=0)//ak ma monstertype1|2|3 tak pocitame podla toho, ak ne tak zatial podla stareho
+      //src.say("daemon|undead bonus: <?arg(monstertypebonus)?>")
+      return <arg(monstertypebonus)>  
+    else
+//      arg(abody,<act.body>)
+//      if (act.brain==brain_undead)
+      //elseif (abody==c_wisp)
+//      elseif (abody==c_ophidian_mage_evil)
+//      elseif (abody==c_dragon_bone)
+//      elseif (abody==c_daemon)
+//      elseif (abody==c_daemon_sword)
+//      elseif (abody==c_daemon_large)
+//      elseif (abody==c_daemon_black)
+//      elseif (abody==c_daemon_mage1)
+//      elseif (abody==c_fireant_daemon)
+      //elseif (abody==c_m_chaos_daemon) ? Tohle ani neexistuje ... hazi to warningy
+//      elseif (abody==c_balron)
+//      elseif (abody==c_gargoyle)
+//      elseif (abody==c_gargoyle_lord)
+//      else
+        return 0
+//      endif
+//      return <eval tag(daemonbonus)>
+    endif
+  endif
+endif
+return 0
+
+[typedef tmi_102]
+on=@equip
+src.tag(dragonbonus,<eval src.tag(dragonbonus)+tag(imi_value[102])>)
+src.events +e_dragonbonus
+return 0
+on=@unequip
+src.tag(dragonbonus,<eval src.tag(dragonbonus)-tag(imi_value[102])>)
+if !(src.tag(dragonbonus))
+ src.events -e_dragonbonus 
+ src.tag.remove(dragonbonus)
+endif
+return 0
+
+[events e_dragonbonus]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (is_physical)//jinak uz se o to postaral @beforedoeffect
+  var(ubrano,<eval (var(ubrano)*(100+(thisdragonbonus)))/100>)
+endif
+return 0
+
+on=@beforedoeffect
+var(spellpower,<eval (var(spellpower)*(100+(thisdragonbonus)))/100>)
+return 0
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[function thisdragonbonus]
+if (act.ischar)
+  arg(monstertypebonus,<eval(getmonstertypebonus(<act>,"dragon",<tag(dragonbonus)>))>)
+  if(<arg(monstertypebonus)>!=0)//ak ma monstertype1|2|3 tak pocitame podla toho, ak ne tak zatial podla stareho
+    //src.say("dragon bonus: <?arg(monstertypebonus)?>")
+    return <arg(monstertypebonus)>  
+  else
+    if (act.brain==brain_dragon)
+      return <eval <tag.dragonbonus>>
+    endif
+  endif
+endif
+return 0
+
+[typedef tmi_103]
+on=@equip
+src.tag(humanbonus,<eval src.tag(humanbonus)+tag(imi_value[103])>)
+src.events +e_humanbonus
+return 0
+on=@unequip
+src.tag(humanbonus,<eval src.tag(humanbonus)-tag(imi_value[103])>)
+if !(src.tag(humanbonus))
+ src.events -e_humanbonus 
+ src.tag.remove(humanbonus)
+endif
+return 0
+[events e_humanbonus]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (is_physical)//jinak uz se o to postaral @beforedoeffect
+  var(ubrano,<eval (var(ubrano)*(100+thishumanbonus))/100>)
+endif
+return 0
+on=@beforedoeffect
+var(spellpower,<eval (var(spellpower)*(100+thishumanbonus))/100>)
+return 0
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+[function thishumanbonus]
+if (act.ischar)
+  if (act.npc)
+    arg(monstertypebonus,<eval(getmonstertypebonus(<act>,"humanoid",<tag(humanbonus)>))>)
+    if(<arg(monstertypebonus)>!=0)//ak ma monstertype1|2|3 tak pocitame podla toho, ak ne tak zatial podla stareho
+      //src.say("humanoid bonus: <?arg(monstertypebonus)?>")
+      return <arg(monstertypebonus)>  
+    else
+//      arg(abody,<act.body>)
+//      if (abody==c_man)
+//        elseif (abody==c_woman)
+//        elseif (abody==c_orc)
+//        elseif (abody==c_ogre)
+//        elseif (abody==c_ettin)
+//        elseif (abody==c_ettin_axe)
+//        elseif (abody==c_titan)
+//        elseif (abody==c_cyclops)
+//        elseif (abody==c_gladiator)
+//        elseif (abody==c_minotaur)
+//        elseif (abody==c_strazce_ohne)
+//        elseif (abody==c_liche)
+//        elseif (abody==c_pirat)
+//        elseif (abody==c_pirat_f)
+//        elseif (abody==c_pirat_mage)
+//        elseif (abody==c_pirat_mage_chief)
+//       elseif (abody==c_gladiator_lord)
+//       elseif (abody==c_alligator)
+//    else
+       return 0
+//      endif
+//      return <eval(tag(humanbonus))>
+    endif
+  endif
+endif
+return 0
+
+[typedef tmi_104]
+on=@equip
+src.tag(spiderbonus,<eval src.tag(spiderbonus)+tag(imi_value[104])>)
+src.events +e_spiderbonus
+return 0
+on=@unequip
+src.tag(spiderbonus,<eval src.tag(spiderbonus)-tag(imi_value[104])>)
+if !(src.tag(spiderbonus))
+ src.events -e_spiderbonus
+ src.tag.remove(spiderbonus)
+endif
+return 0
+[events e_spiderbonus]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (is_physical)//jinak uz se o to postaral @beforedoeffect
+  var(ubrano,<eval (var(ubrano)*(100+thisspiderbonus))/100>)
+endif
+return 0
+on=@beforedoeffect
+var(spellpower,<eval (var(spellpower)*(100+thisspiderbonus))/100>)
+return 0
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+[function thisspiderbonus]
+if (act.ischar)
+  if (act.npc)
+    arg(monstertypebonus,<eval(getmonstertypebonus(<act>,"spider",<tag(spiderbonus)>))>)
+    if(<arg(monstertypebonus)>==0) //chceme to dat aj na golemov
+      arg(monstertypebonus,<eval(getmonstertypebonus(<act>,"animal",<tag(spiderbonus)>))>)
+    endif
+    if(<arg(monstertypebonus)>!=0)//ak ma monstertype1|2|3 tak pocitame podla toho, ak ne tak zatial podla stareho
+      //src.say("spider bonus: <?arg(monstertypebonus)?>")
+      return <arg(monstertypebonus)>  
+    else
+//      arg(abody,<act.body>)
+//      if (abody==c_spider_elder)
+//      elseif (abody==c_spider_giant)
+//      else
+       return 0
+//      endif
+//      return <eval(tag(spiderbonus))>
+    endif
+  endif
+endif
+return 0
+[typedef tmi_105]
+on=@equip
+src.tag(eyebonus,<eval src.tag(eyebonus)+tag(imi_value[105])>)
+src.events +e_eyebonus
+return 0
+
+on=@unequip
+src.tag(eyebonus,<eval src.tag(eyebonus)-tag(imi_value[105])>)
+if !(src.tag(eyebonus))
+ src.events -e_eyebonus
+ src.tag.remove(eyebonus)
+endif
+return 0
+
+[events e_eyebonus]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (is_physical)//jinak uz se o to postaral @beforedoeffect
+  var(ubrano,<eval (var(ubrano)*(100+thiseyebonus))/100>)
+endif
+return 0
+
+on=@beforedoeffect
+var(spellpower,<eval (var(spellpower)*(100+thiseyebonus))/100>)
+return 0
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+[function thiseyebonus]
+if (act.ischar)
+  if (act.npc)
+    arg(monstertypebonus,<eval(getmonstertypebonus(<act>,"eye",<tag(eyebonus)>))>)    
+    if(<arg(monstertypebonus)>==0) //chceme to dat aj na golemov
+      arg(monstertypebonus,<eval(getmonstertypebonus(<act>,"golem",<tag(eyebonus)>))>)
+    endif
+    if(<arg(monstertypebonus)>!=0)//ak ma monstertype1|2|3 tak pocitame podla toho, ak ne tak zatial podla stareho
+      //src.say("daemon|undead bonus: <?arg(monstertypebonus)?>")
+      return <arg(monstertypebonus)>  
+    else
+//      if (act.body==c_gazer)
+//			elseif (atc.body==c_golem_copper)
+//      else
+        return 0
+//      endif
+//      return <eval(tag(eyebonus))>
+    endif
+  endif
+endif
+return 0
+
+[typedef tmi_111]
+on=@equip
+src.tag(mi_hitsleech,<eval src.tag(mi_hitsleech)+tag(imi_value[111])>)
+src.events +e_hitsleech
+return 0
+on=@unequip
+src.tag(mi_hitsleech,<eval src.tag(mi_hitsleech)-tag(imi_value[111])>)
+if !(src.hitsleech_sum)
+  src.events -e_hitsleech 
+elseif !(src.tag(mi_hitsleech))
+  src.tag.remove(mi_hitsleech)
+endif
+return 0
+[events e_hitsleech]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (var(swingedchar).npc)
+  if (hits<maxhits)
+   arg(vysat,<eval (var(ubrano)*hitsleech_sum*nastaveni_ability_leechpower)/100000>)
+   if (arg(vysat)>0)
+     classmessage(Vysavas zivoty!)
+     if (arg(vysat)>var(ubrano))//vysal vic nez uderil, nelze.
+       arg(vysat,<eval var(ubrano)>)
+     endif
+     if (arg(vysat)> <eval nastaveni_hitsleech_max>)
+       arg(vysat,<eval nastaveni_hitsleech_max>)
+     endif
+     hits=<hits>+<arg(vysat)>
+     if (hits>maxhits)
+       hits=<maxhits>
+     endif
+   endif
+  endif
+endif
+return 0
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[typedef tmi_112]
+on=@equip
+src.tag(mi_manaleech,<eval src.tag(mi_manaleech)+tag(imi_value[112])>)
+src.events +e_manaleech
+return 0
+on=@unequip
+src.tag(mi_manaleech,<eval src.tag(mi_manaleech)-tag(imi_value[112])>)
+if !(src.manaleech_sum)
+  src.events -e_manaleech 
+elseif !(src.tag(mi_manaleech))
+  src.tag.remove(mi_manaleech)
+endif
+return 0
+[events e_manaleech]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (var(swingedchar).npc)
+  if (var(swingedchar).magery)
+    if (var(swingedchar).mana)
+      arg(vysat,<eval (var(ubrano)*manaleech_sum*nastaveni_ability_leechpower)/100000>)
+      if (arg(vysat))
+        if (arg(vysat)>var(swingedchar).mana)
+          arg(vysat,<var(swingedchar).mana>)
+        endif
+        if (arg(vysat)> <eval nastaveni_manaleech_max>)
+          arg(vysat,<eval nastaveni_manaleech_max>)
+        endif
+        if (mana<maxmana)
+          classmessage(Vysavas manu)
+          mana=<mana>+<arg(vysat)>
+          if (mana>maxmana)
+            mana=<maxmana>
+          endif
+        endif 
+      endif
+    endif
+  endif
+endif
+return 0
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[typedef tmi_113]
+on=@equip
+src.tag(mi_stamleech,<eval src.tag(mi_stamleech)+tag(imi_value[113])>)
+src.events +e_stamleech
+return 0
+on=@unequip
+src.tag(mi_stamleech,<eval src.tag(mi_stamleech)-tag(imi_value[113])>)
+if !(src.stamleech_sum)
+  src.events -e_stamleech
+elseif !(src.tag(mi_stamleech))
+  src.tag.remove(mi_stamleech)
+endif
+return 0
+
+[events e_stamleech]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (var(swingedchar).npc)
+  if (var(swingedchar).stamina)
+    arg(vysat,<eval (var(ubrano)*stamleech_sum*nastaveni_ability_leechpower)/100000>)
+    if (arg(vysat))
+      if (arg(vysat)>var(swingedchar).stamina)
+        arg(vysat,<var(swingedchar).stamina>)
+      endif
+      if (arg(vysat) > <eval nastaveni_stamleech_max>)
+       arg(vysat,<eval nastaveni_stamleech_max>)
+      endif
+      if (stamina<maxstam)
+        classmessage("Vysavas staminu")
+        stamina=<stamina>+<arg(vysat)>
+        if (stamina>maxstam)
+          stamina=<maxstam>
+        endif
+      endif
+    endif
+  endif
+endif
+return 0
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[typedef tmi_121]
+on=@equip
+src.tag(paralising,<eval <src.tag.paralising>>+<tag(imi_value[121])>)
+src.events +e_paralysing
+return 0
+on=@unequip
+src.tag(paralising,<eval <src.tag.paralising>>-<tag(imi_value[121])>)
+if !(<tag.paralising>)
+  src.events -e_paralysing
+endif
+return 0
+
+//paralyses target (act) after hitting it
+[events e_paralysing]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (act.isplayer && findlayer(2).type==t_weapon_mace_staff)
+  return 0
+elseif (<wasHarmed>)
+  arg(random,<eval({0 99})>)
+  if (tag(paralising)><arg(random)>) && (var(swingedchar).tag(resist_para) < (700 + {-200 200}))
+    act.paralyze
+  endif
+endif
+
+return 0
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+[typedef tmi_131]
+on=@equip
+src.tag(mi_meleereflex,<eval src.tag(mi_meleereflex)+tag(imi_value[131])>)
+src.events +e_meleereflex
+return 0
+on=@unequip
+src.tag(mi_meleereflex,<eval src.tag(mi_meleereflex)-tag(imi_value[131])>)
+if !(src.tag(mi_meleereflex))
+ src.events -e_meleereflex 
+ src.tag.remove(mi_meleereflex)
+endif
+return 0
+[events e_meleereflex]
+on=@aftergetswing
+if (tag(mi_meleereflex)>{0 99})
+  if (src.isfighting_melee)
+    src.damage_noresponse(<var(ubrano)>,<hval(var(damage_flags))>)
+    classmessage("Uder magicky odrazen")
+    src.redmessage("Uder magicky odrazen")
+    var(ubrano,0)
+  endif
+endif
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+[typedef tmi_132]
+on=@equip
+src.tag(mi_rangedreflex,<eval src.tag(mi_rangedreflex)+tag(imi_value[132])>)
+src.events +e_rangedreflex
+return 0
+on=@unequip
+src.tag(mi_rangedreflex,<eval src.tag(mi_rangedreflex)-tag(imi_value[132])>)
+if !(src.tag(mi_rangedreflex))
+ src.events -e_rangedreflex 
+ src.tag.remove(mi_rangedreflex)
+endif
+return 0
+[events e_rangedreflex]
+on=@aftergetswing
+arg(random,<eval({0 99})>)
+if (tag(mi_rangedreflex)><arg(random)>)
+  if (src.isfighting_ranged)
+    src.damage_noresponse(<var(ubrano)>,<hval(var(damage_flags))>)
+    classmessage("Uder magicky odrazen")
+    src.redmessage("Uder magicky odrazen")
+    var(ubrano,0)
+  endif
+endif
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[typedef tmi_133]
+on=@equip
+src.tag(mi_spellreflex,<eval src.tag(mi_spellreflex)+tag(imi_value[133])>)
+src.events +e_spellreflex
+return 0
+on=@unequip
+src.tag(mi_spellreflex,<eval src.tag(mi_spellreflex)-tag(imi_value[133])>)
+if !(src.tag(mi_spellreflex))
+ src.events -e_spellreflex 
+ src.tag.remove(mi_spellreflex)
+endif
+return 0
+[events e_spellreflex]
+on=@beforegeteffect
+arg(random,<eval({0 99})>)
+if (<tag(mi_spellreflex)>><arg(random)>)
+ //if (act.npc)
+  if (<uid>!=<src>)
+    src.dospell_final(<spellnumber>,<spellpower>,<src>)
+    src.redmessage("Kouzlo magicky odrazeno")
+    classmessage("Kouzlo magicky odrazeno")
+    var(spellpower, 0)
+  endif
+ //endif
+endif
+return 0
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+
+[typedef tmi_134]
+on=@equip
+src.tag(mi_meleeblock,<eval src.tag(mi_meleeblock)+tag(imi_value[134])>)
+src.events +e_meleeblock
+return 0
+on=@unequip
+src.tag(mi_meleeblock,<eval src.tag(mi_meleeblock)-tag(imi_value[134])>)
+if !(src.tag(mi_meleeblock))
+ src.events -e_meleeblock 
+ src.tag.remove(mi_meleeblock)
+endif
+return 0
+[events e_meleeblock]
+on=@aftergetswing
+arg(random,<eval({0 99})>)
+if (tag(mi_meleeblock)><arg(random)>)
+  if (src.isfighting_melee)
+    classmessage("Uder magicky zastaven")
+    src.redmessage("Uder magicky zastaven")
+    var(ubrano,0)
+  endif
+endif
+on=@beforegetswing
+on=@beforegeteffect
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+[typedef tmi_135]
+on=@equip
+src.tag(mi_rangedblock,<eval src.tag(mi_rangedblock)+tag(imi_value[135])>)
+src.events +e_rangedblock
+return 0
+on=@unequip
+src.tag(mi_rangedblock,<eval src.tag(mi_rangedblock)-tag(imi_value[135])>)
+if !(src.tag(mi_rangedblock))
+ src.events -e_rangedblock 
+ src.tag.remove(mi_rangedblock)
+endif
+return 0
+[events e_rangedblock]
+on=@aftergetswing
+arg(random,<eval({0 99})>)
+if (tag(mi_rangedblock)><arg(random)>)
+  if (src.isfighting_ranged)
+    classmessage("Uder magicky zastaven")
+    src.redmessage("Uder magicky zastaven")
+    var(ubrano,0)
+  endif
+endif
+on=@beforegetswing
+on=@beforegeteffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+
+[typedef tmi_136]
+on=@equip
+src.tag(mi_spellblock,<eval src.tag(mi_spellblock)+tag(imi_value[136])>)
+src.events +e_spellblock
+return 0
+on=@unequip
+src.tag(mi_spellblock,<eval src.tag(mi_spellblock)-tag(imi_value[136])>)
+if !(src.tag(mi_spellblock))
+ src.events -e_spellblock 
+ src.tag.remove(mi_spellblock)
+endif
+return 0
+
+[events e_spellblock]
+on=@beforegeteffect
+arg(random,<eval({0 99})>)
+if (tag(mi_spellblock)><arg(random)>)
+  //if (act.npc)
+  if (isevil(<var(spellnumber)>))
+    if (<uid>!=<src>)
+      var(spellnumber,0)
+      classmessage("Kouzlo magicky zastaveno")
+      src.redmessage("Kouzlo magicky zastaveno")
+    endif
+  endif
+endif
+return 0
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+
+[itemdef i_mi_bag]
+id=i_bag
+
+on=@create
+type=mit_main
+color=0430
+Name=Pytlik s magickym predmetem
+finduid(#0402D472F).tag(padnute_zelene,#+1)
+
+on=@userclick
+return"<allcontainersClick>"
+
+[itemdef i_mi_bag_high]
+id=i_bag
+
+on=@create
+type=mit_main
+color=045d
+Name=Pytlik s magickym predmetem
+more1=1
+finduid(#0402D472F).tag(padnute_hnede,#+1)
+
+on=@userclick
+return"<allcontainersClick>"
+
+[itemdef i_mi_bag_superHigh]
+id=i_bag
+
+on=@create
+type=mit_main
+color=0455
+Name=Pytlik s magickym predmetem
+more1=2
+finduid(#0402D472F).tag(padnute_cierne,#+1)
+
+on=@userclick
+return"<allcontainersClick>"
+
+[typedef mit_main]
+on=@create
+color=0430
+Name=Pytlik s magickym predmetem
+
+on=@userdclick
+arg(uid,<uid>)
+if (src.tag(realm) == 1)
+	if (more1 == 1)
+    finduid(#0402D472F).tag(gondori_hnede,#+1)
+  elseif (more1 == 2)
+    finduid(#0402D472F).tag(gondori_cierne,#+1)
+  else  	
+    finduid(#0402D472F).tag(gondori_zelene,#+1)
+  endif
+elseif (src.tag(realm) == 2)
+	if (more1 == 1)
+    finduid(#0402D472F).tag(mordori_hnede,#+1)
+  elseif (more1 == 2)
+    finduid(#0402D472F).tag(mordori_cierne,#+1)
+  else  	
+    finduid(#0402D472F).tag(mordori_zelene,#+1)
+  endif
+endif
+f_mif_create
+logmsg("postava <src.uid> (meno: <src.name>, acc: <src.account.name>) rozbaluje magicky vacek <arg(uid)> a vznika predmet <lastnewitem.name> s <lastnewitem.uid>")
+if (lastnewitem.color == 098b)
+	finduid(#0402D472F).tag(padnute_mithil,#+1)
+elseif (lastnewitem.color == 07d6)
+	finduid(#0402D472F).tag(padnute_elven,#+1)
+elseif (lastnewitem.color == 0999)
+	finduid(#0402D472F).tag(padnute_ada,#+1)
+elseif (lastnewitem.color == 0774)
+	finduid(#0402D472F).tag(padnute_eben,#+1)
+endif
+return 0
+
+on=@StackOn
+f_stackOn_dropBy(<argo>)
+return 1
+
+
+[function f_mif_create]
+type=t_container
+emptycont
+src.newitem <mif_chooseitem(<eval more1>)>
+src.act.cont=<uid>
+src.act.mif_randtype
+if ({0 5})
+ src.act.mif_randtype
+endif
+ src.act.tag(unidentified,1)
+ src.act.name=Magicky predmet
+ if (src.act.topobj.ischar)
+  src.act.cont=src.act.topobj.findlayer(21)
+  remove
+ else
+ src.act.p=<src.act.topobj.p>
+ remove
+ endif
+//src.act.mif_finishitem
+return 0
+remove
+
+[function identification_i_mi_magic]
+newequip(i_zamerovatko_identify)
+lastnew.tag(Vetesnik,<argv(0)>)
+lastnew.tag(Price,<argv(1)>)
+
+[itemdef i_zamerovatko_identify]
+id=i_memory
+name=zamerovatko na identifikaci
+type=t_eq_script
+
+on=@create
+timer=15
+
+on=@equip
+target("Zamer neidentifikovany predmet.")
+
+ON=@TARGON_ITEM
+if (src.distancefrom(<tag(vetesnik)>) > 6)
+  src.sysmessage("Na takovou vzdalenost ti to neidentifikuje.")
+  remove
+  return 0
+endif
+if (src.targ.topobj!=<src.uid>)
+  src.sysmessage("Vec musis mit u sebe!")
+  remove
+  return 1
+elseif (<src.targ.cont> == <src>)
+  src.targ.bounce
+endif
+arg(cena,<tag.Price>)
+if (src.targ.tag(unidentified)==1)
+ if (src.pay(<eval arg(cena)>))
+    if (finduid(#0402D472F)) && !(src.isgm)
+     finduid(#0402D472F).tag(payedgold,#+<cena>)
+    endif
+   src.targ.tag(unidentified,"")
+   src.targ.mif_finishitem
+   finduid(<tag(vetesnik)>).say("Moc pekna vecicka...nechces ji rovnou vymenit?")
+ else
+   src.sysmessage("Zadarmo ani kure nehrabe!")
+ endif
+else
+ src.sysmessage("Zameruj neidentifikovane magicke predmety!")
+endif
+remove
+RETURN 1 
+
+ON=@TARGON_GROUND
+src.sysmessage("Tady neni co identifikovat.")
+remove
+RETURN 1 
+
+ON=@TARGON_CHAR
+src.sysmessage("Tady neni co identifikovat.")
+remove
+RETURN 1 
+
+on=@timer
+remove
+return 0
+
+[function getidentifygold]
+if (isgm)
+ sysmessage("Za identifikaci itemu bylo doposud zaplaceno <finduid(#0402D472F).tag(payedgold)> zlata.")
+endif
+
+[function mif_finishitem]
+//src.smsg "name:<arg(magicname)>"
+//vytvoreni tag.imi_sum a tag.imi_present
+arg(skill_sum,0)
+arg(other_sum,0)
+arg(u,0)
+while (arg(u)<200)
+ if (tag(imi_value[<arg(u)>]))
+  if (arg(u)<50)
+   arg(skill_sum,<arg(skill_sum)>+1)
+   arg(skill_present,"<?arg(skill_present)?><?arg(u)?>, ")
+  else
+   arg(other_sum,<arg(other_sum)>+1)
+   arg(other_present,"<?arg(other_present)?><?arg(u)?>, ")  
+  endif
+ endif
+ arg(u,<arg(u)>+1)
+endwhile
+if (arg(skill_sum))
+ tag(imi_skill_present,"<?arg(skill_present)?>")
+ //tag.imi_skill_sum=<arg(skill_sum)>
+endif
+if (arg(other_sum))
+ tag(imi_other_present,"<?arg(other_present)?>")
+ //tag.imi_other_sum=<arg(other_sum)>
+endif
+//src.smsg="skillsum:<?arg(skill_sum)?> present:<?arg(skill_present)?>"
+//src.smsg="othersum:<?arg(other_sum)?> present:<?arg(other_present)?>"
+//tag.imi_other_present		seznam vsech typu na zbrani
+//tag.imi_other_sum		pocet ^^
+//prirazeni odpovidajicich eventu
+//events +tmi_info
+
+tag(unidentified,"")
+mif_setevents(<tag.imi_other_present>)
+
+var(magicname,"<?<def.dispid>.name?>")
+//var(magicname,"<?strtoupper(<magicname>)?>")
+var(magicname,"<?StrFirstCap(<magicname>)?>")
+mif_setname(<?arg(skill_present)?><?arg(other_present)?>)
+name="<?magicname?>"
+attr=<attr>|attr_identified
+
+[typedef tmi_info]//na kazdym magic itemu
+on=@equip
+src.tag(magic,<src.tag.magic>+1)
+return 0
+
+on=@unequip
+src.tag(magic,<src.tag.magic>-1)
+src.freetag(magic)
+return 0
+
+on=@userclick
+if (<topobj>==<src>)||(src.isgm)
+  mif_skillinfo(<tag.imi_skill_present>)
+  mif_othersinfo(<tag.imi_other_present>)
+endif
+
+[typedef t_magicflagger]
+on=@equip
+cont.mi_damflags_add(dam_magic)
+on=@unequip
+cont.mi_damflags_remove(dam_magic)
+
+[function mi_damflags_add]
+tag(mi_weapflags,"<safe tag(mi_weapflags)>|(<hval args>)")
+
+[function mi_damflags_remove]
+arg(strtofind,"(<hval args>)")
+arg(found,0)
+arg(notdone,1)
+arg(index,1)
+while notdone
+  arg(token,"<StrGetTok("<tag(mi_weapflags)>",arg(index),|)>")\
+  if (strlen("<arg(token)>"))
+    if (!arg(found))&&(!strcmpi("<arg(strtofind)>","<arg(token)>"))
+      arg(found,1)
+    else
+      arg(temp,"<safe arg(temp)>|<arg(token)>")
+    endif
+    arg(index,#+1)
+  else
+    arg(notdone,0)
+  endif
+endwhile
+tag(mi_weapflags,"<arg(temp)>")
+
+[function mif_skillinfo]
+arg(v,0)
+while (arg(v)<ARGVCOUNT-1)
+ arg(type,<?argv(<arg(v)>)?>)
+ src.sysmessage "+<?tag(imi_value[<arg(type)>])?>% ke skillu <?findres(skill,<arg(type)>).name?>"
+ arg(v,<arg(v)>+1)
+endwhile
+
+[function mif_othersinfo]
+arg(v,0)
+while (arg(v)<ARGVCOUNT-1)
+ arg(type,<?argv(<arg(v)>)?>)
+ src.sysmessage("+<?tag(imi_value[<arg(type)>])?> <?mifdef_info[<arg(type)>]?>")
+ arg(v,<arg(v)>+1)
+endwhile
+
+[function mif_setname]
+arg(v,0)
+while (arg(v)<ARGVCOUNT-1)
+ if {0 1}
+  var(magicname,"<?magicname?> <?mifdef_sufname[<argv(<arg(v)>)>]?> and")
+ else
+  var(magicname,"and <?mifdef_prefname[<argv(<arg(v)>)>]?> <?magicname?>")
+ endif
+ arg(v,<arg(v)>+1)
+endwhile
+if !(strcmpi("<?strmid(<magicname>,0,3)?>","and"))
+ var(magicname,"<?strmid(<magicname>,4,<STRLEN(<magicname>)>)?>")
+endif
+if !(strcmpi("<?strmid(<magicname>,<STRLEN(<magicname>)>-3,3)?>","and"))
+ var(magicname,"<?strmid(<magicname>,0,<STRLEN(<magicname>)>-4)?>")
+endif
+
+[function mif_setevents]
+destroyevents
+trigger(create)
+events +tmi_info
+if (strcmpi(,<tag.imi_skill_present>))
+ events +tmi_skills
+endif
+arg(u,0)
+while (arg(u)<ARGVCOUNT-1)
+ events +tmi_<argv(<arg(u)>)>
+ arg(u,<arg(u)>+1)
+endwhile
+if (isweapon)
+  events +t_magicflagger
+endif
+
+[function mif_randtype]
+if (isweapon)
+ arg(itemsort,1)
+ if (isstaff)&&({0 3})
+  arg(itemsort,2)
+ elseif (iscrook)
+  arg(itemsort,3)
+ endif
+elseif (isarmor)||(isshield)
+ arg(itemsort,11)
+else
+ arg(itemsort,21)
+endif
+
+arg(u,0)
+while (arg(u)<200)
+ if (<?safe.mifdef_sort_<arg(itemsort)>_type_<arg(u)>_rare?>)
+  arg(rare,<?safe.mifdef_sort_<arg(itemsort)>_type_<arg(u)>_rare?>)
+  arg(randomstring,"<?arg(randomstring)?> <?arg(u)?> <?arg(rare)?>")
+ endif
+ arg(u,<arg(u)>+1)
+endwhile
+arg(randtype,<?eval {<arg(randomstring)>}?>)
+arg(randvalue,<?eval {1 <safe.mifdef_sort_<arg(itemsort)>_type_<arg(randtype)>_max>}?>)
+tag(imi_value[<arg(randtype)>],<arg(randvalue)>)
+
+[function copyitem]
+src.newitemsafe(i_target_item)
+lastnew.equip
+
+[itemdef i_target_item]
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target
+timer 60
+
+on=@targon_char
+remove
+return 1
+
+on=@targon_item
+src.newitem <src.targ.baseid>
+arg(skill_sum,0)
+arg(other_sum,0)
+arg(u,0)
+while (arg(u)<200)
+ if (src.targ.tag(imi_value[<arg(u)>]))
+  if (arg(u)<50)
+   arg(skill_sum,<arg(skill_sum)>+1)
+   arg(skill_present,"<?arg(skill_present)?><?arg(u)?>, ")
+   lastnew.tag(imi_value[<arg(u)>],"<src.targ.tag(imi_value[<arg(u)>])>")
+  else
+   arg(other_sum,<arg(other_sum)>+1)
+   arg(other_present,"<?arg(other_present)?><?arg(u)?>, ")  
+   lastnew.tag(imi_value[<arg(u)>],"<src.targ.tag(imi_value[<arg(u)>])>")
+  endif
+ endif
+ arg(u,<arg(u)>+1)
+endwhile
+if (arg(skill_sum))
+ lastnew.tag(imi_skill_present,"<?arg(skill_present)?>")
+endif
+if (arg(other_sum))
+ lastnew.tag(imi_other_present,"<?arg(other_present)?>")
+endif
+lastnew.mif_setevents(<src.targ.tag(imi_other_present)>)
+lastnew.name="<src.targ.name>"
+lastnew.attr=<attr>|attr_identified
+lastnew.bounce
+src.accmsg("Copy Of Magic Item: created item uid=<lastnew> (<amount> <lastnew.name>)")
+remove
+return 1
+
+[function getmonstertypebonus]//argv(0)=monstrum, argv(1)=druh (daemon, eye, ...), argv(2)=hodnota bonusu
+arg(monster,<argv(0)>)
+arg(monsterkind,<argv(1)>)
+arg(bonus,<eval(<argv(2)>)>)
+arg(bonus_percent,100)
+arg(hasmonstertype,0)
+if ((strlen(<monster.tag(monstertype)>)))//ma ten tag? // monstertype
+  if (<strcmp(<arg(monsterkind)>,<return_nth(1,<monster.tag(monstertype)>)>)>==0)//je to tento druh monstra?
+    if (<strlen(<return_nth(2,<monster.tag(monstertype)>)>)>)//ma druhy atribut? ak ne tak 100%
+      arg(bonus_percent,<eval(<return_nth(2,<monster.tag(monstertype)>)>)>)
+    endif
+    arg(hasmonstertype,1)
+  endif
+endif
+if ((strlen(<monster.tag(monstertype2)>)))
+  if (<strcmp(<arg(monsterkind)>,<return_nth(1,<monster.tag(monsterftype2)>)>)>==0)
+    if (<strlen(<return_nth(2,<monster.tag(monstertype2)>)>)>)
+      arg(bonus_percent,<eval(<return_nth(2,<monster.tag(monstertype2)>)>)>)
+    endif
+    arg(hasmonstertype,1)
+  endif
+endif
+if ((strlen(<monster.tag(monstertype3)>)))
+  if (<strcmp(<arg(monsterkind)>,<return_nth(1,<monster.tag(monstertype3)>)>)>==0)
+    if (<strlen(<return_nth(2,<monster.tag(monstertype3)>)>)>)
+      arg(bonus_percent,<eval(<return_nth(2,<monster.tag(monstertype3)>)>)>)
+    endif
+    arg(hasmonstertype,1)
+  endif
+endif
+if (<arg(hasmonstertype)>==1)
+  return <eval((arg(bonus)*arg(bonus_percent))/100)>
+endif
+return(0)
+
+[function showmonstertypes]
+src.sysmessage("<?tag.monstertype?>")
+src.sysmessage("<?tag.monstertype2?>")
+src.sysmessage("<?tag.monstertype3?>")
+
+[eof]

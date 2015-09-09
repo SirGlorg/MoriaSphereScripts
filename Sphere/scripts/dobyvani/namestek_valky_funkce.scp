@@ -1,0 +1,213 @@
+////////////////////////////////////////////
+//////////////PRO MORDOR////////////////////
+////////////////////////////////////////////
+
+[FUNCTION f_namestek_valky_m]
+if(<src.targ.distance> > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+ return 1
+endif
+if(<src.tag.realm>==2)
+ say("Chces zautocit...?")
+ dialog(d_namestek_valky_m) 
+ return 1
+else
+  say("Tahni...")
+endif
+
+[SPEECH spk_namestek_valky_m]
+ON=*ahoj*
+ON=*hi*
+if(<src.tag.realm>==2)
+ say("Chces zautocit...?")
+ dialog(d_namestek_valky_m)
+ return 1
+else
+ say("Tahni!")
+endif
+
+////////////////////////////////////////////
+//////////////PRO GONDOR////////////////////
+////////////////////////////////////////////
+
+[FUNCTION f_namestek_valky_g]
+if (<src.targ.distance> > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude.")
+ return 1
+endif
+if(<src.tag.realm>==1)
+ say("Chces zautocit...?")
+ dialog(d_namestek_valky_g)
+ return 1
+else
+ say("Tahni!")
+endif
+
+[SPEECH spk_namestek_valky_g]
+ON=*ahoj*
+ON=*hi*
+if (<src.tag.realm>==1)
+ say("Hmmm?")
+ dialog(d_namestek_valky_g)
+ return 1
+else
+ say("Tahni!")
+endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_namestek_valky_g]
+argo.questDialog_create(03029,"Namestek valky ")
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1,51,"Vyhlasit utok")
+argo.questDialog_baseButt(2,51,"Nejake drby ?") 
+argo.questDialog_baseButt(3,51,"Obchodovat ?") 
+argo.questDialog_baseButt(4,51,"Hledam praci") 
+argo.questDialog_baseButt(5,51,"Nesu ti ...") 
+argo.questDialog_baseButt(6,51,"Prohlednout") 
+
+argo.dialog_page("Pozdrav")
+argo.setText(argo.newTextLine,"Hmm...")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Vyhlasit utok")
+argo.setText(argo.newTextLine,"Jejda <?SRC.SEX "mladej panacek","slecna"?> porada utok na nove pevnosti ?  No ale ber na vedomi ze te to bude neco stat. Uredni schvaleni, glejd, zalohy na leky pro ranene z fronty. No rekneme ze celkem mi sem slozis 100 tisic GP jasny ?")
+argo.questDialog_HTMLGUMP
+
+argo.setText(argo.newTextLine,"Ano, to mi vyhovuje. Zaplatim 100 000 GP.")
+argo.questDialog_addResponse(0,1,1,"war_will_pay")
+argo.setText(argo.newTextLine,"Sto tisic je pro me mnoho penez, rad bych neco jineho..")
+argo.questDialog_addResponse(0,1,1,"nowar")
+
+argo.dialog_page("Nejake drby ?")
+argo.setText(argo.newTextLine,"Hehe.. Mno drby tak stim ti nepomohu ja je neposloucham ani neposilam dal..")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Obchodovat ?")
+argo.setText(argo.newTextLine,"Myslis si ze jsem zde  od toho abych tu obchodoval ? Ja nejsem obchodnik jasny ?")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+argo.setText(argo.newTextLine,"Jedine do Armady.. nic jineho nema budoucnost.. Ta te nakrmi pobavi i zahubi.. vse v jednom baleni.. Stalo by zato navtivit but kapitana mestske straze  nebo narukovat k Armade.. Inu to vis..Tohle je stred sveta.. Minas Tirith")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti ...")
+argo.setText(argo.newTextLine,"Ano?")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+argo.setText(argo.newTextLine,"Tento mlady muz rozhodne nevypada nato ze svou dosavadni sluzbu prozil prave v knihovne..  Na obliceji i na rukach")
+argo.questDialog_HTMLGUMP
+
+[dialog d_namestek_valky_g button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("war_will_pay"))
+  if(<eval(<src.tag(skillrank)>)> < 3) || (<eval(<src.tag(level)>)> < 30)
+   say("Je mi lito, ale na nejaky realny uspech ve valce nemas dostatek zkusenosti.")
+   return 1
+  endif
+  if(<strlen(<src.tag(captain)>)>) //uz je kapitanem
+    say("Ty uz kapitanem jsi. Starej se o svou pevnost a vedeni dalsi valky prenech jinemu.")
+    return 1
+  endif
+  if(<src.tag(realm)> == 2)
+    say("Vypadni prasivej mordore!")
+    return 1
+  endif
+  if(<eval(<var(war_declarator_1).tag(conquered)>)> == -3) //Gondor uz dobyl vse az po pevnost -3
+    say("Vzdyt uz jsi tem Mordoranum vsechno <src.sex(dobyl,dobyla)>!")
+    return 1
+  endif
+  if(src.tag(can_declare_war_on_Mordor))
+    say("Je zbytecne platit mi za dalsi vyhlasovani valky, kdyz uz jsi to jednou <src.sex(udelal,udelala)>.")
+    return 1
+  endif
+  if(<src.pay(100000)>)
+    src.tag(can_declare_war_on_Mordor,1)
+  endif
+elseif (<argn> == argo.dialog_linkButton("nowar"))
+  say("Tak s tim se neda nic delat, musis si nasetrit.")
+endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_namestek_valky_m]
+argo.questDialog_create(03047,"Namestek valky ")
+argo.dialog_newPage("Pozdrav")
+
+argo.questDialog_baseButt(1,51,"Vyhlasit utok")
+argo.questDialog_baseButt(2,51,"Nejake drby ?") 
+argo.questDialog_baseButt(3,51,"Obchodovat ?") 
+argo.questDialog_baseButt(4,51,"Hledam praci") 
+argo.questDialog_baseButt(5,51,"Nesu ti ...") 
+argo.questDialog_baseButt(6,51,"Prohlednout") 
+
+argo.dialog_page("Pozdrav")
+argo.setText(argo.newTextLine,"Hmm...")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Vyhlasit utok")
+argo.setText(argo.newTextLine,"Konecne rozumna rec <?SRC.SEX "chlape","zencka"?> poradne jim to nandame. Boli me kazde nadechnuti kdyz vim ze ti smrduti Gondori stale nejsou v nesem pevnem sevreni. A nebo jeste lip, mrtvej Gondor, dobrej Gondor!  Bouzel mam ale pro tebe jednu smutnou zpravu, bude te to neco stat. Posveceni Marghulem, a zalohy na alkohol pro oslavu vitezstvi. No rekneme ze celkem mi sem slozis 100 tisic GP, a bude to v cajku. Jasny ?")
+argo.questDialog_HTMLGUMP
+
+argo.setText(argo.newTextLine,"Ano, to mi vyhovuje. Zaplatim 100 000 GP.")
+argo.questDialog_addResponse(0,1,1,"war_will_pay")
+argo.setText(argo.newTextLine,"Sto tisic je pro me mnoho penez, rad bych neco jineho..")
+argo.questDialog_addResponse(0,1,1,"nowar")
+
+argo.dialog_page("Nejake drby ?")
+argo.setText(argo.newTextLine,"Hehe.. Mno drby tak stim ti nepomohu ja je neposloucham ani neposilam dal..")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Obchodovat ?")
+argo.setText(argo.newTextLine,"Myslis si ze jsem zde  od toho abych tu obchodoval ? Ja nejsem obchodnik jasny ?")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+argo.setText(argo.newTextLine,"Jedine do Armady.. nic jineho nema budoucnost.. Ta te nakrmi pobavi i zahubi.. vse v jednom baleni.. Stalo by zato navtivit but kapitana mestske straze  nebo narukovat k Armade.. Inu to vis..Tohle je stred sveta.. Minas Tirith")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti ...")
+argo.setText(argo.newTextLine,"Ano?")
+argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+argo.setText(argo.newTextLine,"Tento mlady muz rozhodne nevypada nato ze svou dosavadni sluzbu prozil prave v knihovne..  Na obliceji i na rukach")
+argo.questDialog_HTMLGUMP
+
+
+[dialog d_namestek_valky_m button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("war_will_pay"))
+  if(<eval(<src.tag(skillrank)>)> < 3) || (<eval(<src.tag(level)>)> < 30)
+   say("Je mi lito, ale na nejaky realny uspech ve valce nemas dostatek zkusenosti.")
+   return 1
+  endif
+  if(<strlen(<src.tag(captain)>)>) //uz je kapitanem
+    say("Ty uz kapitanem jsi. Starej se o svou pevnost a vedeni dalsi valky prenech jinemu.")
+    return 1
+  endif
+  if(<src.tag(realm)> == 1)
+    say("Vypadni prasivej gondore!")
+    return 1
+  endif
+  if(<eval(<var(war_declarator_2).tag(conquered)>)> == -3) //Mordor uz dobyl vse az po pevnost -3
+    say("Vzdyt uz jsi tem Gondoranum vsechno <src.sex(dobyl,dobyla)>!")
+    return 1
+  endif
+  if(src.tag(can_declare_war_on_Gondor))
+    say("Je zbytecne platit mi za dalsi vyhlasovani valky, kdyz uz jsi to jednou <src.sex(udelal,udelala)>.")
+    return 1
+  endif
+  if(<src.pay(100000)>)
+    src.tag(can_declare_war_on_Gondor,1)
+  endif
+elseif (<argn> == argo.dialog_linkButton("nowar"))
+  say("Tak s tim se neda nic delat, musis si nasetrit.")
+endif
+
+
+
+
+

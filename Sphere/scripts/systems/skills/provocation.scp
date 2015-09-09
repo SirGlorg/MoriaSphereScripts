@@ -1,0 +1,120 @@
+[function provo]
+stopscriptedskills
+skill -1
+if(<findid(i_provo_timer)>)
+ sysmessage(Nespechej s pouzivanim skillu)
+ return 1
+endif
+if (<flag_dead>)
+ return 1
+endif
+if (<eval findtype(t_musical)>==0)
+ sysmessage(Potrebujes nejaky hudebni nastroj.)
+ return 1
+endif
+if (ishungrymsg)
+ return 1
+endif
+newitemsafe(i_provo_timer)
+equip(lastnew)
+
+[itemdef i_provo_timer]
+ID=i_memory
+TYPE=t_eq_script
+name=provokace
+
+on=@equip
+dclick
+
+on=@userdclick
+timer=60
+if (more1==0)
+ target Koho chces vyprovokovat?
+else
+ target Proti komu?
+endif
+return 1
+
+on=@targon_item
+target
+return 1
+
+on=@targon_char
+if (more1==0)
+ tag(cil1,<src.targ>)
+ if (<finduid(<tag(cil1)>).isplayer>)||(<finduid(<tag(cil1)>).provocation>)
+  cont.sysmessage Tohle nemuzes vyprovokovat.
+  remove
+  return 1
+ endif
+ if (<eval(promilerange(<eval(<cont.provocation>)>,<skill_provocation.effect>))> < <finduid(<tag(cil1)>).tag(experience)>)
+  cont.sysmessage Provokace teto prisery presahuje tve moznosti
+  remove
+  return 1   
+ endif
+ more1=1
+ dclick//trigger @equip
+else
+ cont.reveal
+ tag(cil2,<src.targ>)
+ if (<tag(cil2)>==<tag(cil1)>)
+  target
+  return 1
+ endif
+ if (<cont.musicianship> < <eval ({0 1025})>)
+  morex=0
+  cont.sysmessage You play poorly.
+  cont.sound <cont.findtype(t_musical).typedef.tdata2>
+ else
+  cont.sound <cont.findtype(t_musical).typedef.tdata1>
+  morex=0
+  arg(power,<eval(randfakt(<eval(cont.provocation)>,<skill_provocation.effect>))>)
+  if (<arg(power)> > <finduid(<tag(cil1)>).tag(experience)>)
+   morex=<morex>|01
+  endif
+  if(<tag(cil2)>)
+    if !(<finduid(<tag(cil2)>).isplayer>)
+      if !(<finduid(<tag(cil2)>).provocation>)
+        arg(power,<eval(randfakt(<eval(cont.provocation)>,<skill_provocation.effect>))>)
+        if (<arg(power)> > <finduid(<tag(cil2)>).tag(experience)>)
+          morex=<morex>|02
+        endif
+      endif
+    endif
+  endif 
+  
+ endif
+ //timerdelay(<promilerange(<cont.provocation>,<skill_provocation.delay>)>)
+ timerd=(<promilerange(<cont.provocation>,<skill_provocation.delay>)>)
+ more1=2
+endif
+return 1
+
+on=@timer
+cont.reveal
+if (<more1><2)
+ remove
+ return 1
+ENDIF
+if (morex==0)
+ cont.redmessage(Provokace se nepovedla.)
+else
+ cont.classmessage(Provokace se povedla.)
+endif
+//tag(cil1).attack(<cont>)
+if !(morex&01)
+ cont.sysmessage <tag(cil1).name> nereaguje na provokaci.
+else
+ tag(cil1).attack(<tag.cil2>)
+endif 
+//tag(cil2).attack(<cont>)
+tag(cil2).emote(is furious)
+if !(morex&02)
+ cont.sysmessage <tag(cil2).name> nereaguje na provokaci.
+else
+ tag(cil2).attack(<tag(cil1)>)
+endif 
+remove
+return 1
+
+[eof]

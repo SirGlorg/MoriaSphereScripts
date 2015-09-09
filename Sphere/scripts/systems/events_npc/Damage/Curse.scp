@@ -1,0 +1,82 @@
+// Description:
+//  hurts all the enemies in the distance of 8 using dark and dirty magic!
+
+// tags to edit behavior:
+// ciste RP variace na multishot
+// tag.npc_curse_chance=250       // 25% chance to trigger this event
+// tag.npc_curse_delay=12,15      // delay between another possible strike
+// tag.npc_curse_dmg=50,60        // dmg in between 50 and 60
+
+[events e_npc_curse]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+e_f_npc_curse
+
+on=@beforedoeffect
+on=@beforegeteffect
+
+[function e_f_npc_curse]
+if (<eval tag(npc_curse_time)> < <serv.time>)
+  if (strlen(<tag(npc_curse_chance)>))
+    arg(chance,<chance(<tag(npc_curse_chance)>,2)>)
+  else
+    arg(chance,<chance(110,3)>)
+  endif
+  if (<arg(chance)>)
+    if (<strlen(<tag(npc_curse_delay)>)>)
+      tag(npc_curse_time,<serv.time>+<eval (<randombetween(<tag(npc_curse_delay)>)>*10)>)
+    else
+      tag(npc_curse_time,<serv.time>+30)
+    endif
+    newitem(i_src_changer_npcCurse)
+    lastnew.p=<p>
+    lastnew.link=(<UID>)
+    var(cursingmonster,<UID>)
+  endif
+endif
+
+[itemdef i_src_changer_npcCurse]
+id=i_memory
+type=t_eq_script
+name=srcchanger npc curse
+
+on=@create
+timer=0
+
+on=@timer
+sector.allchars(f_npcCurse_effect(<UID>))
+
+[function f_npcCurse_effect]
+if (isPlayer)
+  if (isGM) || (isDead)
+    return 0
+  endif
+elseif !(isPet) // summons & Pets
+  return 0
+endif
+if (distancefrom(<var(cursingmonster)>) > 8)
+  return 0
+endif
+if (<UID> == <var(cursingmonster)>)
+  return 0
+endif
+if (f_canseelos(<argv(0)>)) && !(isgm) && !(flag_invisible==1)  && !(flag_insubstantial==1) && !(flag_hidden==1)
+  if (<argv(0).link.act> != <uid>) // this is NOT the same player that the NPC is attacking
+    if (strlen(<var(cursingmonster).tag(npc_curse_dmg)>))
+      arg(damage,<randomBetween(<var(cursingmonster).tag(npc_curse_dmg)>)>)
+    else
+      arg(damage,<eval {40 80}>)
+    endif
+    if (npc)
+      arg(damage,#*5)
+    endif
+    effect(3,<s_curse.EFFECTID>,6,15,1)
+    damage_noresponse(<arg(damage)>,dam_magic)
+    sysMessage("Citis, jak z tebe mocna a temna sila vysala zivot!")
+  endif
+endif
+
+[eof]

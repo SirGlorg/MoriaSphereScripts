@@ -1,0 +1,645 @@
+///:::::ITEMS:::::///
+[ITEMDEF i_q011_prekupnik_kolektor1]
+ID=i_bag
+NAME=Vacek na lebky kostlivcu
+TYPE=t_collector
+WEIGHT=4
+
+ON=@CREATE
+COLOR=056
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="lebek kostlivcu"
+tag.contentsamount=0
+tag.maxcontents=12
+tag.target_remove=1
+tag.target_desc="Kteremu kostlivci vezmes lebku? "
+tag.target_id="Body of Kostlivec"
+tag.absolute_success=200
+tag.value_to_check=150
+tag.contentscount=0
+tag.fail_msg="Nesiko! Znicil jsi tu lebku!"
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q011_prekupnik_kolektor2]
+ID=i_bag
+NAME=Vacek na ohony Litych vlku
+TYPE=t_collector
+WEIGHT=4
+
+ON=@CREATE
+COLOR=057
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="ohonu litych vlku"
+tag.contentsamount=0
+tag.maxcontents=10
+tag.target_remove=1
+tag.target_desc="Kteremu Litemu Vlkovi urezes ocas? "
+tag.target_id="Body of Lity vlk"
+tag.absolute_success=300
+tag.value_to_check=225
+tag.contentscount=0
+tag.fail_msg="Nesiko! Tenhle ocas uz je ti k nicemu"
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q011_prekupnik_kolektor3]
+ID=i_bag
+NAME=Vacek na kusadla Terathan Avengeru
+TYPE=t_collector
+WEIGHT=4
+
+ON=@CREATE
+COLOR=058
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="kusadel Terathan Avengeru"
+tag.contentsamount=0
+tag.maxcontents=8
+tag.target_remove=1
+tag.target_desc="Kteremu Terathan Avengerovi ulomis kusadla?"
+tag.target_id="Body of Terathan Avenger"
+tag.absolute_success=400
+tag.value_to_check=250
+tag.contentscount=0
+tag.fail_msg="Nesiko! Tys ty kusadla zlomil!"
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q011_prekupnik_kolektor4]
+ID=i_bag
+NAME=Vacek na kusadla Scorpion Princu
+TYPE=t_collector
+WEIGHT=4
+
+ON=@CREATE
+COLOR=058
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="kusadel Scorpion Princu"
+tag.contentsamount=0
+tag.maxcontents=8
+tag.target_remove=1
+tag.target_desc="Kteremu Scorpion Princovi ulomis kusadla?"
+tag.target_id="Body of Skorpion Princ"
+tag.absolute_success=400
+tag.value_to_check=250
+tag.contentscount=0
+tag.fail_msg="Nesiko! Tys ty kusadla zlomil!"
+
+ON=@CollectorCheck
+
+/////////////////////////////////////////
+//   G O N D O R   P R E K U P N I K   //
+//            - H R U O N -            //
+/////////////////////////////////////////
+
+[speech spk_gq011_prekupnik]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if ( <distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_gq011_prekupnik
+endif
+
+[FUNCTION f_gq011_prekupnik]
+IF !(0<src.tag.realm>==1)
+  say "Vyhni se mi obloukem, sluho Temneho Pana !"
+  return 0
+elseif (0<src.tag.mq011_prekupnik> >= 1)
+  say "Neverim ti! Tvar se jak chces, ale ja s tebou mluvit nebudu..."
+  return 0
+elseif (0<src.tag(gq011_neuspel)> !=0)
+  SAY("Prosim te ty mi nechod na oci. Nevdecniky a lenochy nesnasim")
+  return 1
+else
+  DIALOG(d_gq011_prekupnik)
+endif
+           
+
+[dialog d_gq011_prekupnik]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03025 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Drby?
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 520 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+if (0<src.tag.gq011_prekupnik> ==1) // plni prvni ukol - 12 kostlounu.
+  argo.HTMLGUMP(170,230,440,100,19,0,36)        
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      jasne makam na tom jak svestka
+  argo.text 60 395 152 15
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        kaslu ti na to, vem si kolektor 
+  argo.text 60 415 152 16
+elseif (0<src.tag.gq011_prekupnik> ==2)  // mam splnenej prvni ukol, muzu si nechat zadat druhej
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 3  //      chi chi chi dej mi druhej quest a nemel
+  argo.text 60 395 152 17
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        nechci
+  argo.text 60 415 152 14
+elseif (0<src.tag.gq011_prekupnik> ==3)  // plnim druhej ukol - liti vlci.
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      jasne makam na tom jak svestka
+  argo.text 60 395 152 15
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        kaslu ti na to, vem si kolektor 
+  argo.text 60 415 152 16
+elseif (0<src.tag.gq011_prekupnik> ==4) && (<src.tag.realm>==1) // mam splnenej druhy ukol - svestkovni, mohu dostat treti.
+  argo.HTMLGUMP(170,230,440,100,22,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 4  //     dej sem treti nebo ti napalim
+  argo.text 60 395 152 18
+  argo.button 25 415 0fa5 0fa7 1 0 1  //       nechci 
+  argo.text 60 415 152 14
+elseif (0<src.tag.gq011_prekupnik> ==5) && (<src.tag.realm>==1) // plnim treti ukol - terathan avenger
+  argo.HTMLGUMP(170,230,440,100,23,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      jasne makam na tom jak svestka
+  argo.text 60 395 152 15
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        kaslu ti na to, vem si kolektor 
+  argo.text 60 415 152 16
+elseif (0<src.tag.gq011_prekupnik> ==4) && (<src.tag.realm>==2) // mam splnenej druhy ukol - svestkovni, mohu dostat treti.
+  argo.HTMLGUMP(170,230,440,100,29,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 8  //     dej sem treti nebo ti napalim
+  argo.text 60 395 152 18
+  argo.button 25 415 0fa5 0fa7 1 0 1  //       nechci 
+  argo.text 60 415 152 14
+elseif (0<src.tag.gq011_prekupnik> ==5) && (0<src.tag.realm>==2) // plnim treti ukol - scorpion prince
+  argo.HTMLGUMP(170,230,440,100,30,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      jasne makam na tom jak svestka
+  argo.text 60 395 152 15
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        kaslu ti na to, vem si kolektor 
+  argo.text 60 415 152 16
+elseif (0<src.tag.gq011_prekupnik> ==6)  // mam splneno vse a jsem spokojena jak svestka.
+  argo.HTMLGUMP(170,230,440,100,1,0,36)
+else
+  ARGO.HTMLGUMP(170,230,440,100,10,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 2  //      beru beru beru - prijmam prvni ukol a nastavuji tag na 1
+  argo.text 60 395 152 13
+  argo.button 25 415 0fa5 0fa7 1 0 1  //       nechci...
+  argo.text 60 415 152 14
+ENDIF
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)
+if (0<src.tag.gq011_prekupnik> ==1) // plni prvni ukol - 12 kostlounu.       
+  argo.button 25 395 0fa5 0fa7 1 0 5  //      mam to pro tebe !!! Dzimy...
+  argo.text 60 395 152 25
+  argo.button 25 415 0fa5 0fa7 0 1 0  //        Vlastne nic !!! Dzone... 
+  argo.text 60 415 152 26
+elseif (0<src.tag.gq011_prekupnik> ==3)  // plnim druhej ukol - liti vlci.
+  argo.button 25 395 0fa5 0fa7 1 0 6  //      mam to pro tebe 
+  argo.text 60 395 152 27
+  argo.button 25 415 0fa5 0fa7 0 1 0  //        Vlastne nic... 
+  argo.text 60 415 152 26
+elseif (0<src.tag.gq011_prekupnik> ==5) && (0<src.tag.realm>==1)  // plnim treti ukol - terathan avenger
+  argo.button 25 395 0fa5 0fa7 1 0 7  //      mam to pro tebe
+  argo.text 60 395 152 28
+  argo.button 25 415 0fa5 0fa7 0 1 0 //        Vlastne nic
+  argo.text 60 415 152 26
+elseif (0<src.tag.gq011_prekupnik> ==5) && (0<src.tag.realm>==2)  // plnim treti ukol - scorpion prince ( mordor )
+  argo.button 25 395 0fa5 0fa7 1 0 9  //      mam to pro tebe
+  argo.text 60 395 152 28
+  argo.button 25 415 0fa5 0fa7 0 1 0 //        Vlastne nic
+  argo.text 60 415 152 26
+ENDIF
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,24,0,36)
+
+
+[dialog d_gq011_prekupnik text]
+Prekupnik Hruon
+Kdo jsi?
+Drby?
+Obchodovat?
+Hledam praci
+Nesu ti
+Prohlednout ...
+Zdravim te, jmenuji se Hruon a zivim se obchodem. Tu neco koupim, tu neco prodam... vsak to znas * Zazubil se *. 
+Hmno, jelikoz prejizdim z jednoho mesta do druheho, moc mistnich drbu se ke mne nedostane. Jestli chces vedet, co je noveho, budes se muset poptat nekoho jineho...
+Inu, ja obchoduji jen s velkymi odberateli a to ty asi nebudes * Zarechtal se * a navic ted mam tolik zakazek, ze nevim, kde mi hlava stoji.
+Hehe hmno staci rict! Hruon vzdy zamestna sikovneho dobrodruha! Takze mel bych tady asi tri vecicky, co bych potreboval vyridit. Nedam ti nic dulezityho, samo s sebou, kdyz te vubec neznam. Prines mi 12 lebek z obycejnejch kostlivcu, jasny?
+Copak mi neses?
+Prekupnik Hruon vypada jako pravy vykutaleny obchodnicek. Pri pohledu na zlate mince se mu ocka jen lesknou. Nepochybujes o tom, ze by kdykoli kohokoli zradil, kvuli dostatecne velkemu obnosu penez. //12
+Jiste, jdu do toho!
+Nene dekuji...
+Snazim se sec to jde... urcite to bude brzy hotove. //15
+Uz to nechci delat! Sezente si nekoho jineho!
+Jdu do toho! Na Lite vlky jsem specialista... // 17
+Zadny problem...  Budou umirat! // 18
+Tak co, uz mas ty lebky? Docela to specha... //19
+Jestli chces, mam pro tebe dalsi pracicku. Potrebuji, abys mi prinesl 10 ohonu Litych vlku. Zakaznik specha, potrebuju to rychle. Beres? Odmena bude tentokrat vetsi... //20
+Tak co? Opravdu to specha, doufam, ze uz ty ohony mas!
+Mam tu jeste jednu nebezpecnou pracicku. Jeden zakaznik si u mne obednal 8 kusadel nebezpecnych Terathan Avengeru. Myslis, ze bys je mohl sehnat? Zaplatim dobre...
+Ten co si tohle objednal uz zamnou dvakrat byl, zrejme dost specha. Mas to?
+Tak si prosim pospes! Ach proc jsou vsichni takovi nespolehlivi * Cosi si brbla * //24
+Mam ty lebky! 
+Vlastne nic... //26 - pouzit u vsech
+Mam vsechny ty ohony! Tady je mas.
+Tady mas ty kusadla, ale byla to drina!
+Mam tu jeste jednu nebezpecnou pracicku. Jeden chlapek si obednal 8 kusadel z Scorpion Princu. Myslis, ze bys je mohl sehnat? Zaplatim dobre...
+Ten co si tohle objednal uz zamnou dvakrat byl, zrejme dost specha. Mas to?
+
+[dialog d_gq011_prekupnik button]
+on=1
+IF (0<src.tag.gq011_prekupnik>==1)
+  SAY("Ty lenochu! Klid se mi s oci!")
+  src.tag.gq011_neuspel=1
+  src.tag.remove(gq011_prekupnik)
+  SRC.CONSUME i_q011_prekupnik_kolektor1
+elseIF (0<src.tag.gq011_prekupnik>==2)
+  SAY("No dobre, az budes mit cas, zastav se!")
+elseIF (0<src.tag.gq011_prekupnik>==3)
+  SAY("Ty lenochu! Klid se mi s oci!")
+  src.tag.gq011_neuspel=1
+  src.tag.remove(gq011_prekupnik)
+  SRC.CONSUME i_q011_prekupnik_kolektor2
+elseIF (0<src.tag.gq011_prekupnik>==4)
+  SAY("No dobre, az budes mit cas, zastav se!")
+elseIF (0<src.tag.gq011_prekupnik>==5) && (0<src.tag.realm>==1)
+  SAY("Ty lenochu! Klid se mi s oci!")
+  src.tag.gq011_neuspel=1
+  src.tag.remove(gq011_prekupnik)
+  SRC.CONSUME i_q011_prekupnik_kolektor3
+elseIF (0<src.tag.gq011_prekupnik>==5) && (0<src.tag.realm>==2)
+  SAY("Ty lenochu! Klid se mi s oci!")
+  src.tag.gq011_neuspel=1
+  src.tag.remove(gq011_prekupnik)
+  SRC.CONSUME i_q011_prekupnik_kolektor4
+else
+  SAY("No dobre, az budes mit cas, zastav se!")
+endif
+
+on=2 // dostava prvni ukol, svestka jedna 
+src.tag.gq011_prekupnik=1
+src.giveitem=i_q011_prekupnik_kolektor1
+SAY("A pospes si prosim! Tady do tohodle pytliku mi to naskladej")
+
+on=3 // dostava druhy ukol.
+src.tag.gq011_prekupnik=3
+src.giveitem=i_q011_prekupnik_kolektor2
+SAY("A pospes si prosim! Dam ti na to tenhle pytlik")
+
+on=4 // dostava treti ukol.
+src.tag.gq011_prekupnik=5
+src.giveitem=i_q011_prekupnik_kolektor3
+SAY("Honem, zakaznik je netrpelivy!")
+
+on=5 // odevzdava prvni ukol
+if <src.restest i_q011_prekupnik_kolektor1> && (<src.findid(i_q011_prekupnik_kolektor1).tag.contentscount>==12) 
+  src.tag.gq011_prekupnik=2
+  SAY("Vyborne, dekuji ti mnohokrat. Tady je tvoje odmena.")
+  src.addexp(200)
+  SRC.CONSUME i_q011_prekupnik_kolektor1
+  src.givegold(2000)
+else
+  SAY("Jeste nemas to, co jsem po tobe chtel!")
+ENDIF
+
+on=6 // odevzdava druhy ukol
+if <src.restest i_q011_prekupnik_kolektor2> && (<src.findid(i_q011_prekupnik_kolektor2).tag.contentscount>==10) 
+  src.tag.gq011_prekupnik=4
+  SAY("Vyborne, dekuji ti mnohokrat. Tady je tvoje odmena.")
+  src.addexp(400)
+  SRC.CONSUME i_q011_prekupnik_kolektor2
+  src.givegold(5000)
+else
+  SAY("Jeste nemas to, co jsem po tobe chtel!")
+ENDIF
+
+on=7 // odevzdava treti ukol
+if <src.restest i_q011_prekupnik_kolektor3> && (<src.findid(i_q011_prekupnik_kolektor3).tag.contentscount>==8) 
+  src.tag.gq011_prekupnik=6
+  SAY("Vyborne, dekuji ti mnohokrat. Tady je tvoje odmena.")
+  src.addexp(600)
+  SRC.CONSUME i_q011_prekupnik_kolektor3
+  src.givegold(7000)
+else
+  SAY("Jeste nemas to, co jsem po tobe chtel!")
+ENDIF
+
+on=8 // prijmam 3 ukol
+src.tag.gq011_prekupnik=5
+src.giveitem=i_q011_prekupnik_kolektor4
+SAY("Honem, zakaznik je netrpelivy!")
+
+on=9 // odevzdava treti ukol
+if <src.restest i_q011_prekupnik_kolektor4> && (<src.findid(i_q011_prekupnik_kolektor4).tag.contentscount>==8) 
+  src.tag.gq011_prekupnik=6
+  SAY("Vyborne, dekuji ti mnohokrat. Tady je tvoje odmena.")
+  src.addexp(600)
+  SRC.CONSUME i_q011_prekupnik_kolektor4
+  src.givegold(7000)
+  f_quest_complete(10)  // splnenie questu "Prekupnik Hruon"
+else
+  SAY("Jeste nemas to, co jsem po tobe chtel!")
+ENDIF
+
+
+/////////////////////////////////////////
+//   M O R D O R   P R E K U P N I K   //
+//          - A R K A N O N -          //
+/////////////////////////////////////////
+
+[speech spk_mq011_prekupnik]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if ( <distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq011_prekupnik
+endif
+
+[FUNCTION f_mq011_prekupnik]
+IF !(0<src.tag.realm>==2)
+  say "Jdi pryc!"
+  return 0
+elseif (0<src.tag.gq011_prekupnik> >= 1)
+  say "Neverim ti! Tvar se jak chces, ale ja s tebou mluvit nebudu..."
+  return 0
+elseif (0<src.tag(mq011_neuspel)> !=0)
+  SAY("Prosim te ty mi nechod na oci. Nevdecniky a lenochy nesnasim")
+  return 1
+else
+  DIALOG(d_mq011_prekupnik)
+endif
+           
+
+[dialog d_mq011_prekupnik]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03025 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Drby?
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 520 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+if (0<src.tag.mq011_prekupnik> ==1) // plni prvni ukol - 12 kostlounu.
+  argo.HTMLGUMP(170,230,440,100,19,0,36)        
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      jasne makam na tom jak svestka
+  argo.text 60 395 152 15
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        kaslu ti na to, vem si kolektor 
+  argo.text 60 415 152 16
+elseif (0<src.tag.mq011_prekupnik> ==2)  // mam splnenej prvni ukol, muzu si nechat zadat druhej
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 3  //      chi chi chi dej mi druhej quest a nemel
+  argo.text 60 395 152 17
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        nechci
+  argo.text 60 415 152 14
+elseif (0<src.tag.mq011_prekupnik> ==3)  // plnim druhej ukol - liti vlci.
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      jasne makam na tom jak svestka
+  argo.text 60 395 152 15
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        kaslu ti na to, vem si kolektor 
+  argo.text 60 415 152 16
+elseif (0<src.tag.mq011_prekupnik> ==4) && (0<src.tag.realm>==1) // mam splnenej druhy ukol - svestkovni, mohu dostat treti.
+  argo.HTMLGUMP(170,230,440,100,22,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 4  //     dej sem treti nebo ti napalim
+  argo.text 60 395 152 18
+  argo.button 25 415 0fa5 0fa7 1 0 1  //       nechci 
+  argo.text 60 415 152 14
+elseif (0<src.tag.mq011_prekupnik> ==5) && (0<src.tag.realm>==1) // plnim treti ukol - terathan avenger
+  argo.HTMLGUMP(170,230,440,100,23,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      jasne makam na tom jak svestka
+  argo.text 60 395 152 15
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        kaslu ti na to, vem si kolektor 
+  argo.text 60 415 152 16
+elseif (0<src.tag.mq011_prekupnik> ==4) && (0<src.tag.realm>==2) // mam splnenej druhy ukol - svestkovni, mohu dostat treti.
+  argo.HTMLGUMP(170,230,440,100,29,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 8  //     dej sem treti nebo ti napalim
+  argo.text 60 395 152 18
+  argo.button 25 415 0fa5 0fa7 1 0 1  //       nechci 
+  argo.text 60 415 152 14
+elseif (0<src.tag.mq011_prekupnik> ==5) && (0<src.tag.realm>==2) // plnim treti ukol - scorpion prince
+  argo.HTMLGUMP(170,230,440,100,30,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      jasne makam na tom jak svestka
+  argo.text 60 395 152 15
+  argo.button 25 415 0fa5 0fa7 1 0 1  //        kaslu ti na to, vem si kolektor 
+  argo.text 60 415 152 16
+elseif (0<src.tag.mq011_prekupnik> ==6)  // mam splneno vse a jsem spokojena jak svestka.
+  argo.HTMLGUMP(170,230,440,100,31,0,36)
+else
+  ARGO.HTMLGUMP(170,230,440,100,10,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 2  //      beru beru beru - prijmam prvni ukol a nastavuji tag na 1
+  argo.text 60 395 152 13
+  argo.button 25 415 0fa5 0fa7 1 0 1  //       nechci...
+  argo.text 60 415 152 14
+ENDIF
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)
+if (0<src.tag.mq011_prekupnik> ==1) // plni prvni ukol - 12 kostlounu.       
+  argo.button 25 395 0fa5 0fa7 1 0 5  //      mam to pro tebe !!! Dzimy...
+  argo.text 60 395 152 25
+  argo.button 25 415 0fa5 0fa7 0 1 0  //        Vlastne nic !!! Dzone... 
+  argo.text 60 415 152 26
+elseif (0<src.tag.mq011_prekupnik> ==3)  // plnim druhej ukol - liti vlci.
+  argo.button 25 395 0fa5 0fa7 1 0 6  //      mam to pro tebe 
+  argo.text 60 395 152 27
+  argo.button 25 415 0fa5 0fa7 0 1 0  //        Vlastne nic... 
+  argo.text 60 415 152 26
+elseif (0<src.tag.mq011_prekupnik> ==5) && (0<src.tag.realm>==1)  // plnim treti ukol - terathan avenger
+  argo.button 25 395 0fa5 0fa7 1 0 7  //      mam to pro tebe
+  argo.text 60 395 152 28
+  argo.button 25 415 0fa5 0fa7 0 1 0 //        Vlastne nic
+  argo.text 60 415 152 26
+elseif (0<src.tag.mq011_prekupnik> ==5) && (0<src.tag.realm>==2)  // plnim treti ukol - scorpion prince ( mordor )
+  argo.button 25 395 0fa5 0fa7 1 0 9  //      mam to pro tebe
+  argo.text 60 395 152 28
+  argo.button 25 415 0fa5 0fa7 0 1 0 //        Vlastne nic
+  argo.text 60 415 152 26
+ENDIF
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,24,0,36)
+
+
+[dialog d_mq011_prekupnik text]
+Prekupnik Akranon
+Kdo jsi?
+Drby?
+Obchodovat?
+Hledam praci
+Nesu ti
+Prohlednout ...
+Zdravim te, jmenuji se Akranon a zivim se obchodem. Tu neco koupim, tu neco prodam... vsak to znas * Zazubil se *. 
+Hmno, jelikoz prejizdim z jednoho mesta do druheho, moc mistnich drbu se ke mne nedostane. Jestli chces vedet, co je noveho, budes se muset poptat nekoho jineho...
+Inu, ja obchoduji jen s velkymi odberateli a to ty asi nebudes * Zarechtal se * a navic ted mam tolik zakazek, ze nevim, kde mi hlava stoji.
+Hehe hmno staci rict! Akranon vzdy zamestna sikovneho dobrodruha! Takze mel bych tady asi tri vecicky, co bych potreboval vyridit. Nedam ti nic dulezityho, samo s sebou, kdyz te vubec neznam. Prines mi 12 lebek z obycejnejch kostlivcu, jasny?
+Copak mi neses?
+Prekupnik Akranon vypada jako pravy vykutaleny obchodnicek. Pri pohledu na zlate mince se mu ocka jen lesknou. Nepochybujes o tom, ze by kdykoli kohokoli zradil, kvuli dostatecne velkemu obnosu penez. //12
+Jiste, jdu do toho!
+Nene dekuji... // 14
+Snazim se sec to jde... urcite to bude brzy hotove. //15
+Uz to nechci delat! Sezente si nekoho jineho!
+Jdu do toho! Na Lite vlky jsem specialista... // 17
+Zadny problem...  Budou umirat! // 18
+Tak co, uz mas ty lebky? Docela to specha... //19
+Jestli chces, mam pro tebe dalsi pracicku. Potrebuji, abys mi prinesl 10 ohonu Litych vlku. Zakaznik specha, potrebuju to rychle. Beres? Odmena bude tentokrat vetsi... //20
+Tak co? Opravdu to specha, doufam, ze uz ty ohony mas!
+Mam tu jeste jednu nebezpecnou pracicku. Jeden zakaznik si u mne obednal 8 kusadel nebezpecnych Terathan Avengeru. Myslis, ze bys je mohl sehnat? Zaplatim dobre...
+Ten co si tohle objednal uz zamnou dvakrat byl, zrejme dost specha. Mas to?
+Tak si prosim pospes! Ach proc jsou vsichni takovi nespolehlivi * Cosi si brbla * //24
+Mam ty lebky! 
+Vlastne nic... //26 - pouzit u vsech
+Mam vsechny ty ohony! Tady je mas.
+Tady mas ty kusadla, ale byla to drina!
+Mam tu jeste jednu nebezpecnou pracicku. Jeden chlapek si obednal 8 kusadel z Scorpion Princu. Myslis, ze bys je mohl sehnat? Zaplatim dobre...
+Ten co si tohle objednal uz zamnou dvakrat byl, zrejme dost specha. Mas to?
+Uz tu pro tebe nic nemam...//31
+
+[dialog d_mq011_prekupnik button]
+on=1
+IF (0<src.tag.mq011_prekupnik>==1)
+  SAY("Ty lenochu! Klid se mi s oci!")
+  src.tag.mq011_neuspel=1
+  src.tag.remove(mq011_prekupnik)
+  SRC.CONSUME i_q011_prekupnik_kolektor1
+elseIF (0<src.tag.mq011_prekupnik>==2)
+  SAY("No dobre, az budes mit cas, zastav se!")
+elseIF (0<src.tag.mq011_prekupnik>==3)
+  SAY("Ty lenochu! Klid se mi s oci!")
+  src.tag.mq011_neuspel=1
+  src.tag.remove(mq011_prekupnik)
+  SRC.CONSUME i_q011_prekupnik_kolektor2
+elseIF (0<src.tag.mq011_prekupnik>==4)
+  SAY("No dobre, az budes mit cas, zastav se!")
+elseIF (0<src.tag.mq011_prekupnik>==5) && (0<src.tag.realm>==1)
+  SAY("Ty lenochu! Klid se mi s oci!")
+  src.tag.mq011_neuspel=1
+  src.tag.remove(mq011_prekupnik)
+  SRC.CONSUME i_q011_prekupnik_kolektor3
+elseIF (0<src.tag.mq011_prekupnik>==5) && (0<src.tag.realm>==2)
+  SAY("Ty lenochu! Klid se mi s oci!")
+  src.tag.mq011_neuspel=1
+  src.tag.remove(mq011_prekupnik)
+  SRC.CONSUME i_q011_prekupnik_kolektor4
+else
+  SAY("No dobre, az budes mit cas, zastav se!")
+endif
+
+on=2 // dostava prvni ukol, svestka jedna 
+src.tag.mq011_prekupnik=1
+src.giveitem=i_q011_prekupnik_kolektor1
+SAY("A pospes si prosim! Tady do tohodle pytliku mi to naskladej")
+
+on=3 // dostava druhy ukol.
+src.tag.mq011_prekupnik=3
+src.giveitem=i_q011_prekupnik_kolektor2
+SAY("A pospes si prosim! Dam ti na to tenhle pytlik")
+
+on=4 // dostava treti ukol.
+src.tag.mq011_prekupnik=5
+src.giveitem=i_q011_prekupnik_kolektor3
+SAY("Honem, zakaznik je netrpelivy!")
+
+on=5 // odevzdava prvni ukol
+if <src.restest i_q011_prekupnik_kolektor1> && (<src.findid(i_q011_prekupnik_kolektor1).tag.contentscount>==12) 
+  src.tag.mq011_prekupnik=2
+  SAY("Vyborne, dekuji ti mnohokrat. Tady je tvoje odmena.")
+  src.addexp(200)
+  SRC.CONSUME i_q011_prekupnik_kolektor1
+  src.givegold(2000)
+else
+  SAY("Jeste nemas to, co jsem po tobe chtel!")
+ENDIF
+
+on=6 // odevzdava druhy ukol
+if <src.restest i_q011_prekupnik_kolektor2> && (<src.findid(i_q011_prekupnik_kolektor2).tag.contentscount>==10) 
+  src.tag.mq011_prekupnik=4
+  SAY("Vyborne, dekuji ti mnohokrat. Tady je tvoje odmena.")
+  src.addexp(400)
+  SRC.CONSUME i_q011_prekupnik_kolektor2
+  src.givegold(5000)
+else
+  SAY("Jeste nemas to, co jsem po tobe chtel!")
+ENDIF
+
+on=7 // odevzdava treti ukol
+if <src.restest i_q011_prekupnik_kolektor3> && (<src.findid(i_q011_prekupnik_kolektor3).tag.contentscount>==8) 
+  src.tag.mq011_prekupnik=6
+  SAY("Vyborne, dekuji ti mnohokrat. Tady je tvoje odmena.")
+  src.addexp(600)
+  SRC.CONSUME i_q011_prekupnik_kolektor3
+  src.givegold(7000)
+else
+  SAY("Jeste nemas to, co jsem po tobe chtel!")
+ENDIF
+
+on=8 // prijmam 3 ukol ( mordor )
+src.tag.mq011_prekupnik=5
+src.giveitem=i_q011_prekupnik_kolektor4
+SAY("Honem, zakaznik je netrpelivy!")
+
+on=9 // odevzdava treti ukol ( mordor )
+if <src.restest i_q011_prekupnik_kolektor4> && (<src.findid(i_q011_prekupnik_kolektor4).tag.contentscount>==8) 
+  src.tag.mq011_prekupnik=6
+  SAY("Vyborne, dekuji ti mnohokrat. Tady je tvoje odmena.")
+  src.addexp(600)
+  SRC.CONSUME i_q011_prekupnik_kolektor4
+  src.givegold(7000)
+  f_quest_complete(11)  // splnenie questu "Prekupnik Akranon"
+else
+  SAY("Jeste nemas to, co jsem po tobe chtel!")
+ENDIF
+[eof]

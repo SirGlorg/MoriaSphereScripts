@@ -1,0 +1,206 @@
+//ITEMS//
+[ITEMDEF i_q075_valecnik_kolektor]
+ID=i_bag
+NAME=Pytlik na vnitrnosti Cephala
+TYPE=t_collector
+WEIGHT=1
+
+ON=@CREATE
+COLOR=034
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="vnitrnosti"
+tag.contentsamount=0
+tag.maxcontents=1
+tag.target_remove=0
+tag.target_desc="Komu chces vyrvat vnitrnosti ? "
+tag.target_id="Body of Cephalos"
+tag.absolute_success=100
+tag.value_to_check=100
+tag.contentscount=0
+
+//SPEECH//
+
+[speech spk_q075_valecnik]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q075_valecnik
+endif
+
+
+[function f_q075_valecnik]
+f_q010_checkOldTags
+if (<src.flags>&statf_dead)
+ return 1
+else
+  dialog(d_q075_valecnik)
+endif
+
+[function f_q075_checkOldTags]
+if (<src.tag(q075_valecnik)>)
+  src.qtag(q075_valecnik,1)
+  src.tag.remove(q075_valecnik)
+endif
+if (0<src.tag(splnen_kvest_075)> ==1)
+  src.qtag(q075_valecnik,2)
+  src.tag.remove(splnen_kvest_075)
+endif
+
+[dialog d_q075_valecnik]
+argo.questDialog_create(03008,"Valecnik Arkan")
+
+argo.dialog_newPage("Pozdrav")
+
+if (<eval src.qtag(q075_valecnik)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,41,"Zabijeni?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Neco malo bych ti mohl nabidnout...")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"*Nakoupit*")
+  argo.questDialog_addResponse(0,1,1,"Nakoupit",1) // short text & exit button & new button
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Hmm?")
+  argo.questDialog_HTMLGUMP
+  
+  if (<eval src.qtag(q075_valecnik)> == 1)
+    
+    if (<src.f_collector_isFull(i_q075_valecnik_kolektor)>)
+      argo.setText(argo.newTextLine,"Mam pro tebe ty vnitrnosti... tady to mas.")
+      argo.questDialog_addResponse(0,1,1,"Ukol_NovyRecept_giveCollector") // short text & exit button & new button
+    endif
+    argo.setText(argo.newTextLine,"Ne zatim se mi to nepodarilo sehnat.")
+    argo.questDialog_addResponse(0,1,1,"Ukol_NovyRecept_notFoundYet") // short text & exit button & new button
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Stary valecnik Arkan se na Tebe uvedomnele diva a zkouma te svyma staryma, ale presto zivyma ocima. ")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if (<eval src.qtag(q075_valecnik)> == 0)
+    argo.setText(<argo.newTextLine>,"Zdravim te.")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q075_valecnik)> == 1)
+    argo.setText(<argo.newTextLine>,"Zdravim te priteli, tak co, nasel jsi toho zradce Cephala? Ano? Skutecne? Tak to je parada !!!")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q075_valecnik)> == 2)
+    argo.setText(<argo.newTextLine>,"Zdravim Te kamarade, tak ty vnitrnosti jsem pripravil podle tajneho receptu a opravdu to funguje, dekuji Ti.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) // short text & exit button & new button & emote color
+  endif
+
+argo.dialog_page("Hledam praci")
+  if (<eval src.qtag(q075_valecnik)> == 0)
+    argo.setText(argo.newTextLine,"No, reknu Ti to jen jednou... Vypadni !!!.")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q075_valecnik)> == 1)
+    argo.setText(argo.newTextLine,"No ukol jsi ode me uz dostal, tak na nem zacni laskave pracovat !!!")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q075_valecnik)> == 2)
+    argo.setText(argo.newTextLine,"Opravdu nevim, jak bys mi mohl nyni pomoci.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+
+if (<eval src.qtag(q075_valecnik)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Aaaa, nazdar a vitej ! Jsem valecnik Arkan a mel bych pro tebe skutecnou praci, pri ktere se zapotis")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Take te zdravim, jmenuji se <?src.name?> a jen prochazim kolem.")
+    argo.questDialog_addResponse(0,0,1,"JenProchazim") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>No, pochybuji, ze tudy jdes nahodou, takhle daleko od civilizace, to bude osud.")
+    argo.questDialog_addResponse(1,0,1,"ToJeOsud_HledateNekohoJakoJa") // long text & link to page & new page
+
+  argo.dialog_page("Zabijeni?")
+    argo.setText(argo.newTextLine,"Hmmm, rikas ze se zajimas o vrazdeni na zakazku? Tak to je dobre, vskutku vyjimecne.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja mam zabijeni rad...")
+    argo.questDialog_addResponse(0,0,1,"HracRadZabijeni") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"No, preci jenom mam radeji jedy.")
+    argo.questDialog_addResponse(0,0,1,"HracRadLektvary") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"Nesnasim ty hnusne kase co vyrabite...")
+    argo.questDialog_addResponse(0,1,1,"UrazkaValecnika") // short text & exit button & new button
+
+  argo.dialog_page("JenProchazim")
+    argo.setText(argo.newTextLine,"Ahaa... no pojd si alespon trochu popovidat...")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("ToJeOsud_HledateNekohoJakoJa")
+    argo.setText(argo.newTextLine,"No, osud zrejme chtel, abychom si my dva popovidali o necem dulezitem, nuze.. Do toho !!! <def_questDialog_colorTextEmote>*Zarechtal se*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("HracRadZabijeni")  
+    argo.setText(argo.newTextLine,"Opravdu? No, objevil jsem ve starych zaznamech cechu vrahu jeden stary recept..")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"A o co jde?")
+    argo.questDialog_addResponse(0,0,1,"Ukol_NovyRecept") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"Me takove veci nezajimaji, omlouvam se.")
+    argo.questDialog_addResponse(0,1,0,"UrazkaValecnika") // short text & exit button & existing button
+
+  argo.dialog_page("HracRadLektvary")  
+    argo.setText(argo.newTextLine,"No ano. Nekteri lide davaji prednost okamzitemu ucinku, bohuzel nevidi jake poskozeni nese dlouhodobe uzivani jedu. Ale nejsem tu od toho abych si hral na spasitele...")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Ukol_NovyRecept")  
+    argo.setText(argo.newTextLine,"Jde o lektvar, ktery ti propujci nadlidskou silu, nekonecne mladi a vytrvalost, pomuzes mi?.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Jiste! Oc jde? Povezte mi co vite a pokusim se tu prisadu sehnat...")
+    argo.questDialog_addResponse(0,0,1,"Ukol_NovyRecept_2") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"Ne... na to opravdu nemam cas...")
+    argo.questDialog_addResponse(0,1,0,"UrazkaValecnika") // short text & exit button & existing button
+
+  argo.dialog_page("Ukol_NovyRecept_2")  
+    argo.setText(argo.newTextLine,"Jde o jiste vnitrnosti jednoho maga... Kdyz se narodil, kolovala mu v zilach substance, ktera je pro tento recept klicova.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ano pokusim se o to.")
+    argo.questDialog_addResponse(0,1,1,"Ukol_NovyRecept_accept") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Ne, rozmyslel jsem si to.")
+    argo.questDialog_addResponse(0,1,0,"UrazkaValecnika") // short text & exit button & existing button
+elseif (<eval src.qtag(q010_mastickar)> == 1)
+elseif (<eval src.qtag(q010_mastickar)> == 2)
+endif
+
+[dialog d_q075_valecnik button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("UrazkaValecnika"))
+  say("Dobre dobre... vis... hm ted mam neco neodkladneho na praci. Zastav se jindy.")
+elseif (<argn> == argo.dialog_linkButton("Ukol_NovyRecept_accept"))
+  say("Skvele, vezmi si tento vacek, toho zradce zabijes, vloz do nej jeho vnitrnosti, jeste teple !!!")
+  src.qtag(q075_valecnik,1,9)
+  src.newitem(i_q075_valecnik_kolektor)
+  src.act.bounce
+elseif (<argn> == argo.dialog_linkButton("Nakoupit"))
+  say("Zbozi na prodej, vseho dostatek, nejlepsi ceny jen u me.")
+  buy
+elseif (<argn> == argo.dialog_linkButton("Ukol_NovyRecept_notFoundYet"))
+  say("Tak prosim pospes, jsem nedockavy, chci vyzkouset svuj recept")
+elseif (<argn> == argo.dialog_linkButton("Ukol_NovyRecept_giveCollector"))
+  if (<src.f_collector_isFull(i_q075_valecnik_kolektor)>)
+    say("Vyborne! Dekuji ti mnohokrat. Ted konecne mohu svuj recept poradne vyzkouset.")
+    src.consume(i_q075_valecnik_kolektor)
+    src.qtag(q075_valecnik,2,9)
+    src.addexp(15000)
+    src.givegold(15000)
+    f_quest_complete(9)  // splneni questu "Valecnik Arkan"
+  else
+    say("Jeste nemas to co jsem po tobe chtel, musis se vic snazit")
+  endif
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Tobe take hodne stesi priteli...")
+endif

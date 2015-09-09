@@ -1,0 +1,1523 @@
+//**Script built by Tartaros, scripter of Moria (www.moria.cz)**//
+//thanks: used some parts of the old house menu from Amlaruil
+//Enjoy!
+
+[function removekeylink]
+if(!strcmpi(<name>,pratel))||(!strcmpi(<name>,spoluvlastniku))
+ contents(link="") 
+endif
+
+[function make_locked]
+if(type==t_door_locked)&&(link.ishouse)
+ events(+t_lockeditem)
+endif
+
+[function f_eqhmkeylayer]
+if !(findlayer(101))
+ newitem i_memory_keyring
+ equip(act)
+endif
+
+[typedef t_customhouse]
+on=@timer
+timer = 0fffffff //return 1 nestaci, stejne to zmizne...
+return 1
+
+[function ownershipto]//uid of future owner, needs src
+more1=<args>
+if (safe tag.ownermemUID)
+ if (finduid(<tag.ownermemUID>).isitem)
+  src.act=<tag.ownermemUID>
+ else
+  src.newitem i_key_gold
+ endif
+else
+ src.newitem i_key_gold
+endif
+src.act.cont=<finduid(<args>).findlayer(101)>
+src.act.more1=<uid>
+src.act.more2=3
+src.act.link=<uid> 
+src.act.name=owner:<name>
+src.act.updatex
+tag(ownermemUID,<src.act>)
+
+[function ishouse]
+if (type==t_customhouse)
+ return 1
+endif
+if (type==t_multi)
+ return 1
+endif
+return 0
+
+[typedef t_housemenu]
+on=@userdclick
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+if(src.isnazgul) //nazgulum to rekne jmeno majitele (proti zamceni domku)
+ say(Mym majitelem je <finduid(<link.more1>).name>)
+endif
+f_housemenu
+return 1
+
+//on=@userclick
+//trigger(userdclick)
+
+[function findhouse]
+if (ishouse)
+ if (issameregion(<args>))
+  var(housefound,<uid>)
+ endif
+endif
+
+[function find_crystal_topobj] //uid koho hledame
+//src.sysmessage(kr:<uid>,name:<name>,arg:<args>)
+if(more1==finduid(<argv(0)>))
+ var(nalezen_krystal,<uid>) 
+endif
+//hlaska zlocince
+if(!strcmpi(<name>,<argv(0).name>))&&(more1!=finduid(<argv(0)>)) //stejne jmeno ale neni to jeho klicek - je to zlodej
+ //finduid(<argv(0)>).gmpage(Autopage: Snazil jsem se bugem dostat do domu c.p. <cont.link.tag(housenumber)> jako <name>)
+kermel.sysmessage(cont: <cont> - <cont.name> dum: <cont.link> cislo: <cont.link.tag(housenumber)>)
+ kermel.delayedmessage("Cas: <servertime> Autopage: Ja <argv(0)> - <argv(0).name>(<argv(0).account.name>) jsem se snazil bugem dostat do domu c.p. <cont.link.tag(housenumber)> jako <name>(<more1.account.name>)-<more1>")
+endif 
+
+[function isoccupant]
+if(nalezen_krystal) //uz dal nehledame
+ return
+endif
+finduid(<tag(coownerscont)>).contents(find_crystal_topobj(<argv(0)>))
+if(nalezen_krystal)
+ var(whos_he,2)
+else
+ finduid(<tag(friendscont)>).contents(find_crystal_topobj(<argv(0)>))
+ if(nalezen_krystal)
+  var(whos_he,1)
+ endif
+endif
+
+[function iskeyfrom]
+if(<var(is_key_from)>!=0)
+ return
+endif
+if(<link>==<argv(0)>)
+ var(is_key_from,<uid>)
+endif
+
+[function haskeyfrom]//vraci uid nalezeneho klice nebo nic
+var(is_key_from,0)
+findlayer(101).contents(iskeyfrom(<argv(0)>))
+if(is_key_from)
+ return <var(is_key_from)>
+else
+ return 0
+endif
+
+[function f_housemenu]
+link.tag(lastusedsign,<uid>)
+src.f_eqhmkeylayer
+
+if(!src.haskeyfrom(<link>))
+ var(is_key_from,"")
+ kermel.sysmessage(<src.name> nema klic)
+ if(<link.more1>==<src>)
+  kermel.sysmessage(<src.name> je majitel, zakladam klic)
+  src.newitemsafe(i_key_gold)
+  arg(klicek,<lastnew>)
+  klicek.cont=<src.findlayer(101)>
+  klicek.more1=<link>
+  klicek.more2=3
+  klicek.link=<link> 
+  klicek.name=owner:<link.name>
+  klicek.updatex
+  tag(ownermemUID,<klicek>)
+ else//mozna je majitel
+  var(whos_he,0)
+  var(nalezen_krystal,0)
+  link.isoccupant(<src>)   
+  if(<var(whos_he)> > 0) //pritel = 1 , spoluvlastnik = 2
+   kermel.sysmessage(<src.name> je najemnik, zakladam klic)
+   src.newitemsafe(i_key_gold)
+   arg(klicek,<lastnew>)
+   klicek.cont=<src.findlayer(101)>
+   klicek.more1=<link>  //pro odmykani dveri
+   klicek.more2=<var(whos_he)> //rozpoznani hodnosti
+   klicek.link=<link>  
+   nalezen_krystal.link=<klicek>
+  endif
+  var(nalezen_krystal,"")
+  var(whos_he,"")
+ endif
+endif
+var(is_key_from,"")
+
+if !(safe link.ishouse)//neni linknut
+ tag(hm_lockit,1)//nastaveni zakladni dostupnosti menu - od pritele domu vejs
+ var(housefound,0)
+ sector.allitems(findhouse(<uid>))
+ if (housefound)
+  link=<housefound>
+  src.classmessage(V tomto sektoru nalezen dum <?finduid(<housefound>).name?>. Menu prirazeno.)
+  return 1
+ endif
+endif
+
+//nasledujici blok se provede jen tehdy, neni li dum aktivovan
+if !(safe finduid(link.tag(friendscont)).isitem)//neni aktivovan
+ src.classmessage(Toto je nyni tvuj dum.)
+ if !(safe link.isitem)//neni to multidum
+  src.newitem i_worldgem_bit
+  link=<lastnew>
+  lastnew.attr=0b0
+  lastnew.p=<p>
+  lastnew.type=t_customhouse
+  lastnew.more1=<src>
+  if (myrepregion)
+   lastnew.name=<var(lastrepregion).name>
+  else
+   lastnew.name=<region.name>
+  endif
+ else
+  link.events +t_customhouse
+  src.classmessage(Zadne klice od nej nebudes potrebovat)
+ endif
+ 
+ src.newitemsafe(i_pouch)//na friendy
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(18)
+ lastnew.more1=1
+ lastnew.link=<link>
+ lastnew.name=pratel
+ link.tag(friendscont,<lastnew>)
+ 
+ src.newitemsafe(i_pouch)//na coownery
+ lastnew.attr_invis=1
+ lastnew.attr_movenever=1
+ lastnew.P=<P>
+ lastnew.nudgeup(20)
+ lastnew.more1=2
+ lastnew.link=<link>
+ lastnew.name=spoluvlastniku
+ link.tag(coownerscont,<lastnew>)
+ 
+ src.newitemsafe(i_najem_chest)
+ lastnew.attr=attr_move_never
+ lastnew.P=<P>
+ lastnew.fix
+ lastnew.link=<link>
+ lastnew.name=Najem
+ link.tag(najemcont,<lastnew>) 
+ link.tag(paiduntil,<serv.time>)
+ link.tag(najem,100000)//100k default
+ if (region.tag(housenumber))
+   link.tag(housenumber,<region.tag(housenumber)>)
+   var(najmy[link.tag(housenumber)],<link>)
+ else
+   link.tag(housenumber,<array_add(var.najmy,<link>)>)
+ endif
+ link.tag(block,0)
+ link.tag(autorent,1)
+ src.sysmessage(Najem cini <link.tag(najem)>gp)
+ src.redmessage(Autorent zapnut, zaplat si najem jeste nez podruhe kliknes na ceduli!) 
+endif
+
+//kontrola pritomnosti najemni truhlicky (jednou se mi stalo ze zmizela...)
+if !(finduid(link.tag(najemcont))).isitem //neexistuje-li truhlicka
+ src.newitemsafe(i_najem_chest)
+ lastnew.attr=attr_move_never
+ lastnew.P=<P>
+ lastnew.fix
+ lastnew.link=<link>
+ lastnew.name=Najem
+ link.tag(najemcont,<lastnew>) //link=ten worldgem...
+ if (region.tag(housenumber))
+   link.tag(housenumber,<region.tag(housenumber)>)
+   var(najmy[link.tag(housenumber)],<link>)
+ else
+   link.tag(housenumber,<array_add(var.najmy,<link>)>)
+ endif
+ src.sysmessage(Truhlicka navracena!)
+ src.sysmessage(Najem cini <link.tag(najem)>gp)
+endif 
+
+link.checknajem
+if !(link.more1)//dum je bez majitele :o)
+ src.classmessage(Dum je bez majitele)
+ if !(src.isgm)
+  link.potvrdit(myhouse,Chces obsadit tento dum?) //pokud se zvoli ANO (OK button) provede se myvendorplac
+  return 1
+ endif
+endif
+ 
+
+//if !(safe link.tag.banp)//kdyz je cedule mimo zonu (na baraku obvykle) tak to funguje jen jednou nebo vubec uz nevim
+ //if (srcissameregion(<link>))
+  //link.tag(banp,"<src.p>")
+ //endif
+//endif
+
+link.DIALOG d_house_menu
+return 1
+
+[function hm_namerank]
+doswitch <args>
+ var(namestr,Verejnost)
+ var(namestr,Pritel)
+ var(namestr,Spoluvlastnik)
+ var(namestr,Vlastnik)
+ var(namestr,GM)
+enddo
+return"<namestr>"
+
+[function hm_findrank]
+var(hm_rank,0)
+if (finduid(<args>).isgm)
+ var(hm_rank,4)
+elseif (<more1>==<args>)
+ finduid(<tag.ownermemUID>).more1=<uid>
+ finduid(<tag.ownermemUID>).morep=<p>
+ finduid(<tag.ownermemUID>).name=owner:<name>
+ var(hm_rank,3)
+else
+ finduid(<tag.friendscont>).contents(hm_findrankloop(<args>))
+ if (var(hm_rank)==0)
+  finduid(<tag.coownerscont>).contents(hm_findrankloop(<args>))
+ endif
+endif
+if (safe tag(block))//&&(hm_rank<4)
+ if (var(hm_rank)!=4) 
+  src.redmessage(Dum je zablokovan! Pro vice informaci napis page.)
+ endif
+ if (var(hm_rank)<4)
+  var(hm_rank,-1)
+ endif
+endif
+return <var(hm_rank)>
+
+[function hm_findrankloop]
+if (link)
+ if !(link.isitem)
+ //remove toto ne! uz je to udelany trosku jinak
+  return 0
+ endif
+else
+return 0 
+endif
+link.name=<cont.name>:<cont.link.name>
+name=<link.topobj.name>
+more1=<link.topobj> //linknout krystal na hrace
+link.morep=<p>
+link.more1=<cont.link>
+if (<link.topobj>==<args>)
+ var(hm_rank,<cont.more1>)
+endif
+
+[ITEMDEF i_memory_keyring]//used as key
+id=i_pouch
+layer=101
+name=Key layer
+TDATA2=03D
+
+[ITEMDEF i_relating_crystal]
+id=i_crystal_red
+type=t_eq_script
+
+[function hm_section]//y,index,rank,text
+if (var(hm_rank)>argv(2))
+ texta(<tag(sloupec_x[1])>+<d_def_odsazeni>,argv(0),955,<argv(3)>)//ban
+ button(<tag(sloupec_x[0])>,argv(0),4005,4007,1,0,argv(1))
+ return <eval argv(0)+d_def_radek_vyska>
+endif
+return <argv(0)>
+
+[function myhouse]
+if (ischar)
+elseif (ishouse)
+ ownershipto(<src>)
+endif
+//tag(paiduntil,<serv.time>) Nelogicky ! 
+DIALOG d_house_menu
+
+[DIALOG d_house_menu]
+30,0
+arg(itemlevel,<eval tag(lastusedsign).tag(hm_lockit)>)
+hm_findrank(<src>)
+//var(hm_rank,0)
+hm_namerank(<var(hm_rank)>)
+//src.smsg hm_rank:<hm_rank> itemlevel:<arg(itemlevel)>
+argo.settext(100,"Dum cislo <?eval tag(housenumber)?><br><?safe tag(housename)?>")
+if (var(hm_rank)<arg(itemlevel))//zobraz jen ceduli
+ argo.gumppic(100,100,100)
+ argo.htmlgump(120,120,100,60,100,0,0)
+else
+ doswitch var(hm_rank)
+  argo.tag(radku,1)
+  argo.tag(radku,4)
+  argo.tag(radku,7)
+  argo.tag(radku,9)
+  argo.tag(radku,15)
+ enddo
+ argo.tag(sirka,260)
+ //argo.tag(vyska,360)
+ 
+ //if (cm_displaymore)
+ argo.tag(vyska,<eval 100+((2+argo.tag(radku))*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+ //else
+ // argo.tag(vyska,<eval (6*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+ //endif
+ 
+ argo.dialog_prvni
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//owner
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//owner
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname
+ arg(vedleX,<argo.tag(sloupec_x[1])>+<d_def_odsazeni>)
+ argo.dialog_pozadi(114+d_def_skvira,2)//najem
+ argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29)//tlacitka
+ argo.dialog_zpruhledni
+ //argo.resizepic(0,0,2620,290,360)
+ argo.gumppic(<argo.dialog_textpos(0,0,1)>,100)
+ //argo.htmlgump(120,120,100,60,0,0,0)
+ argo.htmlgump(lastxpos+20,lastypos+20,100,60,100,0,0)//
+ argo.texta(vedleX,argo.tag(obj_y[0]),955,Majitel:)
+ argo.texta(vedleX,argo.tag(obj_y[1]),955,<finduid(more1).getrealnamebyrealm(<region.tag.houserealm>)>)
+ argo.texta(vedleX,argo.tag(obj_y[2]),955,Tvuj status:)
+ argo.texta(vedleX,argo.tag(obj_y[3]),955,<namestr>)
+ 
+ 
+ argo.texta(<argo.dialog_textpos(4,0)>,955,Najem: <tag.najem> gp)
+ argo.texta(lastxpos,lastypos+d_def_radek_vyska,955,Zaplaceno na <paiduntildays> dni)//<sectodays((tag(paiduntil)-serv.time)/10)> 
+ 
+ arg(ypos,<argo.tag(obj_y[5])>)
+ //arg(ypos,<argo.hm_section(<ypos>,1,0,Vyhodit ciziho cloveka)>)
+ arg(ypos,<argo.hm_section(<ypos>,2,0,Zamknout/odemknout vec)>)
+ arg(ypos,<argo.hm_section(<ypos>,3,1,Pridat pritele domu)>)
+ arg(ypos,<argo.hm_section(<ypos>,4,0,Seznam pratel domu)>)
+ arg(ypos,<argo.hm_section(<ypos>,5,2,Pridat spoluvlastnika domu)>)
+ arg(ypos,<argo.hm_section(<ypos>,6,0,Seznam spoluvlastniku domu)>)
+ arg(ypos,<argo.hm_section(<ypos>,7,1,Prejmenovat dum)>)
+ arg(ypos,<argo.hm_section(<ypos>,8,1,Zmenit vyvesku domu)>)
+ arg(ypos,<argo.hm_section(<ypos>,9,(-1),"<qval(<tag(bankactivated)>,"Otevrit banku","Aktivovat banku (100kgp)")>")>)
+ arg(ypos,<argo.hm_section(<ypos>,10,2,Predat vlastnictvi domu)>)
+ 
+ arg(ypos,<argo.hm_section(<ypos>,11,3,<qval(<tag(block)>,Od,Za)>blokovat dum)>)
+ arg(ypos,<argo.hm_section(<ypos>,12,3,Vyprazdnit dum)>)
+ arg(ypos,<argo.hm_section(<ypos>,13,3,Vynulovat zaplaceni)>)
+ arg(ypos,<argo.hm_section(<ypos>,14,3,Nastavit najem)>)
+ arg(ypos,<argo.hm_section(<ypos>,15,3,<qval(<tag(autorent)>,Vy,Za)>pnout autorent)>) 
+ arg(ypos,<argo.hm_section(<ypos>,16,3,Redeed (jen multi))>) 
+endif
+
+[DIALOG d_house_menu BUTTON]
+on=1//vyhodit ciziho cloveka
+//if (f_checkrightsmes(0))
+  //src.newitemsafe(i_target_house)
+  //lastnew.link=<uid>
+  //lastnew.more1=4
+  //lastnew.equip
+//endif
+
+on=2//zamknout vec
+if (f_checkrightsmes(0))
+//src.say chci zamknout vec
+src.newitemsafe(i_target_house)
+lastnew.name=zamknout vec
+lastnew.link=<uid>
+lastnew.more1=12
+lastnew.more2=<hm_rank>
+lastnew.equip
+endif
+
+on=3//zamerit pritele
+if (f_checkrightsmes(1))
+//src.say chci pridat pritele
+src.newitem i_target_house
+src.act.name=pritel
+src.act.link=<uid>
+src.act.more1=1
+src.act.equip
+endif
+
+on=4//seznam pratel
+if (f_checkrightsmes(0))
+//src.say chci seznam pratel
+tag(friendscont).dialog(d_hmseznam,0)
+endif
+
+on=5//pridat spoluvlastnika
+if (f_checkrightsmes(2))
+//src.say chci pridat spoluvlastnika
+src.newitemsafe(i_target_house)
+lastnew.name=spoluvlastnik
+lastnew.link=<uid>
+lastnew.more1=2
+lastnew.equip
+endif
+
+on=6//seznam spoluvlastniku
+if (f_checkrightsmes(0))
+//src.say chci seznam spoluvlastniku
+tag(coownerscont).dialog(d_hmseznam,0)
+endif
+
+on=7//prejmenovat dum
+if (f_checkrightsmes(1))
+//src.say chci prejmenovat dum
+ //src.smsg Jak se ma dum jmenovat?
+ //src.targ=<uid>
+ //src.everbtarg finduid(<uid>).renamehouse=tag(housename)
+ input(Jak se ma dum jmenovat?,tag.housename,<tag(housename)>)
+endif
+
+on=8//zmenit vyvesku
+if (f_checkrightsmes(1))
+//src.say chci zmenit vyvesku
+ if (finduid(tag(lastusedsign)))
+   if (tag(lastusedsign).type==t_housemenu)
+     tag(lastusedsign).DIALOG d_house_menu_SIGN_1
+     return 1
+   endif
+ endif
+ src.sysmessage(context lost - retry)
+endif
+
+on=9//bank
+if (tag(bankactivated))
+  if (<src.region>==<region>)
+   if (<src.tag.realm>==<region.tag.houserealm>)
+    src.bankself
+   else
+    src.sysmessage("K teto funkci nemas prava.")
+   endif 
+  else
+    src.sysmessage("Musis byt uvnitr domu.")
+  endif
+else
+	potvrdit("f_activatebank", Skutecne chces aktivovat banku v tomto dome a za to zaplatit 100 000 gp?)
+endif
+
+on=10//predat vlastnictvi
+if (f_checkrightsmes(2))
+//src.say chci predat vlastnictvi domu.
+src.newitem i_target_house
+src.act.name=vlastnik
+src.act.link=<uid>
+src.act.more1=3
+src.act.equip
+endif
+
+on=11//block house
+if (f_checkrightsmes(3))
+ blockhouse
+endif
+
+on=12//trash house
+if (f_checkrightsmes(3))
+ potvrdit(trashhouse,"Opravdu chces vyklidit veci a obyvatele domu?")
+endif
+
+on=13//vynulovat najem
+if (f_checkrightsmes(3))
+ potvrdit(tag(paiduntil,<serv.time>),"Opravdu chces vynulovat najem?")
+endif
+
+on=14//nastavit najem
+if (f_checkrightsmes(3))
+ //src.smsg Kolik gp ma byt mesicni najem?
+ //src.everbtarg finduid(<uid>).tag.najem=
+ inputNajem("kolik ma byt najem?",tag.najem,<tag(najem)>)
+endif
+
+on=15//autorent
+if (f_checkrightsmes(3))
+ if (tag(autorent))
+  src.smsg Automaticky najem vypnut.
+  tag(autorent,0)
+ else
+  src.smsg Automaticky najem zapnut.
+  tag(autorent,1)
+ endif
+endif
+
+on=16//redeed
+if (f_checkrightsmes(3))
+ potvrdit(redeedhouse,"Opravdu chces tento dum do deedu?")
+endif
+
+[function f_checkrightsmes]
+if (f_checkrights(<args>))
+ return 1
+else
+ src.redmessage(Nemas na to pravo.)
+ return 0
+endif
+
+[function f_activatebank]
+if (src.pay(100000)) 
+	tag(bankactivated,1)
+	src.accmsg("bank activated at house uid=<uid> (<name>)")
+	src.classmessage(Domovni terminal aktivovan.)
+	dialog d_house_menu
+endif
+
+[function f_checkrights]
+hm_findrank(<src>)
+if (<hm_rank>><args>)
+ return 1
+else
+ return 0
+endif
+
+[DIALOG d_hmseznam]
+100,100  
+argo.tag(sirka,250)
+argo.tag(vyska,300)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29)
+argo.dialog_zpruhledni
+
+argo.settext(10,<name> : <rescount>)
+argo.text(<argo.dialog_textpos(0,0)>,2301,10)
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)
+argo.tag(firsti,<eval argv(0)>)
+if (argo.tag(firsti))
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval argo.tag(firsti)+argo.tag(radku)>)
+if (imax>rescount)
+ arg(imax,<rescount>)
+endif
+if (rescount>imax)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+endif
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,<argo.tag(firsti)>)
+while (index<imax)
+ argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,(index)+100)
+ argo.textA(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,2301,"<findcont(index).link.topobj.getrealnamebyrealm(<region.tag.houserealm>)>")
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+//resizepic 100 100 2620 200 210
+//text 160 120 955 7
+//text 240 270 955 0
+//text 120 150 955 1
+//text 120 170 955 2
+//text 120 190 955 3
+//text 120 210 955 4
+//text 120 230 955 5
+//text 120 250 955 6
+//
+//button 120 125 2223 2103 1 0 7
+//page <?qval((<rescount>><eval <src.tag.dynamdialog>+0>)&&(<hm_rank>><more>),0,-1)?>-1
+//button 270 155 2104 2103 1 0 1
+//page <?qval((<rescount>><eval <src.tag.dynamdialog>+1>)&&(<hm_rank>><more>),0,-1)?>-1
+//button 270 175 2104 2103 1 0 2
+//page <?qval((<rescount>><eval <src.tag.dynamdialog>+2>)&&(<hm_rank>><more>),0,-1)?>-1
+//button 270 195 2104 2103 1 0 3
+//page <?qval((<rescount>><eval <src.tag.dynamdialog>+3>)&&(<hm_rank>><more>),0,-1)?>-1
+//button 270 215 2104 2103 1 0 4
+//page <?qval((<rescount>><eval <src.tag.dynamdialog>+4>)&&(<hm_rank>><more>),0,-1)?>-1
+//button 270 235 2104 2103 1 0 5
+//page <?qval((<rescount>><eval <src.tag.dynamdialog>+5>)&&(<hm_rank>><more>),0,-1)?>-1
+//button 270 255 2104 2103 1 0 6
+//
+//page <?qval((<rescount>><eval <src.tag.dynamdialog>+6>),0,-1)?>
+//button 270 125 2224 2103 1 0 8
+
+[DIALOG d_hmseznam BUTTON]
+on=0
+link.dialog d_house_menu
+on=1
+dialog(d_hmseznam,(<argo.tag(firsti)>-<argo.tag(radku)>))
+on=2
+dialog(d_hmseznam,(<argo.tag(firsti)>+<argo.tag(radku)>))
+
+on=@anybutton
+arg(radek,<argn>-100)
+src.smsg tlacitko <argn>
+if (link.f_checkrightsmes(<more>))
+ src.accmsg("Zbavil uid=<findcont(radek).link.topobj> (<findcont(radek).link.topobj.name>) prav v domu uid=<link> (<link.name>)")
+ findcont(radek).link.topobj.redmessage(Byl jsi zbaven prav v domu <link.name>)
+ findcont(radek).link.remove
+ findcont(radek).remove
+ dialog d_hmseznam
+endif
+//on=1
+//f_hmremove(0)
+//on=2
+//f_hmremove(1)
+//on=3
+//f_hmremove(2)
+//on=4
+//f_hmremove(3)
+//on=5
+//f_hmremove(4)
+//on=6
+//f_hmremove(5)
+//on=7
+//if (src.tag(dynamdialog)==0)
+//link.f_housemenu
+//else
+//src.tag(dynamdialog,<eval <src.tag(dynamdialog)>-6>)
+//dialog d_hmseznam
+//endif
+//on=8
+//src.tag(dynamdialog,<eval <src.tag.dynamdialog>+6>)
+//dialog d_hmseznam
+
+[function f_hmremove]
+if (link.f_checkrightsmes(<more>))
+findcont(<eval <src.tag(dynamdialog)>+<args>>).link.topobj.classmessage(Byl jsi zbaven prav v domu <link.name>)
+findcont(<eval <src.tag(dynamdialog)>+<args>>).link.remove
+findcont(<eval <src.tag(dynamdialog)>+<args>>).remove
+dialog d_hmseznam
+endif
+
+[itemdef i_target_house]
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+if (<more1> < 4)
+ target 
+ src.classmessage(Koho chces udelat <name>em?)
+elseif (<more1>==4)
+ target
+ src.classmessage(Koho chces vyhodit z domu?)
+elseif (<more1>==12)
+ target 
+ src.classmessage(Co chces zamknout/odemknout?)
+elseif (<more1>==17)
+ targetg
+ src.classmessage(Zamer pozici.)
+endif
+timer 60
+
+on=@targon_char
+src.targ.f_eqhmkeylayer
+if (more1>4)
+else
+ link.hm_findrank(<src.targ>)//rank targetnuteho
+ //src.smsg <src.targ.name> ma rank <hm_rank>
+ if (more1==4)
+  if (var(hm_rank)==0)
+   if (src.targ.issameregion(<link>))
+    src.targ.go <src.region.p>
+    src.targ.classmessage(<src.name> te vyhodil z domu.)
+   endif
+  else
+   src.redmessage(Nemuzes vyhodit obyvatele domu)
+  endif
+ elseif (var(hm_rank))&&(var(hm_rank)<4)
+  src.classmessage(Nejprve bys mu musel odebrat domovni funkci.)
+ elseif (more1==1)||(more1==2)
+  src.newitem i_key_gold
+  arg(memoryuid,<src.act>)
+  src.act.cont=<src.targ.findlayer(101)>
+  src.act.more1=<link>  //pro odmykani dveri
+  src.act.more2=<more1> //rozpoznani hodnosti
+  src.act.link=<link>
+  src.newitem i_relating_crystal
+  src.act.name=<src.targ.name>
+  src.act.more1=<src.targ>
+  doswitch <more1>-1
+   src.act.cont=<link.tag.friendscont>
+   src.act.cont=<link.tag.coownerscont>
+  enddo
+  src.accmsg("pridal uid=<src.targ> (<src.targ.name>) do <src.act.cont.name> domu uid=<link> (<link.name>)")
+  src.act.link=<arg(memoryuid)>
+  //finduid(<arg(memoryuid)>).link=<src.act>
+  src.classmessage(<src.targ.name> uspesne pridan jako <name>)
+  src.targ.classmessage(Stal jsi se <name>em domu <link.name>.)
+ elseif (<more1>==3)//predani ownerstvi
+  link.ownershipto(<src.targ>)
+  src.classmessage(Vlastnictvi predano.)
+  src.targ.classmessage(Stal jsi se vlastnikem domu <link.name>.)
+  src.accmsg("predal uid=<src.targ> (<src.targ.name>) vlastnictvi domu uid=<link> (<link.name>)")
+ endif
+endif
+remove
+return 1
+
+on=@targon_item
+if (more1==12)
+ var(itemlevel,<eval <src.targ.tag.hm_lockit>>)
+ var(itemuid,0)
+ if (<itemlevel>>4)//cislo je UID
+  var(itemuid,<itemlevel>)
+  link.hm_findrank(<itemlevel>)//rank vlastnika itemu
+  var(itemlevel,<hm_rank>+1)
+ endif
+ if (<itemlevel>><more2>)&&(<itemuid>!=<src>)//more2 - rank of src
+  src.redmessage(Nemas na to pravo.)
+ elseif (<eval src.targ.tag.hm_lockedto>==<link>)&&(src.targ.type!=t_housemenu)
+  src.targ.attr=<src.targ.tag(hm_storeattr)>
+  src.targ.events -t_lockeditem
+  src.classmessage(Vec odemcena)
+  link.array_findremove(tag.lockedlist,<src.targ>)
+  src.targ.tag.remove(hm_lockedto)
+  src.targ.tag.remove(hm_lockit)
+  src.targ.tag.remove(hm_storeattr)
+  src.targ.unblockitem
+  if (<src.targ.type>==t_door_locked)
+   src.targ.type=t_door
+   src.targ.link(0)
+  endif
+ elseif (<safe.src.targ.tag.hm_lockedto>)//je zamcen jinam
+  src.classmessage(Toto nemuzes zamknout.)
+ elseif (f_lzezamknout)&&!(src.isgm)
+  src.classmessage(Toto nemuzes zamknout.)
+ elseif (src.targ.issameregion(<link>))&&(src.targ.cont==0)
+  //hm_namerank(<itemlevel>)
+  dialog d_statask
+  return 1
+ else
+  src.classmessage(Vec musi byt v domu nebo v jeho blizkosti.)
+ endif
+else
+ src.classmessage(Nezameruj veci.)
+endif
+remove
+return 1
+
+on=@targon_ground
+if (more1==17)
+ morep=<p>
+ p=<safe.link.region.p>
+ var.max_x1=<p_x>-5
+ var.max_x2=<p_x>+5
+ var.max_y1=<p_y>-5
+ var.max_y2=<p_y>+5
+ p=<src.targp>
+ var.dest_x=<p_x>
+ var.dest_y=<p_y>
+ p=<safe.src.targp>
+ if !(region.flags==01592)
+  if (<var.dest_x><<var.max_x1>)||(<var.dest_x>><var.max_x2>)||(<var.dest_y><<var.max_y1>)||(<var.dest_y>><var.max_y2>)
+   src.redmessage(Urcene misto je mimo rozsah!)
+  else
+   link.tag(banp,<src.targp>)
+   link.tag(banpnastaveno,1)
+  endif
+ else
+  src.redmessage(Do domu radsi ne.)
+ endif
+p=<morep>
+endif
+remove
+return 1
+
+[DIALOG d_statask]
+0,0
+resizepic 100 100 2620 300 <eval 110+(<more2>*20)>
+text 120 120 955 0
+text 140 145 955 6
+button 120 150 2104 2103 1 0 6
+text 140 165 955 1
+button 120 170 2104 2103 1 0 1
+text 140 185 955 2
+button 120 190 2104 2103 1 0 2
+page <?qval((<more2>>1),0,-1)?>
+text 140 205 955 3
+button 120 210 2104 2103 1 0 3
+page <?qval((<more2>>2),0,-1)?>
+text 140 225 955 4
+button 120 230 2104 2103 1 0 4
+page <?qval((<more2>>3),0,-1)?>
+text 140 245 955 5
+button 120 250 2104 2103 1 0 5
+
+[DIALOG d_statask TEXT]
+Na jakou uroven chces vec zamknout?
+Verejna
+Pritel domu
+Spoluvlastnik
+Vlastnik
+GM
+Tvoje osobni
+
+[DIALOG d_statask BUTTON]
+on=0
+remove
+on=1
+f_lock(0)
+on=2
+f_lock(1)
+on=3
+f_lock(2)
+on=4
+f_lock(3)
+on=5
+f_lock(4)
+on=6
+if (src.uid==0)||(src.uid==1)||(src.uid==2)||(src.uid==3)||(src.uid==4)||(src.uid==5)
+  src.classmessage(Mas nevhodnou postavu na osobni zamykani...kontaktuj GM...)
+elseif (src.targ.type==t_housemenu)
+  src.sysmessage("Nemuzes zamknout vyvesku domu na osobu.")
+else
+  f_lock(<src>)
+endif
+
+[function f_lock]//link - house, src.targ - zamknuta vec
+if (src.targ.issameregion(<link>))&&(src.targ.cont==0)
+  src.targ.tag(hm_lockit,<args>)
+  link.array_findremove(tag.lockedlist,<src.targ>)//seznam itemu na domu
+  link.array_add(tag.lockedlist,<src.targ>)//seznam itemu na domu
+  //link.array_dump(tag.lockedlist)
+  if (src.targ.type!=t_housemenu)
+   src.targ.tag(hm_lockedto,<link>)
+   src.targ.tag(hm_storeattr,<src.targ.attr>)
+   src.targ.attr_movenever=1
+   src.targ.attr_movealways=0
+   src.targ.attr_decay=0
+   src.targ.attr_candecay=0
+   src.targ.events +t_lockeditem
+   src.classmessage(Vec zamknuta)
+   if (<src.targ.type>==t_door)
+    src.targ.type=t_door_locked
+    src.targ.more1=<link>
+    src.targ.link=<link>
+   endif
+  endif
+  remove
+endif
+
+[typedef t_lockeditem]
+on=@userdclick
+return <f_lockeditem>
+
+on=@pickup_ground
+src.sysmessage Vec je zamcena k domu.
+return 1
+
+[function f_lockeditem]
+if (finduid(tag.hm_lockedto))
+ if (finduid(<tag.hm_lockedto>).ishouse)//je locknut k domu
+  //opravime pokud mu chybi klicek
+  if(!src.haskeyfrom(<finduid(<tag.hm_lockedto>)>))
+   var(is_key_from,"")
+   kermel.sysmessage(<src.name> nema klic)
+   if(<finduid(<tag.hm_lockedto>).more1>==<src>)
+    kermel.sysmessage(<src.name> je majitel, zakladam klic)
+    src.newitemsafe(i_key_gold)
+    arg(klicek,<lastnew>)
+    klicek.cont=<src.findlayer(101)>
+    klicek.more1=<finduid(<tag.hm_lockedto>)>
+    klicek.more2=3
+    klicek.link=<finduid(<tag.hm_lockedto>)> 
+    klicek.name=owner:<finduid(<tag.hm_lockedto>).name>
+    klicek.updatex
+    tag(ownermemUID,<klicek>)
+   else//mozna je najemnik
+    var(whos_he,0)
+    var(nalezen_krystal,0)
+    finduid(<tag.hm_lockedto>).isoccupant(<src>)   
+    if(<var(whos_he)> > 0) //pritel = 1 , spoluvlastnik = 2
+     kermel.sysmessage(<src.name> je najemnik, zakladam klic)
+     src.newitemsafe(i_key_gold)
+     arg(klicek,<lastnew>)
+     klicek.cont=<src.findlayer(101)>
+     klicek.more1=<finduid(<tag.hm_lockedto>)>  //pro odmykani dveri
+     klicek.more2=<var(whos_he)> //rozpoznani hodnosti
+     klicek.link=<finduid(<tag.hm_lockedto>)>  
+     nalezen_krystal.link=<klicek>
+    endif
+    var(nalezen_krystal,"")
+    var(whos_he,"")
+   endif
+  endif
+  var(is_key_from,"")
+  //a dale uz po staru
+  var(globallock,<eval finduid(<tag.hm_lockedto>).tag.hm_lockit>)//zamceni celeho domu
+  var(itemlevel,<tag.hm_lockit>)
+  var(itemuid,0)
+  if (<itemlevel>>4)
+   var(itemuid,<itemlevel>)
+   finduid(<tag.hm_lockedto>).hm_findrank(<itemlevel>)
+   var(itemlevel,<hm_rank>+1)
+  endif
+  finduid(<tag.hm_lockedto>).hm_findrank(<src>)
+  //kermel.smsg(itemlevel:<itemlevel>. charlevel:<hm_rank>, globallock: <globallock>)
+  if ((type==t_door_locked)||(<itemlevel><=<hm_rank>)||(<itemuid>==<src>))&&(<globallock><=<hm_rank>)
+  //dvere jsou zamcene - standart|| mensi itemlevel||jsem vlastnikem
+   return 0
+  else
+   src.redmessage(Nemas na to pravo.)
+   return 1
+  endif
+ endif
+ tag(chyba,housemenu_1)
+endif
+ tag(chyba,housemenu_2)
+events -t_lockeditem
+unblockitem
+return 0
+
+[function f_lzezamknout]// veci ketere nejsou dovoleny zamykat v dome
+if (src.targ.type == t_ingot)||(src.targ.type == t_log)||(src.targ.type == t_clothing)||(src.targ.type == t_figurine)||(src.targ.type == t_chair)||(src.targ.type == t_ore)||(src.targ.type == t_arock)||(src.targ.type == t_rune)
+//ingoty, logy, obleceni, shrinky, kresla, ruda, kameny, runy
+ return 1
+endif
+return 0
+
+//[DIALOG d_house_rename] // Main
+//0,0 // Position
+//resizepic 190 175 2620 330 120 
+//resizepic 220 225 3000 270 22 
+//text 265 195 995 0 // how?
+//text 355 255 0000 1 // OK
+//button 340 260 2104 2103 1 0 1 // Opens OK
+//textentry 225 226 253 25 0 0 2 // Text Input
+//
+//[DIALOG d_house_rename TEXT]
+//Jak se ma dum jmenovat?
+//OK
+//<?tag(houseNAME)?>
+//
+//[DIALOG d_house_rename BUTTON]
+//ON=0
+//SRC.classmessage(Dum zustal neprejmenovan.)
+//dialog d_house_menu
+//ON=1
+//tag(housename,<argtxt(0)>)
+//dialog d_house_menu
+
+[DIALOG d_house_menu_SIGN_1]
+0,0
+resizepic 0 130 2620 500 250
+button 40 155 2103 2104 1 0 2
+tilepic 50 150 2979
+button 40 180 2103 2104 1 0 3
+tilepic 50 175 2981
+button 40 205 2103 2104 1 0 4
+tilepic 50 200 2983
+button 40 230 2103 2104 1 0 5
+tilepic 50 225 2985
+button 40 255 2103 2104 1 0 6
+tilepic 50 250 2987
+button 40 280 2103 2104 1 0 7
+tilepic 50 275 2989
+button 40 305 2103 2104 1 0 8
+tilepic 50 300 2991
+button 115 155 2103 2104 1 0 9
+tilepic 75 150 2980
+button 115 180 2103 2104 1 0 10
+tilepic 75 175 2982
+button 115 205 2103 2104 1 0 11
+tilepic 75 200 2984
+button 115 230 2103 2104 1 0 12
+tilepic 75 225 2986
+button 115 255 2103 2104 1 0 13
+tilepic 75 250 2988
+button 115 280 2103 2104 1 0 14
+tilepic 75 275 2990
+button 115 305 2103 2104 1 0 15
+tilepic 75 300 2992
+button 210 155 2103 2104 1 0 16
+tilepic 220 150 2993
+button 210 180 2103 2104 1 0 17
+tilepic 220 175 2995
+button 210 205 2103 2104 1 0 18
+tilepic 220 200 2997
+button 210 230 2103 2104 1 0 19
+tilepic 220 225 2999
+button 210 255 2103 2104 1 0 20
+tilepic 220 250 3001
+button 210 280 2103 2104 1 0 21
+tilepic 220 275 3003
+button 210 305 2103 2104 1 0 22
+tilepic 220 300 3005
+button 285 155 2103 2104 1 0 23
+tilepic 245 150 2994
+button 285 180 2103 2104 1 0 24
+tilepic 245 175 2996
+button 285 205 2103 2104 1 0 25
+tilepic 245 200 2998
+button 285 230 2103 2104 1 0 26
+tilepic 245 225 3000
+button 285 255 2103 2104 1 0 27
+tilepic 245 250 3002
+button 285 280 2103 2104 1 0 28
+tilepic 245 275 3004
+button 285 305 2103 2104 1 0 29
+tilepic 245 300 3006
+button 380 155 2103 2104 1 0 30
+tilepic 390 150 3007
+button 380 180 2103 2104 1 0 31
+tilepic 390 175 3009
+button 380 205 2103 2104 1 0 32
+tilepic 390 200 3011
+button 380 230 2103 2104 1 0 33
+tilepic 390 225 3013
+button 380 255 2103 2104 1 0 34
+tilepic 390 250 3015
+button 380 280 2103 2104 1 0 35
+tilepic 390 275 3017
+button 380 305 2103 2104 1 0 36
+tilepic 390 300 3019
+button 455 155 2103 2104 1 0 37
+tilepic 415 150 3008
+button 455 180 2103 2104 1 0 38
+tilepic 415 175 3010
+button 455 205 2103 2104 1 0 39
+tilepic 415 200 3012
+button 455 230 2103 2104 1 0 40
+tilepic 415 225 3014
+button 455 255 2103 2104 1 0 41
+tilepic 415 250 3016
+button 455 280 2103 2104 1 0 42
+tilepic 415 275 3018
+button 455 305 2103 2104 1 0 43
+tilepic 415 300 3020
+button 175 340 2466 2467 1 0 44
+button 260 340 2469 2470 1 0 45
+
+[DIALOG d_house_menu_SIGN_1 TEXT]
+
+[DIALOG d_house_menu_SIGN_1 BUTTON]
+ON=1
+DIALOG d_house_menu_SIGN_1
+ON=2
+changesigdispid=0BA3
+ON=3
+changesigdispid=0BA5
+ON=4
+changesigdispid=0BA7
+ON=5
+changesigdispid=0BA9
+ON=6
+changesigdispid=0BAB
+ON=7
+changesigdispid=0BAD
+ON=8
+changesigdispid=0BAF
+ON=9
+changesigdispid=0BA4
+ON=10
+changesigdispid=0BA6
+ON=11
+changesigdispid=0BA8
+ON=12
+changesigdispid=0BAA
+ON=13
+changesigdispid=0BAC
+ON=14
+changesigdispid=0BAE
+ON=15
+changesigdispid=0BB0
+ON=16
+changesigdispid=0BB1
+ON=17
+changesigdispid=0BB3
+ON=18
+changesigdispid=0BB5
+ON=19
+changesigdispid=0BB7
+ON=20
+changesigdispid=0BB9
+ON=21
+changesigdispid=0BBB
+ON=22
+changesigdispid=0BBD
+ON=23
+changesigdispid=0BB2
+ON=24
+changesigdispid=0BB4
+ON=25
+changesigdispid=0BB6
+ON=26
+changesigdispid=0BB8
+ON=27
+changesigdispid=0BBA
+ON=28
+changesigdispid=0BBC
+ON=29
+changesigdispid=0BBE
+ON=30
+changesigdispid=0BBF
+ON=31
+changesigdispid=0BC1
+ON=32
+changesigdispid=0BC3
+ON=33
+changesigdispid=0BC5
+ON=34
+changesigdispid=0BC7
+ON=35
+changesigdispid=0BC9
+ON=36
+changesigdispid=0BCB
+ON=37
+changesigdispid=0BC0
+ON=38
+changesigdispid=0BC2
+ON=39
+changesigdispid=0BC4
+ON=40
+changesigdispid=0BC6
+ON=41
+changesigdispid=0BC8
+ON=42
+changesigdispid=0BCA
+ON=43
+changesigdispid=0BCC
+ON=44
+link.dialog d_house_menu
+ON=45
+DIALOG d_house_menu_SIGN_2
+
+[DIALOG d_house_menu_SIGN_2]
+0,0
+resizepic 0 130 2620 500 250
+button 40 155 2103 2104 1 0 2
+tilepic 50 150 3021
+button 40 180 2103 2104 1 0 3
+tilepic 50 175 3023
+button 40 205 2103 2104 1 0 4
+tilepic 50 200 3025
+button 40 230 2103 2104 1 0 5
+tilepic 50 225 3027
+button 40 255 2103 2104 1 0 6
+tilepic 50 250 3029
+button 40 280 2103 2104 1 0 7
+tilepic 50 275 3031
+button 40 305 2103 2104 1 0 8
+tilepic 50 300 3033
+button 115 155 2103 2104 1 0 9
+tilepic 75 150 3022
+button 115 180 2103 2104 1 0 10
+tilepic 75 175 3024
+button 115 205 2103 2104 1 0 11
+tilepic 75 200 3026
+button 115 230 2103 2104 1 0 12
+tilepic 75 225 3028
+button 115 255 2103 2104 1 0 13
+tilepic 75 250 3030
+button 115 280 2103 2104 1 0 14
+tilepic 75 275 3032
+button 115 305 2103 2104 1 0 15
+tilepic 75 300 3034
+button 210 155 2103 2104 1 0 16
+tilepic 220 150 3035
+button 210 180 2103 2104 1 0 17
+tilepic 220 175 3037
+button 210 205 2103 2104 1 0 18
+tilepic 220 200 3039
+button 210 230 2103 2104 1 0 19
+tilepic 220 225 3041
+button 210 255 2103 2104 1 0 20
+tilepic 220 250 3043
+button 210 280 2103 2104 1 0 21
+tilepic 220 275 3045
+button 210 305 2103 2104 1 0 22
+tilepic 220 300 3047
+button 285 155 2103 2104 1 0 23
+tilepic 245 150 3036
+button 285 180 2103 2104 1 0 24
+tilepic 245 175 3038
+button 285 205 2103 2104 1 0 25
+tilepic 245 200 3040
+button 285 230 2103 2104 1 0 26
+tilepic 245 225 3042
+button 285 255 2103 2104 1 0 27
+tilepic 245 250 3044
+button 285 280 2103 2104 1 0 28
+tilepic 245 275 3046
+button 285 305 2103 2104 1 0 29
+tilepic 245 300 3048
+button 380 155 2103 2104 1 0 30
+tilepic 390 150 3049
+button 380 180 2103 2104 1 0 31
+tilepic 390 175 3051
+button 380 205 2103 2104 1 0 32
+tilepic 390 200 3053
+button 380 230 2103 2104 1 0 33
+tilepic 390 225 3055
+button 380 255 2103 2104 1 0 34
+tilepic 390 250 3057
+button 380 280 2103 2104 1 0 35
+tilepic 390 275 3059
+button 380 305 2103 2104 1 0 36
+tilepic 390 300 3061
+button 455 155 2103 2104 1 0 37
+tilepic 415 150 3050
+button 455 180 2103 2104 1 0 38
+tilepic 415 175 3052
+button 455 205 2103 2104 1 0 39
+tilepic 415 200 3054
+button 455 230 2103 2104 1 0 40
+tilepic 415 225 3056
+button 455 255 2103 2104 1 0 41
+tilepic 415 250 3058
+button 455 280 2103 2104 1 0 42
+tilepic 415 275 3060
+button 455 305 2103 2104 1 0 43
+tilepic 415 300 3062
+button 175 340 2466 2467 1 0 44
+button 260 340 2469 2470 1 0 45
+
+[DIALOG d_house_menu_sign_2 TEXT]
+[DIALOG d_house_menu_sign_2 BUTTON]ON=1
+DIALOG d_house_menu_SIGN_2ON=2
+changesigdispid=0BCD
+ON=3
+changesigdispid=0BCF
+ON=4
+changesigdispid=0BD1
+ON=5
+changesigdispid=0BD3
+ON=6
+changesigdispid=0BD5
+ON=7
+changesigdispid=0BD7
+ON=8
+changesigdispid=0BD9
+ON=9
+changesigdispid=0BCE
+ON=10
+changesigdispid=0BD0
+ON=11
+changesigdispid=0BD2
+ON=12
+changesigdispid=0BD4
+ON=13
+changesigdispid=0BD6
+ON=14
+changesigdispid=0BD8
+ON=15
+changesigdispid=0BDA
+ON=16
+changesigdispid=0BDB
+ON=17
+changesigdispid=0BDD
+ON=18
+changesigdispid=0BDF
+ON=19
+changesigdispid=0BE1
+ON=20
+changesigdispid=0BE3
+ON=21
+changesigdispid=0BE5
+ON=22
+changesigdispid=0BE7
+ON=23
+changesigdispid=0BDC
+ON=24
+changesigdispid=0BDE
+ON=25
+changesigdispid=0BE0
+ON=26
+changesigdispid=0BE2
+ON=27
+changesigdispid=0BE4
+ON=28
+changesigdispid=0BE6
+ON=29
+changesigdispid=0BE8
+ON=30
+changesigdispid=0BE9
+ON=31
+changesigdispid=0BEB
+ON=32
+changesigdispid=0BED
+ON=33
+changesigdispid=0BEF
+ON=34
+changesigdispid=0BF1
+ON=35
+changesigdispid=0BF3
+ON=36
+changesigdispid=0BF5
+ON=37
+changesigdispid=0BEA
+ON=38
+changesigdispid=0BEC
+ON=39
+changesigdispid=0BEE
+ON=40
+changesigdispid=0BF0
+ON=41
+changesigdispid=0BF2
+ON=42
+changesigdispid=0BF4
+ON=43
+changesigdispid=0BF6
+ON=44
+DIALOG d_house_menu_SIGN_1
+ON=45
+DIALOG d_house_menu_SIGN_3
+
+[DIALOG d_house_menu_SIGN_3]
+0,0
+resizepic 0 130 2620 500 250
+button 40 155 2103 2104 1 0 2
+tilepic 50 150 3063
+button 40 180 2103 2104 1 0 3
+tilepic 50 175 3065
+button 40 205 2103 2104 1 0 4
+tilepic 50 200 3067
+button 40 230 2103 2104 1 0 5
+tilepic 50 225 3069
+button 40 255 2103 2104 1 0 6
+tilepic 50 250 3071
+button 40 280 2103 2104 1 0 7
+tilepic 50 275 3073
+button 115 155 2103 2104 1 0 8
+tilepic 75 150 3064
+button 115 180 2103 2104 1 0 9
+tilepic 75 175 3066
+button 115 205 2103 2104 1 0 10
+tilepic 75 200 3068
+button 115 230 2103 2104 1 0 11
+tilepic 75 225 3070
+button 115 255 2103 2104 1 0 12
+tilepic 75 250 3072
+button 115 280 2103 2104 1 0 13
+tilepic 75 275 3074
+button 380 155 2103 2104 1 0 14
+tilepic 390 150 3075
+button 380 180 2103 2104 1 0 15
+tilepic 390 175 3077
+button 380 205 2103 2104 1 0 16
+tilepic 390 200 3079
+button 380 230 2103 2104 1 0 17
+tilepic 390 225 3081
+button 380 255 2103 2104 1 0 18
+tilepic 390 250 3083
+button 380 280 2103 2104 1 0 19
+tilepic 390 275 3085
+button 455 155 2103 2104 1 0 20
+tilepic 415 150 3076
+button 455 180 2103 2104 1 0 21
+tilepic 415 175 3078
+button 455 205 2103 2104 1 0 22
+tilepic 415 200 3080
+button 455 230 2103 2104 1 0 23
+tilepic 415 225 3082
+button 455 255 2103 2104 1 0 24
+tilepic 415 250 3084
+button 455 280 2103 2104 1 0 25
+tilepic 415 275 3086
+button 175 340 2466 2467 1 0 26
+button 260 340 2469 2470 1 0 27
+
+[DIALOG d_house_menu_sign_3 TEXT]
+[DIALOG d_house_menu_sign_3 BUTTON]ON=1
+TIMER=<EVAL ((30*24*60*60)+60)>
+DIALOG d_house_menu_SIGN_3
+ON=2
+changesigdispid=0BF7
+ON=3
+changesigdispid=0BF9
+ON=4
+changesigdispid=0BFB
+ON=5
+changesigdispid=0BFD
+ON=6
+changesigdispid=0BFF
+ON=7
+changesigdispid=0C01
+ON=8
+changesigdispid=0BF8
+ON=9
+changesigdispid=0BFA
+ON=10
+changesigdispid=0BFC
+ON=11
+changesigdispid=0BFE
+ON=12
+changesigdispid=0C00
+ON=13
+changesigdispid=0C02
+ON=14
+changesigdispid=0C03
+ON=15
+changesigdispid=0C05
+ON=16
+changesigdispid=0C07
+ON=17
+changesigdispid=0C09
+ON=18
+changesigdispid=0C0B
+ON=19
+changesigdispid=0C0D
+ON=20
+changesigdispid=0C04
+ON=21
+changesigdispid=0C06
+ON=22
+changesigdispid=0C08
+ON=23
+changesigdispid=0C0A
+ON=24
+changesigdispid=0C0C
+ON=25
+changesigdispid=0C0E
+ON=26
+DIALOG d_house_menu_SIGN_2
+ON=27
+DIALOG d_house_menu_SIGN_1
+
+[function changesigdispid]
+dispid=<args>
+updatex
+
+
+
+[function inputNajem]//nadpis, value, default
+tag(input_text,"<argv(0)>")
+tag(input_valname,"<argv(1)>")
+tag(input_default,"<argv(2)>")
+dialog d_inputNajem
+
+[dialog d_inputNajem]
+350,350
+argo.tag(sirka,400)
+argo.tag(vyska,<eval 23+(2*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+argo.settext(100,<tag(input_text)>)
+argo.text(<argo.dialog_textpos(0,0)>,0481,100)
+argo.settext(101,<tag(input_default)>)//(d_Def_odsazeni(2*(d_def_okraj+d_def_skvira)))
+argo.textentry(<argo.dialog_textpos(1,0)>,argo.tag(sirka)-(d_Def_odsazeni+(2*(d_def_okraj+d_def_skvira))),d_def_radek_vyska,0481,1,101)
+//30 60 350 20 4 0 2
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[DIALOG d_inputNajem BUTTON]
+on=0
+tag(input_text,"")
+tag(input_valname,"")
+tag(input_default,"")
+safe(<src.tag.cv_lastdialog>)
+src.tag(cv_lastdialog,"")
+
+ON=1
+<tag(input_valname)>="<argtxt(1)>"
+arg(remainTime,<tag(paiduntil)> - <serv.time>)
+arg(lowedValue,<argtxt(1)>/1000)
+arg(compareValue,<tag(input_default)>/<lowedValue>)
+arg(remainTime,<eval (<remainTime>/1000)*<compareValue>>)
+tag(paiduntil,<serv.time> + <remainTime>)
+safe(<src.tag.cv_lastdialog>)
+src.tag(cv_lastdialog,"")
+tag(input_text,"")
+tag(input_valname,"")
+tag(input_default,"")
+
+[eof]
+262

@@ -1,0 +1,276 @@
+[DIALOG d_Cardolanske_pohrebiste_dlazdice_otevirajici_dvere]
+page 0
+resizepic 0 0 5100 300 235
+
+text 50 10 1152 9
+
+text 5 25 1152 1
+button 30 25 00000845 00000846 1 0 901
+text 5 40 1152 2
+button 30 40 00000845 00000846 1 0 902
+text 5 55 1152 3
+button 30 55 00000845 00000846 1 0 903
+text 5 70 1152 4
+button 30 70 00000845 00000846 1 0 904
+text 5 85 1152 5
+button 30 85 00000845 00000846 1 0 905
+text 5 100 1152 6
+button 30 100 00000845 00000846 1 0 906
+
+text 5 110 1152 7
+resizepic 65 104 2620 200 35
+textentry 75 110 600 20 1152 1 0
+
+text 5 210 1152 8
+button 80 210 00000845 00000846 1 0 907
+
+
+[DIALOG d_Cardolanske_pohrebiste_dlazdice_otevirajici_dvere TEXT]
+ 
+0
+D1
+D2
+D3
+D4
+D5
+D6
+prodleva
+konec nastavovani
+nastaveni pro dlazdici otevirajici dvere
+
+[DIALOG d_Cardolanske_pohrebiste_dlazdice_otevirajici_dvere BUTTON]
+ONBUTTON=901 
+SRC.SYSMESSAGE("Zamer dvere D1.")
+tag(dlazdiceotdvere).MORE2=3
+tag(dlazdiceotdvere).TARGET 
+tag(dlazdiceotdvere,"")
+
+ONBUTTON=902 
+SRC.SYSMESSAGE("Zamer dvere D2.")
+tag(dlazdiceotdvere).MORE2=4
+tag(dlazdiceotdvere).TARGET 
+tag(dlazdiceotdvere,"")
+
+ONBUTTON=903 
+SRC.SYSMESSAGE("Zamer dvere D3.")
+tag(dlazdiceotdvere).MORE2=5
+tag(dlazdiceotdvere).TARGET 
+tag(dlazdiceotdvere,"")
+
+ONBUTTON=904 
+SRC.SYSMESSAGE("Zamer dvere D4.")
+tag(dlazdiceotdvere).MORE2=6
+tag(dlazdiceotdvere).TARGET 
+tag(dlazdiceotdvere,"")
+
+ONBUTTON=905 
+SRC.SYSMESSAGE("Zamer dvere D5.")
+tag(dlazdiceotdvere).MORE2=7
+tag(dlazdiceotdvere).TARGET 
+tag(dlazdiceotdvere,"")
+
+ONBUTTON=906 
+SRC.SYSMESSAGE("Zamer dvere D6.")
+tag(dlazdiceotdvere).MORE2=8
+tag(dlazdiceotdvere).TARGET 
+tag(dlazdiceotdvere,"")
+
+
+ONBUTTON=907
+SRC.SYSMESSAGE("Zamknul jsi nastaveni dveri.")
+src.sysmessage("D1 <tag(dlazdiceotdvere).tag(dvere1)>")
+src.sysmessage("D2 <tag(dlazdiceotdvere).tag(dvere2)>")
+src.sysmessage("D3 <tag(dlazdiceotdvere).tag(dvere3)>")
+src.sysmessage("D4 <tag(dlazdiceotdvere).tag(dvere4)>")
+src.sysmessage("D5 <tag(dlazdiceotdvere).tag(dvere5)>")
+src.sysmessage("D6 <tag(dlazdiceotdvere).tag(dvere6)>")
+tag(dlazdiceotdvere).tag(prodleva,<argtxt(1)>)
+tag(dlazdiceotdvere).More2=1
+tag(dlazdiceotdvere,"")
+
+RETURN 0 // Yes, you can have RETURNs in a dialog
+
+[ITEMDEF i_Cardolanske_pohrebiste_dlazdice_otevirajici_dvere]
+Name=dlazdice otevirajici dvere
+ID=01827
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=dlazka otevirajici dvere
+
+ON=@CREATE
+  MORE1=0
+  MORE2=1
+  ATTR=04090 //decay, nevermove, invis
+  TIMER=-1
+  COLOR=044D
+  tag(dvere1,"0")
+  tag(dvere2,"0")
+  tag(dvere3,"0")
+  tag(dvere4,"0")
+  tag(dvere5,"0")
+  tag(dvere6,"0")
+  tag(prodleva,"60")
+ON=@userDCLICK
+  SRC.tag.dlazdiceotdvere=<UID>
+  SRC.DIALOG d_Cardolanske_pohrebiste_dlazdice_otevirajici_dvere
+
+ON=@STEP
+  if(src.isplayer)
+    if(<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+      return 0
+    endif
+    IF(<MORE2>==1)
+      MORE2=0
+      SOUND=558
+      TIMER=<tag(prodleva)> 
+      if (<tag(dvere1)>!=0)
+        tag(dvere1).tag(zamknute,"0")
+        tag(dvere1).Type=t_door
+        tag(dvere1).tag(LockPicking,"0")
+      end if  
+      if (<tag(dvere2)>!=0)
+        tag(dvere2).tag(zamknute,"0")
+        tag(dvere2).Type=t_door
+        tag(dvere2).tag(LockPicking,"0")
+      end if  
+      if (<tag(dvere3)>!=0)
+        tag(dvere3).tag(zamknute,"0")
+        tag(dvere3).Type=t_door
+        tag(dvere3).tag(LockPicking,"0")
+      end if  
+      if (<tag(dvere4)>!=0)
+        tag(dvere4).tag(zamknute,"0")
+        tag(dvere4).Type=t_door
+        tag(dvere4).tag(LockPicking,"0")
+      end if  
+      if (<tag(dvere5)>!=0)
+        tag(dvere5).tag(zamknute,"0")
+        tag(dvere5).Type=t_door
+        tag(dvere5).tag(LockPicking,"0")
+      end if  
+      if (<tag(dvere6)>!=0)
+        tag(dvere6).tag(zamknute,"0")
+        tag(dvere6).Type=t_door
+        tag(dvere6).tag(LockPicking,"0")
+      end if  
+    ENDIF
+  ELSE
+    return 0
+  endif
+
+ON=@TIMER
+  IF(<MORE2>==0)
+    if (<tag(dvere1)>!=0)
+      tag(dvere1).tag(zamknute,"1")
+      tag(dvere1).Type=t_door_locked
+      tag(dvere1).tag(LockPicking,"5000")
+      tag(dvere1).Timer=1 
+    end if
+    if (<tag(dvere2)>!=0)
+      tag(dvere2).tag(zamknute,"1")
+      tag(dvere2).Type=t_door_locked
+      tag(dvere2).tag(LockPicking,"5000")
+      tag(dvere2).Timer=1 
+    end if
+    if (<tag(dvere3)>!=0)
+      tag(dvere3).tag(zamknute,"1")
+      tag(dvere3).Type=t_door_locked
+      tag(dvere3).tag(LockPicking,"5000")
+      tag(dvere3).Timer=1 
+    end if
+    if (<tag(dvere4)>!=0)
+      tag(dvere4).tag(zamknute,"1")
+      tag(dvere4).Type=t_door_locked
+      tag(dvere4).tag(LockPicking,"5000")
+      tag(dvere4).Timer=1 
+    end if
+    if (<tag(dvere5)>!=0)
+      tag(dvere5).tag(zamknute,"1")
+      tag(dvere5).Type=t_door_locked
+      tag(dvere5).tag(LockPicking,"5000")
+      tag(dvere5).Timer=1 
+    end if
+    if (<tag(dvere6)>!=0)
+      tag(dvere6).tag(zamknute,"1")
+      tag(dvere6).Type=t_door_locked
+      tag(dvere6).tag(LockPicking,"5000")
+      tag(dvere6).Timer=1 
+    end if
+
+    MORE2=1
+  ENDIF
+  RETURN 1  
+
+ON=@TARGON_ITEM
+  IF (<MORE2>==3)
+    src.sysmessage("Nastavil jsi D1 <SRC.TARG.UID>")
+    tag(dvere1,<SRC.TARG.UID>)
+  ENDIF
+  IF (<MORE2>==4)
+    src.sysmessage("Nastavil jsi D2.")
+    tag(dvere2,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==5)
+    src.sysmessage("Nastavil jsi D3.")
+    tag(dvere3,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==6)
+    src.sysmessage("Nastavil jsi D4.")
+    tag(dvere4,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==7)
+    src.sysmessage("Nastavil jsi D5.")
+    tag(dvere5,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<MORE2>==8)
+    src.sysmessage("Nastavil jsi D6.")
+    tag(dvere6,<SRC.TARG.UID>)
+  ENDIF 
+  RETURN 1
+
+
+[ITEMDEF i_Cardolanske_pohrebiste_dlazdicenazamknutidveri12]
+Name=dlazdice12
+ID=01827
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=dlazdice na zamykani dveri
+
+ON=@CREATE
+  MORE2=0
+  ATTR=090 //decay, nevermove, invis
+  COLOR=00995
+ 
+  
+ON=@userDclick
+  IF (<more2>==0)  
+    SRC.SYSMESSAGE("Zamer dvere.")
+    TARGET
+  ENDIF
+      
+ON=@TARGON_ITEM
+  SRC.Sysmessage("Doufam, ze jsi zameril dvere :)")
+  tag(dvere,<SRC.TARG.UID>)
+  
+ON=@STEP
+  if(src.isplayer)
+    if(<src.flags>&statf_dead)||(src.isgm) //ne duch ni GM ! 
+      return 0
+    endif
+    IF (<more2>==0)
+      MORE2=1 
+      TIMER=5
+      if (<tag(dvere)>!=0)
+        tag(dvere).tag(zamknute,"1")
+        tag(dvere).Type=t_door_locked
+        tag(dvere).tag(LockPicking,"5000")
+        tag(dvere).timer=0
+      end if 
+    ENDIF
+  else
+    return 0
+  endif 
+  
+ON=@TIMER
+   MORE2=0
+  RETURN 1

@@ -1,0 +1,224 @@
+[function guardBoss]
+if (isItem)
+  if (type==t_spawn_char)
+    dialog(d_guardBossSystem)
+    return 1
+  endif
+endif
+consume(i_guardBoss_targ)
+src.newitemsafe(i_guardBoss_targ)
+lastnew.timer=30
+lastnew.more1=1
+src.equip(<lastnew>) // starts guard spawn targetting
+
+[events e_guardBossSystem_Boss]
+on=@beforegeteffect
+f_guardBossSystem_onHitCheckGuards
+
+on=@beforegetswing
+f_guardBossSystem_onHitCheckGuards
+
+on=@aftergetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+
+[function f_guardBossSystem_onHitCheckGuards]
+if (memoryFindType(memory_ispawned))
+  if (memoryfindtype(memory_ispawned).link.f_guardBossSystem_hasGuard)
+    if !(strlen(<tag(guardBossSystem_origResist_magic)>)) // original resists are not set -> it's necessary to make the boss invulnerable to all attacks
+      f_guardBossSystem_setResists
+    endif
+    if (rand(5)==1)
+      dorand(4)
+        say("Muj strazce je na zivu!")
+        say("Nemuzes mne zranit!")
+        say("Kouzla ani zbrane mi neublizi!")
+        say("Muhaha!")
+      enddo
+    endif
+  else // there is no guard left
+    if (strlen(<tag(guardBossSystem_origResist_magic)>)) // there are managed resists -> it's needed to put it back provided that the boss' guards are dead
+      f_guardBossSystem_resetResists
+    endif
+  endif
+endif
+
+[function f_guardBossSystem_setResists] // sets resists to 1000 == invul && saves original values
+tag(guardBossSystem_origResist_magic,<eval tag(resist_magic)>)
+tag(resist_magic,1000)
+tag(guardBossSystem_origResist_phys,<eval tag(resist_phys)>)
+tag(resist_phys,1000)
+tag(guardBossSystem_origResist_acid,<eval tag(resist_acid)>)
+tag(resist_acid,1000)
+tag(guardBossSystem_origResist_summon,<eval tag(resist_summon)>)
+tag(resist_summon,1000)
+tag(guardBossSystem_origResist_bleed,<eval tag(resist_bleed)>)
+tag(resist_bleed,1000)
+tag(guardBossSystem_origResist_dragon,<eval tag(resist_dragon)>)
+tag(resist_dragon,1000)
+
+[function f_guardBossSystem_resetResists] // loads former resist values from before saved tags
+tag(resist_magic,<tag(guardBossSystem_origResist_magic)>)
+tag.remove(guardBossSystem_origResist_magic)
+tag(resist_phys,<tag(guardBossSystem_origResist_phys)>)
+tag.remove(guardBossSystem_origResist_phys)
+tag(resist_acid,<tag(guardBossSystem_origResist_acid)>)
+tag.remove(guardBossSystem_origResist_acid)
+tag(resist_summon,<tag(guardBossSystem_origResist_summon)>)
+tag.remove(guardBossSystem_origResist_summon)
+tag(resist_bleed,<tag(guardBossSystem_origResist_bleed)>)
+tag.remove(guardBossSystem_origResist_bleed)
+tag(resist_dragon,<tag(guardBossSystem_origResist_dragon)>)
+tag.remove(guardBossSystem_origResist_dragon)
+
+[function f_guardBossSystem_hasGuard] // checks, whether there are some npc's spawned
+arg(i,0)
+while (<i> < <eval tag(guardSpawnsCount)>)
+  if (finduid(<tag(guardSpawn[<eval i>])>))
+    if (<tag(guardSpawn[<eval i>]).more2>)
+      return 1
+    endif
+  endif
+  arg(i,#+1)
+endwhile
+return 0
+
+[dialog d_guardBossSystem]
+arg(textcolor,52)
+argo.SetLocation=285,50
+
+argo.tag(sirka,333)
+arg(v,<eval 135+(<eval tag(guardSpawnsCount)>*<d_def_radek_vyska>)>)
+argo.tag(vyska,<eval arg(v)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,2,148)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,100,138,30,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,<eval tag(guardSpawnsCount)>,100,138,30,30)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Guard Boss System")
+
+argo.button(<argo.dialog_but_ru>,d_def_button_dialog1,d_def_button_dialog2,1,0,2)		//help
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Is activated:")
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,<d_def_writecolor>,"Activate/Deactivate:")
+
+argo.dialog_textpos(1,1)
+argo.texta(lastxpos+48,lastypos+0*d_def_radek_vyska,<d_def_readcolor>,"<?return_true(<f_spawnHasEvent("e_guardBossSystem_Boss")>,"yes","no")?>")
+argo.dialog_buttonpos(1,1)
+if ((<f_canAddOnSpawnEvent>) || (<f_spawnHasEvent("e_guardBossSystem_Boss")>))
+  argo.button(lastxbuttpos+48,lastybuttpos+1*d_def_radek_vyska,d_def_button_checkr1,d_def_button_checkr2,1,0,3)	//activate/deactivate
+else
+  argo.gumppic(lastxbuttpos+48,lastybuttpos+1*d_def_radek_vyska,d_def_button_checkr2)
+endif
+
+argo.texta(<argo.dialog_textpos(2,0)>,<d_def_readcolor>,"Spawn c.:")
+argo.texta(<argo.dialog_textpos(2,1)>,<d_def_readcolor>,"UID Spawnu:")
+argo.texta(<argo.dialog_textpos(2,2)>,<d_def_readcolor>,"Go")
+argo.texta(<argo.dialog_textpos(2,3)>,<d_def_readcolor>,"Del")
+
+arg(pctRadku,0)
+argo.dialog_textpos(3,0)
+while (<arg(pctRadku)> < <tag(guardSpawnsCount)>)
+  argo.texta(lastxpos,lastypos+(<arg(pctRadku)>*d_def_radek_vyska),<d_def_writecolor>,"Spawn <eval arg(pctRadku)+1>:")
+  argo.texta(lastxpos+102,lastypos+(<arg(pctRadku)>*d_def_radek_vyska),<d_def_readcolor>,<tag(guardSpawn[<eval arg(pctRadku)>])>)
+  argo.button(lastxpos+239,lastypos+(<arg(pctRadku)>*d_def_radek_vyska),0fb4,0fb6,1,0,<eval <arg(pctRadku)>+1000>)	//jdi na spawn
+  argo.button(lastxpos+272,lastypos+(<arg(pctRadku)>*d_def_radek_vyska),0fb1,0fb3,1,0,<eval <arg(pctRadku)>+2000>)	//delete spawn
+  arg(pctRadku,#+1)
+endwhile
+
+argo.button(<argo.dialog_but_rd>,d_def_button_checkr1,d_def_button_checkr2,1,0,4) // add new spawn
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_guardBossSystem button]
+on=0 // cancel
+
+on=1 // ok
+return 1
+
+on=2 // help button
+dialog(d_guardBossSystem)
+dialog(d_guardBossSystem_help)
+
+on=3 // activate/deactivate
+if (<f_spawnHasEvent("e_guardBossSystem_Boss")>)
+  f_spawnRemoveEvent("e_guardBossSystem_Boss")
+else
+  arg(inactivePosition,<f_canAddOnSpawnEvent>)
+  if (<arg(inactivePosition)> > 0) // new spawn add event can be added to the spawn
+    tag(spawnevent<eval arg(inactivePosition)>,"e_guardBossSystem_Boss") // adding next npc spawn event to the spawn - ie. this event is added to every new spawned npc.
+    tag(negateOnDeath,1) // set's the spawn to reset the spawn's timer after each kill of it's npc
+  else
+    redMessage("Tento spawn je plne vytizeny a nelze na nej pridat dalsi eventy tohoto typu.")
+  endif
+endif
+dialog(d_guardBossSystem)
+
+on=4 // add new spawn
+src.consume(i_guardBoss_targ)
+src.newitemsafe(i_guardBoss_targ)
+lastnew.tag(spawnID,<uid>)
+lastnew.timer=30
+src.equip(<lastnew>) // starts guard spawn targetting
+
+on=@anyButton
+if (<argn> >= 2000)
+  arg(i,<argn>-2000)
+  f_spawnLinks_remove(<i>,"guardSpawn")
+elseif (<argn> >= 1000)
+  if (safe.tag(guardSpawn[<eval <argn>-1000>]))
+    src.go(<tag(guardSpawn[<eval <argn>-1000>]).p>)
+  else
+    src.redMessage("Nelze se presunout na spawn, ktery neni nastaveny !")
+  endif
+else
+  return 1
+endif
+dialog(d_guardBossSystem)
+
+[dialog d_guardBossSystem_help]
+argo.setText(1,"Guard Boss System slouzi k ochrane monster na jednom spawnu (tzv boss) jinymi monstry (tzv guard). Je-li libovolny guard nazivu, jsou jeho resisty nastaveny na 1000 a je tedy nezranitelny. <br> Is activated: urcuje, zda je spawnovani bosse aktivni. <br> Activate/deactivate: prepina aktivaci Guard Boss Systemu. Je-li system deaktivovan, jsou nastaveni guardu ponechana, ale guardeni je vypnuto a chova se, jako by nebylo vubec nastaveno.<br><br> Pridani Spawnu: tlacitkem v pravem dolnim rohu vyvolas target, kterym je treba zacilit spawn guarda. Nove zobrazeny radek v dialogu obsahuje UID spawnu a tlacitko pro presun na jeho pozici ve svete a tlacitko smazani.<br><br> poznamka: Jak bossu, tak guardu muze byt vice nez 1. Guard nektereho bosse muze byt opet bossem pro dalsi guardy a je tak mozno vytvorit kaskadovy system odbouravani npc - POZOR NA SMYCKY typu A guardi B a soucasne B guardi A!")
+argo.f_dialog_HelpCreator("HELP - Guard Boss System")
+
+[itemdef i_guardBoss_targ]
+id=i_memory
+name=Zamerovac pro udelani monstra strazcem bosse
+type=t_eq_script
+
+on=@create
+attr=attr_decay
+
+on=@equip
+if (<more1> == 1)
+  target("Zamer spawn monstra, ktere bude chraneno")
+else
+  target("Zamer spawn monstra, ktere bude chranit bosse")
+endif
+
+on=@targon_item
+if (src.targ.type==t_spawn_char)
+  if (<more1> == 1) // targettin boss' spawn
+    src.targ.dialog(d_guardBossSystem)
+    return 1
+  else // targetting guard's spawn
+    tag(spawnID).f_spawnLinks_add(<src.targ>,"guardSpawn") // adds new link to this spawn to the boss' spawn
+    src.targ.tag(negateOnDeath,1) // set's the spawn to reset the spawn's timer after each kill of it's npc
+    src.sysMessage("Spawn pridan")
+  endif
+else
+  src.redMessage("Toto neni spawn !")
+endif
+tag(spawnID).dialog(d_guardBossSystem)
+
+on=@targon_char
+src.redMessage("Je treba zamerit spawn!")
+tag(spawnID).dialog(d_guardBossSystem)
+
+on=@targon_ground
+src.redMessage("Je treba zamerit spawn!")
+tag(spawnID).dialog(d_guardBossSystem)
+

@@ -1,0 +1,613 @@
+[itemdef i_nofame]
+id=i_gold
+name=nofame
+on=@create
+attr_invis=1
+
+[itemdef i_poresu]
+id=i_gold
+name=poresu
+on=@create
+attr_invis=1
+
+[itemdef i_nores]
+id=i_gold
+name=nores
+on=@create
+attr_invis=1
+
+[itemdef i_monster_create]
+id=i_memory
+type=t_eq_script
+name=created memory
+
+on=@equip
+src.tag(combattype,"npc")
+timerd=0
+
+on=@timer
+src=<cont>
+cont.creaturestart
+remove
+return 1
+
+[function creaturestart]
+events e_gethit
+events e_spelleffect
+
+if (body==c_spider_giant)
+  events +e_removesilk
+endif
+
+if (tag(npc_flee))
+  events=+e_npc_flee
+endif
+
+if (strlen(<tag(weapflag)>))
+elseif (zbran_char)
+  if (tag(weaponuid).DispID==i_war_fork)
+    tag(atskill,42)
+    tag(weapflag,dam_physical|dam_piercing)
+  elseif (tag(weaponuid).type==t_weapon_sword)
+    tag(atskill,40)
+    tag(weapflag,dam_physical|dam_sharp|dam_slashing)
+  elseif (tag(weaponuid).type==t_weapon_fence)
+    tag(atskill,42)
+    tag(weapflag,dam_physical|dam_sharp|dam_piercing)
+  elseif (tag(weaponuid).type==T_WEAPON_MACE_CROOK)||(tag(weaponuid).type==T_WEAPON_MACE_SMITH)||(tag(weaponuid).type==T_WEAPON_MACE_STAFF)
+    tag(atskill,41)
+    tag(weapflag,dam_physical|dam_blunt)
+  elseif (tag(weaponuid).type==t_weapon_bow_run)||(tag(weaponuid).type==T_WEAPON_XBOW)||(tag(weaponuid).type==T_WEAPON_BOW)
+    tag(weapflag,dam_physical|dam_piercing)
+    tag(atskill,31)
+  else
+    tag(weapflag,dam_physical|dam_blunt)
+    tag(atskill,43)//wrest
+  endif
+elseif !(strlen(<tag(weapflag)>))
+  tag(weapflag,dam_physical|dam_blunt)
+  tag(atskill,43)//wrest
+endif
+
+if (tag(atskill))
+else
+  tag(atskill,43)
+endif
+
+if (hiding)
+  skill hiding
+endif
+if(tag(nores))&&(flag_spawned)
+  tag.remove(nores)
+  newitem(i_nores)
+  lastnew.bounce
+endif
+
+if !(maxhits)
+  maxhits=<str>
+  hits=<maxhits>
+endif
+if !(maxstam)
+  maxstam=<dex>
+endif
+if !(tag(npc_speed))//aby monstra mela dost staminy - enrico
+  tag(npc_speed,<maxstam>)
+  arg(max_stam,<eval <maxstam>*5>)
+  if (arg(max_stam) > 32767)
+    maxstam=32767
+  else 
+    maxstam=<arg(max_stam)>
+  endif
+endif
+stamina=<maxstam>//az sem - enrico
+//tag(additdam,<eval ({800 1200}*<avervalue(<typedef.dam>)>)/2000>)
+//spawn:
+if (flag_spawned)
+  if (itemExists(<memoryFindType(MEMORY_ISPAWNED).link>))  //this creature is spawned
+    arg(mySpawn,<memoryFindType(MEMORY_ISPAWNED).link>)
+    mySpawn.events t_allspawns
+    mySpawn.tag(lastspawned,<uid>)
+    tag(lecitel,<mySpawn.tag(lecitel)>)
+    if (<eval tag(lecitel)>)
+      newequip(i_friendslayer)
+    endif
+    tag(summoner,<mySpawn.tag(summoner)>)
+    //if (<safe.tag.summoner>)
+    // newequip i_corpselayer
+    //endif
+
+    //pro guardovaci a bossovy spawny:
+    if (<eval mySpawn.tag(negateOnDeath)>)
+      events=+e_onDeath_negateSpawn
+    endif
+    arg(i,1)
+    while (i < 4)
+      if (<strlen(<mySpawn.tag(spawnevent<eval arg(i)>)>)>)
+        events <mySpawn.tag(spawnevent<eval arg(i)>)>
+      endif
+      arg(i,#+1)
+    endwhile
+    if (<strlen(<mySpawn.tag(removeAfterTimer)>)>)
+      newequip(i_zmizni)
+      lastnew.timer=<mySpawn.tag(removeAfterTimer)>
+    endif
+    if (<strlen(<mySpawn.tag(firstspawn)>)>)
+      Flag_Conjured=1
+    endif
+  endif
+endif
+//dat vedet o svem vzniku okolnim lecitelum
+sector.allchars(f_addfriend)
+//fame add:
+//finduid(#01A).say(<memoryfindtype(0200).link.tag(spawnevent1)>)
+f_changeHome
+
+if (tag(thiefmrcha)==1)
+  flag_insubstantial=1
+endif
+if (findid(i_nofame))
+  tag(experience,0)
+  findid(i_nofame).remove
+else
+  if (findid(i_gold))
+    if !(isResurrectedNPC)
+      findid(i_gold).amount=<eval (<eval <tag.experience>>*900)/1000>
+      if (rescount(i_gold)>{30 100000})
+        giveitem(i_mi_bag)
+      endif
+      if (rescount(i_gold)>{3500 100000})&&({1 3} == 1)
+        giveitem(i_coal_elemental)
+      endif
+      if (<body>==c_elem_fire_m) || (<color>==044c) || (<obody>==c_fire_fanatik) || (<obody>==c_fire_lord)
+        //firenpc,elmove ohne,verbatimovi fireanti
+        if (rescount(i_gold)>{20 30000})
+          giveitem(i_coal_elemental)
+        endif
+      endif
+      if (rescount(i_gold)>{3500 100000})&&({1 10} == 1)
+        giveitem(i_krystal_eben)
+      endif
+      if (rescount(i_gold)>{3500 100000})&&({1 8} == 1)
+        giveitem(i_tetiva_eben)
+      endif
+      if (rescount(i_gold)>{30 100000})&&({1 20} == 5)
+        giveitem(i_u_treasure_map)
+      endif
+      //if (rescount(i_gold)>{2500 100000})&&({1 20} == 4)
+      //  giveitem(i_u_treasure_map_bonus)
+      //endif
+      
+    endif
+  endif
+  if (<eval tag(experience)> < 10) && (<eval tag(experience)> > 0)
+    tag(experience,10)
+  endif
+endif
+
+if (flag_conjured)
+  if (memoryfindtype(MEMORY_IPET))
+    arg(owner,<memoryfindtype(MEMORY_IPET).link>)
+    if (finduid(<arg(owner)>).isplayer)
+      newitemsafe(i_rune_hassummon)
+      tag(runecaster,<lastnew>)
+      lastnew.link=<uid>
+      lastnew.cont=<owner>
+      if (findid(i_rune_summon_creature))
+        newitemsafe(i_summonremove)
+        equip(lastnew)
+        lastnew.timer=<findid(i_rune_summon_creature).timer>-1
+      endif
+    endif
+  endif
+endif
+safe(trigger(@Created))
+return 1
+
+//checks, whether the spawn can contain another event and returns the first free tag space's position
+[function f_canAddOnSpawnEvent]
+arg(i,1)
+while (i < 4)
+  if !(<strlen(<tag(spawnevent<eval arg(i)>)>)>)
+    return <arg(i)>
+  endif
+  arg(i,#+1)
+endwhile
+return 0
+
+//checks, whether the spawn has the given event and returns it's tag position
+[function f_spawnHasEvent]
+arg(i,1)
+while (i < 4)
+  if (<strcmpi(<tag(spawnevent<eval arg(i)>)>,<args>)> == 0)
+    return <arg(i)>
+  endif
+  arg(i,#+1)
+endwhile
+return 0
+
+// argv(0) - name of the new event
+// returns - 0 if the event is succesfully added (or already there)
+//           1 if the event could not be added
+[function f_spawnAddEvent]
+if (<f_spawnHasEvent("<argv(0)>")>)
+  return 0 // the event is already there -> successfully added
+endif
+arg(inactivePosition,<f_canAddOnSpawnEvent>)
+if (<arg(inactivePosition)> > 0) // new spawn add event can be added to the spawn
+  tag(spawnevent<eval arg(inactivePosition)>,"<argv(0)>") // adding next npc spawn event to the spawn - ie. this event is added to every new spawned npc.
+  return 0
+else
+  return 1
+endif
+
+[function f_addfriend]
+if (findlayer(80))
+  if (ismyfriend)
+    newitemsafe(i_relating_crystal)
+    lastnew.link=<src>
+    lastnew.dispid=<def.icon>
+    lastnew.name=<src.name>
+    lastnew.cont=<findlayer(80)>  
+  endif
+endif
+
+[itemdef i_summonremove]
+id=i_rune_summon_creature
+type=t_eq_script
+name=summoncreaturetimer
+
+on=@timer
+cont.remove
+remove
+return 1
+
+[events e_removesilk]
+on=@itemstep
+if (act.baseid==i_reag_spider_silk)
+ act.more=0
+ act.attr=0
+ act.bounce
+endif
+
+[itemdef i_rune_hassummon]
+NAME=summon timer
+ID=i_rune_summon_creature
+TYPE=T_EQ_SCRIPT 
+
+on=@create
+timer=5
+
+on=@unequip
+if (link)
+ if (link.issumon)
+  link.remove
+ else
+  link.cont.dismount
+ endif
+endif
+
+on=@timer
+if (link)
+ if (cont.rescount(i_rune_hassummon)>eval((cont.tag(level)/5)+1))||(cont.rescount(i_rune_hassummon)>5)
+   remove
+ endif
+else
+ remove
+endif
+timer=5
+return 1
+
+[events e_monster]
+on=@Death //kun smazat
+findlayer(25).remove
+
+on=@npcseenewplayer
+if(<tag(karma)>)
+  karma=<tag(karma)> //oprava pro pripad predchoziho videni mystika
+endif
+if (flag_spawned)//oprava bugnuti Z
+  z=<memoryfindtype(MEMORY_ISPAWNED).link.z>
+  fix
+endif
+if (<src.tag(hypno_mystik)>)
+  if(<karma> < 0)
+    tag(karma,<karma>)
+//    karma=0 //jen takhle nebude utocit na mystika 
+    tag(na_mystika,1) //na mystikovu figurinu utocit muze
+  endif
+//  say(vidim mystika <src.tag(name_m)>) 
+  attack(<src>) //utoci na morphnuteho mystika
+  return 1 //zapomen
+endif
+
+ON=@itemstep
+if (ispet)
+elseif (strcmpi(<act.type>,t_telepad2)==0)||(strcmpi(<act.type>,t_telepad)==0)
+ return 1
+endif
+
+on=@aftergetswing
+if (rand(30)==1)
+ attack(<src>)
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+on=@stopguarding
+
+//ON=@DeathCorpse
+//if !(flag_pet)//nebyl tamnutej
+//  argo.tag(isnopet,1)//nepude resnout
+//endif
+
+on=@spelleffect
+if (issumon)&&(<argn>==44)
+ hits=0
+endif
+//if (<argn>==20)||(<argn>==39)
+//  dospell_final(s_cure,1000)
+//  return 1
+//endif
+if(<argn>==20)&&(<src.isplayer>)//kuzlo poison, len od hraca
+  spell_poison_custom(<src>)
+  return 1
+endif
+
+on=@spellcast
+//pokus o to aby monstra nekuzlili hned za sebou
+if (<rescount(i_silencer)>)//keby sa nahodou zaseklo na -1 z nejakeho dovodu
+  if (<findid(i_silencer).timer> < 0)
+    findid(i_silencer).timer=1
+  endif
+endif
+if ((<nastaveni_silence_using>==1)&&(!<rescount(i_silencer)>))
+  newequip(i_silencer)
+  lastnew.timer=nastaveni_spellcast_silence_after
+  lastnew.more1=1
+endif
+
+[events e_healer]
+on=@userclick
+if !(src.f_check_tag_realm)
+  if (src.tag(realm)<0)
+    src.sysmessage("Jsi stizen kletbou bohu a vyvrzen z tohoto sveta. Nemohu te navratit k zivotu.")
+    return 1
+  endif
+  if (src.flag_dead)
+	  if (distance<5)
+  		src.dospell_final(59,1000)
+  	endif
+  endif
+endif
+
+[speech spk_healer]
+on=*res*
+if (src.tag(realm)<0)
+ src.sysmessage("Jsi stizen kletbou bohu a vyvrzen z tohoto sveta. Nemohu te navratit k zivotu.")
+ return 1
+endif
+if (src.flag_dead)
+  if (srccanseelos)
+    src.dospell_final(59,1000)
+  endif
+endif
+//on=@DeathCorpse
+//if (<safe.argo>)
+//var.corpseuid=<argo>
+//sector.allchars(f_addcorpse)
+//endif
+//return 0
+//
+//[function f_addcorpse]
+//if (findlayer(81))
+// newitemsafe(i_relating_crystal)
+// lastnew.link=<corpseuid>
+// lastnew.cont=<findlayer(81)>
+// lastnew.color=<finduid(<corpseuid>).color>
+// lastnew.dispid=<findres(chardef,<finduid(<corpseuid>).morex>).icon>
+// lastnew.name=<finduid(<corpseuid>).name>
+//endif
+
+//[events e_resist_para]
+//on=@beforegeteffect
+//say huhle:<spellnumber>
+//if (<eval <spellnumber>&0ffff>==38)||(<eval <spellnumber>&0ffff>==47)
+// if (<eval tag.resist_para>>{0 99})
+//  if (<eval tag.resist_para><100)
+//   var(imunmsg,"<?name?> se zda byt castecne resistentni proti paralyze.")
+//  else
+//   var(imunmsg,"<?name?> se zda byt imunni proti paralyze.")
+//  endif
+//  var(spellpowerrelative,0)
+//  return 1
+// endif
+//endif
+//return 0
+//on=@DrinkingPotion
+//on=@afterswing
+//on=@aftergetswing
+//deprecated on=@beforegethit 
+//on=@beforedoeffect
+//deprecated on=@aftergetspelldamage
+
+//[events e_resist_magic]
+//on=@beforegeteffect
+//if (isevil(<spellnumber>))
+// if (<eval tag.resist_negmagery><100)
+//  if (ismpdepend(<spellnumber>))//je to utocne kouzlo, 
+//   var(imunmsg,"<?name?> se zda byt castecne resistentni vuci negativnim kouzlum.")
+//   var(spellpowerrelative,<spellpowerrelative>-<tag.resist_negmagery>)
+//   return 0
+//  elseif (<eval tag.resist_negmagery>>{0 99})//poison, 
+//   var(imunmsg,"<?name?> se zda byt castecne resistentni vuci negativnim kouzlum.")
+//   var(spellpowerrelative,0)
+//   return 1
+//  endif
+// else
+//  var(imunmsg,"<?name?> se zda byt imunni vuci utocnym kouzlum.")
+//  var(spellpowerrelative,0)
+//  return 1
+// endif
+//endif
+//return 0
+//on=@DrinkingPotion
+//on=@afterswing
+//on=@aftergetswing
+////deprecated on=@beforegethit 
+//on=@beforedoeffect
+////deprecated on=@aftergetspelldamage
+//
+//[events e_resist_fire]
+//on=@beforegeteffect
+//if (isfire(<spellnumber>))
+// if (<eval tag.resist_fire><100)
+//  var(imunmsg,"<?name?> se zda byt castecne resistentni vuci ohnivym kouzlum.")
+//  var(spellpowerrelative,<spellpowerrelative>-<tag.resist_fire>)
+//  return 0
+// else
+//  var(imunmsg,"<?name?> se zda byt imunni vuci ohnivym kouzlum.")
+//  var(spellpowerrelative,0)
+//  return 1
+// endif
+//endif
+//return 0
+//on=@DrinkingPotion
+//on=@afterswing
+//on=@aftergetswing
+////deprecated on=@beforegethit 
+//on=@beforedoeffect
+////deprecated on=@aftergetspelldamage
+//
+//[events e_resist_summon] 
+//on=@beforegeteffect
+//if (src.isconjured)
+// if (<eval tag.resist_summon><100)
+//  var(imunmsg,"<?name?> se zda byt castecne resistentni vuci vyvolanym monstrum.")
+//  var(spellpowerrelative,<spellpowerrelative>-<eval tag.resist_summon>)
+//  return 0
+// else
+//  var(imunmsg,"<?name?> se zda byt imunni vuci vyvolanym monstrum.")
+//  var(spellpowerrelative,0)
+//  return 1
+// endif
+//endif
+//return 0
+////deprecated on=@beforegethit 
+//if (src.isconjured)
+// if (<eval tag.resist_summon>==100)
+//  var(imunmsg,"<?name?> se zda byt imunni proti vyvolanym monstrum.")
+//  var(hitimunne,1)
+//  return 1
+// endif
+//endif 
+//on=@aftergetswing
+//if (hits)
+// if (src.isconjured)
+//  finduid(<src.master>).redmessage("<?name?> se zda byt castecne resistentni vuci vyvolanym monstrum.")
+//  hits=<eval <hits>+((<ubrano>*<eval tag.resist_summon>)/100)>
+//  return 0
+// endif
+//endif
+//return 0
+//on=@DrinkingPotion
+//on=@afterswing
+//on=@beforedoeffect
+////deprecated on=@aftergetspelldamage
+//
+//[events e_resist_phys]
+////deprecated on=@beforegethit 
+//if (<eval tag.resist_phys>==100)
+// var(imunmsg,"<?name?> se zda byt imunni proti fyzickemu utoku.")
+// var(hitimunne,1)
+// return 1
+//endif
+//return 0
+//on=@aftergetswing
+//if (hits)
+// src.redmessage("<?name?> se zda byt castecne resistentni vuci fyzickemu utoku.")
+// hits=<eval <hits>+((<ubrano>*<eval tag.resist_phys>)/100)>
+// return 0
+//endif
+//return 0
+//on=@DrinkingPotion
+//on=@afterswing
+//on=@beforedoeffect
+////deprecated on=@aftergetspelldamage
+//on=@beforegeteffect
+//
+//[events e_resist_melee]
+////deprecated on=@beforegethit 
+//if (<eval tag.resist_melee>==100)
+// if (src.isfighting_melee)
+//  var(imunmsg,"<?name?> se zda byt imunni proti melee utoku.")
+//  var(hitimunne,1)
+//  return 1
+// endif
+//endif
+//return 0
+//on=@aftergetswing
+//if (hits)
+// if (src.isfighting_melee)
+//  src.redmessage("<?name?> se zda byt castecne resistentni vuci melee utoku.")
+//  hits=<eval <hits>+((<ubrano>*<eval tag.resist_melee>)/100)>
+//  return 0
+// endif
+//endif
+//return 0
+//on=@DrinkingPotion
+//on=@afterswing
+//on=@beforedoeffect
+////deprecated on=@aftergetspelldamage
+//on=@beforegeteffect
+//
+//[events e_resist_ranged]
+////deprecated on=@beforegethit 
+//if (<eval tag.resist_ranged>==100)
+// if (src.isfighting_ranged)
+//  var(imunmsg,"<?name?> se zda byt imunni proti ranged utoku.")
+//  var(hitimunne,1)
+//  return 1
+// endif
+//endif
+//return 0
+//on=@aftergetswing
+//if (hits)
+// if (src.isfighting_ranged)
+//  src.redmessage("<?name?> se zda byt castecne resistentni vuci ranged utoku.")
+//  hits=<eval <hits>+((<ubrano>*<eval tag.resist_ranged>)/100)>
+//  return 0
+// endif
+//endif
+//return 0 
+//on=@DrinkingPotion
+//on=@afterswing
+//on=@beforedoeffect
+////deprecated on=@aftergetspelldamage
+//on=@beforegeteffect
+
+[itemdef i_silencer]
+id=i_memory
+layer=77
+type=t_src_changer
+name=silencer
+
+on=@equip
+tag(mana,<cont.mana>)
+
+on=@timer
+if (<more1>==1)
+  cont.mana=0
+  timer=<nastaveni_silence_mana_return>
+  more1=0
+else
+  cont.mana=<tag.mana>
+  remove 
+endif
+return(1)
+
+
+[eof]

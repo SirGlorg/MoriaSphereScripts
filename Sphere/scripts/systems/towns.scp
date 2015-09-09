@@ -1,0 +1,552 @@
+[ITEMDEF i_town_stone]
+ID=i_grave_stone_5
+NAME=Townstone
+TYPE=T_STONE_TOWN//t_multi
+
+CATEGORY=Provisions - Deeds
+SUBSECTION=Guild and Town Stones
+DESCRIPTION=Town Stone
+
+on=@create
+tag(allowhire[0],C_m_GUARD_blue)
+tag(allowhire[1],C_m_GUARD_archer_blue)
+tag(allowhire[2],C_f_GUARD_mage_blue)
+tag(pokladna,0)
+
+on=@dropon_ground
+ts_check
+town_dialog
+
+on=@userdclick
+if(<src.tag(hypno_mystik)>) 
+ return 1
+endif
+ts_check
+town_dialog
+return 1
+
+on=@pickup_ground
+
+//tag.towntype - tag kamene - "gondorcity", "mordorcity", "gondorkeep", "mordorkeep"
+//tag.reigntype	-tag kamene - "town", "king"
+
+
+//tag.townstone - tag regionu - odkaz na mestsky kamen
+//tag.kingstone - tag regionu - odkaz na mestsky kamen pod spravou krale
+
+
+[function ts_check]
+if (tag(guardcont))
+  if (finduid(tag(guardcont)))
+    return 1
+  endif
+endif
+src.newitemsafe(0e80)
+lastnew.p=<eval p_x+1>,<p_y>,<p_z>,<mapplane>
+lastnew.attr=0
+lastnew.attr_movenever=1
+lastnew.attr_invis=1
+lastnew.link=<uid>
+tag(guardcont,<lastnew>)
+
+
+[function isbanned] //chybejici metoda T_STONE_TOWN - jakmile nahrazena, odstranit...debug
+arg(player,<src>)
+if (argvcount)
+  arg(player,<finduid(args)>)
+endif
+arg(returnval,0)
+arg(i,<bans.getcount>)
+while i
+  if (bans(<eval(arg(i)-1)>)==arg(player))
+    arg(returnval,1)
+    arg(i,1)
+  endif
+  arg(i,#-1)
+endwhile
+return <arg(returnval)>
+
+[function iscaptain]//metoda townstonu - muzu ovladat zdejsi straze?
+arg(player,<src>)
+if (argvcount)
+  arg(player,<finduid(args)>)
+endif
+//return <arg(player).isgm>
+return <iscaptain_<tag.towntype>(<arg(player)>)>
+
+[function iscaptain_gondorcity]
+arg(player,<args>)
+if (tag(major)==arg(player))||(arg(player).isgm)
+ return 1
+endif
+return 0
+[function iscaptain_mordorcity]
+arg(player,<args>)
+if (link.topobj==src)||(arg(player).isgm)
+ return 1
+endif
+return 0
+
+[function iscaptain_gondorkeep]
+[function iscaptain_mordorkeep]
+
+[function isexecutioner]//methoda townstonu - muzu zde ovladat BannList?
+arg(player,<src>)
+if (argvcount)
+  arg(player,<finduid(args)>)
+endif
+return <isexecutioner_<tag.towntype>(<arg(player)>)>
+
+[function isexecutioner_gondorcity]
+arg(player,<args>)
+if (tag(major)==arg(player))||(arg(player).isgm)
+ return 1
+endif
+return 0
+[function isexecutioner_mordorcity]
+arg(player,<args>)
+if (link.topobj==src)||(arg(player).isgm)
+ return 1
+endif
+return 0
+
+[function ismajor]//methoda townstonu - muzu zde rozmistovat straze?
+arg(player,<src>)
+if (argvcount)
+  arg(player,<finduid(args)>)
+endif
+return <ismajor_<tag.towntype>(<arg(player)>)>
+
+[function ismajor_gondorcity]
+arg(player,<args>)
+if (tag(major)==arg(player))||(arg(player).isgm)
+ return 1
+endif
+return 0
+[function ismajor_mordorcity]
+arg(player,<args>)
+if (link.topobj==src)||(arg(player).isgm)
+ return 1
+endif
+return 0
+
+[function isrecruiter]//methoda townstonu - muzu zde nakupovat straze?
+arg(player,<src>)
+if (argvcount)
+  arg(player,<finduid(args)>)
+endif
+return <isrecruiter_<tag.towntype>(<arg(player)>)>
+
+[function isrecruiter_gondorcity]
+arg(player,<args>)
+if (tag(major)==arg(player))||(arg(player).isgm)
+ return 1
+endif
+return 0
+[function isrecruiter_mordorcity]
+arg(player,<args>)
+if (link.topobj==src)||(arg(player).isgm)
+ return 1
+endif
+return 0
+
+
+//[function ismember]//jsem clenem - obcanem - mesta? tzn muzu si otevrit prislusny dialog?
+//arg(player,<src>)
+//if (argvcount)
+//  arg(player,<finduid(args)>)
+//endif
+//return <arg(player).isgm>
+
+[defnames stonetypes]
+gondorcity	1
+mordorcity	2
+gondorkeep	3
+mordorkeep	4
+town		5
+king		6
+
+
+[function town_dialog]
+if !(strlen(<tag(towntype)>))'
+ emote("Nema nastaven 'tag.towntype' - moznosti:'gondorcity', mordorcity', 'gondorkeep', 'mordorkeep'")
+ return 1
+endif
+if (tag(towntype)==gondorcity)||(tag(towntype)==mordorcity)
+  if !(strlen(<tag(reigntype)>))
+   emote("Nema nastaven 'tag.reigntype' - moznosti:'town', king'")
+   return 1
+  endif
+endif
+//tag.towntype - tag kamene - "gondorcity", "mordorcity", "gondorkeep", "mordorkeep"
+//tag.reigntype	-tag kamene - "town", "king"
+if (iscaptain) 
+  dialog d_town_captain
+endif
+if (ismajor) 
+  dialog d_town_major
+endif
+if (isexecutioner) 
+  dialog d_town_executioner
+endif
+if (isrecruiter) 
+  dialog d_town_recruiter
+endif
+
+//+isexecutioner+ismajor
+
+[function home_run]
+if(<link.tag(lastspawned)>)
+ finduid(<link.tag(lastspawned)>).paralyze_remove
+ finduid(<link.tag(lastspawned)>).events=-e_guard_stopped
+ finduid(<link.tag(lastspawned)>).go(<finduid(<link.tag(lastspawned)>).home>)
+endif
+
+[function stop_guard]
+if(<argv(0)>) //1
+ if(<link.tag(lastspawned)>)
+  finduid(<link.tag(lastspawned)>).paralyze(-1)
+  finduid(<link.tag(lastspawned)>).events=+e_guard_stopped
+ endif
+else
+ if(<link.tag(lastspawned)>)
+  finduid(<link.tag(lastspawned)>).paralyze_remove
+  finduid(<link.tag(lastspawned)>).events=-e_guard_stopped
+ endif
+endif
+
+[events e_guard_stopped]
+on=@aftergetswing
+paralyze_remove
+attack(<src>)
+
+on=@beforegeteffect
+paralyze_remove
+attack(<src>)
+
+on=@beforegetswing
+on=@afterswing //kdyz to tu neni tak to blbne
+on=@beforedoeffect
+
+[function iscriminal]
+if(<flag_criminal>) 
+ return 1
+else
+ return 0
+endif
+
+[itemdef i_guard_targ]
+id=i_memory
+type=t_eq_script
+name=Zamerovac cile strazi
+
+on=@equip
+target Na koho maji zautocit straze?
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targon_item
+remove
+return 1
+
+on=@targon_ground
+remove
+return 1
+
+on=@targon_char
+if(<src>==<src.targ>)
+ src.sysmessage(Proc povolavat straze sam na sebe, ze?)
+ remove
+ return 1
+endif
+if(!src.targ.isplayer && !src.targ.issumon)
+ src.sysmessage(Straze lze poslat jen na hrace a jejich summony)
+endif
+if(<src.tag(realm)>==1) //jen v gondoru
+ if(!src.targ.iscriminal)&&(!src.targ.ismurderer) 
+  finduid(<tag(mesto)>).tm_findrank(<src.targ>)
+  if(<var(tm_rank)>!=0) //neni na bl.  
+   src.sysmessage("Na poctive obyvatele gondoru nemuzes volat straze!")
+   remove
+   return 1
+  endif 
+ endif
+endif
+ if(<src.tag(general)>)||(src.isgm) 
+  if(strlen(<src.region.tag(jmeno_mesta)>))
+   if(strcmpi(<src.region.tag(jmeno_mesta)>,<finduid(<tag(mesto)>).region.tag(jmeno_mesta)>)) //pripadne townstone
+    src.sysmessage(Jsi prilis daleko od uzemi strazi, straze te neslysi!)
+    remove 
+    return 1
+   else
+    arg(jmeno_mesta,<finduid(<tag(mesto)>).region>)
+   endif
+  endif
+ else//(<src.tag(starosta)>) //starosta nebo nazgul
+  if(<src.tag(starosta)>)
+   if(strcmpi(<src.region.tag(jmeno_mesta)>,<finduid(<src.tag(townstone)>).region.tag(jmeno_mesta)>)) //pripadne townstone
+    src.sysmessage(Stojis prilis daleko od uzemi strazi, straze te neslysi!)
+    remove
+    return 1
+   else
+    arg(jmeno_mesta,<finduid(<src.tag(townstone)>).region>)
+   endif
+  endif  
+ endif
+if(strcmpi(<arg(jmeno_mesta)>,<src.targ.region>)) //0 pokud stejne, pak nic nehlasi
+ src.sysmessage(Straze nemohou zautocit mimo prostor mesta)
+ remove
+ return 1
+endif
+if(<src.flags>&statf_dead)
+ sysmessage(Ve svem stavu nejsi niceho schopen)
+ remove
+ return 1
+endif
+if(<src.tag(general)>)||(<src.isgm>)||(<src.tag(lordnazgul)>)
+ arg(pocet_strazi,<finduid(<tag(mesto)>).tag(guardcont)>).rescount>)
+ arg(guardcont,<finduid(<tag(mesto)>).tag(guardcont)>)
+else
+ if(<src.tag(starosta)>)
+  arg(pocet_strazi,<finduid(<finduid(<src.tag(townstone)>).tag(guardcont)>).rescount>)
+  arg(guardcont,<finduid(<src.tag(townstone)>).tag(guardcont)>)
+ endif
+ if(src.isnazgul)
+  arg(pocet_strazi,<finduid(<src.findlayer(8).link.tag(guardcont)>).rescount>)
+  arg(guardcont,<finduid(<src.findlayer(8).link.tag(guardcont)>)>)
+ endif
+endif 
+arg(i,0)
+while(i < pocet_strazi)
+ //arg(j,<eval {0 <eval (<arg(pocet_strazi)>-1)>}>) //nahodna straz ve meste
+ if(<finduid(<arg(guardcont)>).findcont(i).link>) //umisteny spawngem
+  arg(guard,<finduid(<arg(guardcont)>).findcont(i).link.tag(lastspawned)>)
+  if(safe <finduid(guard).npc>) //spawnuta straz
+   if(<src.distancefrom(<finduid(guard)>)> <= 15)
+    finduid(guard).events=-e_guard_stopped 
+    finduid(guard).paralyze_remove
+    finduid(guard).go(<src.p>)
+            //na generaly utocit
+            //if(<src.targ.tag(general)>)
+            // dorand 3
+            //  finduid(guard).say(Muj pane <src.targ.tag(real_name)>! Nas pan nam prikazal na tebe zautocit, odpust mu)
+            //  finduid(guard).say(Zblaznil jste se pane?)
+            //  finduid(guard).say(To je prece sam general <src.targ.tag(real_name)>. Co vas k nam privadi pane?)
+            // enddo
+            //else
+     if(<src.targ.isgm>) 
+      dorand 2
+       finduid(guard).say(O veliky, smiluj se a odpust tomuhle nevedomci jenz nam prikazal na tebe zautocit)
+       finduid(guard).say(Odpust o mocny nasemu panu neb on nevi co ucinil)
+      enddo
+              // else
+              //  if(<src.targ.tag(starosta)>)
+              //   dorand 2
+              //    finduid(guard).say(Ctihodnosti, bud pozdraven!)
+              //    finduid(guard).say(Pane to je prece starosta <src.targ.name>!)
+              //  enddo
+              //  else     
+              //   finduid(guard).attack(<src.targ>)
+              //  endif
+     endif
+             //endif
+   endif
+  endif
+ endif
+ arg(i,#+1)
+endwhile
+remove
+return 1
+
+[function tsc_section]//y,index,text
+texta(<tag(sloupec_x[1])>+<d_def_odsazeni>,argv(0),955,<argv(2)>)//ban
+button(<tag(sloupec_x[0])>,argv(0),4005,4007,1,0,argv(1))
+return <eval argv(0)+d_def_radek_vyska>
+
+[function propustit]
+arg(kolik_zbyva_casu,<eval finduid(<argv(0)>).more2>)
+arg(za_tyden,<findres(chardef,finduid(<argv(0)>).tag(guarddefname)).tag(guardhire)>)
+arg(za_hodinu,<eval (<arg(za_tyden)>/168)>)
+arg(kolik_hodin,<eval (<arg(kolik_zbyva_casu)>/36000)>)
+arg(kolik_vratit,<eval (<arg(za_hodinu)>*<arg(kolik_hodin)>)>)
+tag(pokladna,#+<arg(kolik_vratit)>)
+finduid(<argv(0)>).remove
+dialog d_town_major
+
+[function vysluzba] //argv(0) - zadany cas 
+arg(zbytek,<eval (<argv(0)>)>)
+arg(dni,<eval (arg(zbytek)/<den>)>)
+if(<arg(dni)>)
+ return <arg(dni)/10> dni
+endif
+arg(hodin,<eval (arg(zbytek)/<hodina>)>) //hodina ma 3600s
+if(<arg(hodin)>) 
+ return <arg(hodin)/10> hod
+endif
+arg(minut,<eval (arg(zbytek)/<minuta>)>)
+if(<arg(minut)>)
+ return <arg(minut)/10> min
+endif
+arg(sekund,<eval (arg(zbytek)/10)>)
+if(<arg(sekund)>)
+ return <arg(sekund)/10> s
+endif
+
+[itemdef i_guard_setp]
+name=set guard position
+id=i_memory
+type=t_eq_script
+
+on=@equip
+targetg Kam chces umistit strazce?
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targon_item
+trigger(targon_ground)
+return 1
+
+on=@targon_char
+trigger(targon_ground)
+return 1
+
+on=@targon_ground
+if(isnearguardspawn(<src.targp>))
+ src.sysmessage(Nemuzes umistit guarda tak blizko jineho)
+ trigger(equip)
+ return 1
+endif
+arg(vytvorit,1)
+if (tag(crystal).tag(guardspawn))
+  if (<finduid(<tag(crystal)>).tag(guardspawn)>)
+    arg(vytvorit,0)
+  endif
+endif
+if (arg(vytvorit))
+  src.NEWITEMsafe(01ea7)
+  lastnew.TYPE=34
+  lastnew.p=<src.targp>
+  lastnew.AMOUNT=1
+  lastnew.MOREp=<nastaveni_weapdam_guardspawntime>
+  lastnew.MOREZ=5
+  lastnew.ATTR=0b0  
+  lastnew.timer=<eval {600 900}>
+//  lastnew.timer=<eval (<finduid(<tag(crystal)>).timer>+2)>
+  finduid(<tag(crystal)>).tag(guardspawn,<lastnew>)
+  finduid(<tag(crystal)>).link=<lastnew>
+endif
+finduid(<tag(crystal)>).tag(guardspawn).MORE=<finduid(<tag(crystal)>).tag(guarddefname)>
+if(!<arg(vytvorit)>)
+ finduid(<tag(crystal)>).tag(guardspawn).tag(lastp,<finduid(<tag(crystal)>).tag(guardspawn).p>)
+ finduid(<tag(crystal)>).tag(guardspawn).p=<src.targp>  
+endif
+if (strcmpi(<link.region.tag(jmeno_mesta)>,<finduid(<tag(crystal)>).tag(guardspawn).region.tag(jmeno_mesta)>))
+  src.redmessage("Tam nemuzes strazce umistit")
+  //if (<finduid(<tag(crystal)>).tag(guardspawn).more2>)
+  //  finduid(<tag(crystal)>).timer=1
+  //endif
+  if(<arg(vytvorit)>)
+   finduid(<tag(crystal)>).link.remove
+   finduid(<tag(crystal)>).tag(guardspawn,"")
+  else
+   finduid(<tag(crystal)>).tag(guardspawn).p=<finduid(<tag(crystal)>).tag(guardspawn).tag(lastp)>
+   finduid(<tag(crystal)>).tag(guardspawn).tag.remove(lastp)
+  endif
+else
+  if (<finduid(<tag(crystal)>).tag(guardspawn).more2>) //je li spawnut strazce
+    arg(spawnedchar,<finduid(<finduid(<tag(crystal)>).tag(guardspawn)>).tag(lastspawned)>)
+    arg(spawnedchar).remove
+    finduid(<tag(crystal)>).tag(guardspawn).timer=<eval {600 900}>
+    //arg(spawnedchar).home=<finduid(<finduid(<tag(crystal)>).tag(guardspawn)>).p>
+    //arg(spawnedchar).homedist=<finduid(<finduid(<tag(crystal)>).tag(guardspawn)>).morez>
+  endif
+  finduid(<tag(crystal)>).tag(guardspawn).updatex 
+endif
+link.dialog d_town_major
+remove
+return 1
+
+[function isnearguardspawn]//args - position Im checking, uid - target (its link is either generals or town Stone)
+src.newitemsafe(i_pouch)
+lastnew.p=<args>
+lastnew.update
+arg(helppouch,<lastnew>)
+
+arg(townstone,<var(townstone_<link.region.tag(jmeno_mesta)>)>) //uid of townstone
+arg(generalstone,<var(generalstone_<link.region.tag(jmeno_mesta)>)>) //uid of generalstone
+arg(kingguardscont,<generalstone.tag(kingguardcont)>)
+arg(townguardscont,<townstone.tag(guardcont)>)
+arg(u,0)
+while(u < <kingguardscont.rescount>) 
+ if(kingguardscont.findcont(<u>) != tag(crystal)) //stejny krystal nas nezajima  
+  arg(guardscrystal,<kingguardscont.findcont(<u>)>)
+  if(guardscrystal.tag(guardspawn)) //mame vubec spawn?
+   if(guardscrystal.tag(guardspawn).isitem) //je spawn nastaven?
+    if(helppouch.distancefrom(<guardscrystal.tag(guardspawn)>) <= <nastaveni_vzdalenost_guardspawn>)
+     helppouch.remove
+     return 1
+    endif
+   endif
+  endif
+ endif
+ arg(u,#+1)
+endwhile
+arg(u,0)
+while(u < <townguardscont.rescount>)
+ if(townguardscont.findcont(<u>) != tag(crystal)) //stejny krystal nas nezajima
+  arg(guardscrystal,<townguardscont.findcont(<u>)>)
+  if(guardscrystal.tag(guardspawn)) //mame vubec spawn?
+   if(guardscrystal.tag(guardspawn).isitem) //je spawn nastaven?  
+    if(helppouch.distancefrom(<guardscrystal.tag(guardspawn)>) <= <nastaveni_vzdalenost_guardspawn>)
+     helppouch.remove 
+     return 1
+    endif
+   endif
+  endif
+ endif
+ arg(u,#+1)
+endwhile
+helppouch.remove
+return 0
+
+[dialog d_town_executioner]//blacklist
+argo.SetLocation(400,20)
+argo.tag(sirka,260)
+argo.tag(vyska,<eval (7*d_def_radek_vyska)+(3*d_def_skvira)+(2*d_def_okraj)>)
+var(lastvyska,<argo.tag(vyska)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,"'Blacklist' - psanci:")
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (safe bans(<arg(index)>))
+  argo.button(argo.tag(sloupec_x[0]),ypos,4005,4007,1,0,argv(1))
+  argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,ypos,955,"<tag(knownas[bans(<arg(index)>)])>")
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+endwhile
+
+argo.button(argo.tag(sloupec_x[0]),argo.tag(vyska)-(d_def_okraj+d_def_radek_vyska),4005,4007,1,0,1)//ban target
+argo.texta(argo.tag(sloupec_x[1])+d_def_odsazeni,argo.tag(vyska)-(d_def_okraj+d_def_radek_vyska),955,"Pridat cloveka")
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_town_executioner button]
+on=0
+
+
+//[typedef t_spawn_guard]
+//
+
+[eof]

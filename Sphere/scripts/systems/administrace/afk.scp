@@ -1,0 +1,848 @@
+//(C) Dinivan (www.moria.cz)
+//Stupen utajeni: SECRET
+
+[function serverTime]
+return<serv.rtimetext>
+
+[function shuffleVariables]//argv(0) - dialog na ktery to poukladame
+//umisteni celeho dialogu na strance
+argv(0).tag(dialog_x,<eval {0 d_afk_max_x}>)
+argv(0).tag(dialog_y,<eval {0 d_afk_max_y}>)
+
+arg(u,0)
+while(u<=3)
+  //velikost vsech 4 policek pro pismena
+  argv(0).tag(scale_<u>,<eval {1 3}>)
+
+  //pismenka do 4 policek
+  arg(letterVal,<eval {1 26}>)
+  argv(0).tag(letter_<u>,<d_letter_<eval arg(letterVal)>>)
+  if (<eval var(nastaveni_afk_fakeonoff)>)
+    arg(otherLetter,<eval {1 26}>)
+    if (<letterVal> == <otherLetter>)
+      if (<otherLetter> == 26)
+        arg(otherLetter,1)
+      else
+        arg(otherLetter,#+1)
+      endif
+    endif
+    argv(0).tag(FakeLetter_<u>,<d_letter_<eval arg(otherLetter)>>)
+  endif
+
+  //pozice vsech 4 policek
+  //X = roh celeho dialogu(X) + poradi pismene + znahodnit pozici v policku(X)
+  //Y = roh celeho dialogu(Y) + znahodnit pozici v policku(Y)
+  arg(scale,<argv(0).tag(scale_<u>)>)
+  arg(offset,<eval {0 <d_afk_max_offset_<scale>>}>)
+  argv(0).tag(field_<u>_x,<eval (<argv(0).tag(dialog_x)>+<eval (150*<u>)>+<offset>)>)
+  argv(0).tag(field_<u>_y,<eval (<argv(0).tag(dialog_y)>+<offset>)>) 
+ 
+  //kermel.sysmessage(scale<u>: <argv(0).tag(scale_<u>)>; letter<u>: <argv(0).tag(letter_<u>)>; field<u>: <argv(0).tag(field_<u>_x)>,<argv(0).tag(field_<u>_y)>)
+  arg(u,#+1) 
+endwhile
+
+[DIALOG d_afk_kontrola]
+//znahodnime promenne
+shuffleVariables(<argo>)
+arg(dialog_x,<argo.tag(dialog_x)>)
+arg(dialog_y,<argo.tag(dialog_y)>)
+
+NoClose=1
+NoMove=1
+
+if(findid(i_afk_dialog)) //znovuvytvoreny dialog
+  arg(afk_item,<findid(i_afk_dialog)>) 
+  arg(u,0)
+  while(u <= 3)
+    argo.tag(letter_<u>,<afk_item.tag(letter_<u>)>)
+    if (<eval var(nastaveni_afk_fakeonoff)>)
+      argo.tag(FakeLetter_<u>,<afk_item.tag(FakeLetter_<u>)>)
+    endif
+    arg(u,#+1)
+  endwhile
+  afk_item.tag(my_dialog,<argo>)
+else //novy dialog
+  newitemsafe(i_afk_dialog)
+  arg(u,0)
+  while(u <= 3)
+    lastnew.tag(letter_<u>,<argo.tag(letter_<u>)>)
+    if (<eval var(nastaveni_afk_fakeonoff)>)
+      lastnew.tag(FakeLetter_<u>,<argo.tag(FakeLetter_<u>)>)
+      lastnew.tag(generated_FakeText,<lastnew.tag(generated_FakeText)><argo.tag(FakeLetter_<u>)>)
+    endif
+    lastnew.tag(generated_text,<lastnew.tag(generated_text)><argo.tag(letter_<u>)>)
+    arg(u,#+1)
+  endwhile
+  lastnew.tag(my_dialog,<argo>)
+  lastnew.tag(macro_action,<tag(macro_action)>) //macro_action - akce ulozena na hraci
+  tag.remove(macro_action)
+  lastnew.tag(start_time,<serv.time>)
+  events=+e_afk_controlled
+  lastnew.equip
+endif
+
+if (<eval var(nastaveni_afk_fakeonoff)>)
+  //These 3 resizepic and putFakeLetter cycles are here to give FAKE information to the automatic afk script
+  argo.resizePic(<dialog_x>,<dialog_y>,<d_afk_bgrnd>,<d_afk_bgrnd_x>,<d_afk_bgrnd_y>)	//fake resize
+  //argo.resizePic(<dialog_x>,<dialog_y>+<d_afk_bgrnd_y>,<d_afk_info_bgrnd>,<d_afk_dialog_x>,<d_afk_dialog_y>-<d_afk_bgrnd_y>)	//fake resize
+  //argo.resizePic(<dialog_x>+5,<dialog_y>+<d_afk_bgrnd_y>+3*<d_def_radek_vyska>,<d_textfield_bgrnd>,200,<d_def_radek_vyska>)	//fake resize
+  arg(u,0)
+  while(u<4)
+    argo.putFakeLetter(<u>)
+    arg(u,#+1)
+  endwhile
+endif
+
+argo.resizePic(<dialog_x>,<dialog_y>,<d_afk_bgrnd>,<d_afk_bgrnd_x>,<d_afk_bgrnd_y>)
+arg(u,0)
+while(u<=3)
+  argo.putLetter(<u>)
+  arg(u,#+1)
+endwhile
+
+arg(u,1)
+while(u < 4) //dame oddelovaci listy 
+  argo.gumppictiled(<eval <dialog_x>+<u>*150-1>,<dialog_y>,<d_def_skvira>,<d_afk_bgrnd_y>,2524)
+  arg(u,#+1)
+endwhile
+
+argo.resizePic(<dialog_x>,<dialog_y>+<d_afk_bgrnd_y>,<d_afk_info_bgrnd>,<d_afk_dialog_x>,<d_afk_dialog_y>-<d_afk_bgrnd_y>)
+argo.textA(<dialog_x>+10,<dialog_y>+<d_afk_bgrnd_y>+2*<d_def_skvira>,0481,"AFK KONTROLA!")
+argo.textA(<dialog_x>+10,<dialog_y>+<d_afk_bgrnd_y>+8+<d_def_radek_vyska>,0481,"OPIS TEXT CO VIDIS NAHORE")
+argo.setText(100,"TEXT: ")
+argo.resizePic(<dialog_x>+5,<dialog_y>+<d_afk_bgrnd_y>+3*<d_def_radek_vyska>,<d_textfield_bgrnd>,200,<d_def_radek_vyska>)
+argo.textEntryA(<dialog_x>+10,<dialog_y>+<d_afk_bgrnd_y>+3*<d_def_radek_vyska>,200,20,0481,1,100)
+
+argo.button(<dialog_x>+220,<dialog_y>+<d_afk_bgrnd_y>+3*<d_def_radek_vyska>,2450,2451,1,0,1)
+argo.button(<dialog_x>+<d_afk_dialog_x>-63,<dialog_y>+<d_afk_bgrnd_y>+3*<d_def_radek_vyska>,2453,2454,1,0,0)
+//argo.checkerTrans(<dialog_x>,<dialog_y>,600,150)
+
+
+[DIALOG d_afk_kontrola button]
+on=0
+//jen pro dialogclose
+
+ON=1
+arg(written_text,<argtxt(1)>)
+if (src.findid(i_afk_dialog))
+  arg(afk_item,<src.findid(i_afk_dialog)>)
+else
+  //src.sysmessage(Stala se nejaka chyba, kontaktuj GM a popis mu cos delal)
+  kermel.delayedmessage("Cas: <servertime> hrac <src> <src.name>(<src.account.name>) dosahl chyby pri kontrole - chybel kontrolni item")
+  src.accmsg(Dosahl chyby pri AFK kontrole - chybel kontrolni item)
+  return 1
+endif
+arg(a,0)
+while (a <= 3)
+  arg(generated_text,<arg(generated_text)><afk_item.tag(letter_<a>)>)
+  if (<eval var(nastaveni_afk_fakeonoff)>)
+    arg(generated_FakeText,<arg(generated_FakeText)><afk_item.tag(FakeLetter_<a>)>)
+  endif
+  arg(a,#+1)
+endwhile
+src.tag(written_combination,<strmid(<written_text>,5,<strlen(<written_text>)>)>)
+if (strmatch(<arg(written_text)>,"*<arg(generated_text)>*"))
+  if (strlen(<src.tag(fkMsg)>)) && (<eval var(nastaveni_afk_fakeonoff)>)
+    arg(fakeVal,<eval return_nth(1,<src.tag(fkMsg)>)>)
+    arg(validVal,<?fixNumber(<return_nth(2,<src.tag(fkMsg)>)>)?>)
+    src.tag(fkMsg,"<eval arg(fakeVal)>,<eval arg(validVal)+1>,<src.name>, acc <src.account.name>")
+  endif
+  if (<afk_item.more1> >= <eval (<nastaveni_afk_tolerance>-2)>) //stihli to podezrele rychle
+    kermel.delayedmessage("Cas: <servertime> speeder <src> <src.name>(<src.account.name>) byl podezrele rychly pri AFK - zbyl cas <eval afk_item.more1>s")
+  endif
+  src.sysmessage("Spravne, prijemnou hru")
+  src.tag.remove(written_combination)
+  afk_item.remove
+  while (isMonthLater(<tag(firstsuccesslesscontrol)>))
+    decreaseAFKTag(<tag(numberAFKsInMonth)>)
+  endwhile
+  if(strlen(<tag(numberAFKsInMonth)>))
+    increaseAFKTagSuccess(<tag(numberAFKsInMonth)>)
+  endif
+else
+  if (<eval var(nastaveni_afk_fakeonoff)>)
+    if (strmatch(<arg(written_text)>,"*<arg(generated_FakeText)>*"))
+      src.sysmessage("Spravne, prijemnou hru")	//F A K E   M E S S A G E !
+      if (strlen(<src.tag(fkMsg)>))
+        arg(fakeVal,<eval src.return_nth(1,<src.tag(fkMsg)>)>)
+        arg(validVal,<?fixNumber(<src.return_nth(2,<src.tag(fkMsg)>)>)?>)
+      else
+        arg(fakeVal,1)
+        arg(validVal,0)
+      endif
+      src.tag(fkMsg,"<eval arg(fakeVal)+1>,<eval arg(validVal)>,<src.name>, acc <src.account.name>")
+      src.accMsg("Cas: <servertime>, hrac <src> jmenem <src.name> (<src.account.name>) pouzil AFK SCRIPT k vyplneni kontroly. Pocet zaznamu hrace: <eval src.tag(fkMsg)>")
+      src.tag.remove(written_combination)
+      afk_item.remove
+      while (isMonthLater(<tag(firstsuccesslesscontrol)>))
+        decreaseAFKTag(<tag(numberAFKsInMonth)>)
+      endwhile
+      if (strlen(<tag(numberAFKsInMonth)>))
+        increaseAFKTagSuccess(<tag(numberAFKsInMonth)>)
+      endif
+      return 0
+    endif
+  endif
+  src.sysmessage("Spatne")
+  src.accMsg("Cas: <servertime>, hrac <src> jmenem <src.name> (<src.account.name>) zadal neplatne reseni AFK. Mel napsat: <arg(generated_text)>, napsal: <arg(written_text)>, jeste ma cas..")
+  if (<afk_item.more1> > 0)
+    src.sysmessage(Zkus to znovu)
+    //dialog(d_afk_kontrola) //Zde by to nemelo byt potreba 
+  endif
+endif
+
+[function putLetter]//argv(0) - cislo pismene
+arg(scalenum,<tag(scale_<argv(0)>)>) //cislo meritka
+arg(scale_cit,<d_afk_scale_<scalenum>_cit>) //citatel
+arg(scale_jmen,<d_afk_scale_<scalenum>_jmen>) //jmenovatel
+arg(letter,<tag(letter_<argv(0)>)>) //pismenko
+arg(xpos,<tag(field_<argv(0)>_x)>) //souradnice puvodni
+arg(ypos,<tag(field_<argv(0)>_y)>)
+//kermel.sysmessage(scalenum: <scalenum>, letter: <letter>, pos: <xpos>,<ypos>)
+arg(i,1)
+while(i <= <d_afk_<letter>_length>)
+  arg(pic_x,<xpos>+<scale_cit>*<getXPos(<d_afk_<letter>_<i>>)>/<scale_jmen>) //skalovane souradnice
+  //arg(pic_x,#+<eval {-1 1}>)  //customizer
+  arg(pic_y,<ypos>+<scale_cit>*<getYPos(<d_afk_<letter>_<i>>)>/<scale_jmen>)
+  if (<eval var(nastaveni_afk_fakeonoff)>)
+    button(<pic_x>,<pic_y>,<d_afk_redpoint>,<d_afk_redpoint>,0,0,0)
+  else
+    gumppic(<pic_x>,<pic_y>,<d_afk_redpoint>)
+  endif
+  //gumppic(<pic_x>,<pic_y>,<d_afk_redpoint>)
+  arg(i,#+1)
+endwhile
+
+[function putFakeLetter]//argv(0) - cislo pismene
+arg(scalenum,<tag(scale_<argv(0)>)>) //cislo meritka
+arg(scale_cit,<d_afk_scale_<scalenum>_cit>) //citatel
+arg(scale_jmen,<d_afk_scale_<scalenum>_jmen>) //jmenovatel
+arg(letter,<tag(FakeLetter_<argv(0)>)>) //pismenko
+arg(xpos,<tag(field_<argv(0)>_x)>) //souradnice puvodni
+arg(ypos,<tag(field_<argv(0)>_y)>)
+//kermel.sysmessage(scalenum: <scalenum>, letter: <letter>, pos: <xpos>,<ypos>)
+arg(i,1)
+while(i <= <d_afk_<letter>_length>)
+ arg(pic_x,<xpos>+<scale_cit>*<getXPos(<d_afk_<letter>_<i>>)>/<scale_jmen>) //skalovane souradnice
+ //arg(pic_x,#+<eval {-1 1}>)  //customizer
+ arg(pic_y,<ypos>+<scale_cit>*<getYPos(<d_afk_<letter>_<i>>)>/<scale_jmen>)
+ //tag(gumpPoint_<eval tag(pointsCount)>,"<pic_x>,<pic_y>,<d_afk_redpoint>")
+ gumppic(<pic_x>,<pic_y>,<d_afk_redpoint>)
+ //tag(pointsCount,#+1)
+ arg(i,#+1)
+endwhile
+
+[function getXPos]//argumentem je defname sestávající ze dvou èísel (tj cosi jako "x,y")
+return <argv(0)>
+
+[function getYPos]
+return <argv(1)>
+
+[itemdef i_afk_dialog]
+id=i_memory
+type=t_eq_script
+name=AFK Dialog hlidac
+
+on=@create
+more1=<nastaveni_afk_tolerance> //max timer
+timer=1 //bude kontrolovat zda dialog nezmizel a kdyztak udela novy 
+
+on=@equip
+cont.redmessage(AFK KONTROLA!!!)
+cont.sfx(1153) //takovej divnej hlas :)
+if(cont.tag(afk_penalty))
+ more1=<eval cont.tag(afk_penalty)>
+ cont.tag.remove(afk_penalty)
+endif
+
+on=@unequip
+cont.events=-e_afk_controlled
+
+on=@timer
+if(more1)
+ //cont.redmessage(AFK KONTROLA!!!) //chteli to opakovat, maj to mit 
+ if(<eval (<tag(start_time)> + <nastaveni_afk_tolerance>*10 +10)> < <serv.time>) //10decisekund jako tolerance chyby :) 
+  if(var(wassave) == 0) //nebyl li save tak mi to napis
+   kermel.delayedmessage("Cas: <servertime> spozdenec <cont> <cont.name>(<cont.account.name>) skoncil AFK kontrolu az za <eval (<serv.time>-<tag(start_time)>)/10>s")
+   eufegenie.delayedmessage("Cas: <servertime> spozdenec <cont> <cont.name>(<cont.account.name>) skoncil AFK kontrolu az za <eval (<serv.time>-<tag(start_time)>)/10>s")
+  endif
+  more1=1
+ endif
+ more1=<more1>-1
+ timer=1
+ if(isdefined(tag(my_dialog)))
+  if(finduid(<tag(my_dialog)>))
+   if(<tag(my_dialog).topobj>!=<topobj>) //dialog neni otevreny na hraci - zmizel    
+    if(cont.isonline)
+     cont.dialog(d_afk_kontrola)    
+    endif
+    return 1
+   else
+    if(<more1> % 2) //kazdou druhou sekundu
+     cont.redmessage(<eval more1> sekund do lagru)
+    endif
+    return 1
+   endif
+  else //asi dialog zmizel 
+   if(cont.isonline)
+    cont.dialog(d_afk_kontrola)
+   endif
+   return 1
+  endif
+ else //divne, ale ma proste kliku
+  cont.sysmessage(Cas: <servertime> chyba, ztratil se dialog - pokud jsi byl potrestan lagrem kontaktuj GM a popis cos delal. Pokuds nevypnul makro tak se ale ani nesnaz!)
+  kermel.delayedmessage("Cas: <servertime> chyba <src> <src.name>(<src.account.name>) se ztratil dialog")  
+  cont.accmsg(Na afk_dialog itemu nemel ulozenej ten dialog!)
+  remove
+ endif
+else
+ cont.delayedmessage(Cas AFK kontroly vyprsel)
+ if(finduid(<tag(my_dialog)>))
+  cont.dialogclose(d_afk_kontrola,0) //dialog, simulace tlacitka CLOSE
+ endif
+ if(var(wassave)) //jen pro jistotu
+ else
+  var(wassave,0)
+ endif
+ if(<wassave> == 0) //1 v pøípadì že mezitím probìhl save... 
+  if(cont.account.tag(vlagru)) 
+   if(cont.deservesLager)   
+    if(isdefined(cont.tag(nachytanafk)))
+     cont.tag(nachytanafk,<eval <cont.tag(nachytanafk)>+1>)
+    else 
+     cont.tag(nachytanafk,1)
+    endif
+    cont.account.tag(afklagr,<eval <cont.account.tag(afklagr)>+1>) 
+    cont.tag(lagrlogu,<eval <eval cont.tag(lagrlogu)>*2>)
+    cont.delayedredmessage(Cas: <servertime> trest zvysen na <cont.tag(lagrlogu)>)
+    kermel.delayedmessage("Cas: <servertime> trestanec <cont> <cont.name>(<cont.account.name>) zdvojnasoben pocet logu - nyni: <cont.tag(lagrlogu)>. Celkem byl <cont.account.tag(afklagr)>x AFK. Mel napsat:<tag(generated_text)> - napsal:<cont.tag(written_combination)>")
+    eufegenie.delayedmessage("Cas: <servertime> trestanec <cont> <cont.name>(<cont.account.name>) zdvojnasoben pocet logu - nyni: <cont.tag(lagrlogu)>. Celkem byl <cont.account.tag(afklagr)>x AFK. Mel napsat:<tag(generated_text)> - napsal:<cont.tag(written_combination)>")
+   endif
+  else         
+   if(cont.deservesLager)
+    //if(cont.isdead)
+     if(isdefined(cont.tag(nachytanafk)))
+      cont.tag(nachytanafk,<eval <cont.tag(nachytanafk)>+1>)
+     else 
+      cont.tag(nachytanafk,1)
+     endif
+     kermel.delayedmessage("Cas: <servertime> makrar <cont> <cont.name>(<cont.account.name>) do lagru za <tag(macro_action)> . Celkem byl <cont.account.tag(afklagr)>x AFK. Mel napsat:<tag(generated_text)> - napsal:<cont.tag(written_combination)>")    
+     eufegenie.delayedmessage("Cas: <servertime> makrar <cont> <cont.name>(<cont.account.name>) do lagru za <tag(macro_action)> . Celkem byl <cont.account.tag(afklagr)>x AFK. Mel napsat:<tag(generated_text)> - napsal:<cont.tag(written_combination)>")    
+     cont.afklagr
+    //else //umrel
+    // kermel.delayedmessage("Cas: <servertime> makrar <cont> <cont.name>(<cont.account.name>) kontrola odlozena z duvodu umrti. Mel napsat:<tag(generated_text)> - napsal:<cont.tag(written_combination)>")          
+    // eufegenie.delayedmessage("Cas: <servertime> makrar <cont> <cont.name>(<cont.account.name>) kontrola odlozena z duvodu umrti. Mel napsat:<tag(generated_text)> - napsal:<cont.tag(written_combination)>")          
+    // cont.delayedmessage("AFK potrestani odlozeno z duvodu umrti pri kontrole")
+    //endif
+   endif
+  endif 
+ else
+  cont.delayedmessage(Afk kontrola odpustena z duvodu worldsave)
+  kermel.delayedmessage("Cas: <servertime> stastlivec <cont> <cont.name>(<cont.account.name>) afk kontrola odpustena - worldsave")
+  eufegenie.delayedmessage("Cas: <servertime> stastlivec <cont> <cont.name>(<cont.account.name>) afk kontrola odpustena - worldsave")
+ endif
+ cont.tag.remove(written_combination)
+ remove
+ return 0
+endif
+return 1
+
+[function afkControl]
+src=<uid> //buhviproc to je potreba (a sux)
+if(ismacroing)&&(!isgm)
+ if(!isdefined(account.tag(vlagru))) 
+   src.dialog d_afk_kontrola
+ endif
+endif
+
+[function afkProximity] //varovani pred blizici se kontrolou
+src=<uid>
+if (ismacroing)&&(!isgm)&&(!isdead)&&(!debugging)&&(!afkHasControl)
+ //if(!isdefined(account.tag(vlagru)))
+  src.newitemsafe(i_afk_countdown)
+  lastnew.tag(my_timer,<serv.time>)  
+  src.tag(macro_action,<src.myaction>)
+  src.events=+e_afk_countdowned
+  lastnew.equip
+ //endif
+endif
+
+[function afkHasControl]
+if (isEvent(e_afk_countdowned) || isEvent(e_afk_controlled))
+  return 1
+else
+  return 0
+endif
+
+[function debugging] //Debug purposes
+if(isDefined(tag(debugging)))
+ if(<tag(debugging)>==1)
+  return 1
+ endif
+endif
+return 0
+
+[itemdef i_afk_trigger] //tento item ma zodpovednost za kontrolu afk
+//bude umisten u hlidace nastaveni tak aby stale bezel
+id=i_memory
+type=t_eq_script
+name=AFK trigger
+
+on=@create
+var(afk_trigger_uid,<uid>)
+attr=attr_invis|attr_move_never
+timer=1800
+
+on=@timer
+var(afk_trigger_uid,<uid>)
+if(nastaveni_afk_toggleonoff) 
+  cont.newitemsafe(i_afk_warner) //predmet s t_eq_script sam nemuze provest serv.allclients
+endif
+if (rand(15) == 1)  //priblizne jedna z patnacti kontrol vyhodi druhou kontrolu ve velmi kratkem case => aby se hned po vyplneni neutikalo afk
+  timer=<eval {<d_afk_minTimeCritical> <d_afk_maxTimeCritical>}>
+else
+  timer=<eval {<d_afk_minTime> <d_afk_maxTime>}>
+endif
+return 1
+
+[itemdef i_afk_launcher] //tenhle item t_script pouze spusti kontrolu na klientech
+id=i_memory
+type=t_script
+name=AFK control launcher
+
+on=@create
+if(<serv.statclients> > 0)
+ p=<serv.clientsenum(0).account.Char(0).p> //musi se premistit jinak pouze zmizi !
+ timer=1
+else //nikdo nalogovanej :)
+ remove
+endif
+
+on=@timer
+serv.allclients(afkControl)
+remove
+
+[itemdef i_afk_warner] //tenhle item t_script spusti varovani pred kontrolou
+id=i_memory
+type=t_script
+name=AFK control warner
+
+on=@create
+if(<serv.statclients> > 0)
+ p=<serv.clientsenum(0).account.Char(0).p> //musi se premistit jinak pouze zmizi !
+ timer=1
+else //nikdo nalogovanej :)
+ remove
+endif
+
+on=@timer
+serv.allclients(afkProximity)
+remove
+
+[itemdef i_afk_countdown]
+id=i_memory
+name=Countdown before AFK control
+type=t_eq_script
+
+on=@create
+more1=<nastaveni_afk_countdown> //max timer
+timer=1 //bude oznamovat prichod AFK kontroly
+
+on=@unequip
+cont.events=-e_afk_countdowned
+
+on=@timer
+if (more1)
+ cont.redmessage(AFK kontrola za <eval more1> sekund. Doporucuji vypnout makro!) //chteli to opakovat, maj to mit 
+ if (<eval (<tag(my_timer)> + <nastaveni_afk_countdown>*10 +10)> < <serv.time>) //10decisekund jako tolerance chyby :)  
+  arg(howmuchtime,<eval (<serv.time>-<eval (<tag(my_timer)>+<nastaveni_afk_countdown>*10)>)/10>)
+  if(var(wassave) == 0)
+   kermel.delayedmessage("Cas: <servertime> spozdenec <cont> <cont.name>(<cont.account.name>) pretahl odpocet pred AFK pres limit o <howmuchtime>s")  
+   eufegenie.delayedmessage("Cas: <servertime> spozdenec <cont> <cont.name>(<cont.account.name>) pretahl odpocet pred AFK pres limit o <howmuchtime>s")  
+  endif
+  if (howmuchtime > <nastaveni_afk_tolerance>) //pretahnul i naslednou kontrolu AFK
+   if (cont.isonline)
+    cont.userafk(1) //jedna sekunda postaci... dobytkovi...
+   else
+    cont.events=+e_afk_forced_onlogin
+    cont.tag(afk_time,1)
+   endif
+  else
+   if (cont.isonline)
+    cont.userafk(<eval (<nastaveni_afk_tolerance>-<howmuchtime>)>) //dostane tolik kolik mu zbejva...
+   else
+    //Po nalogovani bude pokracovat 
+    cont.events=+e_afk_forced_onlogin
+    cont.tag(afk_time,<eval (<nastaveni_afk_tolerance>-<howmuchtime>)>)
+    cont.tag(time_off,<serv.time>)
+   endif
+  endif
+  remove  
+ endif
+ more1=<more1>-1
+ timer=1 
+else 
+ if (cont.isonline)
+  cont.userafk
+  remove
+ else
+  timer=1
+  more1=0  
+  return 1
+ endif
+ return 0
+endif
+return 1
+
+[events e_afk_controlled]
+on=@logout
+kermel.delayedmessage("Cas: <servertime> podvodnik <uid> <name>(<account.name>) se odlogoval pri AFK kontrole")
+eufegenie.delayedmessage("Cas: <servertime> podvodnik <uid> <name>(<account.name>) se odlogoval pri AFK kontrole")
+
+on=@login
+arg(afk_item,<findid(i_afk_dialog)>)
+//                    nejvyssi mozny dosazitelny cas                     soucasny cas
+afk_item.more1=<eval (<eval (<afk_item.tag(start_time)>+<nastaveni_afk_tolerance>*10)> - <serv.time>)/10>
+if(<eval afk_item.more1> < 0)
+ if(var(wassave) == 0)
+  kermel.delayedmessage("Cas: <servertime> logouter <uid> <name>(<account.name>) se lognul <eval 0-afk_item.more1>s po konci AFK kontroly")
+  eufegenie.delayedmessage("Cas: <servertime> logouter <uid> <name>(<account.name>) se lognul <eval 0-afk_item.more1>s po konci AFK kontroly")
+ endif
+ afk_item.more1=1
+else
+ kermel.delayedmessage("Cas: <servertime> logouterovi <uid> <name>(<account.name>) po lognuti zbyva <eval afk_item.more1>s do konce AFK kontroly")
+ eufegenie.delayedmessage("Cas: <servertime> logouterovi <uid> <name>(<account.name>) po lognuti zbyva <eval afk_item.more1>s do konce AFK kontroly")
+endif
+
+[events e_afk_countdowned]
+on=@logout
+kermel.delayedmessage("Cas: <servertime> podvodnik <uid> <name>(<account.name>) se odlogoval pri AFK odpocitavani")
+eufegenie.delayedmessage("Cas: <servertime> podvodnik <uid> <name>(<account.name>) se odlogoval pri AFK odpocitavani")
+
+on=@login
+arg(afk_item,<findid(i_afk_countdown)>)
+//                                 nejvyssi mozny dosazitelny cas                     soucasny cas
+if (itemExists(<afk_item>))
+  afk_item.more1=<eval (<eval (<afk_item.tag(my_timer)>+<nastaveni_afk_countdown>*10)> - <serv.time>)/10>
+  if (<eval afk_item.more1> < 0)
+    if (var(wassave) == 0)
+      kermel.delayedmessage("Cas: <servertime> logouter <uid> <name>(<account.name>) pretahl o <eval 0-afk_item.more1>s korektni zacatek AFK kontroly")
+      eufegenie.delayedmessage("Cas: <servertime> logouter <uid> <name>(<account.name>) pretahl o <eval 0-afk_item.more1>s korektni zacatek AFK kontroly")
+    endif
+    afk_item.more1=1
+    return 0
+  endif
+endif
+kermel.delayedmessage("Cas: <servertime> logouterovi <uid> <name>(<account.name>) po lognuti zbyva <eval afk_item.more1>s do zacatku AFK kontroly")
+eufegenie.delayedmessage("Cas: <servertime> logouterovi <uid> <name>(<account.name>) po lognuti zbyva <eval afk_item.more1>s do zacatku AFK kontroly")
+
+
+[events e_afk_forced_onlogin]
+on=@login
+if(tag(time_off))
+ arg(minus,<eval (<serv.time>-<tag(time_off)>)/10>)
+else
+ arg(minus,0)
+endif
+arg(afk_time,<eval <tag(afk_time)>-<minus>>)
+if(afk_time <= 0)
+ arg(afk_time,1)
+endif
+kermel.delayedmessage("Cas: <servertime> logouter <uid> <name>(<account.name>) po nalogovani AFK kontrolovan v limitu <afk_time>s")
+eufegenie.delayedmessage("Cas: <servertime> logouter <uid> <name>(<account.name>) po nalogovani AFK kontrolovan v limitu <afk_time>s")
+userafk(<afk_time>)
+tag.remove(afk_time)
+tag.remove(time_off)
+events=-e_afk_forced_onlogin
+
+[function forceafk]
+if(isgm)
+ kermel.delayedmessage("Cas: <servertime> <uid> <name>(<account.name>) spustil globalni AFK kontrolu")
+endif
+finduid(<var(afk_trigger_uid)>).timer=0
+
+[function userafk]//je li argv(0) dostane hrac tolik casu kolik udava... 
+if(src.isgm)
+ if(argv(0))
+  kermel.delayedmessage("Cas: <servertime> kontrolor <src> <src.name>(<src.account.name>) pustil AFK na hrace <uid> <name>(<account.name>) s limitem <argv(0)>s")
+  eufegenie.delayedmessage("Cas: <servertime> kontrolor <src> <src.name>(<src.account.name>) pustil AFK na hrace <uid> <name>(<account.name>) s limitem <argv(0)>s")
+  src.accmsg("Pustil AFK kontrolu na hrace <uid> <name>(<account.name>) s limitem <argv(0)>s")
+ else
+  kermel.delayedmessage("Cas: <servertime> kontrolor <src> <src.name>(<src.account.name>) pustil AFK na hrace <uid> <name>(<account.name>) s default limitem")
+  eufegenie.delayedmessage("Cas: <servertime> kontrolor <src> <src.name>(<src.account.name>) pustil AFK na hrace <uid> <name>(<account.name>) s default limitem")
+  src.accmsg("Pustil AFK kontrolu na hrace <uid> <name>(<account.name>) s default limitem")
+ endif
+endif
+src=<uid>
+src.accmsg(Zacala mu AFK kontrola)
+if(argv(0)) //dostane penalizaci
+ src.tag(afk_penalty,<argv(0)>)
+endif
+src.dialog d_afk_kontrola
+
+[function runAFK] //afk kontrola i s varovanim komukoliv (i nemakrarovi)
+if(src.isgm)
+ kermel.delayedmessage("Cas: <servertime> kontrolor <src> <src.name>(<src.account.name>) pustil odpocet pred AFK na hrace <uid> <name>(<account.name>)")
+ src.accmsg("Pustil odpocet pred AFK kontrolou na hrace <uid> <name>(<account.name>)")
+endif
+src=<uid>
+src.newitemsafe(i_afk_countdown)
+lastnew.tag(my_timer,<serv.time>)  
+src.tag(macro_action,<src.myaction>)
+src.events=+e_afk_countdowned
+lastnew.equip
+
+
+[function hlnastinfo] //zobraz vsechny hlidace
+nukecharall(zobrhlnast)
+finduid(<var(nastaveni_guardian_uid)>).info
+
+[function zobrhlnast]
+if(!strcmpi(<name>,"Hlidac Nastaveni NEMAZAT!!"))
+ kermel.sysmessage(Hlnast: <uid>)
+endif
+
+[function afktriginfo]
+finduid(<var(afk_trigger_uid)>).info
+
+[function parseSkill]//Args - ulozena action
+if(strmatch(<args>,"*Delaying*"))
+ if(strmatch(<region.name>,"*doly*")||strmatch(<region.name>,"*dul*"))
+  return"Mining"  
+ else
+  if(isneartype(t_water,4)) //asi rybari
+   return"Fishing"
+  else
+   if(isneartype(t_tree,4)) //asi lumberjackuje
+    return"Lumberjacking"
+   else
+    return"Unknown at pos <p_x> <p_y> <p_z>"
+   endif
+  endif
+ endif
+else //cosi jako skill_XYZ
+ arg(macroSkill,<strmid(<args>,6,<strlen(<args>)>)>)
+ if(!strcmpi(<macroSkill>,"Blacksmith"))
+  return"Blacksmithing" //tam je to trosku jinak :-/
+ else
+  return<macroSkill>
+ endif
+endif
+
+[function parseUID]//args - message; vzor zpravy: "Cas: yyyy/mm/dd hh:mm:ss makrar #xyz Jmeno do lagru za skill_cosi . Celkem byl 5x AFK"
+if(strmatch(<args>,"*#*"))
+ arg(retUID,<finduid(<strgettok("<args>",4," ")>)>) //UIDcko je paty slovo ve zprave (deleno podle mezer, pocitano od nuly)
+ return"<finduid(<retUID>)>"
+endif
+
+[function parseAction]// args- message jako v predchozi funkci. Jmeno ovsem muze byt viceslovne
+if(strmatch(<args>,"*#*"))
+ arg(i,9) //devate slovo je skill (nebo Delaying)  
+ arg(retAction,"")
+ while( (!strmatch(<arg(retAction)>,"*_*")) && (!strmatch(<arg(retAction)>,"Delaying")) )
+  arg(retAction,<strgettok("<args>",<i>," ")>) //Action je nejdrive 9 slovo ve zprave (deleno podle mezer, pocitano od nuly)  
+  arg(i,#+1)
+ endwhile
+ return"<retAction>"
+endif
+
+[function dropSkill] //arg- kolik
+if(!strcmpi(<macroersSkill>,"Lumberjacking") && <macroersUID.account.tag(vlagru)>) //je v lagru a snizuje se skill lumber
+ macroersUID.tag(lumberpits,<eval (<macroersUID.tag(lumberpits)> - <argv(0)>)>)
+ if(<eval macroersUID.tag(lumberpits)> < 0)
+  macroersUID.tag(lumberpits,0.0)
+ endif 
+ //kontrola jestli jsme nepresvihli baseskill...
+ if(isdefined(base_<macroersUID.tag(class)>_<macroersSkill>))
+  if(<eval macroersUID.tag(lumberpits)> < <eval base_<macroersUID.tag(class)>_<macroersSkill>>)
+   macroersUID.tag(lumberpits,<eval base_<macroersUID.tag(class)>_<macroersSkill>>)
+  endif  
+ endif
+ src.sysmessage(Snizil jsi hraci <macroersUID> <macroersUID.name> skill <macroersSkill> o <argv(0)> na <finduid(<macroersUID>).tag(lumberpits)>)
+ kermel.delayedmessage("Cas: <servertime> hraci <macroersUID> <macroersUID.name>(<macroersUID.account.name>) snizen skill <macroersSkill> o <argv(0)> na <finduid(<macroersUID>).tag(lumberpits)>. Snizil <src> <src.name>(<src.account.name>):<src.account.lastip>")
+ src.accmsg(Snizil za trest hraci <macroersUID> <macroersUID.name> skill <macroersSkill> o <argv(0)> na <finduid(<macroersUID>).tag(lumberpits)>)
+else
+ macroersUID.<macroersSkill>=<eval (<eval (macroersUID.<macroersSkill>)> - <argv(0)>)>
+ if(<eval (macroersUID.<macroersSkill>)> < 0)
+  macroersUID.<macroersSkill> = 0.0
+ endif 
+ //kontrola jestli jsme nepresvihli baseskill...
+ if(isdefined(base_<macroersUID.tag(class)>_<macroersSkill>))
+  if(<eval macroersUID.<macroersSkill>> < <eval base_<macroersUID.tag(class)>_<macroersSkill>>)
+   macroersUID.<macroersSkill>=<eval base_<macroersUID.tag(class)>_<macroersSkill>>)
+  endif  
+ endif
+ src.sysmessage(Snizil jsi hraci <macroersUID> <macroersUID.name> skill <macroersSkill> o <argv(0)> na <finduid(<macroersUID>).<macroersSkill>>)
+ kermel.delayedmessage("Cas: <servertime> hraci <macroersUID> <macroersUID.name>(<macroersUID.account.name>) snizen skill <macroersSkill> o <argv(0)> na <finduid(<macroersUID>).<macroersSkill>>. Snizil <src> <src.name>(<src.account.name>):<src.account.lastip>")
+ src.accmsg(Snizil za trest hraci <macroersUID> <macroersUID.name> skill <macroersSkill> o <argv(0)> na <finduid(<macroersUID>).<macroersSkill>>)
+endif
+macroersUID.delayedredmessage(Skill <macroersSkill> za trest snizen o <argv(0)>)
+src.afklog(<macroersUID.account.name>)
+var(macroersSkill,"")
+var(macroersUID,"")
+var(macroersAction,"")
+
+[function deservesLager] //btw. successlesscontrol je hezkej novotvar pravda? :) 
+arg(afk_item,<findid(i_afk_dialog)>)
+if(strlen(<tag(firstsuccesslesscontrol)>)) //uz nekdy v limitu neuspel
+  //f_checkAFKTag
+  if !(isMonthLater(<tag(firstsuccesslesscontrol)>)) //ma x-dni limit
+    arg(cas_konec,<timeMonthLaterSH(<tag(firstsuccesslesscontrol)>)>)
+    if(strlen(<tag(numberAFKsInMonth)>))
+      if(<getAFKsCount(<tag(numberAFKsInMonth)>)> < <nastaveni_povoleno_AFKfails>) //jeste ma nekolik pokusu
+        increaseAFKTag(<tag(numberAFKsInMonth)>)
+        delayedmessage(Tve <getAFKsCount(<tag(numberAFKsInMonth)>)>. AFK selhani v pocitanem obdobi. Davej si lepsi pozor!)
+        kermel.delayedmessage("Cas: <servertime> afkar <uid> <name>(<account.name>) po <getAFKsCount(<tag(numberAFKsInMonth)>)>. selhal pri AFK v obdobi. Jeho obdobi konci <cas_konec>. Jeho skill: <afk_item.tag(macro_action)>. Mel napsat:<afk_item.tag(generated_text)> - napsal:<tag(written_combination)>") 
+        eufegenie.delayedmessage("Cas: <servertime> afkar <uid> <name>(<account.name>) po <getAFKsCount(<tag(numberAFKsInMonth)>)>. selhal pri AFK v obdobi. Jeho obdobi konci <cas_konec>. Jeho skill: <afk_item.tag(macro_action)>. Mel napsat:<afk_item.tag(generated_text)> - napsal:<tag(written_combination)>") 
+        return 0 
+      else //pokusy dosly
+        delayedmessage("Cas: <servertime> tvoje tolerance k AFK selhani vyprsela. Vitej v Lagru")
+        kermel.delayedmessage("Cas: <servertime> nestastnik <uid> <name>(<account.name>) presahl limit AFK selhani. Jeho pocitane obdobi melo koncit <cas_konec>. Sanci na uspech mel <getAFKsCount(<tag(numberAFKsInMonth)>)>")
+        eufegenie.delayedmessage("Cas: <servertime> nestastnik <uid> <name>(<account.name>) presahl limit AFK selhani. Jeho obdobi melo koncit <cas_konec>. Sanci na uspech mel <getAFKsCount(<tag(numberAFKsInMonth)>)>")
+        tag.remove(firstsuccesslesscontrol)
+        tag.remove(numberAFKsInMonth)
+        return 1
+      endif
+    else
+      tag(numberAFKsInMonth,"1,0")
+      delayedmessage(Tve 1. AFK selhani v pocitanem obdobi. Davej si lepsi pozor)
+      kermel.delayedmessage("Cas: <servertime> afkar <uid> <name>(<account.name>) po 1. selhal pri AFK v obdobi. Jeho obdobi konci <cas_konec>. Jeho skill: <afk_item.tag(macro_action)>. Mel napsat:<afk_item.tag(generated_text)> - napsal:<tag(written_combination)>")
+      eufegenie.delayedmessage("Cas: <servertime> afkar <uid> <name>(<account.name>) po 1. selhal pri AFK v obdobi. Jeho obdobi konci <cas_konec>. Jeho skill: <afk_item.tag(macro_action)>. Mel napsat:<afk_item.tag(generated_text)> - napsal:<tag(written_combination)>")
+      return 0
+    endif
+  else //zaciname nove obdobi
+    tag(firstsuccesslesscontrol,<XDaysLater(<nastaveni_AFK_dniKOdmazani>)>)
+    tag(numberAFKsInMonth,"1,0")
+    delayedmessage(Tve 1. AFK selhani v novem obdobi. Davej si lepsi pozor)
+    kermel.delayedmessage("Cas: <servertime> afkar <uid> <name>(<account.name>) po 1. selhal pri AFK v novem obdobi. Jeho skill: <afk_item.tag(macro_action)>. Mel napsat:<afk_item.tag(generated_text)> - napsal:<tag(written_combination)>")
+    eufegenie.delayedmessage("Cas: <servertime> afkar <uid> <name>(<account.name>) po 1. selhal pri AFK v novem obdobi. Jeho skill: <afk_item.tag(macro_action)>. Mel napsat:<afk_item.tag(generated_text)> - napsal:<tag(written_combination)>")
+    return 0
+  endif
+else
+  tag(firstsuccesslesscontrol,<XDaysLater(<nastaveni_AFK_dniKOdmazani>)>)
+  tag(numberAFKsInMonth,"1,0")
+  delayedmessage(Tve 1. AFK selhani. Davej si lepsi pozor. Limit je <nastaveni_povoleno_AFKfails> selhani v danem obdobi.)
+  kermel.delayedmessage("Cas: <servertime> afkar <uid> <name>(<account.name>) po 1. selhal vubec. Jeho skill: <afk_item.tag(macro_action)>. Mel napsat:<afk_item.tag(generated_text)> - napsal:<tag(written_combination)>")
+  eufegenie.delayedmessage("Cas: <servertime> afkar <uid> <name>(<account.name>) po 1. selhal vubec. Jeho skill: <afk_item.tag(macro_action)>. Mel napsat:<afk_item.tag(generated_text)> - napsal:<tag(written_combination)>")
+  return 0
+endif
+
+[function nullAFKTrest] //arg - komu
+macroersUID.afklagrodvolat
+var(macroersUID,"")
+
+[function odmazSelhani]
+if(strlen(<tag(numberAFKsInMonth)>))
+ decreaseAFKTag(<tag(numberAFKsInMonth)>)
+ kermel.delayedmessage("Cas: <servertime> gm <src> <src.name>(<src.account.name>):<src.account.lastip> odmazal hraci <uid> <name>(<account.name>) selhani pri afk kontrole - zbylo mu: <getAFKsCount(<tag(numberAFKsInMonth)>)> selhani") 
+ eufegenie.delayedmessage("Cas: <servertime> gm <src> <src.name>(<src.account.name>):<src.account.lastip> odmazal hraci <uid> <name>(<account.name>) selhani pri afk kontrole - zbylo mu: <getAFKsCount(<tag(numberAFKsInMonth)>)> selhani") 
+endif
+
+[function decreaseAFKTag]
+if (argvcount == 0)
+  return 1
+else
+  arg(AFKsInPeriod,<eval <argv(0)>-1>)
+  if (<arg(AFKsInPeriod)> <= 0)
+    tag.remove(numberAFKsInMonth)
+    tag.remove(firstsuccesslesscontrol)
+  else
+    tag(numberAFKsInMonth,"<arg(AFKsInPeriod)>,0")
+    tag(firstsuccesslesscontrol,<XDaysLaterFrom(<nastaveni_AFK_dniKOdmazani>,<tag(firstsuccesslesscontrol)>)>)
+  endif
+endif
+
+[function increaseAFKTag]
+if (argvcount == 0)  //jeste nebyl trestan
+  tag(numberAFKsInMonth,"1,0")
+  return 1
+else
+  arg(AFKsInPeriod,<eval <argv(0)>+1>)
+  tag(numberAFKsInMonth,"<arg(AFKsInPeriod)>,<eval argv(1)>")  //dalsi prohresek -> zachovame pocet odmenovych bodu za spravny odpovedi
+endif
+
+[function getAFKsCount]
+if (argvcount)
+  return<argv(0)>
+else
+  return 0
+endif
+
+[function increaseAFKTagSuccess]
+if (argvcount == 0)  //jeste nebyl trestan a ani byt nema? Tohle by nemelo nastat ... ale tak radsi
+  return 1
+elseif (argvcount==1)
+  arg(correctAnswers,1)
+else
+  arg(correctAnswers,<eval <argv(1)>+1>)
+endif
+if (<arg(correctAnswers)> >= <nastaveni_uspesnych_AFK_k_odmazani>)
+  decreaseAFKTag(<tag(numberAFKsInMonth)>)
+else
+  tag(numberAFKsInMonth,"<argv(0)>,<arg(correctAnswers)>")
+endif
+
+
+//Vezme casovy udaj v decisekundach a prevede to na absolutni pocet dni:hodin:minut:sekund.decisekund  
+[function getTime] //argv(0) - ds
+arg(zpracovat_ds,<argv(0)>)
+arg(dni,<eval (arg(zpracovat_ds)/<den>)>)
+arg(zbyde,<eval (<zpracovat_ds>-(<dni>*<den>))>) //hodiny v decisekundách
+arg(hodin,<eval (<zbyde>/36000)>) //hodina ma 3600s
+arg(zbyde,<eval (<zbyde>-(<hodin>*36000))>) //minuty v decisekundách
+arg(minut,<eval (<zbyde>/600)>)
+arg(zbyde,<eval (<zbyde>-(<minut>*600))>) //sekundy v decisekundách
+arg(sekund,<eval (<zbyde>/10)>)
+arg(zbyde,<eval (<zbyde>-(<sekund>*10))>) //decisekundy
+return"<arg(dni)>:<arg(hodin)>:<arg(minut)>:<arg(sekund)>.<arg(zbyde)>"
+
+//Zjisti hraci jak je na tom
+[function pocetafk]
+if(!(strlen(<tag(numberAFKsInMonth)>)))
+  sysmessage("<sex Zmeskal Zmeskala> jsem 0 krat.")
+else
+  while (isMonthLater(<tag(firstsuccesslesscontrol)>))
+    decreaseAFKTag(<tag(numberAFKsInMonth)>)
+  endwhile
+  sysmessage("<sex Zmeskal Zmeskala> jsem <eval getAFKsCount(<tag(numberAFKsInMonth)>)> krat.")
+  //f_checkAFKTag
+  //arg(cas_konec,<timeMonthLater(<tag(firstsuccesslesscontrol)>)>)
+  //sysmessage(zbyva: <cas_konec>)
+endif
+
+[function f_checkAFKTag]
+if (strlen(<tag(firstsuccesslesscontrol)>) < 11)
+ arg(zbyva_cas,<tag(firstsuccesslesscontrol)>+<eval 2*<tyden>>-<serv.time>)
+ src.sysMessage("zbyva: <zbyva_cas>")
+ if (<zbyva_cas> < 0)
+  tag(firstsuccesslesscontrol,"2000,01,01,00,00")
+  return 1
+ endif
+ arg(days,<eval (<zbyva_cas>/<den>)>)
+ arg(zbyde,<eval (<zbyva_cas>-(<days>*<den>))>) //hodiny v decisekundách
+ arg(NeededHour,<eval (<zbyde>/36000)>) //hodina ma 3600s
+ arg(zbyde,<eval (<zbyde>-(<NeededHour>*36000))>) //minuty v decisekundách
+ arg(NeededMinute,<eval (<zbyde>/600)>)
+ arg(ThisMonth,<getMonth>)
+ arg(ThisDay,<getDay>)
+ arg(NextMonth,<ThisMonth>+1)
+ arg(totalDayCount,<getDay>+<days>)
+ if (<totalDayCount> > <d_month_days_<ThisMonth>>)
+  arg(totalDayCount,#-<d_month_days_<ThisMonth>>)
+  if (<totalDayCount> > <d_month_days_<NextMonth>>)
+   arg(NeededMonth,<NextMonth>+1)
+   arg(totalDayCount,#-<d_month_days_<NextMonth>>)
+  else
+   arg(NeededMonth,<NextMonth>)
+  endif
+ else
+  arg(NeededMonth,<ThisMonth>)
+ endif
+ arg(NeededDay,<totalDayCount>)
+ arg(NeededYear,<getYear>)
+ arg(vypis,"<NeededYear>,<NeededMonth>,<NeededDay>,<NeededHour>,<NeededMinute>")
+ tag(firstsuccesslesscontrol,<vypis>)
+endif
+return 1
+
+[EOF]

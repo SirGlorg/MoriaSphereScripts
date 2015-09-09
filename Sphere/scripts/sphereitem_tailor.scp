@@ -1,0 +1,1581 @@
+// Beginning of Tailoring section
+
+
+
+[ITEMDEF 09b0]
+DEFNAME=i_pouch
+TYPE=T_CONTAINER
+TDATA2=03c
+FLIP=1
+DYE=1
+WEIGHT=1.0
+DUPELIST=0e79
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Pouch
+SKILLMAKE=TAILORING 10.0, t_sewing_kit
+RESOURCES=2 i_hides_cut
+RESOURCES2=2 i_hide
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0e75]
+DEFNAME=i_backpack
+RESOURCES=4 i_hides_cut
+TYPE=T_CONTAINER
+TDATA2=03c
+FLIP=1
+DYE=1
+WEIGHT=3.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Backpack
+SKILLMAKE=TAILORING 28.0, t_sewing_kit
+RESOURCES2=10 i_hide
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0e76]
+DEFNAME=i_bag
+TYPE=T_CONTAINER
+TDATA2=03D
+FLIP=1
+DYE=1
+WEIGHT=2.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Leather Bag
+SKILLMAKE=TAILORING 29.0, t_sewing_kit
+RESOURCES=4 i_hides_cut
+RESOURCES2=5 i_hide
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0f95]
+//Bolt of Cloth
+// DEFNAME2=BOLT_OF_CLOTH
+DEFNAME=i_cloth_bolt
+TYPE=T_CLOTH_BOLT
+DYE=1
+WEIGHT=5.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Bolt of Cloth
+SKILLMAKE=TAILORING 30.0
+RESOURCES=50 i_CLOTH
+DUPELIST=0f96,0f97,0f98,0f99,0f9a,0f9b,0f9c
+
+[ITEMDEF 0f96]
+//bolt of cloth
+//DEFNAME2=BOLT_OF_CLOTH_3
+DUPEITEM=0f95
+
+[ITEMDEF 0f97]
+//bolt of cloth
+//DEEFNAME2=BOLT_OF_CLOTH_4
+DUPEITEM=0f95
+
+[ITEMDEF 0f98]
+//bolt of cloth
+DUPEITEM=0f95
+
+[ITEMDEF 0f99]
+//bolt of cloth
+DUPEITEM=0f95
+
+[ITEMDEF 0f9a]
+//bolt of kilt cloth
+DUPEITEM=0f95
+
+[ITEMDEF 0f9b]
+//bolt of cloth
+//DEFNAME2=BOLT_OF_CLOTH
+DUPEITEM=0f95
+
+[ITEMDEF 0f9c]
+//bolt of cloth
+//DEFNAME2=BOLT_OF_CLOTH_2
+DUPEITEM=0f95
+
+
+[ITEMDEF 0f9d]
+//Sewing Kit
+DEFNAME=i_sewing_kit
+TYPE=T_SEWING_KIT
+RESOURCES=2 i_ingot_iron
+WEIGHT=2.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Sewing Kit
+SKILLMAKE=TINKERING 18.8,t_tinker_tools
+RESOURCES2=1 I_SEWING_NEEDLE,1 i_bowl_wood,1 i_yarn_ball
+
+on=@targon_item
+if (<src.targ.more1L> < <src.targ.more1H>) && (src.targ.type==t_clothing) && (src.tailoring<400)
+src.sysmessage("Se svou ubohou dovednosti nic neopravis.")
+return 1
+endif
+if (<src.targ.more1L> >= <src.targ.more1H>) && (src.targ.type==t_clothing)
+src.sysmessage("<src.targ.name> nepotrebuje opravit.")
+return 1
+endif
+if (src.targ.events==tmi_info) && (src.targ.type==t_clothing) && !(src.tailoring > 100.0) && !(src.findid(i_magicka_nit))
+src.sysmessage("Neumis dost dobre sit a ani nemas potrebne suroviny k oprave <src.targ.name>.")
+return 1
+endif
+if (src.targ.events==tmi_info) && (src.targ.type==t_clothing) && !(src.tailoring > 100.0) && (src.findid(i_magicka_nit))
+src.sysmessage("Na opravu <src.targ.name> neumis dost dobre sit.")
+return 1
+endif
+if (src.targ.events==tmi_info) && (src.targ.type==t_clothing) && (src.tailoring > 104.0) && !(src.findid(i_magicka_nit))
+src.sysmessage("Na opravu <src.targ.name> nemas potrebne suroviny.")
+return 1
+endif
+if (src.targ.events==tmi_info) && (src.targ.type==t_clothing) && (src.tailoring > 104.0) && (src.findid(i_magicka_nit))
+if (<eval {0 100}> < 20)
+src.targ.more1H=<src.targ.more1H>-1
+src.targ.more1L=<src.targ.more1L>-1
+src.consume(i_magicka_nit,1)
+src.sysmessage("<src.sex(Zkazil,Zkazila)> jsi opravu <src.targ.name>.")
+if <src.targ.more1H> < 1 || <src.targ.more1L> < 1
+src.emote("destroyed <src.targ.name>")
+src.targ.remove
+endif
+return 1
+endif
+src.targ.more1H=<src.targ.more1H>-1
+src.targ.more1L=<src.targ.more1H>
+src.consume(i_magicka_nit,1)
+if <src.targ.more1H> < 1 || <src.targ.more1L> < 1
+src.emote("destroyed <src.targ.name>")
+src.targ.remove
+endif
+src.sysmessage("<src.sex(Opravil,Opravila)> jsi <src.targ.name>.")
+endif
+///normalni oblecky
+if !(src.targ.events==tmi_info) && (src.targ.type==t_clothing) && (src.tailoring > 30.0) && (src.findid(i_thread))
+if (<eval {0 1200}> < <src.tailoring>)
+src.targ.more1H=<src.targ.more1H>-1
+src.targ.more1L=<src.targ.more1L>-1
+src.consume(i_thread,1)
+src.sysmessage("<src.sex(Zkazil,Zkazila)> jsi opravu <src.targ.name>.")
+if <src.targ.more1H> < 1 || <src.targ.more1L> < 1
+src.emote("destroyed <src.targ.name>")
+src.targ.remove
+endif
+return 1
+endif
+src.targ.more1H=<src.targ.more1H>-1
+src.targ.more1L=<src.targ.more1H>
+src.consume(i_magicka_nit,1)
+if <src.targ.more1H> < 1 || <src.targ.more1L> < 1
+src.emote("destroyed <src.targ.name>")
+src.targ.remove
+endif
+src.sysmessage("<src.sex(Opravil,Opravila)> jsi <src.targ.name>.")
+endif
+if (src.targ.type==t_cloth)
+elseif (src.targ.type==t_hide)
+elseif (src.targ.type==t_leather)
+else
+//  src.targ.tryrepair
+  return 1
+endif
+craftmenu(tailoring)
+return 1
+
+[ITEMDEF 01515]
+DEFNAME=i_cape
+RESOURCES=14 i_cloth
+WEIGHT=5.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=5
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Cloak, Cape
+DUPELIST=01530
+SKILLMAKE=TAILORING 45.4, t_sewing_kit
+RESOURCES2=14 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={11 40 }
+
+[ITEMDEF 01516]
+DEFNAME=i_skirt_long
+RESOURCES=10 i_cloth
+WEIGHT=4.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+CATEGORY=Provisions - Clothes
+SUBSECTION=Pants & Skirts
+DESCRIPTION=Long Skirt
+SKILLMAKE=TAILORING 31.8, t_sewing_kit
+RESOURCES2=10 i_cloth,1 i_thread
+
+[ITEMDEF 01517]
+DEFNAME=i_shirt_plain
+RESOURCES=8 i_cloth
+SKILLMAKE=TAILORING 22.7, t_sewing_kit
+WEIGHT=3.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Plain Shirt
+DUPELIST=01518
+RESOURCES2=8 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01518]
+//plain shirt
+DUPEITEM=01517
+
+[ITEMDEF 0152e]
+DEFNAME=i_pants_short
+RESOURCES=6 i_cloth
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Pants & Skirts
+DESCRIPTION=Short Pants
+DUPELIST=0152f
+SKILLMAKE=TAILORING 6.8, t_sewing_kit
+RESOURCES2=6 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={11 40}
+
+[ITEMDEF 0152f]
+//Short Pants
+DUPEITEM=0152e
+
+[ITEMDEF 01530]
+//cloak, cape
+DUPEITEM=01515
+
+[ITEMDEF 01531]
+DEFNAME=i_skirt_short
+RESOURCES=10 i_CLOTH, 1 i_THREAD
+WEIGHT=4.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+CATEGORY=Provisions - Clothes
+SUBSECTION=Pants & Skirts
+DESCRIPTION=Skirt (Tea Length)
+
+ON=@Create
+HITPOINTS={21 24}
+
+[ITEMDEF 01537]
+DEFNAME=i_kilt
+RESOURCES=8 i_cloth
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Pants & Skirts
+DESCRIPTION=Kilt
+DUPELIST=01538
+SKILLMAKE=TAILORING 22.7, t_sewing_kit
+RESOURCES2=8 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 24}
+
+[ITEMDEF 01538]
+//Kilt
+DUPEITEM=01537
+
+[ITEMDEF 01539]
+DEFNAME=i_pants_long
+RESOURCES=8 i_cloth
+WEIGHT=3.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Pants & Skirts
+DESCRIPTION=Long Pants
+DUPELIST=0153a
+SKILLMAKE=TAILORING 27.2, t_sewing_kit
+RESOURCES2=8 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 24}
+
+[ITEMDEF 0153a]
+//Long Pants
+DUPEITEM=01539
+
+[ITEMDEF 0153b]
+DEFNAME=i_apron_half
+RESOURCES=6 i_cloth
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=2
+CATEGORY=Provisions - Clothes
+SUBSECTION=Miscellaneous
+DESCRIPTION=Half Apron
+DUPELIST=0153c
+SKILLMAKE=TAILORING 22.7, t_sewing_kit
+RESOURCES2=6 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 25}
+
+[ITEMDEF 0153c]
+//Half Apron
+DUPEITEM=0153b
+
+[ITEMDEF 0153d]
+DEFNAME=i_apron_full
+RESOURCES=10 i_cloth
+WEIGHT=4.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+CATEGORY=Provisions - Clothes
+SUBSECTION=Miscellaneous
+DESCRIPTION=Full Apron
+DUPELIST=0153e
+SKILLMAKE=TAILORING 31.8, t_sewing_kit
+RESOURCES2=10 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 30}
+
+[ITEMDEF 0153e]
+//Full Apron
+DUPEITEM=0153d
+
+[ITEMDEF 0153f]
+DEFNAME=i_bandana
+RESOURCES=2 i_cloth
+WEIGHT=1.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=1
+CATEGORY=Provisions - Clothes
+SUBSECTION=Miscellaneous
+DESCRIPTION=Bandana
+DUPELIST=01540
+SKILLMAKE=TAILORING 10.1, t_sewing_kit
+RESOURCES2=2 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01540]
+//bandana
+DUPEITEM=0153f
+
+[ITEMDEF 01541]
+DEFNAME=i_sash
+RESOURCES=4 i_cloth
+WEIGHT=1.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=1
+CATEGORY=Provisions - Clothes
+SUBSECTION=Miscellaneous
+DESCRIPTION=Body Sash
+DUPELIST=01542
+SKILLMAKE=TAILORING 4.5, t_sewing_kit
+RESOURCES2=4 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={11 40}
+
+[ITEMDEF 01542]
+//body sash
+DUPEITEM=01541
+
+[ITEMDEF 01543]
+DEFNAME=i_skull_cap
+RESOURCES=2 i_cloth
+WEIGHT=1.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=1
+CATEGORY=Provisions - Clothes
+SUBSECTION=Miscellaneous
+DESCRIPTION=SkullCap
+DUPELIST=01544
+SKILLMAKE=TAILORING 0.1, t_sewing_kit
+RESOURCES2=2 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={10 14}
+
+[ITEMDEF 01544]
+//skullcap
+DUPEITEM=01543
+
+[ITEMDEF 0170b]
+DEFNAME=i_boots_calf
+RESOURCES=8 i_hides_cut
+WEIGHT=3.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=7
+CATEGORY=Provisions - Clothes
+SUBSECTION=Footwear
+DESCRIPTION=Boots (R)
+DUPELIST=0170c
+SKILLMAKE=TAILORING 36.3, t_sewing_kit
+RESOURCES2=8 i_hide,1 i_thread
+
+ON=@Create
+HITPOINTS={21 29}
+
+[ITEMDEF 0170c]
+//boots
+DUPEITEM=0170b
+
+[ITEMDEF 0170d]
+DEFNAME=i_sandals
+RESOURCES=4 i_hides_cut
+WEIGHT=1.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Footwear
+DESCRIPTION=Sandals (R)
+DUPELIST=0170e
+SKILLMAKE=TAILORING 13.6, t_sewing_kit
+RESOURCES2=4 i_hide,1 i_thread
+
+ON=@Create
+HITPOINTS={21 25}
+
+[ITEMDEF 0170e]
+//Sandals
+DUPEITEM=0170d
+
+[ITEMDEF 0170f]
+DEFNAME=i_shoes_plain
+//DEFNAME=i_shoes_plain
+RESOURCES=6 i_hides_cut
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Footwear
+DESCRIPTION=Shoes (R)
+DUPELIST=01710
+SKILLMAKE=TAILORING 18.1, t_sewing_kit
+RESOURCES2=6 i_hide,1 i_thread
+
+ON=@Create
+HITPOINTS={21 25}
+
+[ITEMDEF 01710]
+//Shoes
+DUPEITEM=0170f
+DESCRIPTION=Shoes (L)
+
+[ITEMDEF 01711]
+//DEFNAME2=THIGHBOOTS
+DEFNAME=i_boots_thigh
+TYPE=T_CLOTHING
+FLIP=1
+SKILLMAKE=TAILORING 25.0, t_sewing_kit
+RESOURCES2=10 i_hide,1 i_thread
+RESOURCES=10 i_hides_cut
+WEIGHT=5.0
+DYE=1
+ARMOR=6
+CATEGORY=Provisions - Clothes
+SUBSECTION=Footwear
+DESCRIPTION=Thigh Boots (R)
+DUPELIST=01712
+
+ON=@Create
+HITPOINTS={50 80}
+
+[ITEMDEF 01712]
+//Thigh Boots
+DUPEITEM=01711
+DESCRIPTION=Thigh Boots (L)
+
+[ITEMDEF 01713]
+DEFNAME=i_hat_floppy
+RESOURCES=11 i_cloth
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Floppy Hat
+SKILLMAKE=TAILORING 6.8, t_sewing_kit
+RESOURCES2=5 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01714]
+// DEFNAME2=BUMPKIN_STRAW_HAT
+DEFNAME=i_hat_wide_brim
+RESOURCES=12 i_cloth
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Wide Brim Hat
+SKILLMAKE=TAILORING 6.8, t_sewing_kit
+RESOURCES2=5 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01715]
+// DEFNAME=DARBY_HAT
+DEFNAME=i_cap
+RESOURCES=5 i_CLOTH, 1 i_THREAD
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Cap
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01716]
+// DEFNAME=POINTY_HAT
+DEFNAME=i_hat_straw_tall
+RESOURCES=12 i_cloth,
+WEIGHT=1.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Tall Straw Hat
+SKILLMAKE=TAILORING 6.8, t_sewing_kit
+RESOURCES2=10 I_STRAW,1 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01717]
+// DEFNAME=BANDED_STRAW_HAT
+DEFNAME=i_hat_straw
+RESOURCES=10 i_cloth
+WEIGHT=1.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Straw Hat
+SKILLMAKE=TAILORING 6.8, t_sewing_kit
+RESOURCES2=7 I_STRAW,1 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01718]
+DEFNAME=i_hat_wizards
+RESOURCES=8 i_CLOTH, 1 i_THREAD
+SKILLMAKE=TAILORING 35.0, t_sewing_kit
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Wizards Hat
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01719]
+DEFNAME=i_bonnet
+RESOURCES=11 i_cloth
+WEIGHT=1.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Bonnet
+SKILLMAKE=TAILORING 31.8, t_sewing_kit
+RESOURCES2=4 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 0171a]
+DEFNAME=i_hat_feather
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Feathered Hat
+SKILLMAKE=TAILORING 32.8, t_sewing_kit
+RESOURCES=12 i_cloth,i_feather
+RESOURCES2=5 i_cloth,i_feather,i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 0171b]
+//DEFNAME=STRAW_BOATER
+DEFNAME=i_hat_tricorne
+RESOURCES=12 i_cloth
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Tricorne Hat
+SKILLMAKE=TAILORING 32.8, t_sewing_kit
+RESOURCES2=5 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 0171c]
+DEFNAME=i_hat_jester
+RESOURCES=15 i_cloth
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Hats
+DESCRIPTION=Jester's Cap
+DUPELIST=0172e
+SKILLMAKE=TAILORING 30.0, t_sewing_kit
+RESOURCES2=5 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 0172e]
+//Jester's Cap
+DUPEITEM=0171c
+
+[ITEMDEF 01efd]
+//Fancy Shirt
+DEFNAME=i_shirt_fancy
+RESOURCES=8 i_cloth
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+DUPELIST=01efe
+DESCRIPTION=Fancy Shirt
+SUBSECTION=Shirts & Robes
+CATEGORY=Provisions - Clothes
+SKILLMAKE=TAILORING 35.0, t_sewing_kit
+RESOURCES2=8 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 23}
+
+[ITEMDEF 01efe]
+//fancy shirt
+DUPEITEM=01efd
+
+[ITEMDEF 01eff]
+//Fancy Dress
+DEFNAME=i_dress_full
+RESOURCES=12 i_cloth
+WEIGHT=3.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=5
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Fancy Dress
+DUPELIST=01f00
+SKILLMAKE=TAILORING 33.6, t_sewing_kit
+RESOURCES2=12 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 30}
+
+[ITEMDEF 01f00]
+//fancy dress
+DUPEITEM=01eff
+
+[ITEMDEF 01f01]
+// DEFNAME2=PLAIN_DRESS
+DEFNAME=i_dress_plain
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+RESOURCES=10 i_cloth
+SKILLMAKE=TAILORING 36.3, t_sewing_kit
+ARMOR=5
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Plain Dress
+DUPELIST=01f02
+RESOURCES2=10 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={21 30}
+
+[ITEMDEF 01f02]
+//plain dress
+DUPEITEM=01f01
+
+[ITEMDEF 01f03]
+DEFNAME=i_robe
+RESOURCES=16 i_cloth
+WEIGHT=3.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=7
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Robe
+DUPELIST=01f04
+SKILLMAKE=TAILORING 59.0, t_sewing_kit
+RESOURCES2=16 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={11 40}
+
+[ITEMDEF 01f04]
+//robe
+DUPEITEM=01f03
+
+[ITEMDEF 01f05]
+DUPEITEM=01085
+
+[ITEMDEF 01f7b]
+DEFNAME=i_doublet
+RESOURCES=8 I_CLOTH, I_THREAD
+SKILLMAKE=TAILORING 22.7, t_sewing_kit
+WEIGHT=2.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Doublet
+DUPELIST=01f7c
+
+ON=@Create
+HITPOINTS={11 40}
+
+[ITEMDEF 01f7c]
+//doublet
+DUPEITEM=01f7b
+
+[ITEMDEF 01f9f]
+//Jester's Suit
+DEFNAME=i_jester_suit
+RESOURCES=24 i_cloth
+WEIGHT=5.0
+TYPE=T_CLOTHING
+ARMOR=7
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Jester's Suit
+DUPELIST=01fa0
+SKILLMAKE=TAILORING 29.0, t_sewing_kit
+RESOURCES2=24 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={11 40}
+
+[ITEMDEF 01fa0]
+//Jester's Suit
+DUPEITEM=01f9f
+
+[ITEMDEF 01fa1]
+//Tunic
+DEFNAME=i_tunic
+RESOURCES=12 i_cloth
+WEIGHT=5.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Tunic
+DUPELIST=01fa2
+SKILLMAKE=TAILORING 31.1, t_sewing_kit
+RESOURCES2=12 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={11 40}
+
+[ITEMDEF 01fa2]
+//Tunic
+DUPEITEM=01fa1
+
+[ITEMDEF 01ffd]
+DEFNAME=i_surcoat
+WEIGHT=5.0
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+CATEGORY=Provisions - Clothes
+SUBSECTION=Shirts & Robes
+DESCRIPTION=Surcoat
+DUPELIST=01ffe
+
+SKILLMAKE=TAILORING 32.0, t_sewing_kit
+RESOURCES=14 i_cloth
+RESOURCES2=14 i_cloth,1 i_thread
+
+ON=@Create
+HITPOINTS={11 40}
+
+[ITEMDEF 01ffe]
+//surcoat
+DUPEITEM=01ffd
+
+[ITEMDEF 0990]
+DEFNAME=i_basket
+TYPE=T_CONTAINER
+TDATA2=041
+RESOURCES=3 I_STRAW
+WEIGHT=2.0
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Basket
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 09ac]
+DEFNAME=i_basket_bushel
+TYPE=T_CONTAINER
+TDATA2=041
+RESOURCES=3 I_STRAW
+WEIGHT=5.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Large Basket
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 09b1]
+DEFNAME=i_basket_2
+TYPE=T_CONTAINER
+TDATA2=03F
+RESOURCES=3 I_STRAW
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Small Basket
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0dc9]
+//fishing net
+DEFNAME=i_fishing_net_2
+RESOURCES=10 I_ROPE, 10 I_THREAD, 4 I_SHELL
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fishing Net
+
+[ITEMDEF 0dca]
+//fishing net
+DEFNAME=i_fishing_net_3
+RESOURCES=10 I_ROPE, 10 I_THREAD, 4 I_SHELL
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fishing Net
+
+[ITEMDEF 0dcb]
+//fishing net
+DEFNAME=i_fishing_net_4
+RESOURCES=10 I_ROPE, 10 I_THREAD, 4 I_SHELL
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fishing Net
+DUPELIST=0dd0,0dd1,0dd2,0dd3,0dd4,0dd5
+
+[ITEMDEF 0dc8]
+//fishing net
+DEFNAME=i_fishing_net
+RESOURCES=10 I_ROPE, 10 I_THREAD, 4 I_SHELL
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fishing Net
+
+[ITEMDEF 0dd0]
+//fishing net
+DUPEITEM=0dcb
+
+[ITEMDEF 0dd1]
+//fishing net
+DUPEITEM=0dcb
+
+[ITEMDEF 0dd2]
+//fishing net
+DUPEITEM=0dcb
+
+[ITEMDEF 0dd3]
+//fishing net
+DUPEITEM=0dcb
+
+[ITEMDEF 0dd4]
+//fishing net
+DUPEITEM=0dcb
+
+[ITEMDEF 0dd5]
+//fishing net
+DUPEITEM=0dcb
+
+[ITEMDEF 0df6]
+DEFNAME=i_knitting_item
+RESOURCES=1 I_KNITTING_NEEDLES, 1 i_yarn_ball
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Knitting Items
+DUPELIST=0df7
+
+[ITEMDEF 0df7]
+//KNITTING
+DUPEITEM=0df6
+
+
+[ITEMDEF 0dff]
+DEFNAME=i_wig
+RESOURCES=1 I_CLOTH, 5 I_THREAD, 20 i_hair_cut
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Barber
+DESCRIPTION=WIG
+DUPELIST=0e00, 0e09, 0e0a
+
+[ITEMDEF 0e00]
+DUPEITEM=0dff
+
+[ITEMDEF 0e09]
+DUPEITEM=0dff
+
+[ITEMDEF 0e0a]
+DUPEITEM=0dff
+
+[ITEMDEF 0e01]
+DEFNAME=i_wig_2
+RESOURCES=1 i_cloth, 5 I_THREAD, 20 i_hair_cut
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Barber
+DESCRIPTION=WIG 2
+DUPELIST=0e02, 0e0b, 0e0c
+
+[ITEMDEF 0e02]
+DUPEITEM=0e01
+
+[ITEMDEF 0e0b]
+DUPELIST=0e02
+
+[ITEMDEF 0e0c]
+DUPELIST=0e02
+
+[ITEMDEF 0e03]
+DEFNAME=i_wig_3
+RESOURCES=1 i_cloth, 5 I_THREAD, 20 i_hair_cut
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Barber
+DESCRIPTION=WIG 4
+DUPELIST=0e04, 0e0d, 0e0e
+
+[ITEMDEF 0e04]
+DUPEITEM=0e03
+
+[ITEMDEF 0e0d]
+DUPEITEM=0e03
+
+[ITEMDEF 0e0e]
+DUPEITEM=0e03
+
+[ITEMDEF 0e05]
+DEFNAME=i_wig_stand
+RESOURCES=1 i_cloth, 5 I_BOARD
+WEIGHT=2.0
+CATEGORY=Items by Professions
+SUBSECTION=Barber
+DESCRIPTION=WIG STAND
+DUPELIST=0e06, 0e07, 0e08
+
+[ITEMDEF 0e06]
+DUPEITEM=0e05
+
+[ITEMDEF 0e07]
+DUPEITEM=0e05
+
+[ITEMDEF 0e08]
+DUPEITEM=0e05
+
+[ITEMDEF 0fa0]
+//Spool of Thread
+DEFNAME=i_thread
+RESOURCES=1 i_flax_bundle
+TYPE=T_THREAD
+DYE=1
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Spool of Thread
+DUPELIST=0fa1
+
+ON=@userdclick
+if (<src.targ.topobj>!=<src>)
+ src.sysmessage("Nite musis mit u sebe.")
+ return 1
+else
+ TARGET("Na cem chces nite sprist?")
+endif
+
+ON=@targon_item
+if (src.targ.type==t_loom)
+ if src.f_canseelos(<src.targ>)
+  f_vyroba_latky(i_thread,i_cloth,nite)
+  return 1
+ else
+  src.Sysmessage("Nevidis na stav.")
+  return 1
+ endif
+endif
+
+[ITEMDEF 0fa1]
+//spool of thread
+DUPEITEM=0fa0
+
+[ITEMDEF 0fef]
+//brown book facing NE
+DEFNAME=i_book_lg_pub
+RESOURCES=1 I_CANVAS, 10 I_PAPER, 1 I_THREAD, 1 I_HIDE
+WEIGHT=2.0
+//DEFNAME=LG_PUB_BOOK
+TYPE=T_BOOK
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Brown Book
+
+[ITEMDEF 0ff0]
+//light tan book facing NE
+DEFNAME=i_book_sm_pub
+RESOURCES=1 I_CANVAS, 10 I_PAPER, 1 I_THREAD, 1 I_HIDE
+WEIGHT=2.0
+//DEFNAME=SM_PUB_BOOK
+TYPE=T_BOOK
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Light Tan Book
+
+[ITEMDEF 0ff1]
+//dark brown book facing NE
+DEFNAME=i_book_sm
+//DEFNAME=SM_BLANK_BOOK
+RESOURCES=1 I_CANVAS, 10 I_PAPER, 1 I_THREAD, 1 I_HIDE
+WEIGHT=2.0
+TYPE=T_BOOK
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Dark Brown Book
+
+[ITEMDEF 0ff2]
+//purple book facing NE
+DEFNAME=i_book_lg
+//DEFNAME=LG_BLANK_BOOK
+RESOURCES=5 I_LOG_copper
+WEIGHT=2.0
+TYPE=T_BOOK
+SKILLMAKE=CARPENTRY 40.0, t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Purple Book
+
+[ITEMDEF 0ff3]
+//small open book facing SE
+DEFNAME=i_book_sm_open
+RESOURCES=1 I_CANVAS, 10 I_PAPER, 1 I_THREAD, 1 I_HIDE
+WEIGHT=2.0
+TYPE=T_BOOK
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Small Open Book
+
+[ITEMDEF 0ff4]
+//large open book facing SE
+DEFNAME=i_book_lg_open
+RESOURCES=1 I_CANVAS, 10 I_PAPER, 1 I_THREAD, 1 I_HIDE
+WEIGHT=2.0
+TYPE=T_BOOK
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Large Open Book
+
+[ITEMDEF 0e78]
+//Round Basket (AKA basin)
+DEFNAME=i_basket_round
+RESOURCES=3 i_ingot_iron
+TYPE=T_CONTAINER
+TDATA2=041
+FLIP=1
+WEIGHT=1.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Basin
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0e79]
+// Pouch
+DUPEITEM=09b0
+
+[ITEMDEF 0e7a]
+//picnic basket
+DEFNAME=i_basket_square
+TYPE=T_CONTAINER
+TDATA2=03f
+RESOURCES=5 I_STRAW
+FLIP=1
+WEIGHT=1.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Picnic Basket
+
+on=@userclick
+return"<allcontainersClick>"
+
+[ITEMDEF 0fbd]
+//brown open book facing SE
+DEFNAME=i_book_open
+RESOURCES=1 i_BOOK_LG_PUB
+WEIGHT=2.0
+TYPE=T_BOOK
+CATEGORY=Items by Professions
+SUBSECTION=Artists
+DESCRIPTION=Book (W)
+DUPELIST=0fbe
+
+[ITEMDEF 0fbe]
+//brown open book facing SW
+DUPEITEM=0fbd
+
+[ITEMDEF 0e1d]
+// DEFNAME2=BALL_OF_YARN_1
+DEFNAME=i_yarn_ball
+RESOURCES=1 I_WOOL
+TYPE=T_YARN
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=BALL OF YARN
+DUPELIST=0e1e,0e1f
+
+ON=@userdclick
+if (<src.targ.topobj>!=<src>)
+ src.sysmessage("Prizi musis mit u sebe.")
+ return 1
+else
+ TARGET("Na cem chces prizi utkat?")
+endif
+
+ON=@targon_item
+if (src.targ.type==t_loom)
+ if src.f_canseelos(<src.targ>)
+  f_vyroba_latky(i_yarn_ball,i_cloth,nite)
+  return 1
+ else
+  src.Sysmessage("Nevidis na stav.")
+  return 1
+ endif
+endif
+
+[ITEMDEF 0e1e]
+// DEFNAME2=BALL_OF_YARN_2
+DUPEITEM=0e1d
+
+[ITEMDEF 0e1f]
+// DEFNAME2=BALL_OF_YARN_3
+DUPEITEM=0e1d
+
+[ITEMDEF 01067]
+DEFNAME=i_hides_cut
+RESOURCES=1 i_HIDE
+TYPE=T_LEATHER
+DYE=1
+WEIGHT=1.0
+DUPELIST=01068,01081,01082
+CATEGORY=Items by Professions
+SUBSECTION=Tanner
+DESCRIPTION=Cut-up Leather
+
+[ITEMDEF 01068]
+//cut up leather
+DUPEITEM=01067
+
+[ITEMDEF 011f0]
+DEFNAME=i_hammock
+RESOURCES=1 i_ROPE, 2 i_board, 2 i_cloth
+WEIGHT=8.0
+CATEGORY=Decoration - Furniture
+SUBSECTION=Hammocks & Cots
+DESCRIPTION=Hammock
+DUPELIST=011f1,011f2,011f3
+
+[ITEMDEF 011f1]
+//hammock
+DUPEITEM=011f0
+
+[ITEMDEF 011f2]
+//hammock
+DUPEITEM=011f0
+
+[ITEMDEF 011f3]
+//hammock
+DUPEITEM=011f0
+
+[ITEMDEF 01374]
+DEFNAME=i_BRIDLE_HORSE
+RESOURCES=2 i_HIDE, 1 i_ingot_iron
+WEIGHT=5.0
+CATEGORY=Items by Professions
+SUBSECTION=StableMaster
+DESCRIPTION=Bridle
+DUPELIST=01375
+
+[ITEMDEF 01375]
+//horse bridle
+DUPEITEM=01374
+
+[ITEMDEF 01397]
+DEFNAME=i_pillow
+RESOURCES=4 i_CLOTH, 2 i_WOOL
+WEIGHT=2.0
+CATEGORY=Decoration - Furniture
+SUBSECTION=Bedding
+DESCRIPTION=Pillow
+DUPELIST=013a6
+
+[ITEMDEF 013a4]
+DEFNAME=i_pillow_2
+CATEGORY=Decoration - Furniture
+SUBSECTION=Bedding
+DESCRIPTION=Pillow
+DUPELIST=013a5
+
+[ITEMDEF 013a5]
+//pillow
+DUPEITEM=013a4
+
+[ITEMDEF 013a6]
+//pillow
+DUPEITEM=01397
+
+[ITEMDEF 013a7]
+DEFNAME=i_pillow_3
+RESOURCES=4 i_CLOTH, 2 i_WOOL
+WEIGHT=2.0
+
+[ITEMDEF 013a8]
+DEFNAME=i_pillow_4
+RESOURCES=4 i_CLOTH, 2 i_WOOL
+WEIGHT=2.0
+DUPELIST=013a9,013aa
+
+[ITEMDEF 013a9]
+DEFNAME=i_pillow_5
+DUPEITEM=013a8
+
+[ITEMDEF 013aa]
+//pillow
+DUPEITEM=013a8
+
+[ITEMDEF 013ab]
+DEFNAME=i_pillow_6
+RESOURCES=4 i_CLOTH, 2 i_WOOL, 4 i_THREAD
+WEIGHT=2.0
+
+[ITEMDEF 013ac]
+DEFNAME=i_pillow_7
+RESOURCES=4 i_CLOTH, 2 i_WOOL, 4 i_THREAD
+WEIGHT=2.0
+DUPELIST=013ad,013ae
+
+[ITEMDEF 013ad]
+DEFNAME=i_pillow_8
+DUPEITEM=013ac
+
+[ITEMDEF 013ae]
+//pillow
+DUPEITEM=013ac
+
+[ITEMDEF 01420]
+DEFNAME=i_string
+RESOURCES=1 i_COTTON
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Beekeepers/Candlers
+DESCRIPTION=String
+DUPELIST=01421
+
+[ITEMDEF 01421]
+//string
+DUPEITEM=01420
+
+[ITEMDEF 0163a]
+DEFNAME=i_PILLOW_LARGE
+RESOURCES=6 i_CLOTH, 4 i_WOOL
+WEIGHT=4.0
+CATEGORY=Decoration - Furniture
+SUBSECTION=Bedding
+DESCRIPTION=Pillow
+
+[ITEMDEF 0163b]
+DEFNAME=i_pillow_9
+RESOURCES=4 i_CLOTH, 2 i_WOOL, 4 i_THREAD
+WEIGHT=2.0
+CATEGORY=Decoration - Furniture
+SUBSECTION=Bedding
+DESCRIPTION=Pillow
+
+[ITEMDEF 0163c]
+DEFNAME=i_pillow_10
+RESOURCES=4 i_CLOTH, 2 i_WOOL, 4 i_THREAD
+WEIGHT=2.0
+CATEGORY=Decoration - Furniture
+SUBSECTION=Bedding
+DESCRIPTION=Pillow
+
+[ITEMDEF 0166e]
+DEFNAME=i_whip
+RESOURCES=10 i_hides_cut, 1 i_HIDE, 1 i_CAT_GUT
+WEIGHT=8.0
+CATEGORY=Decoration - Dungeons and The Dead
+SUBSECTION=Torture
+DESCRIPTION=Whip
+
+[ITEMDEF 0166f]
+DEFNAME=i_cat_o_ninetails
+RESOURCES=10 i_hides_cut, 1 i_HIDE, 1 i_CAT_GUT
+WEIGHT=8.0
+CATEGORY=Decoration - Dungeons and The Dead
+SUBSECTION=Torture
+DESCRIPTION=Cat o' Ninetails
+
+[ITEMDEF 01914]
+DEFNAME=i_towel
+RESOURCES=3 i_CLOTH
+WEIGHT=2.0
+CATEGORY=Decoration - Furniture
+SUBSECTION=Bedding
+DESCRIPTION=Towel
+
+[ITEMDEF 01915]
+DEFNAME=i_pillow_11
+RESOURCES=2 i_CLOTH, 1 i_WOOL
+WEIGHT=1.0
+CATEGORY=Decoration - Furniture
+SUBSECTION=Bedding
+DESCRIPTION=Pillow
+
+[ITEMDEF 01e36]
+DEFNAME=i_RUG_BEARSKIN_1
+RESOURCES=2 I_HIDE, 5 i_THREAD, 4 i_CANVAS
+WEIGHT=20.0
+//bearskin rug brown
+CATEGORY=Decoration - Carpets & Rugs
+SUBSECTION=Bearskin Carpet
+DESCRIPTION=@
+DUPELIST=01e37,01e38,01e39,01e3a,01e3b,01e3c,01e3d,01e3e,01e40,01e41,01e42,01e43,01e44,01e45,01e46,01e47,01e48
+
+[ITEMDEF 01e37]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e38]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e39]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e3a]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e3b]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e3c]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e3d]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e3e]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e40]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e41]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e42]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e43]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e44]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e45]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e46]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e47]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e48]
+//bearskin rug
+DUPEITEM=01e36
+
+[ITEMDEF 01e49]
+DEFNAME=i_RUG_BEARSKIN_2
+RESOURCES3=2 I_CORPSE_BEAR, 5 i_THREAD, 4 i_CANVAS
+WEIGHT=20.0
+//bearskin rug white
+CATEGORY=Decoration - Carpets & Rugs
+SUBSECTION=Polar Bear Rug
+DESCRIPTION=@
+DUPELIST=01e4a,01e4b,01e4c,01e4d,01e4e,01e4f,01e50,01e51,01e53,01e54,01e55,01e56,01e57,01e58,01e59,01e5a,01e5b
+
+[ITEMDEF 01e4a]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e4b]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e4c]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e4d]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e4e]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e4f]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e50]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e51]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e53]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e54]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e55]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e56]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e57]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e58]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e59]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e5a]
+//bearskin rug
+DUPEITEM=01e49
+
+[ITEMDEF 01e5b]
+//bearskin
+DUPEITEM=01e49
+
+[ITEMDEF 01ea3]
+DEFNAME=i_net
+RESOURCES=5 i_ROPE
+WEIGHT=5.0
+CATEGORY=Buildings - Other
+SUBSECTION=Hooks, Pulleys and Winches
+DESCRIPTION=Net
+DUPELIST=01ea4,01ea5,01ea6
+
+[ITEMDEF 01ea4]
+DUPEITEM=01ea3
+
+[ITEMDEF 01ea5]
+DUPEITEM=01ea3
+
+[ITEMDEF 01ea6]
+DUPEITEM=01ea3
+
+
+
+[EOF]

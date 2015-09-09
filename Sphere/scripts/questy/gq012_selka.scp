@@ -1,0 +1,216 @@
+//// Kolektor 
+
+
+[ITEMDEF i_gq012_selka_collector]
+ID=i_crate_small
+NAME=Bedna na mrtve hrabose
+TYPE=t_collector
+WEIGHT=1
+
+ON=@CREATE
+COLOR=042
+ATTR=010|04
+tag.contentsinfo="V bedne je"
+tag.contentstype="mrtvych hrabosu"
+tag.contentsamount=0
+tag.maxcontents=20
+tag.target_remove=0
+tag.target_desc="Ktereho hrabose das do bedny? "
+tag.target_id="Body of Hrabos"
+tag.absolute_success=200
+tag.value_to_check=200
+tag.contentscount=0
+
+ON=@CollectorCheck
+
+
+/////// speech selka ///////
+
+[SPEECH spk_gq012_selka]
+ON *Ahoj*
+ON *Zdravim*
+ON *Dobry den*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_gq012_selka
+endif
+
+[FUNCTION f_gq012_selka]
+IF (<src.tag.gq012_selka> <=1)
+ DIALOG(d_gq012_selka)
+ELSEIF (<src.tag.gq012_selka> ==2)
+ DIALOG(d_gq012_selka1)
+ENDIF
+
+
+[dialog d_gq012_selka]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03009 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 0 7 0  //      
+text 60 395 152 13
+button 25 415 0fa5 0fa7 0 1 0  //         
+text 60 415 152 14
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)   
+button 25 395 0fa5 0fa7 1 0 2  //      
+text 60 395 152 17
+button 25 415 0fa5 0fa7 0 1 0  //         
+text 60 415 152 18
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //      
+text 60 395 152 16
+
+
+[dialog d_gq012_selka text]
+Selka Enrica
+Kdo jsi?
+Muzu pomoci?
+Obchodovat?
+Hledam praci
+Nesu ti
+Prohlednout
+Jmenuji se Selka Enrica. Muj muz odjel do mesta za obchody a ja se musim o statek postarat sama... a ke vsemu ti prasivi hrabosi na poli...
+No... na statku je prace dost, coz o to, ale nemam cim zaplatit. Ale mohl bys udelat dobry skutek a pozabijet ty priserne hrabose kteri nam zerou urodu na poli.
+Nemam co bych nabidla, manzel odjel se zbozim do mesta
+No... na statku je prace dost, coz o to, ale nemam cim zaplatit. Ale mohl bys udelat dobry skutek a pozabijet ty priserne hrabose kteri nam zerou urodu na poli.
+Copak pro me mas?
+Selka Enriva je krasna zena. I v prostem obleceni a s tvari zachmurenou starostmi by okouzlila kazdeho muze. Jeji pruzracne modre oci, plave vlasy a pevna nadra ktera odhaluje bujny zivutek by ji mohla zavidet kazda zena.
+Jiste, to rad udelam
+Fuj, to v zadnem pripade !
+Tak to jsem moc rada, moc mi tim pomuzes. Takze jdi na pole a zabij alespon 10 hrabosu a naskladej je tady do bedynky, dalsi se sem pak neodvazi...
+Dobre, jdu na to.
+Uz jsem zabil ty hrabose, tady mam tu bedynku.
+Vlastne nic.
+
+[dialog d_gq012_selka button]
+on=0
+return 1
+
+//  prijeti ukolu
+on=1  
+IF (<src.tag.gq012_selka>==1)
+ src.sysmessage Tento ukol uz jsi splnil nebo ho prave plnis !
+ELSE (<src.tag.gq012_selka>==0)
+ src.sysmessage Prijmas ukol od Selky Enricy
+ SRC.NEWITEM=i_gq012_selka_collector
+ SRC.ACT.BOUNCE
+ src.tag.gq012_selka=1
+ return 0
+ENDIF
+
+on=2  
+if <src.restest i_gq012_selka_collector> && (<src.findid(i_gq012_selka_collector).tag.contentscount>==10) 
+ SAY Dekuji ti mnohokrat, buh ti to oplat !
+ src.addexp(300)
+ SRC.CONSUME i_gq012_selka_collector
+ src.tag.gq012_selka=2
+ return 1
+ELSE
+ SAY Vzdyt jsi jeste neudelal oc jsem te prosila 
+ Return 1
+ENDIF
+
+///// Selka - po splneni ukolu
+
+[dialog d_gq012_selka1]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03009 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1    // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoci? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)   
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+//
+
+[dialog d_gq012_selka1 text]
+Selka Enrica
+Kdo jsi?
+Muzu pomoci?
+Obchodovat?
+Hledam praci
+Nesu ti
+Prohlednout
+Jmenuji se Selka Enrica. Muj muz odjel do mesta za obchody a ja se musim o statek postarat sama... ale ty jsi mi narame pomohl s tema hrabosema. Jinak by nam asi znicili celou urodu. Jsem ti opravdu vdecna!
+Nene, uz jsi pomohl az az. Doufam ze te buh za tvou laskavost odmeni !
+Nemam co bych nabidla, manzel odjel se zbozim do mesta.
+Tady se pro tebe zadna nenajde... tedy nasla by se ale nemame cim zaplatit. Sotva uzivime sami sebe.
+Ale vzdyt pro me nic nemas...
+Selka se ted tvari mnohem veseleji a vypada jeste lepe, pokud to jde. Na tvari ji hraje spokojeny usmev, jde videt ze starosti s hrabosi ji dost trapily...
+
+
+
+[EOF]

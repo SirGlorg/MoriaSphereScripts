@@ -1,0 +1,119 @@
+[SPEECH Lenastirovarec]
+ON=*dobry*
+ON=*dobre*
+ON=*den*
+ON=*zdravim* 
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+
+if (<SRC.TAG(skillrank)>==1)&&(<SRC.RESTEST 1 i_hadi_vejce>)&&(<src.tag(level)> > 5)&&(src.tag(mistrquest)==1)
+  if (src.findid(i_hadi_vejce).link==src) //vejce mu patri
+    SAY Vyborne, dekuji ti, velmi jsi mi pomohl. Za odmenu te povysuji na mistra.
+    src.sysmessage Blahoprejeme, byl jsi povysen na mistra. Timto se ti otevira cesta k dalsimu rustu tve postavy.
+    SRC.TAG(skillrank,2)
+    src.setPlayer //updates it's status
+    src.tag.remove(mistrquest)
+    src.consume=i_hadi_vejce
+    src.consume=i_klic_teleportu
+    sfx snd_SPELL_lightning
+    src.addexp(500)
+    if (isqueststone)
+      finduid(<return_nth(1,<questMenu_questStone>)>).tag.quest_mistr=<finduid(<return_nth(1,<questMenu_questStone>)>).tag.quest_mistr>+1
+    endif
+  else
+    say (Snazis se me podvest! Toto vejce na sobe nese otisk jineho hrdiny, jeho jmeno je <src.findid(i_hadi_vejce).link.name>, a to ty nejsi!)
+    say (Zmiz mi z oci. Dokud nebudes sam schopen vejce ziskat, zustanes slabym!)  
+    src.go (bug)
+  endif
+elseif (<SRC.TAG(skillrank)>==1)&&(<SRC.RESTEST 1 i_hadi_vejce>)&&(<src.tag(level)> > 5)
+  SAY Snazis se me oklamat! Toto je koupene obycejne vejce, ty jsi hadi kralovnu ani koutkem oka nezahledl.
+elseif (<SRC.TAG(skillrank)>==1)&&(<src.tag(level)> > 5)
+  SAY Zdravim te. Mam pro tebe ukol, za jehoz splneni te povysim na mistra. Pokud mas zajem mi pomoci a ukolu se zhostit, rekni ano.
+elseif (<SRC.TAG(skillrank)>>1)
+  say Jiz jsi muj ukol splnil.
+else
+  say Nejprve se musis stat expertem a mit alespon 6. level. Muj ukol je pro tebe zatim prilis tezky.
+endif
+return 1
+
+ON=*yes*
+ON=*ano*
+
+if (<SRC.RESTEST 1 i_klic_teleportu>)
+  SAY Musis mi prinest oplozene hadi vejce od samotne hadi kralovny. Bohuzel neznam misto, kde se kralovna nachazi, ale mohu ti poskytnout tento klic, ktery pry stary teleport otevira. Dej si vsak pozor, hadi jsou velmi nebezpecni.
+elseif (<src.tag(skillrank)>==1)&&!(<SRC.RESTEST 1 i_klic_teleportu>)
+  SAY Poslouchej tedy. Musis mi prinest oplozene hadi vejce od samotne hadi kralovny. Bohuzel neznam misto, kde se kralovna nachazi, ale mohu ti poskytnout tento klic, ktery pry stary teleport otevira. Dej vsak pozor, hadi jsou velmi nebezpecni.
+  src.newitem i_klic_teleportu
+  src.act.bounce
+endif 
+return 1
+
+ON=*teleport*
+ON=*najdu*
+ON=*kde*
+ON=*klic*
+
+SAY Stary teleport, od ktereho je tento klic, ma byt nekde v podzemi pobliz hadich oltaru, vice nevim. Ale i cesta jina nez pres teleport pry k hadi kralovne vede.
+
+[ITEMDEF i_hadi_vejce]
+ID=01365
+NAME=Hadi vejce
+
+CATEGORY=Moria
+SUBSECTION=Mistrovsky quest
+DESCRIPTION=Hadi vejce
+
+ON=@Create
+COLOR=0481
+
+on=@pickup_pack
+if(!link) //linkneme na hrace a preda-li to nekomu jinemu tak smula !!!!! 
+ link=<src>
+endif
+
+ON=@userCLICK
+src.sysmessage Toto je oplodnene hadi vejce - velmi vzacna prisada.
+
+
+[ITEMDEF i_klic_teleportu]
+ID=0100f
+NAME=Tajemny klic
+
+CATEGORY=Moria
+SUBSECTION=Mistrovsky quest
+DESCRIPTION=Tajemny klic
+
+ON=@Create
+attr=attr_newbie
+COLOR=0481
+
+
+[ITEMDEF i_hadi_teleport]
+ID=04f3
+NAME=Zamceny teleport
+
+CATEGORY=Moria
+SUBSECTION=Mistrovsky quest
+DESCRIPTION=Zamceny teleport
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+COLOR=0481
+
+ON=@userCLICK
+src.sysmessage Neznamy zamceny teleport
+
+ON=@STEP
+if (<SRC.RESTEST 1 i_klic_teleportu>) && (<src.tag.skillrank>==1)
+src.consume=i_klic_teleportu
+src.go 1508,3860,10
+return 1
+elseif (<SRC.RESTEST 1 i_klic_teleportu>)
+src.consume=i_klic_teleportu
+SRC.redmessage(Tudy nemuzes projit!)
+return 1
+endif
+
+[eof]

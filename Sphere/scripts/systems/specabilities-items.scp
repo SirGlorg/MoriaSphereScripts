@@ -1,0 +1,105 @@
+[itemdef i_hypnotizer]
+id=i_crystal_ball
+type=t_crystal_prof
+name=Hypnotizer's ball
+resources=1 i_scroll_polymorph, 1 i_crystal_ball, 1 i_ingot_adamantinum
+skillmake=alchemy 100.0, magery 100.0
+
+on=@create
+attr=00
+color=0480
+
+on=@userdclick
+if (<src.tag(hypno_mystik)>)
+  src.hypnotize
+else
+  src.dialog(d_hypnotizerBall)
+endif
+return 1
+
+[Dialog d_hypnotizerBall]
+argo.SetLocation=250,405
+
+argo.tag(sirka,314)
+argo.tag(vyska,146)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,188)
+argo.dialog_zpruhledni
+
+arg(radku,0)
+argo.texta(100,12,d_def_WriteColor,"Hypnotizer's ball")
+argo.button(276,9,0fb1,0fb3,1,0,0)
+if (src.profession==class_mystik)	//
+  argo.button(<argo.tag(sloupec_x[0])>+<d_def_skvira>,<argo.tag(obj_y[1])>-2,4020,4022,1,0,1)
+  argo.texta(<argo.tag(sloupec_x[0])>+<d_def_button_sirka>+<d_def_skvira>,<argo.tag(obj_y[1])>,<d_def_WriteColor>,"Hypnoza")
+  argo.texta(210,<argo.tag(obj_y[1])>,<d_def_NAcolor>,".hypnotize")  
+  arg(radku,#+1)
+endif
+if (0<src.tag(ra_buffsteal)>)
+  argo.button(<argo.tag(sloupec_x[0])>+<d_def_skvira>,(<argo.tag(obj_y[1])>-2)+<radku>*<d_def_radek_vyska>,4002,4004,1,0,2)
+  argo.texta(<argo.tag(sloupec_x[0])>+<d_def_button_sirka>+<d_def_skvira>,<argo.tag(obj_y[1])>+<radku>*<d_def_radek_vyska>,<d_def_WriteColor>,"Ovladnuti Talentu")
+  argo.texta(210,<argo.tag(obj_y[1])>+<radku>*<d_def_radek_vyska>,<d_def_NAcolor>,".buffsteal")
+  arg(radku,#+1)
+endif
+if (0<src.tag(ra_controlnpc)>)
+  argo.button(<argo.tag(sloupec_x[0])>+<d_def_skvira>,(<argo.tag(obj_y[1])>-2)+<radku>*<d_def_radek_vyska>,4026,4028,1,0,3)
+  argo.texta(<argo.tag(sloupec_x[0])>+<d_def_button_sirka>+<d_def_skvira>,<argo.tag(obj_y[1])>+<radku>*<d_def_radek_vyska>,<d_def_WriteColor>,"Ovladani NPC")
+  argo.texta(210,<argo.tag(obj_y[1])>+<radku>*<d_def_radek_vyska>,<d_def_NAcolor>,".controlnpc")
+  arg(radku,#+1)
+endif
+if (0<src.tag(ra_catch)>)
+  argo.button(<argo.tag(sloupec_x[0])>+<d_def_skvira>,(<argo.tag(obj_y[1])>-2)+<radku>*<d_def_radek_vyska>,4005,4007,1,0,4)
+  argo.texta(<argo.tag(sloupec_x[0])>+<d_def_button_sirka>+<d_def_skvira>,<argo.tag(obj_y[1])>+<radku>*<d_def_radek_vyska>,<d_def_WriteColor>,"Drzeni NPC")
+  argo.texta(210,<argo.tag(obj_y[1])>+<radku>*<d_def_radek_vyska>,<d_def_NAcolor>,".catch")  
+  arg(radku,#+1)
+endif
+if (0<src.tag(ra_catch)>)
+  argo.button(<argo.tag(sloupec_x[0])>+<d_def_skvira>,(<argo.tag(obj_y[1])>-2)+<radku>*<d_def_radek_vyska>,4008,4010,1,0,5)
+  argo.texta(<argo.tag(sloupec_x[0])>+<d_def_button_sirka>+<d_def_skvira>,<argo.tag(obj_y[1])>+<radku>*<d_def_radek_vyska>,<d_def_WriteColor>,"Drzeni NPC v okoli")
+  argo.texta(210,<argo.tag(obj_y[1])>+<radku>*<d_def_radek_vyska>,<d_def_NAcolor>,".catchfield")  
+  arg(radku,#+1)
+endif
+
+if !(<radku>)
+  argo.texta(<argo.tag(sloupec_x[0])>+<d_def_skvira>,<argo.tag(obj_y[1])>,d_def_NAcolor,"Nevis, jak kouli pouzit.")
+endif
+
+[Dialog d_hypnotizerBall button]
+on=1
+src.hypnotize
+
+on=2
+src.buffSteal
+
+on=3
+src.controlnpc
+
+on=4
+src.catch
+
+on=5
+src.catchfield
+
+[ITEMDEF i_kudla]
+NAME=vrhaci nuz
+ID=i_dagger
+
+RESOURCES=2 i_ingot_iron
+DAM=3
+CATEGORY=Provisions - Weapons - Special
+SUBSECTION=iron
+DESCRIPTION=Vrhaci nuz
+SKILLMAKE=BLACKSMITHING 40.0, TINKERING 35.0
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+return"<bowcrafting_targon_item>"
+	
+
+ON=@Create
+weaponcreate(Iron)
+
+

@@ -1,0 +1,64 @@
+# axissvr.cfg
+# Introduced in v0.6f to accomodate those users who have multiple shards
+# on the same server.
+#
+# The format of this file is pretty simple.  Anything that is preceded with
+# a '#' is interpreted as a comment.
+# Actual values are preceded with the tag name of the value.
+#
+# PORT specifies the TCP/IP port that axissvr will listen and respond to.
+# It is a good idea to pick a high value for this (>1024).
+# Also, make sure you aren't using a port that another application uses.
+# The default value for PORT is 4006.  All of the users that connect using the
+# Axis client will need to specify a value for the port if you change this one.
+PORT 4006
+#
+# NTSERVICE applies only on Windows NT machines.  It is ignored on linux and
+# Win9x implementations of axissvr.  If NTSERVICE is specified, axissvr will
+# attempt to run as a system service.  However, before this will truly work,
+# you will need to uncomment the line, and type 'axissvr -install' from the
+# directory in which axissvr resides (should be your TUS directory).
+# To remove axissvr from the system services list, run 'axissvr -remove'.
+# To run axissvr in a console window while it is configured as a service, type
+# 'axissvr -debug' from the TUS folder.
+#NTSERVICE
+#
+# NOMULTITHREADING makes all tasks run in the same thread.  Only use this if
+# you are experiencing problems creating new threads.
+#NOMULTITHREADING
+#
+# MAXCONNECTIONS specifies the maximum number of simultaneous client
+# connections on Axis Server.  The default is 5
+MAXCONNECTIONS 5
+#
+# READONLY prevents local files from being updated be remote users.
+#READONLY
+#
+# ALLOWEDPATHS specifies the relative paths which can be accessed with the
+# raw editor function in the Axis client.  Multiple paths can be specified, and
+# should be delimited by a colon.  If you wish to use subdiretories, use the
+# complete relative path (e.g. scripts:scripts/test:scripts/speech:etc)
+ALLOWEDPATHS speech:log
+#
+# ALLOWEDEXTENSIONS specifies the file extensions which can be accessed with
+# the raw editor function in the Axis client.  Multiple extensions can be
+# specified, and should be delimited by a colon.  Do not include the '.'
+ALLOWEDEXTENSIONS scp:ini:tmp:bkp
+
+# DENIEDHOSTS specifies which hosts are denied access to this server.  It 
+# can be a numerical IP, a fully qualified domain name, or all hosts in a
+# given domain.  If this is blank no hosts will be blocked, unless the 
+# ALLOWEDHOSTS setting is populated, in which case only those hosts will be
+# permitted to connect to the server.
+# To specify a domain, do not use a '*', instead use '.aol.com'.  Entries
+# should be delimited by a comma.  e.g. '.adelphia.net,127.0.0.1'.  Do not use
+# quotes.
+# DENIEDHOSTS .aol.com,.adelphia.net,192.168.
+
+# ALLOWEDHOSTS specifies which hosts are allowed to access this server.  It
+# can be a numerical IP, a fully qualified domain name, or all hosts in a
+# given domain.  If left blank, all hosts not specifically denied are allowed.
+# To specify a domain, do not use a '*', instead use '.aol.com'.  Entries
+# should be delimited by a comma.  e.g. '.adelphia.net,127.0.0.1'.  Do not use
+# quotes.
+# ALLOWEDHOSTS localhost,10.0.

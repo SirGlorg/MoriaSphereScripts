@@ -1,0 +1,663 @@
+////////////////////////////////////////////////
+//Fiflena
+////////////////////////////////////////////////
+[function f_q024_Fiflena]
+if (src.qtag(q024) < 1)
+  src.qtag(q024,0)
+endif
+dialog(d_q024_Fiflena)
+
+[speech spk_q024_fiflena]
+on = *ahoj*
+on = *hi*
+
+if (<distance>>3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q024_Fiflena
+endif
+
+[dialog d_q024_Fiflena]
+argo.questDialog_create(03031,"Rozhnevana Fiflena")
+
+argo.dialog_newPage("Pozdrav")
+arg(q024,<eval src.qtag(q024)>)
+
+if (<arg(q024)> < 10)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,21,"Muzu pomoci?")
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Ahoj.")
+  argo.questDialog_HTMLGUMP
+
+if (<arg(q024)> < 10)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Rikaji mi Fiflena a mam zatraceny vztek! Tak se tu ani nezdrzuj a dej si odchod!")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Muzu pomoci?")
+  argo.setText(argo.newTextLine,"Ale jiste, pomuzes mi tim, ze me nechas na pokoji!")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"Dobre, mej se.")
+  argo.questDialog_addResponse(0,1,1,"Goodbye")
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Na obchod nemam ani pomysleni, jsem nastvana!")
+  argo.questDialog_HTMLGUMP
+  argo.f_q036_jonas_fiflena_bargain    // button pre q036_jonas //
+  
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Nemas praci? Je to videt. Kdybys <?src.sex(mel,mela)?>, tak bys <?src.sex(neotravoval,neotravovala)?> lidi, kteri o to nestoji!")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+  if (<arg(q024)> == 10) && (<src.rescount i_q024_prsten> >= 1)
+    argo.setText(argo.newTextLine,"Mam pro tebe prsten od Gregora. Chce te pozadat o ruku.")
+    argo.questDialog_addResponse(0,0,1,"q024_give_the_ring")
+  else
+    argo.setText(argo.newTextLine,"Radeji snad nic...")
+    argo.questDialog_addResponse(0,1,0,"Goodbye")
+  endif
+  argo.f_q036_jonas_fiflena_bring  // button pre q036_jonas //
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis sympaticke devce s tvari rudou vzteky. Nejspis se s nekym pekne pohadala.*")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q024)> == 10)  
+  argo.dialog_page("q024_give_the_ring")
+    argo.setText(argo.newTextLine,"Grr, po tom, jak strasne me rozcilil, si dovoli pokusit se me takhle jednoduse uplatit, jo? Tak to ma smulu, aby vedel! Uz nejmin tyden se o mou ruku uchazi muz jmenem Theodor, zapacha mu trochu z ust, ale jinak je to fesak! Hmm, i kdyz... ukaz ten prsten na chvilku? Pekny, to se musi nechat.. no...hmm.. vyrid Gregorovi, ze teda se svatbou souhlasim, ale nastvana jsem porad! Ze me si koupit jen tak nemuze! A ty uz se tu neukazuj, nebo si to rozmyslim...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, tak teda diky, ja radsi jdu.")
+    argo.questDialog_addResponse(0,1,1,"q024_complete") 
+endif
+
+// other quests
+if (<eval src.qtag(q036_jonas)> == 7)
+  argo.f_q036_jonas_fiflena_answer
+endif
+ 
+[dialog d_q024_Fiflena button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q024_complete"))
+  if ((<src.qtag(q024)> == 10) && (<src.rescount(i_q024_prsten)> >= 1))
+    say("Jdi uz, nez si to rozmyslim...")
+    src.consume(i_q024_prsten)
+    src.addexp(150)
+    src.qtag(q024,11,34)
+  else
+    say("Ty ten prsten nemas? Tak to nic nebude!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+// other quests:
+if (<argo.f_q036_jonas_fiflena_Button(<argn>,<uid>)>)
+  return
+endif
+
+
+////////////////////////////////////////////////
+//Klenotnik Hugo
+////////////////////////////////////////////////
+[function f_q024_klenotnik]
+if (src.qtag(q024) < 1)
+  src.qtag(q024,0)
+endif
+dialog(d_q024_klenotnik)
+
+[speech spk_q024_klenotnik]
+on = *ahoj*
+on = *hi*
+
+if (<distance>>3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q024_klenotnik
+endif
+
+
+[dialog d_q024_klenotnik]
+5,5
+page 0
+
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod xicht	
+gumppic 40 215 03099 // obrazek xichtu   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+argo.HTMLGUMP(170,230,440,100,8,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 0  //      
+argo.text 60 395 152 9
+
+page 3
+HTMLGUMP(170,230,440,100,18,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,19,0,36)
+
+page 5
+if (src.qtag(q024) == 7) && (<src.rescount i_q024_sutr> >= 1)
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0
+  argo.text 60 395 152 12
+elseif (src.qtag(q024) == 8) && (<src.rescount i_q024_sutr> >= 1) && (<src.rescount i_gold> >= 50000)
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+  argo.button 25 395 0fa5 0fa7 0 8 0    
+  argo.text 60 395 152 15
+else
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 11
+endif
+
+page 6
+HTMLGUMP(170,230,440,100,20,0,36)
+
+page 7
+argo.HTMLGUMP(170,230,440,100,13,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 1
+argo.text 60 395 152 14
+
+page 8
+argo.HTMLGUMP(170,230,440,100,16,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 2
+argo.text 60 395 152 17
+
+[dialog d_q024_klenotnik text]
+Klenotnik Hugo // 0
+Kdo jsi? // 1
+Muzu pomoci? // 2
+Obchodovat? // 3
+Hledam praci // 4
+Nesu ti // 5
+Prohlednout // 6
+Jsem klenotnik, ktery umi z krasneho materialu udelat jeste hezci vyrobek! //7
+Nic me nenapada, ale dekuji za nabidku. //8
+Jasne, mej se... //9
+Tak co mi neses? //10
+Vlastne nic... //11
+Mam tu rubin od Gregora. Potrebuje udelat snubni prsten... //12
+No jo, pekny sutrik, to se musi nechat. To se Gregor musel prastit pres kapsu. Ale co, do toho mi nic neni. Jsem profesional! Ten prstynek ti samozrejme zhotovim. A ze jdes od meho znameho, dam ti slevu. Prines mi 50 tisic zlatych a budes mit ten nejkrasnejsi snubak pod sluncem. //13
+Pff, takova palka. Nu dobra, jdu pro tech 50 tisic. //14
+Tady mas tech 50 tisic a rubin na prsten. //15
+Dobra, sem s penezmi a rubinem. Jde se na prstynek! //16
+- uskutecnit obchod - //17
+Rad bych, ale momentalne tu mam spoustu predjednanych zakazek... //18
+No jo, vsichni hledame. Rad bych ti neco nabidnul, ale nevypadas, ze umis s klenoty... //19
+Vidis sikovneho muze ve vkusnem ale neprekazejicim obleceni. Postava si vedle fontany a mumla neco o horsici se kvalite zlata //20
+ 
+[dialog d_q024_klenotnik button]
+on=1
+src.qtag(q024,8,34)
+on=2
+if ((<src.rescount i_gold> >= 50000) && (<src.rescount i_q024_sutr> >= 1) && (0<src.qtag(q024)> ==8))
+say("Tak to mame jeden zbrusu novy prstynek...")
+  src.consume(i_q024_sutr)
+  src.consume(50000,i_gold)
+  src.addexp(400)
+  src.NewItem(i_q024_prsten).Bounce
+  src.qtag(q024,9,34)
+else
+ say("Nemas vse potrebne!")
+endif
+
+
+////////////////////////////////////////////////
+//zlodejicek Boris
+////////////////////////////////////////////////
+[function f_q024_zlodej_boris]
+if (src.qtag(q024) < 1)
+  src.qtag(q024,0,34)
+endif
+dialog(d_q024_zlodej_boris)
+
+[speech spk_q024_zlodej_boris]
+on = *ahoj*
+on = *hi*
+
+if (<distance>>3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q024_zlodej_boris
+endif
+
+
+[dialog d_q024_zlodej_boris]
+5,5
+page 0
+
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod xicht	
+gumppic 40 215 03018 // obrazek xichtu   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+if (src.qtag(q024) == 6)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 27
+elseif (src.qtag(q024) == 7)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 27
+elseif (src.qtag(q024) == 8)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 27
+elseif (src.qtag(q024) == 9)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 27
+elseif (src.qtag(q024) == 10)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 27
+elseif (src.qtag(q024) == 11)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 27
+elseif (src.qtag(q024) == 12)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 27
+else
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 9
+endif
+
+page 3
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,11,0,36)
+
+page 5
+if( (src.qtag(q024) == 3) && (<src.rescount i_q024_truhlicka> == 1))
+  argo.HTMLGUMP(170,230,440,100,14,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      
+  argo.text 60 395 152 15
+elseif (src.qtag(q024) == 4)
+  if (<src.findid(i_q024_vacek_strazci).tag.contentscount>>=2)
+    argo.HTMLGUMP(170,230,440,100,18,0,36)
+    argo.button 25 395 0fa5 0fa7 0 8 0  //      
+    argo.text 60 395 152 19
+  else
+    argo.HTMLGUMP(170,230,440,100,18,0,36)
+    argo.button 25 395 0fa5 0fa7 1 0 0  //      
+    argo.text 60 395 152 17
+  endif
+elseif (src.qtag(q024) == 5)
+  argo.HTMLGUMP(170,230,440,100,22,0,36)
+  if (<src.rescount i_lockpick> >= 120)
+    argo.button 25 395 0fa5 0fa7 0 9 0  //      
+    argo.text 60 395 152 23 
+  endif
+else
+  argo.HTMLGUMP(170,230,440,100,14,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 13
+endif
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7
+argo.HTMLGUMP(170,230,440,100,16,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 1  //      
+argo.text 60 395 152 17
+
+page 8
+argo.HTMLGUMP(170,230,440,100,20,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 2  //      
+argo.text 60 395 152 21
+
+page 9
+argo.HTMLGUMP(170,230,440,100,24,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 3  //      
+argo.text 60 395 152 25
+
+[dialog d_q024_zlodej_boris text]
+Stary zlodejicek Boris // 0
+Kdo jsi? // 1
+Muzu pomoci? // 2
+Obchodovat? // 3
+Hledam praci // 4
+Nesu ti // 5
+Prohlednout // 6
+Nazdar, nazdar! Jmenuji se Boris. Ale nikde to radeji moc nesir, znam par lidi, co by si me moc rado vzalo do parady. Mozna postradaji neco, co jsem si od nich v mladi tak trochu vypujcil, hehe.  // 7
+Nene, dekuji. Jsem uz star a da se rict, ze mam vseho dost. Umel jsem se o sebe postarat driv, zvladnu to i ted! //8
+dobra tedy, tak naschle. //9
+Nemyslim, ze u sebe mas neco, co by me mohlo zajimat //10
+No tak hledej dal... //11
+Vidis postarsiho muze, na kterem je i pres pokrocilejsi vek videt mrstnost a pruznost, kterou musel za sveho mladi oplyvat. //12
+Vlastne nic nemam... //13
+Co mi neses? //14
+Nesu ti truhlicku, patrici Gregorovi. Pry budes vedet, jak ji otevrit //15
+No jo, poznavam tenhle mechanismus... coz o to, ja ti to klidne otevru, ale zadarmo ani kure nehrabe! Jednomu dobremu znamemu jsem slibil sehnat jako trofeje dve paze z obavanych strazcu... sam jsem uz moc stary na to, abych se nekde plazil po jeskynich... prines mi ty pracky a ja ti truhlicku otevru, je to pro me zalezitost okamziku. Tak co, placneme si? //16
+jdu na to... //17
+Uz mas ty trofeje? //18
+tady jsou! //19
+Dobra tedy, svou cast dohody jsi splnil. I kdyz ty trofeje nejsou teda nic moc... no ale uvidime, snad to bude stacit. Dones mi 120 lockpicku a vrhneme se na tu tvoji nezbednou truhlicku! //20
+Jdu je sehnat... //21
+Uz mas ty lockpicky? //22
+Tady jsou. //23
+Dobra, tak mi dej lockpicky a truhlicku a jdeme na to! //24
+- provest vymenu - //25
+Krom tech trofeji, co od tebe mam, uz nic nepotrebuju, diky! //26
+Dobra tedy, mej se //27
+
+[dialog d_q024_zlodej_boris button]
+on=1
+if (0<src.qtag(q024)> ==3)
+  src.qtag(q024,4,34)
+  say("Hodne stesti se strazci!")
+  src.newitem(i_q024_vacek_strazci).bounce
+endif
+
+on=2
+if (src.qtag(q024) == 4) && (<src.findid(i_q024_vacek_strazci).tag.contentscount>>=2)
+  src.qtag(q024,5,34)
+  src.consume(i_q024_vacek_strazci)
+  src.addexp(800)
+on=3
+if ((src.qtag(q024) == 5) && (<src.rescount i_lockpick> >= 120)) && (<src.rescount i_q024_truhlicka> == 1))
+  src.qtag(q024,6,34)
+  src.consume(i_q024_truhlicka)
+  src.consume(120,i_lockpick)
+  src.addexp(300)
+  src.newitem(i_q024_sutr).bounce
+  say("tady mas, pozdravuj odeme Gregora!")
+else
+  say("Nemas vse potrebne!")
+endif
+
+
+
+////////////////////////////////////////////////
+//Valecnik Gregor
+////////////////////////////////////////////////
+[function f_q024_valecnik_gregor]
+if (src.qtag(q024) < 1)
+  src.qtag(q024,0,34)
+endif
+dialog(d_q024_valecnik_gregor)
+
+[speech spk_q024_valecnik_gregor]
+on = *ahoj*
+on = *hi*
+
+if (<distance>>3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  f_q024_valecnik_gregor
+endif
+
+[dialog d_q024_valecnik_gregor]
+5,5
+page 0
+
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod xicht	
+gumppic 40 215 03029 // obrazek xichtu   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+if (src.qtag(q024) == 1)
+  argo.HTMLGUMP(170,230,440,100,11,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 12
+elseif (src.qtag(q024) == 2)
+  argo.HTMLGUMP(170,230,440,100,11,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0
+  argo.text 60 395 152 18
+elseif (src.qtag(q024) == 3)
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 12
+elseif (src.qtag(q024) == 4)
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 12
+elseif (src.qtag(q024) == 5)
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 12
+elseif (src.qtag(q024) == 6)
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+  argo.button 25 395 0fa5 0fa7 0 8 0
+  argo.text 60 395 152 22
+elseif (src.qtag(q024) == 7)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0 
+  argo.text 60 395 152 12
+elseif (src.qtag(q024) == 8)
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 12
+elseif ((src.qtag(q024) == 9) && (<src.rescount i_q024_prsten> >= 1))
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 0 9 0
+  argo.text 60 395 152 27
+elseif (src.qtag(q024) == 10)
+  argo.HTMLGUMP(170,230,440,100,30,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0
+  argo.text 60 395 152 12
+elseif (src.qtag(q024) == 11)
+  argo.HTMLGUMP(170,230,440,100,30,0,36)
+  argo.button 25 395 0fa5 0fa7 0 10 0 
+  argo.text 60 395 152 31
+elseif (src.qtag(q024) == 12)
+  argo.HTMLGUMP(170,230,440,100,34,0,36)
+else
+  if (<src.tag(level)> > 15)
+    argo.HTMLGUMP(170,230,440,100,8,0,36)
+    argo.button 25 395 0fa5 0fa7 1 0 0
+    argo.text 60 395 152 9
+    argo.button 25 415 0fa5 0fa7 1 0 1  
+    argo.text 60 415 152 10
+  else
+    argo.HTMLGUMP(170,230,440,100,35,0,36)
+  endif
+endif
+
+page 3
+HTMLGUMP(170,230,440,100,13,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,14,0,36)
+
+page 5
+if( (src.qtag(q024) == 2) && (<src.rescount i_q024_truhlicka> == 1))
+  argo.HTMLGUMP(170,230,440,100,11,0,36)
+  argo.button 25 395 0fa5 0fa7 0 7 0  //      
+  argo.text 60 395 152 18
+elseif (src.qtag(q024) == 6)
+  argo.HTMLGUMP(170,230,440,100,16,0,36)
+  argo.button 25 395 0fa5 0fa7 0 8 0  //      
+  argo.text 60 395 152 22
+elseif ((src.qtag(q024) == 9) && (<src.rescount i_q024_prsten> >= 1))
+  argo.HTMLGUMP(170,230,440,100,26,0,36)
+  argo.button 25 395 0fa5 0fa7 0 9 0  //      
+  argo.text 60 395 152 27
+elseif (src.qtag(q024) == 11)
+  argo.HTMLGUMP(170,230,440,100,30,0,36)
+  argo.button 25 395 0fa5 0fa7 0 10 0  //      
+  argo.text 60 395 152 31
+else
+  argo.HTMLGUMP(170,230,440,100,16,0,36)
+  argo.button 25 395 0fa5 0fa7 1 0 0  //      
+  argo.text 60 395 152 17
+endif
+
+page 6
+HTMLGUMP(170,230,440,100,15,0,36)
+
+page 7
+HTMLGUMP(170,230,440,100,19,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 2  //      
+argo.text 60 395 152 20
+
+page 8
+HTMLGUMP(170,230,440,100,23,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 3  //      
+argo.text 60 395 152 25
+argo.button 25 415 0fa5 0fa7 1 0 0  //      
+argo.text 60 415 152 24
+
+page 9
+HTMLGUMP(170,230,440,100,28,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 4  //      
+argo.text 60 395 152 29
+
+page 10
+HTMLGUMP(170,230,440,100,32,0,36)
+argo.button 25 395 0fa5 0fa7 1 0 5  //      
+argo.text 60 395 152 33
+
+[dialog d_q024_valecnik_gregor text]
+Oslehany valecnik Gregor // 0
+Kdo jsi? // 1
+Muzu pomoci? // 2
+Obchodovat? // 3
+Hledam praci // 4
+Nesu ti // 5
+Prohlednout // 6
+Zdravicko! Rikaji mi Gregor a zivim se tim nejdulezitejsim, co chlap muze mit. Tedy mecem, buwehe. // 7
+No... vypadas docela schopne, ale nevim, zda takovy ukol zvladnes... Ale proc ne, zkusit to s tebou muzu! Tak poslouchej... byl jsem dohodnuty se svym pritelem, ze se zde sejdeme a spolecne si do jeskyne dojdeme pro poklad... Ale kdyz jsem dorazil, nasel jsem jen par tel a muj vychytraly kamarad byl davno fuc - jiste sel napred, aby poklad ukoristil sam! Ja tam vsak mam neco velmi duleziteho. Neco, co pro me ma osobni hodnotu... najdi pro mne truhlu s pokladem driv nez ten podrazak a prines mi jeji obsah - odmenim se ti kralovsky! //8
+Promin, ale jestli nekdy najdu nejakou truhlu, beru si veskery jeji obsah. Mej se! //9
+Tak truhla s pokladem, rikas? Nuze dobra, najdu ji a prinesu ti jeji obsah! //10
+Uz jsi nasel truhlu s pokladem? //11
+Jeste ne... //12
+Ja na obchod moc nejsem... //13
+To hledas spatne. Jsem zoldak, prace chodi za mnou, ne naopak. //14
+Vidis statneho valecnika, ktery si evidentne na slova moc nepotrpi. Kde ale plytva slovy, jiste by nesetril energii pro poradny svih mecem ci ranu palcatem. //15
+Co mi neses? //16
+Asi spis nic... //17
+Jasne. Byla tam truhlicka, ale nejde otevrit... //18
+Hmm, myslel jsem si to. To jsou tyhlety stary zatraceny zamky. Nikdo ze soucasnych profiku uz na ne nestaci. No, neda se nic delat. Musis najit Borise. Je to starej nicema a zlodej, ale ruce ma zlaty. Obavam se, ze on jediny bude vedet, jak truhlicku otevrit. Zatim si ji nech a jdi mu ji ukazat, snad na neco prijde. Najdes ho urcite v blizkosti nejakeho elfskeho mesta, snazi se od nich odkoukat neco z jejich hbitosti, previt... //19
+Dobra, jdu za Borisem. //20
+Uz jste to s Borisem nejak vyresili? //21
+V truhlicce byl rubin... //22
+Ano, ano! To je on, muj rubin! Mockrat ti dekuji. Tim bohuzel me strasti nekonci, mam na tebe jeste jednu prosbu. Ten rubin mel byt soucasti snubniho prstenu pro mou vyvolenou. Jeho zhotoveni mi slibil klenotnik Hugo. Jenze ja tu musim cekat, jestli se neobjevi ten zpropadenec, co mi tehda utekl do dungeonu hledat muj, MUJ rubin! Myslis, ze bys tam ten kamen odnesl a nechal mi u Huga prsten zhotovit? //23
+Prsteny, klenotnici... blee, tohle po mne nechtej! //24
+Ale jo, najdu Huga, ze jsi to ty! //25
+Tak jak u Huga? Mas prsten? //26 
+Ano, tady ho mas! //27
+Pockej, pockej! Jeste mi ho nedavej. Mam pro tebe posledni ukol - a ten se obavam bude snad nejtezsi... je v nem totiz zenska. Musis najit mou vyvolenou, krasnou Fiflenu. Jsme ted trosku rozhadani a nechce na me ani pohlednout, natoz pak aby mi naslouchala... Ale treba to zvladnes ty... Najdi ji a pozadej ji mym slovem o ruku. Jestlize svoli a prsten prijme, odvdecim se ti, jak jen bude v mych silach! //28
+*mrmlas neco o manzelske poradne a hello dolly*. No tak dobre! //29
+Tak co Fiflena? Prijala? //30
+Nakonec ano. Gratuluji! //31
+Vazne? Ach ano, dekuji ti mockrat! Jen se znovu uvidime, pokusim se ji trochu uklidnit a zlepsit naladu. Pozvu te na svatbu, az ji budeme mit naplanovanou! Zatim se mej a jeste jednou diky! A abych nezapomnel - zde je tva odmena!  //32
+Diky, preju hodne stesti, zdravi a ty podobny veci, co se tak rikavaji. //33
+Pomoci uz netreba, diky. Akorat balim veci a chystam se za Fiflenkou... //34
+Promin, ale pro reseni meho problemu jeste nemas dostatek zkusenosti... //35
+
+
+
+[dialog d_q024_valecnik_gregor button]
+on=1
+if (0<src.qtag(q024)> ==0)
+  src.qtag(q024,1,34)
+  say("Diky moc, tu truhlu jiste poznas, ma napadnou barvu!")
+endif
+
+on=2
+if (src.qtag(q024) == 2) && (<src.rescount i_q024_truhlicka> == 1))
+  src.qtag(q024,3,34)
+  src.addexp(100)
+  say("Hodne stesti u toho staryho lapky!")
+else
+  say("vzdyt tu truhlicku nemas! Prijd, az ji budes opravdu mit")
+endif
+
+on=3
+if (src.qtag(q024) == 6) && (<src.rescount i_q024_sutr> >= 1))
+  src.qtag(q024,7,34)
+  src.addexp(500)
+  say("Hugo obdivuje krasu fontany na ostrove Imperatoru...")
+else
+  say("vzdyt ten rubin u sebe nemas! Prijd, az ho budes opravdu mit")
+endif
+
+on=4
+if (src.qtag(q024) == 9) && (<src.rescount i_q024_prsten> >= 1))
+  src.qtag(q024,10,34)
+  src.addexp(500)
+  say("Fiflena trucuje na rhunskem ostrove...")
+else
+  say("vzdyt ten rubin u sebe nemas! Prijd, az ho budes opravdu mit")
+endif
+
+on=5
+if (src.qtag(q024) == 11) 
+  src.qtag(q024,12,34)
+  src.addexp(800)
+  src.givegold(20000)
+  say("Jeste jednou diky...")
+  f_quest_complete(34)  // splneni questu "Zasnubni prsten"
+endif
+

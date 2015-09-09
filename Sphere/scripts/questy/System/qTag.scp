@@ -1,0 +1,62 @@
+[function qtag]
+arg(MyQuestRune,<findid(i_quest_rune)>)
+if !(ischar)
+  return""
+endif
+if (<argvcount> >= 2) //zapisujeme novy qtag
+  if !(<findid(i_quest_rune)>) // postava jeste nema quest runu
+    newequip(i_quest_rune)
+    arg(MyQuestRune,<lastnew>)
+  endif
+  MyQuestRune.tag(<argv(0)>,"<argv(1)>")
+  if (<argvcount> == 3) // mame odkaz na quest dialog -> budeme reportovat postup v questu
+    f_questMenu_reportQuest(<argv(2)>)
+  endif
+  return""
+elseif (<argvcount> == 1) // cteme qtag
+  if !(<findid(i_quest_rune)>)
+    return""
+  endif
+  if (strlen(<MyQuestRune.tag(<argv(0)>)>))
+    return<MyQuestRune.tag(<argv(0)>)>
+  else
+    return""
+  endif
+endif
+RedMessage("spatny pocet argumentu")
+Return""
+
+[function qtagremove]
+arg(MyQuestRune,<findid(i_quest_rune)>)
+MyQuestRune.tag.remove.(<argv(0)>)
+return 1
+
+[function qtagshow]
+if (<argvcount> == 0)
+  findid(i_quest_rune).tag(dump)
+else
+  Src.SysMessage("Hodnota quest tagu -<argv(0)>- :")
+  arg(tag_value,"<qtag(<argv(0)>)>")
+  if !(strcmpi(<tag_value>,00))
+    Src.RedMessage("Tag je nulovy.")
+  else
+    Src.RedMessage("<tag_value>")
+  endif
+endif
+
+[itemdef i_quest_rune]
+id=i_rune_marker
+name=Runa na questy
+type=t_eq_script
+
+on=@create
+attr=094 // invis, nb, nevermove
+color=0989
+
+[function ensureQTag]
+if !(strlen(<qtag(argv(0))>)
+  tag(<argv(0)>,0)
+endif
+
+
+[eof]

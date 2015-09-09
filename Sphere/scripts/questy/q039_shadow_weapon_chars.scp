@@ -1,0 +1,508 @@
+/////////////////////////////////////////////////////////
+////////////////// SHADOW WEAPONS////////////////////////
+/////////////////////////////////////////////////////////
+
+[chardef c_q039_kovar]
+id=c_man
+name=Kovar
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TSPEECH=spk_q039_shadow_weapon_kovar
+
+CATEGORY=Moria Questy
+SUBSECTION=q039_shadow_weapon
+DESCRIPTION=Kovar
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=1000
+DEX=300
+INT=100
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={95.0 100.0}
+TACTICS={95.0 100.0}
+MACEFIGHTING={90.0 100.0}
+RESIST={95.0 100.0}
+
+tag(noanimate,1)
+
+maxhits=3500
+maxstam={300 350}
+maxmana=0
+
+tag.resist_para=850
+tag.resist_poison=650
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_hair_receding
+ITEMNEWBIE=i_beard_short
+ITEMNEWBIE=i_apron_full
+COLOR=0675
+ITEMNEWBIE=i_hammer_smith
+NAME=Mithril smith hammer
+COLOR=0999
+ITEMNEWBIE=i_sandals
+COLOR=0675
+ITEMNEWBIE=i_studded_gloves
+COLOR=0675
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+  return 1
+else
+  f_q039_shadow_weapon_kovar
+ENDIF
+
+/////////////////////////////////////////////////////////
+///////////////////   Hunted   //////////////////////////
+/////////////////////////////////////////////////////////
+//// Verlix - nejbeznejsi - melee - weak na elect, blunt
+//// Mercelis - bezna - archer - weak na sekery, ohen
+//// Gloata - vzacna - mage - weak na archery, poison a frost
+//// Bakchor - nejsilnejsi - mage - weak bleed, sharps a sekery
+
+[CHARDEF c_q039_verlix]
+id=c_man
+NAME=Verlix           //weak na elect, frost, blunt
+ICON=i_pet_MAN
+anim=0ffc78c7f
+CAN=MT_WALK|MT_run|MT_USEHANDS
+
+attack=70
+ARMOR=60
+MOVERATE=3
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+TEVENTS=e_npc_bleed
+TEVENTS=e_npc_critic        //sance na kritik melee
+TEVENTS=e_shadow_weapon_brother   //timer na boj
+
+CATEGORY=Moria Questy
+SUBSECTION=q039_shadow_weapon
+DESCRIPTION=Verlix
+
+ON=@Create
+COLOR=colors_skin 
+Title=Mlaticka
+NPC=brain_monster
+fame={2000 2999}              
+karma={-2999 -3999}
+
+str=1000
+dex={180 200}
+int=10
+
+maxhits=15000
+maxstam={250 300}
+maxmana=0
+
+tag.experience=<eval {250.0 255.0}>
+
+tag.npc_bleed=700 //70.0%
+
+tag.npc_critic_chance=250         //25% chance
+tag.npc_critic_dmg=20,25          //dmg in between
+
+tag.shadow_remover=50         //zmizi po 50 sekundach
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>  
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,humanoid)
+
+tag(resist_poison,790)
+tag.resist_para=<eval {700 750}>
+tag(resist_summon,650)
+tag(resist_bleed,800)
+
+tag(resist_sharp,500)
+tag(resist_slash,500)        //sekery
+tag(resist_pierce,300)
+tag(resist_blunt,-150)
+
+tag(resist_fire,400)
+tag(resist_elect,-600)
+tag(resist_cold,-200)
+
+parrying={100.0 110.0}
+resist=100.0
+tactics={90.0 110.0}
+wrestling={100.0 105.0}
+FENCING={100.0 105.0}
+SWORDSMANSHIP={100.0 105.0}
+MACEFIGHTING={100.0 105.0}
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+//ITEMNEWBIE=i_beard_long
+//COLOR=match_hair
+itemnewbie=i_axe_battle_large
+Color=0999
+itemnewbie=i_Silver_PLATEMAIL
+itemnewbie=i_Silver_PLATEMAIL_ARMS
+itemnewbie=i_Silver_PLATEMAIL_GAUNTLETS
+itemnewbie=i_Silver_PLATE_HELM
+itemnewbie=i_Silver_PLATEMAIL_leggings
+itemnewbie=i_Silver_PLATEMAIL_GORGET
+Color=00
+
+ON=@NPCRestock
+item=i_gold
+ITEM=i_q039_shadow_weapon_head_verlix,1
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_q039_mercelis]
+id=c_woman
+NAME=Mercelis        //weak na sekery, ohen
+ICON=i_pet_WOMAN
+anim=0ffc78c7f
+CAN=MT_WALK|MT_run|MT_USEHANDS
+
+attack=45
+ARMOR=45
+moverate=3
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+TEVENTS=e_npc_sniper                //Pøidá dmg k útoku
+TEVENTS=e_npc_multishot             //vsechny viditelne zrani o dmg
+TEVENTS=e_shadow_weapon_brother     //timer na boj
+
+CATEGORY=Moria Questy
+SUBSECTION=q039_shadow_weapon
+DESCRIPTION=Mercelis
+
+ON=@Create
+COLOR=colors_skin 
+Title=Lucistnice
+NPC=brain_monster
+fame={100 300}
+karma={-2000 -2999}
+
+str=1000
+dex={220 250}
+int=100
+
+maxhits=12000
+maxstam={250 300}
+maxmana=0
+
+tag.experience=<eval {260.0 265.0}>
+
+tag.npc_sniper_dmg=20             //o 20 HP
+tag.npc_sniper_chance=200         //20% Defaultne 20%
+
+tag.shadow_remover=50         //zmizi po 50 sekundach
+
+tag.multishot_chance=250          // 25% chance pri zasahu monstra
+tag.multishot_delay=15,20         // prodleva nez znovu
+tag.multishot_dmg=30,40           // dmg in between 30 and 40
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>  
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,humanoid)
+
+tag(resist_poison,750)
+tag.resist_para=<eval {700 750}>
+tag(resist_summon,450)
+tag(resist_bleed,200)
+
+tag(resist_sharp,200)
+tag(resist_slash,-100)        //sekery
+tag(resist_pierce,550)
+tag(resist_blunt,550)
+
+tag(resist_fire,-500)
+tag(resist_elect,400)
+tag(resist_cold,400)
+
+parrying={100.0 105.0}
+resist=100.0
+tactics={95.0 105.0}
+wrestling={90.0 100.0}
+ARCHERY={100.0 110.0}
+FENCING={100.0 105.0}
+SWORDSMANSHIP={100.0 105.0}
+MACEFIGHTING={100.0 105.0}
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+Color=0774
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+itemnewbie=i_armor_female_bustier
+Color=098A
+itemnewbie=i_armor_female_shorts
+Color=098A
+itemnewbie=i_bracelet_gold
+Color=00
+itemnewbie=i_boots_thigh
+Color=00
+itemnewbie=i_necklace_gold
+Color=00
+itemnewbie=i_bonnet
+Color=098c
+
+ON=@NPCRestock
+item=i_gold
+ITEM=i_arrow,{30 40}
+ITEM=i_q039_shadow_weapon_head_Mercelis,1
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_q039_gloata]
+id=c_woman
+NAME=Gloata        //weak na archery, poison a frost
+ICON=i_pet_WOMAN
+anim=0ffc78c7f
+CAN=MT_WALK|MT_run|MT_USEHANDS
+
+attack=40
+ARMOR=40
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_looter
+TEVENTS=e_npc_curse               //vsechny viditelne zrani o dmg
+TEVENTS=e_lightnings
+TEVENTS=e_shadow_weapon_brother   //timer na boj
+
+CATEGORY=Moria Questy
+SUBSECTION=q039_shadow_weapon
+DESCRIPTION=Gloata
+
+ON=@Create
+COLOR=colors_skin 
+Title=Pyromanka
+NPC=brain_monster
+fame={100 300}
+karma={-2000 -2999}
+
+STR=1000
+dex=120
+int=200
+
+maxhits=10000
+maxstam={100 125}
+maxmana=1000
+
+tag.experience=<eval {65.0 75.0}>
+
+tag(poisoning_dmg,15) // affects spell_poison
+tag(poisoning_MvM_dmg,50) // affects spell_poison
+
+tag(e_lightnings_chance,100)   //10%
+tag(e_lightnings_range,5)     // kolik blesku v linii
+
+tag.shadow_remover=80         //zmizi po 80 sekundach
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=15,17         // delay between another possible strike
+tag.npc_curse_dmg=30,35           // dmg 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>  
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,humanoid) 
+
+tag(resist_poison,-1000)
+tag.resist_para=<eval {800 850}>
+tag(resist_summon,1000)
+tag(resist_bleed,400)
+
+tag(resist_sharp,400)
+tag(resist_slash,400)        //sekery
+tag(resist_pierce,-300)
+tag(resist_blunt,500)
+
+tag(resist_fire,950)
+tag(resist_elect,400)
+tag(resist_cold,-400)
+
+parrying={85.0 100.0}
+resist={125.0 160.0}
+tactics={80.0 90.0}
+wrestling={85.0 95.0}
+FENCING={90.0 105.0}
+SWORDSMANSHIP={90.0 105.0}
+MACEFIGHTING={100.0 105.0}
+EI=55.0
+magery=120.0
+peacemaking=100.0
+SpiritSpeak=50.0
+
+itemnewbie=i_spellbook
+addspell=s_poison
+addspell=s_fire_bolt
+addspell=s_flamestrike
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_staff_gnarled
+Color=0774
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+itemnewbie=i_armor_female_bustier
+Color=098A
+itemnewbie=i_robe
+Color=098A
+itemnewbie=i_bracelet_gold
+Color=00
+itemnewbie=i_necklace_gold
+Color=00
+itemnewbie=i_hat_wizards
+Color=098c
+itemnewbie=i_boots_calf
+Color=00
+
+ITEMnewbie=i_monster_create
+ON=@NPCRestock
+item=i_gold
+ITEM=i_q039_shadow_weapon_head_Gloata,1
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_q039_bakchor]
+id=c_man
+NAME=Bakchor                   ///weak bleed, frost, sharps a sekery
+ICON=i_pet_MAN
+anim=0ffc78c7f
+CAN=MT_WALK|MT_run|MT_USEHANDS
+
+attack=90
+ARMOR=90
+moverate=4
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater_vamp
+TEVENTS=e_npc_curse
+TEVENTS=e_lifeLeech          //kazda rana saje HP
+TEVENTS=e_npc_detect         //spouští detekci každých 55s
+TEVENTS=e_shadow_weapon_brother   //timer na boj
+
+CATEGORY=Moria Questy
+SUBSECTION=q039_shadow_weapon
+DESCRIPTION=Bakchor
+
+ON=@Create
+COLOR=colors_skin 
+Title=Vudce party
+NPC=brain_monster
+fame={3000 3999}
+karma={-4999 -5999}
+
+STR=5000
+dex=300
+int=100
+
+maxhits=25000
+maxstam={330 400}
+maxmana=700
+
+tag.experience=<eval {320.0 340.0}>
+
+tag.npc_lifeLeech=50,60      //tolik si prida kazdou ranou
+
+tag.shadow_remover=200         //zmizi po 200 sekundach
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=15,17         // delay between another possible strike
+tag.npc_curse_dmg=30,35           // dmg 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid)
+
+tag(resist_poison,400)
+tag.resist_para=<eval {900 950}>
+tag(resist_summon,650)
+tag(resist_bleed,-200)
+
+tag(resist_sharp,-200)
+tag(resist_slash,-100)        //sekery
+tag(resist_pierce,350)
+tag(resist_blunt,350)
+
+tag(resist_fire,600)
+tag(resist_elect,600)
+tag(resist_cold,-200)
+
+parrying={155.0 165.0}
+resist=190.0
+tactics={105.0 110.0}
+wrestling={120.0 130.0}
+FENCING={100.0 105.0}
+SWORDSMANSHIP={100.0 105.0}
+MACEFIGHTING={100.0 105.0}
+EI=45.0
+magery={105.0 110.0}
+peacemaking=100.0
+provocation=100.0
+SpiritSpeak=60.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_meteor_swarm
+addspell=s_greater_heal
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_staff_gnarled
+Color=0774
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=i_beard_long
+COLOR=match_hair
+itemnewbie=i_shirt_plain
+Color=098a
+itemnewbie=i_pants_long
+Color=098a
+itemnewbie=i_bracelet_gold
+Color=00
+itemnewbie=i_necklace_gold
+Color=00
+itemnewbie=i_hat_jester
+Color=098a
+itemnewbie=i_boots_thigh
+Color=00
+
+ON=@NPCRestock
+item=i_gold
+ITEM=i_q039_shadow_weapon_head_Bakchor,1
+
+///////////////////////////////////////////////////////////

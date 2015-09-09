@@ -1,0 +1,1544 @@
+//////////////////////////////////////////////////
+////////    V a r i a  b l e   G a t e    ////////
+////////          (c) Yavanna             ////////
+//////////////////////////////////////////////////
+//  Bits:
+// 1: isExpgate
+// 2: 
+// 3: 
+
+[ItemDef i_varGate]
+NAME=Brana
+ID=i_moongate_blue
+TYPE=t_varGate
+CATEGORY=Questy
+SUBSECTION=Brana portujici jen dany lvl
+DESCRIPTION=Brana
+
+ON=@Create
+tag(gateFlags,0)
+attr=010 // moveNever
+
+[Dialog d_varGate]
+argo.SetLocation=15,5
+
+argo.tag(sirka,<d_def_baseMenu_sirka>+(3*<d_def_skvira>)+30+332+200+130+30)
+argo.tag(vyska,<d_def_baseMenu_vyska>+(3*<d_def_skvira>)+(22*<d_def_radek_vyska>))
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,365,200,130,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,8,30,332,200,130,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,6,30,332,200,130,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,6,30,332,200,130,30)
+
+argo.dialog_zpruhledni
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Variable Gate")
+argo.textA(<argo.dialog_textpos(0,2)>,<d_def_writecolor>,"MoreP:")
+argo.textA(<argo.dialog_textpos(0,3)>,<d_def_readcolor>,"<?moreP?>")
+argo.dialog_textpos(0,4)
+
+argo.button(<lastxpos>-4,<lastypos>-2,0fa5,0fa7,1,0,2)		//set moreP
+//		F L A G S :		//
+//	NPC Go Through:
+argo.dialog_textpos(1,0)
+argo.checkBox(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_npcGoThrough>,1)
+argo.dialog_textpos(1,1)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,<d_def_readcolor>,"NPC muze projit.")
+
+//	Hypno Go Through:
+argo.dialog_textpos(1,0)
+argo.checkBox(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_hypnoGoThrough>,2)
+argo.dialog_textpos(1,1)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,<d_def_readcolor>,"Hypno-NPC muze projit.")
+
+//	Ghost Go Through
+argo.dialog_textpos(1,0)
+argo.checkBox(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_ghostCanGoThrough>,3)
+argo.dialog_textpos(1,1)
+argo.textA(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,<d_def_readcolor>,"Duchove mohou projit.")
+
+//	Is Exp Gate:
+argo.dialog_textpos(1,0)
+argo.checkBox(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_isExpGate>,4)
+argo.dialog_textpos(1,1)
+argo.textA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,<d_def_readcolor>,"Toto je ExpGate.")
+argo.dialog_textpos(1,2)
+argo.textA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,<d_def_writecolor>,"Experience 'exp, cas/min' :")
+argo.dialog_textpos(1,3)
+if (strLen(<tag(expToGive)>))
+  argo.setText(100,"<?tag(expToGive)?>")
+else
+  argo.setText(100,"0,0")
+endif
+argo.textEntryA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,125,<d_def_radek_vyska>,52,100,100)
+
+argo.dialog_textpos(1,2)
+argo.textA(<lastxpos>,<lastypos>+4*<d_def_radek_vyska>,<d_def_writecolor>,"do 'min' nebo 'min,max' lvl:")
+if (strLen(<tag(expToGiveLvl)>))
+  argo.setText(110,"<?tag(expToGiveLvl)?>")
+else
+  argo.setText(110,"0,0")
+endif
+argo.dialog_textpos(1,3)
+argo.textEntryA(<lastxpos>,<lastypos>+4*<d_def_radek_vyska>,125,<d_def_radek_vyska>,52,101,110)
+
+argo.dialog_textpos(1,2)
+argo.textA(<lastxpos>,<lastypos>+5*<d_def_radek_vyska>,<d_def_writecolor>,"range padu exp.'low,hi' lvlu:")
+if (strLen(<tag(expToGiveDecay)>))
+  argo.setText(120,"<?tag(expToGiveDecay)?>")
+else
+  argo.setText(120,"0,0")
+endif
+argo.dialog_textpos(1,3)
+argo.textEntryA(<lastxpos>,<lastypos>+5*<d_def_radek_vyska>,125,<d_def_radek_vyska>,52,102,120)
+
+//	Specific Level Required:
+argo.dialog_textpos(1,0)
+argo.checkBox(<lastxpos>,<lastypos>+6*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_reqLevel>,5)
+argo.dialog_textpos(1,1)
+argo.textA(<lastxpos>,<lastypos>+6*<d_def_radek_vyska>,<d_def_readcolor>,"Specificky level je vyzadovan k projiti.")
+argo.dialog_textpos(1,2)
+argo.textA(<lastxpos>,<lastypos>+6*<d_def_radek_vyska>,<d_def_writecolor>,"Level 'min' nebo 'min, max':")
+argo.dialog_textpos(1,3)
+if (strLen(<tag(reqLevel)>))
+  argo.setText(1100,"<?tag(reqLevel)?>")
+else
+  argo.setText(1100,"0,0")
+endif
+argo.textEntryA(<lastxpos>,<lastypos>+6*<d_def_radek_vyska>,125,<d_def_radek_vyska>,52,103,1100)
+
+//	Port sideway:
+argo.dialog_textpos(1,0)
+argo.checkBox(<lastxpos>,<lastypos>+7*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_portSideway>,15)
+argo.dialog_textpos(1,1)
+argo.textA(<lastxpos>,<lastypos>+7*<d_def_radek_vyska>,<d_def_readcolor>,"Mezi-port pres souradnice 10 10")
+
+
+//	RemoveMenu:
+argo.textA(<argo.dialog_textpos(2,0)>,<d_def_writecolor>,"Odstran Menu:")
+
+//	Remove Cursor:
+argo.dialog_textpos(3,0)
+argo.checkBox(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_removeCursor>,6)
+argo.dialog_textpos(3,1)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,<d_def_readcolor>,"Odstran kurzor.")
+
+//	Remove PVP tools, except for weapons and armor
+argo.dialog_textpos(3,0)
+argo.checkBox(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_removePVPTools>,7)
+argo.dialog_textpos(3,1)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,<d_def_readcolor>,"Odstran PVP vybavu vyjma zbrani a zbroji.")
+
+//	Remove mount
+argo.dialog_textpos(3,0)
+argo.checkBox(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_removeMount>,8)
+argo.dialog_textpos(3,1)
+argo.textA(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,<d_def_readcolor>,"Odstran kone.")
+
+//	Remove bank box
+argo.dialog_textpos(3,0)
+argo.checkBox(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_removeBank>,9)
+argo.dialog_textpos(3,1)
+argo.textA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,<d_def_readcolor>,"Odstran bank box.")
+
+//	Remove Menu
+argo.dialog_textpos(3,0)
+argo.checkBox(<lastxpos>,<lastypos>+4*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_removeItem>,10)
+argo.dialog_textpos(3,1)
+argo.textA(<lastxpos>,<lastypos>+4*<d_def_radek_vyska>,<d_def_readcolor>,"Odstran Object menu.")
+argo.dialog_textpos(3,2)
+argo.textA(<lastxpos>,<lastypos>+4*<d_def_radek_vyska>,<d_def_readcolor>,"Pocet Itemu/Eventu:")
+argo.dialog_textpos(3,3)
+argo.textA(<lastxpos>,<lastypos>+4*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval tag(remItemsCount)?>")
+argo.dialog_textpos(3,4)
+argo.button(<lastxpos>-4,<lastypos>+4*<d_def_radek_vyska>,0fbd,0fbf,1,0,4)	//Remove Item Menu
+
+
+
+
+//	AddMenu:
+argo.textA(<argo.dialog_textpos(4,0)>,<d_def_writecolor>,"Pridej Menu:")
+
+//	Add Object Menu
+argo.dialog_textpos(5,0)
+argo.checkBox(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_addItem>,11)
+argo.dialog_textpos(5,1)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,<d_def_readcolor>,"Pridej Object menu.")
+argo.dialog_textpos(5,2)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,<d_def_readcolor>,"Pocet Predmetu/Eventu:")
+argo.dialog_textpos(5,3)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval tag(addItemsCount)?>")
+argo.dialog_textpos(5,4)
+argo.button(<lastxpos>-4,<lastypos>+0*<d_def_radek_vyska>,0fbd,0fbf,1,0,5)	//Add Item Menu
+
+//	Add Function Menu
+argo.dialog_textpos(5,0)
+argo.checkBox(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_addFunction>,12)
+argo.dialog_textpos(5,1)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,<d_def_readcolor>,"Pridej Funkci menu.")
+argo.dialog_textpos(5,2)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,<d_def_readcolor>,"Pocet Funkci:")
+argo.dialog_textpos(5,3)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval tag(addFunctionsCount)?>")
+argo.dialog_textpos(5,4)
+argo.button(<lastxpos>-4,<lastypos>+1*<d_def_radek_vyska>,0fbd,0fbf,1,0,6)	//Add Function Menu
+
+// Add Guards Menu
+argo.dialog_textpos(5,0)
+argo.checkBox(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_isGuarded>,13)
+argo.dialog_textpos(5,1)
+argo.textA(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,<d_def_readcolor>,"Pridej Strazce menu.")
+argo.dialog_textpos(5,2)
+argo.textA(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,<d_def_readcolor>,"Pocet Spawnu:")
+argo.dialog_textpos(5,3)
+argo.textA(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval tag(pocetSpawnu)?>")
+argo.dialog_textpos(5,4)
+argo.button(<lastxpos>-4,<lastypos>+2*<d_def_radek_vyska>,0fbd,0fbf,1,0,7)	//Add Guards Menu
+
+// Add Plugin Menu
+argo.dialog_textpos(5,0)
+argo.checkBox(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,210,211,<tag.gateFlags>&<vg_hasPlugins>,14)
+argo.dialog_textpos(5,1)
+argo.textA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,<d_def_readcolor>,"Pridej Plugin menu.")
+argo.dialog_textpos(5,2)
+argo.textA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,<d_def_readcolor>,"Pocet Pluginu:")
+argo.dialog_textpos(5,3)
+argo.textA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval tag(addPluginsCount)?>")
+argo.dialog_textpos(5,4)
+argo.button(<lastxpos>-4,<lastypos>+3*<d_def_radek_vyska>,0fbd,0fbf,1,0,8)	//Add Plugins Menu
+
+
+
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)		//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)	//cancel
+
+
+
+
+[Dialog d_varGate button]
+on=0
+src.sysMessage("Nastaveni nebylo ulozeno.")
+
+on=@AnyButton	// OK
+if (<argChk(1)>)	//npcs can go through
+  tag.gateFlags=<tag.gateFlags>|<vg_npcGoThrough>	// add npcGoThrough flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_npcGoThrough>	// del npcGoThrough flag
+endif
+
+if (<argChk(2)>)	//hypnotized npcs can go through
+  tag.gateFlags=<tag.gateFlags>|<vg_hypnoGoThrough>	// add hypnoGoThrough flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_hypnoGoThrough>	// del hypnoGoThrough flag
+endif
+
+if (<argChk(3)>)	//ghosts can go through
+  tag.gateFlags=<tag.gateFlags>|<vg_ghostCanGoThrough>	// add ghostCanGoThrough flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_ghostCanGoThrough>		// del ghostCanGoThrough flag
+endif
+
+if (<argChk(4)>)	//is ExpGate
+  tag.gateFlags=<tag.gateFlags>|<vg_isExpGate>		// add isExpGate flag
+  tag(expToGive,"<argTxt(100)>")
+  tag(expToGiveLvl,"<argTxt(101)>")
+  tag(expToGiveDecay,"<argTxt(102)>")
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_isExpGate>		// del isExpGate flag
+endif
+
+if (<argChk(5)>)	//specific level is required
+  tag.gateFlags=<tag.gateFlags>|<vg_reqLevel>
+  tag(reqLevel,"<argTxt(103)>")
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_reqLevel>
+endif
+
+if (<argChk(6)>)	//remove cursor
+  tag.gateFlags=<tag.gateFlags>|<vg_removeCursor>	// add removeCursor flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_removeCursor>	// del removeCursor flag
+endif
+
+if (<argChk(7)>)	//remove PVP Tools
+  tag.gateFlags=<tag.gateFlags>|<vg_removePVPTools>	// add removePVPTools flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_removePVPTools>	// del removePVPTools flag
+endif
+
+if (<argChk(8)>)	//remove horse
+  tag.gateFlags=<tag.gateFlags>|<vg_removeMount>	// add removeMount flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_removeMount>	// del removeMount flag
+endif
+
+if (<argChk(9)>)	//remove bank box
+  tag.gateFlags=<tag.gateFlags>|<vg_removeBank>		// add removeBank flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_removeBank>	// del removeBank flag
+endif
+
+if (<argChk(10)>)	//remove item
+  tag.gateFlags=<tag.gateFlags>|<vg_removeItem>		// add removeItem flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_removeItem>	// del removeItem flag
+endif
+
+if (<argChk(11)>)	//add item
+  tag.gateFlags=<tag.gateFlags>|<vg_addItem>		// add addItem flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_addItem>		// del addItem flag
+endif
+
+if (<argChk(12)>)	//add function
+  tag.gateFlags=<tag.gateFlags>|<vg_addFunction>		// add addFunction flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_addFunction>		// del addFunction flag
+endif
+
+if (<argChk(13)>)	//add guards
+  tag.gateFlags=<tag.gateFlags>|<vg_isGuarded>		// add guards flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_isGuarded>		// del guards flag
+endif
+
+if (<argChk(14)>)	//add plugins
+  tag.gateFlags=<tag.gateFlags>|<vg_hasPlugins>		// add plugins flag
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_hasPlugins>		// del plugins flag
+endif
+
+if (<argChk(15)>) //port sideways
+  tag.gateFlags=<tag.gateFlags>|<vg_portSideway>
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_portSideway>
+endif
+
+if (argn == 2)	//pressed button 2 - set position
+  moreP=<src.p>
+  dialog(d_varGate)
+  return 1
+endif
+
+if (argn == 4)  //pressed button 4 - remove Item menu
+  dialog(d_varGate_advRemoveItem)
+  return 1
+endif
+
+if (argn == 5)	//pressed button 5 - add Item menu
+  dialog(d_varGate_advAddItem)
+  return 1
+endif
+
+if (argn == 6)	//pressed button 6 - add Function menu
+  dialog(d_varGate_advAddFunction)
+  return 1
+endif
+
+if (argn == 7) //pressed button 7 - add Guards menu
+  dialog(d_guarditAdv,d_varGate)
+  return 1
+endif
+
+if (argn == 8) //pressed button 8 - add Plugins menu
+  dialog(d_varGate_advAddPlugin)
+  return 1
+endif
+
+
+[Dialog d_varGate_advRemoveItem]
+argo.SetLocation=15,5
+
+argo.tag(sirka,673)
+argo.tag(vyska,<eval <d_def_baseMenu_vyska>+(1*<d_def_skvira>)+((2+<eval tag(remItemsCount)>)*<d_def_radek_vyska>)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30,100,250,80,60,80,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,<eval tag(remItemsCount)>,30,100,250,80,60,80,30)
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Variable Gate - Odstran Object Menu")
+argo.dialog_textpos(1,0)
+argo.button(<lastxpos>-4,<lastypos>,0fbd,0fbf,1,0,2)		//set Item to remove - dialog
+argo.textA(<argo.dialog_textpos(1,1)>,<d_def_writecolor>,"Pridej novy predmet do skupiny odstranovanych predmetu")
+
+argo.textA(<argo.dialog_textpos(2,1)>,<d_def_readcolor>,"Cislo Itemu:")
+argo.textA(<argo.dialog_textpos(2,2)>,<d_def_readcolor>,"Item ID/Type/Event:")
+argo.textA(<argo.dialog_textpos(2,3)>,<d_def_readcolor>,"Pocet")
+argo.textA(<argo.dialog_textpos(2,4)>,<d_def_readcolor>,"Jdi")
+argo.textA(<argo.dialog_textpos(2,5)>,<d_def_readcolor>,"ID/Event")
+argo.textA(<argo.dialog_textpos(2,6)>,<d_def_readcolor>,"Del")
+
+arg(i,0)
+while (<arg(i)> < <eval tag(remItemsCount)>)
+  argo.dialog_textpos(3,0)
+  argo.f_varGate_compileItemTag(<tag(itemToRemove_<eval arg(i)>)>)
+  argo.button(<lastxpos>-4,<lastypos>+<arg(i)>*<d_def_radek_vyska>,0fb4,0fb6,1,0,100+<arg(i)>)		//edit Item to remove - dialog
+  argo.dialog_textpos(3,1)
+  argo.textA(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,"Item <eval arg(i)> :")
+  argo.dialog_textpos(3,2)
+  argo.textA(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,"<?argo.tag(itID)?>")
+  argo.dialog_textpos(3,3)
+  argo.textA(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval argo.tag(itCount)?>")
+  argo.dialog_textpos(3,4)
+  argo.textA(<lastxpos>+23,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval argo.tag(itGo)?>")
+  argo.dialog_textpos(3,5)
+  argo.textA(<lastxpos>+30,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval argo.tag(itDef)?>")
+  argo.dialog_textpos(3,6)
+  argo.button(<lastxpos>-4,<lastypos>+<arg(i)>*<d_def_radek_vyska>,0fb1,0fb3,1,0,1000+<arg(i)>)		//edit Item to remove - dialog
+  arg(i,#+1)
+endwhile
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)		//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)	//cancel
+
+[Dialog d_varGate_advRemoveItem button]
+on=0
+dialog(d_varGate)
+
+on=1	// apply changes
+dialog(d_varGate)
+
+on=2	// set Item to remove dialog
+dialog(d_varGate_setRemovingItem)
+
+on=@anyButton
+if (<argn> >= 1000)
+  arg(itemNumber,<eval argn-1000>)
+  while (<arg(itemNumber)> < <eval <eval tag(remItemsCount)>-1>)
+    tag(itemToRemove_<eval itemNumber>,<tag(itemToRemove_<eval itemNumber+1>)>)
+    arg(itemNumber,#+1)
+  endwhile
+  tag(remItemsCount,<eval <eval tag(remItemsCount)>-1>)
+  tag.remove(itemToRemove_<eval itemNumber>)
+  dialog(d_varGate_advRemoveItem)
+elseif (<argn> >= 100)
+  arg(itemNumber,<eval argn-100>)
+  dialog(d_varGate_setRemovingItem,<tag(itemToRemove_<eval arg(itemNumber)>)>,<itemNumber>)
+endif
+
+[Dialog d_varGate_advAddItem]
+argo.SetLocation=15,5
+
+argo.tag(sirka,610)
+argo.tag(vyska,<eval <d_def_baseMenu_vyska>+(2*<d_def_skvira>)+((3+<eval tag(addItemsCount)>)*<d_def_radek_vyska>)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30,200)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30,100,250,80,80,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,<eval tag(addItemsCount)>,30,100,250,80,80,30)
+argo.dialog_zpruhledni
+
+argo.setText(argo.newTextLine,"Variable Gate - Pridej Object Menu")
+argo.text(<argo.dialog_textpos(0,0)>,42,argo.lastTextLine)
+argo.dialog_textpos(1,0)
+argo.button(<lastxpos>-4,<lastypos>,0fbd,0fbf,1,0,2)		//set Item to add - dialog
+argo.setText(argo.newTextLine,"Pridej novy predmet do skupiny pridavanych predmetu")
+argo.text(<argo.dialog_textpos(1,1)>,<d_def_writecolor>,argo.lastTextLine)
+
+argo.dialog_buttonpos(2,0)
+argo.checkBox(<lastxbuttpos>,<lastybuttpos>+3,210,211,<tag(gateFlags)>&<vg_addItemTimeLimit>,1)
+argo.setText(argo.newTextLine,"Pridej casove omezeni/s:")
+argo.text(<argo.dialog_textpos(2,1)>,<d_def_writecolor>,argo.lastTextLine)
+argo.setText(argo.newTextLine,"<eval tag(addItem_timeLock)>")
+argo.textEntryA(<lastxpos>+203,<lastypos>,100,<d_def_radek_vyska>,52,1,argo.lastTextLine)
+
+argo.setText(argo.newTextLine,"Cislo Itemu:")
+argo.text(<argo.dialog_textpos(3,1)>,<d_def_readcolor>,argo.lastTextLine)
+argo.setText(argo.newTextLine,"Item ID/Event Name:")
+argo.text(<argo.dialog_textpos(3,2)>,<d_def_readcolor>,argo.lastTextLine)
+argo.setText(argo.newTextLine,"Pocet")
+argo.text(<argo.dialog_textpos(3,3)>,<d_def_readcolor>,argo.lastTextLine)
+argo.setText(argo.newTextLine,"ID/Event")
+argo.text(<argo.dialog_textpos(3,4)>,<d_def_readcolor>,argo.lastTextLine)
+argo.setText(argo.newTextLine,"Del")
+argo.text(<argo.dialog_textpos(3,5)>,<d_def_readcolor>,argo.lastTextLine)
+
+arg(i,0)
+while (<arg(i)> < <eval tag(addItemsCount)>)
+  argo.dialog_textpos(4,0)
+  argo.f_varGate_compileItemTag(<tag(itemToAdd_<eval arg(i)>)>)
+  argo.button(<lastxpos>-4,<lastypos>+<arg(i)>*<d_def_radek_vyska>,0fb4,0fb6,1,0,100+<arg(i)>)		//edit Item to Add - dialog
+  argo.dialog_textpos(4,1)
+  argo.setText(argo.newTextLine,"Item <eval arg(i)> :")
+  argo.text(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,argo.lastTextLine)
+  argo.dialog_textpos(4,2)
+  argo.setText(argo.newTextLine,"<?argo.tag(itID)?>")
+  argo.text(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,argo.lastTextLine)
+  argo.dialog_textpos(4,3)
+  argo.setText(argo.newTextLine,"<?eval argo.tag(itCount)?>")
+  argo.text(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,argo.lastTextLine)
+  argo.dialog_textpos(4,4)
+  argo.setText(argo.newTextLine,"<?eval argo.tag(itDef)?>")
+  argo.text(<lastxpos>+30,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,argo.lastTextLine)
+  argo.dialog_textpos(4,5)
+  argo.button(<lastxpos>-4,<lastypos>+<arg(i)>*<d_def_radek_vyska>,0fb1,0fb3,1,0,1000+<arg(i)>)		//edit Item to Add - dialog
+  arg(i,#+1)
+endwhile
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)		//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)	//cancel
+
+[Dialog d_varGate_advAddItem button]
+on=0
+dialog(d_varGate)
+
+on=@anyButton
+if (<argChk(1)>)
+  tag.gateFlags=<tag.gateFlags>|<vg_addItemTimeLimit>)
+  arg(timeLock,<fixNumber(<argtxt(1)>)>)
+  if (<arg(timeLock)> <= 0)
+    src.redMessage("Nastavene casove omezeni musi byt kladne cele cislo!")
+    dialog d_varGate_advAddItem
+    return
+  endif
+  tag(addItem_timeLock,<arg(timeLock)>)
+else
+  tag.gateFlags=<tag.gateFlags>&~<vg_addItemTimeLimit>)
+  tag.remove(addItem_timeLock)
+endif
+if (<argn> == 1)	// apply changes
+  dialog(d_varGate)
+elseif (<argn> == 2)	// set Item to Add dialog
+  dialog(d_varGate_setAddingItem)
+elseif (<argn> >= 1000)
+  arg(itemNumber,<eval argn-1000>)
+  while (<arg(itemNumber)> < <eval <eval tag(addItemsCount)>-1>)
+    tag(itemToAdd_<eval itemNumber>,<tag(itemToAdd_<eval itemNumber+1>)>)
+    arg(itemNumber,#+1)
+  endwhile
+  tag(addItemsCount,<eval <eval tag(addItemsCount)>-1>)
+  tag.remove(itemToAdd_<eval itemNumber>)
+  dialog(d_varGate_advAddItem)
+elseif (<argn> >= 100)
+  arg(itemNumber,<eval argn-100>)
+  dialog(d_varGate_setAddingItem,<tag(itemToAdd_<eval arg(itemNumber)>)>,<itemNumber>)
+endif
+
+
+[Dialog d_varGate_advAddFunction]
+argo.SetLocation=15,5
+
+argo.tag(sirka,527)
+argo.tag(vyska,120+<eval tag(addFunctionsCount)>*<d_def_radek_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30,100,250,80,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,<eval tag(addFunctionsCount)>,30,100,250,80,30)
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Variable Gate - Pridej Funkci Menu")
+argo.dialog_textpos(1,0)
+argo.button(<lastxpos>-4,<lastypos>,0fbd,0fbf,1,0,2)		//set Function to add - dialog
+argo.textA(<argo.dialog_textpos(1,1)>,<d_def_writecolor>,"Pridej novou funkci do skupiny spoustenych funkci")
+
+argo.textA(<argo.dialog_textpos(2,1)>,<d_def_readcolor>,"Cislo F.:")
+argo.textA(<argo.dialog_textpos(2,2)>,<d_def_readcolor>,"Jmeno Funkce:")
+argo.textA(<argo.dialog_textpos(2,3)>,<d_def_readcolor>,"Zastavuje")
+argo.textA(<argo.dialog_textpos(2,4)>,<d_def_readcolor>,"Del")
+
+arg(i,0)
+while (<arg(i)> < <eval tag(addFunctionsCount)>)
+  argo.dialog_textpos(3,0)
+  argo.f_varGate_compileItemTag(<tag(FunctionToAdd_<eval arg(i)>)>)
+  argo.button(<lastxpos>-4,<lastypos>+<arg(i)>*<d_def_radek_vyska>,0fb4,0fb6,1,0,100+<arg(i)>)		//edit Function to Add - dialog
+  argo.dialog_textpos(3,1)
+  argo.textA(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,"Funkce <eval arg(i)> :")
+  argo.dialog_textpos(3,2)
+  argo.textA(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,"<?argo.tag(itID)?>")
+  argo.dialog_textpos(3,3)
+  argo.textA(<lastxpos>,<lastypos>+<arg(i)>*<d_def_radek_vyska>,<d_def_readcolor>,"<?eval argo.tag(itCount)?>")
+  argo.dialog_textpos(3,4)
+  argo.button(<lastxpos>-4,<lastypos>+<arg(i)>*<d_def_radek_vyska>,0fb1,0fb3,1,0,1000+<arg(i)>)		//edit Function to Add - dialog
+  arg(i,#+1)
+endwhile
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)		//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)	//cancel
+
+[Dialog d_varGate_advAddFunction button]
+on=0
+dialog(d_varGate)
+
+on=1	// apply changes
+dialog(d_varGate)
+
+on=2	// set Function to Add dialog
+dialog(d_varGate_setAddingFunction)
+
+on=@anyButton
+if (<argn> >= 1000)
+  arg(functionNumber,<eval argn-1000>)
+  while (<arg(functionNumber)> < <eval <eval tag(addFunctionsCount)>-1>)
+    tag(functionToAdd_<eval functionNumber>,<tag(functionToAdd_<eval functionNumber+1>)>)
+    arg(functionNumber,#+1)
+  endwhile
+  tag(addFunctionsCount,<eval <eval tag(addFunctionsCount)>-1>)
+  tag.remove(functionToAdd_<eval functionNumber>)
+  dialog(d_varGate_advAddFunction)
+elseif (<argn> >= 100)
+  arg(functionNumber,<eval argn-100>)
+  dialog(d_varGate_setAddingFunction,<tag(functionToAdd_<eval arg(functionNumber)>)>,<functionNumber>)
+endif
+
+
+
+
+[Dialog d_varGate_setRemovingItem]
+argo.SetLocation=15,40
+
+argo.tag(sirka,980)
+argo.tag(vyska,183)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,6,150,250,30)
+argo.dialog_zpruhledni
+if (<argvcount> > 1)
+  arg(editing,1)
+  argo.tag(thisItem,<argv(4)>)
+else
+  arg(editing,0)
+endif
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Variable Gate - Nastav Odstranovany Item Menu")
+
+argo.dialog_textpos(1,0)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,d_def_readcolor,"ItemID / Type:")
+argo.dialog_textpos(1,3)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,d_def_readcolor,"Hodnota rozhodne, zda je text itemdef(0), typedef(1) nebo event(2).")
+
+argo.dialog_textpos(1,0)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,d_def_readcolor,"Pocet Itemu:")
+argo.dialog_textpos(1,2)
+if (<arg(editing)>)
+  argo.checkBox(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,210,211,<hval argv(3)>&01,10)
+  argo.checkBox(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,210,211,<hval argv(3)>&02,11)
+else
+  argo.checkBox(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,210,211,0,10)
+  argo.checkBox(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,210,211,0,11)
+endif
+argo.dialog_textpos(1,3)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,d_def_readcolor,"Vezmi tento pocet itemu hraci, vloz 0 pro odebrani vseho") //Take this many items from player, put zero for removing everything.
+argo.textA(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,d_def_readcolor,"checkBox rika, zda lze projit bez odpovidajiciho mnozstvi predmetu") //checkBox determines, if you can go through without enough items/event.
+argo.textA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,d_def_readcolor,"Tento checkBox vypne odstranovani predmetu a prepne se do ") //This checkBox will deny removing the items and switches a removing
+argo.textA(<lastxpos>,<lastypos>+4*<d_def_radek_vyska>,d_def_readcolor,"kontrolni procedury. Gate zamezi vstup hracum, kteri maji") //procedure to the checking procedure. Gate will deny entering for
+argo.textA(<lastxpos>,<lastypos>+5*<d_def_radek_vyska>,d_def_readcolor,"u sebe vice predmetu, nezli zde stanoveny pocet.") //those who has more items on them, than the number specified here.
+
+if (<arg(editing)>)
+  argo.setText(100,"<?argv(0)?>")
+  argo.setText(101,"<?eval argv(1)?>")
+  argo.setText(102,"<?eval argv(2)?>")
+else
+  argo.setText(100,"")
+  argo.setText(101,"<?eval 0?>")
+  argo.setText(102,"<?eval 0?>")
+endif
+argo.dialog_textpos(1,1)
+argo.textEntryA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,250,<d_def_radek_vyska>,52,1,100)
+argo.textEntryA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,250,<d_def_radek_vyska>,52,2,101)
+argo.dialog_textpos(1,2)
+argo.textEntryA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,15,<d_def_radek_vyska>,52,3,102)
+
+if (<arg(editing)>)
+  argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,2)	//ok
+else
+  argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)	//ok
+endif
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)	//cancel
+
+[Dialog d_varGate_setRemovingItem button]
+on=0
+dialog(d_varGate_advRemoveItem)
+
+on=1	// apply changes
+tag(itemToRemove_<eval tag(remItemsCount)>,"<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setRemovingItem_getChkBut(<argChk(10)>,<argChk(11)>)>")	//ID, amount,ID/Type,GoThroughIfNotEnoughItems.
+tag(remItemsCount,<eval tag(remItemsCount)>+1)
+dialog(d_varGate_advRemoveItem)
+
+on=2
+if (<argTxt(3)> < 0) || (<argTxt(3)> > 2)
+  src.redMessage("Hodnota za jmenem odstranovaneho objektu musi byt v rozmezi 0-2 (Item,Type,Event)")
+  dialog(d_varGate_setRemovingItem,<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setRemovingItem_getChkBut(<argChk(10)>,<argChk(11)>)>)
+else
+  tag(itemToRemove_<eval <argo.tag(thisItem)>>,"<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setRemovingItem_getChkBut(<argChk(10)>,<argChk(11)>)>")		//ID, amount,ID/Type,GoThroughIfNotEnoughItems.
+  dialog(d_varGate_advRemoveItem)
+endif
+
+[function f_varGate_setRemovingItem_getChkBut]
+arg(checkButtons,0)
+if (<argv(0)>)
+  arg.checkButtons=<arg(checkButtons)>|01 //adds first bit if checked - CanGoThrough bit
+endif
+if (<argv(1)>)
+  arg.checkButtons=<arg(checkButtons)>|02 //adds second bit if checked - Really wants to remove it?
+endif
+return<arg(checkButtons)>
+
+
+
+[Dialog d_varGate_setAddingItem]
+argo.SetLocation=15,40
+
+argo.tag(sirka,920)
+argo.tag(vyska,167)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,150,250,30)
+argo.dialog_zpruhledni
+if (<argvcount> > 1)
+  arg(editing,1)
+  argo.tag(thisItem,<argv(4)>)
+else
+  arg(editing,0)
+endif
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Variable Gate - Nastav Pridavany Item Menu")
+
+argo.dialog_textpos(1,0)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,d_def_readcolor,"ItemID / Event:")
+argo.dialog_textpos(1,3)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,d_def_readcolor,"Hodnota udava, zda je text itemdef(0) nebo event(1).")
+
+argo.dialog_textpos(1,0)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,d_def_readcolor,"Pocet Itemu:")
+argo.dialog_textpos(1,3)
+argo.textA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,d_def_readcolor,"Dej hraci tento pocet predmetu.")
+
+//argo.textA(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,d_def_readcolor,"Is stackable?")
+argo.textA(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,d_def_readcolor,"Je-li zatrzeno, pozadovany pocet predmetu bude jen spocten") //If this is checked, desired number of items will be just counted
+argo.textA(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,d_def_readcolor,"a vstup do gate zamitnut, pokud hrac nema dostatek predmetu.") //and entering the gate denied, if player lacks enought of these.
+argo.textA(<lastxpos>,<lastypos>+4*<d_def_radek_vyska>,d_def_readcolor,"Zadne predmety nebudou pridany.") //No items will be added !
+
+argo.dialog_textpos(1,2)
+if (<arg(editing)>)
+  argo.setText(100,"<?argv(0)?>")
+  argo.setText(101,"<?eval argv(1)?>")
+  argo.setText(102,"<?eval argv(2)?>")
+  argo.checkBox(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,210,211,<hval argv(3)>&01,10)
+else
+  argo.setText(100,"")
+  argo.setText(101,"<?eval 0?>")
+  argo.setText(102,"<?eval 0?>")
+  argo.checkBox(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,210,211,0,10)
+endif
+argo.dialog_textpos(1,1)
+argo.textEntryA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,250,<d_def_radek_vyska>,52,1,100)
+argo.textEntryA(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,250,<d_def_radek_vyska>,52,2,101)
+argo.dialog_textpos(1,2)
+argo.textEntryA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,15,<d_def_radek_vyska>,52,3,102)
+
+if (<arg(editing)>)
+  argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,2)	//ok
+else
+  argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)	//ok
+endif
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)	//cancel
+
+[Dialog d_varGate_setAddingItem button]
+on=0
+dialog(d_varGate_advAddItem)
+
+on=1	// apply changes
+if !(<argTxt(1).def>)
+  src.redMessage("Zadane ID neodpovida zadnemu predmetu ! Oprav jmeno itemu.")
+  dialog(d_varGate_setAddingItem,<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setAddingItem_getChkBut(<argChk(10)>)>)
+else
+  tag(itemToAdd_<eval <eval tag(addItemsCount)>>,"<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setAddingItem_getChkBut(<argChk(10)>)>")	//ID, amount,ID/Type,GoThroughIfNotEnoughItems.
+  tag(addItemsCount,<eval tag(addItemsCount)+1>)
+  dialog(d_varGate_advAddItem)
+endif
+
+on=2
+if (<argTxt(3)> == 0) && !(<argTxt(1).def>)
+  src.redMessage("Zadane ID neodpovida zadnemu predmetu ! Oprav jmeno itemu.")  
+  dialog(d_varGate_setAddingItem,<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setAddingItem_getChkBut(<argChk(10)>)>)
+elseif (<argTxt(3)> < 0) || (<argTxt(3)> > 1)
+  src.redMessage("Hodnota za jmenem odstranovaneho objektu musi byt v rozmezi 0-1 (Item,Event)")
+  dialog(d_varGate_setAddingItem,<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setAddingItem_getChkBut(<argChk(10)>)>)
+elseif (<argTxt(2)> == 0)
+  src.redMessage("Musis nastavit pocet pridavanych itemu !")
+  dialog(d_varGate_setAddingItem,<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setAddingItem_getChkBut(<argChk(10)>)>)
+else
+  tag(itemToAdd_<eval <argo.tag(thisItem)>>,"<argTxt(1)>,<eval argTxt(2)>,<eval argTxt(3)>,<f_varGate_setAddingItem_getChkBut(<argChk(10)>)>")		//ID, amount,ID/Type,GoThroughIfNotEnoughItems.
+  dialog(d_varGate_advAddItem)
+endif
+
+
+[function f_varGate_setAddingItem_getChkBut]
+arg(checkButtons,0)
+if (<argv(0)>)
+  arg.checkButtons=<arg(checkButtons)>|01 //adds first bit if checked - CanGoThrough bit
+endif
+if (<argv(1)>)
+  arg.checkButtons=<arg(checkButtons)>|02 //adds second bit if checked - Really wants to remove it?
+endif
+return<arg(checkButtons)>
+
+
+[Dialog d_varGate_setAddingFunction]
+argo.SetLocation=15,40
+
+argo.tag(sirka,920)
+argo.tag(vyska,90)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,250,30)
+argo.dialog_zpruhledni
+if (<argvcount> > 1)
+  arg(editing,1)
+  argo.tag(thisFunction,<argv(2)>)
+else
+  arg(editing,0)
+endif
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Variable Gate - Nastav Pridani Funkce Menu")
+
+argo.dialog_textpos(1,0)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,d_def_readcolor,"Jmeno Function:")
+argo.dialog_textpos(1,3)
+argo.textA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,d_def_readcolor,"CheckBox rozhodne, zda funkce muze zamezit vstupu.")
+
+if (<arg(editing)>)
+  argo.setText(100,"<?argv(0)?>")
+else
+  argo.setText(100,"")
+endif
+argo.dialog_textpos(1,1)
+argo.textEntryA(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,250,<d_def_radek_vyska>,52,1,100)
+argo.dialog_textpos(1,2)
+if (<arg(editing)>)
+  argo.checkBox(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,210,211,<argv(1)>,1)
+else
+  argo.checkBox(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,210,211,0,1)
+endif
+
+if (<arg(editing)>)
+  argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,2)	//ok
+else
+  argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)	//ok
+endif
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)	//cancel
+
+[Dialog d_varGate_setAddingFunction button]
+on=0
+dialog(d_varGate_advAddFunction)
+
+on=1	// apply changes
+tag(functionToAdd_<eval tag(addFunctionsCount)>,"<argTxt(1)>,<eval argChk(1)>")	//FunctionName, CanDenyEnteringTheGate
+tag(addFunctionsCount,<eval tag(addFunctionsCount)>+1)
+dialog(d_varGate_advAddFunction)
+
+on=2
+tag(functionToAdd_<eval <argo.tag(thisFunction)>>,"<argTxt(1)>,<eval argChk(1)>")		//FunctionName, CanDenyEnteringTheGate
+dialog(d_varGate_advAddFunction)
+
+
+
+[TypeDef t_varGate]
+ON=@UserDClick
+if (src.isGM)
+  dialog(d_varGate)
+  return 1
+endif
+
+ON=@Step
+//	Order of following actions is very important ! So be carefull while editing...
+//	Only Go Through Checking :
+
+if (<tag(gohome)>) && (src.isgm)
+  src.gohome
+  return 1
+elseif (src.isgm)
+  src.go(100,100)
+  src.go(<moreP>)
+  return 1
+endif
+
+var(lastVarGate,<uid>)
+
+if (<tag(gateFlags)>&<vg_isGuarded>)	//Gata je Guardena
+  if (f_guarditAdv_CheckSpawns)	// 1 == strazce je nazivu
+    src.sysMessage("Neprojdes, dokud je strazce pruchodu na zivu.")
+    return 1
+  endif
+endif
+
+if !(<tag(gateFlags)>&<vg_npcGoThrough>)
+  if !(src.isPlayer)
+    return 1
+  endif
+endif
+
+if !(<tag(gateFlags)>&<vg_hypnoGoThrough>)
+  if (<src.tag(hypno_mystik)>)
+    src.redMessage("Tuto branu nemuzes pouzit.")
+    return 1
+  endif
+endif
+
+if !(<tag(gateFlags)>&<vg_ghostCanGoThrough>) && (<src.flags>&statf_dead)
+  src.redMessage("Musis byt nazivu.")
+  return 1
+endif
+
+if (<tag(gateFlags)>&<vg_reqLevel>)
+  if (src.f_vg_gotReqLevel(<tag(reqLevel)>))
+    return 1
+  endif
+endif
+
+if (<tag(gateFlags)>&<vg_removeItem>)	//this removeItem cycle just determines, whether it is necessary to deny the player to go through the gate
+  arg(i,0)
+  while (<arg(i)> < <eval tag(remItemsCount)>)
+    if !(<return_nth(4,<tag(itemToRemove_<eval arg(i)>)>)>&01)		//if I can not go through, without specific number of items or without existing item, which will be removed afterwards
+      if (<return_nth(3,<tag(itemToRemove_<eval arg(i)>)>)> == 2)	//searching for event
+        if !(src.isevent(<return_nth(1,<tag(itemToRemove_<eval arg(i)>)>)>))
+          src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+          src.redMessage("Nejsi <src.sex(hoden,hodna)> projit dal.")
+          return 1
+        endif
+      elseif (<return_nth(3,<tag(itemToRemove_<eval arg(i)>)>)> == 1) //searching for type
+        var(varGate_itType,<return_nth(1,<tag(itemToRemove_<eval arg(i)>)>)>)
+        var(varGate_itCount,0)
+        src.contentsNoBank(f_varGate_countTypes)
+        if !(<return_nth(4,<tag(itemToRemove_<eval arg(i)>)>)>&02)  //I want to have less than this many items !
+          if (<var(varGate_itCount)> > <return_nth(2,<tag(itemToRemove_<eval arg(i)>)>)>) // if there are too many items to go through
+            src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+            src.redMessage("Brana te odmita prijmout.")
+            return 1
+          endif
+        else
+          if (<var(varGate_itCount)> < <return_nth(2,<tag(itemToRemove_<eval arg(i)>)>)>) // if there are not enought items to go through
+            src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+            src.redMessage("Brana si zada obet, aby jsi <src.sex(mohl,mohla)> projit.")
+            return 1
+          endif
+        endif
+      else  // searching for items
+        arg(itemCount,<src.rescount(<return_nth(1,<tag(itemToRemove_<eval arg(i)>)>)>)>)
+        if !(<return_nth(4,<tag(itemToRemove_<eval arg(i)>)>)>&02)  //I want to have less than this many items !
+          if (<arg(itemCount)> < <return_nth(2,<tag(itemToRemove_<eval arg(i)>)>)>)		// if there are not enought items to go through
+            src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+            src.redMessage("Brana te odmita prijmout.")
+            return 1
+          endif
+        else
+          if (<arg(itemCount)> > <return_nth(2,<tag(itemToRemove_<eval arg(i)>)>)>)		// if there are too many items to go through
+            src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+            src.redMessage("Brana te odmita prijmout.")
+            return 1
+          endif
+        endif
+      endif
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+if (<tag(gateFlags)>&<vg_addItem>)	//this addItem cycle just determines, whether it is necessary to deny the player to go through the gate
+  arg(i,0)
+  while (<arg(i)> < <eval tag(addFunctionsCount)>)
+    if (<hval return_nth(4,<tag(itemToAdd_<eval arg(i)>)>)>&01)		//if I can not go through, without specific number of items
+      if (<eval return_nth(3,<tag(itemToAdd_<eval arg(i)>)>)> == 1)	//searching for event
+        arg(varGate_itType,<return_nth(1,<tag(itemToAdd_<eval arg(i)>)>)>)
+        if !(<src.isEvent(<arg(varGate_itType)>)>)  //player can not have more than one event of each, so further checking is unnecessarry.
+          src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+          src.redMessage("Brana te odmita prijmout.")
+          return 1
+        endif
+      else  //searching for item !
+        arg(varGate_itID,<return_nth(1,<tag(itemToAdd_<eval arg(i)>)>)>)
+        arg(itemCount,<src.rescount(<return_nth(1,<tag(itemToAdd_<eval arg(i)>)>)>)>)
+        if (<arg(itemCount)> < <return_nth(2,<tag(itemToAdd_<eval arg(i)>)>)>)  //we don't have enough items to go through
+          src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+          src.redMessage("Brana te odmita prijmout.")
+          return 1
+        endif
+      endif
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+if (<tag(gateFlags)>&<vg_addFunction>)	//this runs only those functions, that are able to stop a player from going through the gate.
+  arg(i,0)
+  while (<arg(i)> < <eval tag(addFunctionsCount)>)
+    if (return_nth(2,<tag(functionToAdd_<eval arg(i)>)>))		//this realy is a function, that can stop player
+      if (src.<return_nth(1,<tag(functionToAdd_<eval arg(i)>)>)>)
+        src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+        return 1
+      endif
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+
+if (<tag(gateFlags)>&<vg_hasPlugins>)	//this runs only those functions, that are able to stop a player from going through the gate.
+  arg(i,0)
+  while (<arg(i)> < <tag(addPluginsCount)>)
+    if (<return_nth(3,<tag(plugin[<eval arg(i)>])>)>) // calls the function saved in the plugin tag - this returns 1 if player can't go through
+      src.move(<dir_inttochar(<dir_revert(<src.dir>)>)>)
+      return 1
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+//	Only Removing Actions:
+
+if (<tag(gateFlags)>&<vg_removeCursor>)
+  src.findLayer(31).remove
+endif
+
+if (<tag(gateFlags)>&<vg_removePVPTools>)
+  src.findlayer(21).contents2(f_smazat_murdoc_pvp)
+endif
+
+if (<tag(gateFlags)>&<vg_removeMount>)		// remove horse
+  src.findlayer(25).remove
+endif
+
+if (<tag(gateFlags)>&<vg_removeBank>)		// remove bank box
+  src.findlayer(29).remove
+endif
+
+if (<tag(gateFlags)>&<vg_removeItem>)	//this removeItem cycle is finaly removing the items
+  arg(i,0)
+  while (<arg(i)> < <eval tag(remItemsCount)>)
+    if !(<hval return_nth(4,<tag(itemToRemove_<eval arg(i)>)>)>&02) //if this bit is set, then removing is denied !
+      var(varGate_itID,<return_nth(1,<tag(itemToRemove_<eval arg(i)>)>)>)
+      arg(varGate_itCount,<eval return_nth(2,<tag(itemToRemove_<eval arg(i)>)>)>)
+      if (<eval return_nth(3,<tag(itemToRemove_<eval arg(i)>)>)> == 2)	//searching for event
+        src.events=-<varGate_itID>
+      elseif (<arg(varGate_itCount)> > 0)	//if there is specific amount of items to remove
+        src.consume(<var(varGate_itID)>,<arg(varGate_itCount)>)				//consume item from 1.st argument, the amount of consuming items is in 2.nd argument
+      else
+        var(varGate_itDef,<return_nth(3,<tag(itemToRemove_<eval arg(i)>)>)>)
+        src.contentsNoBank("f_varGate_removeSpecItem")
+      endif
+    endif
+    arg(i,#+1)
+  endwhile
+  var(varGate_itID,"")
+  var(varGate_itDef,"")
+endif
+
+
+//	Only Adding Actions:
+
+if (<tag(gateFlags)>&<vg_addFunction>)	//this runs only those functions, that are able to stop a player from going through the gate.
+  arg(i,0)
+  while (<arg(i)> < <eval tag(addFunctionsCount)>)
+    if !(return_nth(2,<tag(functionToAdd_<eval arg(i)>)>))		//if this is function, that can NOT stop player
+      src.<return_nth(1,<tag(functionToAdd_<eval arg(i)>)>)>
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+if (<tag(gateFlags)>&<vg_addItem>)
+  arg(addItemGo,1)
+  if (<tag(gateFlags)>&<vg_addItemTimeLimit>)
+    if (<f_playerTime_hasRecord(<src>,vg_addItem_player)>) // this player already received the item!
+      arg(addItemGo,0)
+    else
+      f_playerTime_add(<src>,<eval <tag(addItem_timeLock)>*10>,vg_addItem_player) // write player's uid & time
+    endif
+  endif
+  if (<arg(addItemGo)>)
+    arg(i,0)
+    while (<arg(i)> < <eval tag(addItemsCount)>)
+      if !(<hval return_nth(4,<tag(itemToAdd_<eval arg(i)>)>)>&01)		//if the adding is not switched just to checking item amount mode
+        arg(varGate_itID,<return_nth(1,<tag(itemToAdd_<eval arg(i)>)>)>)
+        arg(varGate_itCount,<eval return_nth(2,<tag(itemToAdd_<eval arg(i)>)>)>)
+        if (<eval return_nth(3,<tag(itemToAdd_<eval arg(i)>)>)> == 1)	//adding event
+          src.events=+<arg(varGate_itID)>
+        else
+          src.giveItem(<arg(varGate_itID)>,<arg(varGate_itCount)>)			//give item from 1.st argument, the amount of adding items is in 2.nd argument
+        endif
+      endif
+      arg(i,#+1)
+    endwhile
+  endif
+endif
+
+if (<tag(gateFlags)>&<vg_hasPlugins>)	//this runs only those functions, that alters some variables after the player successfully goes through the gate
+  arg(i,0)
+  while (<arg(i)> < <tag(addPluginsCount)>)
+    <return_nth(4,<tag(plugin[<eval arg(i)>])>)> // calls the function saved in the plugin tag - this only alters its values
+    arg(i,#+1)
+  endwhile
+endif
+
+if (<tag(gateFlags)>&<vg_isExpGate>)
+  arg(timeToGive,<eval return_nth(2,<tag(expToGive)>)>)
+  if !(strlen(<tag(expToGiveLvl)>))
+    tag(expToGiveLvl,"0,0")
+  endif
+  if !(strlen(<tag(expToGiveDecay)>))
+    tag(expToGiveDecay,"0,0")
+  endif
+  arg(expCount,<eval f_varGate_lvlToGetExp(<tag(expToGiveLvl)>,<tag(expToGiveDecay)>,<return_nth(1,<tag(expToGive)>)>)>)
+  if (<arg(expCount)>)
+    if (<arg(timeToGive)>)
+      if (<f_playerTime_hasRecord(<src>,exPlayer)>)
+      //if (<eval tag(hrac[<src>])> > <serv.time>)
+        src.sysMessage("Jeste nemuzes dostat experience.")
+      else
+        f_playerTime_add(<src>,<eval <arg(timeToGive)>*60*10>,exPlayer)
+        //tag(hrac[<src>],<eval serv.time+<arg(timeToGive)>*60*10>)
+        src.addExp(<arg(expCount)>)
+      endif
+    else
+      src.addExp(<arg(expCount)>)
+    endif
+  endif
+  src.accMsg("hrac <src.name> (UID <src>,acc <src.account.name>, Lvl <src.tag(level)>) prosel experience vargate na souradnicich -<p>- <src.region.name>")
+endif
+if (<tag(gohome)>)
+  src.gohome
+else
+  if (<tag(gateFlags)>&<vg_portSideway>)
+    // sector.allchars (and therefore all visible pets function too) works only on item's timer. Repair dismissed
+    //src.allVisiblePets(f_varGate_petMove(<src>,<moreP>)) // all pets in the range of 20 steps except for Vendors go to the target position
+    src.go(<moreP>) // this FIRST move ports the pets to the relevant position
+    src.go(10,10)  //vypada to nepotrebne, ale je to uzitecny. Pokud gata posunuje jenom v mapplanu, tak se z pameti clienta smazou itemy z puvodniho mapplanu
+    src.go(<moreP>)
+  endif
+  src.go(<moreP>)
+endif
+return 1
+
+//argv(0) - src
+[function f_varGate_petMove]
+arg(generator,<argv(0).findID(i_varGate_petMover)>)
+if !(arg(generator))
+  if (action != 065) // stop action -> order to stay in place
+    argv(0).newequip(i_varGate_petMover)
+    arg(generator,<lastnew>)
+    arg(generator).morep="<eval argv(1)>,<eval argv(2)>,<eval argv(3)>,<eval argv(4)>"
+    arg(generator).timerd=15
+  endif
+endif
+arg(generator).f_customLink_add(<uid>,pet)
+
+[itemdef i_varGate_petMover]
+name=vg pet holder
+id=i_memory
+type=t_eq_script
+
+on=@create
+attr=010
+
+on=@timer
+arg(i,0)
+while (<arg(i)> < <tag(petsCount)>)
+  tag(pet[<eval arg(i)>]).go(<moreP>)
+  arg(i,#+1)
+endwhile
+remove
+
+[function f_varGate_lvlToGetExp]		//argv(0) - min lvl na zisk expu, argv(1) max lvl na zisk expu, argv(2) pricitana spodni hranice na zisk alespon neceho, argv(3) pricitana horni hranice na zisk este nejakych expu, argv(4) pocet expu
+if (<argv(1)>) // ma limit nastavenou nejakou hodnotu ?
+  arg(lvl,<src.tag(level)>)
+  arg(low,<argv(2)>+1)
+  arg(hi,<argv(3)>+1)
+  if (<arg(lvl)> >= <eval <argv(0)>-<argv(2)>>) //mame aspon takovy lvl jako je potreba ?
+    if (<arg(lvl)> < <argv(0)>)	// mame mensi lvl nez optimum, ale jsme v range
+      arg(numerator,<eval <arg(low)>-(<argv(0)>-<arg(lvl)>)>) //
+      arg(experience,<eval <eval <argv(4)>/<arg(low)>>*<arg(numerator)>>)
+    elseif (<arg(lvl)> <= <argv(1)>) // jsme v idealnim rozmezi
+      arg(experience,<argv(4)>)
+    elseif (<arg(lvl)> <= <eval <argv(1)>+<argv(3)>>) // vejdeme se do horniho limitu dobihani ?
+      arg(numerator,<eval <arg(hi)>-(<arg(lvl)>-<argv(1)>)>)
+      arg(experience,<eval <eval <argv(4)>/<arg(hi)>>*<arg(numerator)>>)
+    else
+      src.classMessage("Tady te jiz nic noveho nepotka. Posledni udalosti pro tebe byly pouhou rutinou.")
+      tag.remove(<tag(hrac[<src>])>)
+     arg(experience,0)
+    endif
+  else
+    src.classMessage("Jsi prilis <src.sex("nezkuseny","nezkusena")> na to, aby jsi si z poslednich udalosti neco <src.sex("odnesl","odnesla")>.")
+  endif
+else
+  return <argv(4)>	 // nebyl lvl limit, takze poustime automaticky
+endif
+return <arg(experience)>
+
+[function f_varGate_removeSpecItem]		//argv(0) - id/type itemu, ktery se ma smazat, argv(1) - urceni, jestli jde o id nebo type
+if (<var(varGate_itDef)>)
+  if (<strcmpi(<var(varGate_itID)>,<type>)> == 0)
+    remove
+  endif
+else
+  if (<strcmpi(<var(varGate_itID)>,<id>)> == 0)
+    remove
+  endif
+endif
+
+[function f_varGate_countTypes]
+if (type==<var(varGate_itType)>)
+  var(varGate_itCount,#+<amount>)
+endif
+
+[function f_varGate_compileItemTag]
+tag(itID,<argv(0)>)
+tag(itCount,<argv(1)>)
+tag(itDef,<argv(2)>)
+if (<argv(3)>)
+  tag(itGo,1)
+else
+  tag(itGo,0)
+endif
+
+[Function f_vg_gotReqLevel]
+if (argvcount > 1)			// required level is between two values
+  if (<argv(0)> <= <argv(1)>)		// in case, the second argument is higher than the first one, The second will be ignored.
+    if (<src.tag(level)> >= <argv(0)>) && (<src.tag(level)> <= <argv(1)>)
+      return 0
+    else
+      src.redMessage("Brana te odmita.")
+    endif
+  elseif (src.tag(level) > <argv(0)>)
+    return 0
+  else
+    src.redMessage("Nemas dostatek sily projit touto branou.")
+  endif
+elseif (src.tag(level) > <argv(0)>)	// function gets only one argument, so a player's level must be higher or equal to it for the player to go through the gate ... I guess, that the previous sentence was a gramatical torture, so's this one.
+  return 0
+else
+  src.redMessage("Nemas dostatek sily projit touto branou.")
+endif
+return 1
+
+[DefNames varGate_bits]
+vg_npcGoThrough       000000001	// this allows NPCs to go through the gate, if they step on it
+vg_hypnoGoThrough     000000002	// this allows Mystics to go through the gate while they are controling whatever NPC
+vg_ghostCanGoThrough  000000004	// this allows Ghosts to go through the gate, if the step on it
+vg_isExpGate          000000008	// this gate is Expgate and so it gives experiences whenever player goes through
+vg_reqLevel           000000010	// this allows onli certain levels to go through
+vg_removeCursor       000000020	// this removes the cursor of the player entering the gate.
+vg_removePVPTools     000000040	// this removes which ever pvp tool such as bandages, potions, jewlery and so on (except for weapons or armor)
+vg_removeMount        000000080	// this removes horse 
+vg_removeBank         000000100	// this removes everything inside the bankBox
+vg_removeItem         000000200	// this removes certain item(s) or events, according to further specification
+vg_addItem            000000400	// this adds certain item(s) or events, according to further specification
+vg_addFunction        000000800	// this runs certain function on player
+vg_isGuarded          000001000	// this gate is guarded
+vg_hasPlugins         000002000	// this gate has some plugins
+vg_portSideway        000004000	// this gate ports the player to the sea first so as to clear its memory of items on his position - useful while traveling only through mapplane, but in the same locality
+vg_addItemTimeLimit   000008000	// this gate add item only after a certain time
+//vg_17				000010000	//
+//vg_18				000020000	//
+//vg_19				000040000	//
+//vg_20				000080000	//
+//vg_21				000100000	//
+//vg_22				000200000	//
+//vg_23				000400000	//
+//vg_24				000800000	//
+//vg_25				001000000	//
+//vg_26				002000000	//
+//vg_27				004000000	//
+//vg_28				008000000	//
+//vg_29				010000000	//
+//vg_30				020000000	//
+//vg_31				040000000	//
+//vg_32				080000000	//
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+//                                                                 //
+//                       P  L  U  G  I  N  S                       //
+//                                                                 //
+// conventions:                                                    //
+//  * plugin suppose to have THE function which adds&removes it    //
+//  * this function is supposed to react to 2 values of 1st arg.   //
+//      argv(0) ~ 0/NONE -> THE function enables the plugin        //
+//                          and opens settings dialog if exists    //
+//      argv(0) ~ 1 -> THE function removes the plugin             //
+/////////////////////////////////////////////////////////////////////
+
+[menu menu_vg_pluginAdd]
+Jaky plugin chces pridat?
+
+on=0 Time Seal
+f_vg_registerPlugin("Time Seal",f_vg_timeSealPlugin,f_vg_timeSeal_Conditions,f_vg_timeSeal_setValues)
+
+on=0 Realm Controller - not working yet
+//f_vg_registerPlugin("Realm Controller",f_vg_realmControllerPlugin)
+dialog(d_varGate_advAddPlugin)
+
+// ALL THESE ARGUMENTS ARE MENDATORY WHEN THE FUNCTION IS CALLED!
+// argv(0) ~ plugin name
+// argv(1) ~ settings function
+// argv(2) ~ on@step conditions function - conditions can deny walk through
+// argv(3) ~ on@step setValues function - player is definitely going through the gate -> some values may be necessary to update
+[function f_vg_registerPlugin]
+tag(plugin[<eval <tag(addPluginsCount)>>],"<argv(0)>,<argv(1)>,<argv(2)>,<argv(3)>")
+tag(addPluginsCount,<eval tag(addPluginsCount)>+1)
+<argv(1)> // call the function and set the plugin
+
+[Dialog d_varGate_advAddPlugin]
+argo.SetLocation=15,5
+
+argo.tag(sirka,<d_def_baseMenu_sirka>+(3*<d_def_skvira>)+30+100+250+30)
+argo.tag(vyska,<d_def_baseMenu_vyska>+((<eval tag(addPluginsCount)>+2)*<d_def_radek_vyska>)+(2*<d_def_skvira>))
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30,100,250,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,<tag(addPluginsCount)>,30,100,250,30)
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Variable Gate - Pridej Plugin Menu")
+argo.dialog_buttonpos(1,0)
+argo.button(<lastxbuttpos>-4,<lastybuttpos>,0fbd,0fbf,1,0,2)		//set Plugin to add - dialog
+argo.textA(<argo.dialog_textpos(1,1)>,<d_def_writecolor>,"Pridej novoy plugin")
+
+argo.textA(<argo.dialog_textpos(2,1)>,<d_def_readcolor>,"Cislo P.:")
+argo.textA(<argo.dialog_textpos(2,2)>,<d_def_readcolor>,"Jmeno Pluginu:")
+argo.textA(<argo.dialog_textpos(2,3)>,<d_def_readcolor>,"Del")
+
+arg(i,0)
+while (<arg(i)> < <tag(addPluginsCount)>)
+  argo.dialog_buttonpos(3,0)
+  argo.button(<lastxbuttpos>-4,<lastybuttpos>+(<arg(i)>*<d_def_radek_vyska>),0fb4,0fb6,1,0,100+<arg(i)>)		//edit Plugin - call THE function
+  argo.dialog_textpos(3,1)
+  argo.textA(<lastxpos>,<lastypos>+(<arg(i)>*<d_def_radek_vyska>),<d_def_readcolor>,"Plugin <eval arg(i)> :")
+  argo.dialog_textpos(3,2)
+  argo.textA(<lastxpos>,<lastypos>+(<arg(i)>*<d_def_radek_vyska>),<d_def_readcolor>,"<?return_nth(1,<tag(plugin[<eval arg(i)>])>)?>")
+  argo.dialog_buttonpos(3,3)
+  argo.button(<lastxbuttpos>-4,<lastybuttpos>+(<arg(i)>*<d_def_radek_vyska>),0fb1,0fb3,1,0,1000+<arg(i)>)		//delete Plugin
+  arg(i,#+1)
+endwhile
+
+argo.button(<d_def_okraj>+<d_def_skvira>,<eval (<argo.tag(vyska)>-<d_def_okraj>)-23>,0fb7,0fb9,1,0,1)		//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,<eval (<argo.tag(vyska)>-<d_def_okraj>)-23>,0fb1,0fb3,1,0,0)	//cancel
+
+[Dialog d_varGate_advAddPlugin button]
+on=0
+dialog(d_varGate)
+
+on=1	// apply changes
+dialog(d_varGate)
+
+on=2	// add Plugin menu
+menu(menu_vg_pluginAdd)
+
+on=@anyButton
+if (<argn> >= 1000) // plugin removal
+  arg(pluginNumber,<eval argn-1000>)
+  <return_nth(2,<tag(plugin[<eval pluginNumber>])>)>(1)  // call THE function which removes this plugin settings
+  while (<arg(pluginNumber)> < <eval <tag(addPluginsCount)>-1>)
+    tag(plugin[<eval pluginNumber>],<tag(plugin[<eval pluginNumber+1>])>)
+    arg(pluginNumber,#+1)
+  endwhile
+  tag(addPluginsCount,<eval <tag(addPluginsCount)>-1>)
+  tag.remove(plugin[<eval pluginNumber>])
+  dialog(d_varGate_advAddPlugin)
+elseif (<argn> >= 100)
+  arg(pluginNumber,<eval argn-100>)
+  <return_nth(2,<tag(plugin[<eval pluginNumber>])>)>(0)  // call THE function which opens this plugin's settings
+endif
+
+
+
+///////////////////////////////////////
+//  T I M E   S E A L   P L U G I N  //
+//    (c) Yavanna - blame ME         //
+///////////////////////////////////////
+
+// tag(vg_timeSeal) ~ serv.time of the time, when the seal starts to take the effect
+// tag(vg_timeSeal_length) ~ the length of the seal in ms
+// tag(vg_timeSeal_delay) ~ the time to step on the gate before the gate seals itself (first player to step on the gate sets this delay)
+// tag(vg_timeSeal_maxPlayers) ~ the maximum number of players to walk through
+// tag(vg_timeSeal_playersThrough) ~ the number of players that already walked through the gate
+// tag(vg_timeSeal_realm) ~ the realm of the first player that stepped on the gate (if relevant)
+// tag(vg_timeSeal_bits) ~ additional ON/OFF settings (bits storage tag)
+
+//calling function that sets the timeSealPlugin on or off
+// argv(0) ~ 0/NONE == adds the plugin and (or) opens the settings
+//           1 == removes the plugin
+[function f_vg_timeSealPlugin]
+if (<eval argv(0)> == 1) // fce is only supposed to remove the plugin
+  tag.remove(vg_timeSeal_length)
+  tag.remove(vg_timeSeal_delay)
+  tag.remove(vg_timeSeal_maxPlayers)
+  tag.remove(vg_timeSeal_realm)
+  tag.remove(vg_timeSeal_bits)
+  f_vg_timeSeal_resetTimer
+  return 1
+elseif (<eval tag(vg_timeSeal[1])> == 0) // seal time for Gondor must be non-zero value if active
+  tag(vg_timeSeal[1],<serv.time>)
+  tag(vg_timeSeal_delay,100) //default value - 10s before the gate seals itself
+  tag(vg_timeSeal_length,600) // default value - 60s seal time
+  tag(vg_timeSeal_bits,00) // default value - no bits set
+endif
+dialog(d_vg_timeSeal)
+
+[function f_vg_timeSeal_resetTimer]
+arg(i,-2) // start with outcasts
+while (arg(i) < 3)
+  tag.remove(vg_timeSeal[<eval arg(i)>])
+  tag.remove(vg_timeSeal_playersThrough[<eval arg(i)>])
+  arg(i,#+1)
+endwhile
+
+
+// function just checks whether the player can go through the gate
+// returns: 1 if can't go through
+//          0 if OK
+[function f_vg_timeSeal_Conditions]
+arg(realm,<eval src.tag(realm)>)
+if (<hval tag(vg_timeSeal_bits)>&<vg_ts_sameRealm>) // only the players of the same realm are allowed to step throught
+  if (<serv.time> > <eval tag(vg_timeSeal[<eval tag(vg_timeSeal_realm)>])>) // gate is opened
+    return 0
+  elseif (<arg(realm)> != <eval tag(vg_timeSeal_realm)>)
+    src.sysMessage("Brana te odmita!")
+    return 1 // block the @step trigger and let the player outside
+  endif
+else
+  if (<serv.time> > <eval tag(vg_timeSeal[<eval arg(realm)>])>) // gate is opened
+    return 0
+  endif
+endif
+
+// gate is somehow sealed
+if (<serv.time> < <eval <eval tag(vg_timeSeal[<eval arg(realm)>])>-<eval tag(vg_timeSeal_length)>>) // the timer to go through after the first player is on
+  if (<eval tag(vg_timeSeal_maxPlayers)> == 0) // maxPlayers is not set to 0 -> should be tested for maxplayers
+    return 0
+  elseif (<eval tag(vg_timeSeal_MaxPlayers)> > <eval tag(vg_timeSeal_playersThrough[<eval arg(realm)>])>) // there is still a room for another player
+    return 0
+  endif
+endif
+src.sysMessage("Brana te odmita!") // due to the player's realm
+return 1 // block the @step trigger and let the player outside
+
+
+//the player's capability to go through the gate is already checked when this function is called
+[function f_vg_timeSeal_setValues]
+arg(realm,<eval src.tag(realm)>)
+if (<serv.time> > <eval tag(vg_timeSeal[<eval arg(realm)>])>) // varGate is not sealed anymore - the first player is stepping on
+  // first player sets the gate
+  tag(vg_timeSeal_playersThrough[<eval arg(realm)>],1)
+  tag(vg_timeSeal[<eval arg(realm)>],<eval (<serv.time>+<tag(vg_timeSeal_delay)>+<tag(vg_timeSeal_length)>)>)
+  if (<hval tag(vg_timeSeal_bits)>&<vg_ts_sameRealm>) // only the players of the same realm are allowed to step throught
+    tag(vg_timeSeal_realm,<arg(realm)>)
+  endif
+else
+  tagInc(vg_timeSeal_playersThrough[<eval arg(realm)>])
+endif
+
+
+[dialog d_vg_timeSeal]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,<d_def_baseMenu_sirka>+(1*<d_def_skvira>)+150+98)
+argo.tag(vyska,<d_def_baseMenu_vyska>+(4*<d_def_radek_vyska>))
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,4,150,98)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"VarGate's Time Seal plugin")
+argo.button(<argo.dialog_but_ru>,d_def_button_dialog1,d_def_button_dialog2,1,0,2)	//help
+
+argo.dialog_textpos(1,0)
+argo.texta(<lastxpos>,<lastypos>+0*<d_def_radek_vyska>,<d_def_writecolor>,"Doba zablokovani /s:")
+argo.texta(<lastxpos>,<lastypos>+1*<d_def_radek_vyska>,<d_def_writecolor>,"Cas na pruchod /s:")
+argo.texta(<lastxpos>,<lastypos>+2*<d_def_radek_vyska>,<d_def_writecolor>,"Pocet hracu:")
+argo.texta(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,<d_def_writecolor>,"Stejny Realm:")
+
+argo.dialog_textpos(1,1)
+argo.settext(9,"<?eval tag(vg_timeSeal_length)/10?>") // convertion into seconds
+argo.settext(10,"<?eval tag(vg_timeSeal_delay)/10?>") // convertion into seconds
+argo.settext(11,"<?eval tag(vg_timeSeal_maxPlayers)?>")
+argo.textEntry(lastxpos,lastypos+(0*d_def_radek_vyska),80,<d_def_radek_vyska>,textcolor,1,9)
+argo.textEntry(lastxpos,lastypos+(1*d_def_radek_vyska),80,<d_def_radek_vyska>,textcolor,2,10)
+argo.textEntry(lastxpos,lastypos+(2*d_def_radek_vyska),80,<d_def_radek_vyska>,textcolor,3,11)
+argo.checkBox(<lastxpos>,<lastypos>+3*<d_def_radek_vyska>,210,211,<hval tag(vg_timeSeal_bits)>&<vg_ts_sameRealm>,1)
+
+argo.button(<argo.dialog_ld>,<d_def_button_ok1>,<d_def_button_ok2>,1,0,1)//ok
+argo.button(<lastxbuttpos>+35,<lastybuttpos>,<d_def_button_cancel1>,<d_def_button_cancel2>,1,0,0)//cancel
+argo.button(<argo.dialog_rd>,<d_def_button_select1>,<d_def_button_select2>,1,0,3) // reset
+
+[dialog d_vg_timeSeal button]
+on=0 // cancel
+dialog(d_varGate_advAddPlugin) // get back to the varGate menu
+
+on=1 // ok
+arg(setFail,0)
+arg(num,<fixnumber(<argtxt(1)>)>)
+if (<arg(num)> > 0)
+  tag(vg_timeSeal_length,<eval arg(num)*10>) // convert time to ms
+else
+  src.redMessage("Doba zablokovani musi byt kladne cele cislo!")
+  arg(setFail,1)
+endif
+
+arg(num,<fixnumber(<argtxt(2)>)>) //time delay
+if (<arg(num)> >= 0)
+  tag(vg_timeSeal_delay,<eval arg(num)*10>) // convert time to ms
+else
+  src.redMessage("Cas na pruchod nesmi byt zaporny!")
+  arg(setFail,1)
+endif
+
+arg(num,<fixnumber(<argtxt(3)>)>) // players count
+if (<arg(num)> >= 0)
+  tag(vg_timeSeal_maxPlayers,<eval arg(num)>)
+else
+  src.redMessage("Cas na pruchod nesmi byt zaporny!")
+  arg(setFail,1)
+endif
+
+if (<argChk(1)>)	//npcs can go through
+  tag.vg_timeSeal_bits=<hval tag(vg_timeSeal_bits)>|<vg_ts_sameRealm>	// add sameRealm flag
+else
+  tag.vg_timeSeal_bits=<hval tag(vg_timeSeal_bits)>&~<vg_ts_sameRealm>	// del sameRealm flag
+endif
+
+
+if (<arg(setFail)>)
+  dialog(d_vg_timeSeal) // setting failed -> reopen the dialog
+else
+  dialog(d_varGate_advAddPlugin) // get back to the varGate menu
+endif
+
+on=2 // help
+dialog(d_vg_timeSeal)
+dialog(d_vg_timeSeal_help)
+
+on=3
+f_vg_timeSeal_resetTimer
+dialog(d_vg_timeSeal)
+
+[dialog d_vg_timeSeal_help]
+argo.setText(1," Doba zablokovani /s: Je doba, po jakou bude gate nepruchozi. Od kdy bude gate nepruchozi zavisi na dalsim nastaveni<br><br> Cas na pruchod /s: Je doba v sekundach, po kterou mohou hraci zkouset projit branou, nez se zcela uzavre. Tento cas se pocita od chvile vstupu prvniho hrace.<br><br> Pocet hracu: Je fakticky pocet hracu, kteri mohou v dobe otevreni brany projit za sebou. Nulova hodnota udava neomezeny pocet hracu.<br><br> Stejny Realm: Pokud je prislusny box zaskrtly, projdou dale jen ti hraci, kteri jsou stejneho realmu jako prvni.<br> Tlacitko v pravem dolnim rohu resetuje timer.")
+argo.f_dialog_HelpCreator("HELP - VarGate's Time Seal")
+
+[DefNames vg_timeSeal_bits]
+vg_ts_sameRealm     000000001 // only the players of a same realm can go through
+
+[DefNames vg_realmSeal_bits]
+vg_rs_realm[1]     000000001 // gondor can go through
+vg_rs_realm[2]     000000002 // mordor can go through
+vg_rs_realm[-1]    000000004 // gondor outcasts can go through
+vg_rs_realm[-2]    000000008 // mordor outcasts can go through
+vg_rs_criminalBan  000000010 //criminals won't be allowed to go through
+//vg_s_		000000020	// 
+//vg_s_		000000040	// 
+
+
+[EOF]

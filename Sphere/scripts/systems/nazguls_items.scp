@@ -1,0 +1,76 @@
+[itemdef i_shrine_power]
+id=i_altar_stone //01216
+type=t_shrine_power
+name=Nazgul's shrine
+
+on=@create
+color=0692
+timer=10
+attr=attr_static|attr_move_never
+tag(leading,0)
+
+[itemdef i_leading_shrine_power]
+id=i_altar_stone //01216
+type=t_shrine_power
+name=First Nazgul's shrine
+
+on=@create
+color=0675
+timer=10
+attr=attr_static|attr_move_never
+tag(leading,1)
+
+[itemdef i_lordnazgulsstone]
+ID=i_grave_stone_5
+name=Lord Nazgul's stone
+type=t_lordnazgulmenu
+CATEGORY=GM Items
+SUBSECTION=Kameny
+DESCRIPTION=Lord Nazgul's Stone
+
+ON=@Create
+color=0990 //silver
+ATTR=attr_move_never
+
+
+[itemdef i_lordnazgulsboard]
+ID=i_grave_stone_4
+name=Zasluhy Prvniho Nazgula
+type=t_lordnazgulboard
+CATEGORY=GM Items
+SUBSECTION=Kameny
+DESCRIPTION=Lord Nazgul's Board
+
+ON=@Create
+color=color_o_verite
+ATTR=attr_move_never
+
+[itemdef i_mordorcaptainstone]
+ID=i_grave_stone_5
+name=Mordor Captain's stone
+type=t_mordorcaptainmenu
+CATEGORY=GM Items
+SUBSECTION=Kameny
+DESCRIPTION=Mordor Captain's Stone
+
+ON=@Create
+color=099a //med
+ATTR=attr_move_never
+
+[itemdef i_nazgul_quest]
+id=i_memory
+name=nazgul quest
+type=t_eq_script
+
+on=@create
+attr=attr_invis|attr_decay
+tag.killed=0
+           
+on=@equip
+timer=259200  //3 dni? snad
+cont.sysMessage("Aby jsi <?cont.sex(mohl,mohla)?> ziskat prsten, musis nejprve prokazat oddanost bojem proti gondoru.")
+
+on=@timer
+remove
+
+return(1)

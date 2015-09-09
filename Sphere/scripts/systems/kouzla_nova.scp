@@ -1,0 +1,87 @@
+[ITEMDEF i_customscroll_manashield]
+id=i_scroll_blank
+Name=Mana Shield Scroll
+RESOURCES=i_scroll_blank//, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 60.0, MAGERY 80.0
+TYPE=t_customspell_scroll
+WEIGHT=1.0
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Special
+DESCRIPTION=Mana Shield Scroll
+
+ON=@Create
+ATTR_MAGIC=1
+MOREX=104 //cislo kouzla
+tag(class_mag,1) //bude pro magy mystiky a negry, knez muze jen psat
+tag(class_mystik,1)
+tag(class_necro,1)
+tag(class_priest,1)
+color=044d
+
+
+[ITEMDEF i_customscroll_frostbolt]
+id=i_scroll_blank
+Name=Frost Bolt Scroll
+RESOURCES=i_scroll_blank//, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 75.0, MAGERY 60.0
+TYPE=t_customspell_scroll
+WEIGHT=0.1
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Special
+DESCRIPTION=Frost Bolt Scroll
+
+ON=@Create
+ATTR_MAGIC=1
+MOREX=101 //cislo kouzla
+tag(class_necro,1)
+tag(class_shaman,1)
+color=044d
+
+on=@dropon_obj
+if(argo.type==t_spellbook)
+ if(isbit(<argo.morex>,6))
+ else
+  argo.morex=<argo.morex>+64
+  remove
+ endif
+endif
+
+[ITEMDEF i_customscroll_mass_bless]
+id=i_scroll_blank
+Name=Mass Bless Scroll
+RESOURCES=i_scroll_blank//, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 60.0, MAGERY 80.0
+TYPE=t_customspell_scroll
+WEIGHT=1.0
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Special
+DESCRIPTION=Mass Bless Scroll
+
+ON=@Create
+ATTR_MAGIC=1
+MOREX=102 //cislo kouzla
+tag(class_priest,1)
+color=044d
+
+
+[ITEMDEF i_customscroll_summon_attendant]
+id=i_scroll_blank
+Name=Summon Attendant Scroll
+RESOURCES=i_scroll_blank//, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 60.0, MAGERY 80.0
+TYPE=t_customspell_scroll
+WEIGHT=1.0
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Special
+DESCRIPTION=Sumon Attendant Scroll
+
+ON=@Create
+ATTR_MAGIC=1
+MOREX=105 //cislo kouzla
+tag(class_mag,1)
+tag(class_necro,1)
+//tag(class_priest,1)
+color=044d
+
+
+[eof]

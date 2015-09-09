@@ -1,0 +1,454 @@
+[speech spk_q14_malkor]
+on = *Hi*
+on = *dobry*
+on = *zdravim*
+on = *den*
+say("Jak ti mohu pomoci cizince?")
+
+on = *Jeskyne*
+if (<src.flags>&statf_dead)
+  say("S mrtvymi se nebavim.")
+elseif (0<src.tag.q14>==3)||(0<src.tag.q14>==3)
+  say("Vitam te <src.name>. Dekuji ti za tvou pomoc, Tomy se jiz zotavuje ale stale jeste polehava.")
+elseif (<src.findid.i_q14_cutora>)
+  say("Vitam te <src.name>. Zde mas dalsi svitek s klicovym slovem, ktery pouzijes tam, kde ho pouzit mas.")
+  src.giveitem(i_q14_souradnice)
+  src.giveitem(i_q14_uzdraveni)
+  src.consume 1 i_q14_cutora
+  src.consume 1 i_q14_syn
+  src.consume 1 i_q14_pisenmladi
+  src.consume 1 i_q14_material
+  src.consume 1 i_q14_potrebnacutora
+  src.consume 1 i_q14_vzacnyprotijed
+  src.consume 1 i_q14_experiment
+  src.consume 1 i_q14_zlateklasy
+  src.consume 1 i_q14_dopis_pepe
+  src.tag.q14=1
+elseif (<src.findid.i_q14_syn>)
+  say("Vitam te <src.name>. Potrebne klicove slovo mas jiz v batohu.")
+else
+  say("Vitam te <src.name>. Zde mas svitek s klicovym slovem, ktery pouzijes tam, kde ho pouzit mas.")
+ src.giveitem(i_q14_syn)
+endif
+
+[speech spk_q14_dalmara]
+on = *Lahev*
+if (<src.findid.i_q14_flask_empty>)
+  say("Uz jednu lahev mas.")
+else
+  say("Tady mas, a dej na ni priste pozor.")
+  src.giveitem(i_q14_flask_empty)
+endif
+
+on = *Dopis*
+if (<src.findid.i_q14_dopis_pepe>)
+  say("Uz jeden dopis mas.")
+else
+  say("Tady mas, a dej na nej priste pozor.")
+  src.giveitem(i_q14_dopis_pepe)
+endif
+on = *Hi*
+on = *dobry*
+on = *zdravim*
+on = *den*
+say("Jak ti mohu pomoci cizince?")
+on=*Bystra zena*
+if (<src.flags>&statf_dead)
+  say("S mrtvymi se nebavim.")
+elseif (<src.findid.i_q14_flask_full>)&& (<src.findid.i_q14_redscroll>)&& (<src.findid.i_q14_bluescroll>)&& (<src.rescount i_gold> >= 500)&& (<src.rescount i_potion_healgreat> >= 20)&& (<src.rescount i_potion_poison> >= 10)
+  say("Vitam te <src.name>. Zde mas dalsi svitek s klicovym slovem, ktery pouzijes tam, kde ho pouzit mas.")
+  src.giveitem(i_q14_cutora)
+  src.giveitem(i_q14_vzacnyprotijed)
+  src.consume 1 i_q14_flask_full
+  src.consume 1 i_q14_redscroll
+  src.consume 1 i_q14_bluescroll
+  src.consume 500 i_gold
+  src.consume 20 i_potion_healgreat
+  src.consume 10 i_potion_poison
+elseif (<src.findid.i_q14_bluescroll>)&& (<src.rescount i_log_iron> >= 100)&& (<src.rescount i_ingot_silver> >= 50)&& (<src.rescount i_hide> >= 30)&& (src.findid(i_hide).more2 == c_horse_gray)&& (<src.rescount i_ingot_silver> >= 50)&& (<src.findid.i_pet_llama_pack>)
+ say("Vitam te <src.name>. Zde mas dalsi svitek s klicovym slovem, ktery pouzijes tam, kde ho pouzit mas.")
+ src.giveitem(i_q14_potrebnacutora)
+ src.consume 100 i_log_iron
+ src.consume 50 i_ingot_silver
+ src.consume 30 i_hide
+ src.consume 1 i_pet_llama_pack
+ src.giveitem(i_q14_flask_empty)
+ src.giveitem(i_q14_redscroll)
+elseif (<src.rescount i_reag_spider_silk> >= 100)&& (<src.rescount i_reag_nightshade> >= 100)&& (<src.rescount i_reag_blood_moss> >= 100)&& (<src.rescount i_reag_bone> >= 300)&& (<src.rescount i_q14_otep> >= 50)
+ say("Vitam te <src.name>. Zde mas dalsi svitek s klicovym slovem, ktery pouzijes tam, kde ho pouzit mas.")
+ src.giveitem(i_q14_material)
+ src.consume 100 i_reag_spider_silk
+ src.consume 100 i_reag_nightshade
+ src.consume 100 i_reag_blood_moss
+ src.consume 300 i_reag_bone
+ src.consume 50 i_q14_otep
+ src.giveitem(i_q14_bluescroll)
+elseif (<src.findid.i_q14_redscroll>)
+ say("Vitam te zpet <src.name>. Dones vse jak jsem zadala, a pak prijd.")
+elseif (<src.findid.i_q14_bluescroll>)
+ say("Vitam te zpet <src.name>. Dones vse jak jsem zadala, a pak prijd.")
+elseif (<src.findid.i_q14_otep>)
+ say("Vitam te zpet <src.name>. Dones vse jak jsem zadala, a pak prijd.")
+elseif (<src.findid.i_q14_dopis_pepe>) && (<src.findid.i_q14_pisenmladi>)
+ say("Vitam te zpet <src.name>. Nemas u sebe zadne zlate otepi. Sezenes je u meho pritele Pepe Dungara.")
+elseif (<src.findid.i_q14_dopis_pepe>)
+ say("Vitam te zpet <src.name>. Nemas u sebe zadne zlate otepi. Sezenes je u meho pritele Pepe Dungara.")
+ src.giveitem(i_q14_pisenmladi)
+elseif (<src.findid.i_q14_pisenmladi>)
+ say("Vitam te <src.name>. Potrebne klicove slovo mas jiz v batohu.")
+ src.giveitem(i_q14_dopis_pepe)
+else
+ say("Vitam te <src.name>. Zde mas svitek s klicovym slovem, ktery pouzijes tam, kde ho pouzit mas.")
+ src.giveitem(i_q14_pisenmladi)
+ src.giveitem(i_q14_dopis_pepe)
+endif
+
+[speech spk_q14_pepe]
+on = *Hi*
+on = *dobry*
+on = *zdravim*
+on = *den*
+say("Jak ti mohu pomoci cizince?")
+on = *Dalmara*
+if (<src.flags>&statf_dead)
+ say("S mrtvymi se nebavim.")
+elseif (<src.rescount i_ingot_gold> >= 10)
+ say("Vitam te <src.name>. Zde mas dalsi svitek s klicovym slovem, ktery pouzijes tam, kde ho pouzit mas.")
+ src.giveitem(i_q14_zlateklasy)
+ src.consume 10 i_ingot_gold
+ src.giveitem(i_q14_sazenice_bag)
+ src.tag.q14_2=1
+elseif (<src.findid.i_q14_dopis_pepe>)
+ say("Vitam te <src.name>. Zde mas svitek s klicovym slovem, ktery pouzijes tam, kde ho pouzit mas.")
+ src.giveitem(i_q14_experiment)
+ src.consume 1 i_q14_dopis_pepe
+else
+ say("Nemam, co bych ti povedel.")
+endif 
+
+[itemdef i_q14_gate]
+id=i_moongate_blue
+type=t_script
+
+on=@step
+if (0<src.tag.q14>>1)||(0<src.tag.q14>>1)
+ say("<src.name>. Do Jeskyne poznani jsi uz jednou <src.sex vstoupil vstoupila>.")
+elseif (0<src.tag.q14>==1)&&(0<src.tag.q14_2>)
+ src.tag.q14=2
+ src.consume 1 i_q14_souradnice
+ src.consume 1 i_q14_uzdraveni
+ src.go 5250,54
+else
+ say("Nemas vsechny potrebne veci k vstupu do jeskyne.")
+endif
+
+[itemdef i_q14_gate_vystup]
+id=i_moongate_blue
+type=t_script
+
+on=@step
+if (0<src.tag.q14>==3)
+ src.go 4612,13
+else
+ say("Jeste jsi si nevybral odmenu poklikanim na kamenny sloup.")
+endif
+
+[itemdef i_q14_odmena]
+id=01182
+type=t_script
+
+
+ON=@USERDCLICK
+if (0<src.tag.q14> < 2)||(0<src.tag.q14_2>==0)
+ say Nemas pravo na odmenu.
+elseif (0<src.tag.q14> > 2)
+ say Ty uz jsi odmenu dostal.
+else
+ src.tag.q14=3
+ src.addexp(5000)
+ src.giveitem(i_mi_bag)
+ src.giveitem(i_mi_bag)
+ src.giveitem(i_mi_bag)
+ src.giveitem(i_mi_bag)
+ src.givegold(80000)
+endif
+
+[itemdef i_q14_sud]
+id = 0154d
+name = Ziva voda
+
+ON=@USERDCLICK
+if (<src.findid.i_q14_flask_empty>)
+ src.giveitem(i_q14_flask_full)
+ src.consume 1 i_q14_flask_empty
+endif
+
+[itemdef i_q14_souradnice]
+id = 0e34
+type = t_scroll_blank
+name = Souradnice vstupu do Jeskyne poznani
+
+on=@create
+attr=attr_newbie
+color=0995
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_souradnice
+return 1
+
+[scroll sc_q14_souradnice]
+Vstup do Jeskyne poznani: 4613,16
+
+[itemdef i_q14_uzdraveni]
+id = 0e34
+type = t_scroll_blank
+name = Svitek s klicovym slovem
+
+on=@create
+attr=attr_newbie
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_uzdraveni
+return 1
+
+[scroll sc_q14_uzdraveni]
+Klicove slovo: Uzdraveni
+
+[itemdef i_q14_syn]
+id = 0e34
+type = t_scroll_blank
+name = Svitek s klicovym slovem
+
+on=@create
+attr=attr_newbie
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_syn
+return 1
+
+[scroll sc_q14_syn]
+Klicove slovo: Syn
+
+[itemdef i_q14_pisenmladi]
+id = 0e34
+type = t_scroll_blank
+name = Svitek s klicovym slovem
+
+on=@create
+attr=attr_newbie
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_pisenmladi
+return 1
+
+[scroll sc_q14_pisenmladi]
+Klicove slovo: Pisen Mladi
+
+[itemdef i_q14_material]
+id = 0e34
+type = t_scroll_blank
+name = Svitek s klicovym slovem
+
+on=@create
+attr=attr_newbie
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_material
+return 1
+
+[scroll sc_q14_material]
+Klicove slovo: Material
+
+[itemdef i_q14_potrebnacutora]
+id = 0e34
+type = t_scroll_blank
+name = Svitek s klicovym slovem
+
+on=@create
+attr=attr_newbie
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_potrebnacutora
+return 1
+
+[scroll sc_q14_potrebnacutora]
+Klicove slovo: Potrebna cutora
+
+[itemdef i_q14_vzacnyprotijed]
+id = 0e34
+type = t_scroll_blank
+name = Svitek s klicovym slovem
+
+on=@create
+attr=attr_newbie
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_vzacnyprotijed
+return 1
+
+[scroll sc_q14_vzacnyprotijed]
+Klicove slovo: Vzacny protijed
+
+[itemdef i_q14_experiment]
+id = 0e34
+type = t_scroll_blank
+name = Svitek s klicovym slovem
+
+on=@create
+attr=attr_newbie
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_experiment
+return 1
+
+[scroll sc_q14_experiment]
+Klicove slovo: Experiment
+
+[itemdef i_q14_zlateklasy]
+id = 0e34
+type = t_scroll_blank
+name = Svitek s klicovym slovem
+
+on=@create
+attr=attr_newbie
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_zlateklasy
+return 1
+
+[scroll sc_q14_zlateklasy]
+Klicove slovo: Zlate klasy
+
+[itemdef i_q14_redscroll]
+id=i_deed
+type=t_script
+name=Potvrzeni o donesenem materialu
+
+on=@create
+attr=attr_newbie
+color=0658
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_redscroll
+return 1
+
+[scroll sc_q14_redscroll]
+Potvrzuji, ze jsem prevzala tento material: 100ks chestnut logu, 100ks silver ingotu, 30 kuzi z kone, 1 Pack lamu
+
+[itemdef i_q14_bluescroll]
+id=i_deed
+type=t_script
+name=Potvrzeni o donesenem materialu
+
+on=@create
+attr=attr_newbie
+color=052e
+
+
+ON=@USERDCLICK
+src.scroll sc_q14_bluescroll
+return 1
+
+[scroll sc_q14_bluescroll]
+Potvrzuji, ze jsem prevzala tento material: 100ks Spider's Silk, 100ks Nightshade, 100ks Blood Moss, 300 kostí ze skeletona, 50 zlatych otepi
+
+[itemdef i_q14_dopis_pepe]
+id=i_deed
+type=t_script
+name=Dopis pro Pepe Dungara
+
+on=@create
+color=08a4
+
+[itemdef i_q14_sazenice_bag]
+id=i_bag
+
+on=@create
+type=t_q14_sazenice
+
+[typedef t_q14_sazenice]
+ON=@USERDCLICK
+runxtimes(60,giveitem(i_q14_sazenice))
+src.newitem i_scarecrow
+src.act.cont=<uid>
+src.act.name=Majitel Pole: <src.name>
+src.act.attr=attr_newbie
+type=t_container
+
+
+[itemdef i_q14_sazenice]
+id=01ebf
+tdata2=i_q14_rostlina
+
+on=@create
+attr=attr_newbie
+color=0995
+timer=18000
+
+on=@pickup_pack
+timer=18000
+
+[itemdef i_q14_rostlina]
+id=0c5b
+type=t_script
+
+on=@create
+attr=attr_newbie
+color=0995
+
+
+ON=@USERDCLICK
+src.giveitem(i_q14_otep)
+remove
+return 1
+
+[itemdef i_q14_otep]
+id=01ebd
+type=t_script
+
+on=@create
+attr=attr_newbie
+color=0995
+
+[itemdef i_q14_flask_full]
+id=0182a
+type=t_script
+
+on=@create
+attr=attr_newbie
+
+[itemdef i_q14_flask_empty]
+id=0182d
+type=t_script
+
+[itemdef i_q14_cutora]
+id=0ffa
+type=t_script
+name=Protijed
+
+on=@create
+attr=attr_newbie
+color=0996
+
+[TEMPLATE tmp_q14_drevo] 
+CATEGORY=Moria Questy
+SUBSECTION=Dalmara
+DESCRIPTION=tmp Drevo 
+CONTAINER=i_backpack 
+ITEM=i_q14_bluescroll
+ITEM=i_log_iron,100
+ITEM=i_ingot_silver,50
+ITEM=i_hide,30
+ITEM=i_pet_llama_pack
+
+[eof]

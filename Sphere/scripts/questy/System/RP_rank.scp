@@ -1,0 +1,149 @@
+[function RPRank]
+if !(isplayer)
+ src.redmessage("Funkci musis pouzit na hrace!")
+else
+ dialog(d_RP_Rank_info,<uid>)
+endif
+
+[Dialog d_RP_Rank_info]
+argo.SetLocation=15,5
+
+argo.tag(sirka,396)
+argo.tag(vyska,438)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,308,60)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,12)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,159,93,50,60)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,308,60)
+argo.dialog_zpruhledni
+
+argo.tag(this_player,<argv(0)>)
+arg(sloupec_prvni_x,<d_def_okraj>+<d_def_skvira>+<d_def_odsazeni>)
+arg(sloupec_prvni_y,<d_def_okraj>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*(<d_def_radek_vyska>+<d_def_skvira>),42,"RP Rank - <?argv(0).name?>")
+argo.button(sloupec_prvni_x+340,sloupec_prvni_y-3,0fb1,0fb3,1,0,0)//cancel
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,"Hodnota Ranku:")
+if (strlen(<argv(0).tag(RP_Rank)>))
+  argo.texta(sloupec_prvni_x+311,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,"<?argv(0).tag.RP_Rank?>")
+else
+  argo.texta(sloupec_prvni_x+311,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,"0")
+endif
+argo.button(sloupec_prvni_x+340,sloupec_prvni_y-3,4005,4007,1,0,1)//zmenit rank
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_readcolor>,"Poznamky:")
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+arg(index,00)
+while (strlen(<argv(0).qtag(RP_RankLog_<index>)>))
+ argo.texta(sloupec_prvni_x,sloupec_prvni_y+<index>*<d_def_radek_vyska>,<d_def_readcolor>,"<?argv(0).qtag(RP_RankLog_<index>)?>")
+ arg(index,#+1)
+endwhile
+arg(index,0)
+
+arg(sloupec_prvni_y,#+(12*<d_def_radek_vyska>)+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+<index>*<d_def_radek_vyska>,<d_def_readcolor>,"Prehled postav na acc:")
+argo.texta(sloupec_prvni_x+162,sloupec_prvni_y+<index>*<d_def_radek_vyska>,<d_def_readcolor>,"Rasa")
+argo.texta(sloupec_prvni_x+260,sloupec_prvni_y+<index>*<d_def_radek_vyska>,<d_def_readcolor>,"Level")
+argo.texta(sloupec_prvni_x+311,sloupec_prvni_y+<index>*<d_def_radek_vyska>,<d_def_readcolor>,"Rank") 
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+arg(my_acc,<argv(0).account>)
+while (index<my_acc.chars)
+ arg(charcolor,<my_acc.char(index).getNameHue>)
+ argo.texta(sloupec_prvni_x,sloupec_prvni_y+<index>*<d_def_radek_vyska>,charcolor,<my_acc.char(index).name>)
+ argo.texta(sloupec_prvni_x+162,sloupec_prvni_y+<index>*<d_def_radek_vyska>,charcolor,<my_acc.char(index).tag.race>)
+ argo.texta(sloupec_prvni_x+260,sloupec_prvni_y+<index>*<d_def_radek_vyska>,charcolor,<my_acc.char(index).tag.level>)
+ if (strlen(<my_acc.char(index).tag(RP_Rank)>))
+  argo.texta(sloupec_prvni_x+311,sloupec_prvni_y+<index>*<d_def_radek_vyska>,<d_def_writecolor>,"<?my_acc.char(index).tag.RP_Rank?>")
+ else
+  argo.texta(sloupec_prvni_x+311,sloupec_prvni_y+<index>*<d_def_radek_vyska>,<d_def_writecolor>,"0")
+ endif
+ arg(index,#+1)
+endwhile
+
+[Dialog d_RP_Rank_info button]
+on=1
+Dialog(d_PR_Rank_changer,<argo.tag(this_player)>)
+
+[Dialog d_PR_Rank_changer]
+argo.SetLocation=15,5
+
+argo.tag(sirka,396)
+argo.tag(vyska,131)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,308,60)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+argo.tag(this_player,<argv(0)>)
+arg(sloupec_prvni_x,<d_def_okraj>+<d_def_skvira>+<d_def_odsazeni>)
+arg(sloupec_prvni_y,<d_def_okraj>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*(<d_def_radek_vyska>+<d_def_skvira>),42,"RP Rank Changer - <?argv(0).name?>")
+argo.button(sloupec_prvni_x+340,sloupec_prvni_y-3,0fb1,0fb3,1,0,0)//cancel
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_writecolor>,"Nova Hodnota Ranku:")
+if (strlen(<argv(0).tag(RP_Rank)>))
+  argo.settext(100,<?argv(0).tag.RP_Rank?>)
+else
+  argo.settext(100,"0")
+endif
+argo.textentry(sloupec_prvni_x+311,sloupec_prvni_y+0*<d_def_radek_vyska>,30,<d_def_radek_vyska>,52,1,100)
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.texta(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,<d_def_readcolor>,"Kratky Popis:")
+
+arg(sloupec_prvni_y,#+<d_def_radek_vyska>+<d_def_skvira>)
+argo.settext(102,"--")
+argo.textentry(sloupec_prvni_x,sloupec_prvni_y+0*<d_def_radek_vyska>,300,<d_def_radek_vyska>,52,2,102)
+argo.button(sloupec_prvni_x+340,sloupec_prvni_y+<d_def_radek_vyska>,0fb7,0fb9,1,0,1)//OK
+
+[Dialog d_PR_Rank_changer button]
+on=1
+if ((<argtxt(1)> > 7) || (<argtxt(1)> < -3))
+  src.RedMessage("RP Rank musi byt cele cislo mezi -3 a 7 !")
+  return 0
+endif
+arg(i,00)
+while (strlen(<argo.tag(this_player).qtag(RP_RankLog_<i>)>) && i < 11)
+ arg(i,#+1)
+endwhile
+if (i < 11)
+ argo.tag(this_player).qtag(RP_RankLog_<i>,<?strMid(<servertime>,0,10)?>: <?argo.tag(this_player).tag(RP_Rank)?>-><?argtxt(1)?> - <?argtxt(2)?>)
+ argo.tag(this_player).tag(RP_Rank,<argtxt(1)>)
+else
+ argo.tag(this_player).f_RP_Rank_LogMove
+ argo.tag(this_player).qtag(RP_RankLog_<i>,<?strMid(<servertime>,0,10)?>: <?argo.tag(this_player).tag(RP_Rank)?>-><?argtxt(1)?> - <?argtxt(2)?>)
+ argo.tag(this_player).tag(RP_Rank,<argtxt(1)>)
+endif
+src.dialog(d_RP_Rank_info,<argo.tag(this_player)>)
+
+[function f_RP_Rank_LogMove]
+arg(i,0)
+while i<11
+ qtag(RP_RankLog_<i>,<qtag(RP_RankLog_<eval i+1>)>)
+ arg(i,#+1)
+endwhile
+qtagremove(RP_RankLog_11)
+
+[defNames RPrank_effect]
+RP_rank[-3]	-30
+RP_rank[-2]	-20
+RP_rank[-1]	-10
+RP_rank[00]	0
+RP_rank[1]	5
+RP_rank[2]	10
+RP_rank[3]	20
+RP_rank[4]	30
+RP_rank[5]	40
+RP_rank[6]	55
+RP_rank[7]	70
+
+[eof]

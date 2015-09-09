@@ -1,0 +1,744 @@
+[defnames mountTimers]
+mt_sitOnFoodTimer=1000
+mt_freeFoodTimer=3600
+mt_lowFoodTimer=60	//tenhle cas * 10 pro jedno snizeni nizkyho foodu + kazdej dobehlej timer shodi jezdce ze sedla
+
+[itemdef i_hladovitko]
+id=i_memory
+type=t_eq_script
+name=hlad jezditka
+
+on=@create
+more2=10	//pocet shozeni hladovyho jezditka pred dalsim snizenim foodu
+attr=attr_invis|attr_decay
+timer=mt_sitOnFoodTimer
+
+on=@timer
+if (<cont>)
+  if (playerExists(<cont>)) //hladovitko je na hraci
+    if (cont.isGM) //jezditka pod GMs nebudou hladovet
+      remove
+      return 1
+    endif
+    if (tag(myfood)<3)
+      cont.sysmessage("Zvire je hladove")
+      timer=<mt_lowFoodTimer>
+      if (<more2> == 0)
+        tag(myfood,#-1)
+        finduid(<tag(myuid)>).tag(myfood,<tag(myfood)>)
+        more2=10
+      else
+        more2=<more2>-1	//more2,timery atd se pri sesedani a nasedani kopiruje na novy hladovitko, takze to ma smysl :)
+      endif
+      cont.dismount
+      remove
+      return 1
+    endif
+    tag(myfood,#-1)
+    if (<cont.animallore> > <eval {0 1200}>)
+      if (tag(myfood) < <tag(mymaxfood)>/4)
+        cont.message("<tag(myname)> ma velky hlad.")
+      elseif (tag(myfood) < <tag(mymaxfood)>/2)
+        cont.message("<tag(myname)> by snesl nejake jidlo.")
+      else
+        cont.message("<tag(myname)> spokojene funi.")
+      endif
+    endif
+    finduid(<tag(myuid)>).tag(myfood,<tag(myfood)>)
+    timer=<mt_sitOnFoodTimer>
+    return 1
+  else // hladovitko je na jezditku
+    if (<cont.food> < 3)
+      if (more2 == 0)
+        cont.food=<cont.food>-1
+        more2=10
+      else
+        more2=<more2>-1	//more2,timery a t se pri sesedani a nasedani kopiruje na novy hladovitko, takze to ma smysl :)
+      endif
+      timer=<mt_lowFoodTimer>
+    else
+      cont.food=<cont.food>-1
+      if (<cont.food> < 3)
+        timer=<mt_lowFoodTimer>
+      else
+        timer=<mt_freeFoodTimer>	//Jezditko bez jezdce bude hladovet 3x pomalejc + asi je tam nejaky globalni hladoveni...
+      endif
+    endif
+    if (<cont.food> == 0)
+      while (<cont.memoryfindtype(memory_ipet)>)
+        cont.memoryfindtype(memory_ipet).remove
+      endwhile
+      cont.action=0
+      cont.flag_pet=0
+      cont.emote("umira hlady")
+      remove
+    endif
+    return 1
+  endif
+else //hladovitko neni equipnuty hracem/jezditkem
+  remove
+endif
+
+
+[function mount_equip]
+if (cont.tag(hypno_mystik)) //prehazovani zviratek mezi batuzky - nic nedelat (hlavne nemazat protoze tam je ten hrac)
+else
+ if (playerExists(<cont>))
+  cont.f_mounts_removeMemoryes
+  tag(mycolor,<color>)
+  cont.newitemsafe(i_hladovitko)
+  arg(mylastnew,<lastnew>)
+  mylastnew.tag(myfood,<finduid(<more2>).food>)     
+  mylastnew.tag(mymaxfood,<finduid(<more2>).typedef.maxfood>)     
+  mylastnew.tag(myname,<finduid(<more2>).name>)     
+  mylastnew.tag(myuid,<uid>)
+  if (findUID(<more2>).findid(i_hladovitko))
+    arg(hladovitko,<findUID(<more2>).findid(i_hladovitko)>)
+    arg(foodTimer,<arg(hladovitko).timer>)
+    if (<finduid(<more2>).food> < 3)
+      mylastnew.more2=<arg(hladovitko).more2>
+      if (arg(foodTimer) < mt_lowFoodTimer)
+        mylastnew.timer=<arg(foodTimer)>
+      else
+        mylastnew.timer=<mt_lowFoodTimer>
+      endif
+    else
+      if (<arg(foodTimer)> < <mt_sitOnFoodTimer>)
+        mylastnew.timer=<arg(foodTimer)>
+      else
+        mylastnew.timer=<mt_sitOnFoodTimer>
+      endif
+    endif
+  elseif (<mylastnew.tag(myfood)> < 3)
+    mylastnew.timer=<mt_lowFoodTimer>
+  endif
+  cont.equip(<mylastnew>)
+  tag(myfood,<finduid(<more2>).food>)
+  tag(fooduid,<mylastnew>)
+  tag(myhits,<finduid(<more2>).hits>)
+  tag(myid,<finduid(<more2>).id>)
+  if (strlen(<finduid(<more2>).tag(myid)>))
+   tag(myid,<finduid(<more2>).tag(myid)>)
+  endif
+  if (finduid(<more2>).issumon)
+   cont.newitemsafe(i_summonmountremover)
+   lastnew.timer=600
+   cont.equip(<lastnew>)
+   arg(mymnt,<finduid(<more2>).tag(runecaster)>)
+   if (arg(mymnt))
+    finduid(<arg(mymnt)>).link=<uid>
+   else
+    remove
+   endif
+  endif
+  finduid(<more2>).actarg1=""
+  finduid(<more2>).remove 
+ endif
+ more2=<cont>
+endif
+
+[function mount_unequip]
+arg(mylastnewchar,<lastnewchar>)
+if !(<arg(mylastnewchar)>)
+  return 1
+endif
+if (cont.tag(hypno_mystik)) //prehazovani zviratek mezi batuzky - nic nedelat 
+else
+  if !(strcmpi("<arg(mylastnewchar).id>","mage_horse_brown"))||!(strcmpi("<mylastnewchar.id>","necro_horse_undead"))
+    mylastnewchar.remove
+    return 1
+  endif
+  if (tag(myid))
+    if (mylastnewchar.id==<tag(myid)>)
+    else
+      cont.newnpc(<tag(myid)>)
+    endif
+    mylastnewchar.tag(myid,<tag(myid)>)
+  endif
+  cont.tag(lastjezdik,<mylastnewchar>)
+  if (tag(mycolor))
+  else
+    tag (mycolor,0)
+  endif
+  mylastnewchar.color=<tag(mycolor)>
+  mylastnewchar.oskin=<tag(mycolor)>
+  mylastnewchar.newequip(i_hladovitko)
+  if (cont.findID(i_hladovitko))
+    lastnew.timer=<cont.findID(i_hladovitko).timer>
+    if (<cont.findID(i_hladovitko).tag(myFood)> < 3)
+      lastnew.more2=<cont.findID(i_hladovitko).more2>
+    endif
+  endif
+  cont.consume(i_hladovitko)
+  if (cont.findid(i_summonmountremover))
+    mylastnewchar.remove
+    cont.consume(i_summonmountremover)
+    return 1
+  endif
+
+  if (tag(myhits))
+    mylastnewchar.hits=<tag(myhits)>
+  endif
+
+  mylastnewchar.food=<tag(myfood)>
+  if (mylastnewchar.food<1)
+    while (<mylastnewchar.memoryfindtype(memory_ipet)>)
+      mylastnewchar.memoryfindtype(memory_ipet).remove
+    endwhile
+    mylastnewchar.flag_pet=0
+    mylastnewchar.action=0
+    mylastnewchar.emote("umira hlady")
+  elseif (mylastnewchar.food > <mylastnewchar.typedef.maxfood> *2)
+    mylastnewchar.food=<mylastnewchar.typedef.maxfood>
+  endif
+  finduid(tag(fooduid)).remove
+  if (cont.hits==0)
+    mylastnewchar.tag(jezdec_chcip,<serv.time>)
+    cont.newitemsafe(i_vrazditko)
+    arg(vrazditko,<lastnew>)
+    vrazditko.p=<mylastnewchar.p>
+    vrazditko.z=-100
+    vrazditko.link=<mylastnewchar>
+    vrazditko.timer=1
+    vrazditko.remove
+  endif 
+endif
+
+[function mount_unequip_pack]
+arg(mylastnewchar,<lastnewchar>)
+if (cont.tag(hypno_mystik))
+else
+  mylastnewchar.remove
+  cont.newnpc(<tag(mount_pack_id)>)
+  arg(mylastnewchar,<lastnewchar>)
+  cont.tag(lastjezdik,<mylastnewchar>) 
+  if (tag(mycolor))
+  else
+    tag(mycolor,0)
+  endif
+  mylastnewchar.color=<tag(mycolor)>
+  mylastnewchar.oskin=<tag(mycolor)>
+  mylastnewchar.newequip(i_hladovitko)
+  if (cont.findID(i_hladovitko))
+    lastnew.timer=<cont.findID(i_hladovitko).timer>
+    if (<cont.findID(i_hladovitko).tag(myFood)> < 3)
+      lastnew.more2=<cont.findID(i_hladovitko).more2>
+    endif
+  endif
+  cont.consume(i_hladovitko)
+  mylastnewchar.food=<tag(myfood)>
+  if (mylastnewchar.food<1)
+    while (<mylastnewchar.memoryfindtype(memory_ipet)>)
+      mylastnewchar.memoryfindtype(memory_ipet).remove
+    endwhile
+    mylastnewchar.flag_pet=0
+    mylastnewchar.action=0
+    mylastnewchar.emote("umira hlady")
+  elseif (mylastnewchar.food > <mylastnewchar.typedef.maxfood>*2)
+    mylastnewchar.food=<mylastnewchar.typedef.maxfood>
+  endif
+  mylastnewchar.name=<name>
+  finduid(tag(fooduid)).remove
+  if (tag(myhits))//casem zrusit
+    mylastnewchar.hits=<tag(myhits)>
+  endif
+
+  finduid(tag(bagl)).cont=<mylastnewchar>
+
+  mylastnewchar.newmemory(<cont>)
+  mylastnewchar.act.COLOR=<mylastnewchar.act.COLOR>|memory_ipet
+  mylastnewchar.act.more1=04
+  mylastnewchar.act.MORE2=<SERV.TIME>
+  mylastnewchar.act.MOREP=<mylastnewchar.P>
+  mylastnewchar.act=<var(newmemoryact)>
+
+  if (cont.hits<=0)
+    mylastnewchar.tag(jezdec_chcip,<serv.time>)  
+    cont.newitem(i_vrazditko)
+    arg(vrazditko,<lastnew>)
+    vrazditko.p=<mylastnewchar.p>
+    vrazditko.z=-100
+    vrazditko.link=<mylastnewchar>
+    vrazditko.timer=1
+    //vrazditko.remove
+  endif 
+  cont.f_mounts_removeMemoryes
+endif
+
+[function udelej_pack]
+if !(src.targ.ismypet)
+ src.sysmessage "Toto neni tve zvire."
+ return 1
+elseif !(src.targ.srccombatLOS)||(src.targ.distance>6)
+ SRC.SYSMESSAGE "Nevidis cil."
+ return 1
+endif
+if (src.targ.id==c_horse_tan)
+ src.targ.newnpc(c_horse_pack)
+elseif (src.targ.id==c_horse_gray)
+ return 1
+elseif (src.targ.body==c_horse_tan)||(src.targ.body==c_llama)||(src.targ.body==c_horse_gray)
+ src.targ.newnpc(<src.targ.id>_pack)
+else
+ src.sysmessage "Toto zvire neni ochotno nest batozinu."
+ return 1
+endif
+arg(mylastnewchar,<lastnewchar>)
+mylastnewchar.name=<src.targ.name>
+mylastnewchar.hits=<src.targ.hits>
+mylastnewchar.food=<src.targ.food>		
+mylastnewchar.tag(myid,<src.targ.id>)
+mylastnewchar.newmemory(<src>)
+mylastnewchar.act.COLOR=<mylastnewchar.act.COLOR>|memory_ipet
+mylastnewchar.act.more1=04
+mylastnewchar.act.MORE2=<SERV.TIME>
+mylastnewchar.act.MOREP=<mylastnewchar.P>
+mylastnewchar.act=<var(newmemoryact)>
+src.targ.remove
+remove
+
+
+[function odsedlej]
+reveal
+stopscriptedskills
+skill -1
+if (<flag_dead>) && (isplayer)
+ return 1
+endif
+newitemsafe(i_umount_target)
+equip(lastnew)
+
+[itemdef i_umount_target]
+ID=i_memory
+NAME=unmount
+TYPE=T_EQ_SCRIPT
+
+ON=@EQUIP
+target
+timer 10
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+
+ON=@TIMER
+remove
+return 1
+
+on=@targon_char
+if !(src.targ.ismypet)
+ src.sysmessage("Toto zvire neni tve.")
+elseif !(src.targ.srccombatLOS)||(src.targ.distance>6)
+ src.sysmessage("Nevidis na cil.")
+else
+
+  if (src.targ.id == c_llama_pack)
+    src.targ.tag(myid,c_llama)
+  elseif (src.targ.id == c_horse_pack)
+    src.targ.tag(myid,c_horse_tan)
+  elseif (src.targ.id == c_a_mustang_roan_pack)
+    src.targ.tag(myid,c_a_mustang_roan)
+  elseif (src.targ.id == c_a_mustang_wimmimate_pack)
+    src.targ.tag(myid,c_a_mustang_wimmimate)
+  elseif (src.targ.id == c_a_mustang_redroan_pack)
+    src.targ.tag(myid,c_a_mustang_redroan)
+  elseif (src.targ.id == c_a_mustang_pamamino_pack)
+    src.targ.tag(myid,c_a_mustang_pamamino)
+  elseif (src.targ.id == c_a_mustang_grey_pack)
+    src.targ.tag(myid,c_a_mustang_grey)
+  endif
+
+  if (src.targ.tag(myid))
+    src.targ.newnpc(<src.targ.tag(myid)>)
+  else
+    src.sysmessage("Toto zvire nema batozinu.")
+    return 1
+  endif
+ 
+ arg(mylastnewchar,<lastnewchar>)
+ mylastnewchar.name=<src.targ.name>
+ mylastnewchar.hits=<src.targ.hits>
+ mylastnewchar.food=<src.targ.food>		
+
+ if (src.targ.findlayer(21))
+   src.targ.findlayer(21).attr_newbie=0
+   src.targ.findlayer(21).attr_movenever=0
+   src.targ.findlayer(21).cont=<src>
+ endif
+
+ mylastnewchar.newmemory(<src>)
+ mylastnewchar.act.color = <mylastnewchar.act.COLOR>|memory_ipet
+ mylastnewchar.act.more1=04
+ mylastnewchar.act.MORE2=<SERV.TIME>
+ mylastnewchar.act.MOREP=<mylastnewchar.P>
+ mylastnewchar.act=<var(newmemoryact)>
+ src.targ.remove
+
+ src.newitem(i_saddle).bounce
+ 
+endif
+return 1
+
+
+
+[function jezdik]
+if (findlayer.layer_horse)
+ dclick
+else
+  arg(myJezdik,<finduid(<tag(lastjezdik)>)>)
+  if (npcExists(<arg(myJezdik)>))
+    if (myJezdik.distance > 2)
+      sysmessage("Zvire je prilis daleko.")
+    elseif !(myJezdik.srccanseelos)
+      sysmessage("Zvire neni v dohledu.")
+    elseif (myJezdik.ismypet)
+      myJezdik.f_osedlej_2
+    endif
+  else
+    sysMessage("Neni zvire, ktere by jsi <sex("mohl","mohla")> osedlat.")
+  endif
+endif
+
+[function f_osedlej_2]
+if (npcExists(<src.tag(lastjezdik)>))
+  arg(lastJezdik,<finduid(<src.tag(lastJezdik)>)>)
+  if (lastJezdik.body==c_llama_pack)
+    src.newitem(i_mt_llama_pack)
+  elseif (lastJezdik.body==c_horse_pack)
+    src.newitem(i_mt_horse_pack)
+  else
+    lastJezdik.dclick
+    return 1
+  endif
+  lastnew.tag(mount_pack_id,<lastJezdik.id>)
+  lastnew.more2=<lastJezdik>
+  lastnew.color=<lastJezdik.color>
+  lastnew.tag(mycolor,<lastJezdik.color>)//ne, neni to zbytecne ackoli to tak vypada
+  lastnew.tag(myfood,<lastJezdik.food>*86240)		//humus
+  lastnew.timer=<lastnew.tag(myfood)>						//humus
+  lastnew.tag(mycurentfood,<lastJezdik.food>)		//humus
+  lastnew.tag(myhits,<lastJezdik.hits>)
+  lastnew.name=<lastJezdik.name>
+  lastnew.tag(bagl,<lastJezdik.findlayer(21)>)
+  finduid(lastnew.tag(bagl)).cont=0400b065b
+  src.equip(lastnew)
+else
+  src.redMessage("Jezditko nenalezeno...")
+  src.accMsg("WARNING: Jezditko <lastJezdik> hrace (<src>,<src.name>) nebylo pri pokusu o osedlani nalezeno !")
+endif
+//finduid(<src.tag(lastjezdik)>).dclick
+//return 1
+
+[function osedlej]
+reveal
+stopscriptedskills
+skill -1
+if (<flag_dead>)
+ return 1
+endif
+newitemsafe(i_mount_target_timer)
+equip(lastnew)
+
+[itemdef i_mount_target_timer]
+ID=i_memory
+TYPE=t_eq_script
+name=mounter
+
+on=@equip
+dclick
+
+on=@userdclick
+timer=60
+target Na ktere zvire chces nasednout ?
+return 1
+
+on=@targon_item
+target
+return 1
+
+on=@targon_char
+if !(src.targ.ismypet)
+ src.sysmessage "Toto neni tve zvire."
+ remove
+ return 1
+elseif !(src.targ.srccombatLOS)||(src.targ.distance>6)
+ SRC.SYSMESSAGE "Nevidis cil."
+ remove
+ return 1
+else
+ src.dismount
+ if (src.targ.body==c_llama_pack)
+  src.newitem(i_mt_llama_pack)
+ elseif (src.targ.body==c_horse_pack)
+  src.newitem(i_mt_horse_pack)
+ else
+  src.targ.dclick
+  remove
+  return 1
+ endif
+ arg(mymemjezdik,<lastnew>)
+ mymemjezdik.tag(mount_pack_id,<src.targ.id>)
+ mymemjezdik.more2=<src.targ>
+ mymemjezdik.color=<src.targ.color>
+ mymemjezdik.tag(mycolor,<src.targ.color>)//ne, neni to zbytecne ackoli to tak vypada
+ mymemjezdik.tag(myhits,<src.targ.hits>)
+ mymemjezdik.name=<src.targ.name>
+ mymemjezdik.tag(bagl,<src.targ.findlayer(21)>)
+ mymemjezdik.tag(myfood,<src.targ.food>)
+ finduid(mymemjezdik.tag(bagl)).cont=0400b065b
+ src.equip(mymemjezdik)
+endif
+//cont.newitemsafe(i_hladovitko)
+//lastnew.tag(myfood,<src.targ.food>)     
+//lastnew.tag(myuid,<mymemjezdik>)
+//cont.equip(<lastnew>)
+//tag(fooduid,<lastnew>)
+remove
+return 1
+
+on=@timer
+remove
+return 1
+
+ 
+
+[function logoutdismount]
+if (findlayer(25))
+  arg(layerUID,<findlayer(25)>)
+  arg(layerName,<findlayer(25).name>)
+  dismount
+  arg(mylastnewchar,<lastnewchar>)
+  if (charExists(<arg(mylastnewchar)>))
+    if !(arg(mylastnewchar).isjezditko)	//Mozna zbytecna podminka, ale nevim proc jinak by hazel chyby flag_stone nez ze by tohle neexistovalo...
+      accmsg("ERROR: pri odlogu bylo zachyceno chybne uid v promenne lastnewchar (<lastnewchar>) hrace (<uid>, <uid.name>)")
+      return 1
+    endif
+    tag(last_logout_horse,<lastnewchar>)
+    mylastnewchar.flag_stone=1
+    arg(myx,<eval {4740 4770}>)
+    arg(myy,<eval {101 126}>)
+    mylastnewchar.go(<arg(myx)>,<arg(myy)>,0,10)
+    mylastnewchar.tag(logoutfood,<arg(mylastnewchar).food>)		
+    mylastnewchar.food=1000
+    if (mylastnewchar.findid(i_hladovitko))
+      mylastnewchar.consume(100 i_hladovitko)
+    endif
+  else
+    accmsg("ERROR: pri odlogu se nepodarilo odchytit dismountnute jezditko (memory:<layerUID>,<layerName>), hrace (<uid>, <uid.name>)")
+  endif
+endif
+if (strlen(<tag(last_logout_horse)>))
+  if (finduid(<tag(last_logout_horse)>))
+    if (charExists(<tag(last_logout_horse)>))
+      if !(finduid(<tag(last_logout_horse)>).flag_stone)
+        accmsg("WARNING: Jezditko <tag(last_logout_horse)> hrace <uid> nebylo pri logoutu spravne oznaceno!")
+        tag.remove.last_logout_horse
+      endif
+    else
+      accmsg("WARNING: Jezditko <tag(last_logout_horse)> hrace <uid> neni char ! (logout kontrola tagu)")
+    endif
+  endif
+endif
+
+[function loginmount]
+if (findid(i_hladovitko))
+  consume(100 i_hladovitko)
+endif
+if (strlen(<tag(last_logout_horse)>))
+  newitem(i_mounter)
+  act.equip
+endif
+
+[function f_loginmount]
+arg(logout_horse,<finduid(<tag(last_logout_horse)>)>)
+if (strlen(<arg(logout_horse)>))
+  if (arg(logout_horse).isjezditko)
+    finduid(<tag(last_logout_horse)>).flag_stone=0
+  else
+    accMsg("WARNING: tag last_logout_horse <tag(last_logout_horse)> hrace <uid> nebyl pri loginu jezditkem !")
+    return 1
+  endif
+else
+  accmsg("WARNING: Jezditko <tag(last_logout_horse)> hrace (<uid>,<uid.name>) nebylo pri loginu nalezeno !")
+  return 2
+endif
+if (strlen(<arg(logout_horse).tag(logoutfood)>))
+  arg(logout_horse).food=<arg(logout_horse).tag(logoutfood)>
+endif
+finduid(<tag(last_logout_horse)>).p=<p>
+if (strcmpi(<tag(last_logout_horse)>,<tag(lastJezdik)>))
+  accmsg("WARNING: Pri loginu byl zjisten rozpor mezi tagem lastjezdik a last_logout_horse u hrace (<uid>,<uid.name>)")
+endif
+f_osedlej_2
+tag.remove(last_logout_horse)
+return 0
+// finduid(<tag(last_logout_horse)>).dclick
+
+
+[itemdef i_mounter]
+id=i_memory
+type=t_eq_script
+name=resyncer - mounter
+
+on=@create
+timer=1
+
+on=@timer
+cont.resync
+cont.f_loginmount
+remove
+
+
+[itemdef i_vrazditko]
+id=i_memory
+layer=77
+type=t_src_changer
+name=vrazditko srcChanger
+
+on=@timer
+//var(attack_src,<link>)
+sector.allchars(sejmimne(<link>))
+remove 
+return 1
+
+[function f_mounts_removeMemoryes]
+consume(i_hladovitko)
+consume(i_summonmountremover)
+
+
+[function sejmimne]
+if (<uid>==<argv(0)>) || (isplayer)
+else
+  if (distancefrom(argv(0))<=8)
+   attack(<argv(0)>)
+  endif
+endif
+
+[function f_vg_mountDeny]	//funkce pro vargate zakazujici vstup do gate s jezditkem
+if (src.findid(t_eq_horse)) && !(src.isGM)
+  src.sysMessage("V sedle se sem nedostanes")
+  return 1
+else //(kun - 24887)
+  if (memoryfindtype(04FD4))
+    if (memoryfindtype(04FD4).link.ispet)	// zastavi peta aby neprosel, pokud je na follow - problem ve vice petech ! neumime foreach cykly ... debilni sphere
+      memoryfindtype(04FD4).link.action=065	//stop action
+    endif
+  endif
+endif
+return 0
+
+
+[function magic_horse]
+if (<tag(hop)>)
+elseif (<strlen(<src.tag(magic_horse)>)>)
+ tag(hop,1)
+ <src.tag(magic_horse)>_mif
+ mif_finishitem
+endif
+
+[function roan_mif]
+tag(imi_value[101], 3)  //demoni
+tag(imi_value[102], 3)  //draci
+tag(imi_value[103], 3)  //humanoidi
+
+[function wimmimate_mif]
+tag(imi_value[101], 7)  //demoni
+tag(imi_value[102], 7)  //draci
+tag(imi_value[103], 7)  //humanoidi
+
+[function red_roan_mif]
+tag(imi_value[101], 9)  //demoni
+tag(imi_value[102], 9)  //draci
+tag(imi_value[103], 9)  //humanoidi
+
+[function chocolate_mif]
+tag(imi_value[101], 11)  //demoni
+tag(imi_value[102], 11)  //draci
+tag(imi_value[103], 11)  //humanoidi
+
+[function pamamino_mif]
+tag(imi_value[101], 13)  //demoni
+tag(imi_value[102], 13)  //draci
+tag(imi_value[103], 13)  //humanoidi
+
+[function zostrich_mif]
+tag(imi_value[101], 10)  //demoni
+tag(imi_value[102], 10)  //draci
+tag(imi_value[103], 10)  //humanoidi
+tag(imi_value[134], 5)  //blok z blizka
+
+[function sky_mif]
+tag(imi_value[101], 15)  //demoni
+tag(imi_value[102], 15)  //draci
+tag(imi_value[103], 15)  //humanoidi
+
+[function grey_mif]
+tag(imi_value[101], 17)  //demoni
+tag(imi_value[102], 17)  //draci
+tag(imi_value[103], 17)  //humanoidi
+
+
+[function sky_grey_mif]
+tag(imi_value[101], 19)  //demoni
+tag(imi_value[102], 19)  //draci
+tag(imi_value[103], 19)  //humanoidi
+
+[function crimson_mif]
+tag(imi_value[101], 25)  //demoni
+tag(imi_value[102], 25) //draci
+tag(imi_value[103], 25)  //humanoidi
+
+[function black_mif]
+tag(imi_value[101], 20)  //demoni
+tag(imi_value[102], 20)  //draci
+tag(imi_value[103], 20)  //humanoidi
+//tag(imi_value[135], 10) //blok z dalky
+tag(imi_value[21], 5)   //hiding
+tag(imi_value[47], 10)   //stealth
+
+[function polar_bear_mif]
+                    
+[function zostrich_green_mif]
+tag(imi_value[101], 20) //demoni
+tag(imi_value[102], 20) //draci
+tag(imi_value[103], 20) //humanoidi
+tag(imi_value[134], 8)  //blok z blizka
+tag(imi_value[135], 8)  //blok z dalky
+//tag(imi_value[136], 5)  //blok kouzel
+
+[function zostrich_red_mif]
+tag(imi_value[101], 25) //demoni
+tag(imi_value[102], 25) //draci
+tag(imi_value[103], 25) //humanoidi
+tag(imi_value[134], 10)  //blok z blizka
+tag(imi_value[135], 10)  //blok z dalky
+//tag(imi_value[136], 5)  //blok kouzel
+
+[function zostrich_send_mif]
+tag(imi_value[101], 25) //demoni
+tag(imi_value[102], 25) //draci
+tag(imi_value[103], 25) //humanoidi
+tag(imi_value[134], 10)  //blok z blizka
+tag(imi_value[135], 10)  //blok z dalky
+//tag(imi_value[136], 5)  //blok kouzel
+
+[function zostrich_brown_mif]
+tag(imi_value[101], 25) //demoni
+tag(imi_value[102], 25) //draci
+tag(imi_value[103], 25) //humanoidi
+tag(imi_value[134], 10)  //blok z blizka
+tag(imi_value[135], 10)  //blok z dalky
+//tag(imi_value[136], 5)  //blok kouzel
+
+[function ridgeback_mif]
+tag(imi_value[101], 10)  //demoni
+tag(imi_value[102], 10)  //draci
+tag(imi_value[103], 10)  //humanoidi
+tag(imi_value[134], 2)  //blok z blizka
+tag(imi_value[135], 4)  //blok z dalky
+
+[function ridgeback_savage_mif]
+tag(imi_value[101], 10)  //demoni
+tag(imi_value[102], 10)  //draci
+tag(imi_value[103], 10)  //humanoidi
+tag(imi_value[134], 3)  //blok z blizka
+tag(imi_value[135], 8)  //blok z dalky

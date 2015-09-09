@@ -1,0 +1,8988 @@
+////////////////// vzor sriptu uzemi a jeho vyklad - co je na co ///////////////
+//[AREA cave]                 /// nazev lokace, urci nazev runy - "cave", .kde (Jsem v "cave" + souradnice)
+//CLASS=13                    /// tak tohle nevim a zajimalo by me, to co to definuje 
+//TITLE=JESKYNE               /// jmeno regionu - nevim kde se ukaze (TITLE REGION)
+//FLAGS=080                   /// flag uzemi
+//RECT=2373,900,2395,928      /// vyznaceni uzemi odbelnikem 2373,900 (levy horni roh) 2395,928 (pravy dolni)
+//RECT=2391,903,2409,919      /// uzemi se muze skladat z vice obdelniku - i pres sebe presahujicich    
+//GUARDOWNER=GUARDS TITLE     /// Podle me to je nazev spravce strazi lokality - treba straz Lorda Britishe (GUARD OWNER TITLE)
+////RAINCHANCE 80             /// procento pravdeppdobnosti deste a vetru (vubec nemusi byt, potom to bere % z server.ini)
+//COLDCHANCE 50               /lastnewnpc.tag(experience,<src.tag(experience)>)// procento pravdepodobnosti snezeni (vubec nemusi byt, potom to bere % z server.ini)
+//P=2367,942                  /// teleportacni bod pro GM a prikaz .xgo (TELEPORT POINT)
+//GROUP=Mines & Caves         /// nazev skupiny, pod kterou se zobrazuji v Axisu (Axis specifikation)
+//EVENTS=r_hobitin            /// udalost
+
+
+
+///////////////////////// Definice cel‚ mapy - z kladn¡ lokace NEMAZAT !!!!! /////////
+
+[AREA Stredozeme] // %SERVNAME% = doplni nazev podle win.ini (pokud bude nazev serveru Moria, budou vsechna mista, ktera nejsou definovana jinym skriptem, mit jmeno "Moria" pri marku runy a prikazu .where.
+CLASS=11
+RECT=1,1,6143,4096
+P=1323,1624,55,255
+DEFNAME=a_world
+GROUP=ALLMAP
+tag.realm=3
+resources=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=25
+COLDCHANCE=20
+
+//[AREA neznama oblast]
+//CLASS=11
+//RECT=0,0,6144,4096
+//P=11,11,-55,2
+//DEFNAME=a_world_b
+//GROUP=ALLMAP
+//resources=r_default_rock, r_default_water, r_default_tree, //r_default_grass
+//FLAGS=02
+
+[AREA Mordorske uzemi]// Tohle ma asi Tar nejak vymysleny dynamicky, radi na to nebudu sahat :)
+GROUP=Mordorske uzemi
+P=3848, 2312
+Rect=2300,3612,3264,4096
+Rect=2503,1886,2511,1950
+Rect=2510,1868,2519,1955
+Rect=2516,885,2525,940
+Rect=2517,1851,2527,1974
+Rect=2523,858,2558,953
+Rect=2526,1839,2538,1992
+Rect=2528,3512,3140,3656
+Rect=2529,845,2655,865
+Rect=2534,950,2557,1020
+Rect=2537,1830,2544,2000
+Rect=2539,1826,2548,2003
+Rect=2541,837,2551,846
+Rect=2545,1809,2643,2025
+Rect=2546,1015,2558,1053
+Rect=2548,3498,2624,3525
+Rect=2552,831,2629,849
+Rect=2554,864,2666,1102
+Rect=2557,821,2587,835
+Rect=2559,1778,2604,1810
+Rect=2564,1098,2650,1166
+Rect=2565,1767,2604,1779
+Rect=2570,1160,2668,1188
+Rect=2571,1754,2603,1767
+Rect=2572,3472,2628,3504
+Rect=2582,1186,2650,1218
+Rect=2582,1741,2604,1754
+Rect=2583,2022,2644,2045
+Rect=2590,3452,2626,3474
+Rect=2591,1216,2649,1254
+Rect=2592,1729,2603,1741
+Rect=2603,1723,2642,1811
+Rect=2605,1250,2643,1278
+Rect=2606,1715,2616,1725
+Rect=2608,3432,2626,3452
+Rect=2610,2040,2642,2060
+Rect=2614,1706,2626,1726
+Rect=2616,3405,2854,3533
+Rect=2620,1275,2641,1303
+Rect=2624,1690,2639,1726
+Rect=2628,1299,2643,1332
+Rect=2629,1525,2642,1692
+Rect=2632,3394,2644,3407
+Rect=2636,1256,2878,1544
+Rect=2643,3368,2679,3406
+Rect=2648,1528,3184,2080
+Rect=2646,998,2876,1258
+Rect=2661,871,2692,998
+Rect=2664,2134,2676,2168
+Rect=2670,2122,2700,2178
+Rect=2675,3351,2738,3406
+Rect=2680,2062,3102,2168
+Rect=2687,889,2699,897
+Rect=2687,923,2735,961
+Rect=2687,960,2788,999
+Rect=2689,895,2710,925
+Rect=2706,908,2720,923
+Rect=2733,938,2760,961
+Rect=2735,3340,2773,3412
+Rect=2736,3340,2814,3405
+Rect=2743,2228,2761,2266
+Rect=2755,2407,2766,2492
+Rect=2756,953,2765,962
+Rect=2759,2206,2771,2275
+Rect=2763,2375,2776,2520
+Rect=2768,3369,2818,3411
+Rect=2770,2164,3100,2286
+Rect=2772,3356,2806,3371
+Rect=2775,2284,2781,2526
+Rect=2780,2282,3100,2618
+Rect=2786,977,2809,998
+Rect=2795,2616,2865,2641
+Rect=2806,989,2824,1000
+Rect=2808,2638,2865,2664
+Rect=2817,3380,2832,3397
+Rect=2817,3396,2854,3409
+Rect=2824,2661,2864,2703
+Rect=2842,2698,2865,2726
+Rect=2851,3407,3110,3516
+Rect=2855,1031,3155,1418
+Rect=2862,2616,3102,2758
+Rect=2868,1010,2914,1034
+Rect=2872,1416,3200,1540
+Rect=2874,1032,2896,1176
+Rect=2893,1029,2937,1053
+Rect=2894,1052,2907,1100
+Rect=2907,1053,2924,1067
+Rect=2910,1020,2932,1034
+Rect=2926,2752,3097,2780
+Rect=2997,2777,3042,2796
+Rect=3028,2792,3042,2814
+Rect=3098,2777,3105,3029
+Rect=3105,1912,4672,4096
+Rect=3136,1156,3162,1194
+Rect=3142,1184,3164,1256
+Rect=3150,1244,3203,1420
+Rect=3162,1212,3174,1256
+Rect=3172,1228,3188,1256
+Rect=3172,1440,3548,1920
+Rect=3186,1284,3232,1312
+Rect=3190,1268,3210,1288
+Rect=3192,1310,3276,1448
+Rect=3276,1326,3298,1446
+Rect=3296,1344,3307,1354
+Rect=3297,1354,3323,1391
+Rect=3297,1391,3340,1441
+Rect=3340,1404,3372,1446
+Rect=3368,1418,3406,1448
+Rect=3468,1428,3536,1454
+Rect=3540,1448,3636,1924
+Rect=3632,1460,3684,1920
+Rect=3676,1476,3736,1654
+Rect=3682,1644,3762,1922
+Rect=3706,1480,3744,1552
+Rect=3734,1544,3762,1650
+Rect=3762,1646,3794,1918
+Rect=3794,1674,4090,1916
+Rect=3974,1662,4028,1684
+Rect=4064,1794,4300,1972
+Rect=4082,1688,4096,1842
+Rect=4094,1704,4118,1836
+Rect=4114,1738,4132,1812
+Rect=4652,3731,4774,4095
+Rect=4664,2312,5072,3752
+Rect=4665,2268,4789,2322
+Rect=4759,3744,4880,3831
+Rect=4236,1062,4658,1708
+Rect=4133,1690,4658,1924
+FLAGS=00000
+tag.realm=2
+EVENTS=r_mordor
+RESOURCES=r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=10  
+COLDCHANCE=02  
+
+
+[AREA Gondorske uzemi]//dtto
+GROUP=Gondorske uzemi
+P=1520, 1704
+Rect=1,606,1984,2328
+Rect=80,964,152,1300
+Rect=384,390,1096,664
+Rect=1047,2318,1198,2390
+Rect=1072,408,1400,712
+Rect=1108,2492,1748,3328
+Rect=1248,2304,1968,2512
+Rect=1384,520,1656,800
+Rect=1640,528,1888,784
+Rect=1740,2492,2040,3164
+Rect=1936,2328,2624,2784
+Rect=1976,892,2412,1608
+Rect=1980,1580,2496,2336
+Rect=1982,672,2243,912
+Rect=2016,2776,2376,3080
+Rect=2031,3095,2051,3108
+Rect=2034,3089,2071,3101
+Rect=2038,3105,2051,3121
+Rect=2041,3067,2148,3093
+Rect=2045,3094,2062,3113
+Rect=2068,3087,2086,3102
+Rect=2130,3082,2160,3108
+Rect=2146,3074,2384,3344
+Rect=2246,3340,2372,3354
+Rect=2250,3350,2368,3456
+Rect=2366,2782,2450,3302
+Rect=2376,1284,2616,1546
+Rect=2382,3316,2390,3324
+Rect=2384,3302,2430,3317
+Rect=2400,1152,2504,1313//
+Rect=2409,1545,2619,1580
+Rect=2421,3315,2433,3323
+Rect=2429,3293,2442,3321
+Rect=2440,3080,2460,3276
+Rect=2442,3288,2447,3311
+Rect=2444,3286,2455,3293
+Rect=2444,3292,2451,3301
+Rect=2446,3275,2480,3289
+Rect=2448,2808,2472,3128
+Rect=2454,2702,2660,3178
+Rect=2456,1028,2478,1079//
+Rect=2456,3150,2531,3279
+Rect=2464,2628,2660,3140
+Rect=2469,1517,2566,1539
+Rect=2473,1037,2493,1074//
+Rect=2478,1071,2542,1180//
+Rect=2488,1171,2563,1294//
+Rect=2490,1049,2508,1076//
+Rect=2492,1579,2620,1652
+Rect=2493,1647,2617,1689
+Rect=2493,1708,2594,1723
+Rect=2495,1959,2510,2067
+Rect=2496,2072,2626,2339
+Rect=2497,1687,2612,1700
+Rect=2497,1699,2600,1710
+Rect=2497,1731,2573,1743
+Rect=2497,1741,2565,1754
+Rect=2497,1751,2553,1789
+Rect=2498,1722,2583,1733
+Rect=2499,1787,2544,1801
+Rect=2500,1801,2538,1816
+Rect=2500,1816,2525,1831
+Rect=2500,1831,2523,1843
+Rect=2500,1843,2509,1857
+Rect=2500,1857,2506,1874
+Rect=2502,3306,2550,3331
+Rect=2503,1060,2517,1075//
+Rect=2506,1976,2518,2063
+Rect=2506,3274,2538,3330
+Rect=2516,2012,2540,2036
+Rect=2516,2032,2554,2078
+Rect=2530,3092,2800,3322
+Rect=2537,1107,2556,1181//
+Rect=2550,2044,2578,2072
+Rect=2559,1191,2572,1290//
+Rect=2570,1215,2580,1290//
+Rect=2574,2056,2596,2074
+Rect=2576,1237,2588,1285//
+Rect=2584,1255,2597,1290//
+Rect=2611,1318,2620,1530//
+Rect=2615,1347,2632,1519//
+Rect=2618,2146,2656,2718
+Rect=2626,2074,2644,2140
+Rect=2642,2078,2656,2134
+Rect=2646,3314,2764,3332
+Rect=2648,2836,2872,3108
+Rect=2650,2732,2668,2850
+Rect=2656,2088,2670,2114
+Rect=2656,2180,2670,2706
+Rect=2664,2738,2842,2872
+Rect=2668,2184,2704,2700
+Rect=2668,3328,2712,3344
+Rect=2694,2296,2748,2514
+Rect=2694,2570,2770,2654
+Rect=2696,2650,2742,2684
+Rect=2704,2186,2726,2300
+Rect=2716,2286,2756,2370
+Rect=2718,2646,2756,2668
+Rect=2724,2276,2744,2290
+Rect=2734,2512,2756,2574
+Rect=2752,2290,2764,2304
+Rect=2754,2300,2770,2348
+Rect=2768,2926,2858,3096
+Rect=2794,3088,2856,3286
+Rect=2798,3280,2850,3300
+Rect=2798,3294,2833,3310
+Rect=2838,2762,2872,2856
+Rect=2854,2952,2894,3282
+Rect=2870,2770,2896,2824
+Rect=2870,2824,3014,2978
+Rect=2887,3241,2921,3278
+Rect=2892,2978,2992,3130
+Rect=2892,3162,2974,3192
+Rect=2892,3190,2952,3220
+Rect=2892,3258,2904,3272
+Rect=2894,2778,2924,2824
+Rect=2894,3130,2984,3162
+Rect=2894,3220,2934,3242
+Rect=2894,3240,2918,3260
+Rect=2920,2788,2948,2824
+Rect=2946,2789,3003,2841
+Rect=2946,2800,2966,2826
+Rect=2961,2794,3001,2826
+Rect=2992,2978,3006,2994
+Rect=3002,2798,3016,2855
+Rect=3010,2853,3021,2915
+Rect=3015,2803,3022,2855
+Rect=3021,2810,3029,2848
+RECT=2706,2171,2752,2221
+RECT=2683,2495,2743,2582
+RAINCHANCE=20  
+coldchance=20  
+FLAGS=00000
+tag.realm=1
+tag.elven=2065,1377//smazat jakmile dodelam battlefield 3
+EVENTS=r_gondor
+RESOURCES=r_default_water, r_default_tree, r_default_grass, r_default_rock
+
+
+//////////special areas
+
+[AREA test]//na testy
+P=5615,801,0,100
+RECT=5512,784,5632,840
+mapplane=100
+GROUP=a test
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+[AREA marek]//na testy s vice mistem
+P=5636,1175,10,100
+RECT=5611,1156,5653,1197
+mapplane=100
+GROUP=a test
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+
+
+[AREA PlanSto] //testovaci mapplan 100
+P=2000,2000,0,110
+RECT=1,1,5096,4000
+mapplane=100
+GROUP=a test
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+[AREA London] //testovaci mesto v mapplanu 100
+P=2312,2515,0,100
+RECT=2199,2459,2376,2619
+mapplane=100
+GROUP=a test
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=London
+EVENTS=r_edoras
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Jail]//novy 
+CLASS=51
+FLAGS=06d9f
+P=5615,801,0,250
+mapplane=250
+RECT=5512,784,5632,840
+GROUP=a Jails
+TAG.GUARDOWNER=Zalarnik serverovy
+tag.nobank=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+[AREA klec] // klec v minas morgul
+CLASS=51
+FLAGS=06d9f
+P=3256,2916,5
+RECT=3255,2914,3258,2918//klec v morgulu
+GROUP=a Jails
+tag.nobank=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+
+[AREA Lagr]
+CLASS=51
+FLAGS=06d9f
+P=432,1212,0,1
+RECT=272,910,600,1366
+GROUP=a Jails
+TAG.GUARDOWNER=Strazce pracovniho tabora
+mapplane=1
+events=r_lagr
+resources=r_default_rock, r_default_water, r_lagr_tree
+tag.nobank=1
+RAINCHANCE=80  
+coldchance=20
+
+
+
+
+[AREA zivejregion]//novy vypravecuv navrh
+P=2281,2586,80,10
+RECT=2281,2586,2306,2601
+GROUP=a special
+FLAGS=00180
+tag.nobank=1
+tag.nomask=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+
+
+[AREA Start realmu]//novy vypravecuv navrh
+P=4764,1362,10,10
+RECT=4785,1366,4742,1341
+MAPPLANE=10
+GROUP=a special
+//FLAGS=00180
+FLAGS=00812
+tag.realm=4
+tag.nobank=1
+tag.nomask=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+[AREA Start room]//novy vypravecuv navrh
+P=4764,1362,10
+RECT=4785,1366,4742,1341
+GROUP=a special
+FLAGS=00180
+tag.nobank=1
+tag.nomask=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+
+[AREA Start rasy]
+CLASS=39
+GROUP=a special
+P=4753,118
+RECT=4738,99,4771,127
+FLAGS=00180
+tag.nobank=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+                     
+[AREA Start povolani]//asi zrusit
+CLASS=39
+FLAGS=0180
+P=5927,110
+RECT=5914,93,5940,113
+GROUP=a special
+tag.nobank=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+[AREA Prevodni zona]//asi k nicemu. Leda pro ruseni maiar atd ...
+P=5991, 138
+RECT=5981,120,6007,154
+FLAGS=03197
+GROUP=a special
+tag.nobank=1
+RAINCHANCE=00  
+COLDCHANCE=00  
+
+/////////////////////////// hlavni oblasti //////////////////////////////////
+
+
+//battlefield 3 gondor chybi mi kosatcova pole, Loriensky les, eregion a rhudaur.
+
+//[AREA Kosatcova pole]//nedodelek // a nedodelky zalomitkovavat ... pozn Yavanna...
+//GROUP=battlefiel 3
+//P=2400,1679
+//Rect=
+//FLAGS=00000
+//tag.realm=1
+//tag.bf=3
+//resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+//RAINCHANCE=20
+//COLDCHANCE=05
+
+
+
+[AREA Severni vrchy]//nedodelek
+GROUP=battlefiel 3
+P=1731,1008,10
+Rect=1675,940,2042,1160
+Rect=1366,940,2164,1060
+Rect=1367,1058,1497,1124
+FLAGS=00000
+tag.realm=1
+//tag.bf=3
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=15
+
+[AREA Vetrovske vrchy]//nedodelek
+GROUP=battlefiel 3
+P=1720,1504
+Rect=1675,1160,1985,1350
+FLAGS=00000
+tag.realm=1
+//tag.bf=3
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=15
+
+[AREA Jizni vrchy]//nedodelek
+GROUP=battlefiel 3
+P=1720,1304
+Rect=1495,1350,1721,1785
+FLAGS=00000
+tag.realm=1
+//tag.bf=3
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=15
+
+[AREA Obroviste]//nedodelek
+GROUP=battlefiel 3
+P=2277,1098
+Rect=2164,913,2340,1079
+Rect=2255,1079,2340,1200
+FLAGS=00000
+tag.realm=1
+//tag.bf=3
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=15
+
+
+[AREA Angmar]
+GROUP=battlefiel 3
+P=2112,801
+Rect=1597,528,1888,784
+Rect=1597,672,2243,912
+Rect=1597,910,2110,940
+FLAGS=00000
+tag.realm=1
+//tag.bf=3
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=15
+
+[AREA Pravy breh Anduiny]
+GROUP=battlefiel 3
+P=2596,1473
+Rect=2419,1455,2492,1519//
+Rect=2456,1028,2478,1079
+Rect=2473,1037,2493,1074
+Rect=2478,1071,2542,1180
+Rect=2489,1171,2563,1294
+Rect=2489,1284,2616,1519//
+Rect=2490,1049,2508,1076
+Rect=2503,1060,2517,1075
+Rect=2537,1107,2556,1181
+Rect=2559,1191,2572,1290
+Rect=2570,1215,2580,1290
+Rect=2576,1237,2588,1285
+Rect=2584,1255,2597,1290
+Rect=2589,1495,2620,1530
+Rect=2611,1318,2620,1530
+Rect=2615,1347,2632,1519
+FLAGS=00000
+tag.realm=1
+//tag.bf=3
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=10
+
+//battlefield 3 mordor
+
+[Area Rhovanion]
+P=2900,1900
+Rect=2557,821,2587,831
+Rect=2552,831,2629,837
+Rect=2541,837,2551,845
+Rect=2552,837,2629,845
+Rect=2529,845,2655,858
+Rect=2523,858,2655,864
+Rect=2523,864,2666,871
+Rect=2523,871,2692,885
+Rect=2516,885,2692,889
+Rect=2516,889,2699,895
+Rect=2516,895,2710,908
+Rect=2516,908,2720,923
+Rect=2516,923,2735,938
+Rect=2516,938,2760,940
+Rect=2523,940,2760,953
+Rect=2534,953,2765,960
+Rect=2534,960,2788,977
+Rect=2534,977,2809,989
+Rect=2534,989,2824,998
+Rect=2534,998,2876,1010
+Rect=2534,1010,2914,1020
+Rect=2546,1020,2932,1029
+Rect=2546,1029,2937,1031
+Rect=2546,1031,3155,1053
+Rect=2554,1053,3155,1102
+Rect=2564,1102,3155,1156
+Rect=2564,1156,3162,1166
+Rect=2570,1166,3162,1184
+Rect=2570,1184,3164,1188
+Rect=2582,1188,3164,1212
+Rect=2582,1212,3174,1218
+Rect=2591,1218,3174,1228
+Rect=2591,1228,3188,1244
+Rect=2591,1244,3203,1254
+Rect=2605,1254,2643,1256
+Rect=2646,1254,3203,1256
+Rect=2605,1256,3203,1268
+Rect=2605,1268,3210,1278
+Rect=2620,1278,3210,1284
+Rect=2620,1284,3232,1303
+Rect=2628,1303,3232,1310
+Rect=2628,1310,3276,1326
+Rect=2628,1326,3298,1332
+Rect=2636,1332,3298,1344
+Rect=2636,1344,3307,1354
+Rect=2636,1354,3323,1391
+Rect=2636,1391,3340,1404
+Rect=2636,1404,3372,1418
+Rect=2636,1418,3406,1428
+Rect=2636,1428,3406,1440
+Rect=3468,1428,3536,1440
+Rect=2636,1440,3548,1448
+Rect=2636,1448,3636,1460
+Rect=2636,1460,3684,1476
+Rect=2636,1476,3736,1480
+Rect=2636,1480,3744,1525
+Rect=2629,1525,3744,1544
+Rect=2629,1544,3762,1646
+Rect=2629,1646,3794,1662
+Rect=2629,1662,3794,1674
+Rect=3974,1662,4028,1674
+Rect=2629,1674,4090,1688
+Rect=2629,1688,4096,1690
+Rect=2624,1690,4096,1704
+Rect=2624,1704,4118,1706
+Rect=2614,1706,4118,1715
+Rect=2606,1715,4118,1723
+Rect=2603,1723,4118,1729
+Rect=2592,1729,4118,1738
+Rect=2592,1656,4132,1741
+Rect=2582,1741,4132,1754
+Rect=2571,1754,4132,1767
+Rect=2565,1767,4132,1778
+Rect=2559,1778,4130,1809
+Rect=2545,1809,4130,1826
+Rect=2539,1826,4130,1830
+Rect=2537,1830,4130,1839
+Rect=2526,1839,4130,1851
+Rect=2517,1851,4130,1868
+Rect=2510,1868,4130,1886
+Rect=2503,1886,4130,1912
+Rect=2503,1912,2538,1950
+Rect=2539,1912,2548,1950
+Rect=2635,1912,3184,1950
+Rect=2510,1950,2538,1955
+Rect=2539,1950,2548,1955
+Rect=2635,1950,3184,1955
+Rect=2517,1955,2538,1974
+Rect=2539,1955,2548,1974
+Rect=2635,1955,3184,1974
+Rect=2526,1974,2538,1992
+Rect=2539,1974,2548,1992
+Rect=2635,1974,3184,1992
+Rect=2539,1992,2548,2003
+Rect=2635,1992,3184,2003
+Rect=2635,2003,3184,2062
+Rect=2648,2062,3184,2080
+Rect=2770,2164,3100,2286
+Rect=2680,2062,3102,2168
+RECT=2774,2270,3097,2406
+Rect=2759,2206,2771,2275
+Rect=2743,2228,2761,2266
+GROUP=battlefiel -3
+FLAGS=00000
+tag.realm=2
+//tag.bf=-3
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=5
+
+[Area Temny hvozd]
+P=2901,1901
+Rect=2529,845,2655,858
+Rect=2523,858,2655,864
+Rect=2523,864,2666,871
+Rect=2523,871,2692,885
+Rect=2516,885,2692,889
+Rect=2516,889,2699,895
+Rect=2516,895,2710,908
+Rect=2516,908,2720,923
+Rect=2516,923,2735,938
+Rect=2516,938,2760,940
+Rect=2523,940,2760,953
+Rect=2534,953,2765,960
+Rect=2534,960,2788,977
+Rect=2534,977,2809,989
+Rect=2534,989,2824,998
+Rect=2534,998,2876,1010
+Rect=2534,1010,2914,1020
+Rect=2546,1020,2932,1029
+Rect=2546,1029,2937,1053
+Rect=2855,1031,3155,1418
+Rect=2554,1053,2924,1067
+Rect=2554,1067,2907,1100
+Rect=2554,1100,2896,1102
+Rect=2564,1102,2896,1156
+Rect=2564,1156,2896,1166
+Rect=3136,1156,3162,1166
+Rect=2570,1166,2896,1176
+Rect=3136,1166,3162,1176
+Rect=2570,1176,2876,1184
+Rect=3136,1176,3162,1184
+Rect=2570,1184,2876,1188
+Rect=3136,1184,3164,1188
+Rect=2582,1188,2876,1194
+Rect=3136,1188,3164,1194
+Rect=2582,1194,2876,1212
+Rect=3142,1194,3164,1212
+Rect=2582,1212,2876,1218
+Rect=3142,1212,3174,1218
+Rect=2591,1218,2876,1228
+Rect=3142,1218,3174,1228
+Rect=2591,1228,2876,1254
+Rect=3142,1228,3188,1254
+Rect=3150,1244,3203,1420
+Rect=2605,1254,2643,1256
+Rect=2646,1254,2876,1256
+Rect=3142,1254,3188,1256
+Rect=2605,1256,2878,1268
+Rect=2605,1268,2878,1278
+Rect=3190,1268,3210,1278
+Rect=2620,1278,2878,1284
+Rect=3190,1278,3210,1284
+Rect=2620,1284,2878,1303
+Rect=3186,1284,3232,1303
+Rect=2628,1303,2878,1310
+Rect=3186,1303,3232,1310
+Rect=2628,1310,2878,1312
+Rect=3186,1310,3232,1312
+Rect=2628,1312,2878,1326
+Rect=3192,1312,3232,1326
+Rect=2628,1326,2878,1332
+Rect=3192,1326,3240,1336
+Rect=2636,1332,2878,1344
+Rect=3192,1328,3256,1344
+Rect=2636,1344,2878,1354
+Rect=3192,1344,3272,1354
+Rect=2636,1354,2878,1391
+Rect=3192,1354,3272,1391
+Rect=2636,1391,2878,1404
+Rect=3192,1384,3272,1404
+Rect=2636,1404,2878,1416
+Rect=3192,1400,3264,1416
+Rect=2636,1408,3256,1416
+Rect=2636,1418,3217,1428
+Rect=2636,1428,3216,1440
+Rect=2660,1434,3217,1472
+Rect=2686,1466,3200,1505
+Rect=2692,1497,3208,1516
+Rect=2698,1508,3208,1528
+Rect=2705,1527,3217,1594
+Rect=2723,1589,3210,1637
+RECT=2759,1629,3180,1925
+RECT=2796,1905,3068,2052
+RECT=2711,1769,2806,2014
+RECT=2651,1853,2782,1913
+RECT=3165,1725,3237,1840
+RECT=2662,1903,2713,1950
+RECT=3061,1920,3158,1988
+RECT=3174,1834,3217,1895
+GROUP=battlefiel -3
+FLAGS=00000
+tag.elven=2958,1857
+tag.realm=2
+//tag.bf=-3
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=5
+
+[Area Srdce lesa]//oblast vyloucena z bf3 kvuli priotmnosti kralovstvi lesnich elfu
+P=3050,1200
+Rect=2855,1031,3155,1418
+tag.realm=1
+resources=r_default_rock, r_default_water, r_default_tree, r_default_grass
+GROUP="Gondorske uzemi"
+RAINCHANCE=25
+COLDCHANCE=5
+
+//battlefield 2 mordor
+
+[Area Gorgoroth]
+P=3263,2621
+Rect=3128,2546,3432,2712
+Rect=3140,2513,3424,2564
+Rect=3173,2454,3266,2550
+Rect=3116,2681,3137,2750
+Rect=3118,2687,3388,2824
+Rect=3370,2763,3397,2795
+Rect=3376,2716,3406,2740
+Rect=3110,2821,3398,2924
+Rect=3376,2799,3394,2818
+Rect=3129,2912,3400,3018
+Rect=3388,2872,3423,2926
+Rect=3417,2898,3441,2919
+Rect=3394,2854,3408,2875
+Rect=3392,2846,3402,2859
+Rect=3402,2860,3414,2874
+Rect=3410,2863,3416,2874
+Rect=3414,2866,3419,2874
+Rect=3420,2882,3430,2901
+Rect=3419,2875,3425,2883
+Rect=3426,2889,3434,2900
+Rect=3431,2894,3436,2901
+Rect=3438,2901,3444,2916
+Rect=3419,2916,3435,2922
+Rect=3413,2920,3430,2924
+GROUP=battlefiel -2
+FLAGS=00000
+tag.realm=2
+//tag.bf=-2
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=5
+
+
+[Area Gorgoroth cesta k vychodnimu brehu]	//prechod
+P=6131,3885,-80
+RECT=3112,2940,3136,2955
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Minas Morgul]
+GROUP=battlefiel -2
+P=3249,2933
+RECT=3176,2952,3224,3000
+CLASS=48
+FLAGS=0000 
+tag.realm=2
+//tag.bf=-2
+EVENTS=r_minas_morgul
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+//battlefield 2 gondor
+
+[AREA Vychodni Marka]
+GROUP=battlefiel 2
+P=2720,2189
+Rect=2696,2650,2742,2684
+RECT=2470,2590,2551,2626
+RECT=2487,2617,2550,2641
+RECT=2502,2632,2551,2666
+Rect=2694,2570,2770,2654
+Rect=2718,2646,2756,2668
+RECT=2683,2495,2743,2582
+Rect=2704,2186,2726,2300
+Rect=2694,2296,2748,2514
+Rect=2668,2184,2704,2700
+Rect=2724,2276,2744,2290
+Rect=2734,2512,2756,2574
+Rect=2656,2180,2670,2706
+Rect=2618,2146,2656,2718
+Rect=2754,2300,2770,2348
+Rect=2752,2290,2764,2304
+RECT=2706,2171,2752,2221
+RECT=2543,2130,2622,2685
+RECT=2462,2338,2600,2600
+FLAGS=00000
+tag.realm=1
+//tag.bf=2
+resources=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20
+COLDCHANCE=5
+
+
+[AREA Anorien]
+GROUP=battlefiel 2
+P=2736,2796
+RECT=2486,2690,2552,2776
+RECT=2516,2763,2541,2783
+RECT=2533,2717,2623,2788
+RECT=2548,2695,2564,2723
+RECT=2552,2784,2602,2799
+RECT=2561,2702,2600,2720
+RECT=2601,2788,2639,2812
+RECT=2638,2787,2697,2814
+RECT=2651,2813,2695,2824
+RECT=2694,2772,2858,2842
+RECT=2767,2834,2859,2850
+RECT=2937,2856,3020,2913
+RECT=2956,2911,3003,2930
+RECT=2958,2925,2992,2969
+RECT=2618,2741,2781,2802
+RECT=2620,2722,2659,2743
+RECT=2385,2697,2510,2777
+RECT=2856,2781,2913,2877
+RECT=2907,2791,2975,2900
+RECT=2657,2734,2667,2742
+RECT=2777,2746,2806,2777
+RECT=2806,2756,2840,2775
+RECT=2837,2765,2871,2783
+RECT=2869,2772,2895,2783
+RECT=2909,2784,2924,2793
+RECT=2968,2841,2993,2858
+RECT=2968,2830,2984,2844
+RECT=2986,2847,3004,2858
+FLAGS=00000
+tag.realm=1
+//tag.bf=2
+EVENTS=r_gondor
+RESOURCES=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20  
+COLDCHANCE=05  
+
+//battlefield 1 mordor
+
+[AREA Jizni Ithilien]
+GROUP=battlefiel -1
+P=3052,3150
+Rect=2808,3318,2965,3363
+Rect=2815,3361,2837,3368
+Rect=2821,3365,2835,3373
+Rect=2825,3370,2839,3379
+Rect=2833,3360,2986,3383
+Rect=2837,3382,2853,3391
+Rect=2851,3377,2913,3398
+Rect=2852,3313,2861,3320
+Rect=2859,3305,2879,3321
+Rect=2862,3397,2902,3405
+Rect=2878,3295,2987,3364
+Rect=2905,3290,2912,3296
+Rect=2909,3285,2919,3299
+Rect=2916,3280,2936,3298
+Rect=2922,3277,2927,3281
+Rect=2925,3271,2932,3283
+Rect=2931,3261,2981,3309
+Rect=2942,3236,2973,3263
+Rect=2966,3204,3009,3321
+Rect=2982,3314,3011,3351
+Rect=2984,3348,2995,3371
+Rect=2990,3189,3010,3217
+Rect=2994,3349,3003,3359
+Rect=3000,3021,3080,3320
+Rect=3006,3315,3029,3337
+Rect=3011,3337,3016,3345
+Rect=3016,3337,3020,3343
+Rect=3029,3320,3046,3333
+Rect=3077,3169,3101,3240
+Rect=3078,3238,3098,3277
+Rect=3078,3275,3094,3316
+Rect=3079,3040,3104,3094
+Rect=3079,3079,3104,3170
+Rect=3005,2993,3119,3084
+Rect=3081,2974,3121,3002
+Rect=3086,3290,3101,3313
+Rect=3092,3301,3112,3310
+RAINCHANCE=15
+COLDCHANCE=00  
+FLAGS=00000
+//tag.bf=-1
+tag.realm=2
+RESOURCES=r_default_rock, r_default_water, r_tree_ithilien, r_default_grass
+
+[Area Jizni Ithilien cesta na sever]	//prechod
+P=3103,3027
+RECT=3089,3022,3111,3048
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[Area Jizni Ithilien cesta na jih]	//prechod
+P=6106,4079,-80
+RECT=6088,4055,6128,4090
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[Area Severni Ithilien]
+GROUP=battlefiel -1
+P=3071,2814
+Rect=3034,2658,3109,2970
+Rect=3095,2930,3115,2966
+Rect=3010,2674,3039,2795
+Rect=2986,2732,3018,2786
+RAINCHANCE=15
+COLDCHANCE=00  
+FLAGS=00000
+//tag.bf=-1
+tag.realm=2
+RESOURCES=r_default_rock, r_default_water, r_tree_ithilien, r_default_grass
+
+[Area Severni Ithilien cesta na jih]	//prechod
+P=3084,2924
+RECT=3071,2905,3103,2932
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[Area Osgiliath vychodni breh]
+GROUP=battlefiel -1
+P=6012,3892,-80
+RECT=5974,3812,6045,3939
+flags=000
+tag.realm=2
+//tag.bf=-1
+events=r_nofield
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[Area Vychodni breh severni cesta]	//prechod
+P=6129,3773,-80
+RECT=6117,3766,6138,3795
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[Area Vychodni breh cesta k prusmyku]	//prechod
+P=6131,3885,-80
+RECT=6114,3874,6138,3903
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[Area Vychodni breh]
+P=6111,3884,-80
+Rect=5974,3695,6143,3975
+Rect=5977,3969,6088,4008
+Rect=6079,3964,6116,3990
+Rect=6083,3985,6100,3999
+Rect=6095,3982,6107,3995
+Rect=6108,3968,6125,3984
+Rect=6122,3971,6131,3980
+Rect=6111,3978,6120,3988
+Rect=5996,4001,6058,4013
+Rect=6100,3976,6116,3998
+GROUP=battlefiel -1
+flags=000
+tag.realm=2
+//tag.bf=-1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+//battlefield 1 gondor
+[Area Pelenorska pole vychodni cesta]	//prechod
+P=5737,3730,-80
+RECT=5721,3726,5756,3749
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[Area Anorien cesta k polim]	//prechod
+P=2996,2923,1
+RECT=2985,2909,3014,2931
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[Area Pelenorska pole zapadni cesta]	//prechod
+P=5611,4077,-80
+RECT=5600,4059,5629,4084
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[Area Zapadni cesta k polim]	//prechod
+P=2988,2984
+RECT=2971,2971,2996,2990
+RECT= 2994,2980,2999,2990
+RECT=2971,2983,2994,2997
+RECT=2971,2996,2989,3004
+FLAGS=00812
+tag.realm=3
+events=r_nofield, r_nosumon
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Pelenorska pole]
+GROUP=battlefiel 1
+P=5727,3944,-80
+RECT=5523,3696,5753,4098
+RECT=5439,3758,5553,4044
+RECT=5745,3697,5974,3966
+RECT=5723,3940,5800,4009
+RECT=5730,3698,5869,4002
+RECT=5751,3993,5849,4092
+RECT=5848,3947,5896,4043
+FLAGS=0100 // 0100 available
+EVENTS=r_pelenorska_pole
+tag.realm=1
+//tag.bf=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[Area Osgiliath zapadni breh]
+GROUP=battlefiel 1
+P=5939,3892,-80
+RECT=5908,3818,5974,3960
+RECT=5880,3896,5911,3921
+flags=000
+tag.realm=1
+//tag.bf=1
+events=r_nofield
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+//jednotliva uzemi nejprve mordor
+
+[AREA Horondor]
+GROUP=Mordorske uzemi
+P=3144,3928
+RECT=2332,3756,2847,4095
+RECT=2532,3516,2847,3890
+RECT=2620,3408,2894,3522
+RECT=2552,3500,2624,3520
+RECT=2576,3474,2626,3502
+RECT=2592,3456,2626,3488
+RECT=2610,3436,2630,3464
+RECT=2644,3370,2812,3430
+RECT=2636,3394,2646,3422
+RECT=2676,3354,2806,3404
+RECT=2735,3340,2776,3361
+RECT=2808,3380,2830,3410
+RECT=2807,3373,2815,3382
+RECT=2825,3397,2851,3414
+FLAGS=00000
+RESOURCES=r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.realm=2
+
+[AREA Mordor]
+GROUP=Mordorske uzemi
+P=3848, 2312,20
+Rect=3098,2551,3153,2587
+Rect=3110,2831,3199,2926
+Rect=3127,2544,3832,3028
+Rect=3132,2510,3431,2578
+Rect=3170,2452,3268,2532
+Rect=3740,2499,3780,2662
+Rect=3770,2507,3874,2654
+Rect=3810,2485,3896,2554
+Rect=3824,2791,3844,2877
+RAINCHANCE=20  
+COLDCHANCE=10
+FLAGS=00000
+tag.realm=2
+EVENTS=r_mordor
+RESOURCES=r_default_water, r_default_tree, r_default_grass
+
+[AREA Nurnen]//tohle ma asi tar nejak vymysleny dynamicky radi na to nebudu sahat :)
+GROUP=Mordorske uzemi
+P=3464,3256,13
+RECT=3164,3040,3462,3550
+RECT=3172,3548,3524,3870
+RECT=3190,3868,3308,3890
+RECT=3238,3890,3303,3904
+RECT=3456,3084,3980,3756
+RECT=3521,3752,3796,3821
+RECT=3956,3610,4158,3764
+RECT=4142,3640,4298,3706
+RAINCHANCE=20  
+coldchance=20
+FLAGS=00000
+tag.realm=2
+EVENTS=r_mordor
+RESOURCES=r_default_water, r_default_tree, r_default_grass
+
+[AREA Haradwaith]//tohle ma asi tar nejak vymysleny dynamicky radi na to nebudu sahat :)
+GROUP=Mordorske uzemi
+P=3144,3928
+RECT=2848,3672,2984,4095
+RECT=2964,3588,3144,4065
+RECT=3136,3888,3184,4095
+RECT=3184,3904,3536,4095
+RECT=3536,3848,3824,4095
+RECT=3824,3792,4768,4095
+RECT=4176,3720,4874,3792
+RECT=4312,3664,4584,3720
+RECT=4384,3592,4584,3664
+FLAGS=00000
+tag.realm=2
+RAINCHANCE=05  
+COLDCHANCE=00  
+EVENTS=r_mordor
+RESOURCES=r_default_water, r_default_tree, r_default_grass
+
+[AREA Chand]//tohle ma asi tar nejak vymysleny dynamicky radi na to nebudu sahat :)
+GROUP=Mordorske uzemi
+P=4832,3472,1
+RECT=4528,3550,4932,3656
+RECT=4555,3540,4566,3551
+RECT=4560,3535,4566,3542
+RECT=4564,3533,4581,3554
+RECT=4568,3528,4574,3534
+RECT=4573,3522,4580,3535
+RECT=4578,3514,4595,3552
+RECT=4593,3501,4638,3555
+RECT=4630,3462,4930,3559
+RECT=4694,3442,4721,3466
+RECT=4700,3427,4722,3443
+RECT=4704,3423,4709,3428
+RECT=4708,3419,4716,3428
+RECT=4711,3415,4716,3420
+RECT=4715,3399,4721,3428
+RECT=4920,3392,4976,3608
+RECT=4720,3328,4920,3480
+RECT=4920,3200,5040,3392
+RECT=4848,3240,4920,3328
+FLAGS=00000
+tag.realm=2
+EVENTS=r_mordor
+RESOURCES=r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=05  
+COLDCHANCE=00  
+
+
+//////////jednotliva uzemi gondor
+
+[AREA Lebennin]
+GROUP=Gondorske uzemi
+P=2687,3293
+RECT=2502,3307,2549,3329
+RECT=2509,3264,2699,3322
+RECT=2532,3254,2701,3270
+RECT=2553,3248,2697,3257
+RECT=2575,3241,2609,3251
+RECT=2631,3243,2643,3253
+RECT=2637,3234,2655,3251
+RECT=2646,3307,2764,3332
+RECT=2651,3223,2696,3260
+RECT=2669,3219,2677,3226
+RECT=2671,3331,2713,3341
+RECT=2673,3208,2688,3231
+RECT=2677,3202,2684,3212
+RECT=2682,3182,2711,3257
+RECT=2690,3162,2762,3190
+RECT=2695,3182,2785,3309
+RECT=2702,3146,2728,3174
+RECT=2716,3133,2754,3175
+RECT=2723,3127,2732,3137
+RECT=2729,3113,2757,3140
+RECT=2738,3106,2748,3119
+RECT=2744,3062,2831,3309
+RECT=2760,3304,2800,3321
+RECT=2823,3076,2844,3134
+RECT=2823,3132,2861,3279
+RECT=2827,3277,2849,3299
+RECT=2837,3118,2852,3137
+RECT=2844,3274,2856,3285
+FLAGS=00000
+tag.realm=1
+EVENTS=r_gondor
+RESOURCES=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20  
+COLDCHANCE=05  
+
+[AREA Anfalas]
+GROUP=Gondorske uzemi
+P=1980,3068
+RECT=1598,3100,1724,3222
+RECT=1618,3056,1726,3114
+RECT=1720,3026,1850,3158
+RECT=1844,3012,1984,3126
+RECT=1928,2986,2030,3128
+RECT=2006,2974,2100,3056
+FLAGS=00000
+tag.realm=1
+EVENTS=r_gondor
+RESOURCES=r_default_water, r_default_tree, r_default_grass, r_default_rock
+RAINCHANCE=20  
+COLDCHANCE=05  
+
+
+[AREA Lamedon]
+GROUP=Gondorske uzemi
+P=2300,2896,16
+RECT=2180,2702,2254,2780
+RECT=2184,2779,2201,2795
+RECT=2189,2795,2200,2811
+RECT=2190,2913,2206,2946
+RECT=2197,2779,2301,2958
+RECT=2203,2956,2223,2967
+RECT=2214,2954,2306,2981
+RECT=2230,2980,2264,2991
+RECT=2256,2981,2297,2995
+RECT=2269,2996,2299,3007
+RECT=2280,3006,2297,3016
+RECT=2291,2804,2424,3030
+RECT=2298,3030,2362,3054
+RECT=2359,3029,2374,3047
+RECT=2369,3026,2391,3040
+RECT=2416,2830,2452,2872
+RECT=2416,2865,2536,2939
+RECT=2417,2936,2506,2977
+RECT=2418,2971,2468,2996
+RECT=2419,2994,2462,3004
+RECT=2419,3010,2434,3022
+RECT=2421,3001,2452,3012
+RECT=2465,2976,2498,2988
+RECT=2505,2937,2520,2968
+RECT=2517,2935,2529,2951
+RECT=2532,2885,2552,2912
+
+RECT=2488,2972,2506,2982
+FLAGS=00000
+tag.realm=1
+RAINCHANCE=20  
+COLDCHANCE=05  
+EVENTS=r_gondor
+RESOURCES=r_default_water, r_default_tree, r_default_grass, r_default_rock
+
+[AREA Rohan]
+GROUP=Gondorske uzemi
+P=2312,2467
+RECT=1762,2501,1794,2518
+RECT=1770,2514,1803,2530
+RECT=1790,2502,1824,2542
+RECT=1822,2506,1866,2548
+RECT=1832,2540,1870,2560
+RECT=1863,2503,1970,2574
+RECT=1876,2496,1921,2509
+RECT=1887,2570,1937,2585
+RECT=1911,2585,1936,2598
+RECT=1922,2595,1941,2606
+RECT=1934,2571,1975,2621
+RECT=1952,2614,1978,2636
+RECT=1968,2503,2057,2669
+RECT=2009,2494,2021,2506
+RECT=2018,2486,2031,2506
+RECT=2028,2473,2042,2505
+RECT=2038,2457,2077,2570
+RECT=2048,2425,2068,2459
+RECT=2057,2398,2063,2428
+RECT=2060,2317,2079,2360
+RECT=2060,2354,2448,2636
+RECT=2232,2338,2431,2371
+RECT=2293,2324,2391,2343
+RECT=2384,2628,2480,2653
+RECT=2389,2651,2428,2663
+RECT=2426,2551,2462,2638
+RECT=2432,2371,2461,2533
+FLAGS=00000
+tag.realm=1
+RAINCHANCE=20  
+COLDCHANCE=05  
+
+EVENTS=r_gondor
+RESOURCES=r_default_water, r_default_tree, r_default_grass, r_default_rock
+
+
+[AREA Kraj]
+GROUP=Gondorske uzemi
+P=1090,1524
+RECT=886,1120,1282,1496
+RECT=890,1069,1030,1134
+FLAGS=00000
+tag.realm=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+//////a uzemi bez realmu
+
+[AREA Severni Spoust]
+GROUP=uzemi nikoho
+P=3218,209
+RECT=1360,252,1470,384
+RECT=1413,2,4640,300
+RECT=1453,300,1567,382
+RECT=1462,264,1776,336
+RECT=3776,288,4640,496
+RECT=3960,488,4640,544
+RECT=4216,536,4648,704
+RECT=2824,288,3776,352
+RECT=3160,336,3784,392
+RECT=3504,376,3800,448
+RAINCHANCE=50
+coldchance=50
+events=r_led_plane
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+FLAGS=00000
+
+//// dopad dostavnikem na LP
+
+[AREA Dostavnik Severni Spoust]
+GROUP=uzemi nikoho
+P=3218,209,2
+RECT=3197,192,3240,224
+RAINCHANCE=50
+coldchance=50
+//EVENTS=r_led_plane
+events=r_nofield, r_led_plane
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+FLAGS=00000
+
+
+[AREA Harlindon]
+GROUP=uzemi nikoho              // docasne prirazeno ke G, aby byl exp strop
+P=400,1600
+RECT=312,1448,680,1936
+FLAGS=00000
+tag.realm=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+///////////////dalsi povetsinou kvestova a vyznamna mista
+
+
+[AREA Smutna stezka]
+GROUP=vyznamna mista
+P=2854,2484,50
+RECT=2800,2408,2894,2552
+FLAGS=00012
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20  
+COLDCHANCE=00
+
+[AREA ostrov Rhun]
+GROUP=vyznamna mista
+P=4202,1881
+RECT=4168,1840,4288,1936
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_tree_ostrovrhun, r_default_grass
+RAINCHANCE=20  
+COLDCHANCE=00
+
+[AREA Zelezny pas]
+P=2028,2392
+RECT=2000,2360,2056,2424
+CLASS=48
+GROUP=vyznamna mista
+FLAGS=0000 
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Mrtve mocaly]
+GROUP=vyznamna mista
+P=2996,2528
+RECT=2895,2420,3060,2570
+FLAGS=00012
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20  
+COLDCHANCE=00
+
+
+
+[AREA Nindalf vlhka plan]
+GROUP=vyznamna mista
+P=2904,2648
+RECT=2796,2570,3060,2632
+RECT=2856,2664,3008,2728
+RECT=2856,2624,3032,2672
+RECT=2872,2720,2984,2752
+RECT=2824,2616,2864,2688
+FLAGS=00012
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=30  
+COLDCHANCE=00
+
+
+[AREA Zapadni hrana]
+GROUP=vyznamna mista
+P=1428,3156,70
+RECT=1416,3144,1440,3168
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00  
+
+
+[AREA Svatyne ohne]
+GROUP=vyznamna mista
+P=1292,3148,75
+RECT=1280,3128,1304,3168
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00  
+
+
+[AREA Roklinka dum Elronduv]
+GROUP=vyznamna mista
+P=2331,1238,10
+RECT=2312,1200,2360,1240
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00  
+
+
+
+[AREA Delvaniova zhouba]
+GROUP=vyznamna mista
+P=1248,3192,70
+RECT=1240,3184,1256,3200
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00  
+
+
+[AREA Vetrov]
+GROUP=vyznamna mista
+P=1753,1318,32
+RECT=1738,1303,1773,1334
+FLAGS=00000
+tag.realm=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA zvadla vresoviste]
+GROUP=vyznamna mista
+P=3048,760,45
+RECT=2960,696,3088,824
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=05
+COLDCHANCE=00  
+
+
+[AREA Nenuial soumracne jezero]
+GROUP=vyznamna mista
+P=1152,1072
+//RECT=1096,1000,1232,1120
+RECT=1096,1000,1197,1120
+RECT=1216,1071,1196,1120
+RECT=1231,1079,1196,1120
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Stoky pod Minas Tirith]
+GROUP=vyznamna mista
+P=5808,443
+RECT=5809,536,6000,615
+RECT=5880,427,6140,536
+RECT=5787,442,5880,447
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+//tag.kick=1
+EVENTS=r_minas_tirith
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Tajna chodba pod Edorasem]
+GROUP=vyznamna mista
+P=2330,2441,-22,1
+RECT= 2321,2438,2370,2542
+mapplane=1
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+//tag.kick=1
+EVENTS=r_edoras
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+/////knihovny
+
+
+[AREA Krajska knihovna]
+group=knihovna
+p=1184,1364,0,5
+RECT=1179,1358,1190,1371
+mapplane=5
+FLAGS=0119E
+tag.realm=3
+tag.knihovna=1
+tag.noshrink=1
+events=r_nosumon
+//events=r_killHorse	// wtf ? nic takovyho neexistuje ...
+
+[AREA knihovna Harad]
+group=knihovna
+p=4170,3940,20,5
+RECT=4163,3932,4183,3945
+mapplane=5
+FLAGS=0119E
+tag.knihovna=1
+tag.noshrink=1
+
+
+[AREA knihovna Minas Tirith]
+group=knihovna
+p=5547,3830,0,5
+RECT=5529,3819,5557,3847
+mapplane=5
+FLAGS=0119E
+tag.knihovna=1
+tag.noshrink=1
+
+[AREA knihovna Minas Tirith sklep]
+group=knihovna
+p=5450,200,20,5
+RECT=5435,165,5476,219
+mapplane=5
+FLAGS=0119E
+tag.knihovna=1
+tag.noshrink=1
+
+
+
+////////////////////////////////// mesta gondor
+
+//trpajzlici
+
+[AREA Erebor]//trpaslici mesto
+P=3157,970,40
+//RECT=3108,924,3194,989
+//RECT=4696,2024,4784,2208
+//RECT=4776,2048,4920,2160
+RECT=3134,946,3167,977        //Erebor povrch
+RECT=4704,2023,4914,2154      //Erebor mistnosti 
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0900 // 0100 available
+TAG.GUARDOWNER=the city
+tag.realm=1
+tag.jmeno_mesta=Erebor
+tag.kick=1
+events=r_nosumon
+RESOURCES=r_doly, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dainovo kralovstvi pod horou]//trpaslici mesto -- opustene
+P=3816,1021
+RECT=4784,2200,4992,2262
+RECT=4819,2239,4860,2307
+CLASS=48
+GROUP=Mesta Gondor
+events=r_nosumon
+FLAGS=0900 // 0100 available
+TAG.GUARDOWNER=the city
+tag.realm=3
+tag.jmeno_mesta=Dainovo_kralovstvi
+tag.kick=1
+RESOURCES=r_default_rock
+RAINCHANCE=00
+COLDCHANCE=00
+
+//hobiti
+
+[AREA Hobitin]
+P=1079,1327
+RECT=1049,1250,1126,1371
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0100 // 0100 available
+TAG.GUARDOWNER=the city
+EVENTS=r_hobitin
+tag.realm=1
+tag.jmeno_mesta=Hobitin
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Severni ctvrtka]
+P=1069,1181,2
+RECT=1000,1120,1225,1249
+CLASS=48
+GROUP=Mesta Gondor
+events=r_nosumon
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Hobitin //vsechny nizsi jsou vazany na hobitin
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+coldchance=20
+
+[AREA Parezov]
+P=1268,1405
+RECT=1251,1386,1281,1454
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Hobitin
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Radovsko]
+P=1312,1373
+RECT=1285,1339,1327,1412
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Hobitin
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA Zabovresky]
+P=1215,1347
+RECT=1179,1329,1234,1375
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Hobitin
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+//lidi
+
+[AREA Hurka]
+P=1582,1184
+RECT=1544,1160,1597,1215
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Fornost
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Hurecko]
+P=1633,1221
+RECT=1621,1168,1656,1240
+RECT=1604,1220,1630,1240
+CLASS=48
+GROUP=Mesta Gondor
+events=r_nosumon
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Fornost
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA Fornost]
+P=1424,1090
+RECT=1392,1040,1485,1123
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Fornost
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Forondon]
+P=1210,613
+RECT=1180,582,1297,656
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Fornost
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass 
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA Minas Tirith]
+GROUP=Mesta Gondor
+P=5678,3871,-80
+RECT=5522,3700,5634,4020
+RECT=5628,3726,5721,3956
+RECT=5627,3946,5682,3996
+RECT=5456,3895,5505,3980
+RECT=5467,3785,5535,3868
+RECT=5490,3863,5526,4025
+FLAGS=0100 // 0100 available
+TAG.GUARDOWNER=the city
+EVENTS=r_minas_tirith
+tag.realm=1
+tag.jmeno_mesta=Minas_Tirith
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Cair Andros]
+GROUP=Mesta Gondor
+P=3016,2840
+RECT=2981,2801,3008,2827
+RECT=2985,2826,3012,2849
+RECT=2999,2800,3011,2826
+RECT=3007,2825,3028,2847
+RECT=3010,2805,3019,2826
+RECT=3019,2812,3028,2824
+//CLASS=48
+FLAGS=0100
+tag.realm=1
+tag.jmeno_mesta=Minas_Tirith //vazano jinam ! 
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Esgaroth]
+GROUP=Mesta Gondor
+P=3105,1077
+RECT=3095,1032,3152,1092
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Dol
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA Edoras]//upraveno
+GROUP=Mesta Gondor
+P=2312,2515
+//RECT=2240,2490,2378,2622
+RECT=2245,2507,2377,2622      // hlavni cast
+RECT=2245,2491,2284,2511      // levej horni roh 
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Edoras
+tag.kick=1
+EVENTS=r_edoras
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA Helmuv zleb]
+GROUP=Gondorske uzemi
+P=2056,2544
+RECT=2040,2528,2072,2560
+RECT=5184,3688,5424,3816
+FLAGS=00000
+tag.realm=1
+tag.jmeno_mesta=Edoras
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05  
+
+[AREA Linhir]
+GROUP=Mesta Gondor
+P=2737,3282
+RECT=2693,3234,2750,3289
+TAG.GUARDOWNER=the city
+tag.jmeno_mesta=Dol_Amroth
+events=r_nosumon
+tag.kick=1
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA Calembel]
+GROUP=Mesta Gondor
+P=2468,2939,5
+RECT=2436,2899,2504,2981
+TAG.GUARDOWNER=the city
+tag.jmeno_mesta=Dol_Amroth
+events=r_nosumon
+tag.kick=1
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Dol Amroth]//upraveno
+GROUP=Mesta Gondor
+P=2262,3205
+RECT=2152,3180,2371,3306
+RECT=2263,3100,2318,3185
+RECT=2257,3158,2264,3182
+RECT=2250,3167,2261,3184
+TAG.GUARDOWNER=the city
+tag.jmeno_mesta=Dol_Amroth
+events=r_nosumon
+tag.kick=1
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Dol]// nove 
+GROUP=Mesta Gondor
+P=3192,1064,1
+RECT=3166,992,3235,1022
+RECT=3155,1016,3221,1064
+RECT=3162,1062,3191,1079
+RECT=3233,992,3250,1010
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Dol
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Tharbad]// nove
+GROUP=Mesta Gondor
+P=1592,1944
+RECT=1568,1904,1624,1944
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Fornost
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA Pelargir]//upraveno
+GROUP=Mesta Gondor
+P=2887,3245
+RECT=2864,3193,2941,3252
+RECT=2865,3250,2907,3286
+RECT=2903,3247,2916,3273
+TAG.GUARDOWNER=the city
+tag.jmeno_mesta=Dol_Amroth
+events=r_nosumon
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+
+//elfove                   
+
+[AREA Sede pristavy]//nove
+P=752,1369
+RECT=683,1363,711,1386
+RECT=707,1325,762,1415
+RECT=662,1259,728,1347
+RECT=726,1267,751,1288
+RECT=723,1286,736,1308
+RECT=734,1285,743,1297
+CLASS=48
+GROUP=Mesta Gondor
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Sede_pristavy
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Lorien]
+GROUP=Mesta Gondor
+P=2420,1889
+RECT=2447,1824,2494,1929
+RECT=2423,1825,2448,1920
+RECT=2391,1826,2424,1912
+RECT=2373,1842,2392,1906
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Kralovstvi_lesnich_elfu
+tag.kick=1
+EVENTS=r_lorien
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+[AREA Kralovstvi lesnich elfu]
+GROUP=Mesta Gondor
+P=2976,1248
+RECT=2920,1208,3032,1288
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=1
+tag.jmeno_mesta=Kralovstvi_lesnich_elfu
+tag.kick=1
+events=r_nohorsehigh
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+//mordor skreti
+
+[AREA Rhun]
+GROUP=Mesta Mordor
+P=3824,2134
+RECT=3730,2023,3963,2211
+RECT=3959,2033,3990,2066
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=2
+tag.jmeno_mesta=Rhun
+tag.kick=1
+EVENTS=r_rhun
+RESOURCES=r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=10
+COLDCHANCE=00
+
+[AREA Barad-dur]
+GROUP=Mesta Mordor
+P=3647, 2717,-50
+//RECT=3549,2664,3736,2827
+RECT=3549,2664,3728,2793      // hlavni cast - mesto
+RECT=3656,2632,3704,2688      // palac - beze zmeny
+TAG.GUARDOWNER=the city
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=2
+tag.jmeno_mesta=Barad-dur
+tag.kick=1
+EVENTS=r_barad_dur
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=00
+
+[AREA Bagronk]
+GROUP=Mesta Mordor
+P=3920,3012
+RECT=3880,2976,3960,3048
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=2
+tag.jmeno_mesta=Barad-dur
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=00
+
+
+//lidi
+
+[AREA Nurn]
+GROUP=Mesta Mordor
+P=3472,3264,13
+RECT=3400,3216,3560,3328
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=2
+tag.jmeno_mesta=Nurn
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=05
+
+
+[AREA Harad]
+GROUP=Mesta Mordor
+P=4186,3960
+RECT=4104,3888,4314,4048
+RECT=4152,3818,4229,3900
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=2
+tag.jmeno_mesta=Harad
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=10
+COLDCHANCE=00
+
+
+[AREA Oaza Hagir]
+GROUP=Mesta Mordor
+P=2910,3710
+RECT=2872,3680,2960,3736
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=2
+tag.jmeno_mesta=Umbar
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=05
+COLDCHANCE=00
+
+
+[AREA Tahabar]
+GROUP=Mesta Mordor
+P=2775,3804
+RECT=2736,3748,2816,3824
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=2
+tag.jmeno_mesta=Umbar
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=05
+COLDCHANCE=00
+
+
+
+[AREA Umbar]
+GROUP=Mesta Mordor
+P=2502,4017,11
+RECT=2360,3935,2542,4095
+CLASS=48
+FLAGS=0100 // 0100 available
+tag.realm=2
+tag.jmeno_mesta=Umbar
+events=r_nosumon
+tag.kick=1
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+
+////////////////////////////  ostrovy /////////////////////////////////////////////
+
+[AREA Snezny ostrov]
+GROUP=Ostrovy
+P=1024, 136
+RECT=856,0,1248,264
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=50
+COLDCHANCE=100
+
+[AREA Ledovy ostrov]
+GROUP=Ostrovy
+P=149, 2147
+RECT=38,1964,428,2194
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=50
+COLDCHANCE=100
+
+[AREA Ostrov nestalosti]    //Drive Imperatoru
+GROUP=Ostrovy
+P=1149,3883
+RECT=1032,3837,1158,3917
+//RAINCHANCE 25
+FLAGS=00000
+tag.realm=2
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=20
+COLDCHANCE=00
+
+
+[AREA Ostrov Divu]
+GROUP=Ostrovy
+P=728, 3680
+RECT=528,3668,1000,3800
+RECT=728,3490,1106,3720
+RECT=684,3560,736,3674
+RECT=596,3632,696,3672
+RECT=664,3612,694,3640
+RECT=574,3658,900,3768
+//RAINCHANCE 25
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=50
+coldchance=20
+
+
+[AREA Ostrov Zatemnele mysli]
+GROUP=Ostrovy
+P=368, 3522
+RECT=288,3290,594,3390
+RECT=224,3374,560,3430
+RECT=98,3418,212,3704
+RECT=204,3424,268,3684
+RECT=230,3424,514,3476
+RECT=254,3468,476,3546
+RECT=242,3536,454,3564
+RECT=260,3552,408,3590
+RECT=250,3578,374,3612
+RECT=246,3598,302,3644
+RECT=290,3604,314,3624
+RECT=266,3636,286,3658
+RECT=204,3678,226,3694
+RECT=470,3472,488,3494
+RECT=514,3424,526,3446
+RECT=552,3382,574,3404
+FLAGS=00001
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+tag.realm=3
+RAINCHANCE=25
+COLDCHANCE=00
+
+[AREA Vetrne ostrovy]
+GROUP=Ostrovy
+P=544, 3502
+RECT=488,3574,542,3634
+RECT=496,3512,544,3580
+RECT=528,3498,590,3520
+RECT=534,3460,594,3516
+RECT=568,3448,588,3468
+RECT=586,3394,624,3514
+RECT=606,3362,696,3504
+//RAINCHANCE 80
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=25
+COLDCHANCE=00
+
+[AREA Ostrovni pevnost]
+GROUP=Ostrovy
+P=1010,510,45
+RECT=944,464,1125,576
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=25
+COLDCHANCE=00
+
+[AREA Slunecni ostrov]
+GROUP=Ostrovy
+P=396, 3876
+
+RECT=304,3772,398,3836
+RECT=296,3828,417,3874
+RECT=318,3864,432,3918
+RECT=408,3876,456,3970
+RECT=438,3898,474,3972
+RECT=340,3888,428,3954
+RECT=392,3948,414,3966
+RECT=388,3814,410,3840
+RECT=306,3862,322,3886
+RECT=460,3922,478,3964
+RECT=324,3766,370,3788
+tag.realm=3
+FLAGS=0001A
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Ostrov narku]
+GROUP=Ostrovy
+P=1512, 3992
+RECT=1362,3678,1498,3806
+RECT=1418,3800,1486,4070
+RECT=1388,4032,1444,4074
+RECT=1470,3914,1500,4060
+RECT=1492,3934,1796,4058
+RECT=1568,3874,1692,3942
+RECT=1492,3760,1506,3804
+RAINCHANCE=25
+COLDCHANCE=00
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+
+[AREA Hadi ostrovy]
+GROUP=Ostrovy
+P=1514, 3868
+RECT=1492,3826,1528,3870
+RECT=1501,3865,1536,3917
+RECT=1570,3783,1641,3845
+RAINCHANCE=25
+COLDCHANCE=00
+tag.realm=3
+EVENTS=r_hadiostrovy
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+
+[AREA Draci ostrovy]
+GROUP=Ostrovy
+P=2605, 3390
+RECT=2553,3328,2633,3376
+RECT=2559,3373,2621,3403
+RECT=2565,3401,2607,3436
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=25
+COLDCHANCE=00
+
+[AREA Ostrov strachu]
+GROUP=Ostrovy
+P=2450, 3480
+RECT=2348,3503,2370,3538
+RECT=2385,3418,2535,3460
+RECT=2407,3404,2535,3419
+RECT=2426,3391,2533,3409
+RECT=2440,3378,2519,3397
+RECT=2449,3366,2507,3379
+RECT=2454,3456,2490,3555
+RECT=2464,3360,2474,3366
+RECT=2471,3357,2503,3368
+RECT=2487,3452,2501,3539
+RECT=2498,3452,2518,3495
+RECT=2512,3456,2527,3475
+RECT=2373,3448,2458,3564
+RECT=2362,3484,2380,3561
+RECT=2370,3476,2374,3485
+RAINCHANCE=25
+COLDCHANCE=00
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+
+[AREA Ebenove ostrovy]
+GROUP=Ostrovy
+P=2460, 3323
+RECT=2394,3319,2407,3333
+RECT=2449,3312,2479,3337
+RECT=2454,3295,2468,3308
+RECT=2404,3339,2441,3369
+RECT=2398,3342,2418,3373
+RECT=2393,3348,2413,3384
+RECT=2383,3349,2396,3384
+RECT=2377,3352,2384,3382
+RECT=2375,3358,2380,3375
+RECT=2487,3292,2500,3314
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_tree_ebenoveostrovy, r_default_grass
+RAINCHANCE=25
+COLDCHANCE=00
+
+[AREA Ostrovy Titanu]
+GROUP=Ostrovy
+P=600, 2600
+RECT=472,2492,756,2800
+RECT=154,2600,410,2822
+RECT=404,2649,486,2757
+RECT=397,2528,488,2593
+RECT=346,2516,399,2564
+RECT=319,2419,379,2475
+RECT=463,2514,497,2536
+RAINCHANCE=25
+COLDCHANCE=00
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+
+[AREA Ostrov Piratu]
+GROUP=Ostrovy
+P=377,392,51
+RECT=228,354,381,446
+FLAGS=00012
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Terathanti Ostrov]
+GROUP=Ostrovy
+P=307,788
+RECT=264,769,370,830
+FLAGS=00000
+tag.realm=3
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+
+///////////////// doly /////////////////////
+
+[AREA doly Moria]
+GROUP=Doly
+P=5998, 956
+RECT=5908,830,6117,953
+RECT=5800,640,6136,904
+RECT=6032,576,6138,656
+RECT=5504,768,5912,944
+FLAGS=00812
+events=r_doly_nohorse
+tag.nobank=1
+RESOURCES=r_dolymoria
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA doly slz]
+GROUP=Doly
+P=5311, 35
+RECT=5297,25,5348,80
+FLAGS=00812
+tag.nobank=1
+tag.kick=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Ereborsky dul]
+GROUP=Doly
+P=4750,2190
+RECT=4715,2169,4775,2207
+FLAGS=00812
+tag.kick=1
+tag.nobank=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Severni doly]
+GROUP=Doly
+P=529, 666
+RECT=462,641,516,686
+FLAGS=00812
+tag.kick=1
+tag.nobank=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Krajske doly]
+GROUP=Doly
+P=756, 1528
+RECT=730,1509,781,1541
+FLAGS=00812
+tag.kick=1
+tag.nobank=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Osamely dul]
+GROUP=Doly
+P=1232, 917
+RECT=1189,877,1248,933
+FLAGS=00812
+tag.kick=1
+tag.nobank=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dul u Zelezneho pasu]
+GROUP=Doly
+P=2030, 2281
+RECT=2007,2259,2059,2287
+RECT=2011,2283,2039,2294
+RECT=2036,2286,2042,2293
+FLAGS=00812
+tag.kick=1
+tag.nobank=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Skalni dul]
+GROUP=Doly
+P=2066, 717
+RECT=2036,673,2076,722
+FLAGS=00812
+tag.kick=1
+tag.nobank=1
+events=r_doly_nohorse
+RESOURCES=r_doly
+RAINCHANCE=00
+COLDCHANCE=00
+
+//[AREA Doly Erebor]
+//GROUP=Doly
+//P=3166, 966
+//RECT=3148,949,3171,977
+//RECT=3168,960,3185,984
+//FLAGS=00812
+//tag.kick=1
+//RESOURCES=r_doly
+//RAINCHANCE=00
+//COLDCHANCE=00
+
+[AREA Barad-durske doly]
+GROUP=Doly
+P=3849, 2523
+RECT=3812,2487,3888,2525
+RECT=3833,2522,3876,2541
+FLAGS=00812
+tag.kick=1
+tag.nobank=1
+events=r_doly_nohorse
+RESOURCES=r_doly
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mordorske doly]
+GROUP=Doly
+P=4518, 3235
+RECT=4499,3221,4537,3242
+RECT=4512,3241,4536,3252
+FLAGS=00812
+tag.kick=1
+tag.nobank=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doly]
+GROUP=Doly
+RECT=5054,14,5102,80
+RECT=5060,96,5100,148
+RECT=4768,22,4824,76
+RECT=4820,86,4858,128
+RECT=4868,12,5044,138
+RECT=4704,1592,4776,1920
+RECT=4776,1616,5024,1880
+RECT=4848,1584,4904,1624
+FLAGS=00812
+tag.kick=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Kralovske Doly]
+GROUP=Doly
+RECT=4704,1592,4776,1920
+RECT=4776,1616,5024,1880
+RECT=4848,1584,4904,1624
+FLAGS=00812
+tag.kick=1
+RESOURCES=r_doly
+events=r_doly_nohorse
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Kralovske Doly vstup]
+GROUP=Doly
+RECT=2797,2870,2838,2977
+FLAGS=00812
+tag.kick=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+///////////////////////////////// DUNGEONY ////////////////////////////////
+
+[AREA Stara hrobka]
+GROUP=NB Dung
+P=5836,3667,0,10
+RECT=5809,3608,5851,3670
+MAPPLANE=10
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Tajemna Hospoda]
+GROUP=Dungeon vstup
+P=235,2085,0,0
+RECT=232,2073,248,2089
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Oblast Cerne Smrti Labyrint]
+GROUP=Dungeon
+P=5965,161,0,12
+RECT=5940,128,5989,165
+MAPPLANE=12
+FLAGS=00812
+events=r_oblast_cerne_smrti
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Oblast Cerne Smrti Boss]
+GROUP=Dungeon
+P=6006,4064,-80,10
+RECT=5968,4036,6026,4083
+MAPPLANE=10
+FLAGS=00812
+events=r_oblast_cerne_smrti
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Oblast Cerne Smrti Jeskyne]
+GROUP=Dungeon
+P=5636,114,0,10
+RECT=5613,88,5648,119
+MAPPLANE=10
+FLAGS=00812
+events=r_oblast_cerne_smrti
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Oblast Cerne Smrti]
+GROUP=Dungeon
+P=1525,550,11,2
+RECT=1468,473,1890,721
+RECT=1749,380,1890,473
+RECT=1573,187,1793,379
+RECT=1681,120,1775,187
+MAPPLANE=2
+FLAGS=00812
+events=r_oblast_cerne_smrti
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=25
+COLDCHANCE=00
+
+[AREA Krvava Jeskyne]
+GROUP=quest dungeon
+P=4968,40,0,10
+RECT=4935,32,4972,74
+MAPPLANE=10
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Magicky Les]
+GROUP=quest dungeon
+P=5412,2556,15,35
+RECT=5376,2368,5530,2566
+MAPPLANE=11
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Ztracene Mesto]
+GROUP=Dungeony
+P=938, 642, -80, 2
+RECT=712,349,1322,830
+mapplane=2
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=25
+COLDCHANCE=00
+
+[AREA Lost Treasure Maze]
+GROUP=quest dungeon
+P=2232,1800,45,10
+RECT=2085,1696,2236,1841
+MAPPLANE=10
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Shooter Arena]
+P=5968,143,0,11
+RECT=5922,124,6008,155
+mapplane=11
+FLAGS=0001E
+RAINCHANCE=00
+COLDCHANCE=00
+tag.realm=3
+
+
+[AREA Lost Treasure Dung]
+GROUP=quest dungeon
+P=5323,907,0,10
+RECT=5312,863,5386,914
+MAPPLANE=10
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Domov drakulu]
+GROUP=quest dungeon
+P=5612,3609,31,10
+RECT=5494,3503,5623,3620
+MAPPLANE=10
+FLAGS=00812
+tag.cFlags=0b0
+events=r_domov_drakulu
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA zatuchla stavba v pousti]		//vstup do Hrobek cernych numenorejcu
+GROUP=Dungeony
+P=4937, 4074, 0, 10
+MAPPLANE=10
+RECT=4906,4067,4944,4088
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Hrobky Cernych Numenorejcu]
+GROUP=Dungeony
+P=4939, 4061, 0, 10
+MAPPLANE=10
+RECT=4930,4003,4992,4066
+RECT=4992,4000,5037,4074
+RECT=5037,3980,5082,4074
+FLAGS=00812
+tag.realm=3
+events=r_Hrobky_Cernych_Numenorejcu
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Hrobky Cernych Numenorejcu 2 Level]
+GROUP=Dungeony
+P=4978, 3976, 0, 10
+MAPPLANE=10
+RECT=4924,3917,4993,3994
+RECT=4993,3907,5044,3947
+RECT=4993,3946,5021,3990
+FLAGS=00812
+tag.realm=3
+events=r_Hrobky_Cernych_Numenorejcu_Lvl2
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Cardolanske pohrebiste]
+GROUP=Dungeony
+P=5735, 2507, 20
+RECT=5730,2466,5864,2590
+FLAGS=00812
+tag.realm=3
+events=e_Cardolanske_pohrebiste
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Cardolanska hrobka]
+GROUP=Dungeony
+P=5735, 2507, 20 , 10 
+RECT=5730,2466,5864,2590
+FLAGS=00812
+tag.realm=3
+events=e_Cardolanske_pohrebiste
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Turnajova Arena]
+GROUP=Arena
+P=5670,250,30
+MAPPLANE=10
+RECT=5665,220,5799,325 
+FLAGS=0081E
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Arena Lamy]
+GROUP=Arena
+P=5543,244,5,10
+mapplane=10
+RECT=5473,229,5546,260
+FLAGS=02801
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Arena Lamy1]
+GROUP=Arena
+P=5543,244,5,11
+mapplane=11
+RECT=5473,229,5546,260
+FLAGS=02801
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Arena Lamy2]
+GROUP=Arena
+P=5543,244,5,12
+mapplane=12
+RECT=5473,229,5546,260
+FLAGS=02801
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[Area Arena Gondor - Horska pevnost]
+GROUP=Arena
+P=2335,791,45
+RECT=2244,760,2404,846
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.nobank=1
+tag.arena=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Arena Gondor]
+GROUP=Arena
+P=5286,3474,35
+RECT=5618,3483,5800,3602
+RECT=5195,3467,5391,3617
+FLAGS=00800
+resources=r_default_rock, r_default_water, r_default_tree, r_PvP_PortZone
+tag.cFlags=0b0	//region_cf_denyRecall_in | region_cf_denyRecall_in | region_cf_denyRecall_out
+tag.nobank=1
+tag.arena=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Arena Gondor Podzemi]
+GROUP=Arena
+P=5870,800
+RECT=5846,782,5894,818
+RECT=5195,3467,5391,3617
+FLAGS=00800
+resources=r_default_rock, r_default_water, r_default_tree, r_PvP_PortZone
+tag.cFlags=0b0	//region_cf_denyRecall_in | region_cf_denyRecall_in | region_cf_denyRecall_out
+tag.nobank=1
+tag.arena=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[Area Arena Mordor - Horska pevnost]
+GROUP=Arena
+P=2335,791,45
+mapplane=55
+RECT=2244,760,2404,846
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.nobank=1
+tag.arena=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Arena Mordor]
+GROUP=Arena
+P=5286,3474,35,55
+mapplane=55
+RECT=5618,3483,5800,3602
+RECT=5195,3467,5391,3617
+FLAGS=00800
+resources=r_default_rock, r_default_water, r_default_tree, r_PvP_PortZone
+tag.cFlags=0b0	//region_cf_denyRecall_in | region_cf_denyRecall_in | region_cf_denyRecall_out
+tag.nobank=1
+tag.arena=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Arena Mordor Podzemi]
+GROUP=Arena
+P=5870,800,0,55
+mapplane=55
+RECT=5846,782,5894,818
+RECT=5195,3467,5391,3617
+FLAGS=00800
+resources=r_default_rock, r_default_water, r_default_tree, r_PvP_PortZone
+tag.cFlags=0b0	//region_cf_denyRecall_in | region_cf_denyRecall_in | region_cf_denyRecall_out
+tag.nobank=1
+tag.arena=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Gondor 1]
+GROUP=Arena
+P=5721, 296, 10, 10
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=10
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Mordor 1]
+GROUP=Arena
+P=5721, 296, 10, 55
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=55
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Gondor 2]
+GROUP=Arena
+P=5721, 296, 10, 11
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=11
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Mordor 2]
+GROUP=Arena
+P=5721, 296, 10, 56
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=56
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Gondor 3]
+GROUP=Arena
+P=5721, 296, 10, 12
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=12
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Mordor 3]
+GROUP=Arena
+P=5721, 296, 10, 57
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=57
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Gondor 4]
+GROUP=Arena
+P=5721, 296, 10, 13
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=13
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Mordor 4]
+GROUP=Arena
+P=5721, 296, 10, 58
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=58
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Gondor 5]
+GROUP=Arena
+P=5721, 296, 10, 14
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=14
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Gondor 5]
+GROUP=Arena
+P=5721, 296, 10, 59
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=59
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Gondor 6]
+GROUP=Arena
+P=5721, 296, 10, 15
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=15
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nova Arena Mordor 6]
+GROUP=Arena
+P=5721, 296, 10, 60
+RECT=5588,149,5802,354
+FLAGS=00812
+mapplane=60
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Gondorska bojova arena]
+GROUP=Arena
+P=5000,1200,0,5
+RECT=4976,1128,5084,1224
+FLAGS=00812
+mapplane=5
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mordorska bojova arena]
+GROUP=Arena
+P=5000,1200,0,55
+RECT=4976,1128,5084,1224
+FLAGS=00812
+mapplane=55
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Nova Arena Equip Room]
+GROUP=Arena
+P=2199, 1781, 45
+RECT=2188,1781,2216,1800
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.arena=1
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Fela Nazgul]
+GROUP=Mordorske uzemi
+P=5847,2104,10,10
+RECT=5847,2104,5938,2175
+MAPPLANE=10
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Cirith ungol]
+GROUP=Mordorske uzemi
+P=3144,2854,80
+RECT=3112,2832,3184,2920
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA prepadeni]
+GROUP=Dungeony
+P=5406,4052
+RECT=5371,4017,5434,4079
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=20
+COLDCHANCE=20
+
+[AREA Fangorn prusmyk]
+GROUP=Stredozeme
+P=2064,2198
+RECT=2008,2140,2063,2213
+RECT=2063,2174,2134,2219
+FLAGS=00012
+tag.realm=3
+RAINCHANCE=10
+COLDCHANCE=50
+
+
+[AREA Vysoky Prusmyk]
+GROUP=Dungeony
+P=2308,1318,20
+RECT=2304,1304,2416,1376
+RECT=2408,1256,2489,1448
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=100
+COLDCHANCE=100
+
+[AREA Ruiny chramu Saurona]
+GROUP=Dungeon  //nb
+P=3579,2809
+RECT=3574,2795,3611,2825
+//mapplane=11
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+events=r_nofield
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Martanilova hrobka]
+GROUP=Dungeony
+P=4970,3870,0,10
+RECT=4961,3855,4978,3894
+mapplane=10
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Torech Ungol]
+GROUP=Dungeony
+P=4908,1713,0,10
+RECT=4865,1645,4935,1725
+mapplane=10
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Ered Mithrin vstup]
+GROUP=Dungeony
+P=2834,755,45
+RECT=2826,763,2847,744
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Ered Mithrinska Jeskyne]
+GROUP=Dungeony
+P=19,1196,-10,11
+RECT=1,794,190,1197
+mapplane=11
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Ledove jeskyne 1 level]
+GROUP=Dungeony
+P=6047,3506,20
+RECT=5816,3264,6136,3672
+RECT=5968,3184,6128,3264
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Temna jeskyne]
+GROUP=Dungeony
+P=5896,1438
+RECT=5720,1248,5960,1496
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Nexmirias]
+P=5869,2108,10
+RECT=5758,2098,5960,2306
+FLAGS=00812
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+//[AREA draci sluj]
+//GROUP=Dungeony
+//P=3906,3886
+//RECT=3906,3886,3730,3800
+//FLAGS=00812
+//resources=r_default_rock, r_default_water, r_default_tree
+//tag.realm=3
+//RAINCHANCE=00
+//COLDCHANCE=00
+
+//[AREA podtemno]
+//P=5040,1368,40
+//RECT=4840,1224,5112,1472
+//FLAGS=00812
+//resources=r_default_rock, r_default_water, r_default_tree
+//tag.realm=3
+//tag.nobank=1
+//RAINCHANCE=00
+//COLDCHANCE=00
+
+//[AREA podtemno]
+//P=5040,1368,40
+//RECT=4840,1224,5112,1472
+//mapplane=10
+//FLAGS=00812
+//resources=r_default_rock, r_default_water, r_default_tree
+//tag.realm=3
+//tag.nobank=1
+//RAINCHANCE=00
+//COLDCHANCE=00
+
+//[AREA Nazgard]
+//GROUP=Dungeony
+//P=4910, 2939
+//RECT=3780,3886,3200,3990
+//RECT=3304,3886,3730,3800
+//RECT=3426,3800,3890,3530
+//RECT=3560,3530,3890,3450
+//FLAGS=00812
+//resources=r_default_rock, r_default_water, r_default_tree
+//tag.realm=3
+//RAINCHANCE=00
+//COLDCHANCE=00
+
+
+
+[AREA Mount dorlas vstup]
+GROUP=Dungeon Mont Dorlas
+P=2008, 286
+RECT=1867,286,1885,317
+RECT=1869,274,1898,291
+RECT=1891,262,1910,285
+RECT=1908,260,1944,277
+RECT=1939,262,1954,279
+RECT=1950,266,1960,283
+RECT=1958,269,1966,288
+RECT=1964,274,1975,291
+RECT=1974,276,2018,295
+RECT=1999,293,2025,304
+RECT=2005,300,2031,308
+RECT=2022,306,2059,325
+RECT=2046,293,2059,308
+RECT=2041,284,2052,297
+RECT=2051,291,2055,294
+RECT=2011,273,2021,280
+RECT=2017,270,2037,284
+RECT=2035,275,2043,285
+RECT=2041,279,2048,286
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mount Dorlas 1 Level]
+GROUP=Dungeon Mont Dorlas
+P=5708, 156
+RECT=5587,148,5800,353
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mount Dorlas 2 Level]
+GROUP=Dungeon Mont Dorlas
+P=5256, 352
+RECT=5187,149,5403,374
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mount Dorlas 3 Level]
+GROUP=Dungeon Mont Dorlas
+P=5432, 377
+RECT=5415,152,5575,394
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dug snagum vstup]
+GROUP=Dungeon Dug snagum
+P=4394,3288
+RECT=4337,3280,4452,3349
+FLAGS=00012
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dug snagum 1 Level]
+GROUP=Dungeon Dug snagum
+P=4850, 434
+RECT=4707,402,4916,583
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dug snagum 2 Level]
+GROUP=Dungeon Dug snagum
+P=4946, 407
+RECT=4922,393,5087,596
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dug snagum 3 Level]
+GROUP=Dungeon Dug snagum
+P=5072, 343
+RECT=4923,250,5078,389
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dug snagum 4 Level]
+GROUP=Dungeon Dug snagum
+P=4859, 185
+RECT=4727,162,4878,367
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Sluje vstup]
+GROUP=Dungeon Sluje
+P=3934, 227
+RECT=3790,183,3950,226
+RECT=3846,223,3933,242
+RECT=3863,237,3883,251
+RECT=3926,194,3975,252
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Sluje]
+GROUP=Dungeon Sluje
+P=5482, 486
+RECT=5386,436,5796,760
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Tumma Osto vstup]
+GROUP=Dungeon Tajemna hora
+P=413,3416,10
+RECT=380,3410,470,3440
+FLAGS=00012
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Tumma Osto 1 level]
+GROUP=Dungeon Tajemna hora
+P=132,116,-28,2
+RECT=36,2,188,140
+mapplane=2
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Tumma Osto 2 level]
+GROUP=Dungeon Tajemna hora
+P=427,109,-28,2
+RECT=345,2,500,124
+mapplane=2
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Tumma Osto 3 level]
+GROUP=Dungeon Tajemna hora
+P=247,20,-28,2
+mapplane=2
+RECT=203,2,344,110
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Tumma Osto bonus]
+GROUP=Dungeon Tajemna hora
+P=274,136,-28,2
+mapplane=2
+RECT=260,125,286,148
+RECT=210,111,250,146
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Tumma Osto Boss]
+GROUP=Dungeon - bosses
+P=5522,700,1,10
+mapplane=10
+RECT=5502,731,5548,675
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carn Dum vstup]
+GROUP=Dungeon Carn Dum
+P=1692,558
+RECT=1692,545,1756,564
+FLAGS=00012
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carn Dum 1 Level]
+GROUP=Dungeon Carn Dum
+P=5398, 1914, 10
+RECT=5305,1863,5404,1995
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carn Dum 2 Level]
+GROUP=Dungeon Carn Dum
+P=5301, 2307, -17
+RECT=5199,2281,5362,2459
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carn Dum 3 Level]
+GROUP=Dungeon Carn Dum
+P=5260, 1909, 12
+RECT=5190,1857,5301,2005
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carn Dum 4 Level]
+GROUP=Dungeon Carn Dum
+P=5345, 2553
+RECT=5195,2470,5366,2618
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carn Dum 5 Level]
+GROUP=Dungeon Carn Dum
+P=5275, 2042
+RECT=5191,2023,5364,2270
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carn Dum 4 Level new]
+GROUP=Dungeon Carn Dum
+P=5271, 2529, 28, 10
+RECT=5195,2470,5366,2618
+mapplane=10  
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carn Dum bank]
+GROUP=Dungeon Carn Dum
+P=5260, 1892, -18, 10
+RECT=5253,1860,5301,1901
+mapplane=10  
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Arachnon 1 Level]
+GROUP=Dungeon Arachnon
+P=395,1582,-22,2
+RECT=380,1500,550,1598
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Arachnon 2 Level]
+GROUP=Dungeon Arachnon
+P=226,1336,-19,2
+RECT=202,1334,250,1386
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Pevnost Strachu 1 level]
+GROUP=Dungeon
+P=5555,2325,0,10
+RECT=5416,2112,5690,2341
+mapplane=10
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Pevnost Strachu 2 level]
+GROUP=Dungeon
+P=5345,4068,0,10
+RECT=5121,3894,5354,4086
+mapplane=0
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Podzemi]
+GROUP=Dungeon
+P=4794,837,0,10
+RECT=4791,911,4711,812
+mapplane=10
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dol Guldur vstup]
+GROUP=Dungeon Dol Guldur
+P=2756, 1852
+RECT=2723,1879,2735,1895
+RECT=2732,1873,2757,1894
+RECT=2735,1858,2765,1874
+RECT=2736,1868,2728,1877
+RECT=2743,1840,2769,1862
+RECT=2752,1871,2762,1880
+RECT=2754,1879,2760,1885
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dol Guldur Level 1]
+GROUP=Dungeon Dol Guldur
+P=5220, 649, 50
+RECT=5204,646,5250,701
+FLAGS=0081E
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dol Guldur Level 2]
+GROUP=Dungeon Dol Guldur
+P=5294, 649, 30
+RECT=5258,644,5308,697
+FLAGS=0081E
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dol Guldur level 3]
+GROUP=Dungeon Dol Guldur
+P=5638, 3381
+RECT=5196,3364,5672,3458
+FLAGS=0081E
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Dol Guldur Level 4]
+GROUP=Dungeon Dol Guldur
+P=5259, 830, 10, 10
+RECT=5200,820,5300,932
+MAPPLANE=10
+FLAGS=0081E
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA tutorial]
+GROUP=startovni dungeon
+P=5412,2556,15,35
+RECT=5376,2368,5530,2566
+MAPPLANE=35
+FLAGS=0881E
+tag.realm=4
+tag.nobank=1
+tag.kick=1
+events=e_startdung
+resources=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA tutorial high]
+GROUP=startovni dungeon
+P=5333,2444,-17,35
+RECT=5199,2281,5362,2459
+MAPPLANE=35
+FLAGS=0881E
+tag.realm=4
+tag.nobank=1
+tag.kick=1
+events=e_startdung
+resources=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Beridor vstup]
+GROUP=Dung Beridor
+P=620,1059
+RECT=607,1050,663,1085
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+tag.necro=1
+events=e_beridor
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Beridor 1 Level]
+GROUP=Dung Beridor
+P=5834, 2639,10
+RECT=5540,2618,5890,2996
+FLAGS=00812
+tag.realm=3
+tag.necro=1
+tag.nobank=1
+events=e_beridor
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe]
+GROUP=Doupe
+P=5737,3186,-18
+RECT=5662,3036,5952,3255
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Temna Studovna]
+GROUP=Doupe
+P=3422,2980,5
+RECT=3411,2972,3428,2982
+FLAGS=00812
+tag.realm=3
+tag.nobank=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Beridor 2 Level]
+GROUP=Dung Beridor
+P=1903,160,-28,2
+RECT=1824,5,2084,218
+mapplane=2
+FLAGS=00812
+tag.realm=3
+tag.necro=1
+tag.nobank=1
+events=e_beridor
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Beridor 3 Level]
+GROUP=Dung Beridor
+P=5466, 2669,10
+RECT=5194,2628,5514,2910
+FLAGS=00812
+tag.nobank=1
+tag.necro=1
+tag.realm=3
+events=e_beridor
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Beridor Boss]
+GROUP=Dung Beridor
+P=5208,113,0,10
+RECT=5194,2628,5224,95
+mapplane=10
+FLAGS=00812
+tag.nobank=1
+tag.necro=1
+tag.realm=3
+events=r_nosumon
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Brouci dira]
+GROUP=Dungeon - bosses
+P=5554,616,2,11
+RECT=5520,648,5581,588
+mapplane=11
+//FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+events=r_nofield
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Cervi dira]
+GROUP=Dungeon - bosses
+P=5208,113,0,11
+RECT=5194,2628,5224,95
+mapplane=11
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+events=r_nofield
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Etheria vstup]
+GROUP=Dung Etheria
+P=1351, 3131
+RECT=1333,3120,1377,3141
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Etheria bonus]
+GROUP=Dung Etheria
+P=5100,3810
+RECT=5045,3786,5130,3869
+mapplane=5
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Etheria Level 1]
+GROUP=Dung Etheria
+P=5286, 1556
+RECT=5200,1512,5297,1600
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Etheria Level 2]
+GROUP=Dung Etheria
+P=5285, 1648
+RECT=5194,1603,5292,1713
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Etheria Level 3]
+GROUP=Dung Etheria
+P=5309, 745
+RECT=5204,706,5317,767
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Etheria Level 4]
+GROUP=Dung Etheria
+P=5281, 1755
+RECT=5203,1721,5293,1824
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Etheria Tajna Skrys]
+GROUP=Dung Etheria
+P=6086,1883,100
+RECT=6065,1867,6103,1908
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+//[AREA Etheria 5 Level]//asi uz nebude a koliduje to s arenou
+//GROUP=Dung Etheria
+//P=5268, 3540
+//RECT=5198,3501,5274,3584
+//FLAGS=00812
+//tag.nobank=1
+//tag.realm=3
+//RAINCHANCE=00
+//COLDCHANCE=00
+
+[AREA Arda nare] //nejakej ostrov, autor Crunch
+GROUP=Dung Etheria //prej to nejak patri k etherce, vede tam brana nebo co
+P=5099, 3810
+RECT=5096,3783,5094,3849
+FLAGS=00012
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Shagar vstup]
+GROUP=Dung Shagar
+P=839, 3614
+RECT=823,3604,865,3628
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Shagar]
+GROUP=Dung Shagar
+P=5848,2045,10,10
+RECT=5416,1496,5896,2092
+mapplane=10
+FLAGS=00812 
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Shagar lvl 2]
+GROUP=Dung Shagar
+P=5848,2045,10,10
+RECT=5679,1748,5697,1786
+mapplane=11
+FLAGS=00812 
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Shagar lvl 3]
+GROUP=Dung Shagar
+P=5848,2045,10,10
+RECT=5675,1744,5701,1790
+mapplane=12
+FLAGS=00812 
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Shagar lvl 4]
+GROUP=Dung Shagar
+P=5848,2045,10,10
+RECT=5671,1740,5705,1794
+mapplane=20
+FLAGS=00812 
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Glammoreg Caves]
+GROUP=Dungeon Glammoreg
+P=5708,156,0,10
+RECT=5587,148,5800,353
+mapplane=10
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Glammoreg 1 level]
+GROUP=Dung Glammoreg
+P=5473,849,0,10
+RECT=5359,858,5485,784
+mapplane=10
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Glammoreg 2 level]
+GROUP=Dung Glammoreg
+P=5473,849,0,11
+RECT=5359,858,5485,784
+mapplane=11
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Mahat vstup]
+GROUP=Dung Mahat
+P=4682, 2320
+RECT=4640,2272,4776,2352
+FLAGS=00012
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat 1 Level old]
+GROUP=Dung Mahat
+P=5267, 1015,10
+RECT=5196,958,5702,1230
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat non recallzone]
+P=5267,1016,10,10
+RECT=5270,1100,5350,1200
+mapplane=10
+FLAGS=0001E
+RAINCHANCE=00
+COLDCHANCE=00
+tag.realm=3
+
+[AREA Mahat Level 1]
+GROUP=Dung Mahat
+P=5267, 1015,10,10
+RECT=5196,958,5702,1230
+mapplane=10
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat Level 1 Maze 1]
+GROUP=Dung Mahat
+P=5389, 985, 10,11
+RECT=5359, 966, 5420 , 1008
+mapplane=11
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat Level 1 Maze 2]
+GROUP=Dung Mahat
+P=5509, 1015, 10, 11
+RECT=5483, 985, 5539, 1045
+mapplane=11
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat Level 1 Maze 2 floor 2]
+GROUP=Dung Mahat
+P=5509, 1015, 30, 12
+RECT=5483, 985, 5539, 1045
+mapplane=12
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat Level 1 Maze 3]
+GROUP=Dung Mahat
+P=5299, 989, 10, 11
+RECT=5257,966,5341,1003
+mapplane=11
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat extra 1 Level]
+GROUP=Dung Mahat
+P=5267, 1015,10,20
+RECT=5196,958,5702,1230
+mapplane=20
+events=e_qv3_dejloot
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat 2 Level]
+GROUP=Dung Mahat
+P=5233, 1445 , 10
+RECT=5188,1234,5646,1490
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Mahat extra 2 Level]
+GROUP=Dung Mahat
+P=5233, 1445 , 10, 20
+RECT=5188,1234,5646,1490
+FLAGS=00812
+mapplane=20
+events=e_qv3_dejloot
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Jeskyne zatracencu]
+Group=dunegons
+P=4850,2250,0,10
+RECT=4819,2239,4860,2307
+MAPPLANE=10
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Stezky mrtvych]  /// VYPRAVECI NEHRAB NA TO!//  preci jen sem hrabl :o)  konkretne zvecil sem tu zonu.. na celou chodbu..
+GROUP=Stezky mrtvych
+P=4882,1530
+RECT=4824,1476,4934,1570
+RECT=4696,1528,4840,1576
+RECT=4920,1536,5096,1600
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Jamy smrti] /// do techto jam se jde recalnout ale pryc ne jsou to jamy smrti :)
+GROUP=Jamy smrti
+P=5372, 96
+RECT=5184,4,6132,140
+RECT=5808,148,5868,228
+FLAGS=00804
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Jamy smrti level 1] /// do techto jam se jde recalnout ale pryc ne jsou to jamy smrti :)
+GROUP=Jamy smrti
+P=5372, 96
+MAPPLANE=21
+RECT=5184,4,6132,140
+RECT=5808,148,5868,228
+FLAGS=00804
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Jamy smrti level 2] /// do techto jam se jde recalnout ale pryc ne jsou to jamy smrti :)
+GROUP=Jamy smrti
+P=5372, 96
+MAPPLANE=22
+RECT=5184,4,6132,140
+RECT=5808,148,5868,228
+FLAGS=00804
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Jamy smrti level 3] /// do techto jam se jde recalnout ale pryc ne jsou to jamy smrti :)
+GROUP=Jamy smrti
+P=5372, 96
+MAPPLANE=23
+RECT=5184,4,6132,140
+RECT=5808,148,5868,228
+FLAGS=00804
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Jamy smrti level 4] /// do techto jam se jde recalnout ale pryc ne jsou to jamy smrti :)
+GROUP=Jamy smrti
+P=5372, 96
+MAPPLANE=24
+RECT=5184,4,6132,140
+RECT=5808,148,5868,228
+FLAGS=00804
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Jamy smrti level 5] /// do techto jam se jde recalnout ale pryc ne jsou to jamy smrti :)
+GROUP=Jamy smrti
+P=5372, 96
+MAPPLANE=25
+RECT=5184,4,6132,140
+RECT=5808,148,5868,228
+FLAGS=00804
+resources=r_default_rock, r_default_water, r_default_tree
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[area expert]//pouzito jako expert quest
+P=4750,858
+RECT=4707,804,4810,925
+RECT=5000,859,5098,953
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Slunecni jeskyne]
+GROUP=vm quest
+P=5287,1556,-18,5
+RECT=5200,1512,5297,1600
+MAPPLANE=5
+FLAGS=00812
+tag.realm=3
+tag.q000_dungeon=1
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA jednorozcova svatyne]//
+P=4764,1362,10,5
+mapplane=5
+RECT=4742,1341,4785,1366
+GROUP=questy
+FLAGS=00816
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA jeskyne poznani]//
+P=5866,802,0,5
+mapplane=5
+RECT=5845,722,5899,823
+GROUP=questy
+FLAGS=00816
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA jeskyne zapomneni]//
+P=5870,748,0,6
+mapplane=6
+RECT=5845,722,5899,823
+GROUP=questy
+FLAGS=00816
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Dum plny krys]
+GROUP=questy
+P=3508,3291,25,5
+RECT=3486,3325,3544,3281
+mapplane=5
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe sekty]     //G Mutace
+GROUP=questy
+P=4822,2003,-40,5
+RECT=4802,1952,4925,2024
+mapplane=5
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Strasidelny dum]   
+GROUP=questy
+P=4927,1386,20,5
+RECT=4921,1340,4961,1446
+mapplane=5
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+events=r_nofield
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Carodejky]   
+GROUP=questy
+P=2593,2401
+RECT=2590,2397,2595,2404
+//mapplane=5
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+events=r_nofield
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Baziny]   
+GROUP=questy
+P=1658,2441,-5
+RECT=1608,2353,1706,2460
+//mapplane=5
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+//events=r_nofield
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Hnizdo Drapka]   
+GROUP=questy
+P=5629,102,0,5
+RECT=5607,83,5658,126
+mapplane=5
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+[AREA Poklad 71]   
+GROUP=poklady
+P=3923,2505,0,5
+RECT=3915,2502,3928,2509
+mapplane=5
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+events=r_nofield, r_nosumon
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Fangorn]
+GROUP=Stredozeme
+P=2436,2236
+RECT=2111,2223,2152,2302
+RECT=2135,2029,2424,2320
+RECT=2179,2318,2291,2333
+RECT=2207,2332,2229,2349
+RECT=2245,2002,2312,2031
+RECT=2306,2011,2323,2032
+RECT=2318,2020,2352,2033
+RECT=2418,2040,2436,2093
+RECT=2422,2092,2514,2317
+RECT=2505,2129,2541,2168
+RECT=2508,2234,2528,2317
+RECT=2509,2101,2524,2135
+RECT=2511,2162,2536,2183
+RECT=2511,2180,2526,2199
+RECT=2513,2197,2522,2210
+RECT=2517,2112,2533,2135
+RECT=2522,2182,2533,2194
+RECT=2523,2260,2547,2294
+RECT=2525,2248,2537,2264
+RECT=2525,2291,2538,2305
+RECT=2534,2254,2541,2262
+RECT=2534,2289,2542,2299
+RECT=2428,2316,2484,2324
+RECT=2461,2323,2473,2331
+RAINCHANCE=15
+COLDCHANCE=0
+FLAGS=00012
+tag.realm=3
+
+////////////////////////////////////////////////////////
+///////////////  ****  D R A C I ****  /////////////////
+////////////////////////////////////////////////////////
+
+[AREA Pevnost drakobijcu vstup]
+GROUP=Dungeon - draci
+P=3952,35,20
+RECT=3939,21,3964,47
+//mapplane=11
+//FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+events=r_nofield, r_nosumon
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Pevnost drakobijcu]
+GROUP=Dungeon - draci
+P=5437,3543,0,11
+RECT=5417,3527,5463,3568
+mapplane=11
+//FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+events=r_dragon_fortress, r_nosumon, r_nofield
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe bahenniho draka]
+GROUP=Dungeon - draci
+P=5391,80,0,11
+RECT=5359,56,5403,98
+mapplane=11
+//FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield, r_bahenni
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe hnedeho draka]
+GROUP=Dungeon - draci
+P=5630,103,0,11
+RECT=5608,84,5655,126
+mapplane=11
+FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield, r_hnedy
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe zeleneho draka]
+GROUP=Dungeon - draci
+P=5686,75,0,11
+RECT=5659,50,5713,91
+mapplane=11
+//FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield, r_zeleny
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe ohniveho draka]
+GROUP=Dungeon - draci
+P=5092,3823,5,11
+RECT=5066,3783,5119,3841
+mapplane=11
+//FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield, r_ohnivy
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe ledoveho draka]
+GROUP=Dungeon - draci
+P=3801,194,0,11
+RECT=3786,180,3860,215
+mapplane=11
+FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield, r_ledovy
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe bileho draka 1]
+GROUP=Dungeon - draci
+P=5208,113,0,12
+RECT=5194,2628,5224,95
+mapplane=12
+FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield, r_bily
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe bileho draka]
+GROUP=Dungeon - draci
+P=4881,1974,0,12
+RECT=4868,1961,4895,1992
+mapplane=12
+FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield, r_bily
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Doupe cerneho draka]
+GROUP=Dungeon - draci
+P=4881,1974,0,11
+RECT=4868,1961,4895,1992
+mapplane=11
+FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield, r_cerny
+RAINCHANCE=00
+COLDCHANCE=00
+
+[AREA Svatyne]
+GROUP=Dungeon - draci
+P=5427,3604,-1,11
+RECT=5402,3572,5456,3651
+mapplane=11
+FLAGS=0001E             // asi nejde recall ven:)
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_nofield
+RAINCHANCE=00
+COLDCHANCE=00
+
+////////////////////////////////////////////////////////
+///////////////  ****  NB Jeskyne ***  /////////////////
+////////////////////////////////////////////////////////
+
+[AREA Enedwaithske medvedi doupe]
+P=5466,691,0,10
+RECT=5445,671,5478,718
+mapplane=10
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
+
+
+
+////////////////////////////////////////////////////////
+///////////////   ****   MORIA   ****   ////////////////
+
+
+[AREA MORIA]
+GROUP=MORIA
+P=6014, 1223 ,40
+RECT=5740,953,6131,1246
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+EVENTS=r_Moria_central
+RESOURCES=r_default_rock, r_default_water, r_default_tree, r_default_grass
+RAINCHANCE=00
+COLDCHANCE=00
+
+//[AREA MORIA Chodby]
+//GROUP=MORIA_Mesto
+//P=5275, 2042
+//RECT=5191,2023,5364,2270
+//FLAGS=00012
+//tag.nobank=1
+//tag.realm=3
+//tag.housenumber=2001
+//FLAGS=01592
+//RAINCHANCE=00
+//COLDCHANCE=00
+
+
+[AREA bug]// karibik
+P=370,2536,45
+RECT=365,2530,375,2540
+FLAGS=06d9e
+RAINCHANCE=50
+COLDCHANCE=00
+
+
+//////////////////////////////////////// najemni domy //////////////////////////////////////
+[AREA Nurnske hradiste] // opevnene mestecko v Nurnu, lze pronajmout jako celek s polema
+P=3509,3287,26
+RECT=3492,3287,3534,3318//hradiste s domy
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Mesta Mordor
+tag.jmeno_mesta=Nurn
+
+
+[AREA dum 1] // Barad dur  gild haus
+P=3629,2691,-50
+RECT=3613,2689,3630,2704
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=1
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 2]//Umbar
+P=2489,3977,11
+RECT=2485,3969,2496,3978
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=2
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 3]//minas tirith
+P=5545,3737,-80
+RECT=5539,3731,5549,3737
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=3
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+                
+[AREA dum 4]//Dol Amroth
+P=2191,3220,0
+RECT=2179,3213,2192,3220
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=4
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 5]//Oaza Hagir
+P=2932,3712,0
+RECT=2927,3713,2938,3729
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=5
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 6]//Barad Dur   gildhaus
+P=3641,2691,-50
+RECT=3635,2690,3649,2698
+RECT=3636,2698,3649,2702
+RECT=3638,2702,3649,2706
+RECT=3636,2672,3646,2690
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=6
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 7]//Rhun
+P=3842,2171,0
+RECT=3836,2156,3847,2170
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=7
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 8]// Umbar
+P=2487,4053,11
+RECT=2482,4046,2492,4054
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=8
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 9]// Hurka
+P=1582,1194,0
+RECT=1574,1190,1583,1198
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=9
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 10]// Barad dur
+P=3627,2712,-50
+RECT=3622,2706,3635,2713 
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=10
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 11]// Oaza Hagir
+P=2922,3712,0
+RECT=2917,3713,2927,3736
+RECT=2942,3701,2953,3709
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=11
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+                        
+[AREA dum 12]//Barad Dur
+P=3611,2713,-50
+RECT=3606,2706,3618,2714
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=12
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 13]//Barad dur
+P=3587,2694,-25
+RECT=3575,2684,3586,2699
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=13
+tag.houserealm=2
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 14]//hobitin
+P=1092,1344,0
+RECT=1078,1341,1095,1362
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=14
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 15]//umbar
+P=2489,4015,11
+RECT=2483,3983,2496,3992
+RECT=2470,3989,2497,4015
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=15
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 16]//Barad Dur
+P=3575,2713,-25
+RECT=3555,2711,3575,2723
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=16
+tag.houserealm=2
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 17]//Barad dur
+P=3575,2728,-25
+RECT=3553,2723,3575,2738
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=17
+tag.houserealm=2
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 18]//samota
+P=1593,1917
+RECT=1576,1906,1594,1924
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=18
+tag.nora=1
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 19] //barad-dur
+P=3604,2705,-50
+RECT=3589,2694,3605,2709
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=19
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 20] //Barad dur
+P=3600,2724,-50
+RECT=3594,2721,3601,2732
+RECT=3582,2725,3605,2733
+RECT=3584,2733,3605,2738
+RECT=3586,2738,3592,2741
+RECT=3588,2741,3592,2744
+RECT=3592,2738,3605,2745
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=20
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 21] //Umbar
+P=2442,4005,1
+RECT=2430,3995,2442,4012
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=21
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 22] //Barad-dur
+P=3594,2752,-25
+RECT=3591,2746,3598,2751
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=22
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 23] //Barad-dur
+P=3616,2734,-50
+RECT=3608,2731,3616,2738
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=23
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 24] //Barad-dur
+P=3615,2741,-50
+RECT=3607,2739,3616,2747
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=24
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 25] //Barad-dur
+P=3626,2735,-50
+RECT=3619,2733,3627,2738
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=25
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 26] //Barad-dur
+P=3624,2728,-50
+RECT=3619,2724,3624,2731
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=26
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 27] //Barad-dur
+P=3626,2723,-50
+RECT=3624,2718,3633,2723
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=27
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 28] //Esgaroth
+P=3121,1053
+RECT=3114,1038,3127,1053
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=28
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 29] // naky mesto na severu ;)
+P=1235,597
+RECT=1229,584,1250,600
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=29
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 30] // Harad
+P=3632,2733,-50
+RECT=3629,2724,3635,2733
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=30
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 31] // Barad Dur
+P=3639,2732,-50
+RECT=3637,2726,3645,2732
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=31
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 32] // Oaza Hagir
+P=2912,3711
+RECT=2906,3712,2917,3723
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=32
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 33] // Nurn
+P=3430,3236,12
+RECT=3424,3217,3454,3230
+RECT=3424,3227,3434,3236
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=33
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 34] // Nurnen
+P=3621,3264,12
+RECT=3615,3253,3636,3264
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=34
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 35] // Umbar
+P=2440,4058,10
+RECT=2433,4044,2445,4058
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=35
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+              
+[AREA dum 36] // Rhun
+P=3817,2175
+RECT=3809,2168,3816,2174
+RECT=3807,2172,3816,2185
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=36
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 37] // Rhun 
+P=3816,2164
+RECT=3812,2158,3820,2164
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=37
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 38] // Rhun
+P=3827,2171
+RECT=3823,2165,3830,2171
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=38
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 39] // Nurn
+P=3503,3302,25
+RECT=3494,3294,3503,3308
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=39
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 40] // Nurn
+P=3520,3313,25
+RECT=3521,3310,3534,3318
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=40
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 41] // Rhun
+P=3834,2129
+RECT=3828,2122,3837,2129
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=41
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 42] // Rhun
+P=3817,2119
+RECT=3813,2113,3820,2119
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=42
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 43] // Nurn
+P=3529,3309,25
+RECT=3523,3291,3534,3298
+RECT=3526,3296,3534,3309
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=43
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 44] //edoras
+P=2361,2601
+RECT=2373,2605,2362,2589
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=44
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 45] // Minas Tirith
+P=5616,3976,-60
+RECT=5607,3958,5626,3976
+RECT=5616,3953,5621,3958
+RECT=5621,3949,5626,3958
+RECT=5626,3932,5628,3949
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=45
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 46] // Nurnen
+P=3718,3338
+RECT=3704,3324,3718,3342
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=46
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 47] // Nurnen
+P=3809,3308
+RECT=3804,3292,3818,3307
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=47
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 48] // Tharbad
+P=1594,1934
+RECT=1589,1923,1600,1934
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=48
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 49] // Tharbad
+P=1603,1921
+RECT=1599,1911,1609,1921
+RECT=1608,1910,1621,1922
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=49
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 50] // Tharbad
+P=1609,1938
+RECT=1604,1927,1615,1938
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=50
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 51] // ?
+P=887,631
+RECT=883,621,898,631
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=51
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 52] // Gondor
+P=883,650
+RECT=869,649,880,667
+RECT=877,649,883,660
+RECT=879,641,888,650
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=52
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 53] // Nurnen
+P=3897,3231
+RECT=3893,3222,3902,3231
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=53
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 54] // Samota  skalni dum  nurnen
+P=3886,3533,1
+RECT=3877,3516,3896,3533
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=54
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 55] // Harad  Gild Haus
+P=4146,3946,20
+RECT=4129,3933,4152,3946
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=55
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 56] // najem 100K, domek v Lorienu
+P=2387,1890,20
+RECT=2378,1868,2397,1891
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=56
+EVENTS=r_playerhouse, r_nosumon, r_nohorsehigh
+tag.houserealm=1
+tag.strom=1
+
+[AREA dum 57] // najem 80K, domek nad Hobitinem
+P=358,1121
+RECT=350,1105,364,1120
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=57
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 58] // najem 50K, domek nad Hobitinem
+P=378,1117,2
+RECT=365,1112,378,1124
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=58
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 59] //samota
+P=2159,2879
+RECT=2144,2866,2154,2886
+RECT=2151,2866,2164,2879
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=59
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 60] //sede pristavy
+P=752,1367
+RECT=745,1349,761,1368
+RECT=750,1346,761,1351
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=60
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 61] //sede pristavy
+P=729,1382
+RECT=720,1379,728,1391
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=61
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 62] //Samota
+P=861,1435
+RECT=851,1428,861,1450
+RECT=859,1428,866,1435
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=62
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 63] // Rhun
+P=3903,2133,2
+RECT=3898,2128,3912,2136
+RECT=3904,2136,3912,2142
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=63
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 64] // Harad
+P=4133,3954
+RECT=4127,3947,4139,3957
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=64
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 65] // Harad
+P=4205,3935,20
+RECT=4198,3924,4215,3939
+RECT=4214,3924,4217,3932
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=65
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 66] // Harad
+P=4137,3925,20
+RECT=4129,3917,4137,3932
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms 
+tag.housenumber=66
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 67] // harad
+P=4173,4003
+RECT=4167,3994,4176,4003
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=67
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 68] //  dol
+P=3186,1010,2
+RECT=3178,1004,3186,1015
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=68
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 69] // Minas Tirith
+P=5618,3799,-40
+RECT=5606,3787,5630,3800
+RECT=5607,3775,5611,3788
+RECT=5610,3772,5612,3788
+RECT=5612,3774,5616,3784
+RECT=5612,3784,5629,3788
+RECT=5616,3776,5619,3785
+RECT=5619,3777,5621,3781
+RECT=5619,3781,5626,3785
+RECT=5621,3779,5624,3782
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=69
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 70] // najem 30K, domek lorien
+P=2391,1861
+RECT=2382,1856,2391,1865
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=70
+EVENTS=r_playerhouse, r_nosumon
+tag.houserealm=1
+
+[AREA dum 71] // Barad
+P=3680,2762
+RECT=3675,2751,3684,2762
+RECT=3680,2747,3690,2759
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=71
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 72] // Calembel
+P=2479,2943
+RECT=2474,2934,2489,2943
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=72
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 73] // najem 35, Lorien
+P=2467,1847,20
+RECT=2455,1838,2468,1851
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=73
+EVENTS=r_playerhouse, r_nosumon, r_nohorsehigh
+tag.houserealm=1
+tag.strom=1
+
+[AREA dum 74] // Minas Tirith
+P=5543,3941,-20
+RECT=5529,3920,5554,3940
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=74
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 75] // Edoras
+P=2359,2598
+RECT=2348,2586,2359,2603
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=75
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 76] 
+P=2182,3226,2//amroth
+RECT=2170,3224,2182,3232
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=76
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 77] // samota
+P=4531,1220
+RECT=4525,1209,4538,1220
+RECT=4537,1209,4548,1217
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=77
+tag.houserealm=2
+
+[AREA dum 78] // Cair Andros
+P=2993,2814
+RECT=2986,2806,2999,2813
+RECT=2986,2812,2994,2827
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=78
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 79] // Edoras
+P=2333,2560,20
+RECT=2329,2552,2343,2559
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=79
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 80] // Sede pristavy
+P=730,1367
+RECT=720,1364,730,1378
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=80
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 81] // SAMOTA
+P=933,1109
+RECT=921,1096,934,1107
+RECT=921,1107,930,1111
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=81
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 82] // Umbar
+P=2473,3977,1
+RECT=2458,3974,2467,3988
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=82
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 83] // Cair Andros
+P=3013,2813
+RECT=3006,2809,3013,2819
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=83
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 84] //  gondor 100k
+P=1686,2276,5
+RECT=1682,2258,1701,2276
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=84
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 85] //  Umbar
+P=2467,3979,1
+RECT=2468,3967,2481,3976
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=85
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 86] // edoras 
+P=2264,2505
+RECT=2253,2499,2264,2507
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=86
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 87] // edoras
+P=2260,2524
+RECT=2250,2509,2267,2525
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=87
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 88] 
+P=2189,3238,2//dol amroth
+RECT=2175,3234,2189,3242
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=88
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 89] // edoras 
+P=2338,2580,20
+RECT=2323,2581,2342,2606
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=89
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 90] // edoras 
+P=2361,2602
+RECT=2348,2603,2362,2620
+RECT=2361,2605,2373,2619
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=90
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 91] // edoras
+P=2299,2544,20
+RECT=2292,2529,2307,2542
+RECT=2304,2527,2310,2546
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=91
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 92] // edoras 
+P=2266,2499
+RECT=2267,2499,2279,2506
+RECT=2270,2506,2279,2513
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=92
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 93] // Dol
+P=3179,1045,1
+RECT=3170,1035,3184,1042
+RECT=3170,1037,3178,1050
+RECT=3170,1046,3184,1055
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=93
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 94] // mordor samota
+P=4919,2818
+RECT=4912,2803,4927,2818
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=94
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 95] // Oaza Hagir
+P=2900,3712
+RECT=2892,3712,2906,3724
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.housenumber=95
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 96] // Minas Tirith
+P=5562,3942,-20
+RECT=5555,3920,5570,3940
+RECT=5566,3917,5579,3934
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.housenumber=96
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 97] // Tahabar
+P=2789,3795
+RECT=2790,3787,2799,3802
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.housenumber=97
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 98] // Minas Tirith
+P=5520,3933,-20
+RECT=5512,3920,5530,3930
+RECT=5512,3930,5518,3937
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.housenumber=98
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 99] //Samota
+P=879,1452
+RECT=874,1441,886,1451
+RECT=886,1441,892,1449
+RECT=891,1442,897,1448
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.housenumber=99
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 100] // Tahabar
+P=2796,3780
+RECT=2796,3772,2809,3786
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.housenumber=100
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 101] // Harad
+P=4170,4029
+RECT=4161,4026,4169,4033
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.housenumber=101
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 102] // Minas Tirith
+P=5605,3904,-19
+RECT=5593,3897,5604,3913
+RECT=5595,3889,5604,3897
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.housenumber=102
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 103] // Kralovstvi lesnich elfu
+P=2987,1266,45
+RECT=2981,1259,3012,1280
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+tag.housenumber=103
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon, r_nohorsehigh
+tag.houserealm=1
+tag.strom=1
+
+
+[AREA dum 104] // Harad 
+P=4157,4024
+RECT=4153,4016,4161,4024
+tag.housenumber=104
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 105] // Fornost
+P=1481,1112
+RECT=1470,1107,1479,1122
+RECT=1478,1113,1484,1122
+tag.housenumber=105
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 106] // Harad
+P=4119,4020
+RECT=4115,4012,4125,4020
+tag.housenumber=106
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 107] 
+P=1582,1201 //hurka
+RECT=1574,1198,1582,1207
+tag.housenumber=107
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 108] // Mordor
+P=4909,2798
+RECT=4903,2784,4918,2799
+tag.housenumber=108
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 109] // Helmuv zleb
+P=5310,3714
+RECT=5305,3715,5317,3724
+RECT=5310,3709,5318,3713
+RECT=5312,3712,5317,3716
+RECT=5303,3703,5318,3712
+tag.housenumber=109
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 110]// Severni ctvrtka
+P=1083,1185
+RECT=1080,1172,1092,1184
+tag.housenumber=110
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 111]// Rhun
+P=3794,2141,2
+RECT=3772,2121,3800,2152
+RECT=3769,2146,3796,2159
+tag.housenumber=111
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 112]// Rhun
+P=3830,2118
+RECT=3826,2112,3834,2119
+tag.housenumber=112
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 113]// Leben
+P=2735,3267
+RECT=2714,3259,2728,3278
+RECT=2726,3264,2735,3277
+tag.housenumber=113
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 114]// Umbar
+P=2487,4063,11
+RECT=2483,4057,2492,4063
+tag.housenumber=114
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+
+[AREA dum 115]// Minas Tirith
+P=5645,3967,-80
+RECT=5634,3953,5645,3975
+RECT=5634,3972,5641,3978
+tag.housenumber=115
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 116]// barad
+P=3607,2772
+RECT=3592,2767,3602,2777
+RECT=3601,2768,3607,2776
+tag.housenumber=116
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 117]// Minas Tirith
+P=5661,3982,-80
+RECT=5655,3964,5666,3981
+tag.housenumber=117
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 118]// Hobitin
+P=1074,1339
+RECT=1064,1337,1075,1346
+tag.housenumber=118
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 119]// Minas Tirith
+P=5553,3994,-80
+RECT=5546,3989,5553,3998
+tag.housenumber=119
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 120]// Minas Tirith
+P=5544,3999,-80
+RECT=5538,3989,5546,3999
+tag.housenumber=120
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 121]//Minas Tirith
+P=5534,3998,-80
+RECT=5530,3989,5538,3998
+tag.housenumber=121
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 122]//zabovresky
+P=1202,1345
+RECT=1193,1335,1206,1345
+tag.housenumber=122
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 123]//Hobitin
+P=1067,1332
+RECT=1061,1323,1071,1332
+tag.housenumber=123
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+      
+[AREA dum 124]//Hurecko
+P=1639,1196,35
+RECT=1636,1187,1644,1195
+tag.housenumber=124
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 125]//minas tirith
+P=5527,3998,-80//minas
+RECT=5522,3989,5530,3998
+tag.housenumber=125
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 126]/Minas Tirith
+P=5518,3998,-80//minas
+RECT=5514,3989,5522,3998
+tag.housenumber=126
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 127]//Hurecko
+P=1633,1185,35
+RECT=1625,1182,1631,1188
+tag.housenumber=127
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 128]//minas tirith
+P=5668,3981,-80//minas
+RECT=5666,3964,5675,3981
+tag.housenumber=128
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 129]     //esgaroth
+P=3128,1066
+RECT=3125,1068,3135,1077
+tag.housenumber=129
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 130]     //esgaroth
+P=3128,1065
+RECT=3130,1053,3142,1066
+RECT=3125,1057,3132,1064
+tag.housenumber=130
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 131]     //edoras
+P=2268,2552,20
+RECT=2261,2549,2267,2555
+tag.housenumber=131
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 132]     //esgaroth
+P=3116,1067
+RECT=3107,1064,3115,1071
+tag.housenumber=132
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 133]     //mesto na severu
+P=1198,644
+RECT=1193,632,1204,644
+RECT=1207,621,1192,639
+tag.housenumber=133
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 134]// gondorske uzemi 50k
+P=2477,1744,20
+RECT=2469,1740,2478,1747
+tag.housenumber=134
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon
+tag.houserealm=1
+tag.strom=1
+
+[AREA dum 135]
+P=677,1307//sede pristavt
+RECT=668,1303,677,1324
+tag.housenumber=135
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 136]     //Minas Tirith
+P=5664,3850,-80
+RECT=5654,3846,5664,3854
+tag.housenumber=136
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 137]     //Minas Tirith
+P=5665,3841,-80
+RECT=5654,3838,5664,3845
+tag.housenumber=137
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 138]     //Minas Tirith
+P=5664,3834,-80
+RECT=5654,3830,5664,3837
+tag.housenumber=138
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 139]     //Minas Tirith
+P=5664,3825,-80
+RECT=5654,3820,5664,3829
+tag.housenumber=139
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 140]     //Minas Tirith
+P=5669,3806,-80
+RECT=5654,3800,5669,3812
+RECT=5654,3811,5662,3818
+tag.housenumber=140
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 141]     //Umbar
+P=2419,4019
+RECT=2416,4011,2423,4019
+tag.housenumber=141
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 142]     //Umbar
+P=2440,4021,16
+RECT=2430,4014,2442,4025
+tag.housenumber=142
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 143]     //Umbar
+P=2440,4029,16
+RECT=2430,4025,2442,4035
+tag.housenumber=143
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 144]     //Umbar
+P=2397,4053,2
+RECT=2394,4045,2403,4053
+tag.housenumber=144
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 145]     //Umbar
+P=2440,4066,11
+RECT=2430,4063,2440,4071
+tag.housenumber=145
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 146]     //Umbar
+P=2449,4055,12
+RECT=2445,4044,2453,4057
+tag.housenumber=146
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 147]     //Umbar
+P=2465,4059,11
+RECT=2459,4041,2470,4059
+tag.housenumber=147
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 148]     //Umbar
+P=2479,4069,7
+RECT=2468,4069,2491,4088
+tag.housenumber=148
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 149]     //Edoras
+P=2290,2521
+RECT=2285,2510,2295,2522
+tag.housenumber=149
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 150]     //Sede pristavy
+P=694,1293//sede pristavy
+RECT=685,1290,693,1302
+tag.housenumber=150
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 151]     //Edoras
+P=2344,2525
+RECT=2340,2516,2349,2524
+tag.housenumber=151
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 152]     //Edoras
+P=2357,2525
+RECT=2350,2516,2359,2524
+tag.housenumber=152
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 153]     //Edoras
+P=2354,2579
+RECT=2349,2570,2359,2580
+tag.housenumber=153
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 154]     //Edoras
+P=2323,2562,30
+RECT=2318,2549,2328,2561
+tag.housenumber=154
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 155]     //Edoras
+P=2286,2573,40
+RECT=2282,2564,2292,2574
+tag.housenumber=155
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 156]     //Edoras
+P=2293,2558,20
+RECT=2282,2553,2294,2562
+tag.housenumber=156
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 157]     //Edoras
+P=2307,2558,20
+RECT=2296,2553,2308,2562
+tag.housenumber=157
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 158]     //Edoras
+P=2264,2544,20
+RECT=2257,2540,2265,2548
+tag.housenumber=158
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 159]     //Esgaroth
+P=3115,1059
+RECT=3107,1052,3115,1062
+tag.housenumber=159
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 160]     //Hobitin
+P=1116,1355,0
+RECT=1100,1347,1115,1360
+tag.housenumber=160
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 161]     //Hobitin
+P=1100,1307,0
+RECT=1098,1298,1111,1307
+RECT=1100,1305,1114,1314
+tag.housenumber=161
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 162]     //Hobitin
+P=1085,1291,0
+RECT=1085,1276,1100,1286
+RECT=1085,1282,1095,1293
+tag.housenumber=162
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[area dum 163]
+P=731,1281//sede pristavy
+RECT=725,1271,736,1279
+tag.housenumber=163
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 164]     
+P=742,1281//sede pristavy
+RECT=737,1271,748,1279
+tag.housenumber=164
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 165]     //Minas Tirith
+P=5686,4027,-80
+RECT=5683,4016,5694,4025
+RECT=5690,4007,5699,4018
+tag.housenumber=165
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 166]     //Dol Amroth
+P=2286,3122
+RECT=2277,3113,2286,3126
+RECT=2281,3107,2286,3115
+tag.housenumber=166
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 167]     //Minas Tirith
+P=5522,3959,-40
+RECT=5513,3950,5530,3958
+tag.housenumber=167
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 168]     //Minas Tirith
+P=5541,3959,-40
+RECT=5530,3950,5550,3958
+tag.housenumber=168
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 169]     //Minas Tirith
+P=5626,3909,-40
+RECT=5613,3903,5625,3914
+tag.housenumber=169
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 170]     //Minas Tirith
+P=5626,3895,-40
+RECT=5615,3888,5625,3903
+tag.housenumber=170
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 171]     //Minas Tirith
+P=5590,3789,-40
+RECT=5585,3781,5595,3789
+tag.housenumber=171
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 172]     //Severni ctvrtka
+P=1042,1182
+RECT=1037,1172,1047,1182
+tag.housenumber=172
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 173]     //Sede Pristavy
+P=718,1389,5
+RECT=710,1386,718,1398
+tag.housenumber=173
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 174]     //Sede Pristavy
+P=744,1382
+RECT=732,1379,743,1389
+tag.housenumber=174
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 175]     //Sede Pristavy
+P=743,1368
+RECT=733,1365,742,1375
+tag.housenumber=175
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 176]     //Parezov
+P=1268,1410
+RECT=1258,1407,1269,1415
+tag.housenumber=176
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 177]     //Parezov
+P=1266,1402
+RECT=1262,1393,1272,1402
+tag.housenumber=177
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 178]     //Parezov
+P=1277,1417
+RECT=1265,1417,1277,1426
+tag.housenumber=178
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 179]     //Hurka
+P=1562,1179
+RECT=1553,1172,1563,1185
+tag.housenumber=179
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 180]     //Hurka
+P=1569,1202
+RECT=1557,1189,1568,1199
+tag.housenumber=180
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 181]     //Fornost
+P=1446,1093
+RECT=1437,1085,1453,1092
+tag.housenumber=181
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 182]     //Fornost
+P=1421,1099,1
+RECT=1411,1098,1427,1105
+tag.housenumber=182
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 183]     //Fornost
+P=1404,1110
+RECT=1395,1106,1404,1114
+tag.housenumber=183
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 184]     //Minas Tirith
+P=5578,3789,-40
+RECT=5572,3781,5585,3789
+tag.housenumber=184
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 185]     //Pelargir
+P=2896,3226,2
+RECT=2888,3219,2900,3227
+tag.housenumber=185
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 186]     //Pelargir
+P=2907,3237,5
+RECT=2898,3230,2910,3238
+tag.housenumber=186
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 187]     //Pelargir
+P=2915,3232
+RECT=2909,3222,2921,3230
+RECT=2912,3229,2918,3232
+tag.housenumber=187
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 188]     //Leben
+P=2721,3255
+RECT=2715,3240,2725,3255
+tag.housenumber=188
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 189]     //v kraji
+P=1226,1346,0
+RECT=1220,1337,1229,1345
+tag.housenumber=189
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 190]     //forindon
+P=1210,604
+RECT=1205,593,1216,605
+tag.housenumber=190
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 191]     //Radovsko
+P=1317,1394,0
+RECT=1311,1384,1319,1398
+tag.housenumber=191
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 192]     //Bagronk
+P=3908,3009
+RECT=3891,2996,3908,3019
+tag.housenumber=192
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 193]     //forindon
+P=1229,654
+RECT=1224,643,1235,655
+tag.housenumber=193
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 194]     //Minas TIriht
+P=5564,3789,-40
+RECT=5559,3781,5571,3789
+tag.housenumber=194
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 195]     //Minas Tirith
+P=5660,3960,-80
+RECT=5656,3951,5676,3959
+tag.housenumber=195
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 196]     //minas tirith
+P=5554,3789,-40
+RECT=5550,3781,5558,3789
+tag.housenumber=196
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 197]     //oaza  Hagir
+P=2889,3710
+RECT=2875,3702,2889,3718
+tag.housenumber=197
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 198]     //Gondor
+P=2568,2169
+RECT=2556,2164,2568,2173
+tag.housenumber=198
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 199]     //Rohan
+P=2568,2151
+RECT=2563,2142,2573,2152
+tag.housenumber=199
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 200]     //Minas Tirith
+P=5548,3810,-20
+RECT=5542,3797,5560,3809
+tag.housenumber=200
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 201]     //minas tirith
+P=5671,3781,-80
+RECT=5667,3773,5674,3781
+tag.housenumber=201
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 202]     //minas tirith
+P=5678,3781,-80
+RECT=5674,3773,5683,3781
+tag.housenumber=202
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 203]     //Minas Tirith
+P=5575,3810,-20
+RECT=5560,3797,5579,3809
+tag.housenumber=203
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 204]     //Helmuv zleb
+P=5286,3719
+RECT=5278,3708,5286,3721
+tag.housenumber=204
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 205]     //Minas Tirith
+P=5589,3811,-20
+RECT=5579,3794,5602,3809
+tag.housenumber=205
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 206]     //Harad
+P=4134,4043
+RECT=4127,4034,4134,4048
+tag.housenumber=206
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 207]     //Hurka
+P=1569,1185
+RECT=1565,1174,1572,1184
+tag.housenumber=207
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 208]     //Dol
+P=3190,1068
+RECT=3181,1064,3189,1075
+tag.housenumber=208
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 209]     //Dol
+P=3195,1035
+RECT=3188,1022,3199,1035
+tag.housenumber=209
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 210]     //Dol
+P=3208,1035
+RECT=3201,1037,3209,1048
+RECT=3209,1033,3216,1047
+tag.housenumber=210
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 211]     //Dol
+P=3191,1061,1
+RECT=3188,1061,3195,1047
+tag.housenumber=211
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 212]     //Dol
+P=3199,1059,2
+RECT=3196,1049,3204,1060
+tag.housenumber=212
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 213]     //Erebor
+P=4856,2106
+RECT=4848,2087,4862,2105
+tag.housenumber=213
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 214]     //Erebor
+P=4840,2109
+RECT=4817,2097,4840,2111
+tag.housenumber=214
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 215]     //Erebor
+P=4802,2063
+RECT=4796,2052,4810,2063
+tag.housenumber=215
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 216]     //Erebor
+P=4800,2069
+RECT=4786,2064,4800,2073
+tag.housenumber=216
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 217]     //Erebor
+P=4800,2080
+RECT=4786,2075,4800,2083
+tag.housenumber=217
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 218]     //Erebor
+P=4800,2091
+RECT=4786,2086,4800,2094
+tag.housenumber=218
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 219     //Erebor
+P=4800,2114
+RECT=4786,2108,4800,2116
+tag.housenumber=219
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 220]   //kralovstvi lesnich elfu
+P=2976,1234,45
+RECT=2974,1219,2995,1234
+tag.housenumber=220
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon, r_nohorsehigh
+tag.houserealm=1
+tag.strom=1
+
+
+[AREA dum 221]  //kralovstvi lesnich elfu
+P=2956,1228,45
+RECT=2952,1217,2964,1228
+tag.housenumber=221
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon, r_nohorsehigh
+tag.houserealm=1
+tag.strom=1
+
+[AREA dum 222]   //kralovstvi lesnich elfu
+P=2983,1252,45
+RECT=2970,1240,2986,1252
+tag.housenumber=222
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon, r_nohorsehigh
+tag.houserealm=1
+tag.strom=1
+
+[AREA dum 223]   //kralovstvi lesnich elfu
+P=2963,1260,45
+RECT=2951,1252,2963,1263
+tag.housenumber=223
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon, r_nohorsehigh
+tag.houserealm=1
+tag.strom=1
+
+[AREA dum 224]   //Radovsko
+P=1298,1396,0
+RECT=1289,1382,1296,1396
+RECT=1297,1382,1305,1395
+tag.housenumber=224
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 225]   //Radovsko
+P=1301,1378,0
+RECT=1294,1375,1301,1381
+tag.housenumber=225
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 226]   //Pelanorska pole 
+P=5704,3947,-80
+RECT=5696,3935,5706,3945
+tag.housenumber=226
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 227]   //severni ctvrtka
+P=1157,1229,0
+RECT=1155,1217,1169,1229
+tag.housenumber=227
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 228]   //severni ctvrtka
+P=1181,1241,0
+RECT=1176,1227,1187,1241
+tag.housenumber=228
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 229]   //severni ctvrtka
+P=1198,1236,0
+RECT=1191,1219,1210,1236
+tag.housenumber=229
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 230]   //severni ctvrtka
+P=1213,1157,0
+RECT=1204,1146,1217,1157
+tag.housenumber=230
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 231]   //severni ctvrtka
+P=1209,1171,0
+RECT=1201,1161,1210,1171
+tag.housenumber=231
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 232]   //Bagronk
+P=3898,2989
+RECT=3894,2982,3902,2988
+tag.housenumber=232
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 233]   //Bagronk
+P=3915,2995
+RECT=3911,2989,3919,2995
+tag.housenumber=233
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 234]   //Bagronk
+P=3921,3008
+RECT=3917,3002,3925,3008
+tag.housenumber=234
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 235]   //Bagronk
+P=3921,3030
+RECT=3917,3023,3925,3029
+tag.housenumber=235
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 236]   //Bagronk
+P=3906,3030
+RECT=3902,3024,3910,3030
+tag.housenumber=236
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 237]   //gondorske uzemi
+P=2595,2168
+RECT=2590,2159,2599,2168
+tag.housenumber=237
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 238]   //Harad
+P=4121,3914
+RECT=4111,3910,4121,3917
+tag.housenumber=238
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 239]   //Harad
+P=4121,3921
+RECT=4111,3917,4121,3924
+tag.housenumber=239
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 240]   //Harad
+P=4121,3928
+RECT=4111,3924,4121,3931
+tag.housenumber=240
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 241]   //Harad
+P=4121,3935
+RECT=4111,3931,4121,3938
+tag.housenumber=241
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 242]   //Harad
+P=4121,3941
+RECT=4111,3938,4121,3945
+tag.housenumber=242
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 243]   //Harad
+P=4121,3949
+RECT=4111,3945,4121,3952
+tag.housenumber=243
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 244]   //Rhun
+P=3773,2094
+RECT=3759,2085,3776,2093
+tag.housenumber=244
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 245]   //barad
+P=3586,2776
+RECT=3578,2772,3586,2778
+tag.housenumber=245
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon
+tag.houserealm=2
+
+[AREA dum 246]   //Calembel
+P=2497,2954
+RECT=2493,2944,2501,2954
+tag.housenumber=246
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon
+tag.houserealm=1
+tag.strom=1
+
+[AREA dum 247]   //Minas Tirith
+P=5702,3775,-80
+RECT=5692,3751,5708,3775
+tag.housenumber=247
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+EVENTS=r_playerhouse, r_nosumon
+tag.houserealm=1
+tag.strom=1
+
+[AREA dum 248]     //Helmuv zleb
+P=5298,3712
+RECT=5292,3704,5302,3712
+tag.housenumber=248
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 249]     //Helmuv zleb
+P=5312,3736
+RECT=5301,3727,5312,3736
+RECT=5295,3726,5302,3733
+tag.housenumber=249
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 250]     //Oaza Hagir
+P=2925,3708
+RECT=2918,3697,2934,3707
+tag.housenumber=250
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 251]     //minas tirith
+P=5651,3936,-80
+RECT=5641,3923,5660,3936
+RECT=5659,3915,5667,3940
+RECT=5652,3915,5661,3925
+RECT=5645,3919,5654,3926
+tag.housenumber=251
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 252]     //minas tirith
+P=5618,3992,-80
+RECT=5602,3988,5618,3996
+tag.housenumber=252
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 253]     //minas tirith
+P=5589,4003,-80
+RECT=5585,3996,5593,4003
+tag.housenumber=253
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 254]     //minas tirith
+P=5581,4003,-80
+RECT=5576,3996,5585,4003
+tag.housenumber=254
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 255]     //minas tirith
+P=5570,3999,-80
+RECT=5565,3996,5576,4003
+tag.housenumber=255
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 256]     //minas tirith
+P=5590,3774,-60
+RECT=5586,3760,5594,3773
+tag.housenumber=256
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 257]     //minas tirith
+P=5547,3779,-40
+RECT=5537,3770,5545,3783
+tag.housenumber=257
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 258]     //minas tirith
+P=5547,3779,-40
+RECT=5545,3770,5557,3777
+RECT=5549,3774,5556,3781
+tag.housenumber=258
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 259]     //Hobitin
+P=1104,1295,0
+RECT=1100,1279,1108,1294
+RECT=1095,1284,1108,1294
+tag.housenumber=259
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+tag.nora=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 260]     //minas tirith
+P=5647,3895,-60
+RECT=5630,3883,5648,3908
+tag.housenumber=260
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+
+[AREA dum 261]     //barad-dur
+P=3634,2739,-50
+RECT=3630,2739,3638,2745
+tag.housenumber=261
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 262]     //barad-dur
+P=3647,2739,-50
+RECT=3640,2733,3646,2741
+tag.housenumber=262
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 263]     //Minas tirith
+P=5623,3886,-40
+RECT=5615,3882,5621,3888
+tag.housenumber=263
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 264]     //Dol Amroth
+P=2374,3072
+RECT=2361,3061,2380,3072
+tag.housenumber=264
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 265]     //Barad dur
+P=3713,2731
+RECT=3710,2723,3716,2731
+tag.housenumber=265
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 266]     //Dol Amroth
+P=2255,3296
+RECT=2250,3283,2266,3296
+tag.housenumber=266
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 267]     //Edoras
+P=2371,2575,20
+RECT=2367,2573,2371,2579
+tag.housenumber=267
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 268]     //Dol Amroth
+P=2287,3288
+RECT=2276,3279,2289,3287
+tag.housenumber=268
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 269]     //Dol Amroth
+P=2247,3231
+RECT=2243,3222,2251,3231
+tag.housenumber=269
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 270]     //Harad
+P=4236,3950,-30
+RECT=4228,3941,4236,3952
+tag.housenumber=270
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 271]     //Dol Amroth
+P=2288,3164
+RECT=2285,3148,2292,3164
+tag.housenumber=271
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 272]     //Dol Amroth
+P=2209,3220
+RECT=2206,3214,2217,3220
+tag.housenumber=272
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 273]     //Dol Amroth
+P=2206,3244
+RECT=2199,3237,2215,3244
+tag.housenumber=273
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 274]     //Dol Amroth
+P=2196,3244
+RECT=2193,3235,2198,3243
+tag.housenumber=274
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 275]     //Minas Tirith
+P=5701,3803,-80
+RECT=5691,3791,5700,3816
+tag.housenumber=275
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 276]     //Pelargir
+P=2883,3222
+RECT=2873,3215,2882,3229
+tag.housenumber=276
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 277]     //Harad
+P=4230,4004,-30
+RECT=4225,3992,4234,4003
+tag.housenumber=277
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 278]     //Lebenin
+P=2774,3198,-2
+RECT=2757,3196,2774,3206
+tag.housenumber=278
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 279]     //Nurnen
+P=3338,3525,40
+RECT=3334,3513,3344,3525
+tag.housenumber=279
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 280]     //Umbar
+P=2417,4044
+RECT=2410,4036,2421,4044
+tag.housenumber=280
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=2
+EVENTS=r_playerhouse, r_nosumon
+
+[AREA dum 281]     //Minas Tirith
+P=5599,3741,-80
+RECT=5583,3742,5591,3750
+RECT=5590,3736,5599,3750
+tag.housenumber=281
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+tag.houserealm=1
+EVENTS=r_playerhouse, r_nosumon
+
+////////////////////////////////////////////////////////////////////////////
+//                  Kvest rooms    
+
+
+[AREA Dno pytle]     //Hobitin dno pytle
+P=1066,1313
+RECT=1057,1285,1083,1303
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+[AREA Manweho chram]     //chram pana vetru...   Minas Tirith
+P=5606,3857,-20
+RECT=5598,3817,5613,3844
+tag.housenumber=2000
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=quest Rooms
+EVENTS=r_Manweho_chram
+
+// 9.  Klerik Vardy          - kralovny hvezd 
+
+[AREA sidlo Kleriku Valar Vardy]     
+P=2036,2146,10
+RECT=4824,3873,4874,3929
+tag.housenumber=2001
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=quest Rooms
+EVENTS=r_sidlo_kleriku_Valar_Vardy
+
+[AREA Chram Valar Vardy]     
+P=4841,3869,0
+RECT=4830,3836,4850,3871
+tag.housenumber=2002
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=quest Rooms
+EVENTS=r_Chram_Valar_Vardy
+
+/////////////vendori///////////
+  
+[AREA stanek 1]     //Minas Tirith
+P=5606,3945,-40
+RECT=5598,3943,5613,3950
+RECT=5604,3939,5613,3944
+tag.housenumber=1
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+[AREA stanek 2]     //Minas Tirith
+P=5611,3930,-40
+RECT=5603,3921,5613,3938
+tag.housenumber=2
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00
+COLDCHANCE=00
+GROUP=Rooms
+
+
+[AREA stanek 3]     //Umbar
+P=2473,4054,10
+RECT=2470,4040,2477,4049
+tag.housenumber=3
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 4]     //Umbar
+P=2485,4026,11
+RECT=2481,4021,2490,4030
+tag.housenumber=4
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 5]     //Umbar
+P=2473,4045,10
+RECT=2470,4050,2477,4059
+tag.housenumber=5
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+[AREA stanek 6]     //Umbar
+P=2475,4025,11
+RECT=2471,4021,2480,4029
+tag.housenumber=6
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 7]     //Umbar
+P=2415,4057,1
+RECT=2409,4051,2416,4060
+tag.housenumber=7
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 8]     //Umbar
+P=2421,4055,1
+RECT=2417,4049,2425,4057
+tag.housenumber=8
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 9]     //Umbar
+P=2414,4066
+RECT=2409,4062,2417,4071
+tag.housenumber=9
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+//[AREA stanek 10]     //Umbar
+//P=2423,4066,1
+//RECT=2418,4061,2426,4070
+//tag.housenumber=10
+//tag.houserealm=2
+//FLAGS=01192
+//RAINCHANCE=00  
+//COLDCHANCE=00  
+//GROUP=Rooms
+
+[AREA stanek 11]     //minas tirith
+P=5690,3798,-80
+RECT=5688,3794,5691,3799
+tag.housenumber=11
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+[AREA stanek 12]     //minas
+P=5689,3803,-80
+RECT=5688,3802,5691,3807
+tag.housenumber=12
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 13]     //Edoras
+P=2332,2517
+RECT=2328,2513,2335,2518
+tag.housenumber=13
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 14]     //Edoras
+P=2365,2529
+RECT=2364,2524,2369,2531
+tag.housenumber=14
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 15]     //Edoras
+P=2364,2539
+RECT=2363,2534,2368,2541
+tag.housenumber=15
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 16]     //Edoras
+P=2350,2551
+RECT=2345,2546,2350,2553
+tag.housenumber=16
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 17]     //Edoras
+P=2350,2558
+RECT=2344,2554,2349,2561
+tag.housenumber=17
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 18]     //Barad dur
+P=3590,2714,-50
+RECT=3589,2712,3591,2716
+tag.housenumber=18
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 19]     //barad dur
+P=3577,2747,-25
+RECT=3575,2744,3580,2751
+tag.housenumber=19
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+[AREA stanek 20]     //barad dur
+P=3654,2746,-25
+RECT=3651,2743,3656,2750
+tag.housenumber=20
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+[AREA stanek 21]     //Barad-dur
+P=3667,2741,-25
+RECT=3664,2738,3668,2743
+tag.housenumber=21
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+[AREA stanek 22]     //Barad-dur
+P=3671,2741,-25
+RECT=3669,2738,3673,2742
+tag.housenumber=22
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+
+[AREA stanek 23]     //Barad Dur
+P=3639,2723,-50
+RECT=3637,2722,3641,2725 
+tag.housenumber=23
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 24]     //Barad-dur
+P=3594,2714,-50
+RECT=3592,2712,3596,2716
+tag.housenumber=24
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 25]     //Minas Tirith
+P=5689,3811,-80
+RECT=5688,3810,5691,3815
+tag.housenumber=25
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 26]     //Minas Tirith
+P=5689,3827,-80
+RECT=5688,3826,5691,3831
+tag.housenumber=26
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 27]     //Minas Tirith
+P=5689,3835,-80
+RECT=5688,3834,5691,3839
+tag.housenumber=27
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 28]     //Minas Tirith
+P=5689,3843,-80
+RECT=5688,3842,5691,3847
+tag.housenumber=28
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 29]     //Minas Tirith
+P=5682,3799,-80
+RECT=5681,3798,5685,3803
+tag.housenumber=29
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 30]     //Hobitin
+P=1076,1327
+RECT=1073,1324,1079,1329
+tag.housenumber=30
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 31]     //barad dur
+P=3615,2726,-50
+RECT=3613,2723,3617,2729
+tag.housenumber=31
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 32]     //Hurka
+P=1586,1170
+RECT=1587,1169,1590,1174
+tag.housenumber=32
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 33]     //Minas tirith
+P=5682,3815,-80
+RECT=5681,3814,5685,3819
+tag.housenumber=33
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 34]     //Minas tirith
+P=5682,3831,-80
+RECT=5681,3830,5685,3835
+tag.housenumber=34
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 35]     //Minas tirith
+P=5682,3839,-80
+RECT=5681,3838,5685,3843
+tag.housenumber=35
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 36]     //Oaza Hagir
+P=2893,3702
+RECT=2888,3701,2894,3705
+tag.housenumber=36
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 37]     //Oaza Hagir
+P=2893,3698
+RECT=2888,3696,2894,3700
+tag.housenumber=37
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 38]     //Oaza Hagir
+P=2898,3698
+RECT=2898,3696,2902,3700
+tag.housenumber=38
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 39]     //Oaza Hagir
+P=2898,3702
+RECT=2898,3701,2902,3705
+tag.housenumber=39
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 40]     //Pelargir
+P=2891,3263
+RECT=2890,3260,2893,3265
+tag.housenumber=40
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 41]     //Minas Tirith
+P=5671,3822,-80
+RECT=5670,3821,5674,3826
+tag.housenumber=41
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 42]     //Rhun
+P=3827,2152
+RECT=3822,2148,3830,2154
+tag.housenumber=42
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 43]     //Rhun
+P=3817,2150
+RECT=3812,2145,3818,2153
+tag.housenumber=43
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 44]     //Edoras
+P=2313,2602,60
+RECT=2307,2597,2313,2602
+tag.housenumber=44
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 45]     //Barad-dur
+P=3665,2752,-25
+RECT=3661,2751,3669,2756
+tag.housenumber=45
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 46]     //Harad
+P=4148,4035
+RECT=4144,4034,4152,4042
+tag.housenumber=46
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 47]     //Erebor
+P=3153,954,40
+RECT=3152,953,3155,956
+tag.housenumber=47
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 48]     //Erebor
+P=3153,950,40
+RECT=3152,948,3155,951
+tag.housenumber=48
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 49]     //Erebor
+P=3157,947,40
+RECT=3156,946,3159,949
+tag.housenumber=49
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 50]     //Erebor
+P=3161,947,40
+RECT=3160,946,3164,949
+tag.housenumber=50
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 51]     //Radovsko
+P=1302,1399
+RECT=1301,1396,1304,1401
+tag.housenumber=51
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 52]     //Sede pristavy
+P=739,1360
+RECT=735,1355,739,1362
+tag.housenumber=52
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 53]     //Fornost
+P=1459,1059,30
+RECT=1458,1059,1462,1064
+tag.housenumber=53
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 54]     //Fornost
+P=1460,1054,30
+RECT=1460,1053,1465,1057
+tag.housenumber=54
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 55]     //Fornost
+P=1467,1054,30
+RECT=1466,1053,1471,1057
+tag.housenumber=55
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 56]     // Dol amroth
+P=2252,3230
+RECT=2251,3229,2256,3232
+tag.housenumber=56
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 57]     //Minas Tirith
+P=5672,3840,-80
+RECT=5670,3836,5674,3843
+tag.housenumber=57
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 58]     //Stredozeme
+P=4521,1227
+RECT=4521,1227,4527,1231
+tag.housenumber=58
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 59]     //Tharbad
+P=1580,1934,12
+RECT=1579,1932,1582,1938
+tag.housenumber=59
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00
+COLDCHANCE=00
+GROUP=Rooms
+
+[AREA stanek 60]     //Umbar
+P=2463,4027,10
+RECT=2461,4023,2465,4030
+tag.housenumber=60
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 61]     //Umbar
+P=2463,4018,10
+RECT=2461,4014,2465,4021
+tag.housenumber=61
+tag.houserealm=2
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+[AREA stanek 62]     //MT
+P=5683,3809,-80
+RECT=5682,3807,5684,3811
+tag.housenumber=62
+tag.houserealm=1
+FLAGS=01192
+RAINCHANCE=00  
+COLDCHANCE=00  
+GROUP=Rooms
+
+//////////////////////////////////////////////////
+/////////////       POLE      ////////////////////
+//////////////////////////////////////////////////
+
+[AREA pole 1]     //Nurn
+P=3445,3236,12
+RECT=3438,3229,3461,3248
+tag.housenumber=1
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 2]     //Nurnen
+P=3626,3273,12
+RECT=3622,3268,3630,3275
+tag.housenumber=2
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 3]     //Rhun
+P=3757,2125
+RECT=3750,2122,3763,2135
+tag.housenumber=3
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 4]     //Nurnen
+P=3707,3352
+RECT=3696,3345,3717,3368
+tag.housenumber=4
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 5]     //Nurnen
+P=3730,3352
+RECT=3725,3347,3733,3358
+tag.housenumber=5
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 6]     //Nurnen
+P=3880,3243
+RECT=3873,3236,3895,3256
+tag.housenumber=6
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 7]     //Nurnen
+P=3910,3227
+RECT=3904,3221,3914,3240
+tag.housenumber=7
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 8]     //Nurnen
+P=3902,3189
+RECT=3894,3181,3921,3212
+tag.housenumber=8
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 9]     //Harad
+P=4153,4003
+RECT=4150,4000,4160,4006
+tag.housenumber=9
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 10]     //Harad
+P=4166,4008
+RECT=4163,4005,4171,4010
+tag.housenumber=10
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 11]     //Samota
+P=4553,1221
+RECT=4553,1221,4564,1233
+tag.housenumber=11
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 12]     //Samota
+P=4532,1244
+RECT=4518,1233,4532,1244
+tag.housenumber=12
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 13]     //Samota
+P=4555,1241
+RECT=4545,1235,4555,1241
+tag.housenumber=13
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 14]     //Kraj
+P=958,1106
+RECT=939,1093,958,1106
+tag.housenumber=14
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 15]     //Gondor
+P=871,1455
+RECT=862,1447,871,1455
+tag.housenumber=15
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 16]     //Harad
+P=4181,4033
+RECT=4170,4026,4181,4033
+tag.housenumber=16
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 17]     //Harad
+P=4173,4041
+RECT=4168,4037,4173,4041
+tag.housenumber=17
+tag.houserealm=2
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 18]     //Severni ctvrtka
+P=1108,1184
+RECT=1096,1176,1108,1184
+tag.housenumber=18
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 19]     //Severni ctvrtka
+P=1095,1195
+RECT=1084,1189,1095,1195
+tag.housenumber=19
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 20]     //Zabovresky
+P=1189,1345
+RECT=1179,1338,1189,1345
+tag.housenumber=20
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 21]     //Hobitin
+P=1059,1331
+RECT=1050,1324,1059,1331
+tag.housenumber=21
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 22]     //Hurecko
+P=1627,1190,35
+RECT=1627,1190,1635,1206
+tag.housenumber=22
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 23]     //Hurecko
+P=1632,1173,35
+RECT=1632,1173,1640,1182
+tag.housenumber=23
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 24]     //Hobitin
+P=1088,1296
+RECT=1088,1296,1097,1306
+tag.housenumber=24
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 25]     //Pelenorska pole
+P=5679,4024,-80
+RECT=5669,4019,5683,4027
+tag.housenumber=25
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 26]     //Severni ctvrtka
+P=1023,1170,6
+RECT=1023,1170,1036,1182
+tag.housenumber=26
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 27]     //Severni ctvrtka
+P=1037,1164,6
+RECT=1037,1164,1047,1171
+tag.housenumber=27
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 28]     //Severni ctvrtka
+P=1048,1167,6
+RECT=1048,1167,1058,1178
+tag.housenumber=28
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 29]     //Severni ctvrtka
+P=1047,1179,6
+RECT=1047,1179,1059,1190
+tag.housenumber=29
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 30]     //Leben
+P=2696,3236
+RECT=2695,3235,2712,3253
+tag.housenumber=30
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 31]     //Leben
+P=2731,3245
+RECT=2726,3240,2744,3253
+tag.housenumber=31
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 32]     //Pelenorska pole
+P=5705,3934,-80
+RECT=5696,3924,5705,3934
+tag.housenumber=32
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 33]     //Pelenorska pole
+P=5714,3944,-80
+RECT=5706,3934,5714,3944
+tag.housenumber=33
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 34]     //Helmuv Zleb
+P=5338,3705
+RECT=5332,3700,5351,3711
+tag.housenumber=34
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+
+[AREA pole 35]     //Helmuv Zleb
+P=1317,1373
+RECT=1313,1365,1324,1376
+tag.housenumber=35
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+
+[AREA pole 36]   //Samote - Gondor
+P=2154,2882
+RECT=2154,2882,2165,2891
+tag.housenumber=36
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 37]     //Esgaroth
+P=3096,1070
+RECT=3096,1070,3101,1077
+tag.housenumber=37
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+[AREA pole 38]     //Esgaroth
+P=3097,1081
+RECT=3097,1081,3102,1091
+tag.housenumber=38
+tag.houserealm=1
+FLAGS=01182
+GROUP=Rooms
+
+//todo 2778 371 pevnost ogru (nebo nejak pekne pojmenovat)
+// vstup do ledovych jeskyni  na lokaci...   2464  1284   50  
+//mozna  tohle  jezero take nejak pojmenovat :o)
+//cely to pojmenuju jako prusmyl carathas
+//6105   3655   40     je primo vnitrek  ledovych  jeskyni
+//kosatcove pole  
+// moria..   vchod.  2220 1520
+//5424,3696,5624,3840 co to je ?????
+//5571 3560 3 co tohle
+//stejne me uz ta ultima sere :)
+
+//5906,4069,26=2494,3576,5=tp_EDeluciaTemple_TempleIsle=1
+
+[AREA Arena of games]
+P=5968,143,0,10
+RECT=5922,124,6007,154
+mapplane=10
+FLAGS=0001E
+RAINCHANCE=00
+COLDCHANCE=00
+tag.realm=3
+
+[AREA Brouci doupe]             
+GROUP=questy       
+P=6092,29,0,5
+RECT=6079,18,6125,95 
+mapplane=5              
+FLAGS=00812
+tag.nobank=1
+tag.realm=3              
+RAINCHANCE=00             
+COLDCHANCE=00  
+
+[AREA Aglarond]             
+GROUP=dungeon   
+P=5235,1781,-18,10
+RECT=5200,1720,5300,1820 
+mapplane=10              
+FLAGS=00812            
+RAINCHANCE=00             
+COLDCHANCE=00   
+tag.realm=3  
+tag.nobank=1
+
+[AREA Halda Molle Level 1]
+GROUP=dungeon
+P=5932,2594,0
+RECT=5918,2662,6118,2571
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=40             
+COLDCHANCE=5  
+
+[AREA Halda Molle Level 2]
+GROUP=dungeon
+P=6080,2363,0,10
+RECT=6006,2422,6140,2305
+mapplane=10
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=80             
+COLDCHANCE=00
+
+[AREA Halda Molle skrys]
+GROUP=dungeon
+P=5460,2049,9
+RECT=5454,2052,5465,2041
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00            
+COLDCHANCE=00   
+
+[AREA Halda Molle Level 3]
+GROUP=dungeon
+P=5995,2558,9,10
+RECT=5982,2567,6120,2431
+mapplane=10
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=00             
+COLDCHANCE=80
+
+[AREA Halda Molle bonus]
+GROUP=dungeon
+P=620,1312,-54,2
+RECT=538,1409,586,1358
+RECT=587,1377,622,1301
+mapplane=2
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+RAINCHANCE=25             
+COLDCHANCE=5   
+ 
+[AREA Darkmoon 1]
+GROUP=dungeon
+P=5350,887,0,11	
+mapplane=11
+RECT=5322,910,5382,866
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+
+[AREA Darkmoon 2]
+GROUP=dungeon
+P=4984,993,0,10
+mapplane=10
+RECT=4969,1007,5072,961
+RECT=5053,1033,5070,1008
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+
+[AREA Darkmoon 3]
+GROUP=dungeon
+P=5097,1371,0,10
+mapplane=10
+RECT=5085,1385,5107,1338
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+
+[AREA Darkmoon 4]
+GROUP=dungeon
+P=5097,1281,0,10
+mapplane=10
+RECT=5084,1297,5109,1261
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+
+[AREA Darkmoon 5]
+GROUP=dungeon
+P=5982,383,0,10
+mapplane=10
+RECT=5972,400,5992,372
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+
+[AREA Darkmoon 6]
+GROUP=dungeon
+P=5880,333,0,10
+mapplane=10
+RECT=5793,427,5921,405
+RECT=5808,404,5958,228
+RECT=5769,402,5807,362
+RECT= 5804,340,5807,337
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+
+[AREA Darkmoon 7]
+GROUP=dungeon
+P=5034,1385,0,10
+mapplane=10
+RECT=5019,1457,5050,1343
+FLAGS=00812
+tag.nobank=1
+tag.realm=3
+
+[EOF]
+

@@ -1,0 +1,274 @@
+//////////////////////////////////////////////////
+/////Questovni predmety - seznam
+[itemdef i_q020_seznam]
+id = 0e34
+type = t_scroll_blank
+name = Seznam bylinek
+
+on=@create
+attr_newbie=1
+color=colors_green
+
+ON=@USERDCLICK
+src.scroll sc_q020_seznam
+return 1
+
+[scroll sc_q020_seznam]
+100ks Mandragory
+100ks Garlicu
+50ks Ginsengu
+25ks Serpent Scale (Nox Crystal)
+25ks Dead Wood
+
+//////////////////////////////////////////////////
+/////Questovni predmety - krumpac
+[ITEMDEF i_q020_krumpac]
+
+ID=i_pickaxe
+NAME=Trpaslici krumpac
+TYPE=t_normal
+ON=@Create
+attr_newbie=1
+attr_movenever=1
+color=color_red1
+
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Trpaslici krumpac
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Srdce Lich Kinga
+
+[ITEMDEF i_q020_srdce]
+ID=i_flesh_heart
+TYPE=t_normal
+Name=Srdce nemrtveho carodeje
+ON=@Create
+attr_newbie=1
+color=color_red1
+
+ON=@userCLICK
+src.sysmessage Ohavne, pachnouci srdce nemrtveho carodeje
+ON=@userDCLICK
+src.sysmessage Zmacknul jsi srdce a sklizka pachnouci krev se ti rozstrikla po rukach
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Srdce Licha
+
+//////Questovni predmety - Novy hmozdir
+
+[ITEMDEF i_q020_hmozdir]
+ID=i_mortar_pestle
+TYPE=t_normal
+NAME=Novy hmozdir
+ON=@Create
+attr_newbie=1
+color=0098e
+
+ON=@userCLICK
+src.sysmessage Novotou zarici hmozdir z podivneho kovu
+ON=@userDCLICK
+src.sysmessage Na to tve schopnosti nestaci
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Novy hmozdir
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Vzacna ruda
+
+[ITEMDEF i_q020_ruda]
+ID=i_ore_iron
+NAME=Vzacna ruda
+TYPE=t_normal
+ON=@Create
+attr_newbie=1
+attr_movenever=1
+color=0098e
+
+ON=@userCLICK
+src.sysmessage Ulomek vzacne rudy
+ON=@userDCLICK
+src.sysmessage Na to tve schopnosti nestaci 
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Vzacna ruda
+
+//////Questovni predmety - Teleportacni kamen
+
+[ITEMDEF i_q020_kamen]
+ID=01358
+NAME=Kamen
+TYPE=t_normal
+ON=@Create
+attr=attr_move_never
+color=color_gray_lt
+
+ON=@userCLICK
+src.sysmessage Cesta dal je zavalena. Budes muset kamen nejak odvalit stranou, nebo necim zapacit...
+ON=@userDCLICK
+if (<src.findid.i_q020_krumpac>)
+ src.sysmessage Zasunul jsi krumkac pod kamen a poradne zapacil. Kamen se odvalil stranou a  odhalil vchod hloubeji do podzemi. 
+ src.sysmessage Nevahas ani okamzik a vchazis dovnitr.
+ src.giveitem(i_delay_carodejka)
+else 
+ src.sysmessage Tak s timhle holyma rukama nepohnes.
+endif
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Teleportacni kamen
+
+//////Questovni predmety - Kdybych tak tusil co to vlastne je :-P
+
+[ITEMDEF i_delay_carodejka]
+ID=i_memory
+Name=Teleport Delay Timer Carodejka
+TYPE=T_EQ_SCRIPT
+
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+MORE1=10
+MOREP=5566,575,0
+
+ON=@EQUIP
+TIMER=1
+
+ON=@Timer
+if (more1)
+ cont.sysmessage cas do presunu:<eval <more1>>
+ more1=<eval <more1>-1>
+ TIMER=1
+ return 1
+else
+  cont.GO <MOREP>
+  cont.sysmessage Kamen se za tebou sesunul zpet na puvodni misto. Tudy uz se zpatky nedostanes.
+ remove
+endif
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Rudna zila
+
+[ITEMDEF i_q020_zila]
+ID=0177a
+NAME=Rudna zila
+TYPE=t_normal
+ON=@Create
+attr=attr_move_never
+color=0098e
+
+ON=@userCLICK
+src.sysmessage Podivne se trpytici rudna zila
+ON=@userDCLICK
+if (<src.findid.i_q020_krumpac>)
+ src.sysmessage Poradne ses rozmachnul a odstipnul velky kus rudy.
+ src.sysmessage Krumpac ale ten napor nevydrzel a rozpadl se na kusy.
+ src.consume(i_q020_krumpac)
+ src.giveitem(i_q020_ruda)
+else 
+ src.sysmessage S timhle bez poradneho krumpace nic nenadelas.
+endif
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Rudna zila
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Lahvicka
+
+[ITEMDEF i_q020_lahvicka]
+ID=i_flask_small
+NAME=Lahvicka s podivnou mlhou
+TYPE=t_normal
+ON=@Create
+attr_newbie=1
+color=00482
+
+ON=@userCLICK
+src.sysmessage Lahvicka s podivnou mlhou ve ktere se prevaluji temne stiny
+ON=@userDCLICK
+src.sysmessage Zatrepal jsi s lahvickou a z mlhy se na okamzik vynoril malicky kosteny drak
+return 1
+
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Lahvicka
+
+//////////////////////////////////////////////////
+//////Questovni predmety - Odmena
+
+[TEMPLATE tmp_q020_odmena] 
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Pytlik s lektvary
+
+CONTAINER=i_bag 
+ITEM=i_potion_HealGreat
+ITEM=i_potion_HealGreat
+ITEM=i_potion_HealGreat
+ITEM=i_potion_HealGreat
+ITEM=i_potion_HealGreat
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Heal
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+ITEM=i_potion_Cure
+
+///////////////////////////////////////////////////
+/////////Pomocne predmety pro testovani
+
+[TEMPLATE tmp_q020_jidlo] 
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=tmp Jidlo
+CONTAINER=i_backpack 
+ITEM=i_ribs_cooked,100 
+ITEM=i_fish_cut_cooked,100 
+ITEM=i_bird_cooked,30 
+ITEM=i_fruit_onion,50 
+ITEM=i_fruit_carrot,50
+
+[TEMPLATE tmp_q020_drevo] 
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=tmp Drevo
+CONTAINER=i_backpack 
+ITEM=i_log_copper,100 
+ITEM=i_feather,500 
+ITEM=i_fur_dark,30 
+
+[TEMPLATE tmp_q020_regy] 
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=tmp Regy 
+CONTAINER=i_backpack 
+ITEM=i_reag_mandrake_root,100 
+ITEM= i_reag_garlic,100
+ITEM=i_reag_ginseng,50
+ITEM=i_reag_dead_wood,25
+ITEM=i_reag_serpent_scale,25
+
+[eof]

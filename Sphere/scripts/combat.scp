@@ -1,0 +1,838 @@
+[function typ_boje]
+say(muj typ boje: <tag(combattype)>, <tag(weapflag)<tag(mi_weapflags)>>)
+
+[function temporary_null]
+tag(UC,0)
+tag(ammoid,0)
+tag(SM,0)
+tag(OM,0)
+tag(speedset,"")
+tag(hitspeed,0)
+
+[function zbran_char]
+if (finduid(tag(weaponuid)))
+ if (tag(weaponuid)==findlayer(tag(weaponuid).typedef.layer))//je to v poradku
+  return <tag(weaponuid)>
+ endif
+endif
+tag(weaponuid,0)
+if (findlayer(1))
+ if (findlayer(1).isweapon)
+  tag(weaponuid,<findlayer(1)>)
+ endif
+endif
+if (findlayer(2))
+ if (findlayer(2).isweapon)
+  tag(weaponuid,<findlayer(2)>)
+ endif
+endif
+return <tag(weaponuid)>
+
+[function f_getatack_nonmystik]
+if (zbran_char)
+ if ((tag(weaponuid).DispID==i_war_fork)||(tag(weaponuid).DispID==01405))
+  tag(atskill,42)
+  tag(weapflag,dam_physical|dam_piercing)
+ elseif (tag(weaponuid).type==t_weapon_sword)
+  tag(atskill,40)
+  tag(weapflag,dam_physical|dam_slashing)
+ elseif (tag(weaponuid).type==t_weapon_fence)
+  tag(atskill,42)
+  tag(weapflag,dam_physical|dam_sharp)
+ elseif (tag(weaponuid).type==T_WEAPON_MACE_CROOK)||(tag(weaponuid).type==T_WEAPON_MACE_SMITH)||(tag(weaponuid).type==T_WEAPON_MACE_STAFF)
+  tag(atskill,41)
+  tag(weapflag,dam_physical|dam_blunt)
+ elseif (tag(weaponuid).type==t_weapon_bow_run)||(tag(weaponuid).type==T_WEAPON_XBOW)||(tag(weaponuid).type==T_WEAPON_BOW)
+  tag(weapflag,dam_physical|dam_piercing)
+  tag(atskill,31)
+ else
+  tag(weapflag,dam_physical|dam_blunt)
+  tag(atskill,43)//wrest
+ endif
+else//prece sand nemuze pouzivat info ze zbrane, kterou treba uz nema
+    //elseif !(tag(weapflag))
+ tag(weapflag,dam_physical|dam_blunt)
+ tag(atskill,43)//wrest
+endif
+
+if (tag(atskill)==43)//wrestling
+ arg(base_dam,<nastaveni_weapdam_barehands>)
+else
+ arg(base_dam,<eval tag(weaponuid).typedef.dam>)
+ if (arg(base_dam)<nastaveni_weapdam_barehands)
+  arg(base_dam,<nastaveni_weapdam_barehands>)
+ endif
+endif
+
+arg(tactics_dam,<eval ((arg(base_dam)*(tactics*Skill_Tactics.effect))+500000)/1000000>)
+arg(str_dam,<eval ((arg(base_dam)*(str*nastaveni_global_strUC))+50000)/100000>)
+arg(anatomy_dam,<eval ((arg(base_dam)*(anatomy*SKILL_ANATOMY.effect))+500000)/1000000>)
+arg(armslor_dam,<eval ((arg(base_dam)*(armslore*SKILL_ARMSLORE.effect))+500000)/1000000>)
+
+tag(UC,<eval arg(tactics_dam)+arg(str_dam)+arg(anatomy_dam)+arg(armslor_dam)>)
+tag(fizzlechance,1000)
+tag(piercing,<?eval nastaveni_weappiercing_<tag(weaponuid).typedef.dispid>?>)
+if (tag(atskill)==31)//archery
+ if (tag(weaponuid).type==t_weapon_bow_run)
+  tag(UC,<eval ((tag(UC)*nastaveni_global_runbowdam)+500)/1000>)
+  tag(fizzlechance,<eval ((tag(ability)*nastaveni_global_runbowfizzle)+50000)/100000>)
+ endif
+ if (findtype(tag(weaponuid).typedef.tdata3))
+  tag(ammoid,<findtype(<tag(weaponuid).typedef.tdata3>).baseid>)
+  arg(arrowbonus,<nastaveni_arrowdamage_<eval findtype(<tag(weaponuid).typedef.tdata3>).typedef.tdata1>>)
+  tag(piercing,<nastaveni_arrowdamage_<eval findtype(<tag(weaponuid).typedef.tdata3>).typedef.tdata2>>)
+  tag(fizzlechance,0)
+  tag(UC,<eval ((tag(UC)*arg(arrowbonus))+500)/1000>)
+ else
+  tag(UC,0)
+  tag(ammoid,0)
+ endif
+endif
+//oprava podle zniceni zbrane
+if (tag(atskill)!=43)
+  arg(durkvocient, <eval ((<tag(weaponuid).more1h>-<tag(weaponuid).more1l>)*1000)/<tag(weaponuid).more1h> >)
+  tag(UC,<eval tag(UC)-((<eval tag(UC)>*<arg(durkvocient)>)/2000)>)
+endif
+
+tag(UC,<eval ((tag(UC)*nastaveni_global_UC)+500)/1000>)//globalni nastaveni
+
+[function f_getatack_mystik]
+tag(UC,<eval nastaveni_ability_mystikUC>)
+tag(atskill,43)
+
+[function combat_main_mystik]
+act.dospellcustom_donesrc(103,<calcspelleffect(103)>,<uid>)
+//sebrat manashield a manu eventuelne
+if (<tag(manashield)>)
+  findid(i_a_mana_shield).remove
+  if(<mana> > <eval <int>/2>)
+    mana=<eval (<mana>-<eval <int>/2>)>
+  else
+    mana=0
+  endif 
+endif   
+//
+mana=<eval (mana*nastaveni_mystik_manaloss)/1000)>
+tag.remove(speedset)
+tag(hitspeed,0)
+p=<tag(mystik_storepos)>
+tag.remove(mystik_storepos)
+
+// counts the basic nonmystik damage according to the players combat attributes
+// and the type of his enemy (player vs monster)
+// applies the level bonuses to the damage, but does not count the target's resists etc.
+[function combat_main_nonmystik_countDmg]
+if !(tag(UC))
+  f_getatack_nonmystik
+elseif (tag(atskill)==01f)
+  if !(tag.ammoid)
+    f_getatack_nonmystik
+  elseif (tag(ammoid)!=findtype(<tag(weaponuid).typedef.tdata3>).baseid)
+    f_getatack_nonmystik
+  endif
+endif
+arg(celk_dam,<tag(UC)>)
+if (act.isplayer)//pvp
+  arg(celk_dam,<eval ((arg(celk_dam)*nastaveni_global_PvPweapattack)+500)/1000>)
+elseif (act.npc)//Utok jde na M
+  if (<tag(level)> > 200)
+    arg(useable_level,200)
+  else
+    arg(useable_level,<tag(level)>)
+  endif
+  arg(celk_dam,<eval ((arg(celk_dam)*(nastaveni_global_vMweapattack+(arg(useable_level)*10)))+500)/1000>)
+endif
+return<arg(celk_dam)>
+
+//applies counted damage to the act of this player
+[function combat_main_nonmystik_doDmg] // argv(0) - counted damage
+bark(2)
+act.damagecust(<argv(0)>,<hval tag(weapflag)<tag(mi_weapflags)>>,<eval tag(piercing)>)
+
+if (var(ubrano))
+  if !(act.isplayer)
+  elseif (tag(fizzlechance)>{0 999})
+  else
+    return 0
+  endif
+  act.stopmagery
+endif
+
+//counts the player's damage to his <act> enemy and applies this damage to the enemy
+[function combat_main_nonmystik]
+combat_main_nonmystik_doDmg(<eval combat_main_nonmystik_countDmg>)
+
+[function combat_main_npc]
+if (<tag(hypno_mystik)>) //mystik v tele monstra
+  arg(celk_dam,<eval ((<argv(0)>*<nastaveni_global_MUC>)+500)/1000>) //je jedno kterej argument
+ //kermel.sysmessage(mystik <name> v tele monstra, celk dam: <celk_dam>, arg: <argv(0)>, modfi: <nastaveni_global_MUC>)
+else
+  //kermel.sysmessage(utoci normal monstrum)
+  arg(celk_dam,<eval ((typedef.dam*nastaveni_global_MUC)+500)/1000>)
+endif
+if (<act.npc>)//Utok jde na M
+  //kermel.sysmessage(utok na npc)
+  arg(celk_dam,<eval ((arg(celk_dam)*nastaveni_global_vMweapattack)+500)/1000>)
+  //if(<tag(hypno_mystik)>)
+  // kermel.sysmessage(mystik utoci na normal monstrum, dam: <celk_dam>)
+  //endif
+  act.damagecust(<arg(celk_dam)>,<hval tag(weapflag)<tag(mi_weapflags)>>,<eval tag(piercing)+typedef.tag(piercing)>)
+else //utok na playera
+  if(<act.tag(hypno_mystik)>) //utoci se na mystikovo monstrum  
+    //kermel.sysmessage(utok na mystika v tele monstra)
+    arg(celk_dam,<eval ((arg(celk_dam)*nastaveni_global_vMweapattack)+500)/1000>)
+    act.damagecust(<arg(celk_dam)>,<hval tag(weapflag)<tag(mi_weapflags)>>,<eval tag(piercing)+typedef.tag(piercing)>)
+  else //hrac
+    act.damagecust_MvP(<arg(celk_dam)>,<hval tag(weapflag)<tag(mi_weapflags)>>,<eval tag(piercing)+typedef.tag(piercing)>)
+  endif
+endif
+if (var(ubrano)) && !(var(dodged))
+  if (poisoning)
+    f_poisoning_Trigger(<act>)
+  endif
+endif
+
+
+[function combat_main]
+if (<tag(hypno_mystik)>) //hypnotizujici mystik (v tele monstra) 
+  combat_main_npc(<tag(dam)>) //2 argumenty obycejne
+else
+  combat_main_<tag(combattype)>
+endif
+
+[function f_getspeed_]
+setallcombatrelated
+
+[function combat_main_]
+setallcombatrelated
+
+[function setallcombatrelated]
+if (isplayer)
+  setplayer
+elseif (npc)
+  tag(combattype,"npc")
+  if !(isevent(e_gethit))
+    creaturestart
+  endif
+endif
+
+//recounts the actual damage taking in accord the piercing & armor and sets basic globals:
+// var(ubrano) and var(damage_flags)
+//(resists handled later on in damage_final function)
+[function damagecust]//armorsum
+//<argv(0)>  ut. cislo
+//<argv(1)>  flag
+//<argv(2)>  piercing
+arg(lowerac,<eval 1000-argv(2)>)
+//kermel.sysmessage(Snizeni piercingem: <arg(lowerac)>)
+if (isplayer)
+  if (src.isplayer)&&(!<src.tag(hypno_mystik)>)
+    arg(obrana,<eval armorsum+(nastaveni_global_armorchange_vP_<profession.name>)>)
+    arg(poskozeni,<nastaveni_global_PvPweapdam>)
+  else
+    arg(obrana,<eval armorsum+(nastaveni_global_armorchange_vM_<profession.name>)>)
+    arg(poskozeni,1000)
+  endif
+  if (arg(obrana)>0)
+    arg(obrana,<eval arg(obrana)*nastaveni_global_Parmor>)
+  else
+    arg(obrana, 0)
+  endif
+else
+  arg(poskozeni,<nastaveni_global_vMweapdam>)
+  arg(obrana,<eval armorsum*nastaveni_global_Marmor>)
+  //if(<src.tag(hypno_mystik)>)
+  // kermel.sysmessage(dostava monstrum od mystika, posk: <poskozeni>, obrana: <obrana>) 
+  //endif
+endif
+if (src.npc)
+  arg(poskozeni,<eval(((arg(poskozeni)*nastaveni_global_Mvweapdam)+500)/1000)>)
+endif
+arg(obrana,<eval ((randfakt(<obrana>,<skill_parrying.effect>)*arg(lowerac))+500)/1000>)
+var(ubrano,<eval ((((argv(0)*1000)-arg(obrana))*arg(poskozeni))+500000)/1000000>)
+var(damage_flags,<hval(argv(1))>)
+//if(<src.tag(hypno_mystik)>)
+// kermel.sysmessage(mystikuv utok, posk: <var(ubrano)>) 
+//endif
+damage_final(<src>)
+
+[function damagecust_MvP]
+//<argv(0)>  ut. cislo 
+//<argv(1)>  flag    
+//<argv(2)>  piercing
+
+arg(obrana,<eval armorsum*(1000-argv(2))>)//1000x zvetsen rad
+arg(utok,<eval argv(0)*nastaveni_global_Mvweapdam>)//1000x zvetsen rad
+var(ubrano,<eval ((arg(utok)*(1000-(arg(obrana)/nastaveni_global_MvP_armorfactor)))+500000)/1000000>)
+var(ubrano,<eval ((var(ubrano)*{<nastaveni_global_MvP_randomfactor>})+500)/1000>)
+var(damage_flags,<hval(argv(1))>)
+damage_final(<src>)
+
+[function f_thief_applyrebound]
+if !(<src.isplayer>)
+  if (<var(is_physical)>)
+  	if (<eval tag(ra_thief_rebound)> > 0)
+  		if (findlayer(1))
+  		if (findlayer(1).dispid == i_kryss)||(findlayer(1).dispid == 01401)
+  			arg(chance,100)
+  		elseif (findlayer(1).dispid == i_scimitar)||(findlayer(1).dispid == 013B6)
+  			arg(chance,50)
+  		elseif (findlayer(1).dispid == i_cutlass)||(findlayer(1).dispid == 01441)
+  			arg(chance,150)
+  		else
+  			return 0
+  		endif
+  		arg(chance,<eval <arg(chance)>+<eval <tag(ra_thief_rebound)>*5>>)
+  		if (tag(vigilance))
+  			if (<tag(vigilance)> == 1)
+  				arg(chance,<eval <arg(chance)>*<eval 10+<tag(ra_thief_defstance)>>>)
+  			else
+  				arg(chance,<eval <arg(chance)>*10>)
+  			endif
+  		else
+  			arg(chance,<eval <arg(chance)>*10>)
+  		endif
+  		if (chance(<arg(chance)>,4))
+  			src.damage_noresponse(<var(ubrano)>,<var(damage_flags)>)
+  			var(ubrano,0)
+  			classmessage("Odrazil jsi uder!")
+  		endif
+  		endif
+  	endif
+  endif
+endif
+	
+[function f_dmgFinal_applyReactiveAR]
+if (flag_reactive)   //edited by heck - kolko absorbuje a vrati zavisi na nastaveni a armoru (tag.armorCount)
+  if ((<var(is_physical)>) || (<var(is_slash)>) || (<var(is_piercing)>) || (<var(is_blunt)>) || (<var(is_sharp)>)) // nie na kuzla
+    if (<src.isplayer>)
+      arg(dmg_absorb_percent,<nastaveni_reactivea_pvp_absorb>)
+      arg(dmg_return_percent,<nastaveni_reactivea_pvp_return>)
+      //arg(dmg_absorb_percent,<eval(<tag.armorCount>*<nastaveni_reactivea_pvp_absorb>)>/100)
+      //arg(dmg_return_percent,<eval(<tag.armorCount>*<nastaveni_reactivea_pvp_return>)>/100)
+    else
+      arg(dmg_absorb_percent,<nastaveni_reactivea_pvm_absorb>)
+      arg(dmg_return_percent,<nastaveni_reactivea_pvm_return>)
+      //arg(dmg_absorb_percent,<eval(<tag.armorCount>*<nastaveni_reactivea_pvm_absorb>)>/100)
+      //arg(dmg_return_percent,<eval(<tag.armorCount>*<nastaveni_reactivea_pvm_return>)>/100)
+    endif
+    arg(dmg_absorb,<eval(<var(ubrano)>*<arg(dmg_absorb_percent)>)>/100)
+    arg(dmg_return,<eval(<var(ubrano)>*<arg(dmg_return_percent)>)>/100)
+    arg(dmg_uber,<eval(<var(ubrano)>-<arg(dmg_absorb)>)>)
+    src.damage_noresponse(<arg(dmg_return)>,<var(damage_flags)>)
+    var(ubrano,<arg(dmg_uber)>)
+  endif
+endif
+
+[function f_dmgFinal_applyVoodooShield]
+if (tag(voodooshield)&&!(src.isplayer)&&(var(spellpower)))  //ak ma voodooshield, ak to nieje kuzlo od hraca, ak ho "neabsorboval"
+  tag(voodooshield,<eval tag(voodooshield)>-<var(ubrano)>)
+  if (tag(voodooshield)<0) 
+    var(ubrano,<eval(tag(voodooshield)*(-1))>)
+    findid(i_voodooshield).timer=0
+    events=-e_voodoo_shield
+    effect(3,#02EEB,6,20,2)
+    classmessage("Kouzlo castesne pohlceno.")
+    tag.remove(voodooshield)
+  else
+    var(ubrano,0)
+    effect(3,#02EEB,6,20,2)
+    classmessage("Kouzlo pohlceno stitem")
+  endif
+endif
+
+[function f_dmgFinal_applyEnergyShield]
+if (tag(energyofshield)&&(var(spellpower))&&!(src.isplayer))
+  tag(energyofshield,<eval tag(energyofshield)>-<var(ubrano)>)
+  if (<tag(energyofshield)> < 0) 
+    arg(rest_shield_power, <eval( var(ubrano) + tag(energyofshield) ) > )
+    arg(temp, <eval( (arg(rest_shield_power) * 100) / var(ubrano) ) >)
+    var(ubrano,<eval (var(ubrano)*<tag(shield_power)>)/<temp>>)
+    findid(i_energyshield).timer=0
+    classmessage("Kouzlo castesne pohlceno.")
+  else
+    var(ubrano,<eval (var(ubrano)*<tag(shield_power)>)/100>)
+    effect(3,i_fx_sparkle_2,6,20,2)
+    classMessage("Kouzlo pohlceno stitem")
+  endif
+endif
+
+// ensures minimal damage for nonsummon MvM
+[function f_dmgFinal_MvM_minimalDMG]
+if (src.npc)
+  if (npc) //jen monstrum na monstrum 
+    if (var(ubrano) < 1)
+      if (!<var(is_summon)>)
+        if (!<var(absoluteResist)>)
+          var(ubrano,5)
+        endif
+      endif
+    endif
+  endif
+endif
+
+//ensures minimal damage for wrestling dmg
+[function f_dmgFinal_PvX_minimalDMG]
+if (src.isplayer)
+  if(<src.tag(atskill)>==43)&&(!src.findlayer(1))&&(!src.findlayer(2))&&(!<src.tag(hypno_mystik)>)  //wrestling, beze zbrane
+    if (!<var(absoluteResist)>) //low dmg was caused due to the enemy's absolute resist against the attack
+      if (!<var(ubrano)>)
+        var(ubrano,1) //kvuli odparovani a mozna taky klerici si nejakej ten exp privydelaj!
+      else
+        var(ubrano,<eval (<src.wrestling>/200+1)>)      
+      endif
+    endif
+  endif
+endif
+
+[function physicaldodge]
+if (src.npc)
+  if (var(is_physical))
+    if (<eval <eval tag(ra_weapdodge)>*nastaveni_ability_pvMdodge> > {0 999})
+      var(ubrano,0)
+      var(dodged,1)
+      classmessage("<sex(Uhnul,Uhnula)> jsi uderu.")
+      return 1
+    endif
+  endif
+endif
+return 0
+
+//supprot function, tells, whether the last attacked target
+//was successfully hit (ie the damage was done)
+//use in: @afterswing, @aftergetswing
+[function wasHarmed]
+if (<var(ubrano)> > 0) && (<var(dodged)> == 0)
+  return 1
+else
+  return 0
+endif
+
+//calls triggers & applies resists to the final dmg
+//argv(0) - attacker
+//uid - target to be harmed
+[function damage_final]   
+var(dodged,0)
+var(wasFrozen,0)
+var(swingedchar,<uid>)
+src=<argv(0)> // this helps in custom damage calls
+trigger(@beforegetswing)
+var(ubrano,<handleresists(<var(ubrano)>,<hval var(damage_flags)>)>)
+if !(var(reflected)) // this is NOT a reflected strike
+  if (physicaldodge) // first of all - try to AVOID the punch!
+    src.trigger(@afterswing) //we need physical dodge variables here
+    return 1 //target was not hit -> no need to trigger aftergetswing
+  endif
+  src.trigger(@afterswing)
+endif
+trigger(@aftergetswing)
+f_dmgFinal_applyVoodooShield
+f_dmgFinal_applyEnergyShield
+if (manashield(<src>,<var(ubrano)>,<var(damage_flags)>)) //pouzit manashield
+  if (<eval var(ms_dmgRemain)>) //a zbylo nejake dmg ktere mame jeste dostat (manashield vyprsel)
+    var(ubrano,<var(ms_dmgRemain)>) //dostaneme min
+    var(ms_dmgRemain,) // removes value
+  else //manashield pouze pouzit a jeste nevyprsel - bez dmg
+    return 1
+  endif
+endif
+damage_armors
+
+f_dmgFinal_MvM_minimalDMG
+f_dmgFinal_PvX_minimalDMG
+
+if (<var(ubrano)> > 0)
+	f_thief_applyrebound
+  f_dmgFinal_applyReactiveAR
+  dmgHits(<var(ubrano)>)
+endif
+
+
+// damage that just removes hitpoints according to the given damage
+// takes resists into account, raises no triggers, has no source.
+//argv(0) - damage to be applied
+//argv(1) - damage flags
+[function damage_noresponse]
+if (argv(0)>0)
+  arg(toDmg,<eval handleresists(<argv(0)>,<hval argv(1)>)>)
+  if (isPlayer)
+    if (manashield(0,<argv(0)>,<argv(1)>))
+      return 1
+    endif
+  endif
+  dmgHits(<eval arg(toDmg)>)
+  var(dmgedNoResp,<eval arg(toDmg)>)
+endif
+
+[function dmgHits] //argv(0) hits
+if (<argv(0)> > 0)
+  if (<eval var(wasFrozen)>) //the player was frozen by this specific hit
+    var(wasFrozen,)
+  else
+    paralyze_remove
+  endif
+  events=-e_getHit
+  damage(<argv(0)>,dam_god)
+  events=+e_getHit
+endif
+
+[function damage_armors]
+armor_localdam(<bodypart_layers[<eval {1 14 2 6 3 36 4 7 5 7 6 23}>]>)
+//14+6+36+7+7+23=93. neco tu chybi :) ale nevadi. nejak to blbne nebo co (Dinivan)
+
+[function armor_localdam]
+arg(localARsum,0)
+arg(i,0)
+while (i<argvcount)
+  if (<findlayer(<argv(i)>)>)
+    if (findlayer(<argv(i)>).typedef.type==t_armor) || (findlayer(<argv(i)>).typedef.type==t_armor_leather) || (findlayer(<argv(i)>).typedef.type==t_clothing)
+      arg(localARsum,#+<findlayer(<argv(i)>).typedef.armor>)
+    endif
+  endif
+  arg(i,#+1)
+endwhile
+if (flag_hasshield)
+  if (itemExists(<findlayer(2)>))
+    arg(localARsum,#+<eval 2*(<findlayer(2).typedef.armor>)>)
+    findlayer(2).damage(<eval ((<var(ubrano)>*<nastaveni_global_armorIdam>)/((<arg(localARsum)>*1000)/(2*<findlayer(2).typedef.armor>)))>)
+  endif
+endif
+arg(i,0)
+while (i<argvcount)
+  arg(item,<findlayer(<argv(i)>)>)
+  if (<arg(item)>)
+    if (<finduid(<arg(item)>)>)
+      if (finduid(<arg(item)>).typedef.type==t_armor) || (finduid(<arg(item)>).typedef.type==t_armor_leather) || (finduid(<arg(item)>).typedef.type==t_clothing)
+        finduid(<arg(item)>).damage(<eval ((var(ubrano)*nastaveni_global_armorIdam)/((arg(localARsum)*1000)/findlayer(<argv(<arg(i)>)>).typedef.armor))>)
+      endif
+    else
+      say("neni AR")
+    endif
+  endif
+  arg(i,#+1)
+endwhile
+
+[function f_getspeed_mystik]
+arg(sqrtmana,<sqrt_int(<eval mana/2>)>)
+arg(speed,<eval arg(sqrtmana)*nastaveni_weapspeed_mystik>)
+arg(speed,<eval ((arg(speed)*nastaveni_global_weapspeed)+500)/1000>)
+if !(<eval arg(speed)>)
+ arg(speed,50)
+endif
+tag(hitspeed,<eval 0fffff/arg(speed)>)
+
+[function f_getspeed_nonmystik]
+arg(sqrtdex,<sqrt_int(<eval DEX>)-2>) //-new
+if (zbran_char)
+ arg(speed,<eval arg(sqrtdex)*nastaveni_weapspeed_<tag(weaponuid).typedef.dispid>>)
+else
+ arg(speed,<eval arg(sqrtdex)*nastaveni_weapspeed_barehands>)
+endif
+arg(speed,<eval ((arg(speed)*nastaveni_global_weapspeed)+500)/1000>)
+if !(<eval arg(speed)>)
+ arg(speed,50)
+endif
+tag(hitspeed,<eval 0fffff/arg(speed)>)
+
+[function f_getspeed_npc]
+if(tag(npc_speed))
+ arg(sqrtdex,<sqrt_int(<eval tag(npc_speed)/2>)>)
+else
+ arg(sqrtdex,<sqrt_int(<eval MAXSTAM/2>)>)
+endif
+arg(speed,<eval arg(sqrtdex)*nastaveni_weapspeed_npc>)
+arg(speed,<eval ((arg(speed)*nastaveni_global_weapspeed)+500)/1000>)
+if !(<eval arg(speed)>)
+ arg(speed,50)
+endif
+tag(hitspeed,<eval 0fffff/arg(speed)>)
+
+[function speedtimer]
+if !(tag(speedset))
+  if(<tag(hypno_mystik)>)
+    f_getspeed_npc  
+  endif
+  if !(tag(hitspeed))    
+    f_getspeed_<tag(combattype)>
+  endif
+  newitemsafe(i_speedtimer)
+  lastnew.p=<p>
+  lastnew.removefromview
+  lastnew.attr=attr_invis
+  lastnew.link=<uid>
+  lastnew.timer=0
+  tag(speedset,1)
+endif
+
+[itemdef i_speedtimer]
+id=i_gold
+type=t_script
+
+on=@create
+attr_Invis=1
+
+on=@timer
+link.timerd=<link.tag.hitspeed>
+link.tag.remove(speedset)
+remove
+return 1
+
+[function combatskill_start]
+//reveal
+speedtimer
+
+tag(firststroke,1)
+if (act)
+  if !(act.srccombatLOS)
+    sysmessage(Nevidis na cil)
+    return 1
+  endif
+endif
+return 0
+
+[function combat_stroke]
+if !(act)
+  return
+endif
+if !(isnonmobile)
+  if (tag(firststroke))//prvni stroke
+    reveal
+    if (profession==class_mystik)
+      if(strlen(<tag(hypno_mystik)>))
+      else
+        if (act.srccombatLOS)&&(act.distance>1)//vidim na cil, skok k nemu, nasleduje @hittry      
+          tag(mystik_storepos,<p>)
+          p=<act.p>
+        endif
+      endif
+    endif
+  else //druhej stroke (po hittry)
+  //if (tag(combat_storepos))
+  //  p=<tag(combat_storepos)>
+  //  tag(combat_storepos,"")
+  //endif 
+    if (action==skill_archery)
+      sebratsip(<tag(weaponuid).typedef.tdata3>)
+    endif
+    if (profession==class_mystik)
+      if(strlen(<tag(hypno_mystik)>))
+      else
+        macefighting=<wrestling>
+        if (act.srccombatLOS)
+          if (act.isplayer) //player
+            if (act.distance>=nastaveni_global_mystikrangepvp+<eval tag(rangearrowdst)>)
+              return 0
+            endif
+          endif
+          if (act.distance>=nastaveni_global_mystikrangepvm+<eval tag(rangearrowdst)>)
+            return 0
+          endif
+          tag(mystik_storepos,<p>)
+          p=<act.p>
+        endif
+      endif
+    endif
+  endif
+endif
+
+[function sebratsip]//type
+arg(sipyUID,<findtype(args)>)
+if (arg(sipyUID))
+  if (arg(sipyUID).amount==1)
+    arg(sipyUID).arrowdrop(<act>) //a je to :)
+    return 1
+  else  
+    arg(sipyUID).typedef.type=t_fake
+    arg(sipyUID).type=t_fake
+    arg(druhejsip,<findtype(args)>)
+    
+    if (arg(druhejsip))
+      if (arg(druhejsip).baseid==arg(sipyUID).baseid) //je to ten samej druh
+        if (arg(druhejsip).amount==1)
+          arg(druhejsip).arrowdrop(<act>)
+          arg(sipyUID).typedef.type=<args>
+          arg(sipyUID).type=<args>
+          return 1
+        endif
+      endif
+    endif
+    arg(sipyUID).typedef.type=<args>
+    arg(sipyUID).type=<args>
+  endif
+endif
+//consume(1 <tag(weaponuid).typedef.tdata3>)
+
+[function arrowdrop]
+if ({0 4})
+  cont=<args>
+  if ({0 1})
+    drop
+  endif
+else
+ remove
+endif
+
+[typedef t_fake]
+
+
+///////////////////////////////////////////////////////////
+//                  R  E  S  I  S  T  S                  //
+//
+
+
+// these functions counts the total resists the character has and retuns its value.
+// the value is reduced to fit into the given range, which is from -40.000 to 1000
+// Values restriction is necessary for a valid resist calculation.
+
+//group resists:
+[function resist_magic]
+return<f_rsst_inRange(<eval tag(resist_magic)>+<eval typedef.tag(resist_magic)>)>
+
+[function resist_phys]
+return<f_rsst_inRange(<eval tag(resist_phys)>+<eval typedef.tag(resist_phys)>)>
+
+//magical resists:
+[function resist_fire]
+return<f_rsst_inRange(<eval tag(resist_fire)>+<eval typedef.tag(resist_fire)>)>
+
+[function resist_cold]
+return<f_rsst_inRange(<eval tag(resist_cold)>+<eval typedef.tag(resist_cold)>)>
+
+[function resist_acid]
+return<f_rsst_inRange(<eval tag(resist_acid)>+<eval typedef.tag(resist_acid)>)>
+
+[function resist_poison]
+return<f_rsst_inRange(<eval tag(resist_poison)>+<eval typedef.tag(resist_poison)>)>
+
+[function resist_elect]
+return<f_rsst_inRange(<eval tag(resist_elect)>+<eval typedef.tag(resist_elect)>)>
+
+[function resist_dragon]
+return<f_rsst_inRange(<eval tag(resist_dragon)>+<eval typedef.tag(resist_dragon)>)>
+
+//physical resists:
+[function resist_slash]
+return<f_rsst_inRange(<eval tag(resist_slash)>+<eval typedef.tag(resist_slash)>)>
+
+[function resist_pierce]
+return<f_rsst_inRange(<eval tag(resist_pierce)>+<eval typedef.tag(resist_pierce)>)>
+
+[function resist_blunt]
+return<f_rsst_inRange(<eval tag(resist_blunt)>+<eval typedef.tag(resist_blunt)>)>
+
+[function resist_sharp]
+return<f_rsst_inRange(<eval tag(resist_sharp)>+<eval typedef.tag(resist_sharp)>)>
+
+[function resist_bleed]
+return<f_rsst_inRange(<eval tag(resist_bleed)>+<eval typedef.tag(resist_bleed)>)>
+
+//special resists:
+[function resist_para]
+return<f_rsst_inRange(<eval tag(resist_para)>+<eval typedef.tag(resist_para)>)>
+
+[function resist_summon]
+return<f_rsst_inRange(<eval tag(resist_summon)>+<eval typedef.tag(resist_summon)>)>
+
+[function f_rsst_inRange]
+return<eval num_range(<argv(0)>,-40000,1000)>
+
+[function handleresists]//arg0 - dmg, arg1 - flags
+arg(fl,<hval argv(1)>)
+var(absoluteResist,0)
+var(is_physical ,<isbit(<fl>,1)>)
+var(is_magic    ,<isbit(<fl>,2)>)
+var(is_poison   ,<isbit(<fl>,3)>)
+var(is_fire     ,<isbit(<fl>,4)>)
+var(is_elect    ,<isbit(<fl>,5)>)
+//var(is_drain  ,<isbit(<fl>,6)>)
+//var(is_general,<isbit(<fl>,7)>)
+var(is_acid     ,<isbit(<fl>,8)>)
+var(is_cold     ,<isbit(<fl>,9)>)
+var(is_slash    ,<isbit(<fl>,10)>)
+var(is_piercing ,<isbit(<fl>,11)>)
+var(is_blunt    ,<isbit(<fl>,12)>)
+var(is_sharp    ,<isbit(<fl>,13)>)
+var(is_summon   ,<isbit(<fl>,14)>)
+var(is_bleed    ,<isbit(<fl>,15)>)
+var(is_dragon   ,<isbit(<fl>,16)>)
+
+arg(physFactor,<f_hndlRsst_count_physFactor>) // recounted physical dmg in promiles
+arg(magFactor,<f_hndlRsst_count_magFactor>)   // recounted magical dmg in promiles
+
+if (<var(physFlags)> && <var(magFlags)>)
+  arg(damFactor,<eval (<physFactor>+<magFactor>)/2>)
+elseif (<var(physFlags)>)
+  arg(damFactor,<physFactor>)
+elseif (<var(magFlags)>)
+  arg(damFactor,<magFactor>)
+else
+  arg(damFactor,1000) // 100.0% dmg
+endif
+
+arg(damFactor,<f_hndlRsst_applyGroupResist(<eval resist_summon*is_summon>,<arg(damFactor)>)>) // reduce damage via summon resist
+//say <arg(magFactor)>::<arg(physFactor)>-><arg(damFactor)>
+if (arg(damFactor) == 0) // no further damage will be generated
+  var(absoluteResist,1)
+  return 0
+else
+  var(absoluteResist,0)
+  //incomming resist values should be in a computable range - therefore no further value checking is needed
+  return<eval(((arg(damFactor)*argv(0))+500)/1000)> // number 500 ensures correct rounding UP (in sphere 999/1000 equals 0)
+endif
+
+
+// no physical resist influence: physFlag == 1000
+// maximal physical resist influence: physFlag == 0
+// increase dmg by negative resist: physFlag > 1000
+[function f_hndlRsst_count_physFactor]
+var(physFlags,<eval(is_blunt+is_sharp+is_slash+is_piercing+is_bleed)>)
+if (<eval physFlags>)
+  arg(physFactor,<eval(1000*physFlags)>)
+  arg(physFactor,#-(resist_slash*is_slash))
+  arg(physFactor,#-(resist_pierce*is_piercing))
+  arg(physFactor,#-(resist_blunt*is_blunt))
+  arg(physFactor,#-(resist_sharp*is_sharp))
+  arg(physFactor,#-(resist_bleed*is_bleed))
+  arg(physFactor,<eval(physFactor/physFlags)>) // arithmetic mean of all the physical resists
+else
+  arg(physFactor,1000)
+endif
+if (<is_physical> || <eval physFlags>)
+  arg(physFactor,<f_hndlRsst_applyGroupResist(<eval resist_phys>,<arg(physFactor)>)>)
+endif
+return <arg(physFactor)>
+
+
+// no physical resist influence: physFlag == 1000
+// maximal physical resist influence: physFlag == 0
+// increase dmg by negative resist: physFlag > 1000
+[function f_hndlRsst_count_magFactor]
+var(magFlags,<eval(var(is_poison)+var(is_fire)+var(is_cold)+var(is_elect)+var(is_acid)+var(is_dragon))>)
+if (<eval magFlags>)
+  arg(magFactor,<eval(1000*magFlags)>)
+  arg(magFactor,#-(resist_fire*is_fire))
+  arg(magFactor,#-(resist_cold*is_cold))
+  arg(magFactor,#-(resist_acid*is_acid))
+  arg(magFactor,#-(resist_poison*is_poison))
+  arg(magFactor,#-(resist_elect*is_elect))
+  arg(magFactor,#-(resist_dragon*is_dragon))
+  arg(magFactor,<eval(magFactor/magFlags)>) // arithmetic mean of all the magical resists
+else
+  arg(magFactor,1000)
+endif
+if (<is_magic> || <eval magFlags>)
+  arg(magFactor,<f_hndlRsst_applyGroupResist(<eval resist_magic>,<arg(magFactor)>)>)
+endif
+return <arg(magFactor)> //returns magFactor in the range between 0-40000
+
+//argv(0) - groupResist value
+//argv(1) - affected value (total resist)
+[function f_hndlRsst_applyGroupResist]
+if (<argv(0)> != 0)
+  arg(groupFactor,1000-<argv(0)>)
+  arg(groupFactor,<eval ((<arg(groupFactor)>*<argv(1)>)/1000)>)
+  return <eval arg(groupFactor)> // applies group resist onto the already counted resists
+else
+  return <eval argv(1)> // do no effect to an existing resist
+endif
+[eof]

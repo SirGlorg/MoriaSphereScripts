@@ -1,0 +1,1923 @@
+[CHARDEF 036]
+DEFNAME=c_troll
+NAME=Troll
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TROLL
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=32
+ARMOR=15
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+//=r_forests,r_mountains //=r_civilization
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Troll
+
+ON=@Create
+NPC=brain_monster
+FAME={100 500}
+karma=-3000
+STR=300
+DEX=60
+INT=10
+
+maxhits={400 450}
+maxstam={60 80}
+maxmana=0
+
+tag.experience=<eval {18.0 20.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+tag(resist_poison,700)
+tag.resist_para=<eval {200 300}>
+tag(resist_summon,350)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)        //sekery
+tag(resist_pierce,150)
+tag(resist_blunt,-50)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+WRESTLING={70.0 80.0}
+SpiritSpeak=25.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_TROLL
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+
+[CHARDEF c_troll_ranger]
+ID=c_troll
+NAME=Troll
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TROLL
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=15
+ARMOR=10
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+//=r_forests,r_mountains //=r_civilization
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_sniper 
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Troll ranger
+
+ON=@Create
+NPC=brain_monster
+FAME={100 500}
+karma=-3000
+
+STR=300
+DEX=60
+INT=10
+
+maxhits={400 450}
+maxstam={60 80}
+maxmana=0
+
+tag.experience=<eval {15.0 18.0}>
+
+tag.npc_sniper_dmg=12                          //o 10 HP
+tag.npc_sniper_chance=300                      //30% Defaultne 20%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+tag(resist_poison,700)
+tag.resist_para=<eval {200 300}>
+tag(resist_summon,350)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)        //sekery
+tag(resist_pierce,150)
+tag(resist_blunt,50)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+WRESTLING={50.0 70.0}
+ARCHERY={70.0 75.0}
+SpiritSpeak=25.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+ITEMNEWBIE=i_arrow,{50 75}
+
+ON=@NPCRestock
+ITEM=loot_TROLL
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+
+[CHARDEF 037]
+DEFNAME=c_troll_mace
+NAME=Troll
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=35
+ARMOR=25
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+//=r_forests,r_mountains //=r_civilization
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Troll {Mace}
+
+ON=@Create
+
+NPC=brain_monster
+FAME={100 500}
+karma=-3000
+
+STR=300
+DEX=70
+INT=20
+
+maxhits={500 550}
+maxstam={70 90}
+maxmana=0
+
+tag.experience=<eval {20.0 22.0}>
+
+tag.npc_stun_time=10                         // 1 seconds of stun
+Tag.npc_stun_chance=100                      //10%, defaultne 20% 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+tag(resist_poison,700)
+tag.resist_para=<eval {200 350}>
+tag(resist_summon,350)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)        //sekery
+tag(resist_pierce,150)
+tag(resist_blunt,50)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+MACEFIGHTING={75.0 85.0}
+PARRYING={85.0 80.0}
+WRESTLING={75.0 80.0}
+SpiritSpeak=25.0
+
+ITEMNEWBIE=i_mace_iron
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_TROLL
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+
+[CHARDEF 035]
+DEFNAME=c_troll_axe
+NAME=Troll
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TROLL
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=35
+ARMOR=20
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+//=r_forests,r_mountains //=r_civilization
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Troll {Sword}
+
+ON=@Create
+NPC=brain_monster
+FAME={100 500}
+karma=-3000
+
+STR=300
+DEX=75
+INT=30
+
+maxhits={500 550}
+maxstam={75 98}
+maxmana=0
+
+tag.experience=<eval {22.0 24.0}>
+
+tag.npc_critic_chance=150                //15% chance
+tag.npc_critic_dmg=10,15                 //dmg in between
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_slashing|dam_piercing
+
+tag(resist_poison,700)
+tag.resist_para=<eval {200 350}>
+tag(resist_summon,350)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)        //sekery
+tag(resist_pierce,150)
+tag(resist_blunt,50)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+SWORDSMANSHIP={70.0 75.0}
+PARRYING={65.0 80.0}
+WRESTLING={70.0 75.0}
+SpiritSpeak=20.0
+
+ITEMNEWBIE=i_sword_broad_iron
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_TROLL
+ITEM=i_gold
+
+
+////////////////////////////////////////////////////
+/////////////////  ETTINS  ////////////////////////
+////////////////////////////////////////////////////
+
+[CHARDEF 02]
+DEFNAME=c_ettin
+NAME=Ettin
+SOUND=snd_MONSTER_ETTIN1
+ICON=i_pet_ETTIN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=30
+ARMOR=25
+moverate=3
+
+RESOURCES=8 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Ettin
+
+ON=@Create
+NPC=brain_monster
+FAME={100 500}
+KARMA={-2000 -2999}
+
+STR=500
+DEX=70
+INT=40
+
+maxhits={550 650}
+maxstam={70 90}
+maxmana=0
+
+tag.experience=<eval {18.0 20.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,humanoid,25)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,700)
+tag.resist_para=<eval {300 450}>
+tag(resist_summon,350)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)        //sekery
+tag(resist_pierce,150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+PARRYING={70.0 90.0}
+WRESTLING={70.0 80.0}
+SpiritSpeak=35.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=loot_ETTIN
+//ITEM=tm_rocks,{0 2} 
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+
+[CHARDEF 012]
+DEFNAME=c_ettin_axe
+NAME=Ettin
+SOUND=snd_MONSTER_ETTIN1
+ICON=i_pet_ETTIN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=35
+ARMOR=20
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+FOODTYPE=
+//=r_forests,r_mountains //=r_civilization
+//=c_ettin,c_ettin_axe
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_critic                           //sance na kritik melee
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Ettin {Axe}
+
+ON=@Create
+NPC=brain_monster
+FAME={100 500}
+KARMA={-2000 -2999}
+
+STR=500
+DEX=75
+INT=50
+
+maxhits={500 650}
+maxstam={75 98}
+maxmana=0
+
+tag.experience=<eval {24.0 28.0}>
+
+tag.npc_critic_chance=250                //25% chance
+tag.npc_critic_dmg=15,20                 //dmg in between
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,humanoid,25)
+tag.weapflag=dam_physical|dam_slashing|dam_piercing
+
+//other resists
+tag(resist_poison,700)
+tag.resist_para=<eval {300 450}>
+tag(resist_summon,350)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)        //sekery
+tag(resist_pierce,150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+SWORDSMANSHIP={85.0 95.0}
+PARRYING={80.0 90.0}
+WRESTLING={80.0 90.0}
+
+ITEMNEWBIE=i_axe_double_iron
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+//ITEM=tm_rocks,{0 2} 
+//ITEM=loot_ETTIN
+
+////////////////////////////////////////////////////
+
+[CHARDEF c_ettin_lord]
+ID=c_ettin_axe
+NAME=Ettin Lord
+SOUND=snd_MONSTER_ETTIN1
+ICON=i_pet_ETTIN
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=65
+ARMOR=45
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+FOODTYPE=
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_roundattack
+TEVENTS=e_npc_curse           //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Ettin Lord
+
+ON=@Create
+NPC=BRAIN_MONSTER
+FAME={100 500}
+KARMA={-5000 -7999}
+
+STR=900
+DEX=200
+INT=60
+
+maxhits={1100 1150}
+maxstam={155 200}
+maxmana=1500
+
+tag.experience=<eval {53.0 59.0}>
+
+tag.roundattack_damage=30,35 //dmg od - do
+tag.roundattack_time=20,25   //cas od - do
+tag.roundattack_chance=200   //20.0%
+
+tag.npc_curse_chance=150            // 15% chance to trigger this event
+tag.npc_curse_delay=15,20           // delay between another possible strike
+tag.npc_curse_dmg=25,25             // dmg 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,humanoid,25)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,700)
+tag.resist_para=<eval {450 600}>
+tag(resist_summon,500)
+tag(resist_bleed,400)  //krvaci
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)   // sekery
+tag(resist_pierce,150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,200)
+
+MAGERY=100.0
+SWORDSMANSHIP=100.0
+PARRYING=100.0
+WRESTLING=100.0
+ei=35.0
+SpiritSpeak=35.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ITEMNEWBIE=i_axe_double_iron
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_ETTIN
+ITEM=i_gold
+ITEM=i_gem_diamond,{0 1}
+
+////////////////////////////////////////////////////
+///////////////////   OGRES  ///////////////////////
+////////////////////////////////////////////////////
+
+[CHARDEF 01]
+DEFNAME=c_ogre
+NAME=Zlobr
+SOUND=snd_MONSTER_OGRE1
+ICON=i_pet_OGRE
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=60
+ARMOR=85
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Ogre Lord
+
+ON=@Create
+Name=#NAMES_OGRE
+NPC=BRAIN_MONSTER
+FAME={100 2000}
+KARMA={-4000 -4999}
+
+STR=1100
+DEX=200
+INT=40
+
+maxhits={1800 2200}
+maxstam={120 174}
+maxmana=0
+
+tag.experience=<eval {60.0 65.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,600)
+tag.resist_para=<eval {550 700}>
+tag(resist_summon,800)
+tag(resist_bleed,300)  //krvaci
+
+tag(resist_sharp,-350)
+tag(resist_slash,-200)   // sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,200)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+PARRYING=100.0
+WRESTLING=120.0
+resist=70.0
+TACTICS=100.0
+SpiritSpeak=45.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=loot_OGRE
+ITEM=i_gold
+ITEM=i_gem_diamond,{0 1}
+
+////////////////////////////////////////////////////
+
+[CHARDEF c_ogre_test]
+id=c_ogre
+NAME=Zlobr
+SOUND=snd_MONSTER_OGRE1
+ICON=i_pet_OGRE
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=40
+ARMOR=50
+moverate=3
+
+RESOURCES=6 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Ogre TEST
+
+ON=@Create
+Name=Zlobr TEST
+NPC=brain_monster
+FAME=4500
+KARMA={-1000 -1999}
+
+STR=700
+DEX=300
+INT=60
+
+maxhits={5500 5650}
+maxstam={280 300}
+maxmana=0
+
+tag.experience=<eval {10.0 15.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,500) //
+tag.resist_para=<eval {550 700}>
+tag(resist_summon,300)
+tag(resist_bleed,200)  //krvaci
+
+tag(resist_sharp,150)
+tag(resist_slash,150)   // sekery
+tag(resist_pierce,150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)   //
+tag(resist_elect,200)
+tag(resist_cold,150)
+
+PARRYING=80.0
+Archery=100.0
+WRESTLING=100.0
+SpiritSpeak=45.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=loot_OGRE
+ITEM=i_gold
+ITEM=i_rock_plain
+ITEM=i_rock_plain
+ITEM=i_rock_plain
+
+////////////////////////////////////////////////////
+
+[CHARDEF c_ogre_mage]
+id=c_ogre
+NAME=Zlobr mag
+SOUND=snd_MONSTER_OGRE1
+ICON=i_pet_OGRE
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=40
+ARMOR=60
+moverate=3
+
+RESOURCES=6 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater
+TEVENTS=e_npc_curse                       //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Ogre Mage
+
+ON=@Create
+NPC=brain_monster
+FAME=4500
+KARMA={-500 -1200}
+
+STR=700
+DEX=250
+INT=150
+
+maxhits={1200 1350}
+maxstam={150 170}
+maxmana=1200
+
+tag.experience=<eval {73.0 78.0}>
+
+tag.npc_curse_chance=250                // 25% chance to trigger this event
+tag.npc_curse_delay=15,17               // delay between another possible strike
+tag.npc_curse_dmg=35,40                 // dmg 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,550)
+tag.resist_para=<eval {650 800}>
+tag(resist_summon,600)
+tag(resist_bleed,200)  //krvaci
+
+tag(resist_sharp,-350)
+tag(resist_slash,-200)   // sekery
+tag(resist_pierce,-250)
+tag(resist_blunt,200)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,150)
+
+PARRYING=80.0
+Resist=120.0
+WRESTLING=80.0
+magery=100.0
+ei=75.0
+SpiritSpeak=45.0
+
+ITEMNEWBIE=i_spellbook
+addspell s_lightning
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=loot_OGRE
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+
+//[CHARDEF 01040]
+[CHARDEF c_ogre_lord]
+ID=c_OGRE
+NAME=Zlobr Valecnik
+SOUND=snd_MONSTER_OGRE1
+ICON=i_pet_OGRE
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=90
+ARMOR=85
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_npc_critic              //sance na kritik melee
+//TEVENTS=e_berserk_potvora
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Ogre Lord
+
+ON=@Create
+//Name=#NAMES_OGRE
+NPC=BRAIN_MONSTER
+FAME={100 2000}
+KARMA={-4000 -4999}
+
+STR=1100
+DEX=200
+INT=40
+
+maxhits={2800 2900}
+maxstam={120 190}
+maxmana=0
+
+tag.experience=<eval {100.0 105.0}>
+
+tag.npc_critic_chance=250                //25% chance
+tag.npc_critic_dmg=20,25                 //dmg in between
+
+tag.roundattack_damage=40,50   //dmg od - do
+tag.roundattack_time=15,20     //prodleva od - do v sek
+tag.roundattack_chance=100     //10.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,40)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,550)
+tag.resist_para=<eval {750 900}>
+tag(resist_summon,700)
+tag(resist_bleed,500)  //krvaci
+
+tag(resist_sharp,-350)
+tag(resist_slash,-200)   // sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,200)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+PARRYING=100.0
+WRESTLING=120.0
+resist=120.0
+TACTICS=150.0
+SpiritSpeak=45.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=loot_OGRE
+ITEM=i_gold
+ITEM=i_gem_diamond,{0 2}
+
+///////////////////////////////////////////////////
+///////////////    OGRE BOSS   ////////////////////
+///////////////////////////////////////////////////
+
+[CHARDEF c_Ogre_boss]
+id=c_ogre
+NAME=Zlobr Vudce
+SOUND=snd_MONSTER_OGRE1
+ICON=i_pet_OGRE
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=110
+ARMOR=100
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_roundattack
+TEVENTS=e_summoneater
+TEVENTS=e_npc_multishot             //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_stun
+TEVENTS=e_parakrik
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Ogre boss
+
+ON=@Create
+COLOR=0988
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=450
+INT=100
+
+maxhits={20000 21000}
+maxstam={450 500}
+maxmana=0
+
+tag.experience=<eval {450.0 475.0}>
+
+tag.roundattack_damage=55,60           //dmg od - do
+tag.roundattack_time=10,15             //prodleva od - do
+tag.roundattack_chance=150             //15%
+
+tag.multishot_chance=200               // 20% chance pri zasahu monstra
+tag.multishot_delay=10,12              // prodleva nez znovu
+tag.multishot_dmg=35,45                // dmg in between 30 and 40
+
+tag.npc_port_timer=10
+tag(npc_port_distance,9)
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=20               // takes 20 of stam
+
+Tag.npc_stun_chance=300           //30%, defaultne 20% 
+
+tag(npc_summoning_chance,100)                     //10%
+tag(npc_summoning_time,60)                        //nezakouzli znovu 60 sek
+tag(npc_summoning_count,2)                        //pocet
+tag(npc_summoning_char[0],c_titan_leap)
+tag(npc_summoning_char[1],c_titan_sluha)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000) //
+tag(resist_summon,950)
+tag(resist_para,990)   // nemelo by skoro jit
+tag(resist_bleed,600)  //krvaci malo
+
+tag(resist_sharp,450)
+tag(resist_slash,-50)   // sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,750)
+
+tag(resist_fire,1000)      //kuze ohnivzdorna 
+tag(resist_elect,350)
+tag(resist_cold,-50)       //nahac
+
+PARRYING=120.0
+WRESTLING=150.0
+Resist=200.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_FOOD,{1 3}
+ITEM=RANDOM_REAGENT,{50 70}
+ITEM=i_gem_diamond,{0 2}
+ITEM=i_q039_shadow_weapon_skin,{0 1}
+
+ON=@hit 
+IF (RAND(10)==1)
+  dorand 4
+    SAYU("Pridal ses k Harfanum?!")
+    SAYU("Mne neporazis!")
+    SAYU("Vymetu s tebou cely ostrov!")
+    SAYU("Heru Ruin Val")
+  enddo
+ENDIF
+
+////////////////////////////////////////////////////
+
+[CHARDEF 04b]
+DEFNAME=c_cyclops
+NAME=Cyclop
+SOUND=snd_MONSTER_CYCLOPS1
+ICON=i_pet_CYCLOPS
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=60
+ARMOR=60
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Cyclops
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-4000 -4999}
+
+STR=3000
+DEX=95
+INT=80
+
+maxhits={3000 3450}
+maxstam={85 103}
+maxmana=0
+
+tag.experience=<eval {90.0 91.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,450)
+tag.resist_para=<eval {550 700}>
+tag(resist_summon,600)
+tag(resist_bleed,300)  //krvaci
+
+tag(resist_sharp,-150)
+tag(resist_slash,-150)   // sekery
+tag(resist_pierce,150)
+tag(resist_blunt,00)
+
+tag(resist_fire,200)
+tag(resist_elect,100)
+tag(resist_cold,100)
+
+PARRYING={70.0 80.0}
+WRESTLING={90.0 100.0}
+resist=90.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_CYCLOPS
+//ITEM=tm_rocks,{0 1} 
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+
+[CHARDEF c_cyclops_mage]
+id=c_cyclops
+NAME=Cyclop
+SOUND=snd_MONSTER_CYCLOPS1
+ICON=i_pet_CYCLOPS
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=60
+ARMOR=50
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+
+BLOODCOLOR=020
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Cyclops mage
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={0 -1000}
+
+STR=2200
+DEX=150
+INT=400
+
+maxhits={2200 2650}
+maxstam={120 150}
+maxmana=1500
+
+tag.experience=<eval {100.0 110.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,550)
+tag.resist_para=<eval {650 800}>
+tag(resist_summon,700)
+tag(resist_bleed,300)  //krvaci
+
+tag(resist_sharp,-150)
+tag(resist_slash,-150)   // sekery
+tag(resist_pierce,150)
+tag(resist_blunt,00)
+
+tag(resist_fire,300)
+tag(resist_elect,200)
+tag(resist_cold,200)
+
+PARRYING={70.0 80.0}
+WRESTLING={80.0 90.0}
+resist=170.0
+magery=100.0
+ei=100.0
+SpiritSpeak=60.0
+
+ITEMNEWBIE=i_spellbook
+addspell s_lightning
+addspell s_fireball
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_CYCLOPS
+ITEM=RANDOM_REAGENT,{25 30}
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+
+[CHARDEF 01127]
+id=c_cyclops
+DEFNAME=c_cyclops_king
+NAME=Cyclops King
+SOUND=snd_MONSTER_CYCLOPS1
+ICON=i_pet_CYCLOPS
+CAN=MT_WALK|MT_USEHANDS|MT_RUN|MT_FIRE_IMMUNE
+
+attack=75
+ARMOR=80
+moverate=3
+
+RESOURCES=30 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_roundattack_pullall
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Cyclops King
+
+ON=@Create
+NPC=BRAIN_MONSTER
+KARMA={-5000 -5999}
+FAME={100 2000}
+
+STR=1700
+DEX=195
+INT=80
+
+maxhits={3200 3350}
+maxstam={155 195}
+maxmana=0
+
+tag.experience=<eval {170.0 190.0}>
+
+tag.roundattack_damage=40,45 //dmg od - do
+tag.roundattack_time=10,15   //cas od - do
+tag.roundattack_chance=100   //10.0%
+tag.pullAll_distance=7       //o kolik posun
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,600)
+tag.resist_para=<eval {650 800}>
+tag(resist_summon,600)
+tag(resist_bleed,300)  //krvaci
+
+tag(resist_sharp,-150)
+tag(resist_slash,-150)   // sekery
+tag(resist_pierce,150)
+tag(resist_blunt,00)
+
+tag(resist_fire,300)
+tag(resist_elect,200)
+tag(resist_cold,200)
+
+PARRYING={70.0 100.0}
+WRESTLING={90.0 100.0}
+resist=170.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=RANDOM_REAGENT,{15 20}
+ITEM=loot_CYCLOPS
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+//////////////////    TITANS   /////////////////////
+////////////////////////////////////////////////////
+
+[CHARDEF 04c]
+DEFNAME=c_titan
+NAME=Titan
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN
+
+attack=80
+ARMOR=80
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_knockback
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Titan
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=1500
+DEX=350
+INT=60
+
+maxhits={1500 1700}
+maxstam={350 400}
+maxmana=0
+
+tag.experience=<eval {110.0 120.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,550)
+tag.resist_para=<eval {700 800}>
+tag(resist_summon,600)
+tag(resist_bleed,300)  //krvaci
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)   // sekery
+tag(resist_pierce,-100)
+tag(resist_blunt,150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+PARRYING={40.0 50.0}
+WRESTLING={70.0 80.0}
+//WRESTLING={40.0 50.0}  drive
+resist=100.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_TITAN
+ITEM=i_gold
+
+////////////////////////////////////////////////////
+
+[CHARDEF c_titan_ranger]
+ID=c_titan
+NAME=Titanka
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN
+
+attack=40
+ARMOR=80
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_sniper
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Titan ranger
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=1500
+DEX=250
+INT=60
+
+maxhits={1500 1700}
+maxstam={150 200}
+maxmana=0
+
+tag.experience=<eval {110.0 120.0}>
+
+tag.npc_sniper_dmg=20           //o 20 HP
+tag.npc_sniper_chance=300       //30% Defaultne 20%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//dex 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,650)
+tag.resist_para=<eval {700 800}>
+tag(resist_summon,600)
+tag(resist_bleed,100)  //krvaci
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)   // sekery
+tag(resist_pierce,-100)
+tag(resist_blunt,150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+PARRYING={40.0 50.0}
+WRESTLING={70.0 80.0}
+ARCHERY={90.0 95.0}
+resist=100.0
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_bow
+ITEMNEWBIE=i_arrow,{50 75}
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=random_FOOD,{0 1}
+ITEM=RANDOM_REAGENT,{10 20}
+
+////////////////////////////////////////////////////
+
+[CHARDEF c_titan_mage]
+id=c_titan
+NAME=Titan Mage
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN
+
+attack=65
+ARMOR=55
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_summoneater                 //smaze summona, co zasahne
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_curse                   //vsechny viditelne zrani o dmg
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Titan Mage
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA=-3000
+
+STR=1500
+DEX=250
+INT=220
+
+maxhits={2900 3200}
+maxstam={155 200}
+maxmana=2250
+
+tag.experience=<eval {140.0 150.0}>
+
+tag.npc_curse_chance=250                // 25% chance to trigger this event
+tag.npc_curse_delay=15,20               // delay between another possible strike
+tag.npc_curse_dmg=30,35                 // dmg 
+
+tag(npc_summoning_chance,50)               //5%
+tag(npc_summoning_time,60)                 //nezakouzli znovu 60 sek
+tag(npc_summoning_count,1)                 //pocet
+tag(npc_summoning_char[0],c_titan_leap)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_lightning|dam_magic
+
+//other resists
+tag(resist_poison,550)
+tag.resist_para=<eval {800 880}>
+tag(resist_summon,850)
+tag(resist_bleed,500)
+
+tag(resist_sharp,-100)
+tag(resist_slash,-100)   // sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,100)
+
+tag(resist_fire,500)   //odolnejsi na magii
+tag(resist_elect,500)
+tag(resist_cold,300)
+
+PARRYING=100.0
+Resist=200.0
+WRESTLING=90.0
+magery=100.0
+ei=55.0
+SpiritSpeak=65.0
+PROVOCATION=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell s_lightning
+addspell s_fireball
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_TITAN
+ITEM=i_gold
+ITEM=RANDOM_REAGENT,{10 20}
+
+////////////////////////////////////////////////////
+
+[CHARDEF 01054]
+id=c_titan
+DEFNAME=c_titan_lord
+NAME=Titan Lord
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN
+
+attack=85
+ARMOR=90
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_leaper
+//TEVENTS=e_NPC_Bleed
+TEVENTS=e_npc_stun
+TEVENTS=e_npc_critic
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Titan Lord
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2000
+DEX=250
+INT=100
+
+maxhits={3000 3350}
+maxstam={200 300}
+maxmana=0
+
+tag.experience=<eval {180.0 195.0}>
+
+//tag.npc_bleed=300 //30.0%
+
+//tag.npc_port_timer=10
+//tag(npc_port_distance,6)
+
+tag.npc_critic_chance=250         //25% chance
+tag.npc_critic_dmg=20,25 
+
+tag.npc_stun_delay=25 //2.5 seconds delay in between 2 possible stuns
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,humanoid,60)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,650)
+tag.resist_para=<eval {900 980}>
+tag(resist_summon,800)
+tag(resist_bleed,300)  //krvaci
+
+tag(resist_sharp,-50)
+tag(resist_slash,-50)   // sekery
+tag(resist_pierce,-100)
+tag(resist_blunt,150)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,200)
+
+PARRYING={90.0 100.0}
+WRESTLING={90.0 100.0}
+Resist=200.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_TITAN
+ITEM=i_gold
+ITEM=RANDOM_REAGENT,{15 25}
+
+///////////////////////////////////////////////////
+///////////////   TITAN BOSS   ////////////////////
+///////////////////////////////////////////////////
+
+[CHARDEF c_titan_overlord]
+id=c_titan
+NAME=Titan Overlord
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_RUN
+
+attack=135
+ARMOR=115
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+FOODTYPE=
+
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_roundattack_pullall
+//TEVENTS=e_NPC_Bleed
+TEVENTS=e_npc_stun
+TEVENTS=e_parakrik
+TEVENTS=e_summoneater        //smaze summona, co zasahne
+TEVENTS=e_npc_summoning
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_stam_dmg              //mlacenim saje staminu
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Titan Overlord
+
+ON=@Create
+COLOR=0989
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+STR=2800
+DEX=400
+INT=100
+
+maxhits={25000 26000}
+maxstam={500 550}
+maxmana=0
+
+tag.experience=<eval {730.0 775.0}>
+
+tag.roundattack_damage=70,80    //dmg od - do
+tag.roundattack_time=10,12      //prodleva od - do
+tag.roundattack_chance=600      //60%
+
+tag.npc_port_timer=10
+tag(npc_port_distance,9)
+
+tag.stam_dmg_chance=250             // 25% chance to trigger this event
+tag.stam_dmg_power=20               // takes 30 of stam
+
+Tag.npc_stun_chance=300           //30%, defaultne 20% 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(npc_summoning_chance,100)                      //10%
+tag(npc_summoning_time,40)                         //nezakouzli znovu 40 sek
+tag(npc_summoning_count,2)                         //pocet
+tag(npc_summoning_char[0],c_titan_leap)
+tag(npc_summoning_char[1],c_titan_sluha)
+
+tag(monstertype,humanoid,40)
+
+tag.weapflag=dam_physical|dam_blunt
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,950)            // nemelo by skoro jit
+tag(resist_summon,950)
+tag(resist_bleed,900)           //krvaci malo
+
+tag(resist_sharp,50)
+tag(resist_slash,750)           // sekery
+tag(resist_pierce,250)
+tag(resist_blunt,750)
+
+tag(resist_fire,750)
+tag(resist_elect,250)
+tag(resist_cold,550)
+
+PARRYING=120.0
+WRESTLING=150.0
+Resist=200.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+//ITEM=loot_TITAN
+ITEM=i_gold
+ITEM=random_FOOD,{1 3}
+ITEM=RANDOM_REAGENT,{10 20}
+ITEM=RANDOM_REAGENT_NECRO,{30 40}
+
+ON=@hit 
+IF (RAND(10)==1)
+  dorand 4
+    SAYU("Tyto ostrovy jsou me!")
+    SAYU("Mne neporazis!")
+    SAYU("Titani vladnou svetu!")
+    SAYU("Heru Ruin Val")
+  enddo
+ENDIF
+
+////////////////////////////////////////////////////
+
+[CHARDEF c_titan_sluha]
+ID=c_ratman_mace
+NAME=Krysak
+SOUND=snd_MONSTER_RATMAN1
+ICON=i_pet_RATMAN
+ANIM=078c7f
+CAN=MT_WALK|MT_run
+
+attack=30
+ARMOR=45
+moverate=5
+
+RESOURCES= 10 i_ribs_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+//TEVENTS=e_npc_massleap
+TEVENTS=e_backstub
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Titan Overlord - sluha
+
+ON=@Create
+color=07FFF     // pruhledna
+NAME=#NAMES_RATMAN
+NPC=brain_monster
+FAME=1
+KARMA=-1500
+
+STR=1500
+DEX=200
+INT=300
+
+maxhits={1000 1200}
+maxstam={100 150}
+maxmana=0
+
+tag.experience=<eval {80.0 90.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {600 700}>
+tag(resist_summon,400)
+tag(resist_bleed,200)
+
+//weap resists
+tag(resist_sharp,-200)
+tag(resist_slash,-200)
+tag(resist_pierce,-200)
+tag(resist_blunt,150)
+
+//magic resists
+tag(resist_fire,100)
+tag(resist_elect,100)
+tag(resist_cold,150)
+
+//typ monstra
+tag(monstertype,humanoid,60)
+
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+TACTICS=250.0
+WRESTLING=100.0
+POISONING={80.0 100.0}
+SpiritSpeak=55.0
+HIDING={120.0 140.0}
+STEALTH={130.0 140.0}
+PROVOCATION=100.0
+peacemaking=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+////////////////////////////////////////////////////////////////////////////
+
+[chardef c_titan_leap]
+id=c_ratman
+ANIM=078c7f
+NAME=Krysak
+SOUND=snd_MONSTER_RATMAN1
+ICON=i_pet_RATMAN
+CAN=MT_WALK|MT_RUN
+
+attack=40
+ARMOR=15
+MOVERATE=4
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_bleed
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Titans
+DESCRIPTION=Titan Overlord - Leaper
+
+ON=@Create
+NAME=#NAMES_RATMAN
+COLOR=08000|RAND{COLOR_DYE_HIGH} // shirt color
+NPC=brain_monster
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=400
+DEX=300
+INT=100
+
+maxhits={900 1000}
+maxstam={300 450}
+maxmana=0
+
+tag.experience=<eval {60.0 65.0}>
+
+tag.npc_bleed=800     //80.0%
+tag(npc_port_distance,9)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,400)
+
+tag(resist_sharp,100)
+tag(resist_slash,100)
+tag(resist_pierce,100)
+tag(resist_blunt,200)
+
+tag(resist_fire,100)
+tag(resist_elect,100)
+tag(resist_cold,100)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={125.0 150.0}
+SpiritSpeak=55.0
+PROVOCATION=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold

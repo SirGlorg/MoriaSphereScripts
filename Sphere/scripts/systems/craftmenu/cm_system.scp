@@ -1,0 +1,994 @@
+[function makestring_start]
+hungryhurts
+IF (argvcount<3)
+ redmessage(Nebyl zadan zadny predmet k vyrobe)
+elseif !(<argv(0)>)
+ redmessage(Pocet opakovani je nulovy...)
+else
+  var(pocet_pro_svitky_only,<argv(0)>) //pouzije se k odpoctu vyroby svitku
+  if (nolightfizz(1))//jo ty se poserou
+    return 1 //je to i s hlaskou, nutno proverit jestli jim to nepise dvakrat - Dinivan
+  endif
+  classmessage(vyrabim <argv(0)>x tyto veci:)
+  arg(index,2)
+  while (index<argvcount)
+    classmessage(<finduid(argv(index)).name>)
+    arg(index,#+1)
+  endwhile
+  events +e_makestring
+  makestring_makeitem(<src.tag(makestring)>)
+endif
+
+[function makestring_makeitem]
+arg(setitems,<eval <argvcount>-2>)
+arg(indextomake,<eval (<argv(1)>%<setitems>)+2>)
+arg(itemtomake,<finduid(argv(indextomake))>)
+if !(argv(0))
+ src.sysmessage(makestring_makeitem: Spatne zadano - chyba ve skriptu. Kontaktuj GM.)
+ return 0
+elseif (argv(0)>0)
+ if ((argv(0)*setitems)<=argv(1))
+  classmessage(Vyroba ukoncena.)
+  tag(makestring,"")
+  events -e_makestring
+  return 0
+ endif
+endif
+
+if !(arg(itemtomake).makethis)
+ redmessage(nelze vyrobit <finduid(argv(indextomake)).name>.)
+ var(vyroba_svitku,"")
+ makestring_abort
+endif
+var(vyroba_svitku,"")
+
+[function makethis]
+IF (canmakethis)
+ if (type==t_scroll)
+  //src.say("svitek kouzla <findres(scroll,<morex>).name>: <findres(spell,<morex>).manause> many. mana:<src.mana>")
+  if(strcmpi(<src.profession>,class_necro))
+    src.mana=<eval (<src.mana>+<eval (<findres(spell,<morex>).manause>)/2>)> //pulku vratit (ne negrum, jejich svitky asi nic nestojej)
+  else
+    if(<morex> <= 64) 
+     src.mana=<eval (<src.mana>+<eval (<findres(spell,<morex>).manause>)/2>)> //negrum ubrat (tu pulku)
+    else //necrokouzla aby ubirala
+     //kermel.sysmessage(kolik many beru: <findres(spell,<morex>).manause>)
+     src.mana=<eval (<src.mana>-<eval (<findres(spell,<morex>).manause>)/2>)> //negrum ubrat (tu pulku)
+    endif //
+  //src.say("a ted mana:<src.mana>")
+  endif
+ endif
+ src.classmessage(Vyrabim <name>)
+ if (type==t_customspell_scroll) //protoze ty posrany svitky samy nejak blbnou
+  //pocitac vyrobenych svitku
+  src.newitemsafe(i_vyrobce_svitku)
+  lastnew.more1=<var(pocet_pro_svitky_only)> 
+  lastnew.equip
+  var(pocet_pro_svitky_only,"") //rychle uvolnit nez nekdo dalsi zapne vyrobu :)
+  //zjistit narocnost svitku
+  arg(skillmake_svitku,<typedef.skillmake>) //celej dlouhej stringik
+  getskilldifficulty(<arg(skillmake_svitku)>) //vrati var(insc) a var(magery)
+  //ulozit resources pro odmazani pri failu
+  arg(resources_svitku,<typedef.resources>) //celej dlouhej stringik
+  src.tag(inscriptionSkillResources,<resources_svitku>)
+  //pustit vyrobu
+  vyrob_customsvitek(<morex>,<var(insc)>,<var(magery)>) //cislo kouzla a narocnosti
+  var(insc,"")
+  var(magery,"")
+  return 1
+ elseif (type==t_scroll)
+  //ulozit resources pro odmazani pri failu
+  arg(resources_svitku,<typedef.resources>) //celej dlouhej stringik
+  src.tag(inscriptionSkillResources,<resources_svitku>)
+ endif
+ src.makeitem(<baseid>)
+ return 1
+else
+ src.redmessage(Nemas dost zdroju)
+ return 0
+endif
+
+[function resourcetext]
+arg(vysledtext,"<typedef.resourcenames>")
+if (type==t_scroll)
+ arg(vysledtext,"<vysledtext>, <eval findres(spell,<morex>).manause/2> Many")
+endif
+if (type==t_customspell_scroll)
+ arg(vysledtext,"<vysledtext>, <eval (<a_manause[<morex>]>)/2> Many")
+endif
+return"<vysledtext>"
+
+[function restodisplay]
+//logmsg(resource obrazek:<name>)
+arg(vysledtext,"<typedef.resources>")
+if (type==t_scroll)
+ arg(vysledtext,"<vysledtext>,<eval findres(spell,<morex>).manause/2> i_manaanim")
+endif
+if (type==t_customspell_scroll)
+ arg(vysledtext,"<vysledtext>, <eval (<a_manause[<morex>]>)/2> i_manaanim")
+endif
+return"<vysledtext>"
+
+[function canmakethis]//arg(0)=1 pokud chci kontrolovat i povoleni povolani :)
+if !(cm_section)
+  if (src.canmake(<baseid>))
+    if (type==t_scroll)
+      if (<src.mana> < <eval ((<findres(spell,<morex>).manause>)/2)>)
+        return 0
+      elseif !(src.cancast(<morex>))
+        return 0
+      endif
+    endif
+    if (type==t_customspell_scroll)
+      //src.sysmessage(Vyrabim customsvitek, <baseid>)
+      if (<src.mana> < <eval ((<a_manause[<morex>]>)/2)>)
+        return 0
+      endif
+      if !(safe(<tag(<src.profession>)>))  //nema povolani na ten svitek (0 pokud se stringy shoduji)
+        return 0
+      endif
+    endif
+    if (argv(0))
+      if (type==t_scroll)
+        src.actarg1=<morex>
+        if (!src.class_cancast(scribe_<src.tag(class)>))
+          return 0
+        endif
+      elseif (type==t_potion)||(type==t_allpotions)||(type==t_speedpotions)||(type==t_potion_bomba)
+        if (!src.classIsInList(<?potions_<baseid>?>))
+          return 0
+        endif
+      endif
+    endif
+    //src.sysmessage(Vyroba povolena!)
+    var(displaysect,1)
+    return 1
+  endif
+endif
+return 0
+
+[function classIsInList]
+arg(i,0)
+while (arg(i)<argvcount)
+  if (argv(arg(i))==profession)
+    return 1
+  endif
+  arg(i,#+1)
+endwhile
+return 0
+
+[function makestring_nextitem]
+if (argvcount<3)
+ src.sysmessage(makestring_nextitem: Spatne zadano - chyba ve skriptu. Kontaktuj GM.)
+else
+ arg(vysledstring,"<argv(0)>,<eval <argv(1)>+1>")
+ arg(index,2)
+ while (index<argvcount)
+  arg(vysledstring,"<vysledstring>,<argv(index)>")
+  arg(index,#+1)
+ endwhile
+endif
+return"<vysledstring>"
+
+[function makestring_abort]//pouze "emergency"
+tag(makestring,"")
+events -e_makestring
+Redmessage(Vyroba zrusena)
+
+[function abortmaking]
+tag(makestring,"")
+events -e_makestring
+if (findid(i_vyrobce_svitku)) //pro specialni vyrobni funkci
+  findid(i_vyrobce_svitku).remove
+  findid(i_vyrobni_timer).remove //zrusi soucasnou vyrobu  
+endif
+Redmessage(Vyroba predcasne zrusena)
+
+[events e_makestring]
+on=@hit
+makestring_abort
+on=@gethit
+makestring_abort
+on=@hittry
+makestring_abort
+on=@spellcast
+makestring_abort
+
+on=@skillfail
+if (iscrafting)
+ src.classmessage(Vyrobek se nepovedl - dalsi pokus.)
+ newitemsafe(i_make_delay)
+ lastnew.link=<uid>
+ lastnew.p=<p>
+ lastnew.removefromview
+ lastnew.tag(dothis,"makestring_makeitem(<src.tag(makestring)>)")
+else
+ makestring_abort
+endif
+
+on=@SkillMakeItem
+if (action==skill_blacksmith)||(action==skill_Bowcraft)||(myaction==skill_Carpentry)
+ if (<lastnew.quality>>170)&&(<eval(findres(skill,<myaction>).name)> > 999)&&(lastnew.isweapon)
+  if (tag(level) > {1 200})
+   craftenhanceditem
+  endif
+ endif
+endif
+src.tag(makestring,"<makestring_nextitem(<src.tag(makestring)>)>")
+newitemsafe(i_make_delay)
+lastnew.link=<uid>
+lastnew.tag(item,<argo>)
+lastnew.tag(container,<reccont>)
+lastnew.p=<p>
+lastnew.removefromview
+lastnew.tag(dothis,"makestring_makeitem(<src.tag(makestring)>)")
+
+[function craftenhanceditem]
+if (lastnew.isbow)&&(tag(ra_archery))
+  lastnew.tag(imi_value_31,<tag(ra_archery)>)
+elseif (lastnew.isfencing)||(lastnew.issword)
+  if (lastnew.typedef.layer==1)&&(tag(ra_sharps))
+    lastnew.tag(imi_value_42,<tag(ra_sharps)>)
+  elseif (lastnew.typedef.layer==2)&&(tag(ra_sharps))&&(lastnew.typedef.dispid==i_war_fork) //war fork dostava + xy fencing
+    lastnew.tag(imi_value_42,<tag(ra_sharps)>)
+  elseif (lastnew.typedef.layer==2)&&(tag(ra_twohand))
+    lastnew.tag(imi_value_40,<tag(ra_twohand)>)
+  endif
+elseif (lastnew.ismace)
+  if (tag(ra_crushing))
+    lastnew.tag(imi_value_41,<tag(ra_crushing)>)
+  else
+    return 1
+  endif
+elseif (lastnew.isstaff)||(lastnew.iscrook)
+  if (tag(ra_crushing))
+    lastnew.tag(imi_value_46,<tag(ra_crushing)>)//meditation
+    if (<tag(ra_crushing)>>3)
+      lastnew.tag(imi_value_25,<eval(<tag(ra_crushing)>/4)>)//magery
+    endif
+  else
+    return 1
+  endif
+else
+ return 1
+endif 
+lastnew.mif_finishitem
+lastnew.name="<lastnew.name> vyroben od <src.name>"
+
+[itemdef i_make_delay]
+id=i_memory
+name=Makestring delay
+on=@create
+timerd=1
+attr_invis=1
+
+on=@timer
+src=<link>
+link.<tag(dothis)>
+if (finduid(tag(item)))
+  if (tag(item).topobj==link)
+    tag(item).cont=<tag(container)>
+  endif
+  tag(item).updatex
+endif
+remove
+return 1
+
+[function craftmenu]
+if (safe def_cm_<argv(0)>)
+ src.tag(lastcm,<args>)
+ if (safe src.tag(cmopen_<args>))
+  dialog(d_craftmenu,<src.tag(cmopen_<args>)>)
+ else
+  dialog(d_craftmenu,<finduid(def_cm_<argv(0)>)>)
+ endif
+elseif (finduid(<argv(0)>).isitem)
+  dialog(d_craftmenu,<finduid(<argv(0)>)>)
+endif
+
+[defnames craftmenu]
+d_def_cm_vyska	35
+d_def_cm_radku	11
+
+[dialog d_craftmenu]
+SetLocation(10,10)
+argo.tag(from,<finduid(<argv(0)>)>)
+if !(safe argo.tag(from).isitem)
+ src.sysmessage("Chyba pri otevirani menu...otevri znova,pripadne volej GM")
+ src.tag(cmopen_<src.tag.lastcm>,"")
+ break
+ return -1
+endif
+
+if (argo.tag(from).cont)
+ arg(hobj,<argo.tag(from)>)
+ while (<eval arg(hobj).Cont>!=<eval arg(hobj).topobj>)
+  arg(urovne_uid,"<safe urovne_uid><arg(hobj)>,")
+  arg(hobj,<arg(hobj).cont>)
+ endwhile
+ arg(urovne_uid,"<safe urovne_uid><arg(hobj)>,")
+endif
+arg(urovne_uid,"<safe urovne_uid><argo.tag(from).topobj>") 
+
+arg(index,0)//cislo veci v hotovym seznamu
+arg(icount,0)//cislo v kontejneru
+while (icount<argo.tag(from).rescount)//
+ if (argo.tag(from).findcont(icount))//item existuje
+  If (argo.tag(from).findcont(icount).cm_displayit)//item se ma zobrazit
+   argo.tag(itemtomake[index],<argo.tag(from).findcont(icount)>)
+   arg(index,#+1)
+  endif
+ endif
+ arg(icount,#+1)
+endwhile
+argo.tag(lasti,<index>)
+if !(index)
+ //<qval(src.tag(cmopen_<src.tag.lastcm>)==argo.tag(from),1,0)>
+ if (src.tag(cmopen_<src.tag.lastcm>)==argo.tag(from))
+  src.tag(cmopen_<src.tag.lastcm>,"")
+  Src.sysmessage(Zruseno otevirani menu na tomto miste)
+ endif
+ src.redmessage(S tim co mas nevyrobis nic.)
+ break
+ return -1
+endif
+if (index==1)&&(argo.tag(itemtomake[0]).cm_section)
+ argo.tag(itemtomake[0]).dialog(d_craftmenu,<argo.tag(itemtomake[0])>)
+ //src.Classmessage("Vybrana sekce <argo.tag(itemtomake[0]).name>")
+ break
+ return -1
+endif
+
+if (index>d_def_cm_radku)
+ argo.tag(radku,<d_def_cm_radku>)
+else
+ argo.tag(radku,<index>)
+endif
+
+argo.tag(sirka,700)
+argo.tag(vyska,<eval (3*<d_def_radek_vyska>)+((<argo.tag(radku)>)*<d_def_cm_vyska>)+(5*<d_def_skvira>)+(2*<d_def_okraj>)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+var(d_def_radek_vyska,<d_def_cm_vyska>)
+
+var(sloupec_noback[0],1)
+var(sloupec_noback[3],1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,20,70,300,20)
+var(d_def_radek_vyska,"")
+argo.dialog_pozadi(<argo.tag(nexty)>,1,20,70,300,20)
+var(sloupec_noback[0],"")
+var(sloupec_noback[3],"")
+
+argo.dialog_zpruhledni
+//argo.tilepichue(100,100,var(def_cm_blacksmithing).findcont(0).findcont(2).findcont(0).dispiddec,10)
+argo.texta(<argo.dialog_textpos(0,0)>,2301,"<?cm_UIDs_list(<arg(urovne_uid)>)?>")
+argo.texta(<argo.dialog_textpos(1,0,1)>,2301,make)
+argo.texta(<argo.dialog_textpos(1,2)>,2301,"Jmeno vyrobku/podskupiny")
+argo.texta(<argo.dialog_textpos(1,3,1)>,2301,info)
+//argo.texta(<argo.dialog_textpos(1,4)>,2301,Material)
+if (src.account.tag(commander))
+ argo.button(<argo.tag(sirka)>-140,argo.tag(obj_y[1]),0984,0983,1,0,3)
+ argo.button(<argo.tag(sirka)>-140,argo.tag(obj_y[1])+10,0986,0985,1,0,3)
+ argo.Texta(<argo.tag(sirka)>-130,argo.tag(obj_y[1]),2301,view) 
+ argo.button(<argo.tag(sirka)>-70,argo.tag(obj_y[1]),0984,0983,1,0,4)
+ argo.button(<argo.tag(sirka)>-70,argo.tag(obj_y[1])+10,0986,0985,1,0,4)
+ argo.Texta(<argo.tag(sirka)>-60,argo.tag(obj_y[1]),2301,nastav) 
+endif
+if (src.iscommander==2)
+ argo.Texta(<argo.tag(sloupec_x[3])>-24,argo.tag(obj_y[1]),2301,cut|) 
+ argo.Texta(<argo.tag(sloupec_x[3])>-50,argo.tag(obj_y[0]),2301,paste)
+ argo.Texta(<argo.tag(sloupec_x[3])>-70,argo.tag(obj_y[1]),2301,flip)//flip
+endif
+
+argo.button((<argo.tag(sirka)>-<d_def_okraj>)-30,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)/cancel
+if (argo.tag(from).cont)
+argo.button((<argo.tag(sirka)>-<d_def_okraj>)-60,<argo.tag(obj_y[0])>,0fae,0fb0,1,0,1)
+endif
+
+var(d_def_radek_vyska,<d_def_cm_vyska>)
+arg(ypos,<argo.tag(obj_y[2])>)
+
+arg(ipage,0)
+arg(maxi,<index>)
+arg(index,0)
+while (index<maxi)
+ if (index==(<d_def_cm_radku>*arg(ipage)))
+  arg(ipage,#+1)
+  argo.page(<ipage>)
+  arg(ypos,<argo.tag(obj_y[2])>)
+  if (index)
+   argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,0,<ipage>-1) // prev
+  endif
+  if (maxi>(index+d_def_cm_radku))
+   argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[3])>-24,0fc,0fd,0,<ipage>+1) // next
+  endif
+ endif
+ argo.textA(<argo.tag(sloupec_x[2])>+<d_def_odsazeni>,ypos,2301,"<argo.tag(itemtomake[index]).name>")
+ if (src.iscommander==2)
+  argo.button(<argo.tag(sloupec_x[3])>-35,ypos-3,0984,0983,1,0,(index*4)+101) 
+  argo.button(<argo.tag(sloupec_x[3])>-20,ypos+10,0986,0985,1,0,(index*4)+102)
+  if (argo.tag(itemtomake[index]).cm_section)
+   if (argo.tag(itemtomake[index]).tag.cm_dispid)
+    src.newitemsafe(<argo.tag(itemtomake[index]).tag.cm_dispid>)
+    if (lastnew.typedef.dupelist)
+     argo.button(<argo.tag(sloupec_x[3])>-60,ypos+8,02716,02716,1,0,(index*4)+103)//flip section picture
+    endif
+    lastnew.remove
+   endif
+  elseif (argo.tag(itemtomake[index]).typedef.dupelist)//||(safe argo.tag(itemtomake[index]).typedef.dupeitem)
+   argo.button(<argo.tag(sloupec_x[3])>-60,ypos+8,02716,02716,1,0,(index*4)+103)//flip
+  endif
+   
+ //02716
+ //029f5
+ endif
+ if (argo.tag(itemtomake[index]).cm_section)
+  argo.button(<argo.tag(sloupec_x[0])>,ypos,9905,9904,1,0,(index*4)+100)//208,209,210,211
+  if (argo.tag(itemtomake[index]).tag.cm_dispid)
+   argo.tilepic(<argo.tag(sloupec_x[1])>,ypos,<NID(argo.tag(itemtomake[index]).tag.cm_dispid)>)
+  endif
+ else
+  argo.tilepichue(<argo.tag(sloupec_x[1])>,ypos,<NID(argo.tag(itemtomake[index]).dispiddec)>,<argo.tag(itemtomake[index]).color>)
+  argo.checkbox(<argo.tag(sloupec_x[0])>,ypos,9904,9903,0,index+100)
+  argo.button(<argo.tag(sloupec_x[3])>,ypos,9905,9904,1,0,(index*4)+100)
+  argo.cm_res_pics(<argo.tag(sloupec_x[4])>+<d_def_odsazeni>,<ypos>,<argo.tag(itemtomake[index]).restodisplay>) 
+ endif
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+
+argo.page(0)
+argo.Settext(1000,1)
+argo.button(<argo.dialog_textpos(3,0,1)>,9905,9904,1,0,2)
+argo.Textentry(<argo.dialog_textpos(3,1)>,40,20,2301,1,1000)
+argo.texta(<argo.dialog_textpos(3,2)>,2301,Mnozstvi k vyrobeni)
+argo.checkbox(<argo.dialog_textpos(3,3,1)>,9904,9903,<qval(src.tag(cmopen_<src.tag.lastcm>)==argo.tag(from),1,0)>,1000)
+argo.texta(<argo.dialog_textpos(3,4)>,2301,Priste otevrit zde)
+var(d_def_radek_vyska,"")
+
+
+[dialog d_craftmenu button]
+on=0
+argo.lastopen_check(<ArgChk(1000)>)
+
+on=1
+argo.lastopen_check(<argchk(1000)>)
+dialog(d_craftmenu,<argo.tag(from).cont>)
+
+
+on=2//vyrobit
+argo.lastopen_check(<argchk(1000)>)
+src.tag(makestring,"<fixnumber(<argtxt(1)>)>,0")
+arg(index,0)
+while (index<argo.tag(lasti))
+ if (argchk(index+100))
+  src.tag(makestring,"<src.tag(makestring)>,<argo.tag(itemtomake[index])>")
+ endif
+ arg(index,#+1)
+endwhile
+src.act=<src.targ>//
+src.makestring_start(<src.tag(makestring)>)
+
+on=3//prepnout commander
+argo.lastopen_check(<argchk(1000)>)
+if (src.iscommander)
+ if (src.account.tag(commander)==1)
+  src.sysmessage Arbitrary view on
+  src.account.tag(commander,2)
+ elseif (src.account.tag(commander)==2)
+  src.sysmessage Arbitrary view off
+  src.account.tag(commander,1)
+ endif
+endif
+dialog(d_craftmenu,<argo.tag(from)>)
+
+on=4//nastavit
+if (src.iscommander)
+  argo.tag(from).dialog(d_cm_nastaveni)
+endif
+//makestring:nasobek k vyrobeni, mnozstvi uz vyrobenych, UID1, UID2, UID3...
+//nasobek k vyrobeni: -1 pokud do vycerpani zasob, jinak 0+
+
+ON=@AnyButton 
+argo.lastopen_check(<ArgChk(1000)>)
+arg(radek,<eval (argn-100)/4>)
+arg(button,<eval (argn-100)%4>)
+
+if !(arg(button))
+ arg(vyrobit,<argo.tag(itemtomake[radek])>)
+ if (arg(vyrobit).cm_section)
+  dialog(d_craftmenu,<arg(vyrobit)>)
+ else
+  arg(vyrobit).trigger(@create)
+  arg(vyrobit).dialog(d_craftitem_info,"dialog(d_craftmenu,<argo.tag(from)>)")
+ endif
+elseif (arg(button)==1)&&(src.iscommander)
+ src.newitemsafe(i_bag)
+ arg(itemtopaste,<src.findlayer(21).findcont(0)>)
+ src.accmsg(uid=<arg(itemtopaste)> (<arg(itemtopaste).name> ; <arg(itemtopaste).baseid>) pasted to craftmenu)
+ src.findlayer(21).findcont(0).cont=<lastnew>
+ arg(radek,#-1)
+ while (radek>=0)
+  argo.tag(from).findcont(<arg(radek)>).cont=<lastnew>
+  arg(radek,#-1)
+ endwhile
+ lastnew.contents(cont=<argo.tag(from)>)
+ lastnew.remove
+ dialog(d_craftmenu,<argo.tag(from)>)
+elseif (arg(button)==2)&&(src.iscommander)
+ arg(itemtocut,<argo.tag(itemtomake[radek])>)
+ src.accmsg(uid=<arg(itemtocut)> (<arg(itemtocut).name> ; <arg(itemtocut).baseid>) cut from craftmenu)
+ arg(itemtocut).bounce
+ dialog(d_craftmenu,<argo.tag(from)>)
+elseif (arg(button)==3)&&(src.iscommander)
+ if (argo.tag(itemtomake[radek]).tag.cm_dispid)
+  if (findres(itemdef,<argo.tag(itemtomake[radek]).tag.cm_dispid>))
+   src.newitemsafe(<argo.tag(itemtomake[radek]).tag.cm_dispid>)
+   //lastnew.p=<src.p>
+   lastnew.flip
+   argo.tag(itemtomake[radek]).tag(cm_dispid,<lastnew.dispid>)
+   lastnew.remove
+  endif
+ else
+  argo.tag(itemtomake[radek]).flip
+ endif
+ dialog(d_craftmenu,<argo.tag(from)>)
+endif
+
+[function lastopen_check]
+if (Args)
+ src.tag(cmopen_<src.tag.lastcm>,<tag(from)>)
+elseif (src.tag(cmopen_<src.tag.lastcm>)==tag(from))
+ src.tag(cmopen_<src.tag.lastcm>,"")
+endif
+
+[function cm_displayit]
+if (src.iscommander==2)
+ return 1
+elseif (cm_section)
+ var(displaysect,0)
+ contents2(canmakethis(1))
+ return <displaysect>
+elseif (canmakethis(1))
+ return 1
+endif
+return 0
+
+[function cm_section]
+if (type==t_container)
+ if (rescount)
+  return 1
+ endif
+endif
+return 0
+
+[function cm_UIDs_list]
+arg(u,0)
+arg(retstr," ")
+while (u<argvcount)
+ arg(thisname,<?finduid(<argv(u)>).name?>)
+ arg(retstr,"<arg(thisname)> - <arg(retstr)>")
+ arg(u,#+1)
+endwhile
+arg(retstr,<strleft("<arg(retstr)>",<strlen(<arg(retstr)>)>-2)>)
+return"<arg(retstr)>"
+
+[itemdef i_manaanim]
+//id=01edb
+//id=0186a
+id=01af6
+name=mana obrazek
+
+[function cm_res_pics]
+//x,y,mnozstvi defname, mnozstvi defname,...
+arg(u,2)
+arg(xpos,<argv(0)>)
+while (u<argvcount)
+ singleparse(<argv(u)>)
+ texta(<xpos>,<argv(1)>,2301,<firstnumb>x)
+ tilepic(<xpos>+18,<argv(1)>,<?eval nid(safe <safe secondnumb>.dispid)?>)
+  arg(xpos,#+60)
+ arg(u,#+1)
+endwhile
+
+[dialog d_craftitem_info]
+100,100
+argo.tag(command,<args>)
+argo.tag(sirka,400)
+if (cm_displaymore)
+ argo.tag(vyska,<eval (8*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(6*<d_def_skvira>)>)
+else
+ argo.tag(vyska,<eval (6*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+endif
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,3)//name, obrazek
+argo.dialog_pozadi(<argo.tag(nexty)>,2)//resources
+argo.dialog_pozadi(<argo.tag(nexty)>,1)//typename
+if (cm_displaymore)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)//damage?
+argo.dialog_pozadi(<argo.tag(nexty)>,1)//durability?
+endif
+//argo.dialog_pozadi(<argo.tag(nexty)>,1)
+//argo.dialog_pozadi(<argo.tag(nexty)>,1)
+//argo.dialog_pozadi(<argo.tag(nexty)>,1)
+//argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+//argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+//argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29,29,170,29,170,29,170)
+argo.dialog_zpruhledni
+
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,Nazev:)
+argo.HTMLGumpa(<lastxpos>+70,lastypos,200,100,<?safe?><BASEFONT COLOR="#c0c0c0">"<?name?>"</BASEFONT>,0,0)
+
+//(ix,iy,isx,isy,sTextId,ibBoundBox,ibScrollable)
+argo.tilepichue(<lastxpos>+260,lastypos,<dispiddec>,10)
+
+argo.texta(<argo.dialog_textpos(1,0)>,2301,Material:)
+argo.HTMLGumpa(<lastxpos>+70,lastypos,300,100,<?safe?><BASEFONT COLOR="#c0c0c0">"<?resourcetext?>"</BASEFONT>,0,0)
+
+argo.texta(<argo.dialog_textpos(2,0)>,2301,Typ:)
+argo.HTMLGumpa(<lastxpos>+70,lastypos,300,100,<?safe?><BASEFONT COLOR="#c0c0c0">"<?typename?>"</BASEFONT>,0,0)
+
+if (cm_displaymore)
+argo.texta(<argo.dialog_textpos(3,0)>,2301,UC/OC:)
+argo.HTMLGumpa(<lastxpos>+70,lastypos,300,100,<?safe?><BASEFONT COLOR="#c0c0c0"><?typedef.dam?></BASEFONT>,0,0)
+argo.texta(<argo.dialog_textpos(4,0)>,2301,Vydrz:)
+argo.HTMLGumpa(<lastxpos>+70,lastypos,300,100,<?safe?><BASEFONT COLOR="#c0c0c0"><?more1h?></BASEFONT>,0,0)
+//argo.textA(<argo.tag(sloupec_x[2])>+<d_def_odsazeni>,ypos,2301,"<argo.tag(itemtomake[index]).name>")
+endif
+
+[dialog d_craftitem_info button]
+on=0
+safe(<argo.tag(command)>)
+
+[function cm_displaymore]
+if (isweapon)
+elseif (isarmor)
+elseif (isshield)
+elseif (type==t_clothing)
+else
+return 0
+endif
+return 1
+
+
+
+[function typename]
+arg(tname,<?Typename_<type>?>)
+if !(strcmpi(,<tname>))
+arg(tname,N/A)
+endif
+return"<tname>"
+
+
+[function cmi]
+dialog d_craftitem_info
+
+[defnames jmenatypu]
+Typename_00			Normal
+Typename_t_normal		Normal
+Typename_t_container		Kontejner
+Typename_t_container_locked	Zamceny Kontejner
+Typename_t_door			Dvere
+Typename_t_door_locked		Zamcene Dvere
+Typename_t_key			Klic
+Typename_t_light_lit		Svitici Svetlo
+Typename_t_light_out		Zhasnute svetlo
+Typename_t_food			Jidlo
+Typename_t_food_raw		Syrove Jidlo
+Typename_t_armor		Brneni
+Typename_t_weapon_mace_smith	Tupa Zbran(nastroj?)
+Typename_t_weapon_mace_sharp	Tupa Zbran
+Typename_t_weapon_sword		Ostra Zbran (tezka)
+Typename_t_weapon_fence		Ostra Zbran (lehka)
+Typename_t_weapon_bow		Luk
+Typename_t_wand			Hulka
+Typename_t_telepad		Telepad
+Typename_t_switch		Prepinac
+Typename_t_book			Kniha
+Typename_t_rune			Runa
+Typename_t_booze		Alkohol
+Typename_t_potion		Lektvar
+Typename_t_allpotions		Lektvar
+Typename_t_speedpotions		Lektvar
+Typename_t_potion_bomba		Bomba
+Typename_t_fire			Ohen
+Typename_t_clock		Hodiny
+Typename_t_trap			Past
+Typename_t_trap_active		Aktivni past
+Typename_t_musical		Hudebni nastroj
+Typename_t_spell		Kouzlo
+Typename_t_gem			Drahokam
+Typename_t_water		Voda
+Typename_t_clothing		Obleceni
+Typename_t_scroll		Svitek kouzla
+Typename_t_carpentry		Truhlarsky nastroj
+Typename_t_spawn_char		Character spawner
+Typename_t_game_piece		Hraci figurka
+Typename_t_portculis		Portculis?
+Typename_t_figurine		Figurina(shrink)
+Typename_t_shrine		Oltar(ress)
+Typename_t_moongate		Moongate
+Typename_t_chair		Zidle
+Typename_t_forge		Vyhen
+Typename_t_ore			Ruda
+Typename_t_log			Kmen
+Typename_t_tree			Strom
+Typename_t_rock			Skala
+Typename_t_carpentry_chop	Not Used?
+Typename_t_multi		Multiitem
+Typename_t_reagent		Reagent
+Typename_t_ship			Lod
+Typename_t_ship_plank		Lodni mustek
+Typename_t_ship_side		Bok lodi
+Typename_t_ship_side_locked	Zamceny bok lodi
+Typename_t_ship_tiller		Lodivod
+Typename_t_eq_trade_window	Secure trade item
+Typename_t_fish			Ryba
+Typename_t_sign_gump		Cedule
+Typename_t_stone_guild		Guild stone
+Typename_t_anim_active		Animace
+Typename_t_advance_gate		Advance Gate
+Typename_t_cloth		Latka
+Typename_t_hair			Vlasy
+Typename_t_beard		Vousy
+Typename_t_ingot		Ingot
+Typename_t_coin			Mince
+Typename_t_crops		Uroda
+Typename_t_drink		Piti
+Typename_t_anvil		Kovadlina
+Typename_t_port_locked		Zamceny port
+Typename_t_spawn_item		Item spawner
+Typename_t_telescope		Teleskop
+Typename_t_bed			Postel
+Typename_t_gold			Penize
+Typename_t_map			Mapa
+Typename_t_eq_memory_obj	equippable memory object
+Typename_t_weapon_mace_staff	Tupa zbran (hul)
+Typename_t_eq_horse		Mount item (equipped horse)
+Typename_t_comm_crystal		Komunkacni krystal
+Typename_t_game_board		Herni deska
+Typename_t_trash_can		Odpadkovy kos
+Typename_t_cannon_muzzle	Kanon - prach?
+Typename_t_cannon		Kanon
+Typename_t_cannon_ball		Kanonova koule
+Typename_t_armor_leather	Kozene brneni
+Typename_t_seed			Semena
+Typename_t_junk			Odpad
+Typename_t_crystal_ball		Krystalova koule
+//Typename_t_old_cashiers_check	
+Typename_t_message		Zprava
+Typename_t_reagent_raw		'Syrovy' reagent
+Typename_t_eq_client_linger	udela z klienta NPC
+Typename_t_dream_gate		Brana na jiny shard?
+Typename_t_it_stone		Supply stone
+Typename_t_metronome		Metronom
+Typename_t_explosion		Exploze
+Typename_t_eq_npc_script	EQuippable NPC script
+Typename_t_web			Pavouci sit
+Typename_t_grass		Trava
+Typename_t_arock		Kamen(hazen obry)
+Typename_t_tracker		Tracking obj
+Typename_t_sound		Zvuk
+Typename_t_stone_town		Townstone
+Typename_t_weapon_mace_crook	Tupa zbran (hak)
+Typename_t_weapon_bow_run	Run strelna zbran (/krumpac)
+Typename_t_leather		Kuze
+Typename_t_ship_other		Cast lodi?
+Typename_t_bboard		Cast tabule
+Typename_t_spellbook		Kouzelna kniha
+Typename_t_corpse		Mrtvola
+Typename_t_track_item		Tracking item
+Typename_t_track_char		Tracking character
+Typename_t_weapon_arrow		Sip
+Typename_t_weapon_bolt		Sipka
+Typename_t_weapon_bolt_jagged	Zubata sipka
+Typename_t_eq_vendor_box	Vendor box
+Typename_t_eq_bank_box		Bank box
+Typename_t_deed			Deed
+Typename_t_loom			Loom?
+Typename_t_bee_hive		Vceli ul
+Typename_t_archery_butte	Terc
+Typename_t_eq_murder_count	Killcount timer
+Typename_t_eq_stuck		para v pavouci siti
+Typename_t_trap_inactive	Neaktivni past
+Typename_t_stone_room		Region stone?
+Typename_t_bandage		Bandaz(healing)
+Typename_t_campfire		Taborak(camping)
+Typename_t_map_blank		Prazdna mapa
+Typename_t_spy_glass		Dalekohled
+Typename_t_sextant		Sextant
+Typename_t_scroll_blank		Prazdny svitek
+Typename_t_fruit		Ovoce
+Typename_t_water_wash		Cista voda (bez ryb)
+Typename_t_weapon_axe		Ostra zbran (sekera?)
+Typename_t_weapon_xbow		Kuse
+Typename_t_spellicon		Ikona kouzla
+Typename_t_door_open		Otevrene dvere
+Typename_t_meat_raw		Syrove maso
+Typename_t_garbage		Odpad
+Typename_t_keyring		Krouzek na klice
+Typename_t_table		Stul
+Typename_t_floor		Podlaha
+Typename_t_roof			Strecha
+Typename_t_feather		Peri
+Typename_t_wool			Vlna
+Typename_t_fur			Srst
+Typename_t_blood		Krev
+Typename_t_foliage		jidlo?
+Typename_t_grain		Zrni
+Typename_t_scissors		Nuzky
+Typename_t_thread		Vlakno
+Typename_t_yarn			Prize
+Typename_t_spinwheel		Kolovrat
+Typename_t_bandage_blood	Krvava bandaz
+Typename_t_fish_pole		Prut (fishing)
+Typename_t_shaft		Nasada; Drik
+Typename_t_lockpick		Sperhak
+Typename_t_kindling		Triska
+Typename_t_train_dummy		Panak k boji
+Typename_t_train_pickpocket	Panak k okradani
+Typename_t_bedroll		Prikryvka
+Typename_t_bellows		Mech
+Typename_t_hide			Kuze
+Typename_t_cloth_bolt		Balik latky
+Typename_t_board		tram/prkno
+Typename_t_pitcher		Dzban
+Typename_t_pitcher_empty	Prazdny dzban
+Typename_t_dye_vat		Barva?
+Typename_t_dye			Barva
+Typename_t_potion_empty		Prazdny lektvar
+Typename_t_mortar		Hmozdir
+Typename_t_hair_dye		Vlasova barva
+Typename_t_sewing_kit		Sici souprava
+Typename_t_tinker_tools		Nastroje(tinkering)
+Typename_t_wall			Zed
+Typename_t_window		Okno
+Typename_t_cotton		Bavlna
+Typename_t_bone			Kost
+Typename_t_eq_script		Equippable script item
+Typename_t_ship_hold		Lodni podpalubi
+Typename_t_ship_hold_lock	Zamcene podpalubi
+Typename_t_lava			Lava
+Typename_t_shield		Stit
+Typename_t_jewelry		Sperk
+Typename_t_dirt			Spina
+Typename_t_script		Skript item
+Typename_t_eq_message		Dialog item
+Typename_t_shovel		Lopata
+
+Typename_t_book_shrink		Recept shrink
+Typename_t_bottle_form		Forma Lahev
+Typename_t_book_bottle		Recept Lahev
+Typename_t_src_changer		menitko Src(script)
+Typename_t_book_inscription	Kniha inscriptce
+Typename_t_bottle_empty		Prazdna lahev
+
+[typedef t_cm_topobj]
+on=@userdclick
+craftmenu(<name>)
+return 1
+
+
+[function newTOPOBJ]//vytvori hlavni skupinu a smaze jeji starou verzi
+//jmeno (blacksmithing, alchemy apod)
+if (var(def_cm_<args>))
+ finduid(var(def_cm_<args>)).remove
+endif
+newitem(i_chest_metal)
+lastnew.name="<args>"
+lastnew.p=<p>
+lastnew.events=t_cm_topobj
+lastnew.attr_movenever=1
+var(def_cm_<args>,<lastnew>)
+var(newTOP,<lastnew>)
+var(newsect,<lastnew>)
+
+[function cm_newsection]//vytvori se v <this>
+//zanoreni, jmeno [,dispid]
+arg(thiscont,<newTOP>)
+arg(u,0)
+while (u<argv(0))
+ arg(thiscont,<arg(thiscont).findcont(0)>)
+ arg(u,#+1) 
+endwhile
+newitem(i_pouch)
+lastnew.cont=<thiscont>
+lastnew.name="<argv(1)>"
+src.accmsg(created a new cm section uid=<lastnew> (<lastnew.name>) in uid=<lastnew.cont> (<lastnew.cont.name>))
+if (argv(2))
+lastnew.tag(cm_dispid,<argv(2)>)
+endif
+var(newsect,<lastnew>)
+
+[function cm_newitem]//da se do posledni vytvorene sekce
+//baseID
+newitem(<args>)
+lastnew.cont=<newsect>
+src.accmsg(created a new cm item uid=<lastnew> (<lastnew.name>) in uid=<lastnew.cont> (<lastnew.cont.name>))
+
+[function run_cm_alchemy]
+if (src.findtype(t_mortar))
+  craftmenu(alchemy)
+else
+  src.Sysmessage(Potrebujes hmozdir a palicku)
+endif
+
+[typedef t_cm_blacksmithing_target]
+on=@targon_item
+return(<blacksmithing_targon_item>)
+
+[function f_wrongBlacksmithUsage_LogMessage]
+if(<eval src.targ.more1L> < <eval src.targ.more1H>)
+  src.accmsg("hrac (<src.name>,<src>) je podezrely z pouziti predmetu: (<name>,<uid>) na predmet (<src.targ.name>,<src.targ>) - durabilita: <eval src.targ.more1L>/<eval src.targ.more1H>")
+endif
+
+[function blacksmithing_targon_item]
+if (src.targ.type==t_ingot)
+	if (src.findlayer(1))
+		if (src.findlayer(1).type==T_WEAPON_MACE_SMITH)
+			craftmenu(blacksmithing)
+			return 1
+		endif
+	endif
+	src.Sysmessage("Potrebujes do ruky kladivo")
+	return 1
+else
+	src.targ.craftrepairthis
+endif
+return 1
+
+[typedef t_cm_blacksmithing]
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[function blacksmithing_dclick]
+if (src.findlayer(1))
+  if (src.findlayer(1).type==T_WEAPON_MACE_SMITH)
+    craftmenu(blacksmithing)
+    return 1
+  endif
+endif
+src.Sysmessage(Potrebujes do ruky kladivo)
+return 1
+
+[function bowcrafting_targon_item]
+if (src.targ.type==t_log)
+elseif (src.targ.type==t_ingot)
+elseif (src.targ.type==t_weapon_bolt)
+elseif (src.targ.type==t_weapon_bolt_jagged)
+elseif (src.targ.type==t_weapon_arrow)
+else
+return 0
+endif
+craftmenu(bowcrafting)
+return 1
+
+[typedef t_cm_bowcrafting_target]
+on=@targon_item
+return"<bowcrafting_targon_item>"
+
+on=@targon_char
+return <src.backstab>
+
+[function giveresources]
+if (argvcount)
+  arg(tocont,<finduid(args)>)
+else
+  arg(tocont,<src>)
+endif
+arg(tocont).givelisted(<def.resources>,)
+
+[function givelisted]
+arg(i,0)
+while (i<argvcount-1)
+ singleparse(<argv(i)>)
+ src.newitemsafe(<var(secondnumb)>)
+ lastnew.amount=<var(firstnumb)>
+ lastnew.cont=<uid>
+ arg(i,#+1)
+endwhile
+[eof]

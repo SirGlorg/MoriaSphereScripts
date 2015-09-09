@@ -1,0 +1,517 @@
+[dialog d_pergamen_uvod] 
+0,0
+button 110 0 2624 2624 1 0 1//invis button
+resizepic 0 0 9380 500 210 
+htmlgump 0 <qval(<safe.tag.kopie>,40,50)> 500 20 0 0 0
+htmlgump 0 <qval(<safe.tag.kopie>,60,70)> 500 20 1 0 0
+htmlgump 0 80 500 20 2 0 0
+htmlgump 0 100 500 20 3 0 0
+htmlgump 0 <qval(<safe.tag.kopie>,120,100)> 500 20 4 0 0
+htmlgump 0 <qval(<safe.tag.kopie>,140,120)> 500 20 5 0 0
+
+[dialog d_pergamen_uvod text]
+<center><?qval(<safe.tag.kopie>,Zkopiroval,Autor)?>: 
+<big><center><?tag.autor?>
+<center><?qval(<safe.tag.kopie>,Autor originalu:,"")?>
+<VAR.big><center><?qval(<safe.tag.kopie>,<tag.origautor>,"")?>
+<center>Titul: 
+<big><center><?name?>
+
+[dialog d_pergamen_uvod button]
+on=0
+on=1
+dialog d_pergamen
+
+[dialog d_pergamen]
+0,0
+button 120 5 2621 2621 1 0 1
+button 120 328 2621 2621 1 0 2
+resizepic 0 0 <eval 024a4> 500 350
+page <eval <safe.tag.done>-1>// 1 -> 0, 0 -> -1
+text 30 33 0 0
+text 30 53 0 1
+text 30 73 0 2
+text 30 93 0 3
+text 30 113 0 4
+text 30 133 0 5
+text 30 153 0 6
+text 30 173 0 7
+text 30 193 0 8
+text 30 213 0 9
+text 30 233 0 10
+text 30 253 0 11
+text 30 273 0 12
+text 30 293 0 13
+page <eval 0-<safe.tag.done>>// 1 -> -1 , 0 -> 0:1
+textentry 30 33 430 20 0 0 0
+textentry 30 53 430 20 0 1 1
+textentry 30 73 430 20 0 2 2
+textentry 30 93 430 20 0 3 3
+textentry 30 113 430 20 0 4 4
+textentry 30 133 430 20 0 5 5
+textentry 30 153 430 20 0 6 6
+textentry 30 173 430 20 0 7 7
+textentry 30 193 430 20 0 8 8
+textentry 30 213 430 20 0 9 9
+textentry 30 233 430 20 0 10 10
+textentry 30 253 430 20 0 11 11
+textentry 30 273 430 20 0 12 12
+textentry 30 293 430 20 0 13 13
+
+[dialog d_pergamen text]
+<?tag(radek_<eval src.tag(pergamen)+0>)?>
+<?tag(radek_<eval src.tag(pergamen)+1>)?>
+<?tag(radek_<eval src.tag(pergamen)+2>)?>
+<?tag(radek_<eval src.tag(pergamen)+3>)?>
+<?tag(radek_<eval src.tag(pergamen)+4>)?>
+<?tag(radek_<eval src.tag(pergamen)+5>)?>
+<?tag(radek_<eval src.tag(pergamen)+6>)?>
+<?tag(radek_<eval src.tag(pergamen)+7>)?>
+<?tag(radek_<eval src.tag(pergamen)+8>)?>
+<?tag(radek_<eval src.tag(pergamen)+9>)?>
+<?tag(radek_<eval src.tag(pergamen)+10>)?>
+<?tag(radek_<eval src.tag(pergamen)+11>)?>
+<?tag(radek_<eval src.tag(pergamen)+12>)?>
+<?tag(radek_<eval src.tag(pergamen)+13>)?>
+
+[dialog d_pergamen button]
+on=0
+if (!tag(done))
+  src.sysMessage("kopiruju")
+  arg(whiletimes,14)
+  while (arg(whiletimes))
+    tag(radek_<eval src.tag(pergamen)+arg(whiletimes)-1>,"<argtxt(arg(whiletimes)-1)>")
+    arg(whiletimes,#-1)
+  endwhile
+  dialog d_pergamen_done
+elseif (!tag(kopie))
+f_setpermiss
+endif
+
+on=1
+if (!tag(done))
+  src.sysMessage("kopiruju")
+  arg(whiletimes,14)
+  while (arg(whiletimes))
+    tag(radek_<eval src.tag(pergamen)+arg(whiletimes)-1>,"<argtxt(arg(whiletimes)-1)>")
+    arg(whiletimes,#-1)
+  endwhile
+endif
+src.tag(pergamen,<eval src.tag(pergamen)-13>)
+if (src.tag(pergamen)<0)
+src.tag(pergamen,0)
+endif
+dialog d_pergamen
+
+on=2
+if (!tag(done))
+  src.sysMessage("kopiruju")
+  arg(whiletimes,14)
+  while (arg(whiletimes))          
+    tag(radek_<eval src.tag(pergamen)+arg(whiletimes)-1>,"<argtxt(arg(whiletimes)-1)>")
+    arg(whiletimes,#-1)
+  endwhile
+endif
+src.tag(pergamen,<eval src.tag(pergamen)+13>)
+dialog d_pergamen
+
+[DIALOG d_pergamen_done] // Main
+0,0 // Position
+resizepic 190 175 2620 300 110 
+text 220 195 995 0 
+text 240 215 995 1
+text 240 235 995 2 
+button 220 220 2104 2103 1 0 1 // Opens OK
+button 220 240 2104 2103 1 0 2
+
+[DIALOG d_pergamen_done TEXT]
+Zapecetit pergamen jako hotovy?
+Zapecetit
+Nechat jako nedopsany
+
+[DIALOG d_pergamen_done BUTTON]
+ON=0
+SRC.sysMessage Pergamen zustal nezapeceten.
+tag.done=0
+ON=1
+src.sysMessage Pergamen zapeceten.
+dialog d_pergamen_name
+tag.done=1
+tag.time=<serv.time>
+on=2
+SRC.sysMessage Pergamen zustal nezapeceten.
+tag.done=0
+
+[DIALOG d_pergamen_name] // Main
+0,0 // Position
+resizepic 190 175 2620 330 120 
+resizepic 220 225 3000 270 22 
+text 265 195 995 0 // how?
+text 355 255 0000 1 // OK
+button 340 260 2104 2103 1 0 1 // Opens OK
+textentry 225 226 253 25 0 0 2 // Text Input
+
+[DIALOG d_pergamen_name TEXT]
+Jak se ma pergamen jmenovat?
+OK
+<?NAME?>
+
+[DIALOG d_pergamen_name BUTTON]
+ON=0
+SRC.sysMessage Pergamen zustal nepojmenovan.
+ON=1
+src.sysMessage pergamen pojmenovan: <argtxt(0)>.
+name=<argtxt(0)>
+f_setpermiss
+RETURN 1
+
+[function f_setpermiss]
+if (<src.uid>==<tag.autoruid>)
+dialog d_pergamen_permiss
+endif
+
+[DIALOG d_pergamen_permiss] // Main
+0,0 // Position
+resizepic 190 175 2620 330 120 
+text 220 195 995 0 
+text 240 215 995 1
+text 240 235 995 2 
+text 240 255 995 3
+button 220 220 2104 2103 1 0 1 // Opens OK
+button 220 240 2104 2103 1 0 2
+button 220 260 2104 2103 1 0 3
+
+[DIALOG d_pergamen_permiss TEXT]
+Smi byt pergamen kopirovan?
+Pergamen smi byt volne kopirovan
+Pergamen smi byt jednou kopirovan
+Pergamen nesmi byt kopirovan
+
+[DIALOG d_pergamen_permiss BUTTON]
+ON=0
+if (tag(copy)==-1)
+SRC.sysMessage Pergamen smi byt volne kopirovan.
+elseif (tag(copy==0)
+SRC.sysMessage Pergamen nesmi byt kopirovan.
+elseif (tag(copy==1)
+SRC.sysMessage Pergamen smi byt jednou kopirovan.
+endif
+
+ON=1
+src.sysMessage Pergamen smi byt volne kopirovan.
+tag(copy,-1)
+on=2
+SRC.sysMessage Pergamen smi byt jednou kopirovan.
+tag(copy,1)
+on=3
+SRC.sysMessage Pergamen nesmi byt kopirovan.
+tag(copy,0)
+
+[itemdef i_pergamen]
+id=i_deed
+type=t_pergamen
+name=Pergamen
+resources=t_pergamen_forma, i_pergamen_esence
+
+
+CATEGORY=Knihy
+SUBSECTION=Prislusenstvi
+DESCRIPTION=pergamen
+
+on=@userDClick
+if (type==t_script)
+  type=t_pergamen
+endif
+
+[typedef t_pergamen]
+on=@userdclick
+src.tag.pergamen=0
+if (tag(done))
+dialog d_pergamen_uvod
+elseif (tag(kopie))
+target Vyber pergamen k okopirovani.
+else
+dialog d_pergamen
+endif
+return 1
+
+on=@targon_item
+if (src.targ.baseid!=i_pergamen)
+ dclick
+elseif (<safe.src.targ.tag.kopie>)
+ src.sysMessage Kopirovat lze pouze z originalu.
+ dclick
+elseif (<safe.src.targ.tag.done>==0)
+ src.sysMessage Kopirovat lze pouze z hotoveho originalu.
+ dclick
+elseif (<safe.src.targ.tag.copy>==0)
+ src.sysMessage Autor tohoto pergamenu si nepreje jeho kopirovani.
+ dclick
+elseif (src.targ.topobj.uid!=src.uid)&&(src.isgm==0)
+ src.sysMessage Pergamen musis mit u sebe
+ dclick
+else
+ remove
+ if (<safe.src.targ.tag.copy>==1)
+  src.targ.tag.copy=0
+ endif
+ src.targ.dupe
+ //src.targ.p=<src.p>
+ //src.act=<src.targ.uid>
+ //src.sysMessage kopie:<src.targ.tag.kopie>
+ src.targ.tag.kopie=1
+ //src.targ.tag.kopie=0//oprava...??
+ src.targ.color=<color>
+ src.targ.tag.autor=<src.name>
+ src.targ.tag.autoruid=<src.uid>
+ src.targ.tag.time=<serv.time>
+ //src.targ.cont=<src.uid>
+endif
+return 1
+
+on=@targon_char
+dclick
+return 1
+
+[itemdef i_pergamen_esence]
+id=i_bedroll_open
+name=Esence pergamenu
+type=t_scroll
+resources=50 i_reag_dragon_blood, 10 i_scroll_blank
+skillmake=85.0 inscription
+
+CATEGORY=Knihy
+SUBSECTION=Prislusenstvi
+DESCRIPTION=pergamen esence
+
+on=@create
+color=0482
+
+on=@userdclick
+src.skillmenu sm_pergamen
+return 1
+
+[typedef t_pergamen_forma]
+on=@userdclick
+src.skillmenu sm_pergamen
+return 1
+
+[itemdef i_pergamen_forma_valorite]
+id=i_scroll_blank
+type=t_pergamen_forma
+name=Teak Forma pergamenu
+resources=10 i_log_valorite
+SKILLMAKE=Carpentry 67.5, t_carpentry
+
+CATEGORY=Knihy
+SUBSECTION=Prislusenstvi
+DESCRIPTION=pergamen forma valorite
+
+on=@create
+color=color_teak
+
+[itemdef i_pergamen_forma_obsidian]
+id=i_scroll_blank
+type=t_pergamen_forma
+name=Mahagon Forma pergamenu
+resources=10 i_log_obsidian
+SKILLMAKE=Carpentry 72.5, t_carpentry
+
+CATEGORY=Knihy
+SUBSECTION=Prislusenstvi
+DESCRIPTION=pergamen forma obsid
+
+on=@create
+color=color_mahagon
+
+[itemdef i_pergamen_forma_adamantinum]
+id=i_scroll_blank
+type=t_pergamen_forma
+name=Eben Forma pergamenu 
+resources=10 i_log_adamantinum
+SKILLMAKE=Carpentry 87.5, t_carpentry
+
+CATEGORY=Knihy
+SUBSECTION=Prislusenstvi
+DESCRIPTION=pergamen forma ada
+
+on=@create
+color=color_eben
+
+[itemdef i_pergamen_forma_mithril]
+id=i_scroll_blank
+type=t_pergamen_forma
+name=Elven Forma pergamenu
+resources=10 i_log_mithril
+SKILLMAKE=Carpentry 97.5, t_carpentry
+
+CATEGORY=Knihy
+SUBSECTION=Prislusenstvi
+DESCRIPTION=pergamen forma Mith
+
+on=@create
+color=color_elven
+
+[skillmenu sm_pergamen]
+Pergameny
+
+on=i_pergamen Pergamen k zapisu (<resources>)
+testif (src.canmake(i_pergamen))
+makepergamen(0)
+
+on=i_pergamen Pergamen ke kopirovani (<resources>)
+testif (src.canmake(i_pergamen))
+makepergamen(1)
+
+[function makepergamen]
+var.givestoreact=<act.uid>
+newitem i_pergamen
+act.cont=<uid>
+act.tag.autor=<name>
+act.tag.autoruid=<uid>
+act.tag.origautor=<name>
+act.tag.origautoruid=<uid>
+act.tag.kopie=<args>
+act.color=<findtype(t_pergamen_forma).color>
+act.name="Pergamen <?qval(<args>,"ke kopirovani","k zapisu")?> by <?name?>"
+consume <act.typedef.resources>
+act=<var.givestoreact>
+
+[itemdef i_port_pergamen_vstup]
+id=i_bedroll_open
+type=t_normal
+name=knihovna - vstup 
+
+CATEGORY=Knihy
+SUBSECTION=Prislusenstvi
+DESCRIPTION=port vstup
+
+on=@create
+attr=attr_invis
+
+on=@step
+if !(<safe.src.tag.knihovnik>)
+  if (src.findtype(t_pergamen_forma))||(src.findid(i_pergamen))||(src.findid(t_book))||(src.findid(t_eq_horse))||(src.findid(i_pergamen_esence))
+    src.sysMessage("Nevstoupis pokud neses Knihu,pergamen nebo nejakou jeho cast.")
+    src.sysMessage("Pokud chces do knihovny neco pronest, kontaktuj Knihovnika.")
+    return 0
+  endif
+  src.events=+e_noport
+endif
+src.p=<morep>
+src.updatex
+return 0
+
+[function f_vg_bookDeny]	//funkce pro vargate pro zamitnuti vstupu s knihou, pergamenem apod
+if (<src.tag(knihovnik)>) || (src.isGM)	//knihovnik a GM smi nosit cokoliv
+ return 0
+else
+ if (src.findtype(t_pergamen_forma))||(src.findid(i_pergamen))||(src.findid(t_book))||(src.findid(i_pergamen_esence))
+  src.sysMessage("Nesmis projit, pokud neses knihu,pergamen nebo nejakou jeho cast.")
+  return 1	//deny player to enter
+ endif
+endif
+
+[function f_bookDenyMsgEntry]
+if (f_vg_bookDeny)
+  src.sysMessage("Pokud chces do knihovny neco pronest, kontaktuj Knihovnika.")
+  return 1
+endif
+return 0
+
+[function f_bookDenyMsgExit]
+if (f_vg_bookDeny)
+  src.sysMessage("Pokud si chces nekterou z knih vypujcit, kontaktuj Knihovnika.")
+  return 1
+endif
+return 0
+
+[itemdef i_port_pergamen_vystup]
+id=i_bedroll_open
+type=t_normal
+name=knihovna - vystup
+
+CATEGORY=Knihy
+SUBSECTION=Prislusenstvi
+DESCRIPTION=port vystup
+
+on=@create
+attr=attr_invis
+
+on=@step
+if !(<safe.src.tag.knihovnik>)
+ if (src.findtype(t_pergamen_forma))||(src.findid(i_pergamen))||(src.findid(t_book))||(src.findid(i_pergamen_esence))
+  src.sysMessage Nesmis mit u sebe zadne pergameny.
+    src.sysMessage("Pokud si chces nekterou z knih vypujcit kontaktuj Knihovnika.")
+  return 0
+ endif
+ src.events=-e_noport
+endif
+src.p=<morep>
+src.updatex
+return 0
+       
+[function pergamen_clear]
+tag.remove(radek_0) 
+tag.remove(radek_1) 
+tag.remove(radek_2) 
+tag.remove(radek_3) 
+tag.remove(radek_4) 
+tag.remove(radek_5) 
+tag.remove(radek_6) 
+tag.remove(radek_7) 
+tag.remove(radek_8) 
+tag.remove(radek_9) 
+tag.remove(radek_10)
+tag.remove(radek_11)
+tag.remove(radek_12)
+tag.remove(radek_13)
+tag.remove(radek_14)
+tag.remove(radek_15)
+tag.remove(radek_16)
+tag.remove(radek_17)
+tag.remove(radek_18)
+tag.remove(radek_19)
+tag.remove(radek_20)
+tag.remove(radek_21)
+tag.remove(radek_22)
+tag.remove(radek_23)
+tag.remove(radek_24)
+tag.remove(radek_25)
+tag.remove(radek_26)
+tag.remove(radek_27)
+tag.remove(radek_28)
+tag.remove(radek_29)
+
+[function pergrun]
+safe(<tag.radek[0]>)
+safe(<tag.radek[1]>)
+safe(<tag.radek[2]>)
+safe(<tag.radek[3]>)
+safe(<tag.radek[4]>)
+safe(<tag.radek[5]>)
+safe(<tag.radek[6]>)
+safe(<tag.radek[7]>)
+safe(<tag.radek[8]>)
+safe(<tag.radek[9]>)
+safe(<tag.radek[10]>)
+safe(<tag.radek[11]>)
+safe(<tag.radek[12]>)
+safe(<tag.radek[13]>)
+safe(<tag.radek[14]>)
+safe(<tag.radek[15]>)
+safe(<tag.radek[16]>)
+safe(<tag.radek[17]>)
+safe(<tag.radek[18]>)
+safe(<tag.radek[19]>)
+safe(<tag.radek[20]>)
+safe(<tag.radek[21]>)
+safe(<tag.radek[22]>)
+safe(<tag.radek[23]>)
+safe(<tag.radek[24]>)
+safe(<tag.radek[25]>)
+safe(<tag.radek[26]>)
+safe(<tag.radek[27]>)
+safe(<tag.radek[28]>)
+safe(<tag.radek[29]>)
+[eof]

@@ -1,0 +1,323 @@
+[function healdisarm]
+if (src.findlayer(1))
+  if (src.findlayer(1).isweapon)
+    if (src.findlayer(1).type!=t_weapon_mace_staff)
+      src.findlayer(1).bounce
+    endif
+  endif
+elseif (src.findlayer(2))
+  if (src.findlayer(2).isweapon)
+    if (src.findlayer(2).type!=t_weapon_mace_staff)
+      src.findlayer(2).bounce
+    endif
+  endif
+endif
+
+[function bandaonchar]
+if (src.isnonmobile)
+ src.sysmessage(You are frozen and cannot move.)
+ return 1 
+endif
+if (src.findid(i_mem_healing))
+ src.findid(i_mem_healing).remove
+ src.sysmessage "Leceni nesmis uspechat!"
+endif
+if (src.findid(i_mem_ressurect))
+ src.findid(i_mem_ressurect).remove
+ src.sysmessage "Prerusil jsi ozivovani."
+endif
+IF (argv(0).DISTANCE > 6) 
+ SRC.SYSMESSAGE "cil je moc daleko."
+ return 1 
+elseif (argv(0).issumon)
+ src.sysmessage "Nelze lecit summony."
+ return 1
+elseif !(argv(0).srccombatLOS) 
+ SRC.SYSMESSAGE "Nevidis cil."
+ return 1 
+endif
+if (argv(0).hits < argv(0).maxhits) || (argv(0).findid(i_krvaceni))
+ arg(remove_bloodyband,0)
+ src.sysmessage "Pokousis se vylecit <argv(0).NAME>."
+ healdisarm
+ if (src.profession==class_shaman)&&(dispid==i_bandage_bloody) //samani mohou totiz krvavejma; UID = ta bandaz kterou se leci
+  arg(remove_bloodyband,1) 
+ else //ostatni (vcetne samanu) mohou normalnima
+  SRC.CONSUME 1 i_bandage
+ endif 
+ SRC.NEWITEMsafe(i_mem_healing)
+ lastnew.LINK=<argv(0)>
+ lastnew.EQUIP
+ if (src.profession==class_priest) //(src.profession==class_shaman)
+  if (<src> != <argv(0)>)
+   if (argv(0).isplayer)
+    if (src.specability)
+     src.classmessage(Lecis rychleji!)
+     src.reveal
+     lastnew.timerdelay(<promilerange(<src.healing>,<nastaveni_ability_enlightment>)>)
+     return 1
+    endif
+   endif
+  endif
+ endif
+ if (src.profession==class_shaman)&&(dispid==i_bandage_bloody) //jen saman kdyz leci krvavyma bandama
+  if (<src> != <argv(0)>)
+   if (argv(0).isplayer)
+    if (src.specability)
+     src.classmessage(Lecis lepe!)
+     lastnew.tag(shamanheal,1)
+     lastnew.timerdelay(<promilerange(<src.healing>,<skill_healing.delay>)>)
+     if(<remove_bloodyband>==1)
+      SRC.CONSUME 1 i_bandage_bloody
+      arg(remove_bloodyband,"")
+     endif
+     return 1
+    endif
+   endif
+  endif
+ endif
+ if(<remove_bloodyband>==1)
+  SRC.CONSUME 1 i_bandage_bloody
+  arg(remove_bloodyband,"")
+ endif
+ lastnew.timerdelay(<promilerange(<src.healing>,<skill_healing.delay>)>)
+ return 1
+else
+ src.sysmessage "<argv(0).NAME> neni zranen."
+ return 1 
+endif
+
+[ITEMDEF i_mem_ressurect]
+ID=i_memory 
+TYPE=t_eq_script 
+NAME=resurekce
+layer=30
+
+ON=@create
+TIMER=4
+ATTR=attr_decay 
+
+ON=@TIMER
+src=<cont>
+src.reveal
+if (more1==0)
+ if ({700 1050}<cont.healing) //sance na uspech
+  cont.classmessage("<cont.sex(Ozivil,Ozivila)> jsi <link.link.Name>.")
+  link.link.P=<link.P>
+  src=<cont>
+  link.spelleffect(59,1000)
+  link.link.sysmessage("Ozivil te <?strmid(<link.Name>,5,50)?>.")
+ else
+  cont.redmessage("<cont.sex(Selhal,Selhala)> jsi v ozivovani.")
+ endif
+else
+ if ( {700 1050}<cont.veterinary) //sance na uspech
+  cont.classmessage("Oziveni uspesne.")
+  if !(link.findid(i_nofame))
+   link.giveitem(i_nofame)
+  endif
+  if !(link.findid(i_poresu))
+   link.giveitem(i_poresu)
+  endif
+  cont.giveitem(i_bandage_bloody,20)
+  src=<cont>
+  if (<strlen(<link.tag(myFood)>)>)
+    arg(myFood,<link.tag(myFood)>)
+    if (<arg(myFood)> < 2)
+      arg(myFood,2)
+    endif
+  else
+    arg(myFood,-1)
+  endif
+  link.spelleffect(s_resurrection,1000)
+  if (<arg(myFood)> > 0)
+    lastnewchar.food=<arg(myFood)>
+  endif
+  //lastnewchar.findlayer(21).remove
+ else
+  cont.redmessage("<cont.sex(Selhal,Selhala)> jsi v ozivovani.")
+ endif
+endif
+remove
+return 0
+
+[ITEMDEF i_mem_healing]
+ID=i_memory 
+TYPE=t_eq_script 
+NAME=Leceni
+layer=30
+
+ON=@EQUIP 
+ATTR=attr_decay 
+
+ON=@TIMER
+src=<cont>
+if !(link)
+  remove
+  return 1
+endif
+if (link.body==c_man)||(link.body==c_woman)       //humanoid - skill healing
+ //skilldone skill_healing
+ IF (cont.healing > rand(1025))                     //fizzlecheck podle healingu
+  if(cont.profession==class_priest)//||(cont.profession==class_shaman) //saman a klerik dostanou pak expy 
+   if(topobj!=link) //pokud neleci sebe
+    if(!<cont.tag(awaitsexpforhealing)>) //jeste neni oznacen
+     if(!<link.tag(gethealedby)>) //jeste neni lecen
+      cont.sysmessage(Za vyleceni <link.name> muzes ocekavat zkusenosti)
+      cont.newitemsafe(i_heal_for_exp)
+      lastnew.link =<link> //linknout na leceneho
+      lastnew.timer = 120 //dve minuty pak zmizi
+      cont.equip(<lastnew>)
+      cont.tag(awaitsexpforhealing,1) //znacka na leciteli, ze ocekava expy
+      link.tag(gethealedby,<topobj>) //znacka na lecenem cili, ze je lecen klerikem
+     else
+      cont.sysmessage(<link.name> jiz nekdo za zkusenosti leci - bud pockej nebo si vyber jiny cil)
+     endif
+    endif
+   endif
+  endif
+  if (cont.profession==class_shaman)
+   if ( {1 4} > 1)
+    cont.giveitem(i_bandage_bloody)
+   endif
+  else
+   cont.giveitem(i_bandage_bloody)
+  endif
+  if (link.findid(i_krvaceni))//vyleceni krvaceni
+   cont.classmessage("<link.name> prestal krvacet.")
+   if (link!=cont)
+     link.classmessage("<cont.name> zastavil tve krvaceni.")
+   endif
+   link.findid(i_krvaceni).remove
+   if (tag(shamanheal))
+    link.hits=<eval link.hits+promilerange(<eval cont.healing+cont.anatomy>,<skill_healing.effect>)>
+    cont.classmessage("<link.name> byl uspesne osetren")
+    link.classmessage("<cont.name> te osetril.")
+   endif
+   remove
+   return 1
+  else
+   cont.classmessage("<link.name> byl uspesne osetren")
+   if (tag(shamanheal))
+    link.hits=<eval link.hits+(promilerange(<eval cont.healing+cont.anatomy>,<skill_healing.effect>)*2)>
+   else
+    link.hits=<eval link.hits+promilerange(<eval cont.healing+cont.anatomy>,<skill_healing.effect>)>//mnozstvi vylecenych zivotu podle anatomy i healingu
+   endif
+   if (link.hits>link.maxhits)
+    link.hits=<link.maxhits>
+   endif
+  endif
+  IF (LINK!=CONT)
+   link.classmessage("<cont.name> te osetril.")
+  endif
+ else
+  cont.redmessage("Leceni se ti nepovedlo.")
+ endif
+else//nehumanoid - skill veterinary
+ //skilldone skill_veterinary
+ IF (cont.veterinary > rand(1025))//fizzlecheck podle healingu
+  cont.giveitem(i_bandage_bloody)
+  cont.classmessage("<link.name> byl uspesne osetren.")
+  if (link.findid(i_krvaceni))//vyleceni krvaceni
+   link.findid(i_krvaceni).remove
+   cont.sysmessage "Krvaceni zastaveno.  "
+   remove
+   return 1
+  else//pridani zivotu
+   link.hits=<eval link.hits+promilerange(<eval cont.veterinary+cont.anatomy>,<Skill_Vet.effect>)>  
+   if (link.hits>link.maxhits)
+    link.hits=<link.maxhits>
+   endif
+  endif
+  IF (LINK!=CONT)
+    link.classmessage("<cont.name> te osetril.")
+  endif
+ else
+  cont.redmessage("Osetreni se ti nepovedlo.")
+ ENDIF
+endif
+remove
+RETURN 0
+
+[itemdef i_heal_for_exp]
+name=Timer leceni za expy
+type=t_eq_script
+id=i_memory
+
+on=@create
+attr=attr_movenever|attr_invis
+
+on=@timer
+cont.sysmessage(Nyni jiz muzes lecit dalsiho cloveka za zkusenosti)
+cont.tag.remove(awaitsexpforhealing)
+cont.tag.remove(gotexpforhealingnow)
+link.tag.remove(gethealedby)
+remove
+
+//samanova leceni
+[function samheal0]
+f_samHeal_value(0)
+
+[function samheal1]
+f_samHeal_value(1)
+
+[function samheal2]
+f_samHeal_value(2)
+
+[function samheal3]
+f_samHeal_value(3)
+
+[function samheal4]
+f_samHeal_value(4)
+
+[function samheal5]
+f_samHeal_value(5)
+
+[function samheal6]
+f_samHeal_value(6)
+
+[function samheal7]
+f_samHeal_value(7)
+
+[function samheal8]
+f_samHeal_value(8)
+
+[function samheal9]
+f_samHeal_value(9)
+
+[function samheal10]
+f_samHeal_value(10)
+
+[function samheal11]
+f_samHeal_value(11)
+
+[function samheal12]
+f_samHeal_value(12)
+
+[function samheal13]
+f_samHeal_value(13)
+
+[function samheal14]
+f_samHeal_value(14)
+
+[function samheal15]
+f_samHeal_value(15)
+
+[function f_samHeal_value]
+if (profession==class_shaman)
+  if (<strlen(<equiptag(equip<eval argv(0)>)>)>)
+    if (findUID(<equiptag(equip<eval argv(0)>)>).isChar)
+      findid(i_bandage_bloody).bandaonchar(<equiptag(equip<eval argv(0)>)>)
+      healdisarm
+      stopmagery
+    else
+      src.redMessage("Cil ulozeny jako equip<eval argv(0)> je predmet!")
+    endif
+  else
+    src.redMessage("Nemas nastaveny equip<eval argv(0)>")
+  endif
+else
+  sysMessage("Pouze saman vi jak vyuzit krvave bandaze k leceni")
+endif 
+
+[eof]

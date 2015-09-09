@@ -1,0 +1,753 @@
+////////////////////////////////////////////////
+//        D  O    Z  B  R  A  N  E  !         //
+//                    aneb                    //
+//         Z  M  O  C  N  E  N  E  C          //
+//         G O N D O R/M O R D O R u          //
+////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////
+//            G  O  N  D  O  R:            //
+/////////////////////////////////////////////
+
+[function f_q30_zmocnenecg_DClick]
+ f_q030_checkOldTags
+ f_gq030_zmocnenec
+
+//SPEECH//
+
+[SPEECH spk_gq030_zmocnenec]
+ON=*Hi*
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+ON=*Bud zdrav*
+
+f_qSpeech(f_q30_zmocnenecg_DClick)
+
+
+[function f_gq030_refuseQDialog]
+if ( (<src.tag.realm> != 1) && (src.profession!=class_thief) )//|| (0<src.qtag(gq030_zmocnenec)> >= 1) )
+  say("Vyhni se memu meci, prisluhovaci Mordoru !")
+  return 1
+endif
+
+if( <src.tag.presel> )
+  
+  if ( (src.profession==class_thief) && (0<src.qtag(mq030_zmocnenec)> >= 1) )
+    say("Jdi pryc")
+    return 1
+  else
+
+    if (!<src.qtag(q030_presel)>)
+      src.qtag(q030_presel,<src.qtag(mq030_zmocnenec)>) //kde presiel ( v akej casti questu )
+    endif
+    src.qtagremove(mq030_zmocnenec)//pojde odznova
+  endif
+endif
+return 0
+
+[function f_gq030_zmocnenec]
+if (<src.flags>&statf_dead)
+  return 1
+elseif (<f_gq030_refuseQDialog>)
+  return 1
+else
+  dialog(d_gq030_zmocnenec)
+endif
+
+//DIALOG//
+[dialog d_gq030_zmocnenec]
+arg(tagValue,<eval src.qtag(gq030_zmocnenec)>)
+argo.questDialog_create(03002,"Zmocnenec Gondoru")
+
+argo.dialog_newPage("Pozdrav")
+
+if (<arg(tagValue)> == 0)
+argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,21,"Nejake drby ?")
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+    argo.setText(argo.newTextLine,"Kdepak, ja nejsem obchodnik.. ")
+    argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if (<src.f_q000_canBePromotedVM>)
+    argo.f_q000_zmocnenec_Request
+  else
+    argo.setText(<argo.newTextLine>,"Zdravim...")
+    argo.questDialog_HTMLGUMP
+
+    if ( <eval(<src.qtag(gq030_zmocnenec)>)>==28 )
+      argo.setText(argo.newTextLine,"Ztratil jsem svuji odmenu za sluzby, chtel bych pozadat o novou")
+      argo.questDialog_addResponse(0,0,1,"work_info",0)
+    endif
+  endif
+    
+if (<arg(tagValue)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jsem Zmocnenec Gondorskeho kralovstvi, mam na starosti zkouseni schopnosti novacku, kteri se prihlasi k sluzbe krali. ")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Zmocnenec Gondoru? O tom jsem jeste nikdy <?src.sex(neslysel,neslysela)?> ...")
+    argo.questDialog_addResponse(0,0,1,"neslysel") 
+    argo.setText(argo.newTextLine,"Aha a ceho presne se ty ukoly tykaji?")
+    argo.questDialog_addResponse(0,0,1,"ukoly") 
+    
+  argo.dialog_page("neslysel")
+    argo.setText(argo.newTextLine,"Ano ano... To je mozne, protoze tuto funkci nechal Kapitan strazi v Minas Tirithu zridit teprve pred nedavnem... Veri, ze pomuze zajistit lepsi pripravenost mesta, kdyby doslo k utoku... ")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Aha...")
+      argo.questDialog_addResponse(0,0,0,"Kdo jsi?") 
+      
+  argo.dialog_page("ukoly")
+    argo.setText(argo.newTextLine,"Ukoly, ktere zadavam, maji otestovat bojove schopnosti a odvahu. A to jak jinak nez bojem ! Budes muset prokazat sve schopnosti v boji s ruznymi protivniky a samozrejme budu vyzadovat dukaz, ze jsi je <?src.sex(porazil,porazila)?>.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Aha...")
+      argo.questDialog_addResponse(0,0,0,"Kdo jsi?") 
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Zmocnenec Gondoru vyhlizi dobrackym dojmem, ochotny kazdemu pomoct. Pusobi dojmem zdatneho a spravedliveho velitele.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nejake drby ?")
+  argo.setText(<argo.newTextLine>,"Inu je az s podivem kolik novych zajemcu o me ukoly se zde zastavuje, vsak je mam taky vsechny hezky zapsane. Ale ani ne pulka dokaze moje ukoly splnit. To vis neni to zadnej med. Asi je laka vidina novych zkusenosti, ktere behem plneni nabydou...")
+  argo.questDialog_HTMLGUMP
+ 
+argo.dialog_page("Hledam praci")
+  if (<f_q030_playerCanGetWork(<arg(tagValue)>)>)
+    argo.setText(<argo.newTextLine>,"Hmm  nevim, co by ti sedlo nejlip..  muzes zkusit splnit par ukolu pro me a az nabudes vice zkusenosti, muzes se odvazit vypravit za dobrodruzstvim nekam dal... ")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobra, <?src.sex(chtel,chtela)?> bych zkusit splnit nejaky z tvych ukolu...")
+      argo.questDialog_addResponse(0,0,1,"work_info") 
+      argo.setText(argo.newTextLine,"Hm .. jeste se po necem porozhlednu. Tve ukoly plnit nechci.")
+      argo.questDialog_addResponse(0,1,1,"refuse") 
+  elseif (<f_q030_playerHasWork(<arg(tagValue)>)>)
+    argo.setText(<argo.newTextLine>,"Ja jsem ti uz praci dal! Tak ji spln a potom ti dam treba neco dalsiho. ")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(tagValue)> == 28)
+    argo.setText(<argo.newTextLine>,"Ja uz pro tebe praci nemam, jdi radeji zabit par skretu...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1)
+  endif
+ 
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Hmm?")
+  argo.questDialog_HTMLGUMP
+  
+  if (<f_q030_playerHasWork(<arg(tagValue)>)>)
+    if (<f_q030_collector_isFull(<arg(tagValue)>)>)
+      argo.setText(argo.newTextLine,"Uz jsem <?src.sex(splnil,splnila)?> tvuj ukol... tady to mas !")
+      argo.questDialog_addResponse(0,1,1,"work_giveCollector") 
+    endif
+    argo.setText(argo.newTextLine,"Vlastne nic...")
+    argo.questDialog_addResponse(0,1,1,"work_notFoundYet") 
+  endif
+
+if (<f_q030_playerCanGetWork(<arg(tagValue)>)>)
+  argo.dialog_page("work_info")
+    if (<arg(tagValue)> == 0)
+      argo.setText(<argo.newTextLine>,"Vyborne, pripisuji si te na seznam dobrodruhu, kteri plni me ukoly. A ted k veci : Dam ti tady vacek, do ktereho mi hezky naskladej 20 zubu Velkych potkanu a prines mi je. Aspon pomuzes procistit mestskou kanalizaci. ")
+    elseif (<arg(tagValue)> == 2)
+      argo.setText(<argo.newTextLine>,"No vypada to, ze krysy jsi <?src.sex(zvladl,zvladla)?> a mas odvahu zkusit neco tezsiho, ze ? Novy stin z Mordoru pouziva pro boj odporna stvoreni. Obzivle kostry lidi i skretu. Sem do toho vacku naskladas a prineses devet kosti z Kostlivcu Sekerniku, protoze ti se zdaji byt nejsilnejsi a musis se s nimi naucit bojovat. Nepochybne vis kde je najit.. ")
+    elseif (<arg(tagValue)> == 4)
+      argo.setText(<argo.newTextLine>,"Haha, skvele nemas strach ani z nemrtvych kostlivcu, to se ti bude hodit. Protoze ted potrebuji aby ses utkal s Lichem, mocnym demonem temne moci. Musis mi prines 6, nebo ne lepsi bude osm oci techto demonu! Mel bys byt opatrny, protoze maji zvlastni schopnosti... ")
+    elseif (<arg(tagValue)> == 6)
+      argo.setText(<argo.newTextLine>,"Zda se, ze to se sluzbou myslsi vazne, kdyz ses odvazil a porazil lichy. Ted vyuzijes svoje znalosti kanalizace, protoze potrebuji abys nasel infikovane krysy a prinesl mi z nich 10 drapku. A dej si pozor na jejich jed! ")
+    elseif (<arg(tagValue)> == 8)
+      argo.setText(<argo.newTextLine>,"Vyborne, jde ti to skvele! Ale ted to bude opravdu nebezpecne. V dalekych krajich ziji obrovsti pavouci. Mezi nimi vynikaji cerne vdovy. Prines mi 7 vajicek techto pavouku.  ")
+    elseif (<arg(tagValue)> == 10)
+      argo.setText(<argo.newTextLine>,"<?src.sex(Zvladl,Zvladla)?> jsi toho jiz hodne, ale musis zvladnout jeste vic, chces-li slouzit krali a byt cten jako gondorsky bojovnik. Obri, nebo titani, jak se jim zacalo rikat jsou silni protivnici. A prave to te ceka, potrebuju totiz jejich nehty. Alespon sedum. Odvazis se?")
+    elseif (<arg(tagValue)> == 12)
+      argo.setText(<argo.newTextLine>,"Driv jsi mi <?src.sex("prinesl","prinesla")?> nehty obru. Mozna jsi <?src.sex("zahledl","zahledla")?> jejich vudce, lordy. A prave jejich nehty mi ted musis prinest. Ctyri, nebo radsi sest. Budu te ocekavat bojovniku.")
+    elseif (<arg(tagValue)> == 14)
+      argo.setText(<argo.newTextLine>,"Uz jsi <?src.sex("bojoval","bojovala")?> s mnoha neprateli. Byli silni a velci i mali a zakerni. Ted se musis utkat s jedovym fenixem, postrachem neopatrnych poutniku. Jako dukaz mi prineses deset pirek.")
+    elseif (<arg(tagValue)> == 16)
+      argo.setText(<argo.newTextLine>,"Tento ukol mozna rozhodne, jestli jsi <?src.sex("hoden","hodna")?>, nebot je velmi obtizny! 5 vlasu Strazce Ohne to je to, co po tobe zadam tentokrat. Kazdy ma jen jeden,proto jsou tak vzacne. Kde je najdes ti ale poradit nemuzu.")
+    elseif (<arg(tagValue)> == 18)
+      argo.setText(<argo.newTextLine>,"Zle zpravy! Temny pan povolal do svych sluzeb obry a vybavil je tezkou zbroji! Nasi zvedove vsak hlasi zvlastni vec. Udajne se tito obri vzbourili a vrazdi ted i skrety! Nicmene jsou pro nas velkym nebezpecim protoze nici naco prijdou. Proto musi zemrit. 8 prstu musis prinest v tomto vacku.")
+    elseif (<arg(tagValue)> == 20)
+      argo.setText(<argo.newTextLine>,"Opet jsi <?src.sex("prokazal","prokazala")?> sve schopnosti a odvahu, pri boji s obry. Ale ted musis porazit neco tak ohavneho, ze to ani nema jmeno v nasi reci! Prineses mi cerne srdce toho stvoreni, ale ne jenom jedno! Rovnou 3! Kdysi sme to stvoreni nazyvali Pan kobky, ale to uz je davno... ")
+    elseif (<arg(tagValue)> == 22)
+      argo.setText(<argo.newTextLine>,"Pozor! Vzhledem k tomu jak jsi zkuseny tohle je velmi tezky ukol: Dam ti tady vacek, do ktereho mi hezky naskladej 3 vetvicky z Excelenta a prines mi je.")
+    elseif (<arg(tagValue)> == 24)
+      argo.setText(<argo.newTextLine>,"Toto je uz velmi tezky ukol! Pamatujes si na ty ozbrojene obry, ze? Dari se nam je drzet mimo nase uzemi, avsak zjistili jsme neco zvlastniho. Nekolika z nich se povedlo ukryt se v Ledove Jeskyni. To by mohlo byt v budoucnu nebezpecne! Musis je vyhledat a zabit a donest 5 jejich usi!")
+    elseif (<arg(tagValue)> == 26)
+      argo.setText(<argo.newTextLine>,"Toto je nejtezsi ukol jaky ti mohu nabidnout!  Prines mi tady do vacku 4 draci srdce! Pokud to dokazes, cele kralovstvi bude znat tve jmeno a budes vazenym bojovnikem!")
+    elseif (<arg(tagValue)> == 28 ) //asi je to blbo lebo si bude moct vypytat novu ulohu a dostane prazdny dialog? - ale uz nemam sily nad tym dnes rozmyslat
+      arg(dracichSrdc,<eval((<src.qtag(q030_finished)>+1)*4)>)
+      argo.setText(<argo.newTextLine>,"Hmm! Dobra... ale nejdriv mi tady do vacku prines <?arg(dracichSrdc)?> dracich srdc!")
+    endif
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jdu na to...")
+      argo.questDialog_addResponse(0,1,1,"work_accept") 
+      argo.setText(argo.newTextLine,"Tak to teda ne ...")
+      argo.questDialog_addResponse(0,1,0,"refuse")
+endif
+//other quests
+argo.f_q000_zmocnenec_Answer
+
+
+[dialog d_gq030_zmocnenec button]
+on=@AnyButton
+//no action:
+if (<argn> == 0)
+  return
+elseif (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+
+//base dialog:
+if (f_gq030_refuseQDialog)
+  return 1
+endif
+arg(tagValue,<eval src.qtag(gq030_zmocnenec)>)
+if (<f_q030_playerCanGetWork(<arg(tagValue)>)>)
+  if (<argn> == argo.dialog_linkButton("refuse"))
+    say("Aha...")
+    return
+  endif
+  if (<argn> == argo.dialog_linkButton("work_accept"))
+    if (<arg(tagValue)> == 0)
+      f_q030_getWork(1,1) // arg1 - min. level ; arg2 - new qtag value
+    elseif (<arg(tagValue)> == 2)
+      f_q030_getWork(3,3)
+    elseif (<arg(tagValue)> == 4)
+      f_q030_getWork(6,5)
+    elseif (<arg(tagValue)> == 6)
+      f_q030_getWork(12,7)
+    elseif (<arg(tagValue)> == 8)
+      f_q030_getWork(15,9)
+    elseif (<arg(tagValue)> == 10)
+      f_q030_getWork(20,11)
+    elseif (<arg(tagValue)> == 12)
+      f_q030_getWork(25,13)
+    elseif (<arg(tagValue)> == 14)
+      f_q030_getWork(30,15)
+    elseif (<arg(tagValue)> == 16)
+      f_q030_getWork(40,17)
+    elseif (<arg(tagValue)> == 18)
+      f_q030_getWork(50,19)
+    elseif (<arg(tagValue)> == 20)
+      f_q030_getWork(60,21)
+    elseif (<arg(tagValue)> == 22)
+      f_q030_getWork(70,23)
+    elseif (<arg(tagValue)> == 24)
+      f_q030_getWork(80,25)
+    elseif ( (<arg(tagValue)> == 26) || (<arg(tagValue)> == 28) )
+      f_q030_getWork(90,27)
+    endif
+    return
+  endif
+elseif (<f_q030_playerHasWork(<arg(tagValue)>)>)
+  if (<argn> == argo.dialog_linkButton("work_notFoundYet"))
+    say("Tak se snaz, abys to <src.sex("splnil","splnila")>...")
+    return
+  elseif (<argn> == argo.dialog_linkButton("work_giveCollector"))
+    if (<arg(tagValue)> == 1)
+      f_q030_handoverCollector(150,2) // arg1 - experiences ; arg2 - new qtag value
+    elseif (<arg(tagValue)> == 3)
+      f_q030_handoverCollector(300,4)
+    elseif (<arg(tagValue)> == 5)
+      f_q030_handoverCollector(600,6)
+    elseif (<arg(tagValue)> == 7)
+      f_q030_handoverCollector(1000,8)
+    elseif (<arg(tagValue)> == 9)
+      f_q030_handoverCollector(1200,10)
+    elseif (<arg(tagValue)> == 11)
+      f_q030_handoverCollector(1400,12)
+    elseif (<arg(tagValue)> == 13)
+      f_q030_handoverCollector(1800,14)
+    elseif (<arg(tagValue)> == 15)
+      f_q030_handoverCollector(2200,16)
+    elseif (<arg(tagValue)> == 17)
+      f_q030_handoverCollector(3000,18)
+    elseif (<arg(tagValue)> == 19)
+      f_q030_handoverCollector(4000,20)
+    elseif (<arg(tagValue)> == 21)
+      f_q030_handoverCollector(6000,22)
+    elseif (<arg(tagValue)> == 23)
+      f_q030_handoverCollector(8000,24)
+    elseif (<arg(tagValue)> == 25)
+      f_q030_handoverCollector(10000,26)
+    elseif (<arg(tagValue)> == 27)
+      
+      if ( !<src.qtag(q030_finished)> )
+        f_q030_handoverCollector(15000,28)
+        src.qtag(q030_finished, 1)
+      else
+        f_q030_handoverCollector(0,28) //bez expov
+        src.qtag(q030_finished, <eval(<src.qtag(q030_finished)>+1)>) // #+1 by islo?
+
+        if ( <src.qtag(q030_finished)> > 2 )
+          src.qtag(q030_finished, 2)
+        endif
+      endif
+      src.f_q030_final_reward
+      f_quest_complete(2)
+    endif
+    return
+  endif
+elseif (<arg(tagValue)> == 28)
+  if (<argn> == argo.dialog_linkButton("Goodbye"))
+    say("Tobe take hodne stesi priteli...")
+    return
+  endif
+endif
+//other quests:
+if (<argo.f_q000_zmocnenec_Button(<argn>)>)
+  return
+endif
+
+
+
+
+
+/////////////////////////////////////////////
+//            M  O  R  D  O  R:            //
+/////////////////////////////////////////////
+
+
+[function f_q30_zmocnenecm_DClick]
+f_q030_checkOldTags
+f_mq030_zmocnenec
+
+//SPEECH//
+
+[SPEECH spk_mq030_zmocnenec]
+ON=*Hi*
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+ON=*Bud zdrav*
+
+f_qSpeech(f_q30_zmocnenecm_DClick)
+
+
+[function f_mq030_refuseQDialog]
+if ( (<src.tag.realm> != 2) && (src.profession!=class_thief) )//|| (0<src.qtag(gq030_zmocnenec)> >= 1) )
+  say("Vyhni se memu meci, prisluhovaci Gondoru !")
+  return 1
+endif
+
+if( <src.tag.presel> )
+  
+  if ( (src.profession==class_thief) && (0<src.qtag(gq030_zmocnenec)> >= 1) )
+    say("Jdi pryc")
+    return 1
+  else
+
+    if (!<src.qtag(q030_presel)>)
+      src.qtag(q030_presel,<src.qtag(gq030_zmocnenec)>) //kde presiel ( v akej casti questu )
+    endif
+    src.qtagremove(gq030_zmocnenec)//pojde odznova
+  endif
+endif
+return 0
+
+[function maxof2]
+if ( <argv(0)> > <argv(1)> )
+  return <argv(0)>
+elseif ( <argv(0)> < <argv(1)> )
+  return <argv(1)>
+else //rovnake
+  return <argv(0)>
+endif
+[function f_mq030_zmocnenec]
+if (<src.flags>&statf_dead)
+  return 1
+elseif (<f_mq030_refuseQDialog>)
+  return 1
+else 
+  dialog(d_mq030_zmocnenec)
+endif
+
+//DIALOG//
+[dialog d_mq030_zmocnenec]
+arg(tagValue,<eval src.qtag(mq030_zmocnenec)>)
+argo.questDialog_create(03111,"Zmocnenec Mordoru")
+
+argo.dialog_newPage("Pozdrav")
+
+if (<arg(tagValue)> == 0)
+argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,21,"Nejake drby ?")
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+    argo.setText(argo.newTextLine,"Kdepak, ja nejsem obchodnik.. ")
+    argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if (<src.f_q000_canBePromotedVM>)
+    argo.f_q000_zmocnenec_Request
+  else
+    argo.setText(<argo.newTextLine>,"Zdravim...")
+    argo.questDialog_HTMLGUMP
+
+    if ( <eval(<src.qtag(mq030_zmocnenec)>)>==28 )
+      argo.setText(argo.newTextLine,"Ztratil jsem svuji odmenu za sluzby, chtel bych pozadat o novou")
+      argo.questDialog_addResponse(0,0,1,"work_info",0)
+    endif
+  endif
+    
+if (<arg(tagValue)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Zdravim... jsem Zmocnenec Mordoru, mam na starosti zkouseni schopnosti novacku, kteri se prihlasi k sluzbe Mordoru! ")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Zmocnenec Mordoru? O tom jsem jeste nikdy <?src.sex(neslysel,neslysela)?> ... ")
+    argo.questDialog_addResponse(0,0,1,"neslysel") 
+    argo.setText(argo.newTextLine,"Aha a ceho presne se ty ukoly tykaji?")
+    argo.questDialog_addResponse(0,0,1,"ukoly") 
+    
+  argo.dialog_page("neslysel")
+    argo.setText(argo.newTextLine,"Ano ano... To je mozne, protoze tuto funkci nechal Kapitan strazi v Rhunu zridit teprve pred nedavnem... Veri, ze pomuze zajistit lepsi pripravenost mesta, kdyby nahodou doslo k utoku...Od tech prasivych psu z Gondoru nikdy nevis, co cekat.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Aha...")
+      argo.questDialog_addResponse(0,0,0,"Kdo jsi?") 
+      
+  argo.dialog_page("ukoly")
+    argo.setText(argo.newTextLine,"Ukoly, ktere zadavam, maji otestovat bojove schopnosti a odvahu. A to jak jinak nez bojem ! Budes muset prokazat sve schopnosti v boji s ruznymi protivniky a samozrejme budu vyzadovat dukaz, ze jsi je <?src.sex(porazil,porazila)?>.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Aha...")
+      argo.questDialog_addResponse(0,0,0,"Kdo jsi?") 
+endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Zmocnenec Mordoru vyhlizi az demonickym dojmem, skoro bilevlasy kontrastuji s jeho cernym odevem. Tvar prisne stazena do zdvorilostniho usmevu. Planouci oci ve sluzbach Mordoru...*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nejake drby ?")
+  argo.setText(<argo.newTextLine>,"Inu je az s podivem kolik novych zajemcu o me ukoly se zde zastavuje, vsak je mam taky vsechny hezky zapsane. Ale ani ne pulka dokaze moje ukoly splnit. To vis neni to zadnej med. Asi je laka vidina novych zkusenosti, ktere behem plneni nabydou...")
+  argo.questDialog_HTMLGUMP
+ 
+argo.dialog_page("Hledam praci")
+  if (<f_q030_playerCanGetWork(<arg(tagValue)>)>)
+    argo.setText(<argo.newTextLine>,"Hmm  nevim, co by ti sedlo nejlip..  muzes zkusit splnit par ukolu pro me a az nabudes vice zkusenosti, muzes se odvazit vypravit za dobrodruzstvim nekam dal... ")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobra, <?src.sex(chtel,chtela)?> bych zkusit splnit nejaky z tvych ukolu...")
+      argo.questDialog_addResponse(0,0,1,"work_info") 
+      argo.setText(argo.newTextLine,"Hm .. jeste se po necem porozhlednu. Tve ukoly plnit nechci.")
+      argo.questDialog_addResponse(0,1,1,"refuse") 
+  elseif (<f_q030_playerHasWork(<arg(tagValue)>)>)
+    argo.setText(<argo.newTextLine>,"Ja jsem ti uz praci dal! Tak ji spln a potom ti dam treba neco dalsiho. ")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(tagValue)> == 28)
+    argo.setText(<argo.newTextLine>,"Ja uz pro tebe praci nemam, jdi radeji zabit par gondoru...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Rozloucit se*")
+      argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  endif
+ 
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Hmm?")
+  argo.questDialog_HTMLGUMP
+
+  if (<f_q030_playerHasWork(<arg(tagValue)>)>)
+    if (<f_q030_collector_isFull(<arg(tagValue)>)>)
+      argo.setText(argo.newTextLine,"Uz jsem <?src.sex(splnil,splnila)?> tvuj ukol... tady to mas !")
+      argo.questDialog_addResponse(0,1,1,"work_giveCollector") 
+    endif
+    argo.setText(argo.newTextLine,"Vlastne nic...")
+    argo.questDialog_addResponse(0,1,1,"work_notFoundYet") 
+  endif
+
+if (<f_q030_playerCanGetWork(<arg(tagValue)>)>)
+  argo.dialog_page("work_info")
+    if (<arg(tagValue)> == 0)
+      argo.setText(<argo.newTextLine>,"Vyborne, pripisuji si te na seznam brancu kteri plni me ukoly. A ted k veci : Tady mas vacek, do ktereho mi hezky naskladas 20 zubu Litych vlku a prineses mi je. Uvidime jestli te nesezerou.")
+    elseif (<arg(tagValue)> == 2)
+      argo.setText(<argo.newTextLine>,"HA! Vlky zvladne kazde skrite! Ted hezky pudes a zabijes Trolly! Urezes jim prsty a sedm mi jich prineses! Rozumis? ")
+    elseif (<arg(tagValue)> == 4)
+      argo.setText(<argo.newTextLine>,"Mozna v tobe neco bude spinavce, uvidime! Ted mi prineses 15 klepet obrich skorpionu, rozumis? Nebo se snad bojis?! ")
+    elseif (<arg(tagValue)> == 6)
+      argo.setText(<argo.newTextLine>,"Mozna si myslis, buh vi co nejsi za valecnika? PCHE! Vratis se mezi skorpiony, najdes jejich krale a jejich klepeta mi prineses! Deset bude stacit. A ted uz bez! ")
+    elseif (<arg(tagValue)> == 8)
+      argo.setText(<argo.newTextLine>,"Nejak ti rostou svaly! Ale v hlave porad prazdno jak vidim, hehe! 3 prsty krale lichu! Co ty nato? Tuhne ti krev v zilach, nebo co? A vis co? prines jich rovnou 5 ! Utikej! Nebo snad nechces slouzit svemu panu? ")
+    elseif (<arg(tagValue)> == 10)
+      argo.setText(<argo.newTextLine>,"Ted uvidime jak umis bojovat s Kyklopy. Sedm jejich oci mi prines! Mordorsky valecnik to musi zvladnout!")
+    elseif (<arg(tagValue)> == 12)
+      argo.setText(<argo.newTextLine>,"Dobra zprava, haha! Vratis se mezi Kyklopy. Najdi jejich krale. 12 nehtu musis prinest jako dukaz!")
+    elseif (<arg(tagValue)> == 14)
+      argo.setText(<argo.newTextLine>,"Uvidime jak si poradis ted! Deset pirek jedoveho fenixe. To bys snad <?src.sex(mohl,mohla)?> zvladnout, ne?")
+    elseif (<arg(tagValue)> == 16)
+      argo.setText(<argo.newTextLine>,"Poradil sis s obry i lichy, takze jsi uz dost silny a zkuseny abys mohl vyhledat Minotaury a prinest mi 5 kuzi. Nebo ne?")
+    elseif (<arg(tagValue)> == 18)
+      argo.setText(<argo.newTextLine>,"Doufam, ze znas ty proradne obry, kterym jsme dali brneni a helmy, aby slouzili Mordoru? Vypada to ze se vzbourili a utoci i na nase! Musi zemrit. Prines mi 8 prstu jako dukaz! Nikdo nezradi Mordor!")
+    elseif (<arg(tagValue)> == 20)
+      argo.setText(<argo.newTextLine>,"Mezi obrimy pavouky jsou i ti nejstarsi z davynch dob. Musis je najit a prinest mi jejich srdce. Aspon 3 nebo jeste lepe ctyri! ")
+    elseif (<arg(tagValue)> == 22)
+      argo.setText(<argo.newTextLine>,"Pozor! Vzhledem k tomu jak jsi zkuseny ti zadam velmi tezky ukol! Prines mi 3 vetvicky z Excelenta. Vis doufam co myslim! ")
+    elseif (<arg(tagValue)> == 24)
+      argo.setText(<argo.newTextLine>,"Haha! Uz se nam, i diky tobe, povedlo najit skoro vsechny ty proradne zradcovske obry! Ale zvedove hlasi, ze se nekteri ukryli v Ledove jeskyni! Kdo vi proc prave tam, ale pomsta Mordoru musi byt vykonana nade vsemi! Proto je musis najit! A pokud to jeste neudelal nekdo jiny, zabit a donest 4 jejich usi!")
+    elseif (<arg(tagValue)> == 26)
+      argo.setText(<argo.newTextLine>,"Tak a ted uvidime! Prines mi tady do vacku 4 draci srdce! Jestli nezemres, budes znam v celem Mordoru!")
+    elseif (<arg(tagValue)> == 28 ) //asi je to blbo lebo si bude moct vypytat novu ulohu a dostane prazdny dialog? - ale uz nemam sily nad tym dnes rozmyslat
+      arg(dracichSrdc,<eval((<src.qtag(q030_finished)>+1)*4)>)
+      argo.setText(<argo.newTextLine>,"Hmm! Dobra... ale nejdriv mi tady do vacku prines <?arg(dracichSrdc)?> dracich srdc!")
+    endif
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jdu na to...")
+      argo.questDialog_addResponse(0,1,1,"work_accept") 
+      argo.setText(argo.newTextLine,"Tak to teda ne ...")
+      argo.questDialog_addResponse(0,1,0,"refuse")
+endif
+//other quests
+argo.f_q000_zmocnenec_Answer
+
+[dialog d_mq030_zmocnenec button]
+on=@AnyButton
+//no action:
+if (<argn> == 0)
+  return
+elseif (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+
+//base dialog:
+if (<f_mq030_refuseQDialog>)
+  return 1
+endif
+arg(tagValue,<eval src.qtag(mq030_zmocnenec)>)
+if (<f_q030_playerCanGetWork(<arg(tagValue)>)>)
+  if (<argn> == argo.dialog_linkButton("refuse"))
+    say("Aha...")
+    return
+  endif
+  if (<argn> == argo.dialog_linkButton("work_accept"))
+    if (<arg(tagValue)> == 0)
+      f_q030_getWork(1,1) // arg1 - min. level ; arg2 - new qtag value
+    elseif (<arg(tagValue)> == 2)
+      f_q030_getWork(3,3)
+    elseif (<arg(tagValue)> == 4)
+      f_q030_getWork(6,5)
+    elseif (<arg(tagValue)> == 6)
+      f_q030_getWork(12,7)
+    elseif (<arg(tagValue)> == 8)
+      f_q030_getWork(15,9)
+    elseif (<arg(tagValue)> == 10)
+      f_q030_getWork(20,11)
+    elseif (<arg(tagValue)> == 12)
+      f_q030_getWork(25,13)
+    elseif (<arg(tagValue)> == 14)
+      f_q030_getWork(30,15)
+    elseif (<arg(tagValue)> == 16)
+      f_q030_getWork(40,17)
+    elseif (<arg(tagValue)> == 18)
+      f_q030_getWork(50,19)
+    elseif (<arg(tagValue)> == 20)
+      f_q030_getWork(60,21)
+    elseif (<arg(tagValue)> == 22)
+      f_q030_getWork(70,23)
+    elseif (<arg(tagValue)> == 24)
+      f_q030_getWork(80,25)
+    elseif ( (<arg(tagValue)> == 26) || (<arg(tagValue)> == 28) )
+      f_q030_getWork(90,27)
+    endif
+    return
+  endif
+elseif (<f_q030_playerHasWork(<arg(tagValue)>)>)
+  if (<argn> == argo.dialog_linkButton("work_notFoundYet"))
+    say("Tak se snaz, abys to <src.sex("splnil","splnila")>...")
+    return
+  elseif (<argn> == argo.dialog_linkButton("work_giveCollector"))
+    if (<arg(tagValue)> == 1)
+      f_q030_handoverCollector(150,2) // arg1 - experiences ; arg2 - new qtag value
+    elseif (<arg(tagValue)> == 3)
+      f_q030_handoverCollector(300,4)
+    elseif (<arg(tagValue)> == 5)
+      f_q030_handoverCollector(600,6)
+    elseif (<arg(tagValue)> == 7)
+      f_q030_handoverCollector(1000,8)
+    elseif (<arg(tagValue)> == 9)
+      f_q030_handoverCollector(1200,10)
+    elseif (<arg(tagValue)> == 11)
+      f_q030_handoverCollector(1400,12)
+    elseif (<arg(tagValue)> == 13)
+      f_q030_handoverCollector(1800,14)
+    elseif (<arg(tagValue)> == 15)
+      f_q030_handoverCollector(2200,16)
+    elseif (<arg(tagValue)> == 17)
+      f_q030_handoverCollector(3000,18)
+    elseif (<arg(tagValue)> == 19)
+      f_q030_handoverCollector(4000,20)
+    elseif (<arg(tagValue)> == 21)
+      f_q030_handoverCollector(6000,22)
+    elseif (<arg(tagValue)> == 23)
+      f_q030_handoverCollector(8000,24)
+    elseif (<arg(tagValue)> == 25)
+      f_q030_handoverCollector(10000,26)
+    elseif (<arg(tagValue)> == 27)
+
+      if ( !<src.qtag(q030_finished)> )
+        f_q030_handoverCollector(15000,28)
+        src.qtag(q030_finished, 1)
+      else
+        f_q030_handoverCollector(0,28) //bez expov
+        src.qtag(q030_finished, <eval(<src.qtag(q030_finished)>+1)>) // #+1 by islo?
+        
+        if ( <src.qtag(q030_finished)> > 2 )
+          src.qtag(q030_finished, 2)
+        endif
+      endif
+
+      src.f_q030_final_reward
+      f_quest_complete(3)
+    endif
+    return
+  endif
+elseif (<arg(tagValue)> == 28)
+  if (<argn> == argo.dialog_linkButton("Goodbye"))
+    say("Tobe take hodne stesi priteli...")
+    return
+  elseif ( <argn> == argo.dialog_linkButton("Lost reward") )
+    
+  endif
+endif
+//other quests:
+if (<argo.f_q000_zmocnenec_Button(<argn>)>)
+  return
+endif
+
+
+
+
+///////////////////////////////////////////////////////////
+//   S  U  P  P  O  R  T     F  U  N  C  T  I  O  N  S   //
+///////////////////////////////////////////////////////////
+
+[function f_q030_checkOldTags]
+if (<eval src.tag(q30_zmocnenecm)> > 0)
+  src.qtag(mq030_zmocnenec,<eval src.tag(q30_zmocnenecm)>)
+  src.tag.remove(q30_zmocnenecm)
+  return 1
+endif
+if (<eval src.tag(q30_zmocnenecg)> > 0)
+  src.qtag(gq030_zmocnenec,<eval src.tag(q30_zmocnenecg)>)
+  src.tag.remove(q30_zmocnenecg)
+  return 1
+endif
+return 0
+
+//argv(0) ~ quest tag value
+[function f_q030_playerCanGetWork]
+if ( (<argv(0)> % 2) == 0 )
+  return 1
+else
+  return 0
+endif
+
+//argv(0) ~ quest tag value
+[function f_q030_playerHasWork]
+if ( (<argv(0)> % 2) == 1 )
+  return 1
+else
+  return 0
+endif
+
+//argv(0) ~ min. level
+//argv(1) ~ new quest tag value
+[function f_q030_getWork]
+if (<eval src.tag(level)> < <argv(0)>)
+  say("Na tento ukol jsi jeste mlady mlicnak. Prijd, az ziskas trochu vice zkusenosti!")
+else
+  arg(tagName,<src.splitRealm(gq030_zmocnenec,mq030_zmocnenec)>)
+  arg(tagValue,<eval src.qtag(<arg(tagName)>)>)
+  
+  if (<arg(tagValue)>==28)
+    arg(tagValue,26)
+  endif
+  src.sysMessage("Prijmas ukol od Zmocnence <src.splitRealm("Gondoru","Mordoru")>.")
+  src.newitem(<f_q030_getRelevantCollector(<arg(tagValue)>)>)
+
+  if (0<src.qtag(q030_finished)> >= 1)
+    arg(dracichSrdc,<eval((<src.qtag(q030_finished)>+1)*4)>)
+    src.act.tag(maxcontents, <arg(dracichSrdc)>)
+  endif
+  src.act.bounce
+  src.qtag(<src.splitRealm(gq030_zmocnenec,mq030_zmocnenec)>,<argv(1)>,<src.splitRealm(2,3)>)
+endif
+
+//argv(0) ~ number of experiences
+//argv(1) ~ new quest tag value
+[function f_q030_handoverCollector]
+arg(tagName,<src.splitRealm("gq030_zmocnenec","mq030_zmocnenec")>)
+arg(tagValue,<eval src.qtag(<arg(tagName)>)>)
+if (<f_q030_collector_isFull(<arg(tagValue)>)>)
+  src.sysMessage("Uspesne jsi <src.sex("splnil","splnila")> svuj ukol. Az se na to budes citit, muzes prijit pro dalsi.")
+  arg(expToAdd,<argv(0)>)
+
+  if ( <src.tag.presel> )
+
+    if ( <src.qtag(q030_presel)> > <argv(1)> ) //kym nedobehne hodnotu z minuleho realmu bude dostavat polovicne expy
+      src.sysMessage("Nez si ziskas moji duveru bude tva odmena polovicni")
+      arg(expToAdd,<eval(<arg(expToAdd)>/2)>)
+    endif
+  endif
+  src.addexp(<arg(expToAdd)>)
+  src.consume(<f_q030_getRelevantCollector(<arg(tagValue)>)>)
+  src.qtag(<arg(tagName)>,<argv(1)>,<src.splitRealm(2,3)>)
+else
+  say("Ale vzdyt ty to jeste nemas!")
+endif
+
+//argv(0) ~ questTagValue
+[function f_q030_collector_isFull]
+if (<src.f_collector_isFull(<f_q030_getRelevantCollector(<argv(0)>)>)>)
+  return 1
+endif
+return 0
+
+//argv(0) ~ questTagValue
+[function f_q030_getRelevantCollector]
+if (<argv(0)> == 0) || (<argv(0)> == 1)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_03,i_q30_zmocnenecm_collector_03)>
+elseif (<argv(0)> == 2) || (<argv(0)> == 3)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_36,i_q30_zmocnenecm_collector_36)>
+elseif (<argv(0)> == 4) || (<argv(0)> == 5)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_612,i_q30_zmocnenecm_collector_612)>
+elseif (<argv(0)> == 6) || (<argv(0)> == 7)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_1215,i_q30_zmocnenecm_collector_1215)>
+elseif (<argv(0)> == 8) || (<argv(0)> == 9)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_1520,i_q30_zmocnenecm_collector_1520)>
+elseif (<argv(0)> == 10) || (<argv(0)> == 11)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_2025,i_q30_zmocnenecm_collector_2025)>
+elseif (<argv(0)> == 12) || (<argv(0)> == 13)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_2530,i_q30_zmocnenecm_collector_2530)>
+elseif (<argv(0)> == 14) || (<argv(0)> == 15)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_3040,i_q30_zmocnenecm_collector_3040)>
+elseif (<argv(0)> == 16) || (<argv(0)> == 17)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_4050,i_q30_zmocnenecm_collector_4050)>
+elseif (<argv(0)> == 18) || (<argv(0)> == 19)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_5060,i_q30_zmocnenecm_collector_5060)>
+elseif (<argv(0)> == 20) || (<argv(0)> == 21)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_6070,i_q30_zmocnenecm_collector_6070)>
+elseif (<argv(0)> == 22) || (<argv(0)> == 23)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_7080,i_q30_zmocnenecm_collector_7080)>
+elseif (<argv(0)> == 24) || (<argv(0)> == 25)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_8090,i_q30_zmocnenecm_collector_8090)>
+elseif (<argv(0)> == 26) || (<argv(0)> == 27)
+  return<src.splitRealm(i_q30_zmocnenecg_collector_90100,i_q30_zmocnenecm_collector_90100)>
+endif
+return
+
+[function f_q030_final_reward]
+src.newitem=i_plast_bojovnika
+lastnew.tag(imi_value[70], 10)  // +10 hp regen
+lastnew.tag(imi_value[102], 20)  // +20 draci
+lastnew.mif_finishitem
+lastnew.name=Plast bojovnika
+lastnew.color=d_uniformRealm_clothes[<src.tag.realm>] //asi by som to nemal viazat na defnames z uniforiem, ale urobim to :)
+lastnew.tag(owner,<src.uid>)
+lastnew.tag(craftedby,<src.uid>)
+lastnew.bounce

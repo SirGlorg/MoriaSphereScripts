@@ -1,0 +1,92 @@
+[ITEMDEF i_q024_vacek_strazci]
+ID=i_bag
+NAME=Vacek na paraty Strazcu
+TYPE=t_collector
+WEIGHT=10
+
+on=@create
+color=042
+attr=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="paratu Strazcu"
+tag.contentsamount=0
+tag.maxcontents=2
+tag.target_remove=1
+tag.target_desc="Kteremu strazci utrhnes ruku? "
+tag.target_id="Body of Strazce"
+tag.absolute_success=100
+tag.value_to_check=60
+tag.contentscount=0
+tag.fail_msg="Tohle ma byt trofej! Nemuzes to jen tak roztrhat na nepouzitelne cary!"
+
+ON=@CollectorCheck
+
+	
+//////////
+// pokladova truhla
+/////
+[ITEMDEF i_q024_poklad]
+ID=i_chest_metal
+NAME=podivna truhla
+TYPE=t_normal
+
+on=@create
+attr=attr_move_never
+color=0084e
+
+on=@userdclick
+if (<src.qtag(q024)> == 1)
+  src.newitem(i_q024_truhlicka).bounce
+  src.qtag(q024,2,34)
+  src.sysmessage("Vida, ani nebyla zamcena! Nasels malou truhlicku, ve ktere neco chrasti.")
+elseif (<src.qtag(q024)> == 2)
+  src.sysmessage("Uz mas vse potrebne.")
+else	
+  src.sysmessage("Nejde ani otevrit, ani rozbit... asi z toho nic nebude.")
+endif
+return 1
+
+//////////
+// truhlicka z pokladu
+/////
+[ITEMDEF i_q024_truhlicka]
+ID=i_pouch
+NAME=podivna truhla
+TYPE=t_normal
+
+on=@create
+Attr=attr_move_never
+
+on=@userdclick	
+src.sysmessage("Je zavrena takovym zpusobem, ze vubec netusis, jak se do ni dostat.")
+return 1
+
+//////////
+// rubin na prsten
+/////
+[ITEMDEF i_q024_sutr]
+ID=i_gem_ruby
+NAME=zarivy rubin
+TYPE=t_normal
+
+on=@create
+attr=attr_move_never
+
+on=@userdclick	
+src.sysmessage("Krasny rubin jako by si primo zadal byt vsazen do nejakeho sperku.")
+return 1
+
+//////////
+// zasnubni prsten
+/////
+[ITEMDEF i_q024_prsten]
+ID=i_ring_silver
+NAME=zasnubni prsten
+TYPE=t_normal
+
+on=@create
+attr=attr_move_never
+
+on=@userdclick	
+src.sysmessage("Takovy nadherny snubni prsten... je skoro skoda ho rvat na ruku, jako je tva.")
+return 1

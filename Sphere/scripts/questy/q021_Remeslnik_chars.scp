@@ -1,0 +1,159 @@
+//////////////////////////////////////////////////
+/////NPC Stary remeslnik 					(3578,1061)
+
+[chardef c_q021_remeslnik]
+id=c_man
+name=Navin
+TSPEECH=spk_q021_remeslnik
+TEVENTs=e_character
+CATEGORY=Moria Questy
+SUBSECTION=q021 - Remeslnik
+DESCRIPTION=Stary remeslnik
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+Title=Stary remeslnik
+STR=1000
+DEX=1000
+INT=1000
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+
+ITEMnewbie=i_hat_wide_brim
+COLOR=0045d
+ITEMnewbie=i_apron_full
+COLOR=color_gray_dk
+ITEMnewbie=i_pants_long
+COLOR=color_gray_lt
+ITEMnewbie=i_shirt_plain
+COLOR=colors_yellow
+ITEMnewbie=i_shoes_plain
+COLOR=color_gray_dk
+
+ITEMnewbie=i_hammer_sledge
+
+ON = @UserDClick
+if (src.targ.distance > 3)
+	src.sysMessage("Na takovou vzdalenost s tebou remeslnik jednat nebude")
+else
+	f_q021_Remeslnik
+endif
+
+//////////////////////////////////////////////////
+/////NPC Lecitel 						(3099,877)
+
+[chardef c_q021_lecitel]
+NAME=Healer
+ID=C_MAN
+
+Tspeech=spk_healer
+TEVENTS=e_healer
+TSPEECH=spk_shopkeep
+TSPEECH=spk_q021_lecitel
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+ 
+ON=@Create
+NAME=Horad
+NPC=brain_vendor
+COLOR=color_clovek
+STR=150
+DEX=150
+INT=100
+
+ANATOMY={55.0 78.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={15.0 38.0}
+TACTICS={15.0 35.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=RANDOM_LIGHT
+ITEMnewbie=i_robe
+COLOR=colors_yellow
+ITEMnewbie=i_sandals
+
+SELL=VENDOR_S_HEALER
+
+CATEGORY=Moria Questy
+SUBSECTION=q021 - Remeslnik
+DESCRIPTION=Lecitel
+
+ON = @UserDClick
+if (src.targ.distance > 3)
+	src.sysMessage("Na takovou vzdalenost s tebou lecitel jednat nebude")
+else
+	f_q021_Lecitel
+endif
+
+///////////////////////////////////////////////////
+///// koza so sadlom
+
+[CHARDEF c_q021_koza]
+ID=c_goat
+NAME=Tlusta koza
+ANIM=01fff
+SOUND=snd_ANIMALS_GOAT1
+ICON=i_pet_GOAT
+attack=1,2
+ARMOR=16
+moverate=3
+RESOURCES=14 i_ribs_raw,8 i_hide, i_q021_sadlo
+CAN=MT_WALK|MT_RUN
+FOODTYPE=5 t_fruit, 5 t_leather, 64 t_grass, 5 t_garbage
+//=c_man,c_woman,c_goat,i_potion_shrink
+//=r_plains,r_stables
+//=e_carnivores3
+DESCRIPTION=Goat
+SUBSECTION=Land {Wild}
+CATEGORY=Animals
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+ON=@Create
+NPC=brain_animal
+
+     str={34 56}
+     dex={56 74}
+     int={16 30}
+     maxhits={34 55}
+     maxstam={56 74}
+     maxmana=0
+
+     parrying=50.0
+     resist={25.3 30.0}
+     tactics={31.1 41.6}
+     wrestling={36.0 43.2}
+
+     taming=30.0
+     animallore=40.0
+     peacemaking=0.1
+
+     tag.experience=<eval {1.0 2.0}>
+     tag(hypnotizable,1)
+
+     
+     fame=20
+     karma={-1 -99}
+
+     
+
+ITEMnewbie=i_monster_create
+
+[eof]

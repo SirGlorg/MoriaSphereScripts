@@ -1,0 +1,845 @@
+//[itemdef i_gs]
+//id=i_grave_stone_5
+//TYPE=T_STONE_GUILD
+//name="guildstone"
+
+
+
+[ITEMDEF i_guildstone]
+//gravestone = Guildstone
+id=i_grave_stone_5
+TYPE=T_multi
+VALUE=100000
+RESOURCES=4 i_rock_plain
+FLIP=1
+DUPELIST=0ede
+name="guildstone"
+
+on=@create
+events +t_guild
+tag.abbrev=<name>
+
+on=@timer
+return 1
+//
+[typedef t_guild]
+on=@dropon_ground
+array_add(var.guilds,<uid>)
+on=@pickup_ground
+array_findremove(var.guilds,<uid>)
+on=@destroy
+array_findremove(var.guilds,<uid>)
+
+on=@userdclick
+return <openguild>
+
+
+
+[function openguild]
+if !(friends.getcount)
+  if !(coowners.getcount)
+    SrcJoinAsMember
+    tag.master(<src>)
+  endif
+endif
+//refreshGM
+dialog d_guild_menu
+return 1
+
+
+
+[function recruit]
+src.targetchar("finduid(<uid>).SrcApplyToJoin(src.targ)")
+
+[function SrcApplyToJoin] // default
+if (argvcount)
+  arg(theplayer,<finduid(args)>)
+else
+  arg(theplayer,<src>)
+endif
+if (arg(theplayer).findid(i_memory_guild))
+  src.sysMessage("<arg(theplayer).name> je clenem jine guildy.")
+  return 1
+endif
+arg(theplayer).say("<arg(theplayer).name> je nyni kandidatem.")
+friends(add,<arg(theplayer)>)
+refreshmember(<arg(theplayer)>)
+return 0
+
+
+
+[function SrcJoinAsMember]
+if (argvcount)
+  arg(theplayer,<finduid(args)>)
+else
+  arg(theplayer,<src>)
+endif
+if !(arg(theplayer).isplayer)
+  arg(theplayer).say("<arg(theplayer).name> neni hrac.")
+  return
+endif
+arg(theplayer).say("<arg(theplayer).name> je nyni clenem.")
+friends(remove,(<arg(theplayer)>)) // could have been candidate
+refreshmember(<arg(theplayer)>)
+if (arg(theplayer).findid(i_memory_guild))
+  arg(theplayer).say("<arg(theplayer).name> je clenem zadane guildy.")
+  return
+endif
+CoOwners(add,<arg(theplayer)>)
+refreshmember(<arg(theplayer)>)
+
+
+
+[function SrcIsMember] // default
+if (argvcount)
+  arg(theplayer,<finduid(args)>)
+else
+  arg(theplayer,<src>)
+endif
+return <IsCoowner(<arg(theplayer)>)>
+
+
+
+[function SrcIsCandidate] // default
+if (argvcount)
+  arg(theplayer,<finduid(args)>)
+else
+  arg(theplayer,<src>)
+endif
+//return <IsFriend(arg(theplayer))>
+arg(returnval,0)
+arg(i,<friends.getcount>)
+while arg(i)
+  if (friends(<eval(arg(i)-1)>)==arg(theplayer))
+    arg(returnval,1)
+    arg(i,1)
+  endif
+  arg(i,#-1)
+endwhile
+return <arg(returnval)>
+
+
+
+[function gfindrank]
+var(grank,0)
+if (SrcIsMaster)
+  var(grank,3)
+elseif (srcismember)
+  var(grank,2)
+elseif (srciscandidate)
+  var(grank,1)
+endif
+return <var(grank)>
+
+
+
+[DIALOG d_guild_menu]
+30,0
+arg(itemlevel,<eval <tag.hm_lockit>>)
+gfindrank
+// var(phrank,0)
+// src.say("My status: <grank> - <namestr>")
+doswitch <grank>
+  argo.tag(radku,1)
+  argo.tag(radku,4)
+  argo.tag(radku,5)
+  argo.tag(radku,8)
+enddo
+argo.tag(sirka,260)
+argo.tag(vyska,<eval 100+((1+argo.tag(radku))*<d_def_radek_vyska>)+(2*<d_def_okraj>)+(4*<d_def_skvira>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//master
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//<master>
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//rankname>
+argo.dialog_pozadi(<argo.tag(nexty)>,1,140+d_def_skvira)//<rankname>
+arg(vedleX,<argo.tag(sloupec_x[1])>+<d_def_odsazeni>)
+argo.dialog_pozadi(114+d_def_skvira,1)//abbrev
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29)//tlacitka
+argo.dialog_zpruhledni
+argo.gumppic(<argo.dialog_textpos(0,0,1)>,100)
+argo.settext(100,"<name>")
+argo.htmlgump(lastxpos+20,lastypos+20,100,60,100,0,0)//
+argo.texta(vedleX,argo.tag(obj_y[0]),955,<MasterGenderTitle>:)
+argo.texta(vedleX,argo.tag(obj_y[1]),955,<Mastername>)
+argo.texta(vedleX,argo.tag(obj_y[2]),955,Tvuj rank:)
+doswitch <grank>
+  argo.texta(vedleX,argo.tag(obj_y[3]),955,Verejnost)
+  argo.texta(vedleX,argo.tag(obj_y[3]),955,Kandidat) 
+  argo.texta(vedleX,argo.tag(obj_y[3]),955,Clen)
+  argo.texta(vedleX,argo.tag(obj_y[3]),955,<MasterGenderTitle>)
+enddo
+argo.texta(<argo.dialog_textpos(4,0)>,955,Zkratka: <tag.abbrev>)
+
+arg(ypos,<argo.tag(obj_y[5])>)
+arg(ypos,<argo.master_section(<ypos>,1,0,Zobrazit seznam clenu)>)
+arg(ypos,<argo.master_section(<ypos>,2,1,Zobrazit seznam kandidatu)>)
+arg(ypos,<argo.master_section(<ypos>,3,1,Vzdat se clenstvi)>)
+arg(ypos,<argo.master_section(<ypos>,4,1,<qval(src.AbbrevStatus,Vy,Za)>pnout zobrazeni zkratky)>)
+arg(ypos,<argo.master_section(<ypos>,5,2,Pridat kandidata na clenstvi)>)
+arg(ypos,<argo.master_section(<ypos>,6,3,Nastavit jmeno guildy)>)
+arg(ypos,<argo.master_section(<ypos>,7,3,Nastavit zkratku)>)
+arg(ypos,<argo.master_section(<ypos>,8,3,Predat vedeni)>)
+
+
+
+[DIALOG d_guild_menu button]
+on=0
+
+on=1 // Clenove
+dialog d_g_members
+
+on=2 // Kandidati
+if (gcheckrights(1))
+ dialog d_g_candidates
+endif
+
+on=3 // Rezignace
+if (gcheckrights(1))
+  potvrdit("SrcResign","Chces opravdu opustit guildu?")
+endif
+
+on=4 // Zkratka
+if (gcheckrights(1))
+  if (src.AbbrevStatus)
+    src.AbbrevStatus(0)
+    src.accmsg("Hrac <src.name> si vypina zobrazeni zkratky guildy (<tag.abbrev>)")
+  else
+    src.AbbrevStatus(1)
+    src.accmsg("Hrac <src.name> si zapina zobrazeni zkratky guildy (<tag.abbrev>)")
+   endif
+  dialog d_guild_menu
+endif
+
+on=5 // Pridat kandidata
+if (gcheckrights(2))
+  src.targetchar("applytojoin")
+endif
+
+on=6 // Nastav jmeno
+if (gcheckrights(3))
+  src.tag(cv_lastdialog,"finduid(<uid>).dialog(d_guild_menu)")
+  input("Jak se ma guilda jmenovat?",name,<name>)
+endif
+
+on=7 // Nastav zkratku
+if (gcheckrights(3))
+  src.tag(cv_lastdialog,"finduid(<uid>).dialog(d_guild_menu)")
+  input("Jakou ma mit guilda zkratku?",tag.abbrev,<tag.abbrev>)
+endif
+
+on=8 // Predat guildmasterovstvi
+if (gcheckrights(3))
+  src.newitemsafe(i_guild_target)
+  lastnew.more1=8 
+  lastnew.link=<uid>
+  lastnew.timer=60
+  src.equip(<lastnew>)
+endif
+
+
+
+[function Resign] // UID of the guildstone
+newitemsafe(i_g_srccchanger)
+lastnew.link=<src.findid(i_memory_guild).link>
+//lastnew.link=<src.guildmem.link>
+lastnew.tag(command,srcResign)
+equip(<lastnew>)
+
+
+
+[function applytojoin] // UID of the guildstone
+if !(isplayer)
+  src.sysMessage("<name> neni hrac.")
+  return 1
+endif
+newitemsafe(i_g_srccchanger)
+lastnew.link=<src.findid(i_memory_guild).link>
+//lastnew.link=<src.guildmem.link>
+lastnew.tag(command,srcapplytojoin)
+equip(<lastnew>)
+
+
+
+[function joinasmember] // UID of the guildstone
+newitemsafe(i_g_srccchanger)
+lastnew.link=<src.findid(i_memory_guild).link>
+//lastnew.link=<src.guildmem.link>
+lastnew.tag(command,srcjoinasmember)
+equip(lastnew)
+
+
+
+[itemdef i_g_srccchanger]
+id=i_memory
+layer=77
+type=t_src_changer
+name=cansee memory
+
+on=@equip
+link.<tag(command)>
+timer=0 //suppress error - can't remove item on equip trigger
+
+on=@timer
+remove
+return 1
+
+
+
+
+[function gcheckrights]
+if (gfindrank>=args)
+  return 1
+else
+  src.redmessage("Na to nemas pravo.")
+  return 0
+endif
+
+
+
+[function master_section] // y,index,rank,text
+if (grank>=argv(2))
+ texta(<tag(sloupec_x[1])>+<d_def_odsazeni>,argv(0),955,<argv(3)>)//ban
+ button(<tag(sloupec_x[0])>,argv(0),4005,4007,1,0,argv(1))
+ return <eval argv(0)+d_def_radek_vyska>
+endif
+return <argv(0)>
+
+
+
+[defnames guilddialogs]
+d_def_gm_radku	10
+
+
+
+/////////////////////////////////
+//                             //
+//     Zobrazeni kandidatu     //
+//                             //
+/////////////////////////////////
+
+[DIALOG d_g_candidates]
+100,100  
+gfindrank
+argo.tag(sirka,300)
+argo.tag(vyska,120)
+argo.tag(vyska,<eval ((2+d_def_gm_radku)*<d_def_radek_vyska>)+(4*<d_def_skvira>)+(2*<d_def_okraj>)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+if (grank>2)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,29,190)
+  argo.dialog_pozadi(<argo.tag(nexty)>,<d_def_gm_radku>,29,190)
+else
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,29)
+  argo.dialog_pozadi(<argo.tag(nexty)>,<d_def_gm_radku>,29)
+endif
+
+argo.dialog_zpruhledni
+argo.texta(<argo.dialog_textpos(0,0)>,2301,Kandidatu: <friends.getcount>)
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)
+argo.texta(<argo.dialog_textpos(1,1)>,2301,Jmeno kandidata)
+argo.texta(<argo.dialog_textpos(1,0,1)>,2301,Fire)
+if (grank>2)
+  argo.texta(<argo.dialog_textpos(1,2,1)>,2301,Prijmout)
+endif
+
+arg(imax,<friends.getcount>)
+arg(ipage,0)
+arg(index,0)
+while (index<imax)
+  if !(index%d_def_gm_radku)
+    arg(ipage,#+1)
+    argo.page(<ipage>)
+    arg(ypos,<argo.tag(obj_y[2])>)
+    if (index)
+      argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,0,<ipage>-1) // prev
+    endif
+    if (imax>(index+d_def_gm_radku))
+      argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[4])>-23,0fc,0fd,0,<ipage>+1) // next
+    endif
+  endif
+
+  // Radio,(ix,iy,iGumpId1,iGumpid2,iStartingState,iButtonId)
+  arg(thatplayer,<friends(<index>)>)
+  if(thatplayer.isplayer)
+    argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,(<index>*2)+100) // vyhodit
+    if (grank>2)
+      argo.button(<argo.tag(sloupec_x[2])>,ypos,4005,4007,1,0,(<index>*2)+101) // prijmout
+    endif
+    argo.textA(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,2301,"<arg(thatplayer).name>")
+  else
+    friends(remove,<thatplayer>)
+    arg(imax,#-1)
+  endif
+
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+endwhile
+
+
+
+[DIALOG d_g_candidates BUTTON]
+on=0
+dialog(d_guild_menu)
+// on=1
+// dialog(d_g_candidates],(<argo.tag(firsti)>-<argo.tag(radku)>))
+// on=2
+// dialog(d_g_candidates],(<argo.tag(firsti)>+<argo.tag(radku)>))
+
+on=@anybutton
+arg(radek,<eval (argn-100)/2>)
+arg(thatplayer,<friends(<arg(radek)>)>)
+arg(button,<eval((argn-100)%2)>)
+// src.smsg("radek <radek> clovek <arg(thatplayer).name> button <button>")
+
+// tady nekde bude mozna chybicka
+if (arg(button))&&(srcismaster)
+  arg(thatplayer).joinasmember // prijeti za clena
+  dialog(d_g_candidates)
+elseif !(arg(button))
+  potvrdit("finduid(<uid>).srcresign(<arg(thatplayer)>)","Opravdu chces <arg(thatplayer).name> vyhodit z guildy?")
+  // arg(thatplayer).resign // vyhozeni, puvodni kod
+endif
+
+
+
+/////////////////////////////
+//                         //
+//     Zobrazeni clenu     //
+//                         //
+/////////////////////////////
+
+[DIALOG d_g_members]
+100,100  
+gfindrank(<src>)
+argo.tag(sirka,300)
+argo.tag(vyska,120)
+argo.tag(vyska,<eval ((2+d_def_gm_radku)*<d_def_radek_vyska>)+(4*<d_def_skvira>)+(2*<d_def_okraj>)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+if (grank>2)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,19,200)
+  argo.dialog_pozadi(<argo.tag(nexty)>,<d_def_gm_radku>,19,200)
+else
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,19)
+  argo.dialog_pozadi(<argo.tag(nexty)>,<d_def_gm_radku>,19)
+endif
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,Clenu: <coowners.getcount>)
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)
+argo.texta(<argo.dialog_textpos(1,0,1)>,2301,gm)
+argo.texta(<argo.dialog_textpos(1,1)>,2301,Jmeno clena)
+if (grank>2)
+  argo.texta(<argo.dialog_textpos(1,2,1)>,2301,vyhodit)
+endif
+arg(imax,<coowners.getcount>)
+arg(ipage,0)
+arg(index,0)
+
+while (index<imax)
+  if !(index%d_def_gm_radku)
+    arg(ipage,#+1)
+    argo.page(<ipage>)
+    arg(ypos,<argo.tag(obj_y[2])>)
+    if (index)
+      argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,0,<ipage>-1) // prev
+    endif
+    if (imax>(index+d_def_gm_radku))
+      argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[4])>-23,0fc,0fd,0,<ipage>+1) // next
+    endif
+  endif
+
+  // Radio,(ix,iy,iGumpId1,iGumpid2,iStartingState,iButtonId)
+  arg(thatplayer,<coowners(<index>)>)
+
+  if(thatplayer.isplayer)
+    if (hval(arg(thatplayer))==hval(srcloyalto))
+      argo.gumppic(<argo.tag(sloupec_x[0])>,ypos,211)
+    else
+      argo.button(<argo.tag(sloupec_x[0])>,ypos,210,211,1,0,(<index>*2)+100)
+    endif
+    if (grank>2) // tlacitko Vyhodit
+      argo.button(<argo.tag(sloupec_x[2])>,ypos,4005,4007,1,0,(<index>*2)+101)
+    endif
+    argo.textA(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,ypos,2301,"<arg(thatplayer).name>")  
+  else
+    coowners(remove,<thatplayer>)
+    arg(imax,#-1)
+  endif
+
+  arg(ypos,#+<d_def_radek_vyska>)
+  arg(index,#+1)
+endwhile
+
+
+
+[DIALOG d_g_members BUTTON]
+on=0
+dialog(d_guild_menu)
+// on=1
+// dialog(d_g_members],(<argo.tag(firsti)>-<argo.tag(radku)>))
+// on=2
+// dialog(d_g_members],(<argo.tag(firsti)>+<argo.tag(radku)>))
+
+on=@anybutton
+arg(radek,<eval (argn-100)/2>)
+arg(thatplayer,<coowners(<arg(radek)>)>)
+arg(button,<eval((argn-100)%2)>)
+// src.smsg("radek <radek> clovek <arg(thatplayer).name> button <button>")
+
+if (arg(button))&&(gfindrank(<src>)>2)
+  potvrdit("finduid(<uid>).srcresign(<arg(thatplayer)>)","Opravdu chces <arg(thatplayer).name> vyhodit z guildy?")
+elseif !(arg(button))
+  // src.findid(i_memory_guild).tag.loyal=<arg(thatplayer)>//loyalty
+  dialog(d_g_members)
+endif
+
+[comment]
+Verejnost: Seznam clenu a kdo je GM
+Kandidat: Seznam kandidatu, vzdat se clenstvi,zapnuti vypnuti zkratky za jmenem
+Clen: pridat kandidata, volba GM
+Master: schvaleni kandidata, vyhazovani kandidatu, clenu, jmeno a zkratka guildy
+
+future:
+Verejnost: seznam valek a hrozeb, seznam spojenectvi
+master:pridelovani titulu, vyhlasovani valek a spojenectvi
+
+//AtWar,				CSCRIPTPROP_ARG1, "List of groups we are at war with" )
+//Bans,				CSCRIPTPROP_ARG1, "List of those banned from this group" )
+//Candidates,		CSCRIPTPROP_ARG1, "List of candidates to the group")
+//Charter,			CSCRIPTPROP_ARG1, "Get/Set the line sof the charter")
+//ElectMaster,		CSCRIPTPROP_NARGS, "Check the guild for consistancy and votes for master")
+//Members,			CSCRIPTPROP_ARG1, "Member of the group" )
+//SrcAbbrevStatus,	CSCRIPTPROP_RETVAL, "SRC have abbrev on?")
+//SrcApplyToJoin,	CSCRIPTPROP_NARGS, "Applies to join")
+//SrcIsMaster,		CSCRIPTPROP_RETVAL|CSCRIPTPROP_READO, "Src is the master?")
+//SrcIsMember,		CSCRIPTPROP_RETVAL|CSCRIPTPROP_READO, "Src has ref memory of membership to this guild")
+//SrcJoinAsMember,	CSCRIPTPROP_NARGS, "Add as member directly")
+//SrcLoyalTo,		CSCRIPTPROP_RETVAL, "Who is SRC loyal to?")
+//SrcResign,			CSCRIPTPROP_NARGS, "Resign from this guild.")
+//TheyDeclared,		CSCRIPTPROP_ARG1, "List of groups that have delcared war on us" )
+//WeDeclared,		CSCRIPTPROP_ARG1, "List of groups we have declared war on" )
+
+//tag.abbrev
+
+
+
+[function candidates]
+arg(string," ")
+arg(i,0)
+while (i<friends.getcount)
+  arg(string,"<arg(string)><friends(<i>)>,")
+  arg(i,#+1)
+endwhile
+return <arg(string)>
+
+
+
+[function Members]
+arg(string," ")
+arg(i,0)
+while (i<CoOwners.getcount)
+  arg(string,"<arg(string)><CoOwners(<i>)>,")
+  arg(i,#+1)
+endwhile
+return <arg(string)>
+
+
+
+[function SrcResign] // default
+if (argvcount)
+  arg(theplayer,<finduid(args)>)
+else
+  arg(theplayer,<src>)
+endif
+Friends(remove,<arg(theplayer)>)
+CoOwners(remove,<arg(theplayer)>)
+refreshmember(<arg(theplayer)>)
+refreshmaster
+
+
+
+[function SrcLoyalTo]
+if (argvcount)
+  arg(theplayer,<finduid(args)>)
+else
+  arg(theplayer,<src>)
+endif
+if(<finduid(<arg(theplayer)>).findid(i_memory_guild).link>)
+  if (<finduid(<arg(theplayer)>).findid(i_memory_guild).link>==<uid>)
+    if (<finduid(<arg(theplayer)>).findid(i_memory_guild).tag(loyal)>)
+      if (srcismember(<finduid(<arg(theplayer)>).findid(i_memory_guild).tag(loyal)>))//master still member of guild
+        return <finduid(<arg(theplayer)>).findid(i_memory_guild).tag(loyal)>
+      endif
+    endif
+  endif
+endif
+return <coowners(0)> //the eldest member
+
+
+
+[function AbbrevStatus]
+if (argvcount)
+  arg(guildmemory,<findid(i_memory_guild)>)
+  if (arg(guildmemory))
+    arg(guildmemory).tag(abbrev,<argv(0)>)
+  endif
+else
+  arg(guildmemory,<findid(i_memory_guild)>)
+  if (arg(guildmemory))
+    return(<arg(guildmemory).tag(abbrev)>)
+  endif
+endif
+return 0
+
+
+
+[function refreshmaster]
+arg(i,0)
+array_clear(tag.guildmasters)
+arg(mostvoices,0)
+while (i<coowners.getcount)
+  arg(theplayer,<coowners(<i>)>)
+  arg(thismaster,<SrcLoyalTo(<arg(theplayer)>)>)
+  if (hval(thismaster)==hval(tag.master))
+    arg(mostvoices,<i>)
+  endif
+  arg(masterpos,<array_find(tag.guildmasters,<arg(thismaster)>)>)
+  if (arg(masterpos)==-1)
+    arg(masterpos,<array_add(tag.guildmasters,<arg(thismaster)>)>)
+  endif
+  arg(master_voices[arg(masterpos)],<eval arg(master_voices[arg(masterpos)])>+1)
+  arg(i,#+1)
+endwhile
+arg(i,0)
+
+while (i<coowners.getcount)
+ if (arg(master_voices[mostvoices])<arg(master_voices[i]))
+  arg(mostvoices,<i>)
+ endif
+ arg(i,#+1)
+endwhile
+tag.master=<tag(guildmasters[mostvoices])>
+array_clear(tag.guildmasters)
+return <tag.master>
+
+
+
+[function refreshmember]//remakes the guild memory item.
+if (argvcount)
+  arg(theplayer,<finduid(args)>)
+else
+  arg(theplayer,<src>)
+endif
+if (SrcIsCandidate(<arg(theplayer)>))||(SrcIsMember(<arg(theplayer)>))
+  if (arg(theplayer).findid(i_memory_guild))
+    arg(imemory,<arg(theplayer).findid(i_memory_guild)>)
+  else
+    arg(theplayer).newitemsafe(i_memory_guild)
+    arg(theplayer).equip(lastnew)
+    arg(imemory,<lastnew>)
+  endif
+  arg(imemory).link=<uid>
+  arg(imemory).name=<name>
+  if !(safe arg(imemory).tag.abbrev)
+    arg(imemory).tag.abbrev=0
+  endif
+  if !(safe arg(imemory).tag.loyal)
+    arg(imemory).tag.loyal=<tag.master>
+  endif
+elseif (arg(theplayer).findid(i_memory_guild))//not in this guild, but has guild memory
+  if (arg(theplayer).findid(i_memory_guild).link==uid)//has item of this guild, but should not have
+    arg(theplayer).findid(i_memory_guild).remove
+  endif
+endif
+
+
+
+[function SrcIsMaster]
+if (src.isgm)
+  return 1
+endif
+if(tag(master)) 
+  if(<tag(master)>==<src>)
+    return 1
+  endif
+endif
+return 0
+
+
+
+[itemdef i_memory_guild]//tag.loyal - guildmaster, tag.abbrev - abbreviation
+id=i_memory
+type=t_eq_script
+name=Guild memory
+
+
+
+[function toggleabbrev]
+if (findid(i_memory_guild).tag.abbrev)
+ findid(i_memory_guild).tag(abbrev,0)
+else
+ findid(i_memory_guild).tag(abbrev,1)
+endif
+
+
+
+[function MasterGenderTitle]
+return"<tag(master).sex(Master,Mistress)>"
+
+
+
+[function Mastername]
+return"<tag(master).name>"
+
+
+
+[itemdef i_guild_target]
+id=i_memory
+type=t_eq_script
+name=Guildovni zamerovac pro ruzne akce
+
+on=@timer
+remove
+return 1
+
+on=@equip
+if(more1==8)
+ target("Zamer osobu")
+endif
+
+on=@targon_item
+if(more1==8)
+ target("Zamer osobu")
+endif
+
+on=@targon_ground
+if(more1==8)
+ target("Zamer osobu")
+endif
+
+on=@targon_char
+if (more1==8) // predani guildmasterovstvi
+  //if (<src.targ.findid(i_memory_guild).link>==<link>)
+  if (link.srcismember(<src.targ>))
+    link.tag(master,<src.targ>)
+    src.sysmessage("Guildmasterovstvi predano")
+  else
+    src.sysmessage("Toto neni clen guildy")
+  endif
+  //if(src.targ.MYSrcIsMember(<link>))
+  // link.tag(master,<src.targ>)
+  // src.sysmessage("Guildmasterovstvi predano")
+  //else
+  // src.sysmessage("Ta osoba neni clenem.")
+  //endif 
+  remove
+  return 1
+endif 
+
+
+
+[function guildMembers]
+if (findid(i_memory_guild))
+  if (findid(i_memory_guild).link.IsCoowner(<src>))
+    dialog(d_guild_showGuildMembers)
+  else
+    src.redMessage("Jako adept nemas na tento prikaz narok.")
+  endif
+else
+  src.redMessage("Nejsi clenem zadne guildy.")
+endif
+
+
+
+[dialog d_guild_showGuildMembers]
+argo.SetLocation=55,5
+argo.tag(thisPage,<eval argv(0)>)
+argo.tag(radku,20)
+argo.tag(sirka,661)
+argo.tag(vyska,430)
+argo.page(0)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,200,180,250)
+argo.dialog_zpruhledni
+
+argo.dialog_textpos(0,0)
+argo.texta(30,<lastypos>,42," Seznam on-line clenu guildy")
+argo.button(<lastxpos>+601,<lastypos>-3,0fab,0fad,1,0,1)		//help
+argo.dialog_textpos(1,0)
+arg(guildStone,<findid(i_memory_guild).link>)
+arg(members,<arg(guildStone).CoOwners.getcount>)
+arg(adepts,<arg(guildStone).Friends.getcount>)
+arg(i,0)	//checked members
+arg(j,0)	//checked adepts
+arg(rows,0)
+arg(secondColumn,<eval(<argo.tag(sloupec_x[1])>)>+<d_def_odsazeni>)
+arg(thirdColumn,<eval(<argo.tag(sloupec_x[2])>)>+<d_def_odsazeni>)
+
+if (<eval argv(0)> > 0)
+  argo.button(270,<lastypos>+8,0983,0984,1,0,<eval argv(0)>+9)  //previous page
+endif
+
+while (<arg(i)> < <arg(members)>) && (<arg(rows)> < <eval (<argv(0)>+1)*<argo.tag(radku)>>)
+  arg(thisPlayer,<arg(guildStone).CoOwners(<i>)>)
+  arg(isConnected,<eval <arg(thisPlayer).account.privflags>&priv_Connected>)
+  if (<arg(isConnected)>)
+    if (<eval arg(thisPlayer).tag(chaton)>&chflag_guild)	//jsem lognutej na guildchat
+      if (<arg(thisPlayer)> == <arg(thisPlayer).account.lastCharUID>)
+        if (<arg(rows)> >= <eval argv(0)>*<argo.tag(radku)>)
+          arg(thisYPos,<lastypos>+(<arg(rows)>-(<eval argv(0)>*<argo.tag(radku)>))*<d_def_radek_vyska>)
+          argo.texta(<lastxpos>,<thisYPos>,<d_def_readcolor>,"<arg(thisPlayer).name>")
+          argo.texta(<secondColumn>,<thisYPos>,<d_def_readcolor>,"<arg(thisPlayer).p>")
+          argo.texta(<thirdColumn>,<thisYPos>,<d_def_readcolor>,"<arg(thisPlayer).region.name>")
+        endif
+        arg(rows,#+1)
+      endif
+    endif
+  endif
+  arg(i,#+1)
+endwhile
+
+while (<arg(j)> < <arg(adepts)>) && (<arg(rows)> < <eval (<argv(0)>+1)*<argo.tag(radku)>>)
+  arg(thisPlayer,<arg(guildStone).Friends(<j>)>)
+  arg(isConnected,<eval <arg(thisPlayer).account.privflags>&priv_Connected>)
+  if (<arg(isConnected)>)
+    if (<eval arg(thisPlayer).tag(chaton)>&chflag_guild)	//jsem lognutej na guildchat
+      if (<arg(thisPlayer)> == <arg(thisPlayer).account.lastCharUID>)
+        if (<arg(rows)> >= <eval argv(0)>*<argo.tag(radku)>)
+          arg(thisYPos,<lastypos>+(<arg(rows)>-(<eval argv(0)>*<argo.tag(radku)>))*<d_def_radek_vyska>)
+          argo.texta(<lastxpos>,<thisYPos>,<d_def_readcolor>,"<arg(thisPlayer).name> [adept]")
+          argo.texta(<secondColumn>,<thisYPos>,<d_def_readcolor>,"<arg(thisPlayer).p>")
+          argo.texta(<thirdColumn>,<thisYPos>,<d_def_readcolor>,"<arg(thisPlayer).region.name>")
+        endif
+        arg(rows,#+1)
+      endif
+    endif
+  endif
+  arg(j,#+1)
+endwhile
+if (<arg(rows)> == <argo.tag(radku)>)
+  argo.button(270,<lastypos>+19*<d_def_radek_vyska>,0985,0986,1,0,<eval argv(0)>+11)  //next page
+endif
+
+
+
+[dialog d_guild_showGuildMembers button]
+on=0
+//cancel
+
+on=1 //help
+dialog(d_guild_showGuildMembers,<argo.tag(thisPage)>)
+dialog(d_guild_showGuildMembers_help)
+
+on=@anyButton
+dialog(d_guild_showGuildMembers,<eval <argn>-10>)
+
+
+
+[dialog d_guild_showGuildMembers_help]
+argo.setText(1," Tento seznam zobrazuje pouze cleny guildy, kteri jsou aktualne pripojeni do hry a zaroven maji zapnuty guild chat.<br>Guild chat zapnete v chat dialogu, ktery vyvolate prikazem .chat. Mate-li tedy nejaky zajem zabranit ostatnim clenum guildy, aby vas v seznamu on-line clenu videli, staci se z guild chatu odhlasit.")
+argo.f_dialog_HelpCreator("HELP - Seznam on-line clenu guildy")

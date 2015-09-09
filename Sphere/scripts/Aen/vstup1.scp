@@ -1,0 +1,893 @@
+// listek na spodine rapiku u dvoudeloznich rostlin
+// &&(<tag(dedecek).tag(jsemstalenazivu)>!=1) #a jestlize boss je mrtvej tak je tim er 30
+
+[function f_Cardolanske_pohrebiste_overenielementuamista]
+  IF (<tag(knihovna).tag(rakev1).P_X>><tag(kdo).P_X>-5)&&(<tag(knihovna).tag(rakev1).P_X><<tag(kdo).P_X>+7)&&(<tag(knihovna).tag(rakev1).P_Y>><tag(kdo).P_Y>-5)&&(<tag(knihovna).tag(rakev1).P_Y><<tag(kdo).P_Y>+6)
+    IF(<tag(knihovna).tag(podstavecohne).color>!=0)&&(<tag(knihovna).tag(podstavecvzduchu).color>!=0)&&(<tag(knihovna).tag(podstavecvody).color>!=0)&&(<tag(knihovna).tag(podstaveczeme).color>!=0)
+      tag(knihovna).tag(podstavecohne).tag(obsazen,0)
+      tag(knihovna).tag(podstavecohne).tag(element).REMOVE
+      tag(knihovna).tag(podstavecohne).tag(element,0) 
+      tag(knihovna).tag(podstavecohne).color=0
+      tag(knihovna).tag(podstavecvzduchu).tag(obsazen,0) 
+      tag(knihovna).tag(podstavecvzduchu).tag(element).REMOVE
+      tag(knihovna).tag(podstavecvzduchu).tag(element,0) 
+      tag(knihovna).tag(podstavecvzduchu).color=0
+      tag(knihovna).tag(podstavecvody).tag(obsazen,0)
+      tag(knihovna).tag(podstavecvody).tag(element).REMOVE
+      tag(knihovna).tag(podstavecvody).tag(element,0) 
+      tag(knihovna).tag(podstavecvody).color=0
+      tag(knihovna).tag(podstaveczeme).tag(obsazen,0)
+      tag(knihovna).tag(podstaveczeme).tag(element).REMOVE
+      tag(knihovna).tag(podstaveczeme).tag(element,0) 
+      tag(knihovna).tag(podstaveczeme).color=0
+      IF (<tag(knihovna).tag(pomocnejtimerprorakev).More2>==0)
+        tag(kdo).tag(CardolanskePknihovna,<tag(knihovna)>)
+        tag(kdo).f_Cardolanske_pohrebiste_otevrenarakev
+      ELSE
+        tag(kdo).sysmessage("Nic se nedeje.")
+      ENDIF
+      REMOVE
+    ELSE
+      tag(kdo).sysmessage("Nic se nedeje.")
+    ENDIF 
+  ELSE
+    tag(kdo).sysmessage("Nic se nedeje.")
+  ENDIF
+  
+
+[DIALOG d_Cardolanske_pohrebiste_pergamen]
+page 0
+resizepic 0 0 9380 280 360 
+button 230 340 00000845 00000846 1 0 901
+text 80 30 00156 11
+text 30 63 00156 1
+text 30 90 00156 2
+text 30 117 00156 3
+text 30 144 00156 4
+text 30 171 00156 5
+text 30 198 00156 6
+text 30 225 00156 7
+text 30 252 00156 8
+text 30 279 00156 9
+textentry 30 306 600 20 00156 1 0
+text 110 306 00156 10
+
+[DIALOG d_Cardolanske_pohrebiste_pergamen TEXT]
+
+...
+O velky predku,
+ty nas stary dedku,
+volam te tvym jmenem,
+vstavej at se sejdem, 
+prerus vecny spanek,
+zakus cerstvy vanek,
+odhrn zemi nad sebou,
+nasaklou vodou destovou,
+ohen rozproudi tvou krev,
+, procitni hned ted!
+Stare zaklidnadlo
+
+[DIALOG d_Cardolanske_pohrebiste_pergamen BUTTON]
+ONBUTTON=901 // The apply button
+SRC.SAY("O veliky predku, ty nas stary dedku, volam te tvym jmenem, vstavej, at se sejdem, prerus vecny spanek, zakus cerstvy vanek, odhrn zemi nad sebou, nasaklou vodou destovou, ohen rozproudi tvou krev, <argtxt(1)>, procitni hned ted!")
+SOUND=586
+IF (<STRCMP(<SRC.tag(CardolanskePpergamen).tag(jmeno)>,<argtxt(1)>)>==0) 
+  SRC.tag(CardolanskePpergamen).f_Cardolanske_pohrebiste_overenielementuamista
+ENDIF
+RETURN 0 // Yes, you can have RETURNs in a dialog
+
+[ITEMDEF i_Cardolanske_pohrebiste_pergamen]
+Name=pergamen
+ID=i_DEED
+TYPE=t_script
+
+ON=@CREATE
+  tag(pouzity,"0")  
+  tag(jmeno,"Dormile")
+  tak(kdo,"")
+ON=@userDclick
+  tag(kdo,<SRC.UID>)  
+  SRC.tag(CardolanskePpergamen,<UID>)
+  SRC.DIALOG d_Cardolanske_pohrebiste_pergamen
+  
+  RETURN 1
+
+
+[function f_Cardolanske_pohrebiste_zavrenarakev]
+  
+  tag(mag).NEWITEM=01c63
+  tag(mag).ACT.attr=010
+  tag(mag).ACT.color=0438
+  tag(mag).ACT.P=<tag(knihovnicka).tag(umistenirakve)>
+  tag(mag).tag(knihovnicka).tag(rakev1).REMOVE
+  tag(mag).tag(knihovnicka).tag(rakev1,<tag(mag).ACT.UID>)  
+
+  tag(mag).NEWITEM=01c62
+  tag(mag).ACT.attr=010
+  tag(mag).ACT.color=0438
+  tag(mag).ACT.P=<tag(knihovnicka).tag(umistenirakve)>
+  tag(mag).tag(knihovnicka).tag(rakev2).REMOVE
+  tag(mag).tag(knihovnicka).tag(rakev2,<tag(mag).ACT.UID>)  
+  tag(mag).ACT.MOVE 0 1
+
+  tag(mag).NEWITEM=01c64
+  tag(mag).ACT.attr=010
+  tag(mag).ACT.color=0438
+  tag(mag).ACT.P=<tag(knihovnicka).tag(umistenirakve)>
+  tag(mag).tag(knihovnicka).tag(rakev3).REMOVE
+  tag(mag).tag(knihovnicka).tag(rakev3,<tag(mag).ACT.UID>)  
+  tag(mag).ACT.MOVE 1 0
+
+  tag(mag).NEWITEM=01c61
+  tag(mag).ACT.attr=010
+  tag(mag).ACT.color=0438
+  tag(mag).ACT.P=<tag(knihovnicka).tag(umistenirakve)>
+  tag(mag).tag(knihovnicka).tag(rakev4).REMOVE
+  tag(mag).tag(knihovnicka).tag(rakev4,<tag(mag).ACT.UID>)  
+  tag(mag).ACT.MOVE 1 1
+
+  tag(mag).NEWITEM=01c65
+  tag(mag).ACT.attr=010
+  tag(mag).ACT.color=0438
+  tag(mag).ACT.P=<tag(knihovnicka).tag(umistenirakve)>
+  tag(mag).tag(knihovnicka).tag(rakev5).REMOVE
+  tag(mag).tag(knihovnicka).tag(rakev5,<tag(mag).ACT.UID>)  
+  tag(mag).ACT.MOVE 2 0
+
+  tag(mag).NEWITEM=01c60
+  tag(mag).ACT.attr=010
+  tag(mag).ACT.color=0438
+  tag(mag).ACT.P=<tag(knihovnicka).tag(umistenirakve)>
+  tag(mag).tag(knihovnicka).tag(rakev6).REMOVE
+  tag(mag).tag(knihovnicka).tag(rakev6,<tag(mag).ACT.UID>)  
+  tag(mag).ACT.MOVE 2 1
+  
+  tag(mag).tag(knihovnicka).tag(rakev7).REMOVE
+  tag(mag).tag(knihovnicka).tag(rakev7,"0")  
+  
+  tag(mag).tag(knihovnicka).tag(rakev8).REMOVE
+  tag(mag).tag(knihovnicka).tag(rakev8,"0")  
+
+
+[function f_Cardolanske_pohrebiste_otevrenarakev]
+  SOUND=239
+
+  SRC.NEWITEM=01c73
+  SRC.ACT.attr=010
+  SRC.ACT.color=0438
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.tag(CardolanskePknihovna).tag(rakev1).REMOVE
+  SRC.tag(CardolanskePknihovna).tag(rakev1,<SRC.ACT.UID>)
+
+  SRC.NEWITEM=01c72
+  SRC.ACT.attr=010
+  SRC.ACT.color=0438
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.tag(CardolanskePknihovna).tag(rakev2).REMOVE
+  SRC.tag(CardolanskePknihovna).tag(rakev2,<SRC.ACT.UID>)
+  SRC.ACT.MOVE 0 1
+
+  SRC.NEWITEM=01c74
+  SRC.ACT.attr=010
+  SRC.ACT.color=0438
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.tag(CardolanskePknihovna).tag(rakev3).REMOVE
+  SRC.tag(CardolanskePknihovna).tag(rakev3,<SRC.ACT.UID>)
+  SRC.ACT.MOVE 1 0
+
+  SRC.NEWITEM=01c71
+  SRC.ACT.attr=010
+  SRC.ACT.color=0438
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.tag(CardolanskePknihovna).tag(rakev4).REMOVE
+  SRC.tag(CardolanskePknihovna).tag(rakev4,<SRC.ACT.UID>)
+  SRC.ACT.MOVE 1 1
+
+  SRC.NEWITEM=01c75
+  SRC.ACT.attr=010
+  SRC.ACT.color=0438
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.tag(CardolanskePknihovna).tag(rakev5).REMOVE
+  SRC.tag(CardolanskePknihovna).tag(rakev5,<SRC.ACT.UID>)
+  SRC.ACT.MOVE 2 0
+
+  SRC.NEWITEM=01c70
+  SRC.ACT.attr=010
+  SRC.ACT.color=0438
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.tag(CardolanskePknihovna).tag(rakev6).REMOVE
+  SRC.tag(CardolanskePknihovna).tag(rakev6,<SRC.ACT.UID>)
+  SRC.ACT.MOVE 2 1
+
+  SRC.NEWITEM=01c76
+  SRC.ACT.attr=010
+  SRC.ACT.color=0438
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.tag(CardolanskePknihovna).tag(rakev7,<SRC.ACT.UID>)
+  SRC.ACT.MOVE 3 0
+
+  SRC.NEWITEM=01c6f
+  SRC.ACT.attr=010
+  SRC.ACT.color=0438
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.tag(CardolanskePknihovna).tag(rakev8,<SRC.ACT.UID>)
+  SRC.ACT.MOVE 3 1  
+
+  SRC.tag(CardolanskePknihovna).tag(pomocnejtimerprorakev).more2=1
+  SRC.tag(CardolanskePknihovna).tag(pomocnejtimerprorakev).Timer=30
+
+  src.newnpc(c_liche_king_undead)
+  SRC.ACT.P=<SRC.tag(CardolanskePknihovna).tag(umistenirakve)>
+  SRC.ACT.MOVE 1 2  
+  SRC.ACT.NAME=Dedecek
+  SRC.ACT.SAY("Zdravim vas, damy a panove.") 
+  SOUND=1149
+  SRC.ACT.tag(jsemstalenazivu,"1")
+  SRC.tag(CardolanskePknihovna).tag(pomocnejtimerprorakev).tag(dedecek,<SRC.ACT.UID>)
+  src.act.newitem i_Cardolanske_pohrebiste_klic12
+  src.act.act.more2=<SRC.tag(CardolanskePknihovna).tag(dvere)>
+  src.act.bounce <src.act.act>
+
+[ITEMDEF i_Cardolanske_pohrebiste_pomocnejtimerprorakev]
+Name=pomocnejtimerprorakev
+ID=01827
+
+ON=@CREATE
+  ATTR=090
+  TIMER=-1
+  MORE2=0
+  tag(mag,"0")
+
+ON=@TIMER
+  IF (<MORE2>==1)
+    f_Cardolanske_pohrebiste_zavrenarakev
+    MORE2=0
+    TIMER=120 
+  ELSE    
+    TIMER=180
+    IF (<tag(mag).tag(knihovnicka).tag(dvere).tag(zamknute)>==0) 
+      tag(mag).tag(knihovnicka).tag(dvere).tag(zamknute,"1")
+      tag(mag).tag(knihovnicka).tag(dvere).type=t_door_locked
+    ENDIF  
+  ENDIF
+  RETURN 1
+
+[ITEMDEF i_Cardolanske_pohrebiste_knihovnicka]
+Name=knihovnicka
+ID=0a98
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=knihovnicka s pergamenem
+
+ON=@CREATE
+  ATTR=010
+  MORE2=15
+  TIMER=-1
+  tag(podstavecohne,"0")  # more2 2 
+  tag(podstavecvzduchu,"0") # 3
+  tag(podstavecvody,"0")  # 4
+  tag(podstaveczeme,"0")  # 5
+  tag(umistenirakve,"0")  # 6
+  tag(rakev1,"0")
+  tag(rakev2,"0")
+  tag(rakev3,"0")
+  tag(rakev4,"0")
+  tag(rakev5,"0")
+  tag(rakev6,"0")
+  tag(rakev7,"0")
+  tag(rakev8,"0")
+  tag(pomocnejtimerprorakev,"0")
+  tag(dvere,"0")
+  
+ON=@userDCLICK
+  IF (<More2>>1)
+    IF (<more2>==15)
+      SRC.NEWITEM=i_Cardolanske_pohrebiste_pomocnejtimerprorakev
+      SRC.ACT.P=<P> 
+      SRC.ACT.MOVE 1 1
+      tag(pomocnejtimerprorakev,<SRC.ACT.UID>)
+      SRC.ACT.tag(knihovnicka,<UID>)
+      MORE2=14  
+    ENDIF 
+    IF (<more2>==14)
+      src.sysmessage("Zamer dvere.")
+      target  
+    ENDIF
+    IF (<more2>==13)
+      src.sysmessage("Zamer maga.")
+      target  
+    ENDIF
+    IF (<more2>>6)&&(<more2><13)
+      src.sysmessage("Zamer cast rakve.")
+      target
+    ENDIF
+    IF (<MORE2>==6)
+      src.sysmessage("<src.sex(Nastavil,Nastavila)> jsi umisteni rakve.")
+      tag(umistenirakve,<SRC.P>)
+      More2=5
+    ENDIF
+    IF (<MORE2>>1)&&(<MORE2><6)
+      src.sysmessage("Zamer podstavec.")
+      target  
+    ENDIF  
+  ELSE  
+    IF (<More2>==1)
+      More2=0
+      Timer=3600
+      SRC.NEWITEM=i_Cardolanske_pohrebiste_pergamen
+      SRC.act.cont(<UID>)
+      SRC.ACT.tag(knihovna,<UID>)
+    Else
+    Endif
+  ENDIF
+
+ON=@TARGON_CHAR
+  IF(<more2>==13)
+    src.sysmessage("Doufam, ze jsi zameril maga :)")
+    tag(pomocnejtimerprorakev).tag(mag,<SRC.TARG.UID>)
+    tag(pomocnejtimerprorakev).tag(mag).tag(knihovnicka,<UID>) 
+    more2=12
+  ENDIF
+
+ON=@TARGON_ITEM
+  IF (<MORE2>==14)
+    SRC.Sysmessage("Doufam, ze jsi zameril dvere :)")
+    tag(dvere,<SRC.TARG.UID>)
+    MORE2=13
+  ELSE
+    IF (<more2>>6)&&(<more2><13)
+      src.sysmessage("Doufam, ze jsi zameril spravnou cast rakve :)")
+      IF (<more2>==12)
+        tag(rakev1,<SRC.TARG.UID>) 
+      ENDIF
+      IF (<more2>==11)
+        tag(rakev2,<SRC.TARG.UID>) 
+      ENDIF
+      IF (<more2>==10)
+        tag(rakev3,<SRC.TARG.UID>) 
+      ENDIF
+      IF (<more2>==9)
+        tag(rakev4,<SRC.TARG.UID>) 
+      ENDIF
+      IF (<more2>==8)
+        tag(rakev5,<SRC.TARG.UID>) 
+      ENDIF
+      IF (<more2>==7)
+        tag(rakev6,<SRC.TARG.UID>) 
+      ENDIF
+    ELSE
+      src.sysmessage("Doufam, ze jsi zameril spravny podstavec :)")
+      IF (<more2>==2)
+        tag(podstavecohne,<SRC.TARG.UID>) 
+      ENDIF
+      IF (<more2>==3)
+        tag(podstavecvzduchu,<SRC.TARG.UID>) 
+      ENDIF
+      IF (<more2>==4)
+        tag(podstavecvody,<SRC.TARG.UID>) 
+      ENDIF
+      IF (<more2>==5)
+        tag(podstaveczeme,<SRC.TARG.UID>) 
+      ENDIF
+    ENDIF
+    MORE2=<more2>-1 
+  ENDIF
+
+ON=@TIMER
+  IF(<MORE2>==0)
+    MORE2=1
+  ENDIF
+  RETURN 1  
+
+[ITEMDEF i_Cardolanske_pohrebiste_podstavec]
+Name=podstavec
+ID=i_stairs_marble
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=podstavec pro element
+
+ON=@CREATE
+  ATTR=010
+  tag(obsazen,0)
+  tag(element,0)
+
+ON=@dropon_ground
+  SRC.sysmessage("<src.sex(Polozil,Polozila)> jsi kvadr.")
+
+ON=@Pickup_ground
+  SAY("Zvedam kvadr.")
+
+[ITEMDEF i_Cardolanske_pohrebiste_truhlickaselementem]
+Name=truhlice
+ID=i_basket_square
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=truhlicka s elementem
+
+ON=@CREATE
+  ATTR=010
+  MORE1=0 #0-ohen 1-vzduch 2-voda 3-zeme
+  MORE2=1 #4-ohen 5-vzduch 6-voda 7zeme 3-zameruj podstavec
+  TIMER=-1
+  tag(podstavec,"0")
+  
+ON=@userDCLICK
+  IF (<More2>>2)
+    IF (<MORE2>>3)&&(<MORE2><8)
+      MORE1=<more2>-4
+      more2=3
+    ENDIF    
+    IF (<MORE2>==3)
+      src.sysmessage("Zamer podstavec.")
+      more2=1
+      target
+    ENDIF
+  ELSE  
+    IF (<More2>==1)
+      More2=0
+      Timer=3600
+      SRC.NEWITEM=i_Cardolanske_pohrebiste_element
+      IF (<MORE1>==0)
+        SRC.ACT.COLOR=068b #ohen
+      ENDIF   
+      IF (<MORE1>==1)
+        SRC.ACT.COLOR=0481 //vzduch
+      ENDIF   
+      IF (<MORE1>==2)
+        SRC.ACT.COLOR=00 #voda
+      ENDIF   
+      IF (<MORE1>==3)
+        SRC.ACT.COLOR=0731 #zeme
+      ENDIF   
+      SRC.act.cont(<UID>)
+      SRC.ACT.tag(podstavec,<tag(podstavec)>) 
+    Else
+    Endif
+  ENDIF
+
+ON=@TARGON_ITEM
+  SRC.Sysmessage("Doufam, ze jsi zameril spravny podstavec :)")
+  tag(podstavec,<SRC.TARG.UID>) 
+
+ON=@TIMER
+  IF(<MORE2>==0)
+    MORE2=1
+  ENDIF
+  RETURN 1  
+
+[ITEMDEF i_Cardolanske_pohrebiste_element]
+Name=element
+ID=01869
+type=t_script
+
+ON=@dropon_ground
+  if (<p_x>==<tag(podstavec).p_x>)
+    if (<p_y>==<tag(podstavec).p_y>) 
+      if (<p_z>==<tag(podstavec).p_z>+5)
+        if(<tag(podstavec).tag(obsazen)>==1)
+          REMOVE
+        else
+          IF (<COLOR>==068b)
+            DORAND 2
+              SOUND=477
+              SOUND=837
+            ENDDO
+            tag(podstavec).color=00638 #ohen
+          ENDIF   
+          IF (<COLOR>==0481)
+            DORAND 3
+              SOUND=20
+              SOUND=21
+              SOUND=22
+            ENDDO
+            tag(podstavec).color=00640 #vzduch
+          ENDIF   
+          IF (<COLOR>==00)
+            DORAND 3
+              SOUND=16
+              SOUND=17
+              SOUND=18
+            ENDDO
+            tag(podstavec).color=00985 #voda
+          ENDIF   
+          IF (<COLOR>==0731)
+            DORAND 2
+              SOUND=544
+              SOUND=545
+            ENDDO
+            tag(podstavec).color=00441 #zeme
+          ENDIF
+          tag(podstavec).tag(obsazen,1)
+          tag(podstavec).tag(element,<UID>)
+          TIMER=3600
+        endif
+      endif
+    endif 
+  endif
+
+ON=@Pickup_ground
+  if(<tag(podstavec).tag(element)>==<UID>)
+    tag(podstavec).color=0
+    tag(podstavec).tag(obsazen,0)
+    tag(podstavec).tag(element,0)
+  endif
+
+ON=@userDCLICK
+RETURN1
+
+ON=@TIMER
+  if(<tag(podstavec).tag(obsazen)>==1)
+    if (<tag(podstavec).tag(element)>==<UID>)
+      tag(podstavec).color=0
+      tag(podstavec).tag(obsazen,0)
+      tag(podstavec).tag(element,0)
+    endif 
+  endif
+
+
+[ITEMDEF i_Cardolanske_pohrebiste_truhlickaskrystalem]
+Name=truhlice
+ID=i_basket_square
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=trulicka s krystalem
+
+ON=@CREATE
+  ATTR=010
+  MORE1=1
+  MORE2=1
+  TIMER=-1
+  
+ON=@userDCLICK
+  IF (<More2>==1)
+    More2=0
+    Timer=3600
+    SRC.NEWITEM=i_Cardolanske_pohrebiste_krystal12
+    SRC.act.cont(<UID>)
+  Else
+  Endif
+
+ON=@TIMER
+  IF(<MORE2>==0)
+    MORE2=1
+  ENDIF
+  RETURN 1  
+
+[ITEMDEF i_Cardolanske_pohrebiste_bazensrybou]
+Name=Fontana
+ID=0173e
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=fontana s rybkou
+
+ON=@CREATE
+  ATTR=010 
+  MORE1=1
+  MORE2=1
+  TIMER=-1
+  
+ON=@userDCLICK
+  if (<more2>==1)
+    more2=0
+    timer=360
+    SRC.Sysmessage("Podarilo se ti chytit malou rybku.") 
+    SRC.NEWITEM=i_Cardolanske_pohrebiste_rybazfontany
+    SRC.ACT.Bounce
+  else
+    SRC.sysmessage("Malem jsi <src.sex(chytil,chytila)> malou rybku, ale vyklouzla ti z ruky.")
+  endif
+
+ON=@TIMER
+  IF(<MORE2>==0)
+    MORE2=1
+  ENDIF
+  RETURN 1  
+
+[ITEMDEF i_Cardolanske_pohrebiste_rybazfontany]
+Name=Ryba
+ID=i_chicken_leg
+
+ON=@CREATE
+ Color=0615
+
+[ITEMDEF i_Cardolanske_pohrebiste_krystal12]
+Name=krystal
+ID=i_crystal_red
+Type=t_script
+
+ON=@CREATE
+ Color=00989
+
+
+on=@DROPON_GROUND
+src.sysmessage("Ups, rozpadl se na prach...")
+remove
+return 0
+
+ON=@userDCLICK
+RETURN 1
+
+
+[ITEMDEF i_Cardolanske_pohrebiste_klic12]
+Name=Klic
+ID=i_key_gold
+
+ON=@CREATE
+  MORE2=0
+
+ON=@userDclick
+  IF (<MORE2>!=0)
+    SRC.SYSMESSAGE("Zamer dvere.")
+    TARGET
+  ELSE
+    SRC.Sysmessage("Tento klic nepatri k zadnym dverim.")
+    RETURN 1
+  ENDIF
+    
+
+on=@DROPON_GROUND
+src.sysmessage("Ups, rozpadl se na prach...")
+remove
+return 0
+
+ON=@TARGON_ITEM
+  IF (<SRC.TARG.UID>==<MORE2>)
+    SRC.Sysmessage("<src.sex(Odemkl,Odemkla)> jsi dvere.")
+    SRC.TARG.tag(zamknute,"0")
+    SRC.TARG.TYPE=t_door
+    REMOVE
+    RETURN 1
+  ELSE
+    SRC.SYSMESSAGE("Tohle timto klicem neodemknes.")
+    SRC.SYSMESSAGE("<SRC.TARG.UID>")
+    RETURN 1
+  ENDIF 
+
+[ITEMDEF i_Cardolanske_pohrebiste_nastavenikockyamagaagaty]
+Name=dlazdice12
+ID=01827
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=nastaveni kocky,maga,gate
+
+ON=@CREATE
+  MORE2=0
+  ATTR=04090 //decay, nevermove, invis
+  TIMER=500
+  
+ON=@userDclick
+  DOSWITCH <MORE2>
+    SRC.SYSMESSAGE("Zamer maga.") 
+    SRC.SYSMESSAGE("Zamer kocku.")
+    SRC.SYSMESSAGE("Zamer dvere.")
+    SRC.SYSMESSAGE("Zamer gatu.")
+  ENDDO
+  TARGET
+ RETURN 1
+
+ON=@TARGON_ITEM
+  IF (<more2>==2)
+    SRC.Sysmessage("Doufam, ze jsi zameril dvere.")
+    tag(kocka).tag(dvere,<SRC.TARG.UID>)
+    tag(dvere,<SRC.TARG.UID>)
+    MORE2=3
+  ELSE
+    SRC.Sysmessage("Doufam, ze jsi zameril gatu.")
+    tag(mag).tag(gate,<SRC.TARG.UID>)
+    SRC.TARG.tag(dvere,<tag(dvere)>) 
+    tag(dvere,"")
+    tag(kocka,"")
+    tag(mag,"") 
+    REMOVE
+  ENDIF
+  RETURN 1
+      
+ON=@TARGON_CHAR
+  IF(<MORE2>==0)
+    SRC.Sysmessage("Doufam, ze jsi zameril maga.")
+    tag(mag,<SRC.TARG.UID>)
+    more2=1  
+  ELSE  
+    SRC.Sysmessage("Doufam, ze jsi zameril kocku.")   
+    tag(mag).tag(kocka,<SRC.TARG.UID>)
+    tag(kocka,<SRC.TARG.UID>)
+    more2=2
+  ENDIF
+  Return1
+ 
+[ITEMDEF i_Cardolanske_pohrebiste_poruchovagate]
+Name=Teleporter
+ID=i_moongate_blue
+Type=t_telepad
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=Poruchova gate
+
+ON=@CREATE
+  ATTR=010
+  MORE2=0  // 3-pozice u dedecka 2-pozice u fontany
+  TIMER=-1
+
+ON=@userDClick
+  SRC.SYSMESSAGE("Neklikej na me.")
+  SOUND=snd_SPELL_telekinesis
+  IF (<MORE2>==2)
+    tag(p0,<SRC.P>)
+    More2=0 
+  ENDIF
+  IF (<MORE2>==3)
+    tag(p1,<SRC.P>)
+    More2=2
+  ENDIF
+
+
+ON=@TIMER
+  IF(<MORE2>==1)
+    MOREP=<tag(p0)> 
+    COLOR=0098F 
+    MORE2=0
+    SOUND=snd_SPELL_telekinesis
+  ENDIF
+  RETURN 1 
+
+ON=@STEP
+  if (<src.flags>&statf_dead)
+    src.sysmessage("Musis byt nazivu.")
+    return 1
+  endif
+  IF(<more2>==1)
+    IF (<src.restest 1 i_Cardolanske_pohrebiste_rybazfontany>)
+      src.sysmessage("Mazu klice.")
+      src.consume(i_Cardolanske_pohrebiste_rybazfontany,500) 
+    endif
+    IF (<src.restest 1 i_Cardolanske_pohrebiste_klic12 >)
+      src.sysmessage("Mazu klice.")
+      src.consume(i_Cardolanske_pohrebiste_klic12,500) 
+    endif
+    IF (<src.restest 1 i_Cardolanske_pohrebiste_krystal12 >)
+      src.sysmessage("Mazu krystaly.")
+      src.consume(i_Cardolanske_pohrebiste_krystal12,500) 
+    endif
+    SRC.tag(CardolanskePuMaga,"1")
+  ENDIF
+  tag(dvere).tag(zamknute,"1")
+  tag(dvere).timer=0
+  tag(dvere).Type=t_door_locked
+  
+[ITEMDEF i_Cardolanske_pohrebiste_vstupnigate]
+Name=Teleporter
+ID=i_moongate_blue
+Type=t_telepad
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=Vstupni gate
+
+ON=@CREATE
+  ATTR=090
+  MORE2=1  // 1 nastaveni na zacatku, 0-provozni stav 
+
+ON=@userDClick
+  IF (<MORE2>==1)
+    MOREP=<SRC.P>
+    More2=0
+  ENDIF
+
+ON=@STEP
+  if (<src.flags>&statf_dead)
+    src.sysmessage("Musis byt nazivu.")
+    return 1
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_rybazfontany>)
+    src.sysmessage("Mazu ryby.")
+    src.consume(i_Cardolanske_pohrebiste_rybazfontany,500) 
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_klic12 >)
+    src.sysmessage("Mazu klice.")
+    src.consume(i_Cardolanske_pohrebiste_klic12,500) 
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_krystal12 >)
+    src.sysmessage("Mazu krystaly.")
+    src.consume(i_Cardolanske_pohrebiste_krystal12,500) 
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_element>)
+    src.sysmessage("Mazu elementy.")
+    src.consume(i_Cardolanske_pohrebiste_element,500) 
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_pergamen>)
+    src.sysmessage("Mazu elementy.")
+    src.consume(i_Cardolanske_pohrebiste_pergamen,500) 
+  endif
+  SRC.tag(CardolanskePuMaga,"")
+  SRC.tag(CardolanskePuMaga,"")
+  SRC.tag(CardolanskePknihovna,"")
+  SRC.tag(CardolanskePpergamen,"")
+  
+
+[ITEMDEF i_Cardolanske_pohrebiste_expgate]
+Name=Teleporter
+ID=i_moongate_blue
+Type=t_script
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=Exp gate
+
+ON=@CREATE
+  ATTR=090
+  MORE2=1  // 1 nastaveni na zacatku, xxx-provozni stav 
+
+ON=@userDClick
+  IF (<MORE2>==1)
+    MOREP=<SRC.P>
+    More2=2000
+  ENDIF
+
+ON=@STEP
+  if (<src.flags>&statf_dead)
+    src.sysmessage("Musis byt nazivu.")
+    return 1
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_rybazfontany>)
+    src.sysmessage("Mazu ryby.")
+    src.consume(i_Cardolanske_pohrebiste_rybazfontany,500) 
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_klic12 >)
+    src.sysmessage("Mazu klice.")
+    src.consume(i_Cardolanske_pohrebiste_klic12,500) 
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_krystal12 >)
+    src.sysmessage("Mazu krystaly.")
+    src.consume(i_Cardolanske_pohrebiste_krystal12,500) 
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_element>)
+    src.sysmessage("Mazu elementy.")
+    src.consume(i_Cardolanske_pohrebiste_element,500) 
+  endif
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_pergamen>)
+    src.sysmessage("Mazu elementy.")
+    src.consume(i_Cardolanske_pohrebiste_pergamen,500) 
+  endif
+  if(src.isgm) //pro GM  
+    SRC.tag(CardolanskePuMaga,"")
+    SRC.tag(CardolanskePknihovna,"")
+    SRC.tag(CardolanskePpergamen,"")
+    src.go <morep>
+    return 1
+  endif
+  IF (<SRC.tag(CardolanskePuMaga)>!=1)
+    src.go <morep>
+    SRC.SAY("Jsem ohavny buger a pisu page, jak je to se mnou spatne.")
+    //SRC.Flag_stone(1)
+    SRC.NEWITEM=i_Cardolanske_pohrebiste_pergamenprobugery
+    SRC.ACT.BOUNCE
+    SRC.JAIL 
+    
+  ELSE
+    SRC.tag(CardolanskePuMaga,"")
+    SRC.tag(CardolanskePknihovna,"")
+    SRC.tag(CardolanskePpergamen,"")
+    if (<src.tag(hypno_mystik)>)
+      src.sysmessage("Tuto gatu nemuzes pouzivat.")
+      return 1
+    endif
+    if (tag(hrac[<src>])>serv.time)
+      src.sysmessage("Jeste nemuzes dostat zkusenosti.")
+    else
+      tag(hrac[<src>],<eval serv.time+60*10>)
+      src.addexp(<more2>)
+    endif
+    src.go <morep>
+  ENDIF
+
+[ITEMDEF i_Cardolanske_pohrebiste_pergamenprobugery]
+Name=pergamen pro bugera, ktery se snazil nepoctive projit expgatou na konci dungu
+ID=i_DEED
+TYPE=t_script
+
+ON=@CREATE
+  ATTR=014 
+  WEIGHT=600.0
+  COLOR=0044C
+
+ON=@userDclick
+  SRC.SYSMESSAGE("BUGER, CO CHTEL NEPOCTIVE ZISKAT EXPY PROJITIM GATE NA KONCI DUNGU")
+RETURN 1

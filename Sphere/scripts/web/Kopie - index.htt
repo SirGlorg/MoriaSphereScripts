@@ -1,0 +1,176 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Sphere Status</title>
+	</head>
+	<body bgcolor="#FFFFFF" text="#000000" topmargin="0" leftmargin="5">
+		<p align="center"><font size="5" face="Arial" color="#5B86F7"><strong><?SERV.NAME?></strong></font></p>
+		<p align="left">
+			<strong>
+				<font size="5" face="Arial" color="#5B86F7">Status:<br></font>
+			</strong>
+			<font color="#5B86F7" size="1" face="Arial">
+				<br>
+				This information is updated in real time from the server every <?eval(WebPageUpdate/60)?> minutes. Last
+				update time <?serv.RTIMETEXT?>
+				<br>
+				<br>
+			</font>
+			<font size="4" color="#5B86F7" face="Arial">
+				Administrator: 
+			</font>
+			<font size="4" face="Arial">
+				<a href="mailto:<?serv.adminEMAIL?>"><?serv.ADMINEMAIL?><br></a>
+			</font>
+			<font size="4" color="#5B86F7" face="Arial">
+				Server Version: <?serv.VERSION?><br>
+			</font>
+		</p>
+
+		<div align="left">
+
+		<table border="0" cellpadding="2" width="100%">
+		  <tr ALIGN="center">
+		    <td nowrap colspan="2" bgcolor="#5B86F7"><strong><font face="Arial" size="2"
+		    color="#FFFFFF">Statistics</font></strong></td>
+		  </tr>
+		  <tr>
+		    <td nowrap width="5%"><font face="Arial" size="2">NPCs</font></td>
+		    <td width="95%"><font face="Arial" size="2"><?serv.StatChars?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap bgcolor="#E8E8E8" width="5%"><font face="Arial" size="2">Items</font></td>
+		    <td bgcolor="#E8E8E8" width="95%"><font face="Arial" size="2"><?serv.STATITEMS?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap width="5%"><font face="Arial" size="2">Guilds</font></td>
+		    <td width="95%"><font face="Arial" size="2"><?serv.STATGUILDS?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap bgcolor="#E8E8E8" width="5%"><font face="Arial" size="2">Towns</font></td>
+		    <td bgcolor="#E8E8E8" width="95%"><font face="Arial" size="2"><?serv.STATTOWNS?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap width="5%"><font face="Arial" size="2">Clients</font></td>
+		    <td nowrap width="95%"><font face="Arial" size="2"><?serv.STATCLIENTS?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap bgcolor="#E8E8E8" width="5%"><font face="Arial" size="2">Memory Usage</font></td>
+		    <td bgcolor="#E8E8E8" width="95%"><font face="Arial" size="2"><?serv.STATMEMORY?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap width="5%"><font face="Arial" size="2">Clients Average</font></td>
+		    <td nowrap width="95%"><font face="Arial" size="2"><?serv.CLIENTSAVG?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap bgcolor="#E8E8E8" width="5%"><font face="Arial" size="2">Age (days)</font></td>
+		    <td bgcolor="#E8E8E8" width="95%"><font face="Arial" size="2"><?serv.AGE?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap width="5%"><font face="Arial" size="2">Accounts</font></td>
+		    <td nowrap width="95%"><font face="Arial" size="2"><?serv.STATACCOUNTS?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap bgcolor="#E8E8E8" width="5%"><font face="Arial" size="2">IP</font></td>
+		    <td bgcolor="#E8E8E8" width="95%"><font face="Arial" size="2"><?serv.IP?></font></td>
+		  </tr>
+		  <tr>
+		    <td nowrap width="5%"><font face="Arial" size="2">Time Up</font></td>
+		    <td nowrap width="95%"><font face="Arial" size="2"><?serv.TIMEUP?></font></td>
+		  </tr>
+		  <tr>
+		    <td width="5%"></td>
+		    <td width="95%"></td>
+		  </tr>
+		</table>
+		<br>
+		<table border="0" cellpadding="2" width="100%">
+		  <tr ALIGN="center">
+		    <td colspan="7" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Clients</strong></font></td>
+		  </tr>
+		  <tr ALIGN="center">
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Charname</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Age</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Title</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Guildmember</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Townmember</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Location</strong></font></td>    
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Housowner</strong></font></td>
+		  </tr>
+
+		  <script language="Sphere">
+		  CLIENTLIST "<tr <?LISTCOL?> ><td ALIGN=center>&nbsp;<?NAME?>&nbsp;</td><td ALIGN=center>&nbsp;<?AGE?>&nbsp;</td><td ALIGN=center>&nbsp;<?TITLE?>&nbsp;</td><td ALIGN=center>&nbsp;<?MEMORYFINDTYPE(MEMORY_GUILD).LINK.ABBREV?>&nbsp;</td><td ALIGN=center>&nbsp;<?MEMORYFINDTYPE(MEMORY_TOWN).LINK.NAME?>&nbsp;</td><td ALIGN=center>&nbsp;<?REGION.NAME?>&nbsp;</td><td ALIGN=center>&nbsp;<?MEMORYFINDTYPE(0100).LINK.NAME?>&nbsp;</td></tr>"
+		  </script>
+		</table>
+		<br>
+		<table border="0" cellpadding="2" width="100%">
+		  <tr ALIGN="center">
+		    <td colspan="4" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Pages</strong></font></td>
+		  </tr>
+		  <tr ALIGN="center">
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Account</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Reason</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Time</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Position</strong></font></td>
+		  </tr>
+		  <script language="Sphere">
+		  GMPAGELIST "<tr <?LISTCOL?> ><td ALIGN=center>&nbsp;<?ACCOUNT?>&nbsp;</td><td ALIGN=center>&nbsp;<?REASON?>&nbsp;</td><td ALIGN=center>&nbsp;<?TIME?>&nbsp;</td><td ALIGN=center>&nbsp;<?P?>&nbsp;</td></tr>"
+		  </script>
+		</table>
+		<br>
+		<table border="0" cellpadding="2" width="100%">
+		  <tr ALIGN="center">
+		    <td colspan="4" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Guilds</strong></font></td>
+		  </tr>
+		  <tr ALIGN="center">
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Name</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Abbrev</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Align</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Master</strong></font></td>
+		  </tr>
+		  <script language="Sphere">
+		  GUILDLIST "<tr <?LISTCOL?> ><td ALIGN=center><a href=http://<?WEBPAGE?> Target=_blank>&nbsp;<?NAME?>&nbsp;</a></td><td ALIGN=center>&nbsp;<?ABBREV?>&nbsp;</td><td ALIGN=center>&nbsp;<?ALIGNTYPE?>&nbsp;</td><td ALIGN=center>&nbsp;<?MASTER?>&nbsp;</td></tr>"
+		  </script>
+		</table>
+		<br>
+		<table border="0" cellpadding="2" width="100%">
+		  <tr ALIGN="center">
+		    <td colspan="3" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Towns</strong></font></td>
+		  </tr>
+		  <tr ALIGN="center">
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Name</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Align</strong></font></td>
+		    <td colspan="1" nowrap bgcolor="#5B86F7"><font face="Arial" size="2" color="#FFFFFF"><strong>Major</strong></font></td>
+		  </tr>
+		  <script language="Sphere">
+		  TOWNLIST "<tr <?LISTCOL?> ><td ALIGN=center>&nbsp;<a href=http://<?WEBPAGE?> Target=_blank>&nbsp;<?NAME?>&nbsp;</a></td><td ALIGN=center>&nbsp;<?ALIGNTYPE?>&nbsp;</td><td ALIGN=center>&nbsp;<?MASTER?>&nbsp;</td></tr>"
+		  </script>
+		</table>
+		</div>
+
+		<p>
+			<font size="1" face="Arial">
+				E-mail responses: <a href="mailto:<?serv.adminEMAIL?>"><?serv.ADMINEMAIL?></a>
+			</font>
+		</p>
+
+		<hr color="#5B86F7">
+
+		<p align="center">
+			&nbsp; 
+			<strong>
+				<font size="5" face="Arial" color="#5B86F7">
+					<?SERV.NAME?>
+					<br>
+				</font>
+			</strong>
+			<font size="1" face="Arial">
+				made possible by
+				<br>
+			</font>
+			<a href="http://www.sphereserver.com" target="_top">
+				<img border="0"	src="sphere_pow.gif">
+			</a>
+		</p>
+	</body>
+</html>

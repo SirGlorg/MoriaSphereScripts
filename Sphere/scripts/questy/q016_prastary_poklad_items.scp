@@ -1,0 +1,167 @@
+//////////////////////////////////
+//rakev s pokladem
+//////////////////////////////////
+
+[ITEMDEF i_Crunch_rakev]
+ID=0124c
+NAME=Rakev                                                 
+
+ON=@Create
+color=0986
+
+on=@userdclick    
+src.f_q016_checkOldTags                                                         
+if (<src.qtag(q016_prastary_poklad)> == 9)
+ message("Moc toho tu neni.. Vypada to, ze te nekdo predbehl...")
+ src.qtag(q016_prastary_poklad,10)
+ src.addexp(500)
+ src.givegold(50000)
+elseif (<src.qtag(q016_prastary_poklad)> == 10)
+ message("Uz jsi to vsechno <src.sex(vybral,vybrala)>...")
+else
+ src.kill
+ message("<src.sex(DOSTAL,DOSTALA)> JSI SE SEM PODVODEM!!!")¨
+endIF
+
+
+
+//////////////////////////////////
+//chlast pro klerika
+//////////////////////////////////
+
+[ITEMDEF i_Crunch_clerduv_chlast]
+ID=i_bottle_wine
+NAME=Cizokrajny alkohol                                                  
+
+ON=@Create
+
+on=@userdclick                                                             
+message("Tak tohle by donutilo zvracet i plne vyvinuteho trola... mrtveho..") 
+return 1	//aby to nevyslopal
+
+
+
+
+//////////////////////////////////
+//truhla s chlastem pro clerdu
+//////////////////////////////////
+
+[ITEMDEF i_Crunch_truhla_s_chlastem]
+ID=i_chest_metal_brass
+NAME=Schovana truhla                                                  
+
+ON=@Create
+color=098c
+
+on=@userdclick                                                             
+if (<src.qtag(q016_prastary_poklad)> == 6)
+ src.say("Byl tam chlast!!! To jsem si <src.sex mohl mohla> myslet!")
+ src.newitem=i_crunch_clerduv_chlast
+ src.act.bounce
+ src.qtag(q016_prastary_poklad,7)
+else
+ src.SAY Tak tuhle truhlu by neotevrel ani ten nejzrucnejsi zlodej...
+ return 1
+endIF
+
+
+//////////////////////////////////
+// Magicka brana strezici vchod do kobky
+//////////////////////////////////
+
+[ITEMDEF i_Crunch_magicka_brana]
+ID=i_gate_iron
+NAME=Magicka brana                                                
+
+ON=@Create
+color=098c
+
+on=@userdclick                                                             
+if (<moreX> == 1)
+ if (<src.qtag(q016_prastary_poklad)> == 8)
+  src.say("Brana me pustila!! Pozehnani od klerika pomohlo!")
+  src.qtag(q016_prastary_poklad,9)
+  src.go(3190,3640)
+  moreX=0
+ else
+  src.kill
+  src.sysMessage("Cosi ti rika, ze je velmi pravdepodobne, ze nejspis nejsi vyvoleny vstoupit do te brany.")
+ endif
+elseif (<moreX> == 2)
+ src.kill
+ src.sysMessage("Cosi ti rika, ze je velmi pravdepodobne, ze nejspis nejsi vyvoleny vstoupit do te brany.")
+else
+ if (<src.qtag(q016_prastary_poklad)> == 8)
+  moreX=1
+ else
+  moreX=2
+ endif
+ timer=10
+ src.sysMessage("Brana je magicka!!! Myslis-li si, ze jsi vyvoleny ji projit, zkus ji otevrit jeste jednou... ale pozor! Nezvani se se zlou potazou!!!")
+ return 1
+endIF
+return 1
+
+on=@Timer
+moreX=0
+return 1
+
+//////////////////////////////////
+//flaska s vodou pro orilla
+//////////////////////////////////
+
+[ITEMDEF i_Crunch_lecici_voda]
+ID=i_bottle_empty
+NAME=Voda s ozdravujicimi ucinky                                                   
+
+ON=@Create
+color=0980
+
+on=@userdclick                                                             
+message("vypada to jako voda. skoro bys <sex(rekl,rekla)>, ze je to voda.")  
+return 1
+
+//////////////////////////////////
+// voda s ozdravujicima ucinkama
+//////////////////////////////////
+
+[ITEMDEF i_Crunch_voda]
+ID=i_water
+NAME=Voda s ozdravujicimi ucinky                                                    
+
+ON=@Create
+
+on=@userdclick                                                             
+if (<src.qtag(q016_prastary_poklad)> == 2) && (<src.rescount i_bottle_empty> >= 1)
+  src.newitem(i_Crunch_lecici_voda).bounce
+  src.consume i_bottle_empty 
+  src.qtag(q016_prastary_poklad,3)
+  message("Opatrne jsi si trochu vody <src.sex(odlil,odlila)> do lahvicky.")
+else
+  src.sysMessage("Netusim, jak bych to <src.sex(pouzil,pouzila)>.")
+endif
+return 1
+
+
+
+//////////////////////////////////
+// Cast 'kouzlo' staryho nekromanta - prodleva
+//////////////////////////////////
+
+[itemdef i_q016_delayedKill]
+id=i_memory
+type=t_eq_script 
+name=q016 Timer Zabiti
+
+on=@Equip
+timer=3
+
+on=@Timer
+cont.effect=3,i_fire_column,6,16,0
+SFX=snd_spell_flamestrike
+cont.kill
+link.hits=0
+cont.sysMessage("Stary Nekromant na tebe seslal smrtelne kouzlo a sam pri tom padl vycerpanim.")
+remove
+
+[eof]

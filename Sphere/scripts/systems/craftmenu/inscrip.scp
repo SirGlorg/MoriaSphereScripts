@@ -1,0 +1,465 @@
+[function cmprep_inscrip]
+newTOPOBJ(Inscription)
+ cm_newsection(0,Necromancery,<i_pet_zombie>)
+  cm_newitem(i_scroll_firebolt)
+  cm_newitem(i_scroll_animate_dead)
+  cm_newitem(i_scroll_bone_armor)
+  cm_newitem(i_scroll_light)
+  cm_newitem(i_scroll_hallucination)
+ cm_newsection(0,"Kruh 8",<i_spell_circle_8>)
+  scribesection(8)
+ cm_newsection(0,"Kruh 7",<i_spell_circle_7>)
+  scribesection(7)
+ cm_newsection(0,"Kruh 6",<i_spell_circle_6>)
+  scribesection(6)
+ cm_newsection(0,"Kruh 5",<i_spell_circle_5>)
+  scribesection(5)
+ cm_newsection(0,"Kruh 4",<i_spell_circle_4>)
+  scribesection(4)
+ cm_newsection(0,"Kruh 3",<i_spell_circle_3>)
+  scribesection(3)
+ cm_newsection(0,"Kruh 2",<i_spell_circle_2>)
+  scribesection(2)
+ cm_newsection(0,"Kruh 1",<i_spell_circle_1>)
+  scribesection(1)
+
+[function scribesection]//cislo kruhu
+arg(u,((<argv>-1)*8)+1)
+while (u<=((<argv>)*8))
+ cm_newitem(<findres(spell,u).scrollitem)>)
+ arg(u,#+1)
+endwhile
+
+[SKILLMENU sm_inscription]
+// dclick on blank scroll
+Spell Circles
+ON=0 Pis svitky poklikanim na blank scroll
+craftmenu(inscription)
+
+[eof]
+
+[SKILLMENU sm_inscription]
+ON=i_spell_circle_1
+TESTIF (src.mana>1)
+SKILLMENU=sm_inscrip_1
+
+//stary menu
+// dclick on blank scroll
+Spell Circles
+// Still internal at the moment.
+ON=i_pergamen_esence <name> (<resmake>)
+MAKEITEM=i_pergamen_esence
+
+ON=i_spell_circle_1
+TESTIF (src.mana>1)
+SKILLMENU=sm_inscrip_1
+
+ON=i_spell_circle_2
+TESTIF (src.Mana>2)
+SKILLMENU=sm_inscrip_2
+
+ON=i_spell_circle_3
+TESTIF (src.Mana>3)
+SKILLMENU=sm_inscrip_3
+
+ON=i_spell_circle_4
+TESTIF (src.Mana>4)
+SKILLMENU=sm_inscrip_4
+
+ON=i_spell_circle_5
+TESTIF (src.Mana>6)
+SKILLMENU=sm_inscrip_5
+
+ON=i_spell_circle_6
+TESTIF (src.Mana>9)
+SKILLMENU=sm_inscrip_6
+
+ON=i_spell_circle_7
+TESTIF (src.Mana>19)
+SKILLMENU=sm_inscrip_7
+
+ON=i_spell_circle_8
+TESTIF (src.Mana>24)     
+TESTIF (src.findid(i_book_inscription))
+SKILLMENU=sm_inscrip_8
+
+ON=i_pet_zombie
+SKILLMENU=sm_inscrip_necro
+
+[SKILLMENU sm_inscrip_necro]
+necro spells
+
+ON=i_fx_firesnake fire bolt
+TESTIF (src.Mana>10)
+testif (src.cancast s_fire_bolt)
+src.Mana=<eval <src.Mana>-10>
+MAKEITEM=i_scroll_firebolt
+
+ON=i_pet_zombie animate death
+testif (src.cancast s_fire_bolt)
+testif (src.cancast s_resurrection)
+TESTIF (src.Mana>25)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_animate_dead
+
+ON=i_bone_chest bone armor
+testif (src.cancast s_bone_armor)
+TESTIF (src.Mana>5)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_bone_armor
+
+ON=i_lantern_lit light
+testif (src.cancast s_light)
+TESTIF (src.Mana>2)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_light
+
+ON=i_rune_mind_blast hallucination
+testif (src.cancast s_Hallucination)
+TESTIF (src.Mana>7)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_hallucination
+
+[SKILLMENU sm_inscrip_1]
+Spell Circle 1
+
+ON=i_rune_clumsy
+TESTIF (src.cancast s_clumsy)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_clumsy
+
+ON=i_rune_create_food
+TESTIF (src.cancast s_create_food)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_create_food
+
+ON=i_rune_feeblemind
+TESTIF (src.cancast s_feeblemind)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_feeblemind
+
+ON=i_rune_heal
+TESTIF (src.cancast s_heal)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_heal
+
+ON=i_rune_magic_arrow
+TESTIF (src.cancast s_magic_arrow)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_magic_arrow
+
+ON=i_rune_night_sight
+TESTIF (src.cancast s_night_sight)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_night_sight
+
+ON=i_rune_reactive_armor
+TESTIF (src.cancast s_reactive_armor)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_reactive_armor
+
+ON=i_rune_weaken
+TESTIF (src.cancast s_weaken)
+src.Mana=<eval <src.Mana> - 2>
+MAKEITEM=i_scroll_weaken
+
+[SKILLMENU sm_inscrip_2]
+Spell Circle 2
+
+ON=i_rune_agility
+TESTIF (src.cancast s_agility)
+src.Mana=<eval <src.Mana> - 3>
+MAKEITEM=i_scroll_agility
+
+ON=i_rune_cunning
+TESTIF (src.cancast s_cunning)
+src.Mana=<eval <src.Mana> - 3>
+MAKEITEM=i_scroll_cunning
+
+ON=i_rune_cure
+TESTIF (src.cancast s_cure)
+src.Mana=<eval <src.Mana> - 3>
+MAKEITEM=i_scroll_cure
+
+ON=i_rune_harm
+TESTIF (src.cancast s_harm)
+src.Mana=<eval <src.Mana> - 3>
+MAKEITEM=i_scroll_harm
+
+ON=i_rune_magic_trap
+TESTIF (src.cancast s_magic_trap)
+src.Mana=<eval <src.Mana> - 3>
+MAKEITEM=i_scroll_magic_trap
+
+ON=i_rune_magic_untrap
+TESTIF (src.cancast s_magic_untrap)
+src.Mana=<eval <src.Mana> - 3>
+MAKEITEM=i_scroll_magic_untrap
+
+ON=i_rune_protection
+TESTIF (src.cancast s_protection)
+src.Mana=<eval <src.Mana> - 3>
+MAKEITEM=i_scroll_protection
+
+ON=i_rune_strength
+TESTIF (src.cancast s_strength)
+src.Mana=<eval <src.Mana> - 3>
+MAKEITEM=i_scroll_strength
+
+[SKILLMENU sm_inscrip_3]
+Spell Circle 3
+
+ON=i_rune_bless
+TESTIF (src.cancast s_bless)
+src.Mana=<eval <src.Mana> - 4>
+MAKEITEM=i_scroll_bless
+
+
+ON=i_rune_fireball
+TESTIF (src.cancast s_fireball)
+src.Mana=<eval <src.Mana> - 4>
+MAKEITEM=i_scroll_fireball
+
+ON=i_rune_magic_lock
+TESTIF (src.cancast s_magic_lock)
+src.Mana=<eval <src.Mana> - 4>
+MAKEITEM=i_scroll_magic_lock
+
+ON=i_rune_poison
+TESTIF (src.cancast s_poison)
+src.Mana=<eval <src.Mana> - 4>
+MAKEITEM=i_scroll_poison
+
+ON=i_rune_telekinesis
+TESTIF (src.cancast s_telekinesis)
+src.Mana=<eval <src.Mana> - 4>
+MAKEITEM=i_scroll_telekinesis
+
+ON=i_rune_teleport
+TESTIF (src.cancast s_teleport)
+src.Mana=<eval <src.Mana> - 4>
+MAKEITEM=i_scroll_teleport
+
+ON=i_rune_unlock
+TESTIF (src.cancast s_unlock)
+src.Mana=<eval <src.Mana> - 4>
+MAKEITEM=i_scroll_unlock
+
+ON=i_rune_wall_of_stone
+TESTIF (src.cancast s_wall_of_stone)
+src.Mana=<eval <src.Mana> - 4>
+MAKEITEM=i_scroll_wall_of_stone
+
+[SKILLMENU sm_inscrip_4]
+
+Spell Circle 4
+ON=i_rune_archcure
+TESTIF (src.cancast s_archcure)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_archcure
+
+ON=i_rune_archprotection
+TESTIF (src.cancast s_archprotection)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_archprotection
+
+ON=i_rune_curse
+TESTIF (src.cancast s_curse)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_curse
+
+
+ON=i_rune_fire_field
+TESTIF (src.cancast s_fire_field)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_fire_field
+
+ON=i_rune_greater_heal
+TESTIF (src.cancast s_greater_heal)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_greater_heal
+return 1
+
+ON=i_rune_lightning
+TESTIF (src.cancast s_lightning)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_lightning
+
+ON=i_rune_mana_drain
+TESTIF (src.cancast s_mana_drain)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_mana_drain
+return 1
+
+ON=i_rune_recall
+TESTIF (src.cancast s_recall)
+src.Mana=<eval <src.Mana> - 5>
+MAKEITEM=i_scroll_recall
+
+[SKILLMENU sm_inscrip_5]
+Spell Circle 5
+ON=i_rune_blade_spirits
+TESTIF (src.cancast s_blade_spirits)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_blade_spirits
+
+ON=i_rune_dispel_field
+TESTIF (src.cancast s_dispel_field)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_dispel_field
+
+ON=i_rune_incognito
+TESTIF (src.cancast s_incognito)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_incognito
+
+ON=i_rune_magic_reflection
+TESTIF (src.cancast s_magic_reflection)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_magic_reflection
+
+ON=i_rune_mind_blast
+TESTIF (src.cancast s_mind_blast)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_mind_blast
+
+ON=i_rune_paralyze
+TESTIF (src.cancast s_paralyze)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_paralyze
+
+ON=i_rune_poison_field
+TESTIF (src.cancast s_poison_field)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_poison_field
+
+ON=i_rune_summon_creature
+TESTIF (src.cancast s_summon_creature)
+src.Mana=<eval <src.Mana> - 7>
+MAKEITEM=i_scroll_summon_creature
+
+[SKILLMENU sm_inscrip_6]
+Spell Circle 6
+ON=i_rune_dispel
+TESTIF (src.cancast s_dispel)
+src.Mana=<eval <src.Mana> - 10>
+MAKEITEM=i_scroll_dispel
+
+ON=i_rune_energy_bolt
+TESTIF (src.cancast s_energy_bolt)
+src.Mana=<eval <src.Mana> - 10>
+MAKEITEM=i_scroll_energy_bolt
+
+ON=i_rune_explosion
+TESTIF (src.cancast s_explosion)
+src.Mana=<eval <src.Mana> - 10>
+MAKEITEM=i_scroll_explosion
+
+ON=i_rune_invisibility
+TESTIF (src.cancast s_invisibility)
+src.Mana=<eval <src.Mana> - 10>
+MAKEITEM=i_scroll_invisibility
+
+ON=i_rune_mark
+TESTIF (src.cancast s_mark)
+src.Mana=<eval <src.Mana> - 10>
+MAKEITEM=i_scroll_mark
+
+ON=i_rune_mass_curse
+TESTIF (src.cancast s_mass_curse)
+src.Mana=<eval <src.Mana> - 10>
+MAKEITEM=i_scroll_mass_curse
+
+ON=i_rune_paralyze_field
+TESTIF (src.cancast s_paralyzation_field)
+src.Mana=<eval <src.Mana> - 10>
+MAKEITEM=i_scroll_paralyze_field
+
+ON=i_rune_reveal
+TESTIF (src.cancast s_reveal)
+src.Mana=<eval <src.Mana> - 10>
+MAKEITEM=i_scroll_reveal
+
+[SKILLMENU sm_inscrip_7]
+Spell Circle 7
+ON=i_rune_chain_lightning
+TESTIF (src.cancast s_chain_lightning)
+src.Mana=<eval <src.Mana> - 20>
+MAKEITEM=i_scroll_chain_lightning
+
+ON=i_rune_energy_field
+TESTIF (src.cancast s_energy_field)
+src.Mana=<eval <src.Mana> - 20>
+MAKEITEM=i_scroll_energy_field
+
+ON=i_rune_flamestrike
+TESTIF (src.cancast s_flamestrike)
+src.Mana=<eval <src.Mana> - 20>
+MAKEITEM=i_scroll_flamestrike
+
+ON=i_rune_gate_travel
+TESTIF (src.cancast s_gate_travel)
+src.Mana=<eval <src.Mana> - 20>
+MAKEITEM=i_scroll_gate_travel
+
+ON=i_rune_mana_vampire
+TESTIF (src.cancast s_mana_vampire)
+src.Mana=<eval <src.Mana> - 20>
+MAKEITEM=i_scroll_mana_vampire
+
+ON=i_rune_mass_dispel
+TESTIF (src.cancast s_mass_dispel)
+src.Mana=<eval <src.Mana> - 20>
+MAKEITEM=i_scroll_mass_dispel
+
+ON=i_rune_meteor_swarm
+TESTIF (src.cancast s_meteor_swarm)
+src.Mana=<eval <src.Mana> - 20>
+MAKEITEM=i_scroll_meteor_swarm
+
+ON=i_rune_polymorph
+TESTIF (src.cancast s_polymorph)
+src.Mana=<eval <src.Mana> - 20>
+MAKEITEM=i_scroll_polymorph
+
+[SKILLMENU sm_inscrip_8]
+Spell Circle 8
+ON=i_rune_earthquake
+TESTIF (src.cancast s_earthquake)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_earthquake
+
+ON=i_rune_energy_vortex
+TESTIF (src.cancast s_energy_vortex)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_energy_vortex
+
+ON=i_rune_resurrection
+TESTIF (src.cancast s_resurrection)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_resurrection
+
+ON=i_rune_summon_elem_air
+TESTIF (src.cancast s_summon_elem_air)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_summon_elem_air
+
+ON=i_rune_summon_daemon
+TESTIF (src.cancast s_summon_daemon)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_summon_daemon
+
+ON=i_rune_summon_elem_earth
+TESTIF (src.cancast s_summon_elem_earth)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_summon_elem_earth
+
+ON=i_rune_summon_elem_fire
+TESTIF (src.cancast s_summon_elem_fire)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_summon_elem_fire
+
+ON=i_rune_summon_elem_water
+TESTIF (src.cancast s_summon_elem_water)
+src.Mana=<eval <src.Mana> - 25>
+MAKEITEM=i_scroll_summon_elem_water

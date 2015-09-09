@@ -1,0 +1,192 @@
+//////////////////////////////////////////////////
+//////////////q006_erioluv_vnuk_items.scp/////////
+//////////////////////////////////////////////////
+
+[ITEMDEF i_q006_vacek_stehno]
+ID=i_bag
+NAME=Vacek na stehna grizliho
+TYPE=t_collector
+WEIGHT=10
+
+ON=@CREATE
+COLOR=042
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="stehen grizliho"
+tag.contentsamount=0
+tag.maxcontents=10
+tag.target_remove=1
+tag.target_desc="Kteremu grizlimu seberes stehno? "
+tag.target_id="Body of Grizzly"
+tag.absolute_success=100
+tag.value_to_check=75
+tag.contentscount=0
+tag.fail_msg="Jsi nesika, stehno se ti nepovedlo vzit!"
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q006_vacek_led]
+ID=i_bag
+NAME=Vacek na esenci ledoveho elementala
+TYPE=t_collector
+WEIGHT=10
+
+ON=@CREATE
+COLOR=042
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="esenci ledoveho elementala"
+tag.contentsamount=0
+tag.maxcontents=20
+tag.target_remove=1
+tag.target_desc="Kteremu elementalovy chces vzit esenci?"
+tag.target_id="Body of Elemental Ledu"
+tag.absolute_success=100
+tag.value_to_check=65
+tag.contentscount=0
+tag.fail_msg="Esenci se ti vzit nepovedlo!"
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q006_vacek_kamen]
+ID=i_bag
+NAME=Vacek na esenci kamennyho elementala
+TYPE=t_collector
+WEIGHT=10
+
+ON=@CREATE
+COLOR=042
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="esenci kamenneho elementala"
+tag.contentsamount=0
+tag.maxcontents=20
+tag.target_remove=1
+tag.target_desc="Kteremu elementalovy chces vzit esenci?"
+tag.target_id="Body of Elemental Kamene"
+tag.absolute_success=100
+tag.value_to_check=60
+tag.contentscount=0
+tag.fail_msg="Esenci se ti vzit nepovedlo!"
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q006_vacek_zem]
+ID=i_bag
+NAME=Vacek na esenci elementala zeme
+TYPE=t_collector
+WEIGHT=10
+
+ON=@CREATE
+COLOR=042
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="esenci elementala zeme"
+tag.contentsamount=0
+tag.maxcontents=20
+tag.target_remove=1
+tag.target_desc="Kteremu elementalovy chces vzit esenci?"
+tag.target_id="Body of Elemental Zeme"
+tag.absolute_success=100
+tag.value_to_check=55
+tag.contentscount=0
+tag.fail_msg="Esenci se ti vzit nepovedlo!"
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q006_vacek_snih]
+ID=i_bag
+NAME=Vacek na esenci snezniho elementala
+TYPE=t_collector
+WEIGHT=10
+
+ON=@CREATE
+COLOR=042
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="esenci snezniho elementala"
+tag.contentsamount=0
+tag.maxcontents=20
+tag.target_remove=1
+tag.target_desc="Kteremu elementalovy chces vzit esenci?"
+tag.target_id="Body of Elemental Snehu"
+tag.absolute_success=100
+tag.value_to_check=50
+tag.contentscount=0
+tag.fail_msg="Esenci se ti vzit nepovedlo!"
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q006_pergamen]
+id=0e34
+type=t_scroll_blank
+name=Mohylovi duchove
+
+on=@create
+attr_newbie=1
+attr=attr_move_never
+color=colors_green
+
+ON=@USERDCLICK
+src.scroll sc_q006_pergamen
+return 1
+
+[scroll sc_q006_pergamen]
+„...uz se z cernoknezneho kralovstvi Angmaru rozletlo po Stredozemi mnoho strasnych a tryznivych duchu, kteri se zoufale chteji skryt pred hladovym slunecnim svetlem. Demonim jejichz tela byla znicena, hledaji jina tela, v nichz by se mohli usidlit jejich zly duchove. Tak se z Mohylovych vrchu stalo strasidelne a obavane misto. Z demonu se stali mohylovi duchove, Nemrtvi, ktere ozivovali kosti a drahokamy posazena brneni davnych lidskych kralu, kteri tento kraj obyvali v Prvnim slunecnim veku...“
+
+[ITEMDEF i_roba_alchemisty]
+ID=i_robe
+NAME=Roba Alchymisty
+
+CATEGORY=questy
+SUBSECTION=q006_erioluv_vnuk
+DESCRIPTION=Roba Alchemisty
+
+ON=@Create
+Hitpoints=100
+color=065f
+
+ON=@equip
+if (<hitpoints> == 0)
+	Hitpoints=100
+endif
+
+if (<src.alchemy>>99.9)
+	if (<tag(owner)>)
+		if (<tag(owner)>==<src.uid>)
+			src.tag(altered_alch,1)
+			src.alchemy=(<src.alchemy>+10.0)
+			src.sysmessage("Citis mistrovstvi spjate s touto robou ...")
+		endif
+	else
+		src.sysmessage("Magie obsazena v robe te odmitla!")
+	endif
+endif
+
+ON=@unequip
+if(src.tag(altered_alch))
+	if(<src.tag(altered_alch)>==1)
+  	src.tag.remove(altered_alch)
+		src.alchemy=(<src.alchemy>-10.0)
+	endif
+endif
+
+ON=UserClick
+	src.sysmessage("+ 10% ke skillu Alchemy")
+	
+
+[ITEMDEF i_potion_ocisteni]
+NAME=Lektvar Ocisteni
+ID=i_bottle_empty
+RESOURCES=2 i_srdiczko, 3 i_potion_curegreat, i_bylina , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 100.0
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=055
+
+on=@potioneffect
+src.sysmessage("Niceho zvlastniho jsi si nevsimnul.")
+return 0
+on=@userdeath

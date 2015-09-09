@@ -1,0 +1,621 @@
+// THIS IS A BASIC FUNCTION TO TRIGGER POISON upon players and NPCs.
+// NO OTHER WAY SHALL BE USED TO TRIGGER POISON UNLESS YOU ARE REALLY SURE WHAT YOU'RE DOING!
+// argv(0) ~ poison strength
+// argv(1) ~ poison speed == delay between two poison hits in seconds
+// argv(2) ~ poison type - absolute dmg if not set
+// argv(3) ~ suppress effect
+// argv(4) ~ different sound
+//
+// returns ~ 0 if poison applied
+//           1 if the poison was resisted
+[function f_poison_doPoison]
+if (poisonManager.f_pm_isImmune || isDead)
+  return 1
+endif
+if (<argvcount> == 2)
+  arg(poisonType,poison_absoluteDmg)
+else
+  arg(poisonType,<argv(2)>)
+endif
+if (f_poison_updatePoisonDmg(<argv(0)>,<arg(poisonType)>))
+  newitemsafe(i_memory_jed)
+  arg(poisonMemory,<lastnew>)
+  arg(poisonMemory).tag(jed_sila,<argv(0)>)
+  arg(poisonMemory).tag(jed_rychlost,<argv(1)>)
+  arg(poisonMemory).tag(jed_typ,<arg(poisonType)>)
+  arg(poisonMemory).tag(pManager,<var_poisonManager>)
+  equip(<lastnew>)
+  var(var_poisonManager).f_pm_registerNewPoison(<arg(poisonType)>,<lastnew>)
+endif
+if (<eval argv(3)> == 0) // effect not suppressed
+  effect(3,i_fx_curse,6,15,1)
+endif
+if (<eval argv(4)> == 0) // default sound
+  sound(221)
+else // other sound specified
+  sound(<argv(4)>)
+endif
+return 0
+
+[defnames def_poison_constants]
+def_poison_msgLimit_deadly    15
+def_poison_msgLimit_greater   10
+def_poison_msgLimit_normal    5
+
+def_poison_typesCount         8
+
+def_poison_absoluteDmg        0
+def_poison_c                  1
+def_poison_para               2
+def_poison_fizz               3
+def_poison_stamina            4
+def_poison_feeblemind         5
+def_poison_weaken             6
+def_poison_clumsy             7
+
+def_poison[0]                 poison_absoluteDmg
+def_poison[1]                 poison_c
+def_poison[2]                 poison_para
+def_poison[3]                 poison_fizz
+def_poison[4]                 poison_stamina
+def_poison[5]                 poison_feeblemind
+def_poison[6]                 poison_weaken
+def_poison[7]                 poison_clumsy
+
+[itemdef i_memory_jed]//dela efekt
+ID=i_rune_poison
+TYPE=t_eq_script
+name=jed
+
+on=@equip
+timer=<eval tag(jed_rychlost)> //jak rychle bude skytat
+if !(<eval var(noMessage)>)
+  cont.sysMessage("<cont.sex("Byl jsi otraven","Byla jsi otravena")>!")
+endif
+
+on=@timer
+//before poison hits:
+timer=<eval tag(jed_rychlost)>
+if (cont.isDead)
+  cont.accmsg("NO DOPICE KURVA POISON DO MRTVOLY - typ: <tag(jed_typ)>, sila: <tag(jed_sila)>")
+  tag(pManager).f_pm_removeType(<tag(jed_typ)>)
+  return
+elseif (tag(jed_sila) < 1)//neni sila, likvidovat
+  tag(pManager).f_pm_removeType(<tag(jed_typ)>)
+  return
+elseif (poisonManager.f_pm_isImmune)
+  tag(pManager).f_pm_removeType(<tag(jed_typ)>)
+  return
+endif
+//poison hit (damage/para/stamLoss etc):
+cont.<tag(jed_typ)>(<tag(jed_sila)>)
+
+//after poison hit:
+if (<var(dmgPoison)> <= 0) //the current hit dmg might be too low already -> remove this memory
+  tag(pManager).f_pm_removeType(<tag(jed_typ)>)
+  return
+endif
+arg(jed_minus,<eval tag(jed_sila)/10>)
+if (arg(jed_minus) < 1)
+  arg(jed_minus,1)
+endif
+tag(jed_sila,<tag(jed_sila)>-<arg(jed_minus)>)
+return 1
+
+on=@unequip
+cont.tag.remove(poisonMemories) //this line shall be removed on future sight (was left here just to ensure proper removal of an old tag)
+
+////////////////////////////////////////////
+////////////////////////////////////////////
+//      P O I S O N    M A N A G E R      //
+//                                        //
+
+//returns pointer to the poisonManager
+[function poisonManager]
+if (topobj.isChar)
+  arg(pm,<topobj.findid(i_poisonManager)>)
+  if !(<arg(pm)>)
+    topobj.newequipsafe(i_poisonManager)
+    var(var_poisonManager,<lastnew>)
+    return<lastnew>
+  endif
+  var(var_poisonManager,<arg(pm)>)
+  return<arg(pm)>
+endif
+
+//holds links to all equipped poison items
+[itemdef i_poisonManager]
+id=i_rune_poison
+name=pamet a sprava aktivnich jedu
+type=t_eq_script
+
+on=@create
+attr=094 //invis, nb, nevermove
+
+//argv(0) ~ poisonType name, eg. poison_absoluteDMG
+[function f_pm_getPoisonByType]
+return<tag(memLink[<eval def_<argv(0)>>])>
+
+//argv(0) ~ poisonType name
+//argv(1) ~ poison memory UID
+[function f_pm_registerNewPoison]
+if (<eval tag(poisonsCount)> == 0)
+  cont.flag_poisoned = 1 //makes players lag a bit, but this is triggered just once so only a small harm will be done
+  cont.events=+e_poisoned
+  cont.update
+endif
+tag(memLink[<eval def_<argv(0)>>],<argv(1)>)
+tag(poisonsCount,<eval tag(poisonsCount)>+1)
+
+//argv(0) ~ poisonType to be removed
+[function f_pm_removeType]
+tag(memLink[<eval def_<argv(0)>>]).remove // remove the item
+tag.remove(memLink[<eval def_<argv(0)>>]) // remove link
+tag(poisonsCount,<eval tag(poisonsCount)>-1)
+if (<eval tag(poisonsCount)> == 0)
+  cont.flag_poisoned = 0
+  cont.events=-e_poisoned
+  cont.update
+endif
+
+//removes all the poison effect memory items
+//argv(0) ~ suppreses update on removal if set to 1(useful while clearing on death -> won't cause client to crush!)
+[function f_pm_removeAll]
+arg(i,0)
+while (<arg(i)> < <def_poison_typesCount>)
+  tag(memLink[<eval arg(i)>]).remove //remove the poison item
+  tag.remove(memLink[<eval arg(i)>])
+  arg(i,#+1)
+endwhile
+tag(poisonsCount,0)
+cont.flag_poisoned = 0
+cont.events=-e_poisoned
+if (<eval argv(0)> == 0) //suppress update
+  cont.update
+endif
+
+[function f_pm_isPoisoned]
+if (<eval tag(poisonsCount)> > 0)
+  return 1
+else
+  return 0
+endif
+
+//just INCREASES immunity indicator tag. NOT doing anything with existing poison memory items!
+//argv(0) ~ immunity time in seconds
+[function f_pm_setImmunity]
+arg(immunityTime,<serv.time>+<eval (argv(0)*10)>)
+if (<eval tag(immunityUntil)> < <arg(immunityTime)>)
+  tag(immunityUntil,<arg(immunityTime)>)
+endif
+
+//tells whether the character has a poison immunity (cure immunity flag or resist > 1000)
+//returns 1 if cure immune
+//        2 if JUST resist immune
+//        0 if NOT immune
+[function f_pm_isImmune]
+if (<eval tag(immunityUntil)> > <serv.time>) // immune by cure
+  return 1
+elseif (<eval cont.tag(resist_poison)> >= 1000) //high resists
+  return 2
+else
+  return 0
+endif
+
+//returns the immunity time remaining
+[function f_pm_immunityRemaining]
+if (<f_pm_isImmune> == 1)
+  return<eval (tag(immunityUntil)-<serv.time>)>
+else
+  return 0
+endif
+
+//function to be triggered on players death clearing all the poison settings
+[function f_pm_death]
+tag.remove(immunityUntil)
+f_pm_removeAll(1)
+
+
+//////////////////////////////////////////////
+//       P L A Y E R    E V E N T S :       //
+//                                          //
+
+//because of a cure and death
+[events e_poisoned]
+on=@spelleffect
+if (<argn>==11)||(<argn>==25)//cure, arch cure
+  poisonManager.f_pm_removeAll
+endif
+
+on=@death
+poisonManager.f_pm_death //clears all the poisons
+
+[events e_poison]//otravuju uderem zbrani
+on=@DrinkingPotion
+on=@afterswing
+if (action==skill_swordsmanship)||(action==skill_fencing)
+  if (act)
+    if (act.ischar)
+      arg(mypoisonact,<act>)
+      if (var(ubrano))&&(strlen(<tag(weaponuid)>))// trefil sem ho
+        if (finduid(<tag(weaponuid)>).f_poisoning_weapon_checkPoisoningValues) //weapon has all necessary values set
+          if (act.npc)
+            arg(dmg,<eval <eval <finduid(<tag(weaponuid)>).tag(jed_sila)>*<nastaveni_poison_pvm_coefficient>>/100>)
+          else
+            arg(dmg,<finduid(<tag(weaponuid)>).tag(jed_sila)>)
+          endif
+          arg(poisonType,<finduid(<tag(weaponuid)>).tag(jed_typ)>)
+          if (strcmp(<arg(poisonType)>,poison_c) == 0)
+            arg(poisonType,poison_absoluteDmg) // there is no way at the moment to appli poison_c damage upon weapons -
+          endif
+          finduid(<arg(mypoisonact)>).f_poison_doPoison(<arg(dmg)>,<nastaveni_poison_<arg(poisonType)>>,<arg(poisonType)>,1) //strength, speed, type, suppressed poison effect
+          finduid(<tag(weaponuid)>).sniz_jed//pouzitim zmensime jed na zbrani
+        endif
+      endif
+    endif
+  endif
+endif
+return 0
+on=@beforedoeffect
+on=@beforegeteffect
+on=@aftergetswing
+on=@beforegetswing
+
+
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//      I T E M    P O I S O N I N G :      //
+//                                          //
+
+[function sniz_jed] //zmensuje silu jedu na zbrani pouzitim
+if (tag(jed_vydrz))&&(tag(jed_sila) > 0)
+  tag(jed_sila,<tag(jed_sila)>-<eval (<tag(jed_sila)> / <tag(jed_vydrz)>)>)
+  tag(jed_vydrz,<tag(jed_vydrz)>-1)
+else//uz neni jedovata, zlikviduj to
+  tag.remove(jed_vydrz)
+  tag.remove(jed_typ)
+  tag.remove(jed_sila)
+  events=-e_poisonitem
+  cont.events=-e_poison
+endif
+
+[function f_poisoning]
+//src.reveal
+if (src.nolightfizz(1))
+  return 1
+endif
+src.action=-1
+src.stopscriptedskills
+src.newitem i_potion_poison_timer
+src.act.timer=20
+src.act.more2=<uid>//ulozi flasku na memory item
+src.act.equip
+
+[itemdef i_potion_poison_timer]
+ID=i_memory
+TYPE=t_eq_script
+name=poisoning
+
+on=@equip
+target Co chces otravit?
+
+on=@userdclick
+target Co chces otravit?
+return 1
+
+on=@targon_item
+if (src.targ.tag(jed_sila))
+  if (src.targ.type==t_weapon_arrow) || (src.targ.type==t_weapon_bolt)
+    src.sysMessage("Tyhle sipky uz jsou otravene.")
+    return 0
+  endif
+endif
+if (<src.targ.topobj>!=<src>)
+  src.sysMessage("Vec musis mit u sebe.")
+  dclick
+  return 1
+elseif (src.targ.amount>50)
+  src.sysMessage("Na takove mnozstvi jedna lahvicka nestaci.")
+  dclick
+  return 1
+elseif (src.targ.isarrow)||(src.targ.isbolt)
+  if !(src.targ.typedef.tdata2)
+    src.sysMessage("Na toto nemuzes aplikovat jed.")
+    dclick
+    return 1
+  endif
+elseif (nastaveni_weappoison_<src.targ.typedef.dispid>)
+else
+  src.sysMessage("Na toto nemuzes aplikovat jed.")
+  dclick
+  return 1
+endif
+link=<src.targ>//linkne se na zbran
+if (src.targ.isarrow)||(src.targ.isbolt)
+  if (cont.poisoning > {0 1000})
+    morex=1
+  endif
+elseif (cont.poisoning > <eval <return_nth(1,<nastaveni_weappoison_<src.targ.typedef.dispid>>)> + {0 100}>) //uspesne otraveni
+  morex=1
+endif
+timerdelay(<promilerange(<cont.poisoning>,<skill_poisoning.delay>)>)
+more=1
+return 1
+
+on=@targon_char
+dclick
+return 1
+
+on=@timer
+if (more2)
+else
+  remove
+  return 1
+endif
+if (more)
+  if (morex)
+    if (link.isarrow)||(link.isbolt)
+      cont.newitemsafe(<link.id>_poison)
+      lastnew.amount=<link.amount>
+      lastnew.cont=<link.cont>
+      lastnew.color=<finduid(<more2>).color>
+      link.remove
+      link=<lastnew>
+      link.tag(jed_sila,(<eval {<nastaveni_poison_<finduid(<more2>).id>>}> * <nastaveni_sip_jed>) /100)
+    else
+      link.events=+e_poisonitem//event na zbran
+      if (link.layer == 1) || (link.layer == 2) //zbrane jsou equipnuty -> je potreba na hraci rovnou spustit equip trigger typu e_poisonitem
+        f_poisonItem_equip(<cont>)
+      endif
+      //sila zbrane z nastaveni a pripadnyho postihu/bonusu na zbran
+      link.tag(jed_sila,( <eval {<nastaveni_poison_<finduid(<more2>).id>>}> * <return_nth(2,<nastaveni_weappoison_<link.typedef.dispid>>)>) /100)
+      link.tag(jed_vydrz,<return_nth(3,<nastaveni_weappoison_<link.typedef.dispid>>)>)//kolikrat s ni lze otravit
+      if (link.id==i_kudla)
+        link.color=<finduid(<more2>).color>
+      endif
+    endif
+    link.tag(jed_name,<finduid(<more2>).name>)
+    link.tag(jed_typ,<finduid(<more2>).tag(jed_typ)>)//predej typ
+    link.tag(jed_rychlost,<nastaveni_poison_<finduid(<more2>).tag(jed_typ)>>)//rychlost skytani
+    cont.sysMessage("Uspesne jsi <cont.sex("aplikoval","aplikovala")> jed.")
+    if (6 == {0 10})
+      if (finduid(<more2>).amount==1)
+        finduid(<more2>).remove
+      else
+        finduid(<more2>).amount=<finduid(<more2>).amount>-1
+      endif
+      cont.sysMessage("Dosel jed.")
+    endif
+  else
+    cont.sysMessage("Nepovedlo se ti aplikovat jed.")
+    if (<eval (1200-<cont.poisoning>)/12>>{0 1000})//otraveni sebe
+      cont.sysMessage("Pri manipulaci jsi se <cont.sex("priotravil","priotravila")> pouzitym jedem.")
+      cont.f_poison_doPoison(<eval {<nastaveni_poison_<finduid(<more2>).id>>}>,<nastaveni_poison_<finduid(<more2>).tag(jed_typ)>>,<finduid(<more2>).tag(jed_typ)>) //args: (str, speed, type)
+    endif
+  endif
+  if (link.isarrow)||(link.isbolt)//pokud je to sip, tak uz to bylo stejne smazany
+  elseif (cont.poisoning < {0 1400})//flaska vyprazdnena
+    cont.sysMessage("Pri manipulaci jsi <cont.sex("znehodnotil","znehodnotila")> lektvar.")
+    if (finduid(<more2>).amount==1)
+      finduid(<more2>).remove
+    else
+      finduid(<more2>).amount=<finduid(<more2>).amount>-1
+    endif
+  endif
+endif
+remove
+return 1
+
+[typedef e_poisonitem]
+on=@equip
+f_poisonItem_equip(<src>)
+return 0
+
+on=@unequip
+f_poisonItem_unEquip(<src>)
+return 0
+
+on=@userclick
+if (tag(jed_sila))
+ src.sysmessage("Otravena")
+endif
+
+[function f_poisonItem_equip] //arg 1 == player, that holds the weapon
+argv(0).events=+e_poison
+
+[function f_poisonItem_unEquip] //arg 1 == player, that disequips the weapon
+argv(0).events=-e_poison
+
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//      P O T I O N    E F F E C T S :      //
+//                                          //
+
+[function poison_para]
+if (resist_para)
+  if (resist_para > argv(0))//sila
+    var(dmgPoison,0) // zero value removes the poison memory
+    return 1
+  endif
+endif
+events -e_spelleffect
+paralyze(10)
+events +e_spelleffect
+var(dmgPoison,1) // zero value removes the poison memory
+
+[function poison_fizz]
+stopmagery
+reveal
+stopscriptedskills
+damage 1
+action=-1
+var(dmgPoison,1) // zero value removes the poison memory
+
+// argv(0) ~ poison damage
+// triggeres the message saying how strong the poison is
+[function f_poison_dam_msg]
+if (isPlayer)
+  if (<argv(0)> > <def_poison_msgLimit_deadly>)
+    sysMessage("Jsi smrtelne <sex("otraven","otravena")>!")
+  elseif (<argv(0)> > <def_poison_msgLimit_greater>)
+    sysMessage("Jsi tezce <sex("otraven","otravena")>!")
+  elseif (<argv(0)> > <def_poison_msgLimit_normal>)
+    sysMessage("Jsi <sex("otraven","otravena")>!")
+  elseif (<argv(0)> > 0)
+    sysMessage("Jsi lehce <sex("otraven","otravena")>!")
+  else
+    sysMessage("Otrava na tebe nema zadny ucinek.")
+  endif
+endif
+
+[function poison_absoluteDmg]
+damage_noresponse(<eval argv(0)>,dam_god|dam_poison)
+f_poison_dam_msg(<var(dmgedNoResp)>)
+var(dmgPoison,<var(dmgedNoResp)>) // zero value removes the poison memory
+
+[function poison_c]
+arg(poison_dam,<eval (maxhits * argv(0))>)
+damage_noresponse(<eval arg(poison_dam)/100>,dam_god|dam_poison,0)
+f_poison_dam_msg(<var(dmgedNoResp)>)
+var(dmgPoison,<var(dmgedNoResp)>) // zero value removes the poison memory
+
+[function poison_stamina]
+arg(poison_dam,<eval (maxstam * argv(0))>)
+arg(poison_dam,<eval arg(poison_dam)/100>)
+reduceStamina(<arg(poison_dam)>) // safely decreases stamina
+var(dmgPoison,<arg(poison_dam)>) // zero value removes the poison memory
+
+[function poison_feeblemind]
+f_eqrune(i_a_feeblemind,nastaveni_poison_poison_feeblemind,<argv(0)>,3)
+var(dmgPoison,1) // sets the strength of a poison to non-zero value in order to preserve the poison memory item
+
+[function poison_weaken]
+f_eqrune(i_a_weaken,nastaveni_poison_poison_weaken,<argv(0)>,3)
+var(dmgPoison,1) // sets the strength of a poison to non-zero value in order to preserve the poison memory item
+
+[function poison_clumsy]
+f_eqrune(i_a_clumsy,nastaveni_poison_poison_clumsy,<argv(0)>,3)
+var(dmgPoison,1) // sets the strength of a poison to non-zero value in order to preserve the poison memory item
+
+[function f_poisoning_weapon_checkPoisoningValues]
+if (strcmpi("<tag(jed_typ)>","nastaveni_poison_")!=0) && (strlen("<tag(jed_typ)>"))
+  if (safe <eval tag(jed_sila)>)
+    return 1
+  endif
+endif
+return 0
+
+
+// updates poison Dmg and calls poisonManager to set its variable link
+// var(noMessage) ~ denies messages pop up
+// argv(0) ~ poison strength
+// argv(1) ~ poison type
+// returns: 0 ~ if poison changed
+//          1 ~ if poison item was NOT found
+[function f_poison_updatePoisonDmg]
+arg(poisonMemory,<poisonManager.f_pm_getPoisonByType(<argv(1)>)>)
+if (strlen(<arg(poisonMemory)>))
+  arg(currentDamage,<eval arg(poisonMemory).tag(jed_sila)>)
+  if (<arg(currentDamage)> < <argv(0)>) // the new poison damage is greater
+    arg(poisonMemory).tag(jed_sila,<argv(0)>)
+    if !(<eval var(noMessage)>)
+      sysMessage("<sex("Dostal","Dostala")> jsi dalsi davku jedu!")
+    endif
+  endif
+  return 0
+endif
+return 1
+
+[function f_poison_applyResist]
+if (cont.resist_poison)//ma resist ? kdyz jo, tak prepocitat silu
+  tag(jed_sila,<eval (<tag(jed_sila)>-<eval <eval (<eval tag(jed_sila)>*<cont.resist_poison>)>/1000>)>)
+endif
+
+// function triggered upon the NPC that wants to cause a poison
+//argv(0) - targetPlayer
+//argv(1) - suppress chance computing
+[function f_poisoning_Trigger]
+argv(0).stopmagery
+if (NPC)
+  if (<eval argv(1)> == 0)
+    if !(<chance(<poisoning>,3)>) // chance in promiles
+      return
+    endif
+  endif
+
+  //MvM
+  if (<argv(0).NPC>)
+    if (<eval tag(poisoning_MvM_dmg)>)
+      arg(dmg,<eval tag(poisoning_MvM_dmg)>)
+    else
+      arg(dmg,<eval (<poisoning>*<nastaveni_poison_mvm_coefficient>)/1000>)
+    endif
+
+  // MvP
+  else
+    if (<eval tag(poisoning_dmg)>)
+      arg(dmg,<eval tag(poisoning_dmg)>)
+    else
+      arg(dmg,<eval poisoning/100>)
+    endif
+  endif
+
+  //damage
+  argv(0).f_poison_doPoison(<eval arg(dmg)>,<nastaveni_poison_poison_absoluteDmg>)
+endif
+
+
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//        S P E L L    P O I S O N :        //
+//                                          //
+[function spell_poison_custom]//argv(0)=src
+arg(source,<argv(0)>)
+arg(target,<uid>)
+arg(tmp,0)
+if (!arg(target).isplayer)//vplyv levelu iba ak ciel nieje hrac
+  arg(tmp,<eval(<arg(source).tag(level)>/5)>)//vplyv levelu
+  if (<arg(tmp)>>30)
+    arg(tmp,30)
+  endif
+endif
+arg(divide,<eval(150-<arg(tmp)>)>)//skusime 55 - na hracov (menej je viac dmg)
+if (!arg(target).isplayer)  // na monstra
+  arg(divide,<eval(140-<arg(tmp)>)>)//skusime 45
+endif
+arg(poison_power,<eval(<arg(source).tag(sm)>/<arg(divide)>)>)
+
+if (flag_reflection) //ciel ma zrcko
+  arg(target).effect=3,i_fx_glow,6,9,0
+  flag_reflection=0
+  findid(i_rune_magic_reflection).remove
+  arg(poison_power,#+1) //zvysime silu odrazeneho poisonu
+
+  if (arg(source).flag_reflection) //zdroj ma zrcko
+    arg(source).effect=3,i_fx_glow,6,9,0
+    arg(source).flag_reflection=0
+    arg(source).findid(i_rune_magic_reflection).remove
+  else
+    arg(target,<arg(source)>)
+  endif
+endif
+
+if (arg(target).findid(i_a_curse)) //vplyv curse
+  arg(poison_power,#+1) //zvysime silu poisonu
+endif
+
+if (!arg(target).isplayer)
+  arg(poison_power,#+1) //zvysime silu poisonu (pre monstra)
+endif
+
+if (<arg(poison_power)><=0)
+  return 1
+endif
+
+if (<arg(target).f_poison_doPoison(<arg(poison_power)>,5,poison_c,0,snd_spell_poison)>==0)
+  arg(target).damage(1,dam_god,<arg(source)>) //add +1 instant damage if the target doesn't have cure or resist
+endif
+
+return 1
+
+[eof]

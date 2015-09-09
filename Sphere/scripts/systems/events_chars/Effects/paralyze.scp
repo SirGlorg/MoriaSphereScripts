@@ -1,0 +1,97 @@
+//paralyzes the target for a given amount of time
+//updates current paralyze time if the target is already paralised
+//argv(0) duration in deci-seconds (default == 20), -1 for eternal paralysis
+//argv(1) paralysis strength (default == 0 ~ can be undone using harm)
+[function paralyze]
+if (charIsUnsafe)
+  return 1
+endif
+arg(paraItem,<findID(i_paralysis)>)
+if !(<arg(paraItem)>)
+  newitemsafe(i_paralysis)
+  arg(paraItem,<lastnew>)
+  paraItem.cont=<uid>
+endif
+
+if (<argvcount> > 0) //time of a paralyze was set manualy
+  arg(paraTime,<eval argv(0)>)
+else // default value - 2s
+  arg(paraTime,20)
+endif
+
+if (<paraItem.timer> < <eval arg(paraTime)/10>) //newly set timer is higher than the previous one
+  paraItem.timerd = <arg(paraTime)>
+  if (<argvcount> > 1) // para strength
+    f_para_deny(<eval argv(1)>,<paraItem>)
+  endif
+elseif (<arg(paraTime)> < 0) //an ethernal para impact
+  paraItem.more2 = 1 //ethernal
+  paraItem.timer=0
+endif
+f_paralyze_effect
+f_freeze
+
+//denies the removal of para
+//HALF IMPLEMENTED, MAY HAVE FUNNY EFFECTS
+//argv(0) - paralysis strength (max 100)
+[function paralyze_denyRemoval]
+f_para_deny(<argv(0)>,<findID(i_paralysis)>)
+
+//argv(0) - paralysis strength (max 100)
+//argv(1) - paralysis item
+[function f_para_deny]
+if (<argv(0)>) // custom value
+  if (<argv(0)> > 100) // max value of 100
+    argv(1).more1=100
+  else
+    argv(1).more1=<argv(0)>
+  endif
+else
+  argv(1).more1=1 // default
+endif
+
+//removes the paralyze
+//argv(0) - the strength of a removal (max == 100)
+[function paralyze_remove]
+if (<restest(i_paralysis)>)
+  if (<eval argv(0)> >= findID(i_paralysis).more1) // more1 ~ remove para lock
+    findID(i_paralysis).remove // removes the paralyze if the call is strong enough
+    if (<restest(i_rune_paralyze)>)
+      findID(i_rune_paralyze).remove // removes the rune automaticaly generated after the paralyze spell
+    endif
+  endif
+endif
+
+[function isParalyzed]
+return <flag_freeze>
+
+[function f_paralyze_effect]
+effect(3,i_fx_curse,6,15,1)
+
+//handles the freezing and suppres the item removal by setting the global check value
+[function f_freeze]
+var(wasFrozen,1)
+flag_freeze=1
+
+//Handles the paralize effect for a constantly defined
+//number of seconds
+//USE: ONLY manipulate with this object using the above functions!
+//more1 - para strength -> determines how hard it is to remove para
+//                         (eg. harm removes para with a strength of 0)
+[itemdef i_paralysis]
+id=i_memory
+name=Paralysis memory
+type=t_eq_script
+layer=30
+
+on=@create
+timer=0
+
+on=@unequip
+topobj.flag_freeze=0
+
+on=@timer
+if (more2 == 1) //ethernal para
+  return 1
+endif
+remove

@@ -1,0 +1,469 @@
+///////////////////////////////////////////////
+//////////////   R E G   B O X   //////////////
+///////////////////////////////////////////////
+
+[ITEMDEF i_regbox]
+name="Bedynka na regy"
+id=i_crate_small_2
+type=t_container
+
+on=@create
+tag(pocet_regu,0)
+tag(max_regu,10000000)
+
+on=@userDClick
+dialog(d_regbox_menu)
+return 1
+
+[DIALOG d_regbox_menu]
+if (<eval(tag(pocet_regu) % 4)> == 0)
+  arg(radku, <eval((tag(pocet_regu)/4))>)
+else
+  arg(radku, <eval((tag(pocet_regu)/4)+1)>)
+endif
+arg(vyska,<?eval((arg(radku)*63)+90)?>)
+arg(prvni_radek,50)
+arg(posun,16)
+argo.resizepic(0, 0, 5054, 660, arg(vyska))
+argo.resizepic(10, 10, 3000, 640, <eval(arg(vyska)-20)>)
+argo.button(580,10,4017,4019,1,0,0) //zavrit
+argo.htmlgumpa(245,15,100,20,"Bedynka na regy",0,0)
+argo.button(10,25,4005,4007,1,0,1) //pridat regy
+argo.htmlgumpa(55,27,100,20,"Pridat regy",0,0)
+if (tag(pocet_regu)==0)
+  argo.htmlgumpa(20,arg(prvni_radek),160,30,"Neobsahuje zadne regy",0,0)
+else
+  arg(i,0)
+  while (i < tag(pocet_regu))
+    argo.button(10,arg(prvni_radek)+(arg(i)*arg(posun))-2,4017,4019,1,0,<eval(101 + i)>)
+    argo.htmlgumpa(45,arg(prvni_radek)+(arg(i)*arg(posun)),110,20,<?<tag(reg_<eval(<arg(i)>+1)>)>.name?>,0,0)
+    argo.htmlgumpa(45,arg(prvni_radek)+20+(arg(i)*arg(posun)),100,20,"Pocet:",0,0)
+    argo.htmlgumpa(85,arg(prvni_radek)+20+(arg(i)*arg(posun)),100,20,<?tag(reg_pocet_<eval(<arg(i)>+1)>)?>,0,0)
+    argo.checkbox(10,arg(prvni_radek)+38+(arg(i)*arg(posun)),9903,9904,0,<eval(101 + i)>)
+    argo.htmlgumpa(45,arg(prvni_radek)+38+(arg(i)*arg(posun)),50,20,"Vyndat:",0,0)
+    argo.textentrya(90,arg(prvni_radek)+38+(arg(i)*arg(posun)),65,20,0,<eval(101 +  i)>,6)
+    argo.tilepic(128,<eval(arg(prvni_radek)+(arg(i)*arg(posun)))>,<?<tag(reg_<eval(<arg(i)>+1)>)>.id?>)
+    argo.tilepic(133,<eval(arg(prvni_radek)+5+(arg(i)*arg(posun)))>,<?<tag(reg_<eval(<arg(i)>+1)>)>.id?>)
+    if ((i+1) < tag(pocet_regu))
+      argo.button(170,arg(prvni_radek)+(arg(i)*arg(posun))-2,4017,4019,1,0,<eval(102 + i)>)
+      argo.htmlgumpa(205,arg(prvni_radek)+(arg(i)*arg(posun)),110,20,<?<tag(reg_<eval(<arg(i)>+2)>)>.name?>,0,0)
+      argo.htmlgumpa(205,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,"Pocet:",0,0)
+      argo.htmlgumpa(245,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,<?tag(reg_pocet_<eval(<arg(i)>+2)>)?>,0,0)
+      argo.checkbox(170,arg(prvni_radek)+34+(arg(i)*arg(posun)),9903,9904,0,<eval(102 + i)>)
+      argo.htmlgumpa(205,arg(prvni_radek)+34+(arg(i)*arg(posun)),50,20,"Vyndat:",0,0)
+      argo.textentrya(250,arg(prvni_radek)+34+(arg(i)*arg(posun)),65,20,0,<eval(102 + i)>,6)
+      argo.tilepic(288,<eval(arg(prvni_radek)+(arg(i)*arg(posun)))>,<?<tag(reg_<eval(<arg(i)>+2)>)>.id?>)
+      argo.tilepic(293,<eval(arg(prvni_radek)+5+(arg(i)*arg(posun)))>,<?<tag(reg_<eval(<arg(i)>+2)>)>.id?>)
+    endif
+    if ((i+2) < tag(pocet_regu))
+      argo.button(330,arg(prvni_radek)+(arg(i)*arg(posun))-2,4017,4019,1,0,<eval(103 + i)>)
+      argo.htmlgumpa(365,arg(prvni_radek)+(arg(i)*arg(posun)),110,20,<?<tag(reg_<eval(<arg(i)>+3)>)>.name?>,0,0)
+      argo.htmlgumpa(365,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,"Pocet:",0,0)
+      argo.htmlgumpa(405,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,<?tag(reg_pocet_<eval(<arg(i)>+3)>)?>,0,0)
+      argo.checkbox(330,arg(prvni_radek)+34+(arg(i)*arg(posun)),9903,9904,0,<eval(103 + i)>)
+      argo.htmlgumpa(365,arg(prvni_radek)+34+(arg(i)*arg(posun)),50,20,"Vyndat:",0,0)
+      argo.textentrya(410,arg(prvni_radek)+34+(arg(i)*arg(posun)),65,20,0,<eval(103 + i)>,6)
+      argo.tilepic(448,<eval(arg(prvni_radek)+(arg(i)*arg(posun)))>,<?<tag(reg_<eval(<arg(i)>+3)>)>.id?>)
+      argo.tilepic(453,<eval(arg(prvni_radek)+5+(arg(i)*arg(posun)))>,<?<tag(reg_<eval(<arg(i)>+3)>)>.id?>)
+    endif
+    if ((i+3) < tag(pocet_regu))
+      argo.button(490,arg(prvni_radek)+(arg(i)*arg(posun))-2,4017,4019,1,0,<eval(104 + i)>)
+      argo.htmlgumpa(525,arg(prvni_radek)+(arg(i)*arg(posun)),110,20,<?<tag(reg_<eval(<arg(i)>+4)>)>.name?>,0,0)
+      argo.htmlgumpa(525,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,"Pocet:",0,0)
+      argo.htmlgumpa(565,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,<?tag(reg_pocet_<eval(<arg(i)>+4)>)?>,0,0)
+      argo.checkbox(490,arg(prvni_radek)+34+(arg(i)*arg(posun)),9903,9904,0,<eval(104 + i)>)
+      argo.htmlgumpa(525,arg(prvni_radek)+34+(arg(i)*arg(posun)),50,20,"Vyndat:",0,0)
+      argo.textentrya(570,arg(prvni_radek)+34+(arg(i)*arg(posun)),65,20,0,<eval(104 + i)>,6)
+      argo.tilepic(608,<eval(arg(prvni_radek)+(arg(i)*arg(posun)))>,<?<tag(reg_<eval(<arg(i)>+4)>)>.id?>)
+      argo.tilepic(613,<eval(arg(prvni_radek)+5+(arg(i)*arg(posun)))>,<?<tag(reg_<eval(<arg(i)>+4)>)>.id?>)
+    endif
+    arg(i,#+4)
+  endwhile
+  argo.button(10,<eval(arg(vyska)-33)>,4023,4025,1,0,4) //OK
+endif
+
+[DIALOG d_regbox_menu TEXT]
+ 
+
+[DIALOG d_regbox_menu BUTTON]
+on=0
+return
+
+on=1
+src.findID(i_pridat_regy).remove
+src.newitem i_pridat_regy
+lastnew.link=<UID>
+lastnew.equip
+lastnew.useitem
+return 1
+
+on=4
+arg(i,1)
+while (i <= <tag(pocet_regu)>)
+  if (<argChk(<eval(i+100)>)>)
+    arg(vyndatRegu,<fixNumber(<argTxt(<eval(i+100)>)>)>)
+    if (<arg(vyndatRegu)> > 0)
+      f_vyndat_regy(<arg(i)>,<arg(vyndatRegu)>)
+    endif
+  endif
+  arg(i,#+1)
+endwhile
+useitem
+return 1
+
+on=@anyButton
+arg(cislo, <eval argn-100>)
+f_vyndat_regy(<arg(cislo)>,<tag(reg_pocet_<arg(cislo)>)>)
+useitem
+return 1
+
+[function f_vyndat_regy]
+arg(reagID,<tag(reg_<argv(0)>)>)
+arg(reagAmount,<argv(1)>)
+if (reagAmount >= <tag(reg_pocet_<argv(0)>)>)
+  arg(reagAmount, <tag(reg_pocet_<argv(0)>)>)
+  arg(i,<argv(0)>)
+  while (i < <tag(pocet_regu)>)
+    tag(reg_<arg(i)>,<tag(reg_<eval(arg(i)+1)>)>)
+    tag(reg_pocet_<arg(i)>, <tag(reg_pocet_<eval(arg(i)+1)>)>)
+    arg(i,#+1)
+  endwhile
+  tag.remove(reg_<tag(pocet_regu)>)
+  tag.remove(reg_pocet_<tag(pocet_regu)>)
+  tag(pocet_regu,<tag(pocet_regu)>-1)
+else
+  tag(reg_pocet_<argv(0)>,<tag(reg_pocet_<argv(0)>)>-<arg(reagAmount)>)
+endif
+while (reagAmount>0)
+  src.newitem <arg(reagID)>
+  if (reagAmount>60000)
+    lastnew.amount=60000
+    arg(reagAmount,<arg(reagAmount)>-60000)
+  else
+    lastnew.amount=<reagAmount>
+    arg(reagAmount,0)
+  endif
+  src.accMsg("Hrac (<src.name>,<src>) vyndava z regboxu(<uid>) reag(<lastnew.name>,<lastnew>). Pocet: <lastnew.amount>")
+  lastnew.bounce
+endwhile
+
+[itemdef i_pridat_regy]
+name="Pridat regy"
+type=t_eq_script
+layer=30
+
+on=@create
+attr_decay=1
+timer=60
+
+on=@userDClick
+target
+return 1
+
+on=@equip
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targOn_char
+return 1
+
+on=@targOn_item
+if (src.targ.topobj==src.topobj)
+ 	if (src.targ.type == t_reagent)
+    f_pridat_regy(<src.targ.uid>)
+ 	elseif (src.targ.type == t_container)&&(src.targ.layer != 21)
+    src.targ.contents(f_allregs(<link>))
+  endif
+  src.newitem i_pridat_regy
+  lastnew.link=<link>
+  lastnew.equip
+  lastnew.useitem
+else
+  src.sysmessage("Vec musis mit u sebe!!!")
+endif
+remove
+return 1
+ 
+[function f_allregs]
+if (type == t_reagent)
+	if (args)
+		link=<args>
+	endif
+	f_pridat_regy(<uid>)
+endif
+
+[function f_pridat_regy]
+arg(argUID,<args>)
+arg(reg_cislo,0)
+arg(i,1)
+while (i <= <eval link.tag(pocet_regu)>)
+	if (link.tag(reg_<arg(i)>)==arg(argUID).id)
+		arg(reg_cislo,<arg(i)>)
+	endif
+	arg(i,#+1)
+endwhile
+if (<arg(reg_cislo)>==0)
+	link.tag(pocet_regu,<eval (<link.tag(pocet_regu)>+1)>)
+	arg(cislo,<link.tag(pocet_regu)>)
+	link.tag(reg_<arg(cislo)>,<arg(argUID).id>)
+else
+	arg(cislo,<arg(reg_cislo)>)
+endif
+if (link.tag(reg_pocet_<arg(cislo)>) < link.tag(max_regu))
+	if (<eval(arg(argUID).amount+link.tag(reg_pocet_<arg(cislo)>))> > link.tag(max_regu))
+	  arg(vkladamRegu,<eval (link.tag(max_regu) - link.tag(reg_pocet_<arg(cislo)>))>)
+		arg(argUID).amount=<eval(arg(argUID).amount-arg(vkladamRegu))>
+		link.tag(reg_pocet_<arg(cislo)>, <link.tag(max_regu)>)
+		src.accMsg("Hrac (<src.name>,<src>) vklada do regBoxu(<link>) reg(<arg(argUID).name>,<arg(argUID)>). Pocet: <arg(vkladamRegu)>")
+                src.sysmessage("Vlozil si do bednicky <arg(vkladamRegu)> <arg(argUID).name>.")
+		src.sysmessage("Vic tam nevleze")
+	else
+		link.tag(reg_pocet_<arg(cislo)>, <link.tag(reg_pocet_<arg(cislo)>)>+<arg(argUID).amount>)
+		src.accMsg("Hrac (<src.name>,<src>) vklada do regBoxu(<link>) reg(<arg(argUID).name>,<arg(argUID)>). Pocet: <arg(argUID).amount>")
+                src.sysmessage("Vlozil si do bednicky <arg(argUID).amount> <arg(argUID).name>.")
+		arg(argUID).remove
+	endif
+endif
+  	
+  	
+///////////////////////////////////////////////
+//////////////   G E M   B O X   //////////////
+///////////////////////////////////////////////
+
+[ITEMDEF i_gembox]
+Name="Truhlicka na drahe kameny"
+ID=0e80
+type=t_container
+DupeList=09a8
+
+on=@create
+tag(pocet_gemu,0)
+tag(max_gemu,1000000)
+color=0990
+
+on=@userDClick
+dialog(d_gembox_menu)
+return 1
+
+on=@StackOn
+src.RedMessage("Truhlicku pouzivej dvojklikem")
+argo.bounce
+return 1
+
+[DIALOG d_gembox_menu]
+if (<eval(tag(pocet_gemu) % 4)> == 0)
+  arg(radku, <eval((tag(pocet_gemu)/4))>)
+else
+  arg(radku, <eval((tag(pocet_gemu)/4)+1)>)
+endif
+arg(vyska,<?eval((arg(radku)*63)+90)?>)
+arg(prvni_radek,50)
+arg(posun,16)
+argo.resizepic(0, 0, 5054, 660, arg(vyska))
+argo.resizepic(10, 10, 3000, 640, <eval(arg(vyska)-20)>)
+argo.button(580,10,4017,4019,1,0,0) //zavrit
+argo.htmlgumpa(245,15,200,20,"Truhlicka na drahe kameny",0,0)
+argo.button(10,25,4005,4007,1,0,1) //pridat gemy
+argo.htmlgumpa(55,27,150,20,"Pridat drahe kameny",0,0)
+if (tag(pocet_gemu)==0)
+  argo.htmlgumpa(20,arg(prvni_radek),160,30,"Neobsahuje zadne kameny",0,0)
+else
+  arg(i,0)
+  while (i < tag(pocet_gemu))
+    argo.button(10,arg(prvni_radek)+(arg(i)*arg(posun))-2,4017,4019,1,0,<eval(101 + i)>)
+    argo.htmlgumpa(45,arg(prvni_radek)+(arg(i)*arg(posun)),110,20,<?<tag(gem_<eval(<arg(i)>+1)>)>.name?>,0,0)
+    argo.htmlgumpa(45,arg(prvni_radek)+20+(arg(i)*arg(posun)),100,20,"Pocet:",0,0)
+    argo.htmlgumpa(85,arg(prvni_radek)+20+(arg(i)*arg(posun)),100,20,<?tag(gem_pocet_<eval(<arg(i)>+1)>)?>,0,0)
+    argo.checkbox(10,arg(prvni_radek)+38+(arg(i)*arg(posun)),9903,9904,0,<eval(101 + i)>)
+    argo.htmlgumpa(45,arg(prvni_radek)+38+(arg(i)*arg(posun)),50,20,"Vyndat:",0,0)
+    argo.textentrya(90,arg(prvni_radek)+38+(arg(i)*arg(posun)),65,20,0,<eval(101 +  i)>,6)
+    argo.tilepic(128,<eval(arg(prvni_radek)+(arg(i)*arg(posun)))>,<?<tag(gem_<eval(<arg(i)>+1)>)>.id?>)
+    argo.tilepic(133,<eval(arg(prvni_radek)+5+(arg(i)*arg(posun)))>,<?<tag(gem_<eval(<arg(i)>+1)>)>.id?>)
+    if ((i+1) < tag(pocet_gemu))
+      argo.button(170,arg(prvni_radek)+(arg(i)*arg(posun))-2,4017,4019,1,0,<eval(102 + i)>)
+      argo.htmlgumpa(205,arg(prvni_radek)+(arg(i)*arg(posun)),110,20,<?<tag(gem_<eval(<arg(i)>+2)>)>.name?>,0,0)
+      argo.htmlgumpa(205,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,"Pocet:",0,0)
+      argo.htmlgumpa(245,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,<?tag(gem_pocet_<eval(<arg(i)>+2)>)?>,0,0)
+      argo.checkbox(170,arg(prvni_radek)+34+(arg(i)*arg(posun)),9903,9904,0,<eval(102 + i)>)
+      argo.htmlgumpa(205,arg(prvni_radek)+34+(arg(i)*arg(posun)),50,20,"Vyndat:",0,0)
+      argo.textentrya(250,arg(prvni_radek)+34+(arg(i)*arg(posun)),65,20,0,<eval(102 + i)>,6)
+      argo.tilepic(288,<eval(arg(prvni_radek)+(arg(i)*arg(posun)))>,<?<tag(gem_<eval(<arg(i)>+2)>)>.id?>)
+      argo.tilepic(293,<eval(arg(prvni_radek)+5+(arg(i)*arg(posun)))>,<?<tag(gem_<eval(<arg(i)>+2)>)>.id?>)
+    endif
+    if ((i+2) < tag(pocet_gemu))
+      argo.button(330,arg(prvni_radek)+(arg(i)*arg(posun))-2,4017,4019,1,0,<eval(103 + i)>)
+      argo.htmlgumpa(365,arg(prvni_radek)+(arg(i)*arg(posun)),110,20,<?<tag(gem_<eval(<arg(i)>+3)>)>.name?>,0,0)
+      argo.htmlgumpa(365,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,"Pocet:",0,0)
+      argo.htmlgumpa(405,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,<?tag(gem_pocet_<eval(<arg(i)>+3)>)?>,0,0)
+      argo.checkbox(330,arg(prvni_radek)+34+(arg(i)*arg(posun)),9903,9904,0,<eval(103 + i)>)
+      argo.htmlgumpa(365,arg(prvni_radek)+34+(arg(i)*arg(posun)),50,20,"Vyndat:",0,0)
+      argo.textentrya(410,arg(prvni_radek)+34+(arg(i)*arg(posun)),65,20,0,<eval(103 + i)>,6)
+      argo.tilepic(448,<eval(arg(prvni_radek)+(arg(i)*arg(posun)))>,<?<tag(gem_<eval(<arg(i)>+3)>)>.id?>)
+      argo.tilepic(453,<eval(arg(prvni_radek)+5+(arg(i)*arg(posun)))>,<?<tag(gem_<eval(<arg(i)>+3)>)>.id?>)
+    endif
+    if ((i+3) < tag(pocet_gemu))
+      argo.button(490,arg(prvni_radek)+(arg(i)*arg(posun))-2,4017,4019,1,0,<eval(104 + i)>)
+      argo.htmlgumpa(525,arg(prvni_radek)+(arg(i)*arg(posun)),110,20,<?<tag(gem_<eval(<arg(i)>+4)>)>.name?>,0,0)
+      argo.htmlgumpa(525,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,"Pocet:",0,0)
+      argo.htmlgumpa(565,arg(prvni_radek)+17+(arg(i)*arg(posun)),100,20,<?tag(gem_pocet_<eval(<arg(i)>+4)>)?>,0,0)
+      argo.checkbox(490,arg(prvni_radek)+34+(arg(i)*arg(posun)),9903,9904,0,<eval(104 + i)>)
+      argo.htmlgumpa(525,arg(prvni_radek)+34+(arg(i)*arg(posun)),50,20,"Vyndat:",0,0)
+      argo.textentrya(570,arg(prvni_radek)+34+(arg(i)*arg(posun)),65,20,0,<eval(104 + i)>,6)
+      argo.tilepic(608,<eval(arg(prvni_radek)+(arg(i)*arg(posun)))>,<?<tag(gem_<eval(<arg(i)>+4)>)>.id?>)
+      argo.tilepic(613,<eval(arg(prvni_radek)+5+(arg(i)*arg(posun)))>,<?<tag(gem_<eval(<arg(i)>+4)>)>.id?>)
+    endif
+    arg(i,#+4)
+  endwhile
+  argo.button(10,<eval(arg(vyska)-33)>,4023,4025,1,0,4) //OK
+endif
+
+[DIALOG d_gembox_menu TEXT]
+ 
+
+[DIALOG d_gembox_menu BUTTON]
+on=0
+return
+ 
+on=1
+src.SysMessage("Jake kameny chces pridat?")
+src.findID(i_pridat_gemy).remove
+src.newitem i_pridat_gemy
+lastnew.link=<UID>
+lastnew.equip
+lastnew.useitem
+return 1
+
+on=4
+arg(i,1)
+while (i <= <tag(pocet_gemu)>)
+  if (<argChk(<eval(i+100)>)>)
+    arg(vyndatRegu,<fixNumber(<argTxt(<eval(i+100)>)>)>)
+    if (<arg(vyndatRegu)> > 0)
+      f_vyndat_gemy(<arg(i)>,<arg(vyndatRegu)>)
+    endif
+  endif
+  arg(i,#+1)
+endwhile
+useitem
+return 1
+
+on=@anyButton
+arg(cislo, <eval argn-100>)
+f_vyndat_gemy(<arg(cislo)>,<tag(gem_pocet_<arg(cislo)>)>)
+useitem
+return 1
+
+[function f_vyndat_gemy]
+arg(id,<tag(gem_<argv(0)>)>)
+arg(gemAmount,<argv(1)>)
+if (gemAmount >= <tag(gem_pocet_<argv(0)>)>)
+  arg(gemAmount, <tag(gem_pocet_<argv(0)>)>)
+  arg(i,<argv(0)>)
+  while (i < <tag(pocet_gemu)>)
+    tag(gem_<arg(i)>,<tag(gem_<eval(arg(i)+1)>)>)
+    tag(gem_pocet_<arg(i)>, <tag(gem_pocet_<eval(arg(i)+1)>)>)
+    arg(i,#+1)
+  endwhile
+  tag.remove(gem_<tag(pocet_gemu)>)
+  tag.remove(gem_pocet_<tag(pocet_gemu)>)
+  tag(pocet_gemu,<tag(pocet_gemu)>-1)
+else
+ tag(gem_pocet_<argv(0)>,<tag(gem_pocet_<argv(0)>)>-<arg(gemAmount)>)
+endif
+while (gemAmount>0)
+  src.newitem <arg(id)>
+  if (gemAmount>60000)
+    lastnew.amount=60000
+    arg(gemAmount,<arg(gemAmount)>-60000)
+  else
+    lastnew.amount=<gemAmount>
+    arg(gemAmount,0)
+  endif
+  src.accMsg("Hrac (<src.name>,<src>) vyndava z gemBoxu(<uid>) gem(<lastnew.name>,<lastnew>). Pocet: <lastnew.amount>")
+  lastnew.bounce 
+endwhile
+
+[itemdef i_pridat_gemy]
+name="Pridat drahe kameny"
+type=t_eq_script
+layer=30
+
+on=@create
+attr_decay=1
+timer=60
+
+on=@userDClick
+target
+return 1
+
+on=@equip
+timer=60
+
+on=@timer
+remove
+return 1
+
+on=@targOn_char
+return 1
+
+on=@targOn_item
+if (src.targ.topobj==src.topobj)
+ 	if (src.targ.type == t_gem) && !(src.targ.id==i_coal)
+    f_pridat_gemy(<src.targ.uid>)
+  elseif (src.targ.type == t_container)&&(src.targ.layer != 21)
+    src.targ.contents(f_allgems(<link>))
+  endif
+  src.newitem i_pridat_gemy
+  lastnew.link=<link>
+ 	lastnew.equip
+ 	lastnew.dclick
+else
+  src.sysmessage("Vec musis mit u sebe!!!")
+endif
+remove
+return 1
+ 
+[function f_allgems]
+if (type == t_gem)
+	if (args)
+		link=<args>
+	endif
+	f_pridat_gemy(<uid>)
+endif
+
+[function f_pridat_gemy]
+arg(argUID,<args>)
+arg(gem_cislo,0)
+arg(i,1)
+while (i <= <eval link.tag(pocet_gemu)>)
+	if (link.tag(gem_<arg(i)>)==arg(argUID).id)
+		arg(gem_cislo,<arg(i)>)
+	endif
+	arg(i,#+1)
+endwhile
+if (<arg(gem_cislo)>==0)
+	link.tag(pocet_gemu,<eval (<link.tag(pocet_gemu)>+1)>)
+	arg(cislo,<link.tag(pocet_gemu)>)
+	link.tag(gem_<arg(cislo)>,<arg(argUID).id>)
+else
+	arg(cislo,<arg(gem_cislo)>)
+endif
+if (link.tag(gem_pocet_<arg(cislo)>) < link.tag(max_gemu))
+	if (<eval(arg(argUID).amount+link.tag(gem_pocet_<arg(cislo)>))> > link.tag(max_gemu))
+	  arg(vkladamGemu,<eval (link.tag(max_gemu) - link.tag(gem_pocet_<arg(cislo)>))>)
+		arg(argUID).amount=<eval(arg(argUID).amount-arg(vkladamGemu))>
+		link.tag(gem_pocet_<arg(cislo)>, <link.tag(max_gemu)>)
+		src.accMsg("Hrac (<src.name>,<src>) vklada do gemBoxu(<link>) gem(<arg(argUID).name>,<arg(argUID)>). Pocet: <arg(vkladamGemu)>")
+                src.sysmessage("Vlozil si do bednicky <arg(vkladamGemu)> <arg(argUID).name>.")
+	else
+		link.tag(gem_pocet_<arg(cislo)>, <link.tag(gem_pocet_<arg(cislo)>)>+<arg(argUID).amount>)
+		src.accMsg("Hrac (<src.name>,<src>) vklada do gemBoxu(<link>) gem(<arg(argUID).name>,<arg(argUID)>). Pocet: <arg(argUID).amount>")
+                src.sysmessage("Vlozil si do bednicky <arg(argUID).amount> <arg(argUID).name>.")
+		arg(argUID).remove
+	endif
+endif
+
+[EOF]

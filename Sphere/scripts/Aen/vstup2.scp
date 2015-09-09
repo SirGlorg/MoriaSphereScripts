@@ -1,0 +1,320 @@
+[DIALOG d_Cardolanske_pohrebiste_dvere_kodovane_nastaveni]
+page 0
+resizepic 0 0 5100 200 235
+
+text 50 10 1152 8
+
+text 5 25 1152 1
+button 30 25 00000845 00000846 1 0 901
+text 5 40 1152 2
+button 30 40 00000845 00000846 1 0 902
+text 5 55 1152 3
+button 30 55 00000845 00000846 1 0 903
+text 5 70 1152 4
+button 30 70 00000845 00000846 1 0 904
+text 5 85 1152 5
+button 30 85 00000845 00000846 1 0 905
+text 5 100 1152 6
+button 30 100 00000845 00000846 1 0 906
+
+text 5 210 1152 7
+button 80 210 00000845 00000846 1 0 907
+
+
+[DIALOG d_Cardolanske_pohrebiste_dvere_kodovane_nastaveni TEXT]
+ 
+0
+E1
+E2
+E3
+E4
+E5
+E6
+konec nastavovani
+nastaveni kodovanych dveri a exponatu s napovedou
+
+[DIALOG d_Cardolanske_pohrebiste_dvere_kodovane_nastaveni BUTTON]
+ONBUTTON=901 
+SRC.SYSMESSAGE("Zamer dvere o1.")
+tag(kodovanedvere).tag(zamknute,"3")
+tag(kodovanedvere).TARGET 
+tag(kodovanedvere,"")
+
+ONBUTTON=902 
+SRC.SYSMESSAGE("Zamer dvere o2.")
+tag(kodovanedvere).tag(zamknute,"4")
+tag(kodovanedvere).TARGET 
+tag(kodovanedvere,"")
+
+ONBUTTON=903 
+SRC.SYSMESSAGE("Zamer dvere o3.")
+tag(kodovanedvere).tag(zamknute,"5")
+tag(kodovanedvere).TARGET 
+tag(kodovanedvere,"")
+
+ONBUTTON=904 
+SRC.SYSMESSAGE("Zamer dvere o4.")
+tag(kodovanedvere).tag(zamknute,"6")
+tag(kodovanedvere).TARGET 
+tag(kodovanedvere,"")
+
+ONBUTTON=905 
+SRC.SYSMESSAGE("Zamer dvere o5.")
+tag(kodovanedvere).tag(zamknute,"7")
+tag(kodovanedvere).TARGET 
+tag(kodovanedvere,"")
+
+ONBUTTON=906 
+SRC.SYSMESSAGE("Zamer dvere o6.")
+tag(kodovanedvere).tag(zamknute,"8")
+tag(kodovanedvere).TARGET 
+tag(kodovanedvere,"")
+
+
+ONBUTTON=907
+SRC.SYSMESSAGE("Zamknul jsi nastaveni dveri.")
+tag(kodovanedvere).tag(zamknute,"1")
+src.sysmessage("e1 <tag(kodovanedvere).tag(exponat1)>")
+src.sysmessage("e2 <tag(kodovanedvere).tag(exponat2)>")
+src.sysmessage("e3 <tag(kodovanedvere).tag(exponat3)>")
+src.sysmessage("e4 <tag(kodovanedvere).tag(exponat4)>")
+src.sysmessage("e5 <tag(kodovanedvere).tag(exponat5)>")
+src.sysmessage("e6 <tag(kodovanedvere).tag(exponat6)>")
+tag(kodovanedvere).tag(stav,"1")
+tag(kodovanedvere).f_Cardolanske_pohrebiste_dvere_kodovane_nastaveni_noveho_kodu
+tag(kodovanedvere,"")
+
+RETURN 0 // Yes, you can have RETURNs in a dialog
+
+[ITEMDEF i_Cardolanske_pohrebiste_dvere_kodovane]
+Name=dvere
+ID=032c
+CATEGORY=Dungy
+SUBSECTION=Cardolanske pohrebiste
+DESCRIPTION=kodovane dvere
+
+ON=@CREATE
+  MORE=<UID>
+  MORE2=1000
+  ATTR=attr_decay
+  TIMER=-1  
+  tag(LockPicking,"5000")
+  tag(exponat1,"")
+  tag(exponat2,"")
+  tag(exponat3,"")
+  tag(exponat4,"")
+  tag(exponat5,"")
+  tag(exponat6,"")
+  tag(stav,"")
+  tag(zamknute,"3")
+
+ON=@userDCLICK
+  IF ((<tag(zamknute)>>2)&&(<tag(zamknute)><9))
+    SRC.tag.kodovanedvere=<UID>
+    SRC.DIALOG d_Cardolanske_pohrebiste_dvere_kodovane_nastaveni 
+    Return 1
+  endif
+  IF (<tag(zamknute)>==0)
+    SRC.SYSMESSAGE("Otevreno.")
+    Timer=60
+    tag(zamknute,"9")
+    Return 0
+  ENDIF 
+  IF (<tag(zamknute)>==9)
+    SRC.SYSMESSAGE("Dvere se zasekly.")
+    type=t_door_locked
+    return 1
+  ENDIF 
+  IF (<tag(zamknute)>==1)
+    SRC.SYSMESSAGE("Zavreno.")
+    SRC.tag.kodovanedvere=<UID>
+    SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+    Return 1
+  endif
+
+ON=@TIMER
+  IF ((<tag(zamknute)><3)||(<tag(zamknute)>==9))
+    tag(zamknute,"1")
+    tag(LockPicking,"5000")
+    tag(stav,"1")  
+    Type=t_door_locked 
+    f_Cardolanske_pohrebiste_dvere_kodovane_nastaveni_noveho_kodu  
+  ENDIF
+  RETURN 0  
+
+ON=@TARGON_ITEM
+  IF (<tag(zamknute)>==3)
+    src.sysmessage("Nastavil jsi e1 <SRC.TARG.UID>")
+    tag(exponat1,<SRC.TARG.UID>)
+  ENDIF
+  IF (<tag(zamknute)>==4)
+    src.sysmessage("Nastavil jsi e2.")
+    tag(exponat2,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<tag(zamknute)>==5)
+    src.sysmessage("Nastavil jsi e3.")
+    tag(exponat3,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<tag(zamknute)>==6)
+    src.sysmessage("Nastavil jsi e4.")
+    tag(exponat4,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<tag(zamknute)>==7)
+    src.sysmessage("Nastavil jsi e5.")
+    tag(exponat5,<SRC.TARG.UID>)
+  ENDIF 
+  IF (<tag(zamknute)>==8)
+    src.sysmessage("Nastavil jsi e6.")
+    tag(exponat6,<SRC.TARG.UID>)
+  ENDIF 
+  RETURN 1
+
+[DIALOG d_Cardolanske_pohrebiste_dvere]
+page 0
+button 144 144 000015BC 000015BB 1 0 909 
+button  144  57 000015D0 000015CF 1 0 901  //1
+button  207  82 000015D8 000015D7 1 0 902  //2
+button  233  144 000015D2 000015D1 1 0 903  //3
+button  207  207 000015C6 000015C5 1 0 904  //4
+button  145  233 000015BE 000015BD 1 0 905  //5
+button  82  207 000015CE 000015CD 1 0 906  //6
+button  56  144 000015D4 000015D3 1 0 907  //7
+button  82  82 000015CA 000015C9 1 0 908   //8
+gumppic 50 50 00000068 
+
+
+
+
+
+
+//button 230 142 00000069 00000069 1 0 902
+//button 140 231 0000006A 0000006A 1 0 903
+//button 205  80 0000006B 0000006B 1 0 904
+//button  80  80 0000006C 0000006C 1 0 905
+//button 205 205 0000006D 0000006D 1 0 906
+//button  54 145 0000006E 0000006E 1 0 907
+//button  80 205 0000006F 0000006F 1 0 908
+//button 144  55 00000070 00000070 1 0 909
+
+ 
+
+
+[DIALOG d_Cardolanske_pohrebiste_dvere TEXT]
+
+
+[DIALOG d_Cardolanske_pohrebiste_dvere BUTTON]
+ONBUTTON=901 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(1)
+SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+ONBUTTON=902 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(2)
+SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+ONBUTTON=903 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(3)
+SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+ONBUTTON=904 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(4)
+SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+ONBUTTON=905 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(5)
+SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+ONBUTTON=906 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(6)
+SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+ONBUTTON=907 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(7)
+SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+ONBUTTON=908 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(8)
+SRC.DIALOG d_Cardolanske_pohrebiste_dvere
+ONBUTTON=909 // The apply button
+SOUND=1234
+SRC.f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu(9)
+
+RETURN 0 // Yes, you can have RETURNs in a dialog
+
+
+[function f_Cardolanske_pohrebiste_dvere_kodovane_zadavni_kodu]
+  IF (<SRC.tag(kodovanedvere).tag(stav)>==7)
+    IF (<ARGS>==9)
+      SRC.tag(kodovanedvere).SOUND=558
+      SRC.tag(kodovanedvere).tag(zamknute,"0")
+      SRC.tag(kodovanedvere).Timer=60
+      SRC.tag(kodovanedvere).Type=t_door
+      SRC.tag(kodovanedvere).DCLICK
+      SRC.tag(kodovanedvere).Type=t_door_locked
+    ELSE
+      SRC.tag(kodovanedvere).tag(stav,"1")
+    ENDIF 
+    RETURN 1
+  ENDIF
+  IF (<SRC.tag(kodovanedvere).tag(stav)>==1)
+    IF (<SRC.tag(kodovanedvere).tag(exponat1).tag(katalogovecislo)>==<ARGS>)
+      SRC.tag(kodovanedvere).tag(stav,"2")
+    ELSE 
+      SRC.tag(kodovanedvere).tag(stav,"1")
+    ENDIF
+    RETURN 1
+  ENDIF 
+  IF (<SRC.tag(kodovanedvere).tag(stav)>==2)
+    IF (<SRC.tag(kodovanedvere).tag(exponat2).tag(katalogovecislo)>==<ARGS>)
+      SRC.tag(kodovanedvere).tag(stav,"3")
+    ELSE 
+      SRC.tag(kodovanedvere).tag(stav,"1")
+    ENDIF
+    RETURN 1
+  ENDIF
+  IF (<SRC.tag(kodovanedvere).tag(stav)>==3)
+    IF (<SRC.tag(kodovanedvere).tag(exponat3).tag(katalogovecislo)>==<ARGS>)
+      SRC.tag(kodovanedvere).tag(stav,"4")
+    ELSE 
+      SRC.tag(kodovanedvere).tag(stav,"1")
+    ENDIF
+    RETURN 1
+  ENDIF 
+  IF (<SRC.tag(kodovanedvere).tag(stav)>==4)
+    IF (<SRC.tag(kodovanedvere).tag(exponat4).tag(katalogovecislo)>==<ARGS>)
+      SRC.tag(kodovanedvere).tag(stav,"5")
+    ELSE 
+      SRC.tag(kodovanedvere).tag(stav,"1")
+    ENDIF
+    RETURN 1
+  ENDIF
+  IF (<SRC.tag(kodovanedvere).tag(stav)>==5)
+    IF (<SRC.tag(kodovanedvere).tag(exponat5).tag(katalogovecislo)>==<ARGS>)
+      SRC.tag(kodovanedvere).tag(stav,"6")
+    ELSE 
+      SRC.tag(kodovanedvere).tag(stav,"1")
+    ENDIF
+    RETURN 1
+  ENDIF
+  IF (<SRC.tag(kodovanedvere).tag(stav)>==6)
+    IF (<SRC.tag(kodovanedvere).tag(exponat6).tag(katalogovecislo)>==<ARGS>)
+      SRC.tag(kodovanedvere).tag(stav,"7")
+    ELSE 
+      SRC.tag(kodovanedvere).tag(stav,"1")
+    ENDIF
+    RETURN 1
+  ENDIF
+  
+[function f_Cardolanske_pohrebiste_dvere_kodovane_nastaveni_noveho_kodu]
+   tag(exponat1).tag(katalogovecislo,<EVAL RAND(8)>+1)
+   tag(exponat1).Name=Exponat 1,<tag(exponat1).tag(katalogovecislo)>  
+   tag(exponat2).tag(katalogovecislo,<EVAL RAND(8)>+1)
+   tag(exponat2).Name=Exponat 2,<tag(exponat2).tag(katalogovecislo)>  
+   tag(exponat3).tag(katalogovecislo,<EVAL RAND(8)>+1)
+   tag(exponat3).Name=Exponat 3,<tag(exponat3).tag(katalogovecislo)>  
+   tag(exponat4).tag(katalogovecislo,<EVAL RAND(8)>+1)
+   tag(exponat4).Name=Exponat 4,<tag(exponat4).tag(katalogovecislo)>  
+   tag(exponat5).tag(katalogovecislo,<EVAL RAND(8)>+1)
+   tag(exponat5).Name=Exponat 5,<tag(exponat5).tag(katalogovecislo)>  
+   tag(exponat6).tag(katalogovecislo,<EVAL RAND(8)>+1)
+   tag(exponat6).Name=Exponat 6,<tag(exponat6).tag(katalogovecislo)>  

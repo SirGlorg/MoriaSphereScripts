@@ -1,0 +1,768 @@
+[typedef t_customspell_scroll]
+on=@userdclick
+if(<topobj>==<src>) //je u hrace
+  if(<cont>==<src.findlayer(29)>)
+    src.sysmessage("Svitek musis mit u sebe!")
+    return 1
+  endif
+  //nedelej nic
+else
+  src.sysmessage("Svitek musis mit u sebe!")
+  return 1
+endif
+if !(safe(<tag(<src.profession>)>)) //1 pokud se povolani neshoduje s tim tagem
+  src.redmessage("Pro toto kouzlo nemas vhodne povolani")
+  return 1
+endif
+if(<morex>==104) //manashield
+  if !(strcmpi(<src.profession>,class_priest)) //0 pokud ano (pak ! vrati nenulu)
+    src.redmessage("Pro toto kouzlo nemas vhodne povolani")
+    return 1
+  endif
+endif
+src.spellcast(<morex>)
+return 1
+
+[defnames custom_spells]
+//rescripted spells
+a_clumsy		1
+a_defname[1]		a_clumsy
+a_Feeblemind		3
+a_defname[3]		a_Feeblemind
+a_Weaken		8
+a_defname[8]		a_Weaken
+a_Agility		9
+a_defname[9]		a_Agility
+a_cunning		10
+a_defname[10]		a_cunning
+a_strength		16
+a_defname[16]		a_strength
+a_bless			17
+a_defname[17]		a_bless
+a_curse			27
+a_defname[27]		a_curse
+a_defname[46]		a_curse
+a_defname[41]		a_dispel	
+a_defname[54]		a_dispel
+a_dispel		41
+a_defname[37]		a_mind_blast
+a_mind_blast		37
+a_defname[53]		a_mana_vampire //mana se vysava i kdyz to tu skriptem nedovolim, takze to necham bejt. akorat primo v sphereevents se nesmi kouzlit na chary bez magery
+a_mana_vampire		53
+a_defname[31]		a_mana_drain
+a_mana_drain		31
+a_defname[18]		a_fireball
+a_fireball		18
+a_defname[55]		a_meteor_swarm
+a_meteor_swarm		55
+a_defname[42]		a_energy_bolt
+a_energy_bolt		42
+a_defname[43]		a_explosion
+a_explosion		43
+a_defname[69]		a_fire_bolt
+a_fire_bolt		69
+
+//frost bolt:
+a_frost_bolt		101
+a_defname[101]		a_frost_bolt
+a_name[101]		Frost Bolt
+a_flags[101]		csflag_TARG_CHAR|csflag_SM|csflag_evil|csflag_computed//|csflag_mass|csflag_TARG_xyz
+a_resources[101]	0
+a_wop[101]		Helca Ril Sul
+a_MANAUSE[101]		nastaveni_cs_101_manause
+a_staminause[101]	0
+a_CASTTIME[101]		nastaveni_cs_101_casttime
+a_SKILL[101]		magery
+a_req[101]		800
+a_difficulty[101]	700
+a_scrollitem[101]	i_customscroll_frostbolt
+a_mass_distance[101]	8
+
+//mass bless
+a_mass_bless		102
+a_defname[102]		a_mass_bless
+a_name[102]		Mass Bless
+a_flags[102]		csflag_TARG_CHAR|csflag_TARG_xyz|csflag_TARG_item|csflag_good|csflag_computed|csflag_mass
+a_resources[102]	0
+a_wop[102]		Beleg Faroth Tir
+a_MANAUSE[102]		20
+a_staminause[102]	0
+a_CASTTIME[102]		20
+a_SKILL[102]		magery
+a_req[102]		600
+a_difficulty[102]	500
+a_scrollitem[102]	i_customscroll_mass_bless
+a_mass_distance[102]	8
+
+a_mystic_strike			103
+a_defname[103]		a_mystic_strike
+a_flags[103]		csflag_TARG_CHAR|csflag_SM|csflag_evil|csflag_computed//|csflag_mass|csflag_TARG_xyz
+a_SKILL[103]		magery
+
+//manashield
+a_mana_shield		104
+a_casttime[104]		20
+a_defname[104]		a_mana_shield
+a_name[104]		Mana Shield
+a_flags[104]		csflag_TARG_CHAR|csflag_good
+a_resources[104]	0
+a_wop[104]		Beleg Del Tir
+a_MANAUSE[104]		30
+a_staminause[104]	0
+a_SKILL[104]		magery
+a_req[104]		600
+a_difficulty[104]	500
+a_scrollitem[104]	i_customscroll_manashield
+a_duration[104]		1*30.0,1*40.0
+a_effect[104]		0
+
+//summon :
+a_summon_attendant	105
+a_defname[105]		a_summon_attendant
+a_name[105]		Summon Attendant
+a_flags[105]		csflag_notarg
+a_resources[105]	1 i_reag_blood_moss,1 i_reag_mandrake_root,1 i_reag_spider_silk
+a_wop[105]		Heru Meldo Val
+a_MANAUSE[105]		50
+a_staminause[105]	0
+a_CASTTIME[105]		100
+a_SKILL[105]		magery
+a_req[105]		800
+a_difficulty[105]	700
+a_scrollitem[105]	i_customscroll_summon_attendant
+
+
+[function f_effect_a_mystic_strike]
+if !(src.tag(attack_type))
+  src.tag(attack_type,1)
+endif
+if (isplayer)||(<src.tag(attack_type)>==1)  //cold damage - iba toto v PVP
+  sound 015e
+  //effect(3,i_fx_glow_spike,1,8,5)
+  EFFECT(3,i_fx_curse,6,15,1)
+  if (src.specability)
+    damage(<promilerange(<argv(0)>,<nastaveni_ability_mystikUC>)>,dam_magic|dam_cold,<src>)
+    if (isplayer)
+      if ({1 1000}>nastaveni_mystik_abilitychance_vP)
+       return
+      elseif (src.tag(rangearrowdst))
+       fizzmagictravel
+       return
+      elseif (flag_reflection)
+       return 
+      endif
+    else
+      if ({1 1000}>nastaveni_mystik_abilitychance_vM)	// he? preco napevno a ne v zavislosti od schopnosti
+      //if ({0 100000} > <src.tag(ability)>)
+        return
+      endif
+    endif
+    events -e_spelleffect
+  //  spelleffect(s_paralyze,1000)
+  //  findid(i_rune_paralyze).timer=1  
+    paralyze(10)
+    events +e_spelleffect
+    src.classmessage("Cil je zmrazen!")
+  else
+    damage(<promilerange(<argv(0)>,<nastaveni_ability_mystikUCbezpary>)>,dam_magic|dam_cold,<src>)
+  endif
+elseif (<src.tag(attack_type)>==2)  //elect damage
+  sound snd_spell_lightning
+  effect(3,i_fx_glow_spike,6,15,1)
+  if (src.specability)
+    damage(<promilerange(<argv(0)>,<nastaveni_ability_mystikUClightning>)>,dam_magic|dam_lightning,<src>)
+    //if ({1 1000}><nastaveni_mystik_abilitychance_vP>+150)
+    if ({0 10000} > <src.tag(ability)>/23)
+      return
+    endif
+    events -e_spelleffect
+    dospell_final(30,<nastaveni_ability_mystikBleskDmg>+<src.tag(sm)>*{8 16})
+    events +e_spelleffect
+    src.classmessage("Cil je ochromen!")
+  else
+    damage(<promilerange(<argv(0)>,<nastaveni_ability_mystikUCbezpary>)>,dam_magic|dam_lightning,<src>)
+  endif
+endif
+
+[function f_effect_a_mana_shield] //argv(0) - magery sesilatele (good kouzlo)
+EFFECT(3,<s_magic_reflection.EFFECTID>,6,60,1)
+SOUND=503 //archprotection
+//src.sysmessage(sila? <argv(0)>)
+f_eqrune(i_a_mana_shield,<promilerange(<argv(0)>,<a_duration[104]>)>/10,<promilerange(<argv(0)>,<a_effect[104]>)>,104)
+
+[itemdef i_a_mana_shield]
+id=i_memory
+type=t_custom_dispellable
+layer=layer_manashieldspell
+Name=Manashield spell
+
+on=@create
+events +t_spellrune
+
+on=@equip
+cont.tag(manashield,1)
+return 0
+
+on=@unequip
+cont.tag.remove(manashield)
+cont.sfx(511) //untrap , konec manashieldu   
+cont.effect(3,i_fx_sparkle_2,6,20,2)
+cont.sysMessage("Manashield vyprchal")
+return 0
+
+on=@timer 
+cont.sfx(511) //magic unlock
+if(<cont.mana> > <eval <cont.int>/2>)
+ cont.mana=<eval (<cont.mana>-<eval <cont.int>/3>)>
+else
+ cont.mana=0
+endif
+remove
+return 1
+
+[itemdef i_mshield_manasuck]
+id=i_memory
+type=t_eq_script
+name=Manashield manasuck
+
+on=@create
+kermel.sysmessage(creating: <baseid>. dam mu timer <nastaveni_ms_manasuck_time>)
+timer=<nastaveni_ms_manasuck_time>
+
+on=@timer
+kermel.sysmessage(ubiram <nastaveni_ms_manasuck_amount>)
+if(<cont.mana> >= 0)
+  cont.mana=<eval (<cont.mana>-<nastaveni_ms_manasuck_amount>)>
+else
+  cont.findid(i_a_mana_shield).remove
+endif 
+timer=<nastaveni_ms_manasuck_time>
+return 1
+
+[function manashield] //argv(0) - zdroj, argv(1) - ubrano, argv(2) - flagy, argv(3) - pro pøípad mindblastu jedine (jeho spellpower)
+if (<eval tag(manashield)> == 0)
+  return 0 // manashield not used
+elseif (<mana>) //mame-li vubec manu
+  if (safe(<argv(3)>)) //mindblast
+    arg(mb_damage,<eval (argv(0).int-int)*promilerange(<argv(3)>,<s_mind_blast.effect>)>)
+    arg(damage,<eval((<arg(mb_damage)>+500)/1000)>)
+    arg(remain,<eval (<mana>-<arg(damage)>)>)
+    if (<arg(remain)> > 0) //vejdu se s dmg do many
+      effect_manashield_block
+      mana=<arg(remain)>
+    else //uz se nevejdu a jsem na nule nebo v zaporu
+      arg(finalDmg,<eval (<arg(damage)>-<mana>)>) //mana jeste neco (pripadne nic - kdyz to byla nula) nezachranila
+      effect_manashield_block
+      mana=0
+      findid(i_a_mana_shield).remove
+      dmgHits(<arg(finalDmg)>)
+    endif
+  elseif (<argv(1)>) // not mindblast - there is some damage
+    if (<eval (<mana>-<argv(1)>)> > 0) //vejdu se do many
+      effect_manashield_block
+      mana=<eval (<mana>-<argv(1)>)>
+      var(ms_dmgRemain,0)
+    else //do many se nevejdu  
+      effect_manashield_block
+      var(ms_dmgRemain,<eval (<argv(1)>-<mana>)>) //neco nam mana pripadne zachrani
+      mana=0
+      findid(i_a_mana_shield).remove
+    endif
+  else
+    return 0 // no damage caused so no manashield used either
+  endif
+else //od pocatku nebyla mana
+  findid(i_a_mana_shield).remove
+  return 0 // manashield not used
+endif
+paralyze_remove
+return 1 // manashield used
+
+[function effect_manashield_block]
+EFFECT(3,i_fx_sparkle_2,6,15,1)
+
+[function f_effect_a_fireball]
+damagecust(<promilerange(<argv(0)>,<s_fireball.effect>)>,dam_magic|dam_fire,<return_nth(3,<s_fireball.effect>)>)
+
+[function f_effect_a_meteor_swarm]
+EFFECT(3,i_fx_explode,6,15,1)
+damagecust(<promilerange(<argv(0)>,<s_meteor_swarm.effect>)>,dam_magic|dam_fire,<return_nth(3,<s_meteor_swarm.effect>)>)
+
+[function f_effect_a_energy_bolt]
+damagecust(<promilerange(<argv(0)>,<s_energy_bolt.effect>)>,dam_magic|dam_lightning,<return_nth(3,<s_energy_bolt.effect>)>)
+
+[function f_effect_a_explosion]
+EFFECT(3,i_fx_explode,6,30,1)
+damagecust(<promilerange(<argv(0)>,<s_explosion.effect>)>,dam_magic|dam_fire,<return_nth(3,<s_explosion.effect>)>)
+
+[function f_effect_a_fire_bolt]
+damagecust(<promilerange(<argv(0)>,<s_fire_bolt.effect>)>,dam_magic|dam_fire,<return_nth(3,<s_fire_bolt.effect>)>)
+
+[function f_effect_a_dispel]
+consume(1000 t_custom_dispellable)
+events -e_spelleffect
+spelleffect 41,1000
+events +e_spelleffect
+
+[function f_effect_a_mind_blast]
+effect(03,i_fx_curse,1,15,0)
+SOUND=snd_SPELL_MIND_BLAST
+arg(mb_damage,<eval (src.int-int)*promilerange(<argv(0)>,<s_mind_blast.effect>)>)
+damage(<eval((<arg(mb_damage)>+500)/1000)>,dam_magic|dam_god,<src>)
+paralyze_remove
+
+[function f_effect_a_mana_vampire]
+EFFECT(3,<s_mana_vampire.EFFECTID>,6,15,1)
+SOUND=<s_mana_vampire.sound>
+if (magery)
+  arg(vysat,<eval promilerange(<argv(0)>,<s_mana_vampire.effect>)>)
+  if (arg(vysat)>mana)
+    arg(vysat,<mana>)
+  endif
+  //say("ma vysat <arg(vysat)>")
+  mana=<eval mana-arg(vysat)>
+  //src.mana=<eval src.mana+arg(vysat)>
+  //src.truncatestat(mana)
+endif
+
+[function f_effect_a_mana_drain]
+EFFECT(3,<s_mana_drain.EFFECTID>,6,15,1)
+SOUND=<s_mana_drain.sound>
+if (magery)
+  arg(vysat,<eval promilerange(<argv(0)>,<s_mana_drain.effect>)>)
+  if (arg(vysat)>mana)
+    arg(vysat,<mana>)
+  endif
+  //say("ma vysat <arg(vysat)>")
+  mana=<eval mana-arg(vysat)>
+endif
+
+[function f_effect_a_clumsy]
+EFFECT(3,<s_clumsy.EFFECTID>,6,15,1)
+SOUND=<s_clumsy.sound>
+f_eqrune(i_a_clumsy,<promilerange(<argv(0)>,<s_clumsy.duration>)>/10,<promilerange(<argv(0)>,<s_clumsy.effect>)>,3)
+
+[itemdef i_a_clumsy]
+id=i_rune_clumsy
+type=t_custom_dispellable
+layer=layer_clumsyspell
+on=@create
+events +t_spellrune
+on=@equip
+f_a_curselowerstats(dex)
+return 0
+on=@unequip
+f_a_cursereturnstats(dex)
+return 0
+
+[function f_effect_a_weaken]
+EFFECT(3,<s_weaken.EFFECTID>,6,15,1)
+SOUND=<s_weaken.sound>
+f_eqrune(i_a_weaken,<promilerange(<argv(0)>,<s_weaken.duration>)>/10,<promilerange(<argv(0)>,<s_weaken.effect>)>,3)
+
+[itemdef i_a_weaken]
+id=i_rune_weaken
+type=t_custom_dispellable
+layer=layer_weakenspell
+on=@create
+events +t_spellrune
+on=@equip
+f_a_curselowerstats(str)
+return 0
+on=@unequip
+f_a_cursereturnstats(str)
+return 0
+
+[function f_effect_a_feeblemind]
+EFFECT(3,<s_feeblemind.EFFECTID>,6,15,1)
+SOUND=<s_feeblemind.sound>
+f_eqrune(i_a_feeblemind,<promilerange(<argv(0)>,<s_feeblemind.duration>)>/10,<promilerange(<argv(0)>,<s_feeblemind.effect>)>,3)
+
+[itemdef i_a_feeblemind]
+id=i_rune_feeblemind
+type=t_custom_dispellable
+layer=layer_feeblemindspell
+on=@create
+events +t_spellrune
+on=@equip
+f_a_curselowerstats(intel)
+cont.truncatestat(mana)
+return 0
+on=@unequip
+f_a_cursereturnstats(intel)
+return 0
+
+[function f_effect_a_cunning]
+EFFECT(3,<s_Cunning.EFFECTID>,6,15,1)
+SOUND=<s_Cunning.sound>
+if (var(woodooboost))
+var(woodooboost,"")
+f_eqrune(i_a_cunning,1200,<promilerange(<argv(0)>,<s_cunning.effect>)>,10)
+var(woodoosaman,"")
+else
+f_eqrune(i_a_cunning,<promilerange(<argv(0)>,<s_cunning.duration>)>/10,<promilerange(<argv(0)>,<s_cunning.effect>)>,10)
+endif
+
+[itemdef i_a_cunning]
+id=i_rune_cunning
+type=t_custom_dispellable
+layer=layer_cunningspell
+on=@create
+events +t_spellrune
+tag(saman,<var(woodoosaman)>)
+if (<eval tag(saman).tag(ra_woodoo)> > 10)
+	tag(vit,<eval <eval <tag(saman).tag(ra_woodoo)>-10>/2>)
+endif
+
+on=@equip
+cont.intel(<eval cont.intel+more1>)
+if (tag(vit))
+	cont.vit(<eval cont.vit+<tag(vit)>>)
+endif
+return 0
+on=@unequip
+cont.intel(<eval cont.intel-more1>)
+if (tag(vit))
+	cont.vit(<eval cont.vit-<tag(vit)>>)
+endif
+cont.truncatestat(mana)
+return 0
+
+[function f_effect_a_Agility]
+EFFECT(3,<s_Agility.EFFECTID>,6,15,1)
+SOUND=<s_Agility.sound>
+
+if (var(woodooboost))
+var(woodooboost,"")
+f_eqrune(i_a_Agility,1200,<promilerange(<argv(0)>,<s_Agility.effect>)>,10)
+var(woodoosaman,"")
+else
+f_eqrune(i_a_Agility,<promilerange(<argv(0)>,<s_Agility.duration>)>/10,<promilerange(<argv(0)>,<s_Agility.effect>)>,10)
+endif
+
+[itemdef i_a_Agility]
+id=i_rune_Agility
+type=t_custom_dispellable
+layer=layer_Agilityspell
+on=@create
+events +t_spellrune
+tag(saman,<var(woodoosaman)>)
+if (<eval tag(saman).tag(ra_woodoo)> > 10)
+	tag(vit,<eval <eval <tag(saman).tag(ra_woodoo)>-10>/2>)
+endif
+
+on=@equip
+cont.dex(<eval cont.dex+more1>)
+if (tag(vit))
+	cont.vit(<eval cont.vit+<tag(vit)>>)
+endif
+return 0
+on=@unequip
+cont.dex(<eval cont.dex-more1>)
+if (tag(vit))
+	cont.vit(<eval cont.vit-<tag(vit)>>)
+endif
+return 0
+
+[function f_effect_a_strength]
+EFFECT(3,<s_strength.EFFECTID>,6,15,1)
+SOUND=<s_strength.sound>
+
+if (var(woodooboost))
+var(woodooboost,"")
+f_eqrune(i_a_strength,1200,<promilerange(<argv(0)>,<s_strength.effect>)>,10)
+var(woodoosaman,"")
+else
+f_eqrune(i_a_strength,<promilerange(<argv(0)>,<s_strength.duration>)>/10,<promilerange(<argv(0)>,<s_strength.effect>)>,10)
+endif
+
+[itemdef i_a_strength]
+id=i_rune_strength
+type=t_custom_dispellable
+layer=layer_strengthspell
+on=@create
+events +t_spellrune
+tag(saman,<var(woodoosaman)>)
+if (<eval tag(saman).tag(ra_woodoo)> > 10)
+	tag(vit,<eval <eval <tag(saman).tag(ra_woodoo)>-10>/2>)
+endif
+
+on=@equip
+cont.str(<eval cont.str+more1>)
+if (tag(vit))
+	cont.vit(<eval cont.vit+<tag(vit)>>)
+endif
+return 0
+on=@unequip
+cont.str(<eval cont.str-more1>)
+if (tag(vit))
+	cont.vit(<eval cont.vit-<tag(vit)>>)
+endif
+return 0
+
+[function f_effect_a_bless]
+EFFECT(3,<s_bless.EFFECTID>,6,15,1)
+SOUND=<s_bless.sound>
+f_eqrune(i_a_bless,<promilerange(<argv(0)>,<s_bless.duration>)>/10,<promilerange(<argv(0)>,<s_bless.effect>)>,17)
+
+[function f_effect_a_mass_bless]
+EFFECT(3,<s_bless.EFFECTID>,6,15,1)
+SOUND=<s_bless.sound>
+f_eqrune(i_a_bless,<promilerange(<argv(0)>,<s_bless.duration>)>/10,<promilerange(<argv(0)>,<s_bless.effect>)>,102)
+
+[itemdef i_a_bless]
+id=i_rune_bless
+type=t_custom_dispellable
+layer=layer_blessspell
+on=@create
+events +t_spellrune
+on=@equip
+cont.changeallstats(<more1>)
+return 0
+on=@unequip
+cont.changeallstats(-<more1>)
+cont.truncateallstats
+return 0
+
+[function f_effect_a_curse]
+ if findid(i_a_curse)
+  findid(i_a_curse).remove
+ endif
+  EFFECT(3,<s_curse.EFFECTID>,6,15,1)
+  SOUND=<s_curse.sound>
+ if !(isplayer)
+  tag(levelcastera,<src.tag.level>) //toto si prerob, ked mas uid castera uz nepotrebujes toto (dostanes sa k tomu cez to uid)
+  tag(classcastera,<src.tag.class>) //to iste ^
+  tag(UIDcastera,<src.UID>)
+ endif
+ f_eqrune(i_a_curse,<promilerange(<argv(0)>,<s_curse.duration>)>/10,<promilerange(<argv(0)>,<s_curse.effect>)>,10)
+
+
+[function mvit]
+if (argvcount)
+maxhits=<argv(0)>
+endif
+return <maxhits>
+
+[function mintel]
+if (argvcount)
+int=<argv(0)>
+endif
+return <INT>
+
+[function mstam]
+if (argvcount)
+maxstam=<argv(0)>
+endif
+return <maxstam>
+
+[function mmana]
+if (argvcount)
+MAXMANA=<argv(0)>
+endif
+return <MAXMANA>
+
+[itemdef i_a_curse]
+id=i_rune_curse
+type=t_custom_dispellable
+layer=layer_cursespell
+
+on=@create
+events +t_spellrune
+
+on=@equip
+if(!<eval cont.tag(rfire)>)
+ if (cont.tag(resist_fire))
+   if (<cont.tag(resist_fire)> < 990) && (<cont.tag(resist_fire)> > 19)
+     arg(ra_prokleti_ucinnost_temp,<finduid(cont.tag(UIDcastera)).tag(ra_prokleti_ucinnost)>)
+     
+     if ( (<arg(ra_prokleti_ucinnost_temp)> > 0) && (<strcmp(<cont.tag(classcastera)>,"necro")>==0) )
+       if (<arg(ra_prokleti_ucinnost_temp)> < 11)
+         arg(resist_fire_temp,<eval((<cont.tag(resist_fire)>*100)*(5+<arg(ra_prokleti_ucinnost_temp)>/2))>/10000)
+       else
+         arg(resist_fire_temp,<eval((<cont.tag(resist_fire)>*100)*(5+<arg(ra_prokleti_ucinnost_temp)>/2))>/10000)
+       endif                                            
+     else
+       arg(resist_fire_temp,<eval((<cont.tag(resist_fire)>*100*5))>/10000) 
+     endif
+     tag(temp_ability_resist,<arg(resist_fire_temp)>)
+     cont.tag(resist_fire,#-<arg(resist_fire_temp)>)
+     cont.tag(rfire,1)
+   endif
+ endif
+ finduid(cont.tag(UIDcastera)).sysmessage("<cont.name> je nyni zranitelnejsi ohnem.")
+endif
+
+//cont.truncateallstats
+return 0
+
+on=@unequip
+if (cont.tag(rfire))
+  cont.tag(resist_fire,#+<tag(temp_ability_resist)>)
+  cont.tag.remove(rfire)
+endif
+return 0
+
+
+[function f_a_curselowerstats]
+arg(statValue,<eval cont.<args>>)
+if (cont.isplayer)||(arg(statValue) < 110)
+  arg(lower,<eval more1>)
+  if (arg(statValue) < (arg(lower)+10))
+    arg(lower,<eval arg(statValue)-10>)
+  endif
+else
+  arg(lower,<eval <eval arg(statValue)*<more1>>/100>)
+endif
+if (arg(statValue) < arg(lower)) 
+  arg(lower,<eval arg(statValue)-10>)
+endif
+cont.<args>(<eval arg(statValue)-arg(lower)>)
+tag(lowed<args>,<arg(lower)>)
+
+[function f_a_cursereturnstats]
+cont.<args>(<eval cont.<args>+tag(lowed<args>)>)
+
+[function f_effect_a_frost_bolt]//sila, source
+EFFECT(0,03818,12,1,0)
+sound(0456)
+damagecust(<promilerange(<argv(0)>,<nastaveni_cs_101_effect>)>,dam_magic|dam_cold,<return_nth(3,<nastaveni_cs_101_effect>)>)//<argv(0)>	ut. cislo; <argv(1)>	flag; <argv(2)>	piercing
+if (distancefrom(<src>) > 7)
+  return 1
+endif
+if (<eval <tag(om)>*14> > <eval <src.tag(sm)>*<eval({2 11})>>) //snad to bude takto lepsie
+  return 1
+endif
+if (resist_para)
+  if (resist_para > {0 999})
+    return 1
+  endif
+endif
+
+events -e_spelleffect
+paralyze(10)
+events +e_spelleffect
+
+//if (<argv(0)>>{0 3000})
+// events -e_spelleffect
+// spelleffect(s_paralyze,1000)
+// events +e_spelleffect
+//endif // je to na nieco?
+src.classmessage("Cil zmrazen!")
+
+[function f_effect_a_summon_attendant]
+SOUND=snd_SPELL_SUMMON_CREATURE
+//dopln animaci
+//EFFECT 0,03818,12,1,0 
+//EFFECT 0,03709,5,16,1 
+if(src.class==class_necro)
+ newnpc(c_podpora_necro)
+else
+ newnpc(c_podpora_mag)
+endif
+lastnewchar.be_a_summon
+
+[function be_a_summon]
+karma=9000
+newmemory(<src>)
+act.color=<act.color>|MEMORY_IPET
+act.more1=04
+act.MOREP=<P>
+act=<var(newmemoryact)>
+flag_conjured=1
+skill=-1
+newitem (i_rune_custom_summon)
+act.link(<src>)
+equip(<act>)
+
+[itemdef i_rune_custom_summon]
+id=i_rune_summon_creature
+type=t_spell
+name=summon creature
+layer=41
+
+on=@equip
+attr=026
+timer=600
+more2=01
+morep=40,1000
+
+
+[function nastaveni_potion]
+return <argv(0)>,<eval {<argv(1)> <argv(2)>}>
+
+[function nastaveni_elixir]
+return <eval 2*argv(0)>,<eval 2*{<argv(1)> <argv(2)>}>
+
+
+
+[ITEMDEF i_moongate_blue_realm]
+//DEFNAME=i_moongate_blue_realm
+ID=i_moongate_blue
+TYPE=t_telepad2
+
+on=@create
+if (<src.tag.realm>)
+  tag.realm=<src.tag.realm>
+endif
+timer=<nastaveni_duration_s_gate_travel>
+
+on=@step
+if (<tag.realm>)&&(<src.tag.realm>!=<tag.realm>)&&!(src.isgm)
+  src.sysmessage("Do tehle gate nemuzes.")
+  return(1)
+endif
+
+on=@timer
+remove
+
+[function switchmagic]
+if (profession==class_Mystik)
+  if !(tag(attack_type))
+    tag(attack_type,1)
+    classmessage("Nyni zasazujes mrazive udery")
+  elseif (<tag(attack_type)>==1)
+    if (<stam> > 20)
+	    tag(attack_type,2)
+	    reduceStamina(20)
+	    classmessage("Nyni zasazujes udery energii")
+	  else
+	  	redmessage("Nejsi nato <src.sex pripravenej pripravena>...")
+	  endif
+  else
+    if (<stam> > 20)
+	    tag(attack_type,1)
+	    reduceStamina(20)
+	    classmessage("Nyni zasazujes mrazive udery")
+	  else
+	  	redmessage("Nejsi nato <src.sex pripravenej pripravena>...")
+	  endif
+  endif
+else
+  redmessage("Toto muze pouzit pouze Mystik.")
+endif
+
+return(1)
+
+[defnames dispel_spells]
+dispel_spells_amount 17
+dispel_spells[0]  i_a_clumsy
+dispel_spells[1]  i_a_feeblemind
+dispel_spells[2]  i_a_weaken
+dispel_spells[3]  i_rune_agility
+dispel_spells[4]  i_rune_cunning
+dispel_spells[5]  i_rune_protection
+dispel_spells[6]  i_rune_strength
+dispel_spells[7]  i_a_bless
+dispel_spells[8]  i_rune_archprotection
+dispel_spells[9]  i_a_curse
+dispel_spells[10] i_rune_magic_reflection
+dispel_spells[11] i_rune_reactive_armor
+dispel_spells[12] i_rune_invisibility
+dispel_spells[13] i_a_mana_shield
+dispel_spells[14] i_a_cunning
+dispel_spells[15] i_a_strength
+dispel_spells[16] i_a_agility
+//dispel_spells[17] i_rune_night_sight
+
+[eof]

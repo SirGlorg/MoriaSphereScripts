@@ -1,0 +1,135 @@
+/////////////////////////////////////
+//  N P C   R O U N D A T T A C K  //
+//         (c)-Sir Glorg-          //
+/////////////////////////////////////
+
+[events e_npc_roundattack]
+on=@beforegetswing
+on=@aftergetswing
+f_e_npc_roundattack
+
+on=@beforegeteffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+//f_e_npc_roundattack
+
+on=@beforedoeffect
+on=@spelleffect
+f_e_npc_roundattack
+
+[function f_e_npc_roundattack]
+f_npc_rndAtt_setVals
+if (chance(<tag(roundattack_chance)>,3)) // chance in promiles
+  if (age > 2)  // kdyz to tady neni, tak casteny npc davaj ranu hned po vytvoreni
+    if (<eval tag(nextroundattack)> < <serv.time>)
+      f_npc_roundattack
+    endif
+  endif
+endif
+
+[function f_npc_roundattack]
+sound(512)
+newitemsafe(i_npc_roundattack_srcChanger)
+lastnew.p=<src.p>
+lastnew.removefromview
+lastnew.link=<uid>
+lastnew.tag.damage=<tag(roundattack_damage)>
+lastnew.timer=0
+arg(addTime,<randombetween(<tag(roundattack_time)>)>*10)
+tag(nextroundattack,<serv.time>+<arg(addTime)>)
+return 1
+
+[itemdef i_npc_roundattack_srcChanger]
+id=i_memory
+layer=77
+type=t_src_changer
+name=roundattack srcChanger
+
+on=@timer
+if (strlen(<link.tag(weapflag)>))
+  arg(fl,<hval link.tag(weapflag)<link.tag(mi_weapflags)>>)
+else
+  arg(fl,<hval dam_physical>)
+endif
+sector.allchars(f_npc_rounddamage(<link>,<arg(fl)>,<tag.damage>))
+link.effect(2,02ED0,0,32)
+remove
+return 1
+
+//arg0 - source NPC
+//arg1 - damage flags
+//arg2 - damage lower range
+//arg3 - damage higher range
+[function f_npc_rounddamage]
+if (isgm)
+  return 1
+elseif (<flags>&statf_invisible) || (<flags>&statf_hidden)
+  return 1
+endif
+if (isdead)
+	return 1
+endif
+
+if (0<distancefrom(<argv(0)>)> < 3) // && ((isplayer)||(ispet))
+  if !(<uid> == <argv(0)>) && !(<uid> == <argv(0).act>) //roundattack se provede po rane, takze hrac, na ktereho npc utoci ma vyjimku, aby nedostal dvojak + Verbatimovi nevim proc vadilo, ze se to npc samo pri roundattacku mlati takze tomu taky zabranime (pozn. Yavanna).
+    arg(my_dmg,<randombetween(<argv(2)>,<argv(3)>)>)
+    if (npc) && !(strcmpi(<act>,<src>))
+      damage(<eval <my_dmg>*6>,<argv(1)>,<argv(0)>)
+    elseif (ispet)
+      damage(<eval <my_dmg>*10>,<argv(1)>,<argv(0)>)
+    elseif (isplayer)
+      damage(<arg(my_dmg)>,<argv(1)>,<argv(0)>)
+    endif
+  endif
+endif
+
+//////////////////////////////////////////////
+//  N P C   R O U N D A T T A C K & P U L L //
+//             (c) -Sir Glorg-              //
+//////////////////////////////////////////////
+
+[events e_npc_roundattack_pullall]
+on=@beforegetswing
+on=@aftergetswing
+f_npc_roundattack_pullall
+
+on=@beforegeteffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@spelleffect
+f_npc_roundattack_pullall
+
+[function f_npc_roundattack_pullall]
+f_npc_rndAtt_setVals
+if (strlen(<tag(pullAll_distance)>) == 0)
+  tag(pullAll_distance,9) // default distance value == 9
+endif
+if (chance(<tag(roundattack_chance)>,3)) // chance in promiles
+  if (age > 2)	// kdyz to tady neni, tak casteny npc davaj ranu hned po vytvoreni
+    if (<eval tag(nextroundattack)> < <serv.time>)
+      sound(512)
+      pullall(<tag(pullAll_distance)>)
+      f_npc_roundattack
+      lastnew.timerd=5 //roundattack them with 0.5s delay
+    endif
+  endif
+endif
+
+[function f_npc_rndAtt_setVals]
+if (<eval tag(roundAttack_valsChecked)> == 0)
+  if (strlen(<tag(roundattack_chance)>) == 0) // chance in %
+    tag(roundattack_chance,250)
+  endif
+  if (strlen(<tag(roundattack_damage)>) == 0)
+    tag(roundattack_damage,<def.dam>)
+  endif
+  if (strlen(<tag(roundattack_time)>) == 0)
+    tag(roundattack_time,2,4)
+  endif
+  tag(roundAttack_valsChecked,1) // saves 2 IFs
+endif
+
+[eof]

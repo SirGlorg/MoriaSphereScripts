@@ -1,0 +1,1425 @@
+///// THE SHEEP GAME by GM Heck
+//hlavny ovladac
+[itemdef i_sheep_game_controler]
+id=00ED4
+name=Sheep game controler
+type=t_normal
+
+on=@create
+attr=090
+color=099c
+tag.spawnPoints=1
+tag.monsters=0
+tag.started=0
+tag.autoLevelUp=1
+tag.pointsToLevelUp=3
+tag.startMonsters=1
+
+on=@timer
+return 1
+
+on=@userdclick
+if (src.isgm)
+  dialog(d_sheep_game_controler)
+  if (<strlen(tag.monster_00)> > 0)
+    tag.monster_0=<tag.monster_00>
+  endif
+endif
+return 1
+
+//stone team
+[itemdef i_sheep_game_stone]
+id=00EDC
+name=Team Stone
+type=t_normal
+
+on=@create
+attr=090
+tag.level=0
+tag.toSpawn=0
+tag.startMonsters=1
+tag.points=0
+tag.players=0
+tag.spawning=0
+tag.killed=0
+
+on=@userdclick
+//arg(test,<link.tag(monsters)>)
+//src.say(<random2(0,<link.tag(monsters)>-1)>)
+//src.newnpc(<link.tag.monster_<random2(0,<link.tag(monsters)>-1)>>)
+
+dialog(d_sheep_game_stone)
+if (src.isgm)
+  dialog(d_sheep_game_stone_gm)
+endif
+
+return 1
+
+on=@timer
+//link.f_sheep_game_start
+if (<tag.toSpawn> > 0)
+  tag.spawning=1
+  f_sheep_game_spawn
+else
+  tag.spawning=0
+endif
+return 1
+
+[dialog d_sheep_game_controler]
+argo.SetLocation=5,5
+
+argo.tag(sirka,600)
+argo.tag(vyska,240+22*(<tag.spawnPoints>))//-1
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+
+arg(i,0)
+while (<i> < (<tag.spawnPoints>-1))
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+  arg(i,#+1)
+endwhile
+
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,180,160,30,160,30)
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Sheep Game Controler")
+
+//game stones
+argo.textA(<argo.dialog_textpos(0,1)>,42,"Stone Team 1")
+argo.button(<argo.dialog_textpos(1,2)>,0fa5,0fa7,1,0,1)  //set stone team 1 //button 1
+
+argo.textA(<argo.dialog_textpos(0,3)>,42,"Stone Team 2")
+argo.button(<argo.dialog_textpos(1,4)>,0fa5,0fa7,1,0,2)  //set stone team 2 //button 2
+
+if (<strlen(<tag.stoneTeam1>)> > 0)
+  argo.textA(<argo.dialog_textpos(1,1)>,152,<tag.stoneTeam1>)  
+else
+  argo.textA(<argo.dialog_textpos(1,1)>,152,"undefined")
+endif
+
+if (<strlen(<tag.stoneTeam2>)> > 0)
+  argo.textA(<argo.dialog_textpos(1,3)>,152,<tag.stoneTeam2>)  
+else
+  argo.textA(<argo.dialog_textpos(1,3)>,152,"undefined")
+endif
+
+//gates
+argo.textA(<argo.dialog_textpos(2,1)>,42,"Gate Team 1")
+argo.button(<argo.dialog_textpos(3,2)>,0fa5,0fa7,1,0,3)  //set gate team 1 //button 3
+
+argo.textA(<argo.dialog_textpos(2,3)>,42,"Gate Team 2")
+argo.button(<argo.dialog_textpos(3,4)>,0fa5,0fa7,1,0,4)  //set gate team 2 //button 4
+
+if (<strlen(<tag.gateTeam1>)> > 0)
+  argo.textA(<argo.dialog_textpos(3,1)>,152,<tag.gateTeam1>)  
+else
+  argo.textA(<argo.dialog_textpos(3,1)>,152,"undefined")
+endif
+
+if (<strlen(<tag.gateTeam2>)> > 0)
+  argo.textA(<argo.dialog_textpos(3,3)>,152,<tag.gateTeam2>)  
+else
+  argo.textA(<argo.dialog_textpos(3,3)>,152,"undefined")
+endif
+
+//gates position into
+argo.textA(<argo.dialog_textpos(4,0)>,42,"Position into arena")  
+if (<strlen(<tag.gateTeam1Pos>)> > 0)
+  argo.textA(<argo.dialog_textpos(4,1)>,152,"<?tag.gateTeam1Pos?>")  
+else
+  argo.textA(<argo.dialog_textpos(4,1)>,152,"undefined")
+endif
+argo.button(<argo.dialog_textpos(4,2)>,0fa5,0fa7,1,0,5)
+
+if (<strlen(<tag.gateTeam2Pos>)> > 0)
+  argo.textA(<argo.dialog_textpos(4,3)>,152,"<?tag.gateTeam2Pos?>")  
+else
+  argo.textA(<argo.dialog_textpos(4,3)>,152,"undefined")
+endif
+argo.button(<argo.dialog_textpos(4,4)>,0fa5,0fa7,1,0,6)
+
+//gates position out of 
+argo.textA(<argo.dialog_textpos(5,0)>,42,"Position out of arena(dead)") 
+if (<strlen(<tag.gateTeam1PosOut>)> > 0)
+  argo.textA(<argo.dialog_textpos(5,1)>,152,"<?tag.gateTeam1PosOut?>")  
+else
+  argo.textA(<argo.dialog_textpos(5,1)>,152,"undefined")
+endif
+argo.button(<argo.dialog_textpos(5,2)>,0fa5,0fa7,1,0,7)
+
+if (<strlen(<tag.gateTeam2PosOut>)> > 0)
+  argo.textA(<argo.dialog_textpos(5,3)>,152,"<?tag.gateTeam2PosOut?>")  
+else
+  argo.textA(<argo.dialog_textpos(5,3)>,152,"undefined")
+endif
+argo.button(<argo.dialog_textpos(5,4)>,0fa5,0fa7,1,0,8)
+
+//spawn points
+argo.textA(<argo.dialog_textpos(6,0)>,42,"Add spawn points") 
+argo.button(<lastxpos>+110,<lastypos>,0fa5,0fa7,1,0,9)  //add spawn points
+//argo.textA(<lastxpos>+150,<lastypos>,42,"<?tag.spawnPoints?>") 
+
+argo.textA(<argo.dialog_textpos(6,1)>,42,"Team 1 Spawn") 
+argo.textA(<argo.dialog_textpos(6,3)>,42,"Team 2 Spawn") 
+
+arg(curr,1)
+arg(line,6)
+while (<arg(curr)> < <tag(spawnPoints)>)
+  arg(line,<eval(6+<curr>)>)
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Spawn_<?arg(curr)?>") 
+  if (<strlen(<tag.team1Spawn_<eval(<curr>)>>)> > 0)
+    argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.team1Spawn_<arg(curr)>?>")  
+  else
+    argo.textA(<argo.dialog_textpos(<line>,1)>,152,"undefined")
+  endif
+  argo.button(<argo.dialog_textpos(<line>,2)>,0fa5,0fa7,1,0,100+<arg(curr)>)
+  
+  if (<strlen(<tag.team2Spawn_<curr>>)> > 0)
+    argo.textA(<argo.dialog_textpos(<line>,3)>,152,"<?tag.team2Spawn_<arg(curr)>?>")  
+  else
+    argo.textA(<argo.dialog_textpos(<line>,3)>,152,"undefined")
+  endif
+  argo.button(<argo.dialog_textpos(<line>,4)>,0fa5,0fa7,1,0,200+<arg(curr)>)
+
+  arg(curr,#+1)
+endwhile
+
+arg(line,#+1)
+argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Auto Level Up")  
+argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.autoLevelUp?>")  
+argo.button(<argo.dialog_textpos(<line>,2)>,0fa5,0fa7,1,0,402)
+
+arg(line,#+1)
+if (<strlen(<tag(levelUpKills)>)> > 0)
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Level Up On Kills")  
+  argo.textentrya(<argo.dialog_textpos(<line>,1)>,150,30,152,1,500)
+  argo.button(<argo.dialog_textpos(<line>,2)>,0fa5,0fa7,1,0,408)
+  argo.textA(<argo.dialog_textpos(<line>,3)>,42,"<?tag(levelUpOnKills)?>")  
+else
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Points To Level Up")  
+  argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.pointsToLevelUp?>")  
+  argo.button(<lastxpos>+30,<lastypos>+3,08af,08af,1,0,403)
+  argo.button(<lastxpos>+50,<lastypos>+3,08b0,08b0,1,0,404)
+  argo.textA(<argo.dialog_textpos(<line>,3)>,42,"Switch")
+endif
+argo.button(<argo.dialog_textpos(<line>,4)>,00fa5,0fa7,1,0,407)
+
+arg(line,#+1)
+argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Num Monsters On Start")  
+argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.startMonsters?>")  
+argo.button(<lastxpos>+30,<lastypos>+3,08af,08af,1,0,405)
+argo.button(<lastxpos>+50,<lastypos>+3,08b0,08b0,1,0,406)
+
+arg(line,#+1)
+if (<tag.started>==0)
+  argo.textA(<argo.dialog_textpos(<line>,3)>,42,"Start")  
+  argo.button(<argo.dialog_textpos(<line>,4)>,0fa5,0fa7,1,0,400)
+endif
+if (<tag.started>==1)
+  argo.textA(<argo.dialog_textpos(<line>,1)>,42,"Stop(najskor zneguj spawny)")  
+  argo.button(<argo.dialog_textpos(<line>,2)>,0fa5,0fa7,1,0,401)
+endif
+
+dialog(d_sheep_game_monsters)
+
+[dialog d_sheep_game_controler button]
+on=0
+
+on=@anybutton
+if (argn==1)
+  src.newequip(i_target_sheep_game)
+  lastnew.tag(gameStone,<uid>)
+  lastnew.tag(setTeam,1)
+  src.sysmessage("Zameraj Stone Team 1")
+endif
+
+if (argn==2)
+  src.newequip(i_target_sheep_game)
+  lastnew.tag(gameStone,<uid>)
+  lastnew.tag(setTeam,2)
+  src.sysmessage("Zameraj Stone Team 2")
+endif
+
+if (argn==3)
+  src.newequip(i_target_sheep_game)
+  lastnew.tag(gameStone,<uid>)
+  lastnew.tag(setTeam,1)
+  src.sysmessage("Zameraj Gate Team 1")
+endif
+
+if (argn==4)
+  src.newequip(i_target_sheep_game)
+  lastnew.tag(gameStone,<uid>)
+  lastnew.tag(setTeam,2)
+  src.sysmessage("Zameraj Gate Team 2")
+endif
+
+if (argn==5)
+  tag.gateTeam1Pos=<src.p>
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==6)
+  tag.gateTeam2Pos=<src.p>
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==7)
+  tag.gateTeam1PosOut=<src.p>
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==8)
+  tag.gateTeam2PosOut=<src.p>
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==9)
+  tag(spawnPoints,#+1)
+  dialog(d_sheep_game_controler)
+endif
+
+if ((argn>99) && (argn<200))
+//  tag(team1Spawn_<eval(<argn>-100)>,<src.p>)
+  
+  src.newequip(i_target_sheep_game)
+  lastnew.tag(gameStone,<uid>)
+  lastnew.tag(team,1)
+  lastnew.tag(spawn,<eval(<argn>-100)>)
+  src.sysmessage("Zameraj Spawn <?eval(<argn>-100)?> (team 1)")  
+endif
+
+if ((argn>=200) && (argn<300))
+//  tag(team2Spawn_<eval(<argn>-200)>,<src.p>)
+
+  src.newequip(i_target_sheep_game)
+  lastnew.tag(gameStone,<uid>)
+  lastnew.tag(team,2)
+  lastnew.tag(spawn,<eval(<argn>-200)>)
+  src.sysmessage("Zameraj Spawn <?eval(<argn>-200)?> (team 2)")
+endif
+
+if (argn==400)
+  f_sheep_game_start
+endif
+
+if (argn==401)
+  f_sheep_game_stop
+endif
+
+if (argn==402)//autoLevelUp
+  if (<tag.autoLevelUp>==0)
+    tag.autoLevelUp=1
+  else
+    tag.autoLevelUp=0
+  endif
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==403)//pointsToLevelUp--
+  tag(pointsToLevelUp,#-1)
+  //tag(stoneTeam1).tag.pointsToLevelUp=<tag(pointsToLevelUp)>
+  //tag(stoneTeam2).tag.pointsToLevelUp=<tag(pointsToLevelUp)>
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==404)//pointsToLevelUp++
+  tag(pointsToLevelUp,#+1)
+  //tag(stoneTeam1).tag.pointsToLevelUp=<tag(pointsToLevelUp)>
+  //tag(stoneTeam2).tag.pointsToLevelUp=<tag(pointsToLevelUp)>
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==405)//startMonsters--
+  tag(startMonsters,#-1)
+  tag(stoneTeam1).tag.startMonsters=<tag(startMonsters)>
+  tag(stoneTeam2).tag.startMonsters=<tag(startMonsters)>
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==406)//startMonsters++
+  tag(startMonsters,#+1)
+  tag(stoneTeam1).tag.startMonsters=<tag(startMonsters)>
+  tag(stoneTeam2).tag.startMonsters=<tag(startMonsters)>
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==407)
+  if (<strlen(<tag(levelUpKills)>)> > 0)
+    tag.remove(levelUpKills)
+  else
+    tag.levelUpKills=1
+  endif
+  dialog(d_sheep_game_controler)
+endif
+
+if (argn==408)
+  if (<f_sheep_game_count(<argtxt(1)>,<tag.monsters>)>==1)
+  tag(levelUpOnKills,"<?argtxt(1)?>")
+  else
+    src.redmessage("Pocet cisiel musi byt rovnaky ako je pocet monstier-1")
+  endif
+  dialog(d_sheep_game_controler)
+endif
+
+[itemdef i_target_sheep_game]
+id=i_memory
+type=t_eq_script
+name=i_target_sheep_game
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target()
+//cont.say(<tag.zamerat>)
+timer=10
+
+on=@targon_char
+if (<strlen(<tag.monsterId>)> > 0)
+  if (!src.targ.isplayer)
+    finduid(<tag(gameStone)>).tag(monster_<tag(monsterId)>, <src.targ.id>)
+  endif
+  finduid(<tag(gameStone)>).dialog(d_sheep_game_monsters)
+elseif (<strlen(<tag.teamStone>)> > 0)
+  if (<src.targ.baseid>==c_sheep_game_spawner)
+    finduid(<tag.teamStone>).tag(spawner,<src.targ>)
+  endif
+endif
+return 1
+
+on=@targon_item
+if (!<strlen(<tag.monsterId>)> > 0)
+  if (<strlen(<tag.gameStone>)> > 0)
+    if (<src.targ.baseid>==i_sheep_game_stone)
+      src.targ.name="Team <?tag.setTeam?>"
+      src.targ.link=<tag.gameStone>
+      src.targ.tag(team,<tag.setTeam>)
+      finduid(<tag.gameStone>).tag(stoneTeam<tag.setTeam>,<src.targ>)
+      src.targ.link.dialog(d_sheep_game_controler)
+      return 1
+    endif
+    if (<src.targ.baseid>==i_sheep_game_gate)
+      src.targ.name="Gate Team <?tag.setTeam?>"
+      src.targ.link=<tag.gameStone>
+      src.targ.tag(team,<tag.setTeam>)
+      finduid(<tag.gameStone>).tag(gateTeam<tag.setTeam>,<src.targ>)
+      src.targ.link.dialog(d_sheep_game_controler)
+      return 1
+    endif
+    if (<src.targ.baseid>==i_worldgem_bit)
+      src.targ.timer=32000
+      src.targ.link=<tag.gameStone>
+      //src.say(<tag(spawn)>)
+      finduid(<tag.gameStone>).tag(team<tag(team)>Spawn_<tag(spawn)>,<src.targ>)
+      src.targ.link.dialog(d_sheep_game_controler)
+      return 1
+    endif
+  endif
+endif
+
+if (<strlen(<tag.playersStone>)>)
+  finduid(<tag.playersStone>).link=<src.targ>
+  return 1
+endif
+
+return 1
+
+on=@targon_ground
+return 1
+
+[itemdef i_sheep_game_gate]
+id=i_moongate_red
+name=Gate
+
+on=@step
+if (src.isgm)
+  src.go(<link.tag.gateTeam<tag.team>Pos>)
+  src.update
+  return 1
+endif
+
+if (<strlen(<src.tag(sheepGame)>)> > 0)
+//if ((<strlen(<src.tag(sheepGame)>)> > 0)||(src.isgm))
+  if (<link.tag(started)>==0)
+    src.go(<link.tag.gateTeam<tag.team>Pos>)
+    src.update
+    src.tag(sheepGameTeam,<tag.team>)
+    arg(stone,<link.tag(stoneTeam<tag.team>)>)
+    src.tag(sheepGameStone,<stone>)
+    src.events +e_sheep_game_player
+    
+    stone.tag(players,#+1)
+    stone.tag(player_<stone.tag(players)>,<src.uid>)
+    stone.tag(playersInArena,<stone.tag(players)>)
+    
+    src.tag(sheepGameId,<stone.tag(players)>)//playerId
+    src.tag(sheepGameInArena,1)//player inArena
+    
+    src.tag(sheepGameExperience,<src.tag.experience>)
+    //src.tag(sheepGameProvocation,<src.provocation>)
+    //src.provocation=0.0
+    //src.tag(sheepGameDetectingHidden,<src.detectinghidden>)
+    //src.detectinghidden=<src.detectinghidden>+100.0
+  else
+    src.sysmessage("Brana je uzatvorena")
+  endif
+  
+  
+endif
+return 0
+
+on=@userdclick
+return 1
+
+[dialog d_sheep_game_monsters]
+argo.SetLocation=600,5
+
+argo.tag(sirka,360)
+argo.tag(vyska,40+<tag.monsters>*22)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30,270,30,0)
+arg(curr,0)
+while (<curr> < <tag(monsters)>)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,30,240,30,30)
+  arg(curr,#+1)
+endwhile
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"lvl")
+argo.textA(<argo.dialog_textpos(0,1)>,42,"Sheep Game Monsters | ADD,REM ->")
+argo.button(<argo.dialog_textpos(0,2)>,0fa5,0fa7,1,0,1)
+
+arg(curr,0)
+while (<curr> < <tag(monsters)>)
+  arg(line,<eval(1+<curr>)>)
+  
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,<curr>)
+  argo.textA(<argo.dialog_textpos(<line>,1)>,152,<tag.monster_<curr>>)
+  argo.button(<argo.dialog_textpos(<line>,2)>,0fa5,0fa7,1,0,100+<curr>)
+  arg(curr,#+1)
+endwhile
+
+[dialog d_sheep_game_monsters button]
+on=0
+
+on=@anybutton
+if (argn==1)
+  tag(monsters,#+1)
+  dialog(d_sheep_game_monsters)
+endif
+
+if (argn>=100)
+  src.newequip(i_target_sheep_game)
+  lastnew.tag(gameStone,<uid>)
+  lastnew.tag(monsterId,<eval(<argn>-100)>)
+  src.sysmessage("Zameraj Monstrum (lvl <eval(<argn>-100)>)")
+endif
+
+[dialog d_sheep_game_stone]
+if (!<link>)
+  return 1
+endif
+argo.SetLocation=5,5
+
+argo.tag(sirka,210)
+if (<eval(<link.tag(autoLevelUp)>)>==0)
+  argo.tag(vyska,130)
+else
+  argo.tag(vyska,90)
+endif
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,30)
+if (<eval(<link.tag(autoLevelUp)>)>==0)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,150,30)
+endif
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,30)
+if (<eval(<link.tag(autoLevelUp)>)>==0)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,150,30)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,150,30)
+endif
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,30)
+argo.dialog_zpruhledni
+
+arg(line,0)
+argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Team")
+argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.team?>")
+
+if (<eval(<link.tag(autoLevelUp)>)>==0)
+  arg(line,#+1)
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Bodu")
+  argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.points?>")
+endif
+
+arg(line,#+1)
+argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Level")
+argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.level?>")
+
+if (<eval(<link.tag(autoLevelUp)>)>==0)
+  arg(line,#+1)
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Bodu na zvyseni levelu")
+  argo.textA(<argo.dialog_textpos(<line>,1)>,152,"10")
+  
+  arg(line,#+1)
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Zvysit level")
+  argo.button(<argo.dialog_textpos(<line>,1)>,0fa5,0fa7,1,0,1)
+endif
+
+arg(line,#+1)
+argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Killed")
+argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?tag.killed?>")
+
+[dialog d_sheep_game_stone button]
+on=0
+
+on=@anybutton
+if (argn==1)
+  if (<tag.team>==1)
+    arg(otherTeam,2)
+    arg(otherTeamStone,<link.tag.stoneTeam<otherTeam>>)
+  elseif (<tag.team>==2)
+    arg(otherTeam,1)
+    arg(otherTeamStone,<link.tag.stoneTeam<otherTeam>>)
+  endif
+  if (<link.tag(monsters)> <= <eval(<otherTeamStone.tag(level)>+1)>)
+    say("Maximalny level")
+  else //tututu
+    if (<strlen(<link.tag(levelUpKills)>)> > 0)
+      arg(currLvl,<eval(<otherTeamStone.tag(level)>+1)>)
+      //say("currLvl: <?currLvl?>")
+      arg(pToLevelUp,<return_nth(<currLvl>,<link.tag(levelUpOnKills)>)>)
+      //say("pToLevelUp: <?pToLevelUp?>")
+    else
+      arg(pToLevelUp,<link.tag(pointsToLevelUp)>)
+    endif
+    
+    if (<tag.points> >= <pToLevelUp>)
+      tag(points,#-<pToLevelUp>)
+      otherTeamStone.tag(level,#+1)
+      say("Level monster druhemu teamu zvysen")
+      otherTeamStone.say("Byl zvysen level monster")
+    else
+      say("Nedostatek bodu")
+    endif
+  endif
+endif
+
+[function f_sheep_game_start]
+arg(stone1,<finduid(<tag.stoneTeam1>)>)
+arg(stone2,<finduid(<tag.stoneTeam2>)>)
+//arg(spawner1,<stone1.tag(spawner)>)
+//arg(spawner2,<stone2.tag(spawner)>)
+
+tag.started=1  
+
+//if (<tag.started>==0)
+  stone1.tag.toSpawn=<stone1.tag.startMonsters>
+  stone1.f_sheep_game_spawn
+//endif
+
+//if (<tag.started>==0)
+  stone2.tag.toSpawn=<stone2.tag.startMonsters>
+  stone2.f_sheep_game_spawn
+//endif
+
+
+//arg(i,0)
+//while (<i> < <stone1.tag.toSpawn>)
+//  arg(spawn,<random2(1,<numOfSpawns>-1)>)  
+//  arg(position,<tag(team1Spawn_<spawn>)>)
+//  arg(monster,<tag.monster_<eval(<stone1.tag.level>)>>)
+//  spawner1.newnpc(<monster>)
+//  lastnewchar.p=<position>
+//  lastnewchar.update
+//  arg(i,#+1)
+//endwhile
+
+  //arg(spawn2,<random2(1,<numOfSpawns>)>)  
+  //say(<spawn2>)
+//spawner1.newnpc(c_gargoyle)
+
+//src.say(<random2(0,<link.tag(monsters)>-1)>)
+//src.newnpc(<link.tag.monster_<random2(0,<link.tag(monsters)>-1)>>)
+return 1
+
+[function f_sheep_game_stop]
+arg(i,1)
+while (<i> < <tag.spawnPoints>)
+  arg(spawnPoint,<tag.team1Spawn_<i>>)
+  //arg(spawnPoint,<finduid(<tag.team1Spawn_<i>>)>)
+  //finduid(<arg(spawnPoint)>).useitem //znegovanie spawnu (zrusenie monstier)
+  spawnPoint.type=t_negated_spawn_char
+  spawnPoint.timer=0fffffff
+  //spawnPoint.sector.allchars(f_sheep_game_clear_monsters)
+  //spawnPoint.sheep_game_clear_monsters
+  //arg(spawnPoint,<finduid(<tag.team1Spawn_<i>>)>)
+  arg(spawnPoint,<tag.team2Spawn_<i>>)
+  //finduid(<arg(spawnPoint)>).useitem //znegovanie spawnu (zrusenie monstier)
+  spawnPoint.type=t_negated_spawn_char
+  spawnPoint.timer=0fffffff
+  //spawnPoint.sector.allchars(f_sheep_game_clear_monsters)
+  //spawnPoint.sheep_game_clear_monsters
+  arg(i,#+1)
+endwhile
+
+if (<finduid(<tag(stoneTeam1)>).tag(players)> > 0)
+  finduid(<tag(stoneTeam1)>).f_sheep_game_players_kick
+endif
+if (<finduid(<tag(stoneTeam2)>).tag(players)> > 0)
+  finduid(<tag(stoneTeam2)>).f_sheep_game_players_kick
+endif
+
+finduid(<tag(stoneTeam1)>).f_sheep_game_stone_null
+finduid(<tag(stoneTeam2)>).f_sheep_game_stone_null
+
+tag.started=0
+
+[function f_sheep_game_spawn]
+if (<link.tag(started)>==1)
+  arg(numOfSpawns,<link.tag.spawnPoints>)
+  
+  arg(spwn,<random2(1,<numOfSpawns>-1)>)  
+  arg(spwnbit,<link.tag(team<tag.team>Spawn_<spwn>)>)
+  spwnbit.type=t_spawn_char
+  //say(<spwnbit>)
+  arg(monster,<link.tag.monster_<eval(<tag.level>)>>)
+  spwnbit.more1=<monster>
+  spwnbit.timer=1  //SPAWNING
+  //say(<lastnewchar>)
+  //finduid(spwnbit.tag.lastspawned).memoryfindtype(memory_ispawned).remove
+  //lastnewchar.tag(teamStone,<uid>)
+  //lastnewchar.events +e_sheep_game_monster
+  spwnbit.more2=0
+  //say(<spwnbit.tag.lastspawned>)
+  //src.say("spwn:<?spwn?>")
+  //src.say("position:<?position?>")
+  //src.say("monster:<?monster?>")
+  timer=2
+  tag(toSpawn,#-1)
+  //say("Spawning")
+endif
+
+[events e_sheep_game_monster]
+on=@death
+if (<strlen(<tag.sheepGameStone>)> > 0)
+  finduid(<tag.sheepGameStone>).f_sheep_game_kill
+endif
+events -e_sheep_game_monster
+return 0
+
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[events e_sheep_game_player]
+on=@spellcast
+//24=stone wall, 28=fire field, 32=recall, 33=blade spirits, 40=summon creature, 47=paralyze field, 50=energy field, 52=gate
+//58=vortex, 
+//say(<argn>)
+if ((<argn>==24)||(<argn>==28)||(<argn>==32)||(<argn>==33)||(<argn>==40)||(<argn>==47)||(<argn>==50)||(<argn>==52)||(<argn>==58)|| ((<argn>>=60)&&(<argn><=64)) )
+  src.redmessage("To nepujde")
+  return 1
+endif
+//if(<argn>==44)//invisibility
+//  newequip(i_invisibility_remover)
+//endif
+f_sheep_game_setMonsterEvent
+
+on=@hit
+f_sheep_game_setMonsterEvent
+
+on=@afterswing
+f_sheep_game_setMonsterEvent
+
+on=@death
+newequip(i_sheep_game_ress)
+f_sheep_game_check_winner
+f_sheep_game_death
+
+on=@beforedoeffect 
+f_sheep_game_setMonsterEvent
+
+//on=@DrinkingPotion
+//if (<targ.baseid>==i_potion_Invisibility)
+//  newequip(i_invisibility_remover)
+//endif
+//on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+//on=@SkillStart  //121=provo,9=peace,15=enticement...
+//if (<argn>==9)||(<argn>==15)||(<argn>==121)
+//  f_sheep_game_setMonsterEvent
+//endif
+
+//on=@environchange
+//tag.remove(sheepGameStone)
+//tag.remove(sheepGameTeam)
+//tag.remove(sheepGame)
+//tag.remove(sheepGameExperience)
+//tag.remove(sheepGameInArena)
+//tag.remove(sheepGameId)
+//if (<tag(sheepGameProvocation)>)
+//  provocation=<tag(sheepGameProvocation)>
+//endif
+//tag.remove(sheepGameProvocation)
+//tag.remove(sheepGameDetectingHidden)
+//events -e_sheep_game_player  
+
+[function f_sheep_game_setMonsterEvent]
+if (<act>)
+  if (!<act.isplayer>)
+    act.tag(sheepGameStone,<src.tag(sheepGameStone)>)
+    if (!<act.isevent(e_sheep_game_monster)>) //ma monstrum potrebny event?
+      act.events +e_sheep_game_monster
+      //act.tag(sheepGameStone,<src.tag(sheepGameStone)>)
+      //act.findid(i_backpack).remove
+      act.flag_conjured=1
+    endif
+//    arg(teamLvl,<src.tag(sheepGameStone).tag(level)>)
+//    act.tag(experience,<eval(150+<teamLvl>*50)>)
+    //if (!(<strlen<act.tag(sheepGameStone)>> > 0))
+      //act.tag(sheepGameStone,<src.tag(sheepGameStone)>)
+    //endif
+  endif
+endif
+return 1
+
+[function f_sheep_game_kill]
+arg(team,<tag.team>)
+arg(teamStone,<link.tag.stoneTeam<team>>)
+
+teamStone.tag(points,#+1)//1kill = 1bod pre team
+teamStone.tag(killed,#+1)
+
+if (<team>==1)
+  arg(otherTeam,2)
+  arg(otherTeamStone,<link.tag.stoneTeam<otherTeam>>)
+elseif (<team>==2)
+  arg(otherTeam,1)
+  arg(otherTeamStone,<link.tag.stoneTeam<otherTeam>>)
+endif
+
+if (<link.tag(autoLevelUp)>==1)//autoLevelUp
+  if (<link.tag(monsters)> > <eval(<otherTeamStone.tag(level)>+1)>)
+    if (<strlen(<link.tag(levelUpKills)>)> > 0)
+      arg(currLvl,<eval(<otherTeamStone.tag(level)>+1)>)
+      //say("currLvl: <?currLvl?>")
+      arg(pToLevelUp,<return_nth(<currLvl>,<link.tag(levelUpOnKills)>)>)
+      //say("pToLevelUp: <?pToLevelUp?>")
+    else
+      arg(pToLevelUp,<link.tag(pointsToLevelUp)>)
+    endif
+    if (<tag.points> >= <pToLevelUp>)
+      tag(points,#-<pToLevelUp>)
+      otherTeamStone.tag(level,#+1)
+      say("Level monster druhemu teamu zvysen")
+      otherTeamStone.say("Byl zvysen level monster")
+    endif
+    
+  endif
+endif
+
+otherTeamStone.tag(toSpawn,#+2)//za jedneho zabiteho sa spawnnu 2 v druhom team
+if (<strlen(otherTeamStone.tag(spawning))> > 0)
+  if (<otherTeamStone.tag(spawning)>==0)
+    otherTeamStone.timer=1
+  endif
+endif
+
+[dialog d_sheep_game_stone_gm]
+if (!<link>)
+  src.sysmessage("Najskor nalinkuj cez controler")
+  return 1
+endif
+argo.SetLocation=230,5
+
+argo.tag(sirka,400)
+argo.tag(vyska,80+30*<tag.players>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,130,150,30,60)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,130,150,30,60)
+
+arg(i,0)
+while (<i> < <tag.players>)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,130,150,30,60)
+  arg(i,#+1)
+endwhile
+
+argo.dialog_pozadi(<argo.tag(nexty)>,1,130,150,30,60)
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"GM Dialog")
+argo.textA(<argo.dialog_textpos(0,1)>,42,"Players")
+argo.textA(<argo.dialog_textpos(0,2)>,152,"<?tag.players?>")
+
+argo.textA(<argo.dialog_textpos(1,0)>,42,"Player name")
+argo.textA(<argo.dialog_textpos(1,1)>,42,"Player uid")
+argo.textA(<argo.dialog_textpos(1,2)>,42,"OK")
+argo.textA(<argo.dialog_textpos(1,3)>,42,"In Arena")
+
+arg(i,1)
+while (<i> <= <tag.players>)
+  arg(line,<eval(1+<i>)>)
+
+  arg(player,<finduid(<tag.player_<i>>)>)
+  argo.textA(<argo.dialog_textpos(<line>,0)>,152,"<?player.name?>")
+  argo.textA(<argo.dialog_textpos(<line>,1)>,152,"<?player.uid?>")
+  
+  arg(isOK,<eval(f_sheep_game_player_isOK(<player.uid>))>)
+  argo.textA(<argo.dialog_textpos(<line>,2)>,152,"<?isOK?>")
+  
+  arg(inArena,<eval(<player.tag(sheepGameInArena)>)>)
+  argo.textA(<argo.dialog_textpos(<line>,3)>,152,"<?inArena?>")
+  
+  arg(i,#+1)
+endwhile
+
+if (<tag.players>!=0)
+  arg(line,<eval(1+<i>)>)
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,"Kick 'em all")
+  argo.button(<argo.dialog_textpos(<line>,1)>,0fa5,0fa7,1,0,1)
+endif
+
+[dialog d_sheep_game_stone_gm button]
+on=0
+
+on=@anybutton
+if (argn==1)
+  f_sheep_game_players_kick
+endif
+
+[function f_sheep_game_player_isOK]//argv(0)=player uid
+//say(<argv(0)>)
+arg(pl,<argv(0)>)
+if (!<pl.isevent(e_sheep_game_player)>)
+  return 0
+endif
+
+if (!<strlen(<pl.tag(sheepGameTeam)>)>)
+  return 0
+endif
+
+if (!<strlen(<pl.tag(sheepGameStone)>)>)
+  return 0
+endif
+
+if (!<strlen(<pl.tag(sheepGameExperience)>)>)
+  return 0
+endif
+
+return 1
+
+[function f_sheep_game_players_kick]
+//arg(outPosition,<link.tag(gateTeam<tag.team>PosOut)>)
+arg(i,1)
+while (<i> <= <tag.players>)
+  arg(player,<finduid(<tag.player_<i>>)>)
+  if (<strlen(<player.tag(sheepGameInArena)>)> > 0)
+    player.f_sheep_game_death
+  endif
+  tag.remove(player_<i>)
+  arg(i,#+1)
+endwhile
+f_sheep_game_stone_null
+
+[function f_sheep_game_death]//pri smrti alebo vyhodeni/kick
+if (<strlen(<tag(sheepGameStone)>)> > 0)
+  arg(outPosition,<tag(sheepGameStone).link.tag(gateTeam<tag.sheepGameTeam>PosOut)>)
+  go(<outPosition>)
+  update
+  tag.remove(sheepGameStone)
+  tag.remove(sheepGameTeam)
+  tag.remove(sheepGame)
+  tag.experience=<tag(sheepGameExperience)>
+  tag.remove(sheepGameExperience)
+  provocation=<tag(sheepGameProvocation)>
+  tag.remove(sheepGameProvocation)
+  //detectinghidden=<tag(sheepGameDetectingHidden)>
+  //tag.remove(sheepGameDetectingHidden)
+  tag.remove(sheepGameInArena)
+  tag.remove(sheepGameId)
+  
+  events -e_sheep_game_player
+endif
+
+[ITEMDEF i_invisibility_remover]
+ID=i_memory
+Name=Invisibility remover
+TYPE=T_EQ_SCRIPT
+
+on=@create
+ATTR=attr_invis|attr_decay
+  
+on=@equip
+timer=9
+
+ON=@timer
+cont.findid(i_rune_invisibility).timer=1
+remove
+
+//[function sheep_game_clear_monsters]
+//sector.allchars(f_sheep_game_clear_monsters)
+
+//[function f_sheep_game_clear_monsters]
+//if (!(isplayer) && ((flag_spawned)==1))
+//  events -e_sheep_game_monster
+//  if !(isplayer)//double check
+//    remove
+//  endif
+//  //flag_conjured=1 
+//  //hits=0 
+//endif
+
+//spelleffect(59,1000)
+[ITEMDEF i_sheep_game_ress]
+ID=i_memory
+Name=Self resurrector
+TYPE=T_EQ_SCRIPT
+
+on=@create
+ATTR=attr_invis|attr_decay
+  
+on=@equip
+timer=6
+
+ON=@timer
+cont.spelleffect(59,1000)
+remove
+
+[itemdef i_sheep_game_gate_out]
+id=i_moongate_red
+name=Gate to home
+
+on=@step
+if (<src.isgm>)
+  //src.go(<src.p>)
+  //src.update
+  return 1
+endif
+
+if (<src.isplayer>)
+  src.gohome
+  src.tag.remove(sheepGameStone)
+  src.tag.remove(sheepGameTeam)
+  src.tag.remove(sheepGame)
+  src.tag.remove(sheepGameExperience)
+  src.tag.remove(sheepGameInArena)
+  src.tag.remove(sheepGameId)
+  src.tag.remove(sheepGamePlayer)
+  if (<src.tag(sheepGameProvocation)>)
+    src.provocation=<src.tag(sheepGameProvocation)>
+  endif
+  src.tag.remove(sheepGameProvocation)
+//  tag.remove(sheepGameDetectingHidden)
+  src.events -e_sheep_game_player  
+endif
+  
+return 1
+
+[function f_sheep_game_stone_null]//argn(0)=i_sheep_game_stone(uid)
+tag(points,0)
+tag(level,0)
+tag(players,0)
+tag(spawning,0)
+tag(killed,0)
+tag(totalPlayers,0)
+tag(playersInArena,0)
+
+[function f_sheep_game_check_winner]
+//tag(sheepGameInArena,0)
+tag(sheepGameStone).tag(playersInArena,#-1)
+arg(playersInArena,<eval(tag(sheepGameStone).tag(playersInArena))>)
+if (<playersInArena>==0)
+  tag(sheepGameStone).say("Prohra")
+  if(<tag(sheepGameStone).tag.team>==1)
+    arg(otherTeam,2)
+  else
+    arg(otherTeam,1)
+  endif
+  tag(sheepGameStone).link.tag(stoneTeam<otherTeam>).say("Vyhra")
+  tag(sheepGameStone).link.tag(stoneTeam<otherTeam>).f_sheep_game_players_kick  //vyhodit druhy (vitazny) team von
+  //tag(sheepGameStone).link.f_sheep_game_death
+  //tag(sheepGameStone).link.f_sheep_game_stop  //vypnut hru
+endif
+
+[function f_sheep_game_count]//(<argtxt(1)>,<tag.monsters>))
+if (<eval(<argvcount>-1)>==<argv(<eval(<argvcount>-1)>)>-1)
+  return 1
+else
+  return 0
+endif
+
+[itemdef i_sheep_game_public]
+id=0aec
+name=Publikum
+type=t_normal
+
+on=@create
+color=099d
+attr=090
+tag.setInvisInvul=0
+
+on=@step
+if (src.isgm)
+  return 1
+endif
+src.go(<morep>)
+if (<tag.setInvisInvul>==1)
+  if (!(<strlen(<src.tag(sheepGamePublic)>)>) > 0)
+    src.invis(1)
+    src.invul(1)
+  endif
+  src.tag(sheepGamePublic,1)
+else
+  if (<strlen(<src.tag(sheepGamePublic)>)> > 0)
+    src.invis(0)
+    src.invul(0)
+  endif
+  src.tag.remove(sheepGamePublic)
+endif
+
+return 1
+
+on=@userdclick
+return 1
+
+[itemdef i_sheep_game_public_player]
+id=0aec
+name=Publikum
+type=t_normal
+
+on=@create
+color=099d
+attr=090
+tag.setInvisInvul=0
+
+on=@step
+if (src.isgm)
+  return 1
+endif
+
+if (<strlen(<src.tag(sheepGamePlayer)>)> > 0)
+  src.go(<morep>)
+  if (<tag.setInvisInvul>==1)
+    if (!(<strlen(<src.tag(sheepGamePublic)>)>) > 0)
+      src.invis(1)
+      src.invul(1)
+    endif
+    src.tag(sheepGamePublic,1)
+  else
+    if (<strlen(<src.tag(sheepGamePublic)>)> > 0)
+      src.invis(0)
+      src.invul(0)
+    endif
+    src.tag.remove(sheepGamePublic)
+  endif
+endif
+
+return 1
+
+on=@userdclick
+return 1
+
+[events e_sheep_game_spectator]
+on=@logout
+f_sheep_game_spectator_out
+
+[function sheepgame]
+if (isgm)
+  go(<nastaveni_sg_position_spectators>)
+  return 1
+endif
+
+if (<nastaveni_sg_playing>==1)
+  if (<strlen(<tag(sg_player)>)>)
+    if ((<strcmpi(<region.name>,"dum ")>==1) || (<strcmpi(<region.name>,"pole ")>==1) || (<isevent(e_sheep_game_spectator)>) || (<strlen(<tag(sg_player)>)>))
+      if (<strlen(<tag(sg_from)>)>)
+        f_sheep_game_spectator_out
+        return 1
+      else
+        f_sheep_game_spectator_in
+        return 1
+      endif
+    endif
+  endif
+endif
+
+    if (<strlen(<tag(sg_from)>)>)
+      f_sheep_game_spectator_out
+    endif
+return 1
+//sysmessage(<strcmpi(<region.name>,"dum ")>)
+//sysmessage(<strcmpi(<region.name>,"pole ")>)
+//sysmessage(<isevent(e_sheep_game_spectator)>)
+
+if (<nastaveni_sg_playing>==1)
+  if ((<strcmpi(<region.name>,"dum ")>==1) || (<strcmpi(<region.name>,"pole ")>==1) || (<isevent(e_sheep_game_spectator)>) || (<strlen(<tag(sg_player)>)>))
+    if (<strlen(<tag(sg_from)>)>)
+      f_sheep_game_spectator_out
+      finduid(#02b7c73).tag(divaci,#-1) //gm heck uid
+    else
+      if (<finduid(#02b7c73).tag.divaci> < 11) //gm heck uid
+        f_sheep_game_spectator_in
+        finduid(#02b7c73).tag(divaci,#+1)//gm heck uid
+       else
+        redmessage("Maximalny pocet divakov")
+      endif
+    endif
+  else
+    redmessage("Do areny muzes vstoupit pouze z bezpecne zony - dum/pole")
+  endif
+else
+  redmessage("Sheep Game se momentalne nehraje")
+endif
+return 1
+
+[function f_sheep_game_spectator_in]
+tag(sg_from,<p>)
+stone=1
+invis=1
+//nightsight=1  //pada to (ked je moc itemov asi)
+invul=1
+events +e_sheep_game_spectator
+go(<nastaveni_sg_position_spectators>)
+return 1
+
+[function f_sheep_game_spectator_out]
+go(<tag(sg_from)>)
+stone=0
+invis=0
+//nightsight=0
+invul=0
+tag.remove(sg_from)
+events -e_sheep_game_spectator
+finduid(#02b7c73).tag(divaci,#-1)
+return 1
+
+[itemdef i_sheep_game_players]
+id=i_crystal_ball
+name=Sheep game players
+type=t_normal
+
+on=@create
+attr=090
+color=099c
+tag.teams=1
+
+on=@timer
+return 1
+
+on=@userdclick
+if (src.isgm)
+  dialog(d_sheep_game_players)
+endif
+return 1
+
+[dialog d_sheep_game_players]
+argo.SetLocation=5,5
+
+argo.tag(sirka,890)
+argo.tag(vyska,110+<tag.teams>*22)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30,310,30,0,0)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)//teams
+argo.dialog_pozadi(<argo.tag(nexty)>,1)//player 1,2,3
+
+arg(t,0)
+while (<arg(t)> < <tag(teams)>)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,30,30,200,30,200,30,200,30,30,30)
+  arg(t,#+1)
+endwhile
+argo.dialog_pozadi(<argo.tag(nexty)>,1,30,30,200,30,200,30,200,30,30,30)
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"link")
+if (<link>)
+  argo.textA(<argo.dialog_textpos(0,1)>,152,"Sheep Game Controller - <?link.uid?>")
+else
+  argo.textA(<argo.dialog_textpos(0,1)>,152,"Sheep Game Controller - undefined (NASTAV!)")
+endif
+argo.button(<argo.dialog_textpos(0,4)>,0fa5,0fa7,1,0,500)
+
+argo.textA(<argo.dialog_textpos(1,0)>,42,"<?tag(teams)?> teams")
+argo.button(160,33,0fa5,0fa7,1,0,501)
+argo.textA(<argo.dialog_textpos(1,2)>,42,"Add team")
+
+argo.textA(<argo.dialog_textpos(2,1)>,42,"player 1")
+argo.textA(<argo.dialog_textpos(2,3)>,42,"player 2")
+argo.textA(<argo.dialog_textpos(2,5)>,42,"player 3")
+argo.textA(<argo.dialog_textpos(2,7)>,42,"arena 1|2")
+argo.textA(<argo.dialog_textpos(2,9)>,42,"come")
+argo.textA(<argo.dialog_textpos(2,10)>,42,"home")
+
+arg(t,1)
+while (<arg(t)> < <eval(tag(teams)+1)>)
+  arg(line,<eval(2+<t>)>)
+  argo.textA(<argo.dialog_textpos(<line>,0)>,42,<arg(t)>)
+  arg(p,1)
+  while (<arg(p)> < 4)
+    if (<strlen(<tag(team_<arg(t)>_player_<arg(p)>)>)>)
+      argo.textA(<argo.dialog_textpos(<line>,2*<arg(p)>)>,152,<tag(team_<arg(t)>_player_<arg(p)>).name>)
+    endif
+    argo.button(<argo.dialog_textpos(<line>,-1+2*<arg(p)>)>,0fa5,0fa7,1,0,(<arg(t)>*10)+<arg(p)>)//player
+    arg(p,#+1)
+  endwhile
+  argo.button(<argo.dialog_textpos(<line>,7)>,0fa5,0fa7,1,0,(<arg(t)>*10)+4)//arena 1
+  argo.button(<argo.dialog_textpos(<line>,8)>,0fa5,0fa7,1,0,(<arg(t)>*10)+5)//arena 2
+  argo.button(<argo.dialog_textpos(<line>,9)>,0fa5,0fa7,1,0,(<arg(t)>*10)+6)//come - portne ich ku mne
+  argo.button(<argo.dialog_textpos(<line>,10)>,0fa5,0fa7,1,0,(<arg(t)>*10)+7)//home
+  arg(t,#+1)
+endwhile
+
+argo.button(<argo.dialog_textpos(<line>+1,1)>,0fa5,0fa7,1,0,502)
+argo.textA(<argo.dialog_textpos(<line>+1,2)>,152,"set all as SG players")
+
+argo.button(<argo.dialog_textpos(<line>+1,3)>,0fa5,0fa7,1,0,503)
+argo.textA(<argo.dialog_textpos(<line>+1,4)>,152,"unset all SG players")
+
+
+[dialog d_sheep_game_players button]
+on=0
+on=@anybutton
+
+if (argn==500)
+  src.newequip(i_target_sheep_game)
+  lastnew.tag(playersStone,<uid>)
+  src.sysmessage("Zameraj Sheep Game Controller")
+  dialog(d_sheep_game_players)
+endif
+
+if (argn==501)
+
+  if (<tag(teams)>==20)
+    src.redmessage("Maximum tymov")
+    dialog(d_sheep_game_players)
+    return 1
+  endif
+  tag(teams,#+1)
+  dialog(d_sheep_game_players)
+endif
+
+if (argn==502) //set all as SG players - nastavi vsetkym hracom v zozname tag(sg_player,1)
+  arg(t,1)
+  while (<arg(t)> < <eval(tag(teams)+1)>)
+    arg(p,1)
+    while (<arg(p)> < 4)
+      if (<strlen(<tag(team_<arg(t)>_player_<arg(p)>)>)>)
+        finduid(<tag(team_<arg(t)>_player_<arg(p)>)>).tag.sg_player=1
+      endif
+      arg(p,#+1)
+    endwhile
+    arg(t,#+1)
+  endwhile
+  src.redmessage("Hraci nastaveny")
+  dialog(d_sheep_game_players)
+endif
+
+if (argn==503) //unset all SG players - odstrani vsetky hracske tagy pre SG
+  arg(t,1)
+  while (<arg(t)> < <eval(tag(teams)+1)>)
+    arg(p,1)
+    while (<arg(p)> < 4)
+      if (<strlen(<tag(team_<arg(t)>_player_<arg(p)>)>)>)
+        finduid(<tag(team_<arg(t)>_player_<arg(p)>)>).tag.remove(sg_player)
+        finduid(<tag(team_<arg(t)>_player_<arg(p)>)>).tag.remove(sheepGame)
+        finduid(<tag(team_<arg(t)>_player_<arg(p)>)>).tag.remove(sg_ported_from)
+      endif
+      arg(p,#+1)
+    endwhile
+    arg(t,#+1)
+  endwhile
+  src.redmessage("Hraci zruseny")
+  dialog(d_sheep_game_players)
+endif
+
+if ((<argn> > 10) && (<argn> < 210)) //max 20 teamov
+  arg(team,<eval(<argn>/10)>)
+  arg(player,<eval(<argn>%10)>)
+
+  if (arg(player) < 4)
+    src.newequip(i_target_sheep_game_players)
+    lastnew.tag(playersStone,<uid>)
+    lastnew.tag(team,<arg(team)>)
+    lastnew.tag(player,<arg(player)>)
+    src.sysmessage("Zameraj hraca <?arg(player)?> z tymu <?arg(team)?>")
+  else
+    arg(sendTo,"")
+    
+    if (<arg(player)>==4)
+      arg(sendTo,<link.tag.gateTeam1PosOut>)
+    elseif (<arg(player)>==5)
+      arg(sendTo,<link.tag.gateTeam2PosOut>)
+    elseif (<arg(player)>==6)
+      arg(sendTo,<src.p>)
+    elseif (<arg(player)>==7)
+      arg(sendTo,<src.p>) //blbost - ale musi tam neco byt
+    endif
+    
+    if (<strlen(<arg(sendTo)>)> > 0)
+      arg(p,1)
+      while (<arg(p)> < 4)
+      
+        if (<strlen(<tag(team_<arg(team)>_player_<arg(p)>)>)> > 0)
+          
+          if (<arg(player)>==6)
+            arg(portedFrom,<finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).p>)
+            finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).tag(sg_ported_from,<arg(portedFrom)>)
+          endif
+          
+          if (<arg(player)>==7) // home - posle ich domov (odkial ich zobral s 'come')
+            arg(sendTo,<finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).tag(sg_ported_from)>)
+            finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).tag.remove(sg_player)
+            finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).tag.remove(sheepGame)
+            finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).tag.remove(sg_ported_from)
+            finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).go(<arg(sendTo)>)
+          else
+            finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).go(<arg(sendTo)>)
+            finduid(<tag(team_<arg(team)>_player_<arg(p)>)>).tag(sheepGame,1) // musi mat aby pri vstupe do gaty (ktora vedie do areny) sa mu nastavili potrebne veci
+          endif
+        endif
+        arg(p,#+1)
+      endwhile
+    endif
+  endif
+endif
+
+[itemdef i_target_sheep_game_players]
+id=i_memory
+type=t_eq_script
+name=i_target_sheep_game_players
+
+on=@timer
+remove
+return 0
+
+on=@equip
+target()
+timer=10
+
+on=@targon_char
+if ( (<strlen(<tag.team>)> > 0) && (<strlen(<tag.player>)> > 0))
+  finduid(<tag(playersStone)>).tag(team_<tag(team)>_player_<tag(player)>,<src.targ>)
+  finduid(<tag(playersStone)>).dialog(d_sheep_game_players)
+endif
+return 1
+
+on=@targon_item
+return 1
+
+on=@targon_ground
+return 1

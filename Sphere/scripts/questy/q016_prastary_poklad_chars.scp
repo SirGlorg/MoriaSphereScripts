@@ -1,0 +1,138 @@
+//Umirajici negr, prvni questovni npc
+// souradnice: 3366 3819
+[CHARDEF c_q016_StaryNegr]
+NAME=Nekromant
+ID=C_MAN
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_q016_StaryNegr
+TEVENTS=e_character
+
+ON=@Create
+NAME=Umirajici Nekromant
+NPC=brain_vendor
+STR=1000
+DEX=1000
+INT=1000
+MEDITATION=10
+INSCRIPTION=10
+MAGERY=70
+WRESTLING=10
+Resist=50
+TACTICS=50
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+tag(hypnotizable,0)
+tag(noanimate,1)
+
+on=@UserDclick
+if (src.targ.distance > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q016_StaryNegr_DClick
+endif
+
+ON=@NPCRestock
+ITEMnewbie=i_hat_wizards
+color=001
+ITEMnewbie=i_sandals
+color=001
+ITEMnewbie=i_robe
+color=001
+
+//mag Orillus, druha questovni postava
+// souradnice: 3796 2859 6
+[CHARDEF c_q016_Orillus]
+NAME=Orillus
+ID=C_MAN
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_q016_orillus
+TEVENTS=e_character
+
+ON=@Create
+NPC=brain_vendor
+STR=1000
+DEX=1000
+INT=1000
+MEDITATION=10
+INSCRIPTION=10
+MAGERY=70
+WRESTLING=10
+Resist=50
+TACTICS=50
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+on=@UserDclick
+if (src.targ.distance > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q016_Orillus_DClick
+endif
+
+ON=@NPCRestock
+ITEMnewbie=i_hat_wizards
+color=color_o_obsidian
+ITEMnewbie=i_sandals
+color=001
+ITEMnewbie=i_robe
+color=color_o_obsidian
+
+//klerik Andor
+//souradnice: 3200 2971 20
+[CHARDEF c_q016_Andor]
+NAME=Klerik Andor
+ID=c_man 
+DESIRES=i_gold,t_wand,t_reagent,t_bone 
+AVERSIONS=t_TRAP,t_eerie_stuff 
+attack=65 
+ARMOR=20
+CAN=MT_WALK|mt_run
+TSPEECH=spk_q016_Andor
+TEVENTS=e_character
+TEVENTS=e_summoneater
+ 
+ON=@Create 
+NPC=brain_vendor
+FAME=1
+STR=3500
+DEX=500
+MAXSTAM=300
+INT=300
+maxstam=450
+TACTICS=250.0
+WRESTLING=100.0
+POISONING=500.0 
+tag.experience=0 
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+COLOR=colors_skin 
+
+tag(hypnotizable,0)
+tag(noanimate,1)
+
+on=@UserDclick
+if (src.targ.distance > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q016_Andor_DClick
+endif
+
+ON=@NPCRestock 
+ITEMNEWBIE=i_platemail_chest 
+COLOR=color_o_valorite
+ITEMNEWBIE=i_platemail_arms 
+COLOR=color_o_valorite
+ITEMNEWBIE=i_platemail_gloves 
+COLOR=color_o_valorite
+ITEMNEWBIE=i_platemail_gorget 
+COLOR=color_o_valorite
+ITEMNEWBIE=i_platemail_helm 
+COLOR=color_o_valorite
+ITEMNEWBIE=i_boots_thigh 
+color=0982
+
+[eof]

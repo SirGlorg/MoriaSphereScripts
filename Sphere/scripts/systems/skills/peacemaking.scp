@@ -1,0 +1,130 @@
+[function f_peacemaking]
+if(<findid(i_peacemaking_timer)>)
+ sysmessage(Nespechej s pouzivanim skillu)
+ return 1
+endif
+if (<flag_dead>)
+ return 1 
+endif
+if !(<findtype(t_musical)>)
+ sysmessage(Potrebujes nejaky hudebni nastroj.)
+ return 1
+endif
+reveal
+stopscriptedskills
+if (ishungrymsg)
+ return 1
+endif
+newitemsafe(i_peacemaking_timer)
+equip(<lastnew>)
+return 1
+
+[itemdef i_peacemaking_timer]
+ID=i_memory
+TYPE=t_eq_script
+name=peacemaking
+
+on=@equip
+timer=60
+target Koho chces zkusit uklidnit?
+
+on=@targon_item
+return 1
+
+on=@targon_char
+link=<src.targ.uid>
+if (<link.npc>==0)||(<link.peacemaking>)||(link.issumon)
+ cont.sysmessage(Tohle nemuzes uklidnit.)
+ remove
+ return 1
+endif
+if (<eval(promilerange(<eval(<cont.peacemaking>)>,<SKILL_PEACEMAKING.effect>))> < <link.tag(experience)>)
+ cont.sysmessage(Uklidneni teto prisery presahuje tve moznosti.)
+ remove
+ return 1
+endif
+if (<cont.musicianship> < {0 1025})
+ morex=0
+ cont.sysmessage(You play poorly.)
+ cont.sound(<cont.findtype(t_musical).typedef.tdata2>)
+else
+  arg(power,<eval(randfakt(<eval(<cont.peacemaking>)>,<SKILL_PEACEMAKING.effect>))>)
+  if (<arg(power)> < <link.tag(experience)>)
+   morex=0
+   cont.sound(<cont.findtype(t_musical).typedef.tdata1>)
+  else
+   morex=1
+   cont.sound(<cont.findtype(t_musical).typedef.tdata1>)
+  endif
+endif
+//timerdelay(<promilerange(<cont.peacemaking>,<skill_peacemaking.delay>)>)
+timerd=(<promilerange(<cont.peacemaking>,<skill_peacemaking.delay>)>)
+more1=1
+return 1
+
+on=@timer
+if (more1)
+  if (charExists(<link>)) //mount exists and ergo is not dead or whatever
+    if (morex)
+      cont.classmessage(Uklidneni se povedlo.)  
+      arg(peacestoreact,<link.act>)
+      if (link.findid(i_rune_peacemaking))
+        link.act=<link.findid(i_rune_peacemaking)>
+      else
+        link.newitem(i_rune_peacemaking)
+        link.equip(<lastnew>)
+      endif
+      link.act.timer=<eval 10+(<cont.peacemaking>/20)>
+      link.newmemory(<cont>)
+      link.act.color=memory_harmedby|MEMORY_WAR_TARG|MEMORY_FIGHT|MEMORY_SPEAK
+      link.act=<arg(peacestoreact)>  
+    else
+      cont.redmessage("Uklidnovani nezabralo.")
+      //link.attack(<cont>)
+      link.findid(i_rune_peacemaking).remove
+    endif
+  else
+    cont.redMessage("Jiz neni co uklidnovat!")
+  endif
+endif
+remove
+return 1
+
+[itemdef i_rune_peacemaking]
+ID=i_memory
+TYPE=t_eq_script
+name=peacemade
+
+on=@equip
+cont.events +e_peacemade
+timer=90
+
+on=@unequip
+cont.events -e_peacemade
+cont.action=""
+
+on=@timer
+cont.attack
+remove
+return 1
+
+[events e_peacemade]
+on=@skillstart
+if (isfighting)
+elseif (iscasting)
+else
+ return 0
+endif
+skill 065
+return 1
+
+on=@hittry
+if (isfighting)
+elseif (iscasting)
+else
+ return 0
+endif
+skill 069
+return 1
+
+[eof]

@@ -1,0 +1,331 @@
+/////////////////////////////////
+///////// Shadow weapons  ///////
+/////////////////////////////////
+
+////////
+/// TAGY
+// q039_shadow_weapon -  0 - nic nema spolocne
+// q039_shadow_weapon -  1 - slubil, ze prinese 3 lebky
+// q039_shadow_weapon -  2 - priniesol 3 lebky, slubil, ze zabije 4 bratov
+// q039_shadow_weapon -  3 - zabil 4 bratov, slubil ze prinesie veci na zbran
+// q039_shadow_weapon -  4 - priniesol veci, timer 1 hodina
+// q039_shadow_weapon -  5 - ubehla hodina, dostal zbran
+// q039_shadow_weapon -  6 - znicila sa mu zbran
+// q039_shadow_weapon -  7 - suhlasil, ze splni ulohu aby dostal dalsiu zbran
+
+[speech spk_q039_shadow_weapon_kovar]
+
+on = *nakup*
+on = *kup*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q039_shadow_weapon_kovar
+endif
+
+[function f_q039_shadow_weapon_kovar]
+if (<src.flags>&statf_dead)
+ return 1
+endif
+if (<src.f_npcIsWorking>)  // npc is working
+  f_npcIsWoking_randReaction
+else
+  dialog(d_q039_shadow_weapon_kovar)
+endif
+
+[function f_npcIsWorking]
+if (findID(i_mem_workingTimer))
+  return 1
+else
+  return 0
+endif
+
+
+[function f_npcIsWoking_randReaction]
+dorand 5
+  say("Nevidis, ze pracuji?")
+  say("Vyrabim tvoji zbran.")
+  say("Mam praci, nevidis?")
+  say("Jo, uz natom pracuji...")
+  say("Jsi zde prilis brzo.")
+enddo
+
+[dialog d_q039_shadow_weapon_kovar]
+argo.questDialog_create(03101,"Kovar")
+
+argo.dialog_newPage("Pozdrav")
+arg(q039_shadow_weapon,<eval src.qtag(q039_shadow_weapon)>)
+
+dorand 3
+  arg(drby,1)
+  arg(drby,2)
+  arg(drby,3)
+enddo
+
+if (<arg(q039_shadow_weapon)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,21,"Drby")
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Bud pozdraven, prosim nezdrzuj mne, mam dulezitou praci!")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q039_shadow_weapon)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jmenuji se... ale to je jedno, jsem na svete jiz tak dlouho, ze mi nejaka jmena prijdou nepodstatna. Podstatne je pouze to, co po tobe zustane!")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Obchodovat")
+  if ((<arg(q039_shadow_weapon)> == 0)||(<arg(q039_shadow_weapon)> == 1)||(<arg(q039_shadow_weapon)> == 2)||(<arg(q039_shadow_weapon)> == 3))
+    argo.setText(argo.newTextLine,"Nemyslim si, ze by jsi mi mohl nabidnout neco, co by mne zajimalo!")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q039_shadow_weapon)> == 4))
+    argo.setText(argo.newTextLine,"Zde je tva zbran, uzij ji ve zdravi!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dekuji ti velice.")
+      argo.questDialog_addResponse(0,1,1,"q039_accept_weapon")
+  elseif (<arg(q039_shadow_weapon)> == 6))
+    argo.setText(argo.newTextLine,"Vidim, ze jsi o svoji zbran prisel. Chces vyrobit novou?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Rad bych!")
+      argo.questDialog_addResponse(0,0,1,"q039_want_new_weapon")
+      argo.setText(argo.newTextLine,"Ne dekuji, zatim ne.")
+      argo.questDialog_addResponse(0,1,1,"q039_refuse")
+  else
+    argo.setText(argo.newTextLine,"Vzdyt jiz spolu obchodujeme ne?")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Hledam praci")
+  if (<arg(q039_shadow_weapon)> == 0)
+    if (<src.tag(level)> > 40)
+      //argo.setText(argo.newTextLine,"Jednu bych pro tebe mel, ale nejsem si jist, zda to pro tebe neni prilis velke sousto. Dones mi tri neposkozene lebky vladcu podzemi a muzeme se bavit dal!")
+      argo.setText(argo.newTextLine,"Jednu bych pro tebe mel, ale nejsem si jist, zda to pro tebe neni prilis velke sousto. Dones mi pet neposkozenych lebek vladcu podzemi a muzeme se bavit dal! Konkretne mi jde o tato podzemi - Mahat, Carn Dumm, Mount Dorlas a Tuma Osto. Pak mi jeste prines lebku Paladina ze Ztraceneho mesta!")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Jdu do toho!")
+        argo.questDialog_addResponse(0,1,1,"q039_accept_skulls")
+        argo.setText(argo.newTextLine,"Zatim si netroufam...")
+        argo.questDialog_addResponse(0,1,1,"q039_refuse")
+    else
+      argo.setText(argo.newTextLine,"Je mi lito, ale vrat se pozdeji, neverim, ze bys muj ukol zvladnul!")
+      argo.questDialog_HTMLGUMP
+    endif
+  elseif (<arg(q039_shadow_weapon)> > 0)
+    argo.setText(argo.newTextLine,"Ukol uz jsem ti dal... ted je cas cinu, ne otazek!")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Drby")
+  if (<arg(drby)> == 1)
+    argo.setText(<argo.newTextLine>,"Slysel jsem o nejvetsich hrdinech. Pochazeli pry z dalekeho vychodu a dle povery meli zbrane vyrobeny z podivných materialu - byly lehke, ale zvlast ucinne  proti monstrum.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(drby)> == 2)
+    argo.setText(<argo.newTextLine>,"Videl jsi mlynarku? Kdyz se na ni tak divam, rikam si, ze by bylo na case povesit kovarinu na hrebnicek a stat se otcem. Nebo aspon provadet veci s otcovstvim souvisejici... <def_questDialog_colorTextEmote> *vyznamne mrknul a zasmal se*")
+    argo.questDialog_HTMLGUMP  
+  else 
+    argo.setText(<argo.newTextLine>,"Slysel jsem, ze to mezi Mordorem a Gondorem zase vre. Ale mne tydle valky nezajimaji. Byly a budou...")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis vousateho muze pokrocileho veku, ktery vypada velmi zdatne a silne. Zjevne se necim trapi.*")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vlastne nic...")
+    argo.questDialog_addResponse(0,1,1,"q039_goodbye") 
+    if (<arg(q039_shadow_weapon)> == 1)
+      if (<src.f_q039_has_skulls>)
+        argo.setText(argo.newTextLine,"Zde mas ty lebky.")
+        argo.questDialog_addResponse(0,0,1,"q039_bring_skulls")
+      endif
+    endif
+    if (<arg(q039_shadow_weapon)> == 2)
+      if (<src.f_q039_has_heads>)
+        argo.setText(argo.newTextLine,"Zde mas hlavy tech zradcu.")
+        argo.questDialog_addResponse(0,0,1,"q039_bring_heads")
+      endif
+    endif
+    if (<arg(q039_shadow_weapon)> == 3)
+      if (<src.f_q039_has_material>)
+        argo.setText(argo.newTextLine,"Byla to drina, ale zde mas vse potrebne!")
+        argo.questDialog_addResponse(0,0,1,"q039_bring_material")
+      endif
+    endif
+    
+if (<arg(q039_shadow_weapon)> == 1)
+  if (<src.f_q039_has_skulls>)
+    argo.dialog_page("q039_bring_skulls")
+      argo.setText(argo.newTextLine,"Dekuji. Je videt, ze nejsi zadny zacatecnik. Ted neco osobniho. Jde o ctyri zlosyny. Jmenuji se Verlix, Bakchor, Gloata a Mercelis. Je mozne, ze jde o sourozence, ale treba to jsou jen podobne zbloudile duse. Kdo vi... Kazdopadne chci jejich hlavy a nehodlam z toho slevit. Nikdy mne nikdo tak nezradil jako oni. Podrobnostmi te ale nebudu unavovat... Jen dve male rady - Najdes je nekde v podzemi, ale casto svoji pozici meni, aby je bylo tezke dostihnout! Kdyz uz je ale najdes, tak je zabij rychle. Jsou mimoradne zbabeli!")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Jdu do toho!")
+        argo.questDialog_addResponse(0,1,1,"q039_accept_heads")
+        argo.setText(argo.newTextLine,"Zatim si netroufam...")
+        argo.questDialog_addResponse(0,1,1,"refuse")
+  endif
+endif
+
+if (<arg(q039_shadow_weapon)> == 2)
+  if (<src.f_q039_has_heads>)
+    argo.dialog_page("q039_bring_heads")
+      argo.setText(argo.newTextLine,"Ha, ty jsi vazne neco! Dekuji ti, muj spanek bude nyni klidnejsi a nepochybne nejen muj. Za odmenu ti vyrobim zbran na miru! Nebude to jednoduche, ale stoji za to. Jde o davnou technologie prizracnych nebo stinovych zbrani. Jsou neuveritelne ucinne a lehke. Bohuzel jejich nevyhodou je jejich spjatost s majitelem a narocnost na specialni suroviny. Chces do toho jit?")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Rozhodne!")
+        argo.questDialog_addResponse(0,0,1,"q039_what_material")
+        argo.setText(argo.newTextLine,"Zatim ne dekuji.")
+        argo.questDialog_addResponse(0,1,1,"refuse")
+        
+    argo.dialog_page("q039_what_material")
+      argo.setText(argo.newTextLine,"Dobre potrebujes nasledujici: 5x Rudu z Shadow golemu - pozor pouze rudu, nikoliv ingoty! Je treba pouzit zcela jinou technologii taveni, 10x Kameny ohne, 1x Vysoce horlavy olej - vzacna surovina, ktere si ceni kazdy kovar ci alchymista, 1x Krev Hrdiny - Zde nejde tak ani o krev samotnou, ale o specialni proces jejiho odberu, ktery ovladaji jen ty nejzvracenejsi stvury, 4x Ohnivzdorna kuze - potrebuji si vyrobit ochranne pomucky a na zaver 1x Drahokam jmenem Slza hor.")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Dobra, jdu to pohledat.")
+        argo.questDialog_addResponse(0,1,1,"q039_accept_material")
+        argo.setText(argo.newTextLine,"Uf, toho je hrozne moc - zatim si netroufnu.")
+        argo.questDialog_addResponse(0,1,0,"refuse")
+  endif
+endif
+
+if (<arg(q039_shadow_weapon)> == 3)
+  if (<src.f_q039_has_material>)
+    argo.dialog_page("q039_bring_material")
+      argo.setText(argo.newTextLine,"Dobra, ted od tebe budu potreboval 20 mithril ingotu a 10 elven polen.")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Proc jsi mi to nerekl rovnou?!")
+        argo.questDialog_addResponse(0,0,1,"q039_need_mithril")
+        
+    argo.dialog_page("q039_need_mithril")
+      argo.setText(argo.newTextLine,"Neodolal jsem - pouze zertuji, stav se pozdeji. Zbran pro tebe bude pripravena.")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Dobre, prijdu za chvili...")
+        argo.questDialog_addResponse(0,1,1,"q039_give_material")
+  endif
+endif
+
+if (<arg(q039_shadow_weapon)> == 6)
+  argo.dialog_page("q039_want_new_weapon")
+    argo.setText(argo.newTextLine,"Dobra, tak to aby jsi pro me splnil jednu ulohu...")
+     argo.questDialog_HTMLGUMP
+       argo.setText(argo.newTextLine,"Dobra, jdu do toho")
+       argo.questDialog_addResponse(0,1,1,"q039_want_miniquest")
+endif
+
+[dialog d_q039_shadow_weapon_kovar button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q039_accept_skulls"))
+  say("Vyborne, at se ti dari!")
+  src.qtag(q039_shadow_weapon,1,45)
+elseif (<argn> == argo.dialog_linkButton("q039_accept_heads"))
+  if (<src.f_q039_has_skulls>)
+    say("Skvele! Davej si na ne pozor!")
+    src.qtag(q039_shadow_weapon,2,45)
+    src.f_q039_consume_Skulls
+	  src.addexp(3000)
+  else
+    say("Ale ty nemas to, co jsem chtel!")
+  endif  
+elseif (<argn> == argo.dialog_linkButton("q039_accept_material"))
+  if (<src.f_q039_has_heads>)
+    say("Drzim ti palce pri hledani.")
+    src.qtag(q039_shadow_weapon,3,45)
+    src.f_q039_consume_heads
+	  src.addexp(4000)
+  else
+    say("Ale ty nemas to, co jsem chtel!")
+  endif  
+elseif (<argn> == argo.dialog_linkButton("q039_give_material"))
+  if (<src.f_q039_has_material>)
+    say("Tak za hodinu to bude hotove...")
+    src.qtag(q039_shadow_weapon,4,45)
+    src.f_q039_make_npc_work
+    src.f_q039_consume_material
+	  src.addexp(2000)
+  else
+    say("Ale ty nemas to, co jsem chtel!")
+  endif  
+elseif (<argn> == argo.dialog_linkButton("q039_accept_weapon"))
+  src.qtag(q039_shadow_weapon,5,45)
+  //src.newitem(i_shadow_weapon_bag)
+  //src.act.bounce
+  f_quest_complete(45)
+  say("At ti dobre sluzi...")
+  src.f_shadow_weapon_create
+elseif (<argn> == argo.dialog_linkButton("q039_want_miniquest"))
+  say("Prijd radeji pozdejc...")
+elseif (<argn> == argo.dialog_linkButton("q039_refuse"))
+  say("Tak si trhni a uz me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Tak me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("q039_goodbye"))
+  say("Mej se...")
+endif
+
+[FUNCTION f_q039_has_skulls]
+if (<src.RESTEST(i_boss_skull_cd)> && <src.RESTEST(i_boss_skull_mahat)> && <src.RESTEST(i_boss_skull_to)> && <src.RESTEST(i_boss_skull_md)> && <src.RESTEST(i_boss_skull_ztracene_mesto)>)
+	return 1
+else
+	return 0
+endif
+
+[FUNCTION f_q039_has_heads]
+if (<src.RESTEST(i_q039_shadow_weapon_head_verlix)> && <src.RESTEST(i_q039_shadow_weapon_heas_mercelis)> && <src.RESTEST(i_q039_shadow_weapon_head_gloata)> && <src.RESTEST(i_q039_shadow_weapon_head_Bakchor)>)
+	return 1
+else
+	return 0
+endif
+
+[FUNCTION f_q039_has_material]
+if ((<src.rescount i_ore_shadow> >= 5) && (<src.rescount i_coal_elemental> >= 10) && (<src.rescount i_q039_shadow_weapon_oil> >= 1) && (<src.rescount i_q039_shadow_weapon_blood_bag> >= 1) && (<src.rescount i_q039_shadow_weapon_skin> >= 4) && (<src.rescount i_q039_shadow_weapon_gem> >= 1))
+	return 1
+else
+	return 0
+endif
+
+[FUNCTION f_q039_consume_skulls]
+src.consume(1,i_boss_skull_cd)
+src.consume(1,i_boss_skull_mahat)
+src.consume(1,i_boss_skull_ztracene_mesto)
+src.consume(1,i_boss_skull_to)
+src.consume(1,i_boss_skull_md)
+
+[FUNCTION f_q039_consume_heads]
+src.consume(1,i_q039_shadow_weapon_head_verlix)
+src.consume(1,i_q039_shadow_weapon_head_Mercelis)
+src.consume(1,i_q039_shadow_weapon_head_Gloata)
+src.consume(1,i_q039_shadow_weapon_head_Bakchor)
+
+[FUNCTION f_q039_consume_material]
+src.consume(5,i_ore_shadow)
+src.consume(10,i_coal_elemental)
+src.consume(1,i_q039_shadow_weapon_oil)
+src.consume(1,i_q039_shadow_weapon_blood_bag)
+src.consume(4,i_q039_shadow_weapon_skin)
+src.consume(1,i_q039_shadow_weapon_gem)
+
+[FUNCTION f_q039_make_npc_work]
+src.newequip(i_mem_workingTimer)
+lastnew.timer=3600
+
+
+[itemdef i_mem_workingTimer]
+name=NPC workingtimer
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 1

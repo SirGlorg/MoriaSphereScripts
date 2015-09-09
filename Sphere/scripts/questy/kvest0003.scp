@@ -1,0 +1,661 @@
+/////////////////////////////////////////////
+//
+//     **   Mordorské Kvesty  **                                       * tvurce *
+//
+//
+//
+//   Kvest Neutralni-001 Vampiri Pribeh                                  Vypravec
+//
+//   Kvest Neutralni-002 Hrobky Cernych Numerojcu                        Vypravec
+//
+//   Kvest Neutralni-003 Umbarske Problemy                               Vypravec  
+//
+//   Kvest Neutralni-004 Hora plamene                                    Vypravec
+//
+//   Kvest Neutralni-005 Irbisova vejce                                  Crunch                                  
+//
+//   Kvest Neutralni-006 Zlata otep                                      Noe
+//
+//   Kvest Neutralni-007 Inskripce - Pøesunuto(Heradirovo_Selatko.scp)   editedBY SirGlorg
+//
+//   Kvest Neutralni-008 xxxxxxxxxxxxxx
+//
+//   Kvest Neutralni-009 xxxxxxxxxxxxxx
+//
+//   Kvest Neutralni-010 xxxxxxxxxxxxxx
+//
+//   Pokusy  Vypravec 
+//
+/////////////////////////////////////////////
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-001 Vampiri Pribeh                               //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF i_Vampiri_Pribeh_dyka]
+NAME=stribrna dika
+ID=i_dagger
+RESOURCES=2 i_ingot_silver
+DAM=8
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-001 Vampiri Pribeh
+DESCRIPTION=stribrna dika
+
+ON=@Create
+weaponcreate(mithril)
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-002 Hrobky Cernych Numerojcu                     //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+[SPEECH spk_kvest003_Grager]
+
+ON=*hi*
+ON=*buy*
+ON=*ahoj*
+SAY Ahojky priteli mam nejakou informaci na prodej za 10000 gp. Mas zajem ji koupit?
+
+ON=*ano*
+ON=*jiste*
+ON=*chci*
+
+if (<src.restest 10000 i_gold>)
+src.consume=10000 i_gold
+SAY Diky mam konecne na opravu lodi, tak poslouchej... Je to tajny..  ale Haradskemu Shahovy se stratila dcera, ci co.. hleda hrdiny kteri by mu pomohly ji najit..  Pri uspechu prej obrovska odmena... Pri neuspechu smrt. 
+else 
+SAY Rekl jsem za 10000 gp min ani cent. 
+endif
+
+ON=dik
+ON=diky
+ON=*to*je*vse*
+ON=*vsechno ?
+ON=*vsecko ?
+SAY "Maz zac ...    ale pamatuj je to tajny takze naradim to sirit dal..."
+
+ON=ne
+SAY "Neee ? Hmm tak zadny obchod nebude.."
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-003 Umbarske Problemy                            //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[SPEECH spk_kvest003_ubar_pirati]
+
+
+ON=*buy*
+SAY Co blbnes ?  ja nic neprodavam..
+
+ON=*hi*
+SAY Zda se ti na me mne neco smesneho ? 
+
+ON=*ahoj*
+SAY Co blbnes ?  ja te neznam.  a znat nechci
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-004 Hora plamene                                 //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+[DIALOG D_Duch_Alrondhirona]
+//resizepic      50   50 2604  700  418		// window
+gumppic(130,100,0a2c)    //  hlavni podklad
+gumppic(135,65,01f40)    //  Jmeno NPC
+argo.HTMLGUMPa(170,70,300,161,"<?safe?><BASEFONT SIZE="+5" COLOR="#001080"> Duch Alrondhirona </BASEFONT>",0,0)
+gumppic(130,92,02423)    //  horni okraj
+gumppic(130,300,02429)   //  oddeleni od textu
+gumppic(130,400,02429)   //  dolni okraj
+gumppic(540,100,02427)    //  pravy okraj
+gumppic(30,90,0708)     //  obvod postavy
+gumppic(50,110,0c71a)    //  duch
+gumppic(530,40,028c9)    //  drak
+
+
+
+argo.HTMLGUMPa(250,135,300,161,"<?safe?><BASEFONT SIZE="+5" COLOR="#001080"> Stujte udatni hrdinove a deste se toho co je pred vami!                     Jsem Alrondhiron, mag Radu zijiciho v utrobach teto sopky. Zili jsme v klidu a miru ale nedavno sopka zacala znovu bourit. I proti nam, jejim uctivacum. Neni to nahoda jsou zde monstra ktere vysavaji jeji silu a ona se bouri. Ale pochybuji ze neco zmuzete.  Radeji vemte nohy naramena a utecte, zachrante aspon moji kouzelnou knihu! Ta sila je prilis silna. Smrt, Krev, Ohen, Temnota. Ani moje upsani duse nepomohlo, mozna naopak. Nechte nas nasemu osudu. Nebo dopadnete stejne tak jako ja. Ten kdo bude vlastnit moji knihu, necht ji pouziva s rozumem. Privedla me tam, kde jsem a smrt je pouze mala dan oproti utrapam ktere bude muset zazit! Sbohem hrdinove! Pokud se vydate dal, necht pri vas stoji Valar !    </BASEFONT>",0,1)
+
+BUTTON(490,380,047f,047e,1,0,1)   //Zaviraci tlacitko
+//BUTTON(135,380,0482,0481,1,0,2) //kvestove potvrzovaci tlacitko
+//BUTTON(160,380,4017,4016,1,0,3)
+
+
+[DIALOG D_Duch_Alrondhirona BUTTON]   //klasik ukoncenim se vratis na zacatek
+on=0
+  src.DIALOG(D_Duch_Alrondhirona) 
+
+ON=1
+  
+on=3
+
+
+//argo.HTMLGUMPa(325,215,135,160,"<?safe?><BASEFONT SIZE="+5" COLOR="#000080"><?<tag(startdialog)>[1]?></BASEFONT>",0,0)
+//HTMLGUMPa(120,150,300,163,0 wagfaga skgasjgasjg asjgasjglskg hsklghsdg hslkghklsgh slkkhjj frthjgfhjgjhhj  gsdgjhsgjksd jfddfj  hfr   ozu ho we h h ghweh   weho hgo weh whgfwioh  woh hoihg iowoihg weioh h iowgh o hwioh wof iooi iowe  wiohe ioweh hweoi  weioh fhoigfsi h  woh swhsdohosdiho  sdohi f oosdih osidhgiosh o o sdh sdh hsdoih gsdoi h o hohfoheosdioh hi osdgo i sodgh sdgohi oih  sdoihg so hsodihg ioh  osdhig shdgo oiig i Stujte udatni hrdinove a deste se toho co je pred vami!Jsem Alrondhiron, mag Radu zijiciho v utrobach teto sopky. Zili jsme v klidu a miru ale nedavno sopka zacala znovu bourit. I proti nam, jejim uctivacum. Neni to nahoda jsou zde monstra ktere vysavaji jeji silu a ona se bouri. Ale pochybuji ze neco zmuzete.     Radeji vemte nohy naramena a utecte, zachrante aspon moji kouzelnou knihu! Ta sila je prilis silna. Smrt, Krev, Ohen, Temnota. Ani moje upsani duse nepomohlo, mozna naopak. Nechte nas nasemu osudu. Nebo dopadnete stejne tak jako ja. Ten kdobudu, nji</BASEFONT>",0,2)
+//HTMLGUMPa(200,382,235,25,0,<BASEFONT SIZE="+3" COLOR="#000800"> ZPET                     DALSI</BASEFONT> ,0,0)
+
+
+
+
+//argo.tag(back,<argv(0)>)
+//argo.tag(forward,<argv(1)>)
+//argo.HTMLGUMPa(30,35,300,161,"<?safe?><BASEFONT SIZE="+5" COLOR="#001080"> Stujte udatni hrdinove a deste se toho co je pred vami!  </BASEFONT>",3,0)
+//argo.HTMLGUMPa(30,100,300,162,"<?safe?><BASEFONT SIZE="+5" COLOR="#000080"> Jsem Alrondhiron, mag Radu zijiciho v utrobach teto sopky. Zili jsme v klidu a miru ale nedavno sopka zacala znovu bourit. I proti nam, jejim uctivacum. Neni to nahoda jsou zde monstra ktere vysavaji jeji silu a ona se bouri. Ale pochybuji ze neco zmuzete.  </BASEFONT>",1,2)
+//argo.HTMLGUMPa(325,215,135,160,"<?safe?><BASEFONT SIZE="+5" COLOR="#000080"><?<tag(startdialog)>[1]?></BASEFONT>",0,0)
+
+
+
+
+
+
+[SPEECH spk_Duch_Alrondhirona]
+
+ON=*hi*
+ON=*buy*
+ON=*ahoj*
+  SAY Stujte udatni hrdinove a deste se toho co je pred vami!
+  src.DIALOG(D_Duch_Alrondhirona)
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-005 Iribisova vejce                              //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-006 Zlata otep                                   //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[SPEECH panzvirat] 
+ON=*Dobry*
+ON=*den*
+ON=*zlata*
+ON=*otep*
+ON=*naleza*
+ON=*zdravim* 
+ON=*hi*
+ON=*dekuji*
+ON=*diky*
+ON=*nazdar*
+ON=*co*
+ON=*pomoc*
+ON=*kurva*
+ON=*ress*
+ON=*deje*
+ON=*GM*
+if (<safe.src.TAG.GOTGOLD>)
+ say "Stesti te provazej hrdino a jeste jednou prijmi me diky."
+ return 0
+elseif !(<safe.src.TAG.GOT>)
+ say "Stesti te provazej hrdino pri hledani Zlate otepi."
+ return 0
+endif
+
+if (src.profession==class_ranger)||(src.profession==class_thief)
+ SAY "Dekuji ti za nalezeni Zlate otepi. Tento artefakt byl odcizen a jeho sila se nesmela dostat do cizich rukou. Odmenou ti bud hlt elixiru prirodniho poznani ktery najdeš v mem dome.
+ src.go 2456,839,7
+else
+ SAY "Dekuji ti za nalezeni Zlate otepi. Tento artefakt byl odcizen a jeho sila se nesmela dostat do cizich rukou.
+ src.go 3003,506,20
+ src.addexp(500)
+endif
+return 1
+
+/////////////////////////////
+
+[SPEECH zlatymustang] 
+
+ON=*Dobry*
+ON=*den*
+ON=*zlata*
+ON=*otep*
+ON=*naleza*
+ON=*zdravim* 
+ON=*hi*
+ON=*nasel*
+ON=*pan*
+
+if (0<src.TAG.GOT>==1)
+message "Dekuji ti za pomoc nasedni a vydame se na cestu. Niceho se nelekej a oslov meho pana."
+src.go 2455,855
+return 1
+else
+message "Priteli byl jsem poslan na tuto zem najit Zlatou otep co byla ukradena memu panovi.  Pomuzesli mi odmena te nemine. Najdi ji a vrat se ke me."
+return 1
+endif
+
+//////////////////////////////
+
+[ITEMDEF I_port_tamer]
+NAME=Dzber elixiru prirodni zkusenosti a moudrosti
+ID=0fab
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-006 Zlata otep
+DESCRIPTION=Studnice prirodni zkusenosti a moudrosti
+
+ON=@CREATE
+
+ON=@userDClick
+if (src.profession==class_ranger)
+ if (<safe.src.TAG.GOTGOLD>)
+  src.raceMESSAGE("Okusil jsi elixir poznani, ale uz na tebe nijak nepusobi.")
+ else
+  src.taming=<eval <src.taming>+((1300-<src.taming>)/10)>
+  src.TAG.GOTGOLD=1
+  src.addexp(500)
+  src.raceMESSAGE(Pozrel jsi elixir poznani. Od teto chvile dokazes lepe porozumet vetsine zvirecim tvorum. Otevira se ti moznost lepe ochocit zvirata.)
+ endif
+else
+src.racemessage(Nejsi vyvolen k poziti elixiru poznani.)
+endif
+src.go 3003,506,20
+return 1
+
+//////////////////////////
+
+[ITEMDEF Zlata_otep]
+NAME=Zlata Otep 
+ID=0100d
+type=t_otep
+WEIGHT=0.0
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-006 Zlata otep
+DESCRIPTION=Zlata otep
+
+ON=@Create
+COLOR=0995
+
+ON=@userDClick
+if (0<src.TAG.GOTGOLD>==0)
+src.racemessage("Toto je Zlata otep. Nelen a vydej se hledat Zlateho mustanga, ktery jak ho oslovis doveze te k Panovi zvirat, kteremu sdel kde otep naleza se.")
+src.TAG.GOT=1
+endif
+return 1
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-008 drak                                 //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[SPEECH JOPTRAVEL] 
+ON=*jak*
+ON=*JAK*
+ON=*Povidej*
+ON=*POVEZ* 
+ON=*REKNI* 
+ON=*DEGRANA* 
+ON=*DEGRAN* 
+ON=*ZAHUBIT*
+SAY Jen Draci mec, se srdcem bijicim a krvi v nem proudici zabiti ho muze.
+SAY Vsak tyto casti jsou na dnech dungeonu Moutn Dorlas, Dol Guldur a Beridoru hlidany. 
+SAY Pokud tyto casti ziskate pak jiz snadne sloziti znich zbran co smrt Degranovi privodi.
+
+ON=*hi*
+ON=*ahoj*
+ON=*cau*
+ON=*cus*
+ON=*mej*
+ON=*dekuji*
+ON=*diky*
+ON=*nazdar*
+SAY Jen dulezitou vec si pamatuj ta zbran tak krehka jest, ze jen jednu ranu mas pote zbran se rozpadne a jiz nikdy druha takova nebude.
+SAY Proto streste se tuto zbran na jineho nez Degrana pouzit.
+
+
+
+
+
+
+[ITEMDEF i_sword_zkazy]
+DEFNAME=i_sword_zkazy
+NAME=Draci mec zkazy
+ID=i_sword_long
+DAM=20000
+
+RESOURCES=1 i_srdce,1 i_krev,1 i_kamen
+SKILLMAKE=BLACKSMITHING 0.1
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Drak
+DESCRIPTION=Mec zkazy.
+
+ON=@Create
+color=098b
+HITPOINTS=1
+attr=attr_newbie
+
+ON=@Equip
+	src.STR=(<src.STR> + 1000)
+        src.DEX=(<src.DEX> + 1000)
+	src.invul 1
+ON=@Unequip
+	src.STR=(<src.STR> - 1000)
+        src.DEX=(<src.DEX> - 1000)
+        src.invul 0
+ON=@Damage
+src.kill=1
+
+
+///////////////////////////////////
+
+[ITEMDEF i_srdce]
+ID=i_flesh_heart
+NAME=Draci srdce
+type=T_AROCK
+VALUE=1
+WEIGHT=50.0
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Drak
+DESCRIPTION=Draci srdce
+
+ON=@Create
+attr=attr_newbie
+
+
+////////////////////////////////
+
+[ITEMDEF i_krev]
+ID=i_bottle_PURPLE
+NAME=Draci krev
+type=T_AROCK
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Drak
+DESCRIPTION=Draci krev
+
+ON=@Create
+color=0026
+attr=attr_newbie
+
+/////////////////////
+
+
+[ITEMDEF i_kamen]
+ID=i_sword_long
+NAME=Mrtvy Draci mec.
+type=T_AROCK
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Drak
+DESCRIPTION=Draci mec
+
+ON=@Create
+color=0481
+attr=attr_newbie
+
+
+ON=@userDClick
+
+if (src.findid(i_srdce))&&(src.findid(i_krev))&&(src.findid(i_kamen))
+src.consume=1 i_srdce
+src.consume=1 i_krev
+src.consume=1 i_kamen
+src.newitem=i_sword_zkazy
+else
+src.message=Tento mec je mrtev. Jen srdce a krev s nim spojene mohou probudit jeho ohromnou silu a zivot v nem vzkrisiti.
+endif 
+	
+
+[itemdef i_gate_exp2]
+NAME=Cesta do doupete.
+ID=i_moongate_blue
+type=T_SCRIPT
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Drak
+DESCRIPTION=brana pro pridani exp
+on=@create
+more2=1000
+
+on=@step
+src.addexp(<more2>)
+src.go <morep>
+return 1
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-009                                  //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-010                                  //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                               Pokusy Vypravec                                    //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+[ITEMDEF i_vypravec_0002]
+NAME="symbol "
+ID=i_rune_glowing_1
+type=T_LIGHT_LIT
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-001 Vampiri Pribeh
+DESCRIPTION=blikac svetla 1
+
+ON=@Create
+timer=1
+morez=1
+//attr=attr_invis
+
+ON=@DROPON_GROUND
+	timer=2
+
+ON=@PICKUP_GROUND
+	TOPOBJ.sector.light=-1
+
+ON=@timer
+if <morez>!=1
+	TOPOBJ.sector.light=25
+	morez=1
+else
+	TOPOBJ.sector.light=1
+	morez=024
+endif
+update
+timer=2
+return 1
+
+
+
+
+
+
+[ITEMDEF i_vypravec_0003]
+// This will strobe the lights.
+NAME="symbol"
+ID=i_rune_glowing_1
+type=T_LIGHT_LIT
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-001 Vampiri Pribeh
+DESCRIPTION=blikac svetla 2
+
+ON=@Create
+timer=3
+morez=1
+//attr=attr_invis
+
+ON=@DROPON_GROUND
+	timer=2
+
+ON=@PICKUP_GROUND
+	TOPOBJ.sector.light=-1
+
+ON=@timer
+if <morez>!=1
+	TOPOBJ.sector.light=25
+	morez=1
+else
+	TOPOBJ.sector.light=1
+	morez=024
+endif
+update
+timer=2
+return 1
+
+[ITEMDEF I_Truhla_Past]
+// Add items I_CHEST_TRAP and put trigger T_CHEST_TRAP on it and sit back and watch the fun.
+// Trapped chest #1
+ID={ i_chest_metal 1 i_chest_metal_brass 1 I_CHEST_WOODEN_BRASS 1}
+type=t_container
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-001 Vampiri Pribeh
+DESCRIPTION=Truhla past
+
+ON=@Create
+attr=attr_move_never
+
+[TYPEDEF T_truhla_Past]
+//Chest trigger, works with item I_CHEST_TRAP
+//1. Check tinkering
+//2. Check tools (no, 50% blow up)
+//3. Check for gear
+//4. Blow up if failed
+//5. consume gear
+
+ON=@userDClick
+	if <src.restest 1 i_GEARS>
+		src.consume 1 i_GEARS
+	else
+		src.message You fail to disarm the trap.
+		src.damage_noresponse(<eval <more>+(-<more2>)>,dam_god)
+		src.newitem=i_FIRE_COLUMN
+		src.act.attr attr_can_decay|attr_move_never
+		src.act.timer 2
+		src.update
+		src.sound=snd_SPELL_EXPLOSION
+		return 0
+	endif
+	if <src.tinkering>>=<morex>
+		src.message You attempt to disarm the trap.
+		if <src.restest 1 i_tinker_tools>
+			if rand(2)
+				src.message You disarm the trap successfully.
+				timer=<MOREY>
+				morez=1
+				type=t_container
+				return 0
+			else
+				src.message You fail to disarm the trap.
+				src.damage_noresponse(<eval <more>+(-<more2>)>,dam_god)
+				src.newitem=i_FIRE_COLUMN
+				src.act.attr attr_can_decay|attr_move_never
+				src.act.timer 2
+				src.update
+				src.sound=snd_SPELL_EXPLOSION
+				return 0
+			endif
+		else
+			if rand(10)==5
+				src.message You disarm the trap successfully.
+				timer=<MOREY>
+				morez=1
+				type=t_container
+				return 0
+			else
+				src.message You fail to disarm the trap.
+				src.damage_noresponse(<eval <more>+(-<more2>)>,dam_god)
+				src.newitem i_fire_column
+				src.act.attr attr_can_decay|attr_move_never
+				src.act.timer 2
+				src.update
+				src.sound snd_spell_explosion
+				return 0
+			endif
+		endif
+	endif
+
+ON=@timer
+	morez=0
+	return 1
+
+//
+// Here is some sample code to get it to work.
+// How to make a trapped chest #1
+// /add I_CHEST_TRAP
+// /set type T_CHEST_TRAP
+//
+// A player needs tinkering and gears to open this chest. You can set the following commands:
+// /set more min // the min damage the trap will do.
+// /set more2 max // the max damage the trap will do.
+// /set morex amount // refers to the min amount a players tinkering has to be to disarm the chest.
+// ---------
+//   example of a workable class script. if any of you guys hosting script archives want to touch base, I'll pass along the entire script set.
+
+[ITEMDEF Knihovna_noci]
+//wooden bookshelf
+//empty shelves but shows books if double clicked
+//Dark wood facing SW
+ID=i_bookcase
+type=t_container
+TDATA2=04d
+FLIP=1
+TDATA2=04d
+WEIGHT=20.0
+DUPELIST=0a9e
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-001 Vampiri Pribeh
+DESCRIPTION=Bookcase (Knihovna noci) (Empty)
+
+
+on=@userDClick
+  message("Tato Knihovnice vesti smrt Nezvanym. ")
+  src.hits=<src.hits>-120
+  src.scroll(scroll_632)
+return"<allcontainersClick>"
+
+
+[EOF]
+
+
+

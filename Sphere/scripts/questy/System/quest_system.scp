@@ -1,0 +1,192 @@
+[function f_quest_complete] //vstup1: cislo questu v questMenu, vstupy2-x: podquesty
+if (isqueststone)
+  arg(quest_stone_uid,<return_nth(1,<questMenu_questStone>)>)
+  arg(prvy_arg,<return_nth(1,<args(0)>)>)
+  arg(druhy_arg,<return_nth(2,<args(0)>)>)
+  if (<argvcount> == 2)
+    finduid(<quest_stone_uid>).tag(quest_<prvy_arg>_<druhy_arg>,<finduid(<quest_stone_uid>).tag(quest_<prvy_arg>_<druhy_arg>)>+1))
+  elseif (<argvcount> == 1)
+    finduid(<quest_stone_uid>).tag(quest_<prvy_arg>_00,<finduid(<quest_stone_uid>).tag(quest_<prvy_arg>_00)>+1)
+  endif
+endif
+return(1)
+
+[itemdef i_quest_stone]
+id=3629
+name=Quest Stone
+type=t_normal
+
+on=@create
+color=0981
+attr=094
+tag.start=0
+tag.quest_expert=0
+tag.quest_mistr=0
+tag.quest_velmistr=0
+
+on=@userdclick
+dialog(d_quest_stone)
+return(1)
+
+[dialog d_quest_stone]
+argo.SetLocation=15,5
+  
+argo.tag(sirka,600)
+argo.tag(vyska,490)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,450)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,25,180)
+argo.dialog_pozadi(<argo.tag(nexty)>,21,25,180)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+argo.dialog_zpruhledni
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Questy (<?tag.questov?>)")
+
+tag(questov,<questMenu_rows>)
+
+arg(ind,<tag.start>)
+arg(lastypos,55)
+arg(row,1)
+arg(zaciatok,<fixnumber(<row>+<ind>)>)
+arg(konec,<fixnumber(<ind>+20)>)
+if (<tag.questov><<konec>)
+  arg(pom,<konec>-<tag.questov>)
+  arg(konec,#-<pom>)
+endif
+//say(<zaciatok>)
+//say(<konec>)
+
+//STLPEC ID
+argo.textA(<argo.dialog_textpos(1,0)>,<d_def_readcolor>,"ID")
+arg(row,1)
+arg(akt,<zaciatok>)
+while (<akt> <= <konec>)
+  arg(quest,<fixnumber(<akt>-1)>)
+  argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,<quest>)
+  arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+  arg(akt,#+1)
+  arg(row,#+1)
+endwhile
+
+
+//STLPEC NAZOV
+argo.textA(<argo.dialog_textpos(1,1)>,<d_def_readcolor>,"Nazov")
+arg(lastypos,55)
+arg(row,1)
+arg(akt,<zaciatok>)
+while (<akt> <= <konec>)
+  arg(quest,<fixnumber(<akt>-1)>)
+  argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,<return_nth(1,<questMenu[<quest>]>)>)
+  arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+  arg(akt,#+1)
+  arg(row,#+1)
+endwhile
+if (<eval(<akt>-1)>==<tag.questov>)  
+  arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+  argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,"Expert | Mistr | Velmistr")
+endif
+
+//STLPEC SPLNILO
+argo.textA(<argo.dialog_textpos(1,2)>,<d_def_readcolor>,"Splnilo")
+arg(lastypos,55)
+arg(row,1)
+arg(akt,<zaciatok>)
+while (<akt> <= <konec>)
+  arg(quest,<fixnumber(<akt>-1)>)
+  if (!<tag.quest_<quest>_00>)
+     tag.quest_<quest>_00=0
+  endif
+  argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,<tag.quest_<quest>_00>)
+  if (<tag.quest_<quest>_1>)  //ak je aspon 1 podquest skontroluje aj viac
+    arg(podq,1)
+      while (<podq><10) // hadam viac ako 10 podquestov nebude
+        argo.textA(<lastxpos>+60*<podq>,<lastypos>,<d_def_readcolor>,<tag.quest_<quest>_<podq>>)
+        arg(podq,#+1)
+      endwhile
+    //say("je podquest")
+  endif
+
+  arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+  arg(akt,#+1)
+  arg(row,#+1)
+endwhile
+
+if (<eval(<akt>-1)>==<tag.questov>)  
+  arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+  argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,<tag.quest_expert>)
+  arg(lastxpos,<lastxpos>+80)
+  argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,<tag.quest_mistr>)
+  arg(lastxpos,<lastxpos>+80)
+  argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,<tag.quest_velmistr>)
+endif
+
+//LISTUJ
+argo.button(25,460,08af,08af,1,0,1)
+argo.button(555,460,08b0,08b0,1,0,2)
+
+
+[dialog d_quest_stone button]
+on=0
+tag.start=0
+on=@anybutton
+
+//src.say(<argn>)
+if (<argn>==1) //dozadu
+  tag.start=<tag.start>-20
+  if (<tag.start><0)
+    tag.start=0
+  endif
+  dialog(d_quest_stone)
+endif
+if (<argn>==2) //dopredu
+  if (<fixnumber(20+<tag.start>)>>=<tag.questov>)
+    tag.start=<tag.start>-20
+  endif
+  tag.start=<tag.start>+20
+  dialog(d_quest_stone)
+endif
+
+[function isqueststone]
+if (<finduid(<return_nth(1,<questMenu_questStone>)>).baseid>==i_quest_stone)
+  return(1)
+else
+  return(0)
+endif
+
+[function f_qSpeech] // argv(0) - the name of the function, that should be run on speach
+if (<distance> > 3)
+  src.SysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+  <argv(0)>
+endif
+
+[function f_qDClick] // argv(0) - the name of the function, that should be run on DClick
+if (src.targ.distance > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+  return 0
+else
+  <argv(0)>
+endif
+
+//checks whether the player is in a suitable distance for communication
+// returns - 1 & warning message, if the player too far
+//           0 if the player is in a reasonable distance
+[function f_qReach]
+if (distance > 5)
+  src.redMessage("Jsi prilis daleko!")
+  return 1
+else
+  return 0
+endif
+
+//checks whether the player is dead
+// returns - 1 & warning message, if the player is dead
+//           0 if the player is alive
+[function f_qIsDead]
+if (<src.flags>&statf_dead)
+  src.redMessage("Jako duch toto nemuzes udelat!")
+  return 1
+else
+  return 0
+endif
+[eof]

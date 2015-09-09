@@ -1,0 +1,341 @@
+[ITEMDEF i_najem_chest]
+ID=02c15
+name=Najem
+TYPE=T_CONTAINER_locked
+flip=1
+dupelist 02c16
+DESCRIPTION=GM Items
+SUBSECTION=truhla na najem
+CATEGORY=schranka na najem
+
+ON=@Create
+ATTR=attr_move_never
+
+
+on=@spelleffect
+return 1
+
+on=@userclick
+if (strcmpi(<src.tag(clienttype)>,"old"))//0 pokud ano
+ return 1
+elseif !(safe link.ishouse)//neni linknuta
+ var(housefound,0)
+ sector.allitems(findhouse(<uid>))
+ if (housefound)
+  link=<housefound>
+  link.tag(najemcont,<uid>)
+  src.classmessage(V tomto regionu nalezen dum <link.name>. Truhla prirazena.)
+  return 1
+ endif
+endif
+link.checknajem
+src.smsg(Mesicni najem domu cislo <eval link.tag.housenumber> cini <link.tag(najem)> gp.)
+src.smsg(Najem je zaplacen na <link.paiduntildays> dni dopredu.)
+
+on=@dropon_obj
+src.say(<src.name> do mne hodil <argo.name>)
+
+
+//[DIALOG d_najem]
+//300,0
+//resizepic 0 0 2620 300 260
+//gumppic 20 20 100
+//htmlgump 40 40 100 60 0 0 0//
+//text 180 20 955 1//owner
+//text 180 40 955 2//<owner>
+//text 180 70 955 3//zaplaceno na
+//text 180 90 955 4//<zaplaceno na>
+//
+//text 40 140 955 5//block
+//button 20 145 2104 2103 1 0 1
+//text 40 160 955 6//empty
+//button 20 165 2104 2103 1 0 2
+//text 40 180 955 7//remove
+//button 20 185 2104 2103 1 0 3
+//text 40 200 955 8//redeed
+//button 20 205 2104 2103 1 0 4
+//text 40 220 955 9//vynulovat najem
+//button 20 225 2104 2103 1 0 5
+////text 40 240 955 10//coowner list
+////button 20 245 2104 2103 1 0 7
+////text 40 260 955 11//rename
+////button 20 265 2104 2103 1 0 8
+////text 40 280 955 12//change sign
+////button 20 285 2104 2103 1 0 9
+////text 40 300 955 13//bank
+////button 20 305 2104 2103 1 0 10
+////text 40 320 955 14//transfer ownership
+////button 20 325 2104 2103 1 0 11
+//
+//[DIALOG d_najem TEXT]
+//<?link.NAME?>//0
+//Vlastnik:
+//<?finduid(<link.more1>).name?>
+//Zaplaceno na:
+//<?eval (<tag.paiduntil>-<serv.time>)/864000?> dni
+//<?qval(<link.tag.block>,"Odblokovat dum","Zablokovat dum")?>
+//Vyklidit dum 
+//Smazat dum (nevratne)
+//Redeed (pouze pro Multi)
+//Vynulovat zaplaceni najmu
+//
+//[DIALOG d_najem BUTTON]
+//on=1
+//link.blockhouse
+//
+//on=2//Vyklidit dum 
+//potvrdit(trashhouse,"Opravdu chces vyklidit veci a obyvatele domu?")
+//
+//on=3
+//potvrdit(removehouse,"Opravdu chces nenavratne smazat tento dum?")
+//
+//on=4
+//potvrdit(redeedhouse,"Opravdu chces tento dum do deedu?")
+//
+//on=5
+//potvrdit(tag(paiduntil,<serv.time>),"Opravdu chces vynulovat najem?")
+
+[function checknajem]
+while (tag(najemcont).findtype(t_gold)) && !(tag(paiduntil) == 2147483600)//25920000 - decisekund za mesic //2147483600 - maximalni rozlisitelnost v signed 32Integeru
+  arg(pridatcasu,<eval ((tag(najemcont).findtype(t_gold).amount*2592)/tag(najem))*10000>)
+  if (<eval (2147483600-tag(paiduntil))> < arg(pridatCasu) ) // doslo by prictenim celeho casu k preteceni ?
+    tag(paiduntil,2147483600)
+  else
+    tag(paiduntil,<eval tag(paiduntil)+arg(pridatcasu)>)
+  endif
+  tag(najemcont).findtype(t_gold).remove
+endwhile
+
+f_payRentFrom(i_cashiers_check)
+f_payRentFrom(i_cashiers_mesec)
+f_payRentFrom(i_cashiers_pokladnicka)
+
+if (tag(paiduntil) == 2147483600)
+  src.sysMessage("Najem je plne zaplacen a nemuze byt dale navysovan.")
+endif
+
+
+//src.smsg pridat:<sectodays(<pridatcasu>)>:: <eval pridatcasu/(3600*24)>dni
+if (tag(autorent))
+ if (<eval tag(paiduntil)> < <eval (serv.time)>)
+  src.redmessage(Nedostatecne zaplaceny najem - vystehovavam dum.)
+  trashhouse
+ endif
+endif
+//timer=<nextday>
+
+[function paiduntildays]
+return <eval ((tag(paiduntil)-serv.time)/864000)>
+//24*3600
+
+
+[function redeedhouse]
+if (typedef.type==t_multi)
+ trashhouse
+ src.newitemsafe(i_deed)
+ lastnew.try more1=<baseid>
+ lastnew.name="Deed to <typedef.name>"
+ lastnew.bounce
+ tag(najemcont).contents(try bounce)
+ tag(najemcont).try remove
+ tag(friendscont).try remove
+ tag(coownerscont).try remove
+ try remove
+endif  
+
+[function foreachlocked]//spusti funkci na kazdym itemu co je v dome zamklej
+array_foreachuid(tag.lockedlist,<args>)
+
+[function foreachother]//spusti totez na vsech ostatnich itemech v baraku
+region.sectors.allitems(trashnonlocked(<uid>))
+
+[function foreachanimal]//shirnkne ochocena zvirata a nacpe je do truhly
+region.sectors.allchars(trashanimals(<uid>))
+
+[function counthouseitems]
+if(!strcmpi(<topobj.region>,<finduid(<argv(0)>).region>))
+ var(pocetitemuvdome,<eval(<var(pocetitemuvdome)>+1)>)
+endif
+
+[function counthouseanimals]
+if(<npc>==1) //zvire
+ if(!strcmpi(<region>,<finduid(<argv(0)>).region>))
+  var(pocetzviratvdome,<eval(<var(pocetzviratvdome)>+1)>)
+ endif
+endif
+
+[function removehouse]
+accmsg(Smazani domu <?link.name?> na <?link.p?>)
+link.foreachlocked(try remove)
+link.try remove
+try remove
+
+[function trashhouse] //nevim proc ale dela to problemy co konci padem sphery :(
+if !(src)
+  src=<more1> //more1 - z toho worldgemu ! more dela mozna potize 
+endif  
+src.accmsg(trashes house uid=<uid> (<name>), majitel: <more1> <?finduid(<more1>).name?>)
+if (safe src.ischar) 
+ src.newitemsafe(i_backpack)
+  tag(backpack_s_vecma,<lastnew>)
+  say("majitel: <more1>")
+  say("meno: <finduid(<more1>).name>") 
+  lastnew.name="veci z domu <?name?> - <?serv.rtimetext?>, majitel <?finduid(<more1>).name?>"
+  lastnew.attr_invis=1
+  lastnew.attr_movenever=1
+ foreachlocked(trashitem)
+ region.sectors.allitems(counthouseitems(<uid>))
+ //kermel.sysmessage(pocet itemu v dome: <var(pocetitemuvdome)>)
+ while(<var(pocetitemuvdome)>)
+  region.sectors.allitems(trashnonlocked(<uid>))
+  var(pocetitemuvdome,#-1)
+ endwhile 
+ var(pocetitemuvdome,"")
+ array_clear(tag.lockedlist)
+ if (finduid(tag(backpack_s_vecma)).rescount)
+  finduid(tag(backpack_s_vecma)).cont=<tag(najemcont)>
+ else
+  finduid(tag(backpack_s_vecma)).remove
+ endif 
+ src.newitemsafe(i_backpack)
+  tag(backpack_se_zviraty,<lastnew>)
+  lastnew.name="Zvirata z domu <?name?> - <?serv.rtimetext?>"
+  lastnew.attr_invis=1
+  lastnew.attr_movenever=1
+  arg(taska,<lastnew>) //ten pytel na ne
+ region.sectors.allchars(counthouseanimals(<uid>))
+ //kermel.sysmessage(pocet zvirat v dome: <var(pocetzviratvdome)>)
+ while(<var(pocetzviratvdome)>)
+  region.sectors.allchars(trashanimals(<uid>,<arg(taska)>))
+  var(pocetzviratvdome,#-1)
+ endwhile 
+ var(pocetzviratvdome,"")
+ if (finduid(tag(backpack_se_zviraty)).rescount)
+  finduid(tag(backpack_se_zviraty)).cont=<tag(najemcont)>
+ else
+  finduid(tag(backpack_se_zviraty)).remove
+ endif  
+ tag(paiduntil,<serv.time>) // !!!!! jinak tam jdou cisla do zaporu, ze...
+ tag(friendscont).contents(link.remove)
+ tag(friendscont).emptycont
+ tag(coownerscont).contents(link.remove)
+ tag(coownerscont).emptycont
+ tag.remove(bankactivated)
+ more1=0
+endif
+
+[function trashitem]
+if (baseid==i_najem_chest)
+  //src.sysmessage(Blb si zamknul truhlu)
+  return //truhlu nechat, i kdyz ji nejakej blbec zamkne!
+endif
+if (isevent(t_housemenu))||(type==t_housemenu)
+  //vyvesky nechame viset :)  
+  return
+else 
+ if (topobj.isitem)&&(!strcmpi(<topobj.region>,<finduid(<tag(hm_lockedto)>).region>))
+  attr=<tag(hm_storeattr)>
+  tag.remove(hm_storeattr)
+  tag.remove(hm_lockedto)
+  tag.remove(hm_lockit)
+  unblockitem
+  events -t_lockeditem
+  if (type==t_door_locked)||(type==t_door)
+   type=t_door
+   link(0)
+  else
+   //kermel.sysmessage(Trashing LockedItem)
+   removefromview
+   src.accmsg(trashes item uid=<uid> (<amount> <name>))
+   cont=<lastnew>
+  endif
+ endif
+endif
+
+[function trashnonlocked] //Argv(0) - barackej worldgem ! 
+if (baseid==i_najem_chest)
+  //src.sysmessage(Blb si zamknul truhlu)
+  return //truhlu nechat
+endif
+if(strlen(<link>)) //bude asi linklej na dum - nic nedelat
+ if(!strcmpi(<link>,<argv(0)>)) //je linklej na dum - ownersconty atd.
+  return
+ endif
+endif 
+if(baseid==i_duch_dlazba)
+ return //tohle nechat :)
+endif
+if (isevent(t_housemenu))||(type==t_housemenu)
+  //vyvesky nechame viset :)  
+  return
+endif
+if(type==t_customhouse) //housegem
+ return
+endif
+if (topobj.isitem)&&(!strcmpi(<topobj.region>,<finduid(<argv(0)>).region>)) //region toho domovniho gemu    
+ if (type==t_door_locked)||(type==t_door)
+  type=t_door
+  link(0)
+ else
+  if(attr==010) //neco rucne zamceneho
+   attr=0 //zpohybnit to
+  endif
+  //kermel.sysmessage(Trashing NonLocked)
+  removefromview
+  src.accmsg(trashes item uid=<uid> (<amount> <name>))
+  cont=<lastnew>
+  return 1
+ endif
+endif
+
+[function trashanimals]//Aregv0 - housegem, argv1 - taska 
+if(<flags>&statf_pet) //je ochocen
+ if(<npc>==1) //zvire
+  if(!strcmpi(<region>,<finduid(<argv(0)>).region>))
+   newitemsafe=<typedef.icon>
+   lastnew.name=<name>
+   lastnew.color=<color>
+   lastnew.more1=<id>
+   lastnew.cont=<argv(1)>
+   remove
+   return 
+  endif
+ endif
+endif
+
+[function blockitem]
+if (<safe.tag.hm_lockedto>)
+ if (finduid(<tag.hm_lockedto>).ishouse)//je locknut k domu
+  if !(strlen(<tag.hm_storecolor>))//neni uz blocknut
+   events +t_lockeditem//pro jistotu
+   tag(hm_storecolor,<eval color>)
+   color=1
+  endif 
+ endif
+endif
+
+[function unblockitem]
+if (strlen(<tag.hm_storecolor>))
+ color=<tag.hm_storecolor>
+ tag(hm_storecolor,"")
+endif
+
+[function blockhouse]
+if (argvcount)
+ arg(value,<args>)
+elseif (safe tag(block))
+ arg(value,0) 
+else
+ arg(value,1) 
+endif
+if (arg(value))
+ try tag(block,1)
+ foreachlocked(blockitem)
+ src.redmessage(Dum zablokovan.)
+else
+ try tag(block,"")
+ foreachlocked(unblockitem)
+ src.classmessage(Dum odblokovan.)
+endif
+
+[eof]

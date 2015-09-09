@@ -1,0 +1,170 @@
+[function items_to_wipe]
+var(item_to_wipe,0)
+src.xxi items_to_wipe_c(<argv(2)>)
+arg(storepos,<src.p>)
+src.p <argv(0)> 0 <mapplane>
+src.self
+src.go(<argv(1)>,0,<mapplane>)
+src.self
+src.go <arg(storepos)>
+if !(argv(2))
+ dialog d_maj_itemwiper
+endif
+
+[function items_to_wipe_c]
+ if (baseid==item_to_wipe_baseid)&&(dispid==item_to_wipe_dispid)&&(type==item_to_wipe_type)&&(more1==item_to_wipe_more1)
+  if (argv(0))
+   remove
+  else
+   var(item_to_wipe,<item_to_wipe>+1)
+  endif
+ endif
+endif
+
+[function wipeitem]
+dialog d_maj_select_region
+//dialog d_maj_itemwiper
+
+[DIALOG d_maj_select_region]
+50,50
+PAGE 0
+resizepic 120 45 3600 410 250
+text 284 55 1345 0
+text 253 75 1100 1
+text 140 100 1152 2
+button 400 100 2311 2312 1 0 1
+text 140 140 1152 3
+button 400 140 2311 2312 1 0 2
+text 180 160 1152 4
+text 300 160 1152 5
+textentry 220 160 340 347 10 1 6
+textentry 340 160 340 347 10 2 7
+button 280 235 2121 2120 1 0 3
+
+[DIALOG d_maj_select_region TEXT]
+Item Wiper
+Co vsechno prohledat?
+Cely aktualni mapplan.
+Souradnice:
+1.roh:
+2.roh:
+1,1
+6127,4071
+
+[DIALOG d_maj_select_region BUTTON]
+on=1
+var(item_to_wipe_xy1,"1,1")
+var(item_to_wipe_xy2,"6127,4071")
+items_to_wipe("1,1","6127,4071")
+on=2
+var(item_to_wipe_xy1,"<argtxt(1)>")
+var(item_to_wipe_xy2,"<argtxt(2)>")
+items_to_wipe("<argtxt(1)>","<argtxt(2)>")
+
+[DIALOG d_maj_itemwiper]
+50, 50
+PAGE 0
+resizepic 120 45 3600 300 215
+text 230 55 1345 0
+text 150 90 1152 1
+text 150 110 1152 2
+text 150 130 1152 3
+text 150 150 1152 4
+text 150 170 1152 4
+text 200 110 247 6
+text 200 130 247 7
+text 200 150 247 8
+text 200 170 247 9
+button 175 200 2311 2312 1 0 1
+button 245 200 2121 2120 1 0 2
+
+[DIALOG d_maj_itemwiper TEXT]
+Item Wiper
+Nalezeno <?item_to_wipe?> odpovidajicich itemu.
+ItemID:
+DispID:
+Type:
+More1:
+<?item_to_wipe_baseid?>
+<?item_to_wipe_dispid?>
+<?item_to_wipe_type?>
+<?item_to_wipe_more1?>
+
+[DIALOG d_maj_itemwiper BUTTON]
+on=1
+items_to_wipe("<item_to_wipe_xy1>","<item_to_wipe_xy2>",1)
+on=2
+
+
+[itemdef i_maj_wiper]
+id=i_gold
+type=t_script
+name=Item Wiper (!do not remove!)
+
+on=@create
+attr=attr_invis|attr_static
+tag(repeats,0)
+
+on=@pickup_ground
+src.sysmessage=Picking Up This Item Will Cau se Errors!
+return 1
+
+on=@timer
+if (strmatch(<var.itemtoremove>,00))
+link.sysmessage=!! Unknown Item Specified !!
+remove
+return 1
+endif
+link.removeallscarab(<tag(itemtoremove)>,<tag(itemtoremovedispid)>,<tag(itemtoremovemore1)>)
+serv.allclients sfx=011c
+remove
+return 1
+
+[function removeallscarab]
+if (<var.times> < 1)
+return 1
+else
+goitemid <argv(0)>
+if (<argv(1)>==<act.dispid>)&&(<argv(2)>==<act.more1>)
+act.remove
+endif
+var.times=<var.times>-1
+removeallscarab(<argv(0)>,<argv(1)>,<argv(2)>)
+return 1
+endif
+
+[ITEMDEF i_wipers_wand]
+ID=i_wand_1
+NAME=Kouzelna Hulka
+
+//CATEGORY=Scarabeus
+//SUBSECTION=GM Tools
+//DESCRIPTION=Wipovacka
+
+ON=@userDCLICK 
+//kterej jeliman to tak rozesral ? 
+//kdo tam nechal else bez ifu???? 
+//bez znalosti syntaxe neupravovat !!!
+if (src.isgm)
+ TARGET "Zamer item."
+else
+src.redmessage(Nesahej na to, jak se to pouziva se zeptej Dinivana nebo Scaraba!)
+endif
+RETURN 1
+
+ON=@TARGON_ITEM
+var(item_to_wipe_baseid,<src.targ.baseid>)
+var(item_to_wipe_dispid,<src.targ.dispid>)
+var(item_to_wipe_type,<src.targ.type>)
+var(item_to_wipe_more1,<src.targ.more1>)
+wipeitem
+return 1
+
+ON=@TARGON_CHAR
+SRC.MESSAGE "Todle radsi ne."
+return 1
+
+ON=@CREATE
+ATTR=010
+COLOR=0987
+[eof]

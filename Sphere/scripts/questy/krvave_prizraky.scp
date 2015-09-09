@@ -1,0 +1,197 @@
+[CHARDEF c_h_quest_krvave_prizraky_npc2]
+NAME=Bard Soterios
+ID=c_man
+attack=90
+ARMOR=60
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+TSPEECH=spk_vypravec_vtipy
+TSPEECH=spk_kecy_a_drby
+TSPEECH=spk_krvave_prizraky
+TSPEECH=spk_q020_bard
+TEVENTS=e_character
+TEVENTS=e_monster
+
+
+CATEGORY=Kvesty
+SUBSECTION=Krvave prizraky
+DESCRIPTION=Krvave prizraky NPC
+
+ON=@CREATE 
+brain=6
+COLOR=color_nurn_man
+STR={400 500} 
+INT={80 90} 
+DEX={200 300} 
+KARMA=-1000
+MAGERY={90.0 100.0} 
+WRESTLING={70.0 80.0} 
+TACTICS{40.0 60.0} 
+DETECTINGHIDDEN={90.0 100.0}
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+MACEFIGHTING={150.0 200.0}
+Resist={120.0 150.0}
+
+tag(noanimate,1)
+
+ON=@NPCRESTOCK 
+itemnewbie=random_male_hair
+color=colors_hair
+itemnewbie=random_facial_hair
+color=match_hair
+item=i_shirt_fancy
+color=colors_gray
+item=i_pants_long
+color=colors_green
+item=i_hat_feather
+color=colors_red
+item=random_boots
+item=random_coin_purse
+itemnewbie=i_spellbook
+addspell=s_flamestrike
+color=0036
+							             
+ON=@npcseenewplayer
+        
+DORAND 5
+sfx 744
+sfx 745
+sfx 746
+sfx 68
+sfx 1048
+enddo
+
+[CHARDEF c_crunch_krvavec]
+ID=c_bird
+NAME=Krvavec
+SOUND=snd_ANIMALS_RAVEN1
+ICON=i_pet_RAVEN
+attack=1
+ARMOR=3
+RESOURCES=2 i_ribs_raw, 25 i_feather, 1 i_srdiczko
+CAN=MT_WALK|MT_FLY
+FOODTYPE=15 t_crops, 15 t_grain
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+ON=@Create
+COLOR=colors_black
+STR=9
+DEX=25
+INT=5
+PARRYING=5.0
+Resist=5.0
+TACTICS=6.0
+WRESTLING=6.0
+TAMING=5.0
+NPC=brain_animal
+FAME=5
+KARMA={-1 -99}
+ITEMnewbie=i_monster_create
+
+[CHARDEF c_h_quest_krvave_prizraky_npc]
+NAME=Bard Kerdalion
+ID=c_man
+attack=90
+ARMOR=60
+
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+TSPEECH=spk_vypravec_vtipy
+TSPEECH=spk_kecy_a_drby
+TSPEECH=spk_krvave_prizraky
+TEVENTS=e_character
+TEVENTS=e_monster
+
+
+CATEGORY=Kvesty
+SUBSECTION=Krvave prizraky
+DESCRIPTION=Krvave prizraky NPC
+
+ON=@CREATE 
+brain=6
+COLOR=color_elf
+STR={400 500} 
+INT={80 90} 
+DEX={200 300} 
+KARMA=1000
+MAGERY={90.0 100.0} 
+WRESTLING={70.0 80.0} 
+TACTICS{40.0 60.0} 
+DETECTINGHIDDEN={90.0 100.0}
+provocation=100
+peacemaking=100
+FENCING={150.0 200.0}
+PARRYING={90.0 100.0}
+SWORDSMANSHIP={150.0 200.0}
+MACEFIGHTING={150.0 200.0}
+Resist={120.0 150.0}
+
+tag(noanimate,1)
+
+ON=@NPCRESTOCK 
+itemnewbie=random_male_hair
+     color=colors_hair
+     itemnewbie=random_facial_hair
+     color=match_hair
+     item=i_shirt_fancy
+     color=colors_blue
+     item=i_pants_long
+     color=colors_green
+     item=i_hat_feather
+     color=colors_green
+     item=random_boots
+     item=random_coin_purse
+     itemnewbie=i_spellbook
+     addspell=s_flamestrike
+      color=0036
+      
+ON=@npcseenewplayer
+ 
+DORAND 9
+sfx 744
+sfx 745
+sfx 746
+sfx 68
+sfx 1048
+enddo
+
+[CHARDEF c_crunch_strazcebrany]  
+ID=c_man 
+NAME=Strazce brany
+DESIRES=i_gold,t_wand,t_reagent,t_bone 
+AVERSIONS=t_TRAP,t_eerie_stuff 
+dam=60 
+ARMOR=80 
+CAN=MT_WALK|mt_run
+TSPEECH=crunch_strazce_brany  
+TEVENTS=e_character  
+ 
+ON=@Create 
+hits=50000
+maxhits=50000
+STR=600 
+DEX=200 
+INT=100 
+NPC=brain_human 
+tag.experience=<eval {30.0 35.0}> 
+tag.resist_poison=1000.0
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+COLOR=colors_skin 
+ITEMNEWBIE=i_surcoat 
+COLOR=029c 
+ITEMNEWBIE=i_sandals 
+COLOR=01b6 
+ITEMNEWBIE=i_pants_long 
+COLOR=08f  
+ON=@NPCRestock 
+
+ON=@npcseenewplayer  
+ SAY= "Co civis? " 
+                              

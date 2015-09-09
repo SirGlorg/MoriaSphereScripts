@@ -1,0 +1,1746 @@
+[EVENTS e_mana_draining] 
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if(act.mana>10)
+  act.mana=mana-10
+  act.sysMessage("Neco ti vysava manu!")
+elseif (act.mana<10)
+  act.mana=0
+endif
+
+on=@beforedoeffect 
+on=@beforegeteffect 
+on=@beforegetswing
+on=@aftergetswing
+
+[EVENTS e_mana_vampire] 
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if(act.mana>12)
+  hits=(<hits>+<var(ubrano)>)
+  act.mana=mana-<eval{8 12}>
+  act.sysMessage("Monstrum se syti tvou manou!")
+elseif (act.mana<12)
+  act.mana=0
+endif
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[events e_vamp_exp]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if !tag(zjisteno)
+  tag(experience,<tag(experience)>+5) //ochrana proti hovadinam
+  tag(puvodniexpy,<tag(experience)>) //zaznamena puvodni expy potvory
+  tag(zjisteno,1)
+endif
+if (act.tag(experience)<20) || ((maxhits)>30000) || ((hits)>30000) || (!(act.isplayer))
+  return 0  
+else
+  tag(rana,(<eval {10 20}>)+(<tag(experience)>)/(<tag(puvodniexpy)>))
+  act.tag(experience,(<act.tag(experience)> - <tag(rana)>))
+  tag(experience,(<tag(experience)> + <tag(rana)>))
+  hits=hits +(3*<tag(rana)>)
+  maxhits=maxhits + (3*<tag(rana)>)
+endif
+
+on=@beforedoeffect
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+[events e_summonfrenzy]
+on=@aftergetswing
+if (src.issumon) && (!(src.flags&statf_pet))
+  src.findid(i_rune_summon_creature).link=""
+  src.findid(i_rune_summon_elem_air).link=""
+  src.findid(i_rune_summon_daemon).link=""
+  src.findid(i_rune_summon_elem_earth).link=""
+  src.findid(i_rune_summon_elem_fire).link=""
+  src.findid(i_rune_summon_elem_water).link=""
+  src.action=067
+  while memoryfindtype(0209c) || src.memoryfindtype(0209c)
+    memoryfindtype(0209c).remove
+    src.memoryfindtype(0209c).remove
+  endwhile
+  say("all release")
+  action=067
+  return 0
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_fire_column_damage]
+id=i_fire_column
+name=Ohnivy zasleh
+
+on=@create
+timer=2
+attr=attr_move_never 
+
+on=@step
+if (src.isGM) || (src.isDead)
+  return 1
+endif
+if !((<link.uid>) == (<src.uid>)) && (src.isPlayer || src.isPet)	//dame dmg i summonum a jezditkum
+  if (src.isEvent(e_fire_column_damage))
+    if (<src.tag(fireColumnDamageStep)> > <serv.time>) // if the player stepped on the firecolumn at this position in the last 2 seconds
+      return 1
+    endif
+  endif
+  if (strlen(<tag(damage)>))
+    src.damage_noresponse(<eval tag(damage)>,dam_fire|dam_magic)
+  else
+    src.damage_noresponse(<eval {50 80}>,dam_fire|dam_magic)
+  endif
+  src.events=+e_fire_column_damage
+  src.tag(fireColumnDamageStep,<serv.time>+20) // 2 seconds silence
+  remove
+endif
+
+[events e_fire_column_damage]
+on=@step
+tag.remove(fireColumnDamageStep)
+events=-e_fire_column_damage
+
+[function efektd]
+newitem(<i_fx_vortex>)
+ lastnew.p=<eval(<p_x>)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.update
+newitem(<i_fire_column>)
+ lastnew.p=<eval(<p_x>)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=3
+ lastnew.update
+newitem(<i_fire_column>)
+ lastnew.p=<eval(<p_x>+1)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=3
+ lastnew.update
+newitem(<i_fire_column>)
+ lastnew.p=<eval(<p_x>-1)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=3
+ lastnew.update
+newitem(<i_fire_column>)
+ lastnew.p=<eval(<p_x>)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=3
+ lastnew.update
+newitem(<i_fire_column>)
+ lastnew.p=<eval(<p_x>)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=3
+ lastnew.update
+return 0
+
+[function shieldme]
+forcebackthem
+newitem(<i_fx_energy_field>)
+ lastnew.p=<eval(<p_x>+1)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.dispid=03956
+ lastnew.update
+newitem(<i_fx_energy_field>)
+ lastnew.p=<eval(<p_x>-1)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.dispid=03956
+ lastnew.update
+newitem(<i_fx_energy_field>)
+ lastnew.p=<eval(<p_x>+1)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.dispid=03956
+ lastnew.update
+newitem(<i_fx_energy_field>)
+ lastnew.p=<eval(<p_x>-1)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.dispid=03956
+ lastnew.update
+newitem(<i_fx_energy_field>)
+ lastnew.p=<eval(<p_x>-1)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.dispid=03956
+ lastnew.update
+newitem(<i_fx_energy_field>)
+ lastnew.p=<eval(<p_x>+1)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.dispid=03956
+ lastnew.update
+newitem(<i_fx_energy_field>)
+ lastnew.p=<eval(<p_x>)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.update
+newitem(<i_fx_energy_field>)
+ lastnew.p=<eval(<p_x>)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>
+ lastnew.timer=10
+ lastnew.update
+return 0
+
+[function fireshield]
+f_fireColumnDmg_place(<eval(<p_x>+1)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>)
+f_fireColumnDmg_place(<eval(<p_x>-1)>,<eval(<p_y>)>,<eval(<p_z>)>,<mapplane>)
+f_fireColumnDmg_place(<eval(<p_x>+1)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>)
+f_fireColumnDmg_place(<eval(<p_x>-1)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>)
+f_fireColumnDmg_place(<eval(<p_x>-1)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>)
+f_fireColumnDmg_place(<eval(<p_x>+1)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>)
+f_fireColumnDmg_place(<eval(<p_x>)>,<eval(<p_y>-1)>,<eval(<p_z>)>,<mapplane>)
+f_fireColumnDmg_place(<eval(<p_x>)>,<eval(<p_y>+1)>,<eval(<p_z>)>,<mapplane>)
+return 0
+
+//argv(0) - number of columns, argv(1) <optional> column damage
+[function fireexplosion]
+arg(i,0)
+while (arg(i) < <argv(0)>)
+  f_fireColumnDmg_place(<posInRange(5)>,argv(1))
+  arg(i,#+1)
+endwhile
+return 0
+
+[function f_fireColumnDmg_place] //x,y,z,mapplane, <optional> damage
+newitem(<i_fire_column_damage>)
+lastnew.p=<eval argv(0)>,<eval argv(1)>,<eval argv(2)>,<eval argv(3)>
+lastnew.link=<UID>
+lastnew.update
+if (<eval argv(4)>)
+  lastnew.tag(damage,<argv(4)>)
+endif
+
+[events e_parakrik]
+on=@aftergetswing
+if rand(15)==1
+  newitem(<i_src_changer_parakrik>)
+  lastnew.p=<eval(<p_x>)>,<eval(<p_y>)>,<eval(<p_z>-100)>,<mapplane>
+  emote("crying awfully.")
+endif
+return 0
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_src_changer_parakrik]
+id=i_memory
+type=t_eq_script
+name=parakrik
+
+on=@create
+timer=1
+
+on=@timer
+sector.allchars(parakrik)
+remove
+
+[function parakrik]
+if !isgm && isplayer && tag(resist_para)<900 && !(<flags>&statf_dead)
+ if (<eval tag(ra_speldodge)*nastaveni_ability_pvMdodge> > {0 999})
+  //var(spellpower, 0)
+  classmessage("Kouzlo absorbovano")
+  return 1
+ endif
+  sysMessage("Jsi <sex("ochromen","ochromena")>!")
+  paralyze(50)
+  return 0
+endif
+
+[function invism]
+newequip(i_invism)
+
+[itemdef i_invism]
+id=i_memory
+type=t_eq_script
+name=invism
+
+on=@equip
+if topobj.flag_insubstantial==0
+  topobj.EFFECT(3,#0A2002EEA,6,30,2)
+  timer=1
+else
+  topobj.newitem(#0A2002EEA)
+  lastnew.attr=010
+  lastnew.timer=1
+  lastnew.p=<topobj.p>
+  timer=0
+endif
+
+on=@unequip
+topobj.invis
+
+[events e_odinvis_krik]
+
+on=@aftergetswing
+if rand(12)==1
+  newitem(<i_src_changer_odinvis>)
+  lastnew.p=<eval(<p_x>)>,<eval(<p_y>)>,<eval(<p_z>-100)>,<mapplane>
+  emote("crying.")
+endif
+return 0
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_src_changer_odinvis]
+id=i_memory
+type=t_eq_script
+name=src_changer
+
+on=@create
+timer=1
+
+on=@timer
+sector.allchars(zviditelni)
+remove 
+return 1
+
+[function zviditelni]
+if (<flags>&statf_invisible) || (<flags>&statf_hidden)
+  if isplayer && !isgm && !(<flags>&statf_dead) 
+    flag_invisible=0
+    flag_hidden=0
+    sysMessage("<sex("Byl jsi objeven!","Byla jsi objevena!")>")
+    update
+  endif
+else
+return 1
+endif
+
+[events e_npc_detect]
+on=@npcseenewplayer
+if !(findid(i_npc_detekce))
+  newequip(i_npc_detekce)
+endif
+return 0
+
+[itemdef i_npc_detekce]
+id=i_memory
+type=t_eq_script
+name=detekce
+
+on=@create
+timer=5
+
+on=@timer
+if tag(dalsidetek) > 10
+  topobj.memoryfindtype(0209c).remove
+  topobj.action=""
+  remove
+else
+  topobj.emote("Detecting hidden.")
+  topobj.newitem(<i_src_changer_odinvis>)
+  lastnew.p=<eval(<topobj.p_x>)>,<eval(<topobj.p_y>)>,<eval(<topobj.p_z>-100)>,<topobj.mapplane>
+  timer=55
+  tag(dalsidetek,<tag(dalsidetek)>+1)
+endif
+return 1
+
+[itemdef i_odinvis_dlazka]
+name=odinvis dlazka
+id=i_floor_stone_red
+attr=090
+
+on=@create
+color=0982
+
+on=@step
+if tag(nextstep) < (<serv.time>)
+tag(nextstep,<serv.time>+50)
+src.zviditelni
+endif
+return 1
+
+[events e_potiondrinker]
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if(tag(neknockuj))!=1
+  tag(neknockuj,1)
+  return 0
+endif
+if tag(vypito)!=1
+  if (<hits> < <maxhits>) && ((hits)>(maxhits/2)) && rand(8)==1
+    newequip(i_npc_str_boost)
+    tag(vypito,1)
+    return 0
+  endif
+  if (<hits> < <maxhits>) && ((hits)>(maxhits/2)) && rand(8)==1
+    newequip(i_npc_dex_boost)
+    tag(vypito,1)
+    return 0
+  endif
+  if (<hits> < <maxhits>) && ((hits)>(maxhits/2)) && rand(8)==1 && (<mana> > 0)
+    newequip(i_npc_int_boost)
+    tag(vypito,1)
+    return 0
+  endif
+endif
+return 0
+
+on=@aftergetswing
+if(tag(neknockuj))!=1
+  tag(neknockuj,1)
+  return 0
+endif
+if tag(vypito)!=1
+  if (<hits> < <maxhits>/2) && rand(20)==1
+    hits=(hits)+(maxhits/3)
+    emote("drinking potion")
+    emote("regenerating!")
+    return 0
+  endif
+  if (<hits> < <maxhits>/2) && rand(12)==1
+    newequip(i_npc_stoneskin_p)
+    tag(vypito,1)
+    return 0
+  endif
+  if (<hits> < <maxhits>/2) && rand(12)==1
+    newequip(i_npc_spellshield_p)
+    tag(vypito,1)
+    return 0
+  endif
+endif
+
+return 0
+
+on=@beforegetswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+[itemdef i_npc_str_boost]
+id=i_memory
+type=t_eq_script
+name=str boost
+
+on=@create
+timer=20
+
+on=@equip
+cont.events=+e_strboost
+cont.emote("drinking potion.")
+cont.emote("becomes stronger.")
+
+on=@unequip
+cont.events=-e_strboost
+
+on=@timer
+if (tag(smaznime)==1)
+  remove
+  return 1
+else
+  tag(smaznime,1)
+  cont.tag(vypito,"")
+  timer=20
+  return 1
+endif
+
+[events e_strboost]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if !(act.npc)
+  act.damage_noresponse(<eval {10 20}>,dam_magic)
+endif
+return 0
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+
+[itemdef i_npc_dex_boost]
+id=i_memory
+type=t_eq_script
+name=dex boost
+
+on=@create
+timer=20
+
+on=@equip
+tag(puvodnirychlost,<cont.tag(npc_speed)>)
+cont.tag(npc_speed,5000)
+cont.temporary_null
+cont.emote("drinking potion.")
+cont.emote("becomes much faster.")
+
+on=@unequip
+cont.tag(npc_speed,<tag(puvodnirychlost)>)
+cont.temporary_null
+
+on=@timer
+if (tag(smaznime)==1)
+  remove
+  return 1
+else
+  cont.tag(vypito,"")
+  tag(smaznime,1)
+  timer=15
+  return 1
+endif
+
+[itemdef i_npc_int_boost]
+id=i_memory
+type=t_eq_script
+name=int boost
+
+on=@create
+timer=20
+
+on=@equip
+cont.EI=<cont.EI>+1000
+cont.int=<cont.int>+1000
+if (cont.mana<2000)
+  cont.mana=<cont.mana>+1000
+endif
+cont.emote("drinking potion.")
+cont.emote("becomes more clever.")
+
+on=@unequip
+cont.EI=<cont.EI>-1000
+cont.int=<cont.int>-1000
+
+on=@timer
+if (tag(smaznime)==1)
+  remove
+  return 1
+else
+  cont.tag(vypito,"")
+  tag(smaznime,1)
+  timer=25
+  return 1
+endif
+
+[itemdef i_npc_stoneskin_p]
+id=i_memory
+type=t_eq_script
+name=stoneskin
+
+on=@create
+timer=20
+
+on=@equip
+cont.tag(resist_phys,<cont.tag(resist_phys)>+800)
+cont.emote("drinking potion.")
+cont.emote("s skin becomes harder.")
+
+on=@unequip
+cont.tag(resist_phys,<cont.tag(resist_phys)>-800)
+on=@timer
+if (tag(smaznime)==1)
+  remove
+  return 1
+else
+  cont.tag(vypito,"")
+  tag(smaznime,1)
+  timer=10
+  return 1
+endif
+
+[itemdef i_npc_spellshield_p]
+id=i_memory
+type=t_eq_script
+name=spellshield
+
+on=@create
+timer=20
+
+on=@equip
+cont.tag(resist_fire,<cont.tag(resist_fire)>+800)
+cont.tag(resist_elect,<cont.tag(resist_elect)>+800)
+cont.emote("drinking potion.")
+cont.emote("becomes resistent to spells!")
+
+on=@unequip
+cont.tag(resist_fire,<cont.tag(resist_fire)>-800)
+cont.tag(resist_elect,<cont.tag(resist_elect)>-800)
+
+on=@timer
+if (tag(smaznime)==1)
+  remove
+  return 1
+else
+  cont.tag(vypito,"")
+  tag(smaznime,1)
+  timer=10
+return 1
+endif
+
+[itemdef i_dlazka_vstup_ps]
+name=stone
+id=i_floor_stone_red
+
+ON=@Create
+name=DLAZDICE POD SOCHU
+attr=attr_move_never
+attr=attr_invis
+
+on=@step
+if !(src.findid(i_vstup_ps))
+  src.say("Vsude kolem vidis mrtvoly. Vypada to na bitvu.")
+  src.newequip(i_vstup_ps)
+endif
+
+[itemdef i_vstup_ps]
+id=i_memory
+type=t_eq_script
+name=vstup prodleva
+
+on=@create
+timer=200
+
+on=@timer
+remove
+
+[events e_ps_fanatik]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if rand(5)==1
+  dorand(5)
+    SAY("Priprav se na smrt!")
+    SAY("Konec se blizi!")
+    SAY("Za Pana Desu!")
+    SAY("Ceka te uz jen smrt.")
+    SAY("Muhaha dobra trefa.")
+  enddo
+endif
+
+on=@beforedoeffect
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+on=@npcseenewplayer
+SAY("Nyni zemrete!")
+
+[events e_menavec_malej]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if body!=c_gazer
+  events=-e_tele_to_target
+  findid(i_attack_guard).remove
+endif
+
+on=@aftergetswing
+if !(tag(polymorfmdelay))
+  tag(polymorfmdelay,<serv.time>+50)
+  return 0
+endif
+if (rand(2)==1) && !(findid(i_morfovatko)) && (tag(polymorfmdelay) < <serv.time>)
+  dorand 11
+    tag(doceho,c_valorite_eye_menavec) // menavcova verzia bez leapu
+    tag(doceho,c_black_vdova) // netreba menit, nema ability
+    tag(doceho,c_bug_giant) // taktiez netreba menit
+    tag(doceho,c_tarantule) // netreba
+    tag(doceho,c_obsidian_eye_menavec) // taktiez bez leapu
+    tag(doceho,c_alligator) // netreba menit
+    tag(doceho,c_golem_golden) // netreba menit
+    tag(doceho,c_vortex_mage) // netreba
+    tag(doceho,c_mummy_stone) // netreba 
+    tag(doceho,c_m_phoenix_poison) // netreba
+    tag(doceho,c_ogre_lord) // netreba
+  enddo
+  newequip(i_morfovatko)
+  lastnew.tag(zmenimsena,<tag(doceho)>)
+endif
+return 0
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_menavec]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if body!=c_gazer
+  events=-e_tele_to_target
+  findid(i_attack_guard).remove
+endif
+
+on=@aftergetswing
+if !(tag(polymorfmdelay))
+  tag(polymorfmdelay,<serv.time>+50)
+  return 0
+endif
+if (rand(2)==1) && !(findid(i_morfovatko)) && (tag(polymorfmdelay) < <serv.time>)
+  dorand 8
+    tag(doceho,c_daemon_gold_menavec) // odstraneny reborn
+    tag(doceho,c_fireant_queen_menavec) // odstraneny ovinovac
+    tag(doceho,c_ophidian_king) // netreba menit
+    tag(doceho,c_adamantinum_eye_menavec) // odstraneny leap
+    tag(doceho,c_reaper_eben) // odstraneny ovinovac
+    tag(doceho,c_lizard_king) // netreba menit
+    tag(doceho,c_m_phoenix_poison) // netreba menit
+    tag(doceho,c_minotaur_menavec) // odobrany round + unequip zbrane
+  enddo
+  newequip(i_morfovatko)
+  lastnew.tag(zmenimsena,<tag(doceho)>)
+endif
+return 0
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_menavec_powerful]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if body!=c_gazer
+  events=-e_tele_to_target
+  findid(i_attack_guard).remove
+endif
+if !(tag(polymorfmdelay))
+  tag(polymorfmdelay,<serv.time>+50)
+  return 0
+endif
+
+on=@aftergetswing
+if (rand(2)==1) && !(findid(i_morfovatko)) && (tag(polymorfmdelay) < <serv.time>)
+  dorand 9
+    tag(doceho,c_cajun_lord_menavec) // odstranene summonenie malych cajunov
+    tag(doceho,c_spider_elder_menavec) // odstraneny ovinovac
+    tag(doceho,c_gladiator_lord_menavec) // odstraneny round
+    tag(doceho,c_ophidian_mage_evil_menavec) // odstranene perma zrcko
+    tag(doceho,c_golem_mithril_menavec) // odstraneny reactiv
+    tag(doceho,c_balrogh_menavec) // odstraneny round
+    tag(doceho,c_mitheril_eye_menavec) // odstraneny leap
+    tag(doceho,c_minotaur_strazce_menavec) // odstraneny round
+  enddo
+  newequip(i_morfovatko)
+  lastnew.tag(zmenimsena,<tag(doceho)>)
+endif
+return 0
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_morfovatko]
+id=i_memory
+type=t_eq_script
+name=morfovatko
+
+on=@create
+timer=1
+
+on=@equip
+cont.events=+e_pojistka_morf
+cont.tag(changed,1)
+tag(puvodnitelo,<cont.Obody>)
+tag(puvodnijmeno,<cont.name>)
+tag(puvodnibrain,<cont.brain>)
+cont.action=065
+cont.EFFECT(3,i_fx_sparkle,6,20,2)
+cont.emote("polymorphing!")
+
+on=@unequip
+cont.tag(changed,"")
+cont.flag_immobile=0
+
+on=@timer
+cont.action=""
+if !tag(secenznul)
+  topobj.body=(<tag(zmenimsena)>)
+  topobj.name=Menivec
+  if (<cont.body>==c_dragon_bone)
+    cont.brain=13
+  endif
+  tag(secenznul,1)
+  timer=20
+else
+  topobj.events=-e_pojistka_morf
+  topobj.name=<tag(puvodnijmeno)>
+  topobj.body=<tag(puvodnitelo)>
+  topobj.brain=<tag(puvodnibrain)>
+  topobj.events=-e_tele_to_target
+  topobj.tag(polymorfmdelay,<serv.time>+100)//10s
+  topobj.EFFECT(3,i_fx_sparkle,6,20,2)
+  topobj.emote("polymorphing!")
+  remove
+endif
+return 1
+
+[events e_pojistka_morf]
+on=@aftergetswing
+if (hits) < (maxhits/10)
+  tag(polymorfmdelay,<serv.time>+10000)
+  findid(i_morfovatko).timer=0
+endif
+return 0
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegeteffect
+
+[events e_illusionist]
+on=@aftergetswing
+if !(tag(waitill))
+  tag(waitill,1)
+endif
+if rand(30)==1 && (tag(waittill) < (<serv.time>)) && !(tag(isillusion))
+  tag(waitill,<serv.time> + 600)
+  src.sysMessage("Tvuj pohled se rozmazal.")
+  invis
+  invis
+  newnpc(<obody>)
+  lastnewchar.p=<eval(<p_x>+1)>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.hits=1
+  lastnewchar.tag(nedelse,1)
+  lastnewchar.maxhits=1
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1,
+  lastnewchar.maxmana=500
+  lastnewchar.mana=500
+  lastnewchar.temporary_null 
+  lastnewchar.update
+  lastnewchar.tag(isillusion,1)
+  lastnewchar.events=-e_illusionist
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=30
+  //
+  newnpc(<obody>)
+  lastnewchar.p=<eval(<p_x>-2)>,<eval(<p_y>+{-1 2})>,<p_z>,<mapplane>
+  lastnewchar.hits=1
+  lastnewchar.tag(nedelse,1)
+  lastnewchar.maxhits=1
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.maxmana=500
+  lastnewchar.mana=500
+  lastnewchar.temporary_null 
+  lastnewchar.update
+  lastnewchar.tag(isillusion,1)
+  lastnewchar.events=-e_illusionist
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=30
+  //
+  newnpc(<obody>)
+  lastnewchar.p=<eval(<p_x>-2)>,<eval(<p_y>-2})>,<p_z>,<mapplane>
+  lastnewchar.hits=1
+  lastnewchar.tag(nedelse,1)
+  lastnewchar.maxhits=1
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.maxmana=500
+  lastnewchar.mana=500
+  lastnewchar.temporary_null 
+  lastnewchar.update
+  lastnewchar.tag(isillusion,1)
+  lastnewchar.events=-e_illusionist
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=30
+  //
+  newnpc(<obody>)
+  lastnewchar.p=<eval(<p_x>-2)>,<eval(<p_y>-2})>,<p_z>,<mapplane>
+  lastnewchar.hits=1
+  lastnewchar.tag(nedelse,1)
+  lastnewchar.maxhits=1
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.maxmana=500
+  lastnewchar.mana=500
+  lastnewchar.temporary_null 
+  lastnewchar.tag(isillusion,1)
+  lastnewchar.update
+  lastnewchar.events=-e_illusionist
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=30
+  //
+  newnpc(<obody>)
+  lastnewchar.p=<eval(<p_x>)>,<eval(<p_y>+1)>,<p_z>,<mapplane>
+  lastnewchar.hits=1
+  lastnewchar.tag(nedelse,1)
+  lastnewchar.maxhits=1
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.maxmana=500
+  lastnewchar.mana=500
+  lastnewchar.temporary_null 
+  lastnewchar.tag(isillusion,1)
+  lastnewchar.update
+  lastnewchar.events=-e_illusionist
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=30
+  p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  update
+endif
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+[itemdef i_osklivejsmazse]
+id=i_memory
+type=t_eq_script
+name=zmizni
+
+on=@create
+timer=500
+
+on=@timer
+cont.remove
+remove
+
+[events e_fire_lord]
+on=@aftergetswing
+if rand(12)==1
+  SAY("Heru Beleg Ruin Val")
+  fireexplosion(10)
+endif
+//if rand(50)==1
+//  while (memoryfindtype(0209c)) 
+//    memoryfindtype(0209c).remove
+//    action=067
+//  endwhile
+//endif
+if rand(20)==1
+  SAY("Heru Ruin Val")
+  newnpc(c_m_phoenix_fire)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=20
+  newnpc(c_m_phoenix_fire)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=20
+  newnpc(c_fire_eye)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=20
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+on=@death
+while (memoryfindtype(0209c))
+  memoryfindtype(0209c).link.multi_damage(180)
+  memoryfindtype(0209c).remove 
+endwhile
+
+[events e_phoenix_fire]
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if rand(15)==1
+  if (<eval tag(phoenix_fire_damage)>)
+    fireexplosion(10,<eval tag(phoenix_fire_damage)>)
+  else
+    fireexplosion(10)
+  endif
+  emote("outblazed!")
+endif
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_phoenix]
+on=@aftergetswing
+if ((<hits>) < (<maxhits>/5)) && (maxhits) > (250)
+  if findid(i_a_curse) && rand(3)==1
+    return 0
+  endif
+  hits=maxhits/2
+  maxhits=hits
+  emote("reborning in fire")
+  fireshield
+endif
+return 0
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[ITEMDEF i_socha_ps]
+name=stone
+id=i_floor_stone_red
+
+ON=@STEP
+if !(src.isplayer) && src.memoryfindtype(0200).link.tag(stonehim)==1 && src.flag_invul!=1 && !src.findid(i_osklivejsmazse)
+  tag(socha,<src.uid>)
+  src.paralyze(-1)
+  src.color=098b
+  src.flag_invul=1
+  src.action=065
+  src.p=<morep>
+  src.update
+endif
+return 1
+
+ON=@Create
+name=DLAZDICE POD SOCHU
+attr=090
+type=00
+
+on=@userdclick
+src.sysMessage("Odstonovavam, rucne spusteno!!")
+tag(socha).paralyze_remove
+tag(socha).color=<oskin>
+tag(socha).invul=0
+tag(socha).action=""
+
+[ITEMDEF i_socha_naslapna]
+name=stone
+id=i_floor_stone_red
+
+on=@create
+color=0989
+
+on=@userdclick
+if src.isgm
+  src.newequip(i_socha_zamerovatko)
+  lastnew.link=<UID>
+else
+  src.symessage("Ses buger, husuj od toho!")
+endif
+
+on=@step
+if link && !src.isgm
+  link.tag(socha).action=""
+  link.tag(socha).paralyze(-1)
+  link.tag(socha).color=<link.tag(socha).oskin>
+  link.tag(socha).invulnerable=0
+  link.tag(socha).newequip(i_osklivejsmazse)
+  lastnew.timer=1000
+endif
+
+[itemdef i_socha_zamerovatko]
+id=i_memory
+type=t_eq_script
+
+on=@timer
+remove
+return 0
+
+on=@equip
+timer 20
+target "Zamer dlazku na kterou chces tuhle linknout."
+
+on=@targon_item
+if src.targ.id==i_socha_ps
+  link.link=<src.targ.uid>
+  remove
+  return 1
+else
+  src.sysMessage("Na tohle ne joudoslave!")
+endif
+
+on=@targon_ground
+src.sysMessage("Sem ne joudo!")
+remove
+return 1
+
+on=@targon_char
+src.sysMessage("Sem ne joudo!")
+remove 
+return 1
+
+[events e_strach_lord1]
+on=@aftergetswing
+if ((<hits>) < (<maxhits>/6))
+  say("Beleg Faroth Kel")
+  SAY("Pokud mate odvahu se mi postavit tak mne nasledujte!")
+  flag_immobile=1
+  efektd
+  newitem(i_moongate_blue)
+  lastnew.p=<p>
+  lastnew.color=098E
+  lastnew.morep=5348,4063,1
+  lastnew.timer=1000
+  lastnew.name=Zarici brana
+  newequip(i_osklivejsmazse)
+  lastnew.timer=3
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_strach_lord2]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+if (rand(3)==1)
+  dorand 6
+    SAY("Nemeli jste sem odvazovat!")
+    SAY("Pripravte se na smrt!")
+    SAY("Bojte se!")
+    SAY("Treste se!")
+    SAY("Zemres!")
+    SAY("Ve jmenu Ohne a Strachu!")
+  enddo
+endif
+return 0
+
+on=@aftergetswing
+if (rand(30)==1)
+  SAY("Zhynes Strachem a Ohnem!!!")
+  newnpc(c_daemon_fireps)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+//  lastnewchar.events=+e_illusionist
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=150
+elseif (rand(30)==1)
+  SAY("Zhynes Strachem!!!")
+  newnpc(c_tarantule_fire)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=60
+elseif (rand(100)==1)
+//  SAY("Heru Beleg Ruth Val Ruin")
+  SAY("Zhynes Ohnem!!!")
+  newnpc(c_fire_lord_summon)
+  lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=40
+elseif (rand(20)==1)
+  SAY("Heru Beleg Ruin Val")
+  fireexplosion(10)
+endif
+return 0
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_spawnovac_povlnach_prime] 
+ 
+id=i_rune_marker 
+name=NEMAZAT NEKLIKAT - spawnovatko 
+type=00 
+ 
+on=@create  
+attr=090 
+ 
+on=@userdclick 
+if !(src.isgm) 
+  src.sysMessage("Nesahej na to, rozbijes to!:)") 
+  return 1 
+endif 
+if !(tag(zastavto))
+  src.sysMessage("Zapinam spawnovani") 
+  sector.allitems(vymazpokusy_spawn) 
+  tag(zastavto,1) 
+  timer=1 
+  return 1 
+elseif (tag(zastavto)==1)
+  tag(zastavto,2) 
+  src.sysMessage("Neguji spawny , mazu monstra a vypinam se.") 
+  sector.allchars(removenpcs) 
+  sector.allitems(negateallspawns) 
+  timer=0 
+  return 1 
+endif
+
+on=@timer 
+if (tag(zastavto)==2)
+  tag(zastavto,"") 
+  return 1 
+endif 
+sector.allitems(zaspawnujto) 
+if (tag(mytimer))
+  timer=<tag(mytimer)> 
+else 
+  timer=30 
+endif 
+return 1 
+ 
+[function vymazpokusy_spawn] 
+if (tag(firstspawn))
+  tag(spawned,"") 
+  tag(firstspawn_duration,"") 
+endif 
+ 
+[function zaspawnujto] 
+if ((timer)==(-1)) || !(type==t_spawn_char) || (tag(spawned)==1)
+  return 1 
+endif 
+if (tag(firstspawn)) && !(tag(firstspawn_duration)) 
+  tag(firstspawn_duration,<tag(firstspawn)>)
+endif 
+if (tag(firstspawn_duration))
+  tag(firstspawn_duration,<tag(firstspawn_duration)>-1) 
+endif 
+if (tag(firstspawn_duration)==0) && !(tag(spawned)) 
+  finduid(#01a61f8).sysMessage("Tohle je <tag(firstspawn)> kolo.") 
+  timer=1 
+  tag(spawned,1) 
+  return 0 
+endif 
+
+[function negatespawns] 
+if (isgm)
+  newitem(i_negatnispawny) 
+  lastnew.p=<p> 
+  lastnew.p=<(p_z)-100> 
+endif 
+ 
+[itemdef i_negatnispawny] 
+id=i_memory 
+type=t_eq_script 
+ 
+on=@create 
+timer=0 
+ 
+on=@timer  
+sector.allchars(removenpcs) 
+sector.allitems(negateallspawns) 
+ 
+[function negateallspawns] 
+if (type==t_spawn_char) 
+  tag(spawned,"") 
+  tag(lastspawned).flag_conjured=1 
+  tag(lastspawned).hits=0 
+  timer=50000 
+endif 
+ 
+[function removenpcs] 
+if !(isplayer) && ((flag_spawned)==(1)) 
+  flag_conjured=1 
+  hits=0 
+endif
+
+[events e_resprismrti]
+on=@death
+act.resnpcs
+var(resingnpcs,<act.uid>)
+
+[function resnpcs]
+newitem(i_src_changer_resnpc)
+lastnew.p=<p>
+if hits>0
+  var(resingnpcs,<UID>)
+endif
+
+[itemdef i_src_changer_resnpc]
+id=i_memory
+type=t_eq_script
+name=resnpc src changer
+
+on=@create
+timer=1
+
+on=@timer
+sector.allitems(resnpc)
+
+[function resnpc]
+if tag(brain)==1
+  return 0
+endif
+if !link && ((timer)!=(-1)) && id==i_corpse
+  var(resingnpcs).newnpc=<tag(living)>
+  lastnewchar.go=<p>
+  lastnewchar.tag(deathtag,1)
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=600
+endif
+
+
+
+[events e_manaspirit]
+on=@death
+newitem(i_src_changer_manaspirit)
+lastnew.p=<p>
+
+[itemdef i_src_changer_manaspirit]
+id=i_memory
+type=t_eq_script
+name=srcchanger manaspira
+
+on=@create
+timer=1
+
+on=@timer
+sector.allchars(spirit_drainmana(<UID>))
+remove
+return 0
+
+[function spirit_drainmana]
+if (isplayer) && (distancefrom(<argv(0)>)<6) && !(isgm)
+ mana=mana/2
+endif
+
+[events e_spectre]
+on=@aftergetswing
+if (src.isplayer) && rand(12)==1
+  while (memoryfindtype(0209c)) && (var(stopcreatingill)==4) && (isplayer)
+    if (memoryfindtype(0209c).link.isplayer)
+      memoryfindtype(0209c).link.newnpc(<obody>)
+      newnpc(<obody>)
+      lastnewchar.tag(spectre,<UID>)
+      lastnewchar.events=+e_lowerdmg
+      lastnewchar.hits=<hits>
+      lastnewchar.color=<color>
+      lastnewchar.maxhits=<maxhits>
+      lastnewchar.flag_conjured=1
+      lastnewchar.p=<memoryfindtype(0209c).link.p>
+      lastnewchar.update
+      lastnewchar.attack(<memoryfindtype(0209c).link.uid>)
+      lastnewchar.newequip(i_osklivejsmazse)
+      lastnew.timer=10
+      newitem(i_fx_sparkle_2)
+      lastnew.color=049c
+      lastnew.p=<memoryfindtype(0209c).link.p>	
+      lastnew.timer=5
+      var(stopcreatingill,#+1)
+      if rand(5)==1 && !(tag(prohozen))
+        p=<memoryfindtype(0209c).link.p>
+        invis
+        update
+        invis 
+        update
+      endif
+    endif
+    memoryfindtype(0209c).remove
+  endwhile
+  var(stopcreatingill,"")
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_lowerdmg]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+var(ubrano,<eval (var(ubrano)/3)>)
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_vampire_lord]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if !(act.findid(i_curse_drainhps)) && rand(10)==1
+  act.newequip(i_curse_drainhp)
+  lastnew.tag(lord,<UID>)
+elseif (act.findid(i_curse_drainhps)) && (hits<30000)
+  hits=<hits+(maxhits/20)>
+endif
+
+on=@aftergetswíng
+if !(src.findid(i_curse_givehps)) && rand(20)==1
+  act.newequip(i_curse_givehps)
+  lastnew.tag(lord,<UID>)
+endif
+
+on=@beforedoeffect
+on=@beforegeteffect
+
+if !(src.findid(i_curse_givehps)) && rand(20)==1
+  src.newequip(i_curse_givehps)
+  lastnew.tag(lord,<UID>)
+endif
+
+[itemdef i_curse_givehps]
+id=i_memory
+type=t_eq_script
+name=givehpscurse
+
+on=@create
+timer=15
+
+on=@equip
+topobj.sysMessage("<topobj.sex("Byl jsi proklet!","Byla jsi prokleta")>")
+topobj.EFFECT(3,i_fx_curse,6,20,2)
+topobj.events=+e_curse_givehps
+
+on=@unequip
+topobj.events=-e_curse_givehps
+
+[events e_curse_givehps]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if !(findid(i_curse_givehps)
+  events=-e_curse_givehps
+  return 0
+endif
+if <act>==<findid(i_curse_givehps).tag(lord)> && ((findid(i_curse_givehps).tag(lord).hits)<30000)
+  findid(i_curse_givehps).tag(lord).hits=<findid(i_curse_givehps).tag(lord).hits>+<var(ubrano)>
+  var(ubrano,<eval (var(ubrano)/100)>)
+endif
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_curse_drainhps]
+id=i_memory
+type=t_eq_script
+name=drainhpscurse
+
+on=@create
+timer=15
+
+on=@equip
+topobj.sysMessage("<topobj.sex("Byl jsi proklet!","Byla jsi prokleta")>")
+topobj.EFFECT(3,i_fx_curse,6,20,2)
+
+on=@unequip
+topobj.sysMessage("Prokleti pozbylo na sile.")
+
+[events e_serpentdruid]
+
+on=@aftergetswing
+if ((hits)<(maxhits/2)) && !(findid(i_osklivejsmazse))
+  emote("hissing.")
+  body=<tag(had)>
+  newequip(i_osklivejsmazse)
+  lastnew.timer=2000
+endif
+if (src.obody==c_serpent_malej) && !(src.isplayer)
+  src.remove
+endif
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if rand(10)==1
+  newnpc(c_serpent_malej)
+  lastnewchar.p=<eval(<p_x>+{-2 2})>,<eval(<p_y>+{-2 2})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=30
+  newnpc(c_serpent_malej)
+  lastnewchar.p=<eval(<p_x>+{-2 2})>,<eval(<p_y>+{-2 2})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=30
+  newnpc(c_serpent_malej)
+  lastnewchar.p=<eval(<p_x>+{-2 2})>,<eval(<p_y>+{-2 2})>,<p_z>,<mapplane>
+  lastnewchar.fame=0
+  lastnewchar.tag(experience,0)
+  lastnewchar.flag_conjured=1
+  lastnewchar.newequip(i_osklivejsmazse)
+  lastnew.timer=30
+endif
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_spellparalyze]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@aftergetswing
+on=@beforedoeffect
+if (act.isplayer) && (rand(6)==1)
+  newitem(<i_src_changer_parakrik>)
+  lastnew.p=<eval(<p_x>)>,<eval(<p_y>)>,<eval(<p_z>-100)>,<mapplane>
+  say("Heru Ruth Dol Kel")
+endif
+
+on=@beforegetswing
+on=@beforegeteffect
+
+[events e_npc_manashield]
+on=@aftergetswing
+if (rand(15)==1) && !(findid(i_npc_manashield)) && ((mana)>=(<var(ubrano)>))
+  newequip(i_npc_manashield)
+  lastnew.timer=16
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[itemdef i_npc_manashield]
+id=i_memory
+type=t_eq_script
+name=manashield
+
+on=@equip
+topobj.say("Beleg Del Tir")
+topobj.events=+e_manashieldednpc
+topobj.EFFECT(3,#0A2002EEA,6,20,2)
+
+on=@unequip
+topobj.events=-e_manashieldednpc
+
+on=@timer
+remove
+
+[events e_manashieldednpc]
+on=@aftergetswing
+if ((mana)<=(<var(ubrano)>))
+  findid(i_npc_manashield).remove
+elseif ((mana)>=(<var(ubrano)>))
+  mana=mana-<var(ubrano)>
+  var(ubrano,0)
+  EFFECT(3,i_fx_sparkle_2,6,20,2)
+endif
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_npc_regeneration]
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+if !(safe.findid(i_npc_regeneration)) && ((<hits>)<(<maxhits>/2)) && !(tag(dontregenerate))
+ newequip(i_npc_regeneration)
+ lastnew.timer=3
+endif
+
+on=@beforegeteffect
+
+if !(safe.findid(i_npc_regeneration)) && ((<hits>)<(<maxhits>/2)) && !(tag(dontregenerate))
+ newequip(i_npc_regeneration)
+ lastnew.timer=3
+endif
+
+on=@beforedoeffect
+
+[itemdef i_npc_regeneration]
+id=i_memory
+type=t_eq_script
+name=regeneration
+
+on=@create
+timer=6
+
+on=@equip
+if !(cont.tag(stopreg))
+ cont.tag(stopreg,0)
+endif
+
+on=@timer
+if (cont.tag(stopreg)==12)
+ cont.tag(dontregenerate,1)
+ remove
+endif
+
+if ((<cont.hits>)>(<cont.maxhits>))
+ remove
+endif
+
+if (cont.findid(i_a_curse) && (rand(2)==1)
+ remove
+endif
+
+if ((<cont.hits>)<(<cont.maxhits>))
+ if (cont.tag(regespeed))
+  cont.hits=((<cont.hits>)+(<cont.maxhits>/<cont.tag(regespeed)>))
+  cont.emote=regenerating
+  cont.tag(stopreg,#+1)
+  timer=8
+  return 1
+ endif
+endif
+
+if ((<cont.hits>)<(<cont.maxhits>))
+ cont.hits=<cont.hits>+<cont.maxhits>/10
+ cont.emote=regenerating
+ cont.tag(stopreg,#+1)
+ timer=8
+ return 1
+endif
+
+[itemdef i_statue_bless]
+ID=02d3d
+name=Socha Pozehnani
+
+on=@create
+attr=010
+
+on=@userdclick
+if (tag(max_level))
+	if (<src.tag(level)> > <tag(max_level)>)
+ 		src.sysMessage("Nic se nestalo.")
+		return 1
+	endif
+endif
+if (src.isGM)
+ src.sysMessage("Zdvojnasobi dmg na 140s")
+ return 0
+elseif (src.isplayer) && !(src.findid(i_statue_Blessing)) && (timer<0)
+ timer=600
+ say("Socha se rozzarila.")
+elseif (src.isplayer) && !(src.findid(i_statue_Blessing)) && (timer>579)
+else
+ src.sysMessage("Nic se nestalo.")
+ src.sysMessage("Do dalsiho pozehnani zbyva <timer> vterin.")
+ return 1
+endif
+src.newequip(i_statue_Blessing)
+src.efektv
+src.sysMessage("Naplnila te svata sila. Citis ze nyni dokazes i nemozne.")
+return 1
+
+on=@timer
+return 1
+
+[itemdef i_statue_Blessing]
+
+id=i_memory
+type=t_eq_script
+name=pozehnani sochy
+
+on=@create
+timer=140
+
+on=@timer
+remove
+
+on=@equip
+cont.events=+e_statueBlessing
+
+on=@unequip
+cont.events=-e_statueBlessing
+cont.sysMessage("Bozska sila z tebe vyprchala. Citis se opet jako obycejny clovek.")
+
+[events e_statueBlessing]
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if !(act.isplayer)
+ var(ubrano,#*2)
+endif
+
+on=@beforegetswing
+on=@aftergetswing
+if !(findid(i_statue_Blessing))
+ events=-e_statueBlessing
+endif
+
+on=@beforedoeffect
+
+if !(act.isplayer)
+ var(ubrano,#*2)
+endif
+
+on=@beforegeteffect
+
+[itemdef i_strecha_kill]  
+id=i_rune_alchem_1 
+name=padaci dlazka 
+  
+on=@create 
+ attr=090 
+ color=633
+ 
+on=@step 
+if (src.isgm) || !(src.isplayer)
+ return 1
+endif
+ src.sysMessage("<src.sex("Spadl si ze strechy a zabil se.","Spadla jsi ze strechy a zabila se")>") 
+ src.hits=0
+
+[events e_phoenix_10]
+on=@aftergetswing
+if ((<hits>) < (<maxhits>/5)) && (maxhits) > (250)
+  if findid(i_a_curse) && rand(3)==1
+    return 0
+  endif
+  hits=<eval <eval maxhits/10>*9> // znizi to hp o 10%
+  maxhits=hits
+  emote("reborning in fire")
+  fireshield
+endif
+return 0
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_phoenix_25]
+on=@aftergetswing
+if ((<hits>) < (<maxhits>/5)) && (maxhits) > (250)
+  if findid(i_a_curse) && rand(3)==1
+    return 0
+  endif
+  hits=<eval <eval maxhits/4>*3> // znizi to hp o 25%
+  maxhits=hits
+  emote("reborning in fire")
+  fireshield
+endif
+return 0
+
+on=@beforegetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect

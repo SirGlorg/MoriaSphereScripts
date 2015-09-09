@@ -1,0 +1,83 @@
+// Description:
+//  hurts all the enemies in the distance of 8 using splitted arrow.
+
+// tags to edit behavior:
+// tag.multishot_chance=250 // 25% chance to trigger this event
+// tag.multishot_delay=12,15 // delay between another possible strike
+// tag.multishot_dmg=50,60 // dmg in between 50 and 60
+
+[events e_npc_multishot]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+f_e_npc_multishot
+
+on=@beforedoeffect
+on=@beforegeteffect
+
+[function f_e_npc_multishot]
+if (<eval tag(multishot_time)> < <serv.time>)
+  if (strlen(<tag(multishot_chance)>))
+    arg(chance,<chance(<tag(multishot_chance)>,2)>)
+  else
+    arg(chance,<chance(110,3)>)
+  endif
+  if (<arg(chance)>)
+    if (<strlen(<tag(multishot_delay)>)>)
+      tag(multishot_time,<serv.time>+<eval (<randombetween(<tag(multishot_delay)>)>*10)>)
+    else
+      tag(multishot_time,<serv.time>+30)
+    endif
+    var(multishotingmonster,<UID>)
+    newitem(i_src_changer_multishot)
+    lastnew.p=<p>
+    lastnew.link=(<UID>)
+  endif
+endif
+
+
+[itemdef i_src_changer_multishot]
+id=i_memory
+type=t_eq_script
+name=srcchanger multishot
+
+on=@create
+timer=0
+
+on=@timer
+sector.allchars(multishotthem(<UID>))
+
+[function multishotthem]
+if (isPlayer)
+  if (isGM) || (isDead)
+    return 0
+  endif
+elseif !(isPet) // summons & Pets
+  return 0
+endif
+if (distancefrom(<var(multishotingmonster)>) > 8)
+  return 0
+endif
+if (<UID> == <var(multishotingmonster)>)
+  return 0
+endif
+if (f_canseelos(<argv(0)>)) && !(isgm) && !(flag_invisible==1)  && !(flag_insubstantial==1) && !(flag_hidden==1)
+  if (<argv(0).link.act> != <uid>) // this is NOT the same player that the NPC is attacking
+    if (strlen(<var(multishotingmonster).tag(multishot_dmg)>))
+      arg(damage,<randomBetween(<var(multishotingmonster).tag(multishot_dmg)>)>)
+    else
+      arg(damage,<eval {40 80}>)
+    endif
+    if (npc)
+      arg(damage,#*5)
+    endif
+    src=<argv(0).link>
+    effect(0,i_bolt_jagged_x)
+    damage_noresponse(<arg(damage)>,dam_physical)
+    sysMessage("<sex("Byl jsi zasazen","Byla jsi zasazena")> rozdelenou strelou.")
+  endif
+endif
+
+[eof]

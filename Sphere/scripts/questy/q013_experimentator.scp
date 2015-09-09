@@ -1,0 +1,381 @@
+///////////////////////////////////////////////////
+//   G O N D O R   E X P E R I M E N T A T O R   //
+//              - T H E O R I U S -              //
+///////////////////////////////////////////////////
+// qtags: (g/m)q013_experimentator:
+// 1 ~ zadan ukol
+// 2 ~ splnen ukol
+// 3 ~ neuspech pri plneni ukolu
+
+
+///////////////////
+//::S P E E C H:://
+///////////////////
+[speech spk_gq013_experimentator]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_gq013_experimentator
+endif
+
+[function f_gq013_experimentator]
+f_q013_checkOldTags
+if !(0<src.tag.realm>==1)
+  say "Vyhni se mi obloukem, sluho Temneho Pana !"
+  return 0
+elseif (<eval src.qtag(mq013_experimentator)> !=0) && (<eval src.qtag(mq013_experimentator)> !=3) // haven't finished mordor quest. If the mordor quest has been failed (mq013_experimentator == 3) the player is allowed to continue
+  say("Neverim ti! Tvar se jak chces, ale ja s tebou mluvit nebudu...")
+  return 0
+elseif (<eval src.qtag(gq013_experimentator)> ==3) // player has failed experimentator so he rejects to talk to him
+  say("Nepreji si s tebou nadale hovorit, odejdi prosim")
+  return 1
+else
+  dialog(d_gq013_experimentator)
+endif
+
+[function  f_q013_checkOldTags]
+if (<src.tag(gq013_experimentator)>)
+  src.qtag(gq013_experimentator,<src.tag(gq013_experimentator)>)
+  src.tag.remove(gq013_experimentator)
+endif
+if (<src.tag(mq013_experimentator)>)
+  src.qtag(mq013_experimentator,<src.tag(mq013_experimentator)>)
+  src.tag.remove(mq013_experimentator)
+endif
+if (<src.tag(gq013_neuspel)>)
+  src.qtag(gq013_experimentator,3)
+  src.tag.remove(gq013_neuspel)
+endif
+if (<src.tag(mq013_neuspel)>)
+  src.qtag(mq013_experimentator,3) // neuspel
+  src.tag.remove(mq013_neuspel)
+endif
+
+///////////////////
+//::D I A L O G:://
+///////////////////
+
+[dialog d_gq013_experimentator]
+argo.questDialog_create(03030,"Experimentator Theorius")
+
+argo.dialog_newPage("Pozdrav")
+
+if (<eval src.qtag(gq013_experimentator)> ==0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,52,"Drby?") // butt position & text indention in button & button text
+argo.questDialog_baseButt(3) // obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  if (<eval src.qtag(gq013_experimentator)> ==0)
+    argo.setText(<argo.newTextLine>,"Hmmm....")
+  else
+    argo.setText(<argo.newTextLine>,"Zdravim te, priteli!")
+  endif
+  argo.questDialog_HTMLGUMP
+  argo.f_q026_hcnPoison_HealersDialog_Request
+  argo.f_q000_shouldBePromoted_Request
+
+if (<eval src.qtag(gq013_experimentator)> ==0)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(argo.newTextLine,"Dobry den... co ... co chcete? Jsem Theorius. Zivim se vyrobou masti..")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Drby?")
+  argo.setText(argo.newTextLine,"Drby? Hehehe nezajimam se o povrchnosti. <?def_questDialog_colorTextEmote?>*Civi do neurcita*<?def_questDialog_colorTextNormal?> ja jsem tu od toho, abych pozvedl vedu! Chapes? Drby ... <?def_questDialog_colorTextEmote?>*mumla*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Obchodovat")
+    argo.setText(argo.newTextLine,"Nic neprodavam. Penize me nezajimaji, jen si svuj mesec nechej schovany...")
+    argo.questDialog_HTMLGUMP
+    
+argo.dialog_page("Hledam praci")
+  if (<eval src.qtag(gq013_experimentator)>==1) // player has received the quest and is supposed to bring the collector
+    argo.setText(argo.newTextLine,"Mas to pro me? Nemam tolik casu. Musim pokracovat ve svem dile, rozumis?! <?def_questDialog_colorTextEmote?>*Rozkricel se*<?def_questDialog_colorTextNormal?> Koukej splnit to, co jsi mi slibil.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ano, snazim se. Co nejdrive se vratim.")
+    argo.questDialog_addResponse(0,1,1,"q013_tag1_notYetFound") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Vis co? Kaslu ti na to!")
+    argo.questDialog_addResponse(0,1,1,"q013_failHim") // short text & exit button & new button
+  elseif (<eval src.qtag(gq013_experimentator)>==2) // quest done
+    argo.setText(argo.newTextLine,"Svuj ukol jsi uz splnil, muzes byt stastny a vdecny za to, ze jsi mi mohl pomoci...")
+    argo.questDialog_HTMLGUMP
+  else // no previous quest interference
+    argo.setText(argo.newTextLine,"Copak? Ty nemas svuj zivotni udel? Jiste, ze po tobe neco chci, jinak by rozhovor s tebou nemel smysl. Dam ti tento vacek. *podava* Tvym ukolem bude naplnit ho deseti mozky Obru Valecniku jasne? Rozumis tomu nebo ti to mam radeji zopakovat?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Prijmam, pokusim se o to.")
+    argo.questDialog_addResponse(0,1,1,"q013_tag0_acceptQuest") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Nene dekuji, ale mam na praci neco jineho...")
+    argo.questDialog_addResponse(0,0,1,"q013_tag0_rejectQuest") // short text & page button & new page
+    argo.setText(argo.newTextLine,"Kaslu ti na to, dedku jeden blazniva.")
+    argo.questDialog_addResponse(0,1,1,"q013_failHim") // short text & exit button & new button
+    
+    argo.dialog_page("q013_tag0_rejectQuest")
+      argo.setText(argo.newTextLine,"Tak <?src.sex("panacek","panicka")?> ma na praci neco jineho, ano? Tak to bude jiste neco velmi duleziteho. Ooooo omlouvam se ti, ze jsem te okradl o tolik tveho casu...")
+      argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Nesu ti")
+  if (<eval src.qtag(gq013_experimentator)>==1) // player has received the quest and is supposed to bring the collector
+    argo.setText(argo.newTextLine,"Tak co? Co mi neses? Doufam, ze uz mas to, co jsem po tobe chtel... tak tedy?")
+    argo.questDialog_HTMLGUMP
+    if (<src.f_collector_isFull(i_q013_experimentator_kolektor)>)
+      argo.setText(argo.newTextLine,"Mam to! Tady to je...")
+      argo.questDialog_addResponse(0,1,1,"q013_tag1_giveCollector") // short text & exit button & new button
+    else
+      argo.setText(argo.newTextLine,"Je mi lito, zatim jsem to <src.sex("nesehnal","nesehnala")>")
+      argo.questDialog_addResponse(0,0,1,"q013_tag1_hasNoCollector") // short text & page button & new button
+      
+      argo.dialog_page("q013_tag1_hasNoCollector")
+        argo.setText(argo.newTextLine,"Tak si pospes. Nemohu na to cekat vecne.")
+        argo.questDialog_HTMLGUMP
+    endif
+  else
+    argo.setText(argo.newTextLine,"Hm? Co mi neses? <?def_questDialog_colorTextEmote?>*Zatvaril se neduverive*<?def_questDialog_colorTextNormal?>")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Theorius je opravdu zvlastni. Mastne vlasy padajici do obliceje, roztekany, vystraseny vyraz... to vse naznacuje, ze to bude spis nejaky pobuda, jen jeho oci, ktere zari inteligenci a elanem zrazuji predchozi dojmy.")
+  argo.questDialog_HTMLGUMP
+
+argo.f_q000_shouldBePromoted_Answer
+argo.f_q026_hcnPoison_HealersDialog_Answer(<uid>)
+
+[dialog d_gq013_experimentator button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("q013_tag0_acceptQuest"))
+  say("Smele do toho, odvahu mam rad... Brzy se vrat.")
+  src.qtag(gq013_experimentator,1,12)
+  src.giveitem(i_q013_experimentator_kolektor)
+  return 1
+elseif (<argn> == argo.dialog_linkButton("q013_tag1_notYetFound"))
+  say("Nemam rad plane reci. Radeji si pospes.")
+  return 1
+elseif (<argn> == argo.dialog_linkButton("q013_tag1_giveCollector"))
+  if (<src.f_collector_isFull(i_q013_experimentator_kolektor)>)
+    src.qtag(gq013_experimentator,2,12)
+    say("Vyborne, dekuji ti mnohokrat. Tady je tva odmena.")
+    src.addexp(700)
+    src.consume(i_q013_experimentator_kolektor)
+    src.giveitem(i_mi_bag)
+    f_quest_complete(12)  // splnenie questu "Experimentator Theorius"
+  else
+    say("Jeste nemas to, co jsem po tobe chtel!")
+  endif
+  return 1
+elseif (<argn> == argo.dialog_linkButton("q013_failHim"))
+  if (<eval src.qtag(gq013_experimentator)>==1)
+    src.CONSUME i_q013_experimentator_kolektor
+  endif
+  say("Myslis, ze me muzes urazit? Ne... jen te zradila vlastni hloupost! Zmiz a uz se nevracej!")
+  src.qtag(gq013_experimentator,3,12)
+  return 1
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+argo.f_q026_hcnPoison_HealersDialog_Button(<argn>)
+
+///////////////////////////////////////////////////
+//   M O R D O R   E X P E R I M E N T A T O R   //
+//          - T H E O R I A N U L U S -          //
+///////////////////////////////////////////////////
+
+/////////////////////
+///::S P E E C H::///
+/////////////////////
+[speech spk_mq013_experimentator]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+if (<distance> > 3)
+ src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_mq013_experimentator
+endif
+
+[FUNCTION f_mq013_experimentator]
+f_q013_checkOldTags
+IF !(0<src.tag.realm>==2)
+  say("Tahni odemne !")
+  return 0
+elseif (<eval src.qtag(gq013_experimentator)> >= 1) && (<eval src.qtag(gq013_experimentator)> != 3) // haven't finished gondor quest. If the gondor quest has been failed (gq013_experimentator == 3) the player is allowed to continue
+  say("Neverim ti! Tvar se jak chces, ale ja s tebou mluvit nebudu...")
+elseif (<eval src.qtag(mq013_experimentator)> ==3)
+  say("Nepreji si s tebou nadale hovorit, odejdi prosim") // player has failed experimentator so he rejects to talk to him
+  return 1
+else
+  dialog(d_mq013_experimentator)
+endif
+
+/////////////////////
+///::D I A L O G::///
+/////////////////////
+[dialog d_mq013_experimentator]
+argo.questDialog_create(03030,"Experimentator Theorianulus")
+
+argo.dialog_newPage("Pozdrav")
+
+if (<eval src.qtag(mq013_experimentator)> ==0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2,52,"Drby?") // butt position & text indention in button & button text
+argo.questDialog_baseButt(3) // obchodovat
+argo.questDialog_baseButt(4) // 
+argo.questDialog_baseButt(5)
+argo.questDialog_baseButt(6)
+
+argo.dialog_page("Pozdrav")
+  if (<eval src.qtag(mq013_experimentator)> ==0)
+    argo.setText(<argo.newTextLine>,"Hmmm....")
+  else
+    argo.setText(<argo.newTextLine>,"Zdravim te, priteli!")
+  endif
+  argo.questDialog_HTMLGUMP
+  argo.f_q000_shouldBePromoted_Request
+  argo.f_q026_hcnPoison_HealersDialog_Request
+
+if (<eval src.qtag(mq013_experimentator)> ==0)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(argo.newTextLine,"Dobry den... co ... co chcete? Jsem Theorianulus. Zivim se vyrobou masti..")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Drby?")
+  argo.setText(argo.newTextLine,"Drby? Hehehe nezajimam se o povrchnosti. <?def_questDialog_colorTextEmote?>*Civi do neurcita*<?def_questDialog_colorTextNormal?> ja jsem tu od toho, abych pozvedl vedu! Chapes? Drby ... <?def_questDialog_colorTextEmote?>*mumla*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Obchodovat")
+    argo.setText(argo.newTextLine,"Nic neprodavam. Penize me nezajimaji, jen si svuj mesec nechej schovany...")
+    argo.questDialog_HTMLGUMP
+    
+argo.dialog_page("Hledam praci")
+  if (<eval src.qtag(mq013_experimentator)>==1) // player has received the quest and is supposed to bring the collector
+    argo.setText(argo.newTextLine,"Mas to pro me? Nemam tolik casu. Musim pokracovat ve svem dile, rozumis?! <?def_questDialog_colorTextEmote?>*Rozkricel se*<?def_questDialog_colorTextNormal?> Koukej splnit to, co jsi mi slibil.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ano, snazim se. Co nejdrive se vratim.")
+    argo.questDialog_addResponse(0,1,1,"q013_tag1_notYetFound") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Vis co? Kaslu ti na to!")
+    argo.questDialog_addResponse(0,1,1,"q013_failHim") // short text & exit button & new button
+  elseif (<eval src.qtag(mq013_experimentator)>==2) // quest done
+    argo.setText(argo.newTextLine,"Svuj ukol jsi uz splnil, muzes byt stastny a vdecny za to, ze jsi mi mohl pomoci...")
+    argo.questDialog_HTMLGUMP
+  else // no previous quest interference
+    argo.setText(argo.newTextLine,"Copak? Ty nemas svuj zivotni udel? Jiste, ze po tobe neco chci, jinak by rozhovor s tebou nemel smysl. Dam ti tento vacek. *podava* Tvym ukolem bude naplnit ho deseti mozky Obru Valecniku jasne? Rozumis tomu nebo ti to mam radeji zopakovat?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Prijmam, pokusim se o to.")
+    argo.questDialog_addResponse(0,1,1,"q013_tag0_acceptQuest") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Nene dekuji, ale mam na praci neco jineho...")
+    argo.questDialog_addResponse(0,0,1,"q013_tag0_rejectQuest") // short text & page button & new page
+    argo.setText(argo.newTextLine,"Kaslu ti na to, dedku jeden blazniva.")
+    argo.questDialog_addResponse(0,1,1,"q013_failHim") // short text & exit button & new button
+    
+    argo.dialog_page("q013_tag0_rejectQuest")
+      argo.setText(argo.newTextLine,"Tak <?src.sex("panacek","panicka")?> ma na praci neco jineho, ano? Tak to bude jiste neco velmi duleziteho. Ooooo omlouvam se ti, ze jsem te okradl o tolik tveho casu...")
+      argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Nesu ti")
+  if (<eval src.qtag(mq013_experimentator)>==1) // player has received the quest and is supposed to bring the collector
+    argo.setText(argo.newTextLine,"Tak co? Co mi neses? Doufam, ze uz mas to, co jsem po tobe chtel... tak tedy?")
+    argo.questDialog_HTMLGUMP
+    if (<src.f_collector_isFull(i_q013_experimentator_kolektor)>)
+      argo.setText(argo.newTextLine,"Mam to! Tady to je...")
+      argo.questDialog_addResponse(0,1,1,"q013_tag1_giveCollector") // short text & exit button & new button
+    else
+      argo.setText(argo.newTextLine,"Je mi lito, zatim jsem to <src.sex("nesehnal","nesehnala")>")
+      argo.questDialog_addResponse(0,0,1,"q013_tag1_hasNoCollector") // short text & page button & new button
+      
+      argo.dialog_page("q013_tag1_hasNoCollector")
+        argo.setText(argo.newTextLine,"Tak si pospes. Nemohu na to cekat vecne.")
+        argo.questDialog_HTMLGUMP
+    endif
+  else
+    argo.setText(argo.newTextLine,"Hm? Co mi neses? <?def_questDialog_colorTextEmote?>*Zatvaril se neduverive*<?def_questDialog_colorTextNormal?>")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Theorianulus je opravdu zvlastni. Mastne vlasy padajici do obliceje, roztekany, vystraseny vyraz... to vse naznacuje, ze to bude spis nejaky pobuda, jen jeho oci, ktere zari inteligenci a elanem zrazuji predchozi dojmy.")
+  argo.questDialog_HTMLGUMP
+
+argo.f_q000_shouldBePromoted_Answer
+argo.f_q026_hcnPoison_HealersDialog_Answer(<uid>)
+
+
+[dialog d_mq013_experimentator button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("q013_tag0_acceptQuest"))
+  say("Smele do toho, odvahu mam rad... Brzy se vrat.")
+  src.qtag(mq013_experimentator,1,12)
+  src.giveitem(i_q013_experimentator_kolektor)
+  return 1
+elseif (<argn> == argo.dialog_linkButton("q013_tag1_notYetFound"))
+  say("Nemam rad plane reci. Radeji si pospes.")
+  return 1
+elseif (<argn> == argo.dialog_linkButton("q013_tag1_giveCollector"))
+  if (<src.f_collector_isFull(i_q013_experimentator_kolektor)>)
+    src.qtag(mq013_experimentator,2,12)
+    say("Vyborne, dekuji ti mnohokrat. Tady je tva odmena.")
+    src.addexp(700)
+    src.consume(i_q013_experimentator_kolektor)
+    src.giveitem(i_mi_bag)
+    f_quest_complete(12)  // splnenie questu "Experimentator Theorius"
+  else
+    say("Jeste nemas to, co jsem po tobe chtel!")
+  endif
+  return 1
+elseif (<argn> == argo.dialog_linkButton("q013_failHim"))
+  if (<eval src.qtag(mq013_experimentator)>==1)
+    src.CONSUME i_q013_experimentator_kolektor
+  endif
+  say("Myslis, ze me muzes urazit? Ne... jen te zradila vlastni hloupost! Zmiz a uz se nevracej!")
+  src.qtag(mq013_experimentator,3,12)
+  return 1
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+argo.f_q026_hcnPoison_HealersDialog_Button(<argn>)
+
+///////////////////
+///::I T E M S::///
+///////////////////
+[ITEMDEF i_q013_experimentator_kolektor]
+ID=i_bag
+NAME=Vacek na mozky Zlobru Valecniku
+TYPE=t_collector
+WEIGHT=4
+
+ON=@CREATE
+COLOR=025
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="mozku Zlobru Valecniku"
+tag.contentsamount=0
+tag.maxcontents=10
+tag.target_remove=0
+tag.target_desc="Kteremu Zlobrovi chces otevrit lebku? "
+tag.target_id="Body of Zlobr Valecnik"
+tag.absolute_success=200
+tag.value_to_check=175
+tag.contentscount=0
+tag.fail_msg="Pri otvirani lebky jsi poskodil mozek! Nezbyva, nez se vesele rypat ve zbytcich."
+
+ON=@CollectorCheck
+[eof]

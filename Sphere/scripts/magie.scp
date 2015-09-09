@@ -1,0 +1,1039 @@
+//SPELLFLAG_TARG_OBJ
+
+[function spellskillvalue]
+if (<args><100)
+return <eval magery>
+endif
+return <?<a_SKILL[<args>]>?>
+
+[function calcspelleffect]
+arg(spellpower,1000)
+if (iscomputed(<args>))
+ arg(spellpower,<spellskillvalue(<args>)>)
+ if (isevil(<args>))
+  f_mindpowrefresh
+  arg(spellpower,<eval tag(SM)*10>)
+ endif
+endif
+return <arg(spellpower)>
+
+[itemdef i_spellsrc]
+id=i_memory
+layer=77
+type=t_src_changer
+name=spellsrc
+
+//tag.arg0 == cislo kouzla
+//tag.arg1 == sila kouzla
+//link == target kouzla
+//src == zdroj kouzla
+on=@equip
+link.dospellcustom_donesrc(<tag.arg0>,<tag.arg1>, <src>)
+var(reflected,0)
+remove
+
+[function dospellcustom]
+//<argv(0)>	cislo kouzla
+//<argv(1)>	sila kouzla
+//<argv(2)>	uid zdroje kouzla
+//<uid> cil, nad kterym se pocita ucinek kouzla
+if (<src>==<argv(2)>)||(<argv(2)>==0) // zdroj kouzla je i cilem nebo neni znam zdroj kouzla
+  //kermel.sysMessage(kdo utoci: <src>,uid: <uid>, sila: <argv(1)>)
+  dospellcustom_donesrc(<argv(0)>,<argv(1)>,<argv(2)>)
+else 
+  newitemsafe(i_spellsrc)
+  lastnew.tag(arg0,<argv(0)>)
+  lastnew.tag(arg1,<argv(1)>)
+  lastnew.link=<uid>
+  safe(finduid(<argv(2)>).equip(<lastnew>))
+endif
+
+[function dospellcustom_donesrc]
+//arg0 == cislo kouzla
+//arg1 == sila kouzla
+//arg2 == zdroj kouzla
+//uid == target kouzla
+var(spellnumber,<argv(0)>)
+var(spellhitself,0)
+var(spellpower,<eval ((<argv(1)>*<nastaveni_global_spellpower>)/1000)>)
+if (ischar)
+  if (f_spellchecklos)
+    return 1
+  endif
+  if (spellisgood(<var(spellnumber)>))
+    arg(checkit,0)
+    if (<uid>==<src>)//jsem zdroj, v poradku
+    elseif (<eval src.act>==<eval uid>)//jsem act, v poradku
+    elseif !(src.act)
+      arg(checkit,1)
+    elseif (src.act.isitem)//item nebo zadny act, muze byt v neporadku
+      arg(checkit,1)
+    elseif !(src.act.ischar)
+      arg(checkit,1)
+    elseif !(src.act.ismyfriend)//nepritel byl zameren, v poradku
+    else //zameren byl pritel, muze byt v neporadku
+      arg(checkit,1)
+    endif
+    if (arg(checkit))
+      if !(ismyfriend)
+        return 0
+      endif
+    endif
+  elseif (isevil(<var(spellnumber)>))
+    if (uid==src)//jsem zdroj
+      if (act==uid)//jsem svuj act
+        var(spellhitself,1)//chci zly efekt, a tudiz nechci aplikovat ability (uhyb atd)
+      elseif (canharmcaster(<var(spellnumber)>))//je to zle kouzlo ktere se mne nepta (exploze)
+      else//nezameril jsem se, nechci efekt
+        return 0
+      endif
+    elseif (src.act==uid)//byl jsem zameren, vetsinovy pripad
+    elseif (ismyfriend)//jsem pritel, muze byt v neporadku
+      if (<src.act.isitem>)//item, nechci efekt
+      elseif (<src.act.ismyfriend>)//pritel byl zameren, v poradku
+      else
+        return 0 //jsem pritel a pritel nebyl zameren, nechci efekt
+      endif
+    endif//jsem nepritel, v poradku
+    if (<var(spellnumber)>==103)//aby prosel mystik strike
+    elseif (flag_reflection)
+      flag_reflection=0
+      findid(i_rune_magic_reflection).remove
+      effect=3,i_fx_glow,6,9,0
+      if (<argv(2)>)//je kam odrazit...
+        var(reflectHim,1)
+        src.dospellcustom(<var(spellnumber)>,<eval (argv(1)*nastaveni_global_reflectSPlowering)/1000>,<uid>)//snizuje silu odrazeneho kouzla
+      endif
+      return 0
+    endif
+    if (<var(reflectHim)>) // this spell strike is reflected
+      var(reflected,1)
+    else
+      var(reflected,0)
+    endif
+    var(reflectHim,0)
+    f_minddefrefresh
+    //var(spellpowerrelative,100)
+    if (<argv(2)>)//kdyz je zdroj kouzla      
+      //nastaveni      
+      if (<src.npc>)||(<src.tag(hypno_mystik)>) //utoci NPC nebo hypnomystik 
+        //kermel.sysMessage(puvodni spellpower: <var(spellpower)>, koef: <nastaveni_global_MvSM>)
+        var(spellpower,<eval (<var(spellpower)>*<nastaveni_global_MvSM>)/1000)>)
+        //kermel.sysMessage(Utoci mystik uid: <uid>, src: <src>, spellpower: <var(spellpower)>)
+      endif 
+      if (isplayer)&&!(<src.tag(hypno_mystik)>) //utok na playera a neutoci hypno mystik (vetsinou)        
+        if (src.isplayer) //utoci hrac          
+          if(<tag(hypno_mystik)>) //cilem je mystik v tele monstra           
+            var(spellpower,<eval (var(spellpower)*nastaveni_global_vMSM)/1000)>)
+          else //normalni dmg
+            var(spellpower,<eval (var(spellpower)*nastaveni_global_pvpSM)/1000)>)
+          endif
+        endif
+      else //utok na monstrum
+        if(<npc>==15) //mozek stojiciho mystikova obrazu
+          var(spellpower,<eval (var(spellpower)*nastaveni_global_pvpSM)/1000)>)
+        else //normalni monstrumendif
+          if (src.tag(standcast))
+            if (<src.tag(level)> > 200)
+              arg(useable_level,200)
+            else
+              arg(useable_level,<src.tag(level)>)
+            endif
+            src.tag.remove(standcast)
+            var(spellpower,<eval (var(spellpower)*(nastaveni_global_vMSM+nastaveni_standcast_sm*arg(useable_level)))/1000>)
+          elseif (src.profession==class_mystik)
+            if (<src.tag(level)> > 200)
+              arg(useable_level,200)
+            else
+              arg(useable_level,<src.tag(level)>)
+            endif
+            var(spellpower,<eval ((nastaveni_global_mystikvM)*(var(spellpower)*(nastaveni_global_vMSM+nastaveni_mysticLvL_sm*arg(useable_level))))/10000>)
+            if (0<safe.src.tag(buffDmgBonus)>)
+              var(spellpower,#+<eval ((var(spellpower)/100)*<src.tag(buffDmgBonus)>)>)
+            endif
+            if (src.tag(ra_mystikDoubleswing))
+              if (src.mystikDoubleswingSuccess)
+              	var(spellpower,#+<eval ((var(spellpower)*<nastaveni_mystik_doubleswing_strength>)/100)>)
+              endif
+            endif
+          else
+            var(spellpower,<eval (var(spellpower)*nastaveni_global_vMSM)/1000>)
+          endif
+          if (src.tag(shadow_weapon_dmg))
+            var(spellpower,<eval (var(spellpower)*<eval nastaveni_efekt_shadow*2>)/1000>)
+          endif
+          if (0<src.tag(ra_woodoo_curse)> > 0) // (chance(<eval <arg(chance)>*10>,2))
+          	if (chance(<eval 15+<src.tag(ra_woodoo_curse)>>,2))
+    					if (<src.stam> > 24)
+      					src.reduceStamina(25)
+      					src.sysmessage("Zkoncentrol jsi silu a zasadil silnejsi ranu!")
+            		var(spellpower,<eval <eval(var(spellpower)*13)>/10>)
+      				endif
+      			endif
+      		endif      					
+        endif
+      endif      
+    endif
+
+    if ((src.isplayer)&&(isplayer))
+      arg(spelldefense,<eval (tag(OM)*10)-<nastaveni_global_armorchangeom_vP_<profession.name>>>)
+    else
+      arg(spelldefense,<eval tag(OM)*10>)
+    endif
+
+    if (ismpdepend(<var(spellnumber)>))//utocne kouzlo (harm)
+      var(spellpower,<eval (var(spellpower)-arg(spelldefense))>)
+      if (var(spellpower)<1)
+        src.redmessage("Cil kouzlu odolal.")
+        classmessage("<? src.sex(Odolal,Odolala) ?> jsi kouzlu!")
+      endif   
+      if (var(spellnumber)==5)||(spellnumber==12)
+        flags=<flags>&~statf_freeze
+      endif
+    else
+      if (var(spellnumber)==38)||(var(spellnumber)==47)
+        var(spellpower,#-((<eval var(spellpower)> * <eval(resist_para)>)/1000))
+        if (0=={0 <var(spellpower)>})
+          var(spellpower,0)
+        endif
+      endif
+      if ((<randfakt(<spellpower>,<findres(spell,<var(spellnumber)>).effect>)>) < (<arg(spelldefense)>))//negativni kouzlo (paralyza)
+        src.redmessage("Cil kouzlu odolal.")
+        classmessage("<? src.sex(Odolal,Odolala) ?> jsi kouzlu!")
+        return 0
+      endif
+    endif
+  endif
+endif
+
+if (var(spellpower)>0)
+  //if (ischar)
+  //  var(ubrano,<hits>)
+  //endif
+  if (<argv(2)>)//kdyz je zdroj
+    arg(storeact,<src.act>)    
+    src.act=<uid>              
+    src.trigger(beforedoeffect)//ke zmene 
+    src.act=<arg(storeact)>
+  endif
+  trigger(@beforegeteffect)
+  if (var(spellpower)>0)
+    dospell_final(<var(spellnumber)>,<var(spellpower)>)
+  endif
+endif
+return 1 
+
+[function randfakt]//faktor, r0, r1
+//logmsg(<argv(0)>::<argv(1)>::<argv(2)>)
+arg(min,<eval (<argv(0)>*<argv(1)>)/1000>)
+arg(max,<eval (<argv(0)>*<argv(2)>)/1000>)
+//arg(ret,<eval {<min> <max>}>)
+//say <eval (<argv(0)>*<argv(1)>)/1000> az <eval (<argv(0)>*<argv(2)>)/1000>
+//logmsg(vysl:<ret>)
+return <eval {<min> <max>}>
+
+[function dospell_final] // pro prime zadani spelleffectu
+//<argv(0)>	cislo kouzla
+//<argv(1)>	sila kouzla
+//say spellpower:<argv(1)>
+if (<safe a_defname[<argv(0)>]>)
+  if (<argv(0)>==37)||(<argv(0)>==103) //mindblast - nepouziva damagecust ale rovnou damage
+    if (manashield(<src>,0,0,<argv(1)>)) //byl pouzit manashield - udeli pripadny dmg
+      return 1
+    endif
+  endif
+  f_effect_<a_defname[<argv(0)>]>(<argv(1)>)
+else
+  arg(spelldefname,<findres(spell,<argv(0)>).defname>)
+  arg(storeeffect,"<?<arg(spelldefname)>.effect?>")
+  <arg(spelldefname)>.effect=<?promilerange(<argv(1)>,<arg(storeeffect)>)?>
+  if (<argv(0)>==38) // paralyze
+    paralyze({200 300}) //rand. 20-30s
+  else
+    events=-e_spelleffect
+    spelleffect(<argv(0)>,1000)
+    if (actarg1==32)||(actarg1==52) //zrovna kouzlim recall, brana
+      if (isevil(<argv(0)>)) //ubralo zivoty
+        stopmagery
+      endif
+    endif
+    events=+e_spelleffect
+  endif
+  <arg(spelldefname)>.effect(<arg(storeeffect)>)
+endif
+
+[function f_spellchecklos] //
+if (!islosdepend(<var(spellnumber)>))
+  return 0
+endif
+if (<ischar>)
+  //say Checking LOS:<srccombatLOS>
+  if (src.act)
+    if (src.act==uid)
+      if !(srccombatLOS)
+         src.sysMessage("Nevidis na cil.")
+         return 1
+       endif
+    endif
+  endif
+  arg(storeflags,<flags>)
+  flag_hidden=0
+  flag_invisible=0
+  if !(srccombatLOS)
+    flags=<arg(storeflags)>
+    //say LOS silently failed
+    return 1
+  endif
+  flags=<arg(storeflags)>
+endif
+return 0
+
+[function iscomputed] // jestli se pocita efekt (pouziva SM)
+if (<args><100)
+  if (<findres(spell,<args>).flags>&SPELLFLAG_DIR_ANIM)
+    return 1
+  endif
+  return 0
+else
+  if (<eval a_flags[<args>]>&csflag_computed)
+    return 1
+  endif
+  return 0
+endif
+
+[function canharmcaster] // muze ublizit i mne (hromadne)
+if (<args><100)
+ if (<findres(spell,<args>).flags>&spellflag_harmcaster)
+  return 1
+ endif
+ return 0
+else
+ if (<eval a_flags[<args>]>&csflag_harmcaster)
+ return 1
+ endif
+ return 0
+endif
+
+[function isevil] // jestli je kouzlo odrazitelne etc., jestli ponici hul pri kouzleni.
+if (<args><100)
+ if (<findres(spell,<args>).flags>&spellflag_evil)
+  return 1
+ endif
+ return 0
+else
+ if (<eval a_flags[<args>]>&csflag_evil)
+  return 1
+ endif
+ return 0
+endif
+
+[function spellisgood]
+if (<args><100)
+ if (<findres(spell,<args>).flags>&SPELLFLAG_GOOD)
+  return 1
+ endif
+ return 0
+else
+ if (<eval a_flags[<args>]>&csflag_GOOD)
+ return 1
+ endif
+ return 0
+endif
+
+[function ismpdepend]//jestli efekt kouzla zavisi na sile mysli (damage kouzlo)
+if (<args><100)
+ if (<findres(spell,<args>).flags>&spellflag_SM)
+  return 1
+ endif
+ return 0
+else
+ if (<eval a_flags[<args>]>&csflag_SM)
+  return 1
+ endif
+ return 0
+endif
+
+[function islosdepend]//jestli musi cil byt na dohled
+if (<args><100)
+  if (<findres(spell,<args>).flags>&spellflag_noLOS)
+    return 0
+  endif
+  return 1
+else
+  if (<eval a_flags[<args>]>&csflag_noLOS)
+    return 0
+  endif
+  return 1
+endif
+
+[function isfield]
+if (<findres(spell,<args>).flags>&SPELLFLAG_FIELD)
+return 1
+endif
+return 0
+
+[function armorOM]
+arg(returnspdef,<?safe nastaveni_armorparts_OM_<baseid>?>)
+arg(returnspdef,<eval arg(returnspdef)*layerar[<typedef.layer>]>)
+return <arg(returnspdef)>
+
+
+
+[function f_mindpowrefresh]
+if (npc)||(<tag(hypno_mystik)>)
+ tag(SM,<ei>)
+else
+ if !(<tag.SM>)
+  f_getmindpow
+ endif
+endif
+
+[function f_minddefrefresh]
+if (npc)||(<tag(hypno_mystik)>)
+ tag(OM,<eval resist/10>)
+else
+ if !(tag(OM))
+  f_getminddef
+ endif
+endif
+
+[function f_getmindpow]
+arg(EI_mp,<eval (ei*Skill_EvalInt.effect)/1000>)
+arg(int_mp,<eval (int*nastaveni_global_intSM)/1000>)
+arg(spspeak_mp,<eval (spiritspeak*SKILL_SPIRITSPEAK.effect)/1000>)
+arg(sum,<eval ((arg(EI_mp)+arg(int_mp)+arg(spspeak_mp))*nastaveni_global_SM)/1000>)
+tag(SM,<eval arg(sum)*nastaveni_staffSMbonus_barehands>)
+if (findlayer(2))
+ if (findlayer(2).type==t_weapon_mace_staff)
+  if (safe nastaveni_staffSMbonus_<findlayer(2).baseid>)
+   arg(diff,<eval (arg(sum)*nastaveni_staffSMbonus_<findlayer(2).baseid>)-tag(SM)>)//rozdil mezi barehands a holi
+   tag(SM,<eval ((tag(SM)+(arg(diff)/2)+((arg(diff)*500)/((findlayer(2).more1h*1000)/findlayer(2).more1l)))+500)/1000>)
+   return 0
+  endif
+ endif
+endif
+tag(SM,<eval (tag(SM)+500)/1000>)
+
+[function f_getminddef]
+arg(resist_md,<eval ((resist*Skill_MagicResist.effect)+500)/1000>)
+arg(armor_md,<eval (tag(armordef)*nastaveni_global_armorOM)/100000>)
+tag(OM,<eval (((arg(resist_md)+arg(armor_md))*nastaveni_global_OM)+500)/1000>)
+
+
+//custom kouzla:
+
+[typedef t_custom_dispellable]
+
+[typedef t_custom_spell]
+
+[typedef t_spellrune]
+on=@equip
+cont.temporary_null
+cont.tag(magic,<eval cont.tag(magic)+1>)
+return 0
+on=@unequip
+temporary_null
+cont.tag(magic,<eval cont.tag(magic)-1>)
+if (cont.tag(magic)<1)
+ cont.tag(magic,"")
+endif
+return 0
+
+[function f_eqrune_nodispell]
+//runeid
+//timer
+//more1
+//more2
+safe(findlayer(<argv(0)>.layer).remove)
+newitemsafe(<argv(0)>)
+lastnew.attr=attr_decay
+lastnew.more1=<argv(2)>
+lastnew.more2=<argv(3)>
+equip(<lastnew>)
+lastnew.timer=<argv(1)>
+
+[function f_eqrune]
+//runeid
+//timer
+//more1
+//more2
+//safe(findlayer(<argv(0)>.layer).remove)
+newitemsafe(<argv(0)>)
+lastnew.attr=attr_decay
+lastnew.more1=<argv(2)>
+lastnew.more2=<argv(3)>
+equip(<lastnew>)
+lastnew.timer=<argv(1)>
+
+
+[function spellcast]
+if (<ARGVCOUNT>==0)
+  sysMessage("Musis zadat argument ve tvaru 'spellcast=xxxx', kde xx je cislo kouzla, nebo jeho jmeno.")
+  return 0
+endif
+arg(spellnumber,<eval(<args>)>)
+if !(arg(spellnumber))
+  arg(spellnumber,<?safe a_<args>?>)
+endif
+if (arg(spellnumber)>100)
+  if strlen(a_defname[<arg(spellnumber)>])
+    customspellcast(<arg(spellnumber)>)
+    return 0
+  endif
+endif
+sysMessage("Spatne zadane kouzlo (<arg(spellnumber)>).")
+return 0
+
+[function customspellcast]//cislo kouzla, debugovane
+skill -1
+stopscriptedskills
+arg(spellTarget,<src.memoryfind(<src.act>)>)
+if (<arg(spellTarget)>)
+  arg(spellTarget).color=<arg(spellTarget).color>&~<memory_war_targ> //war mod sposobuje kuzlu neustale fizzovanie (frostbolt)
+endif
+newitemsafe(i_customspell_rune)
+lastnew.name=<a_name[<argv(0)>]>
+lastnew.attr=attr_invis|attr_decay
+lastnew.tag(spellnumb,<argv(0)>)
+lastnew.tag(casttime,<a_casttime[<argv(0)>]>)
+lastnew.tag(flags,<eval a_flags[<argv(0)>]>)
+if strlen(<a_resources[<argv(0)>]>)
+  lastnew.tag(resources,"<a_resources[<argv(0)>]>")
+endif
+lastnew.tag(skill,<a_SKILL[<args>]>)
+lastnew.tag(wop,"<a_wop[<argv(0)>]>")
+lastnew.tag(manause,<eval a_MANAUSE[<argv(0)>]>)
+lastnew.tag(staminause,<eval a_staminause[<argv(0)>]>)
+lastnew.tag(casttime,<a_casttime[<argv(0)>]>)
+lastnew.tag(req,<a_req[<argv(0)>]>)
+//if(safe(<src.act>)) //mame nekoho zamerenyho 
+ //src.sysMessage(<src.act>, <finduid(src.act).name>)
+ //lastnew.tag(act,<src.act>) //nakoho se kouzli
+ //lastnew.more1=1 //uz zamereno
+ //lastnew.morep=<finduid(src.act).p>
+//endif
+lastnew.timer=30
+lastnew.equip
+
+[itemdef i_customspell_rune]
+id=i_memory
+type=t_eq_script
+name=customspell rune
+layer=121
+
+on=@equip
+//src.sysMessage(act je : <src.act>, pozice actu je <morep>)
+if !(src.isgm)
+  if (<src.mana> < <tag(manause)>)
+    src.sysMessage("Na toto kouzlo ted nemas dost many.")
+    timer=0
+    return 0
+  endif
+  if (<src.stamina> < <tag(staminause)>)
+    src.sysMessage("Na toto kouzlo ted nemas dost many.")
+    timer=0
+    return 0 
+  endif
+  if (<StrGetTok("<tag.resources>",0," ")> > 0) //pokud vubec jsou
+    if !(<src.restest(<tag.resources>)>)
+      src.sysMessage("Nemas vse potrebne k provedeni kouzla.")
+      timer=0
+      return 0
+    endif
+  endif
+  if (src.<tag(skill)> < <tag(req)>)
+    src.sysMessage("Toto kouzlo je na tebe prilis slozite.")
+    timer=0
+    return 0
+  endif
+else
+  tag(casttime,0)
+endif
+src.act=<tag(act)> //na koho bylo zamereno
+if (more1)
+  if(<tag(spellnumb)>==104) //manashield
+    if(<tag(act)>==<src>) //kouzli jen na sebe
+      src.accMsg("hrac(<src.name>,<src>,<src.p>,<src.region.name>) kouzli kouzlo (<spellDescription[<tag(spellnumb)>]>) na objekt (<src.act.name>,<src.act>)")
+      //normalka pokracuj
+    else
+      src.sysMessage("Kouzlo lze zamerit pouze na sebe.")
+      timer=0
+      return 0
+    endif
+  endif
+  if (<tag.flags>&csflag_mass)
+    src.accMsg("hrac(<src.name>,<src>,<src.p>,<src.region.name>) kouzli kouzlo (<spellDescription[<tag(spellnumb)>]>) na pozici <src.moreP>")
+    //src.sysMessage(massspell!)
+    src.tag(targp,<moreP>)
+    src.say("<tag.wop>")
+    src.newitemsafe(i_customspell_timer)
+    lastnew.tag(kouzlo,<tag(spellnumb)>)
+    lastnew.tag(cil,0)
+    lastnew.tag(targp,<src.morep>)
+    lastnew.timerd=<tag(casttime)>
+    lastnew.equip
+    timer=0
+    return 0
+  endif
+  if (<tag.act>)
+    //src.sysMessage(mame zamereno!)
+    if !(src.act.srccombatLOS)
+      src.sysMessage("Nevidis na cil.")
+      timer=0
+      return 0
+    endif
+    src.accMsg("hrac(<src.name>,<src>,<src.p>,<src.region.name>) kouzli kouzlo (<spellDescription[<tag(spellnumb)>]>) na objekt (<src.act.name>,<src.act>)")
+    src.say("<tag.wop>")
+    src.newitemsafe(i_customspell_timer)
+    lastnew.tag(kouzlo,<tag(spellnumb)>)
+    lastnew.tag(cil,<src.targ>)
+    lastnew.tag(targp,0)
+    lastnew.timerd=<tag(casttime)>
+    lastnew.equip
+    timer=0
+  else
+    //src.sysMessage(nemame zamereno a neni to masove kouzlo. kouzlime jen na misto)
+    src.tag(targp,<moreP>)
+    src.newitemsafe(i_bag)
+    lastnew.p=<src.tag(targp)>
+    if !(lastnew.srccombatLOS)
+      src.sysMessage("Na pozadovane misto nevidis.")
+      lastnew.remove
+      timer=0
+      return 0
+    endif
+    lastnew.remove
+    src.accMsg("hrac(<src.name>,<src>,<src.p>,<src.region.name>) kouzli kouzlo (<spellDescription[<tag(spellnumb)>]>) na pozici (<src.morep>)")
+    src.say("<tag.wop>")
+    src.newitemsafe(i_customspell_timer)
+    lastnew.tag(kouzlo,<tag(spellnumb)>)
+    lastnew.tag(cil,0)
+    lastnew.tag(targp,<src.morep>)
+    lastnew.timerd=<tag(casttime)>
+    lastnew.equip
+    timer=0
+  endif
+  timer=0
+else
+  if (<tag.flags>&csflag_notarg)
+    //src.sysMessage(nezamerovaci kouzlo, kouzlim na sebe, <src.uid.name>, <src.act.name>)  
+    src.accMsg("hrac(<src.name>,<src>,<src.p>,<src.region.name>) kouzli kouzlo (<spellDescription[<tag(spellnumb)>]>) na sebeobjekt (<src.act.name>,<src.act>)")
+    src.say("<tag.wop>")
+    src.newitemsafe(i_customspell_timer)
+    lastnew.tag(kouzlo,<tag(spellnumb)>)
+    lastnew.tag(cil,<src>)
+    lastnew.tag(targp,0)
+    lastnew.timerd=<tag(casttime)>
+    lastnew.equip
+    timer=0
+  else
+    targetg("Zamer cil.") //ostatni pripady
+  endif
+endif
+
+on=@timer
+remove
+return 1
+
+on=@targon_char
+if(<tag(spellnumb)>==104) //manashield
+  if(<src.targ>==<src>) //zameril na sebe
+    //normalka pokracuj
+  else
+    src.sysMessage("Kouzlo lze zamerit pouze na sebe.")
+    remove
+    return 1
+  endif
+endif 
+if (<tag.flags>&csflag_TARG_char)
+  if !(src.targ.srccombatLOS)
+    src.sysMessage("Nevidis na cil.")
+    remove
+    return 1
+  endif
+  src.accMsg("hrac(<src.name>,<src>,<src.p>,<src.region.name>) kouzli kouzlo (<spellDescription[<tag(spellnumb)>]>) na char (<src.targ.name>,<src.targ>)")
+  src.say("<tag.wop>")
+  src.newitemsafe(i_customspell_timer)
+  lastnew.tag(kouzlo,<tag(spellnumb)>)
+  lastnew.tag(cil,<src.targ>)
+  lastnew.tag(targp,0)
+  lastnew.timerd=<tag(casttime)>
+  lastnew.equip
+  src.f_tryStandcast(<eval tag(casttime)>)
+  remove
+else
+  src.sysMessage("Nelze zamerovat na postavy.")
+  remove
+endif
+return 1
+
+on=@targon_item
+if (<tag.flags>&csflag_TARG_item)
+  if !(src.targ.srccombatLOS)
+    src.sysMessage("Nevidis na cil.")
+    remove
+    return 1
+  endif
+  src.accMsg("hrac(<src.name>,<src>,<src.p>,<src.region.name>) kouzli kouzlo (<spellDescription[<tag(spellnumb)>]>) na objekt (<src.targ.name>,<src.targ>)")
+  src.say("<tag.wop>")
+  src.newitemsafe(i_customspell_timer)
+  lastnew.tag(kouzlo,<tag(spellnumb)>)
+  lastnew.tag(cil,<src.targ>)
+  lastnew.tag(targp,0)
+  lastnew.timerd=<tag(casttime)>
+  lastnew.equip
+  remove
+else
+  src.sysMessage("Nezameruj veci.")
+  remove
+endif
+return 1
+
+on=@targon_ground
+if (<tag.flags>&csflag_TARG_XYZ)
+  src.tag(targp,<src.targp>)
+  src.newitemsafe(i_bag)
+  lastnew.p=<src.tag(targp)>
+  if !(finduid(lastnew).srccombatLOS)
+    src.sysMessage("Na pozadovane misto nevidis.")
+    lastnew.remove
+    remove
+    return 0
+  endif
+  lastnew.remove
+  src.accMsg("hrac(<src.name>,<src>,<src.p>,<src.region.name>) kouzli kouzlo (<spellDescription[<tag(spellnumb)>]>) na pozici (<src.tag(targp)>)")
+  src.say("<tag.wop>")
+  src.newitemsafe(i_customspell_timer)
+  lastnew.tag(kouzlo,<tag(spellnumb)>)
+  lastnew.tag(cil,0)
+  lastnew.tag(targp,<src.tag(targp)>)
+  lastnew.timerd=<tag(casttime)>
+  lastnew.equip
+  remove
+else
+  src.sysMessage("Nelze zamerit na zem.")
+  remove
+endif
+return 1
+
+[itemdef i_customspell_timer]
+id=i_memory
+type=t_eq_script
+name=customspell timer
+
+on=@create
+attr=attr_invis|attr_decay
+if (safe (<src.findid(i_a_mana_shield)>))
+  src.findid(i_a_mana_shield).remove
+  if (<src.mana> > <eval <src.int>/2>)
+    src.mana=<eval (<src.mana>-<eval <src.int>/2>)>
+  else
+    src.mana=0
+  endif
+endif
+
+on=@timer
+//cont.sysMessage(Kouzlim, kouzlo <tag(kouzlo)>, cil <finduid(tag(cil)).name>, <tag(cil)>)
+cont.f_customspell_delayed(<tag(kouzlo)>,<?tag(cil)?>,<?tag(targp)?>)
+remove
+return 1
+
+
+[function f_customspell_delayed]//argv(0)-cislo kouzla, argv(1) - cil, argv(2) - pozice (je-li)
+//src.sysMessage(src - <src.name>, kouzlo - <argv(0)>, cil - <argv(1)>, pozice - <argv(2)>)
+safe(act=<argv(1)>) //zamereni
+if (npc)
+ events=-e_npccustomcasting
+ //timer=0
+ if (act.distance<10)
+  skill magery
+ else
+  attack(<act>)
+ endif
+else
+ skill -1
+endif
+if !(isGM)
+  //sysMessage(Kouzlim!)
+  if (<StrGetTok("<a_resources[<argv(0)>]>",0," ")> > 0) //jsou li vubec
+    consume(<a_resources[<argv(0)>]>)
+  endif
+  stamina=<eval (<stamina>-<eval <a_staminause[<argv(0)>]>>)>
+  if (ishungrymsg)
+    f_fizzleefect
+    consume(<a_scrollitem[<argv(0)>]>)
+    mana=<eval (<mana>-<eval (<a_manause[<argv(0)>]>)/2>)>	
+    return 1 
+  endif
+  arg(narocnost,<a_difficulty[<argv(0)>]>)
+  if (<argv(0)>==101) // je to frostbolt
+    if !(argv(1).isplayer) //miri na npc
+      arg(narocnost,<eval(<a_difficulty[<argv(0)>]>-50)>) //ak mieri na npc tak menej fizuje (-50)
+    endif
+  endif
+  if (f_circle_fizzle(<arg(narocnost)>,<?<a_SKILL[<argv(0)>]>?>)) //overi narocnost kouzla a potrebu magery
+    f_fizzleefect
+    consume(<a_scrollitem[<argv(0)>]>)
+    mana=<eval (<mana>-<eval (<a_manause[<argv(0)>]>)/2>)>
+    return 1
+  endif
+  mana=<eval (<mana>-<eval a_MANAUSE[<argv(0)>]>)>
+  f_spelldone(<argv(0)>) //pro setreni many
+  tag(scrollcast,"")
+endif
+if (<eval a_flags[<argv(0)>]>&csflag_mass) //overit flagy (masove kouzlo), v tom pripade take mame <argv(2)> - pozici
+  var(distanceuid,<eval <act>>) //pro vzdalenost od cile
+  if !(<act>) //nemame cil (char) - kouzlim na zem
+    newitemsafe(i_bag)
+    lastnew.p=<tag.targp> //targp - pouze pri targon_ground
+    var(distanceuid,<lastnew>) //vzdalenost od pomocneho itemu
+    arg(removeitem,1)
+  endif 
+  sector.allchars f_a_massspell_dist(<argv(0)>,<calcspelleffect(<argv(0)>)>,<uid>,<a_mass_distance[<argv(0)>]>,<eval <eval a_flags[<argv(0)>]>&csflag_noLOS>)
+  if (<arg(removeitem)>)
+    finduid(var(distanceuid)).remove
+    var(distanceuid,"")
+  endif
+  consume(<a_scrollitem[<argv(0)>]>)
+  return 0
+endif
+if (<act>) //mame cil (char)
+ finduid(act).dospellcustom(<argv(0)>,<calcspelleffect(<argv(0)>)>,<uid>) 
+ consume(<a_scrollitem[<argv(0)>]>)
+else
+ dospellcustom(<argv(0)>,<calcspelleffect(<argv(0)>)>,<uid>)
+ consume(<a_scrollitem[<argv(0)>]>)
+endif
+return 0
+
+[function f_a_massspell_dist]
+//vzdalenost
+//0 1 2 of dospellcustom
+if (distancefrom(<distanceuid>)><argv(3)>)
+ return 0
+endif
+if !(<argv(4)>)
+ if !(srccombatLOS)
+  return 0
+ endif
+endif
+dospellcustom(<argv(0)>,<argv(1)>,<uid>) //je-li dost blizko, dostane kouzlem.
+
+[function f_circle_fizzle]
+//<argv(0)> difficulty
+//<argv(1)> skill value
+arg(compareskill,<argv(1)>)
+if (arg(compareskill)><argv(0)>+392)
+arg(compareskill,<argv(0)>+392)
+endif
+arg(compareskill2,<eval{<argv(0)> <argv(0)>+400}>)
+if (arg(compareskill)>arg(compareskill2))
+   return 0
+endif
+return 1
+
+[itemdef i_mem_bomba]
+id=i_rune_explosion
+type=t_eq_script
+layer=30
+
+on=@equip
+timer=3
+
+on=@timer
+  topobj.damage_noresponse(<nastaveni_<var(bomba_src).id>,dam_god)
+  topobj.effect(3,<s_explosion.EFFECTID>,6,15,1)
+  topobj.sound=<s_explosion.sound>			
+
+
+[function exploze]
+if (distancefrom(<var(bomba_src)>) < 5)
+  arg(bombarmor,<eval armorsum+(nastaveni_global_armorchange_vP_<profession.name>)>)
+  if (distancefrom(<var(bomba_src)>) > 1)&&(<eval nastaveni_potions_<var(bomba_src).id>-arg(bombarmor)> > 0)
+    damage_noresponse(<eval <eval nastaveni_potions_<var(bomba_src).id>-arg(bombarmor)>/<distancefrom(<var(bomba_src)>)>>,dam_magic|dam_fire)
+  else
+    damage_noresponse(<eval nastaveni_potions_<var(bomba_src).id>-arg(bombarmor)>,dam_magic|dam_fire)
+  endif
+  effect(3,<s_explosion.EFFECTID>,6,15,1)
+  sound=<s_explosion.sound>
+else
+endif 
+
+[function znicsit]
+if (type==t_web)&&(timer!=-1)
+  if (distancefrom(<var(bomba_src)>) < 5)
+    effect(3,<s_explosion.EFFECTID>,6,15,1)
+    sound=<s_explosion.sound>			
+    timer=1
+  endif
+elseif (id==i_rock_plain)&&(timer!=-1)
+  arg(bombdist,distancefrom(<var(bomba_src)>))
+  if (arg(bombdist) < 5)
+    if (arg(bombdist)<1) 
+      arg(bombdist,1)
+    endif
+    if (<eval nastaveni_potions_<var(bomba_src).id>/<arg(bombdist)>> > {0 150})
+      effect(3,<s_explosion.EFFECTID>,6,15,1)
+      sound=<s_explosion.sound>			
+      timer=1
+    endif
+  endif
+endif
+
+
+[function dispellitem]
+if ((type==t_spell)||(type==t_telepad2))&&(timer!=-1)
+ if (distancefrom(<var(bomba_src)>) < 5)
+  effect(3,<s_explosion.EFFECTID>,6,15,1)
+  sound=<s_explosion.sound>			
+  timer=1
+ endif
+endif
+
+[function dispellbomb]
+if (distancefrom(<var(bomba_src)>) < 5)
+ effect(3,<s_explosion.EFFECTID>,6,15,1)
+ sound=<s_explosion.sound>			
+ events=-e_spelleffect
+ spelleffect(41,1000)
+ events=+e_spelleffect
+endif 
+
+
+
+[typedef t_potion_bomba]
+on=@userdclick
+tag(owner,<src>)
+//more2=<nastaveni_potions_<baseid>>
+if (topobj.ischar)
+  src.newitemsafe(i_mem_bomba)
+  lastnew.equip
+  remove
+elseif (serv.time><eval src.tag.nextpotion>)
+ src.tag.nextpotion=<serv.time>+<nastaveni_global_potiondelay>
+ timer=1
+endif
+return 1
+
+
+on=@dropon_ground
+if (<tag(bum)> < 3)
+	tag(bum,3)
+endif
+trigger @userdclick
+//attr_movenever=1
+
+on=@timer
+timer=1
+say <tag(bum)>
+tag(bum,#-1)
+if (tag(bum)==0)
+  trigger @potioneffect
+else 
+ return 1
+endif
+
+on=@PICKUP_GROUND
+trigger @potioneffect
+
+
+on=@potioneffect
+var(bomba_src,<uid>)
+if (strmatch(<tag(bomba)>,dispellbomb))
+  sector.allchars(dispellbomb)
+  sector.allitems(dispellitem)
+else
+  sector.allchars(exploze)
+  sector.allitems(znicsit)
+endif
+effect(3,<s_explosion.EFFECTID>,6,15,1)
+sound=<s_explosion.sound>			
+
+on=@userdeath
+on=@create
+
+
+[typedef t_allpotions]
+on=@userdclick
+//more2=<nastaveni_potions_<baseid>>
+arg(lastPotionDelay,<eval return_nth(1,<src.tag.lastPotionDelay>)>)
+arg(potionsDrinked,<eval return_nth(2,<src.tag.lastPotionDelay>)>)
+if (<serv.time> < <arg(lastPotionDelay)>+15)
+  if (arg(potionsDrinked) < 2) //player drinked less than three potions in the last 1.5 secons
+    src.tag(lastPotionDelay,"<arg(lastPotionDelay)>,<eval (<arg(potionsDrinked)>+1)>")
+  else //this is the third potion drink attempt in the last 1.5seconds
+    src.redMessage("Tva ukvapenost te zpomalila!")
+    src.accmsg("Hrac <src.name>(<src>, acc: <src.account.name>) podezrele casto pije! Penalizace 5s")
+    if ((<serv.time>-<src.tag(nextpotion)>) < 1000) // drinking penalisation goes to at most 100s - players are retarded
+      src.tag(nextpotion,<eval src.tag(nextpotion)>+50)
+      src.tag.remove(lastPotionDelay)
+    endif
+  endif
+else
+  src.tag(lastPotionDelay,"<serv.time>,1")
+endif
+if (serv.time><eval src.tag.nextpotion>)
+  sound 031
+  if ({0 100}< nastaveni_sance_rozbiti_lahve)
+    src.sysMessage("Lahev se rozbila.")
+  else
+    src.newitemsafe(<hval typedef.tdata1>)
+    lastnew.bounce
+  endif
+  src.tag.nextpotion=<serv.time>+<nastaveni_global_potiondelay2>
+  trigger @potioneffect
+  if(amount==1)
+    remove
+  else
+    amount=<amount>-1
+  endif
+  return 1
+else
+
+endif
+sound 050
+return 1
+
+on=@potioneffect
+on=@userdeath
+on=@create
+
+
+
+[typedef t_speedpotions]
+on=@userdclick
+//more2=<nastaveni_potions_<baseid>>
+if (serv.time><eval src.tag.nextpotion>)
+ sound 031
+ if ({0 100}< nastaveni_sance_rozbiti_lahve)
+  src.sysMessage("Lahev se rozbila.")
+ else
+  src.newitemsafe(<hval typedef.tdata1>)
+  lastnew.bounce
+ endif
+ src.tag.nextpotion=<serv.time>+<nastaveni_global_potiondelay>
+ trigger @potioneffect
+ if(amount==1)
+  remove
+ else
+  amount=<amount>-1
+ endif
+ return 1
+endif
+sound 050
+return 1
+
+
+
+on=@potioneffect
+on=@userdeath
+on=@create
+
+[function f_sound_DrinkPoiton]
+dorand 3
+  sound(031)
+  sound(04cd)
+  sound(050)
+enddo
+
+[eof]

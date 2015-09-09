@@ -1,0 +1,81 @@
+////////////////
+// otravitelne sudy
+////////////////
+
+  
+[itemdef i_q038_ocs_sud]
+ID=i_barrel_water
+Type=t_normal
+Name=Sud s vodou
+
+ON=@Create
+attr=010
+
+on=@timer
+return 1
+
+on=@UserDClick
+arg(player,<src>)
+if (<src.qtag(q038_ocs)> == 22) 
+  if (tag(ovladac).tag(sud_<tag(sud_cislo)>_hrac_[<arg(player)>]) == 1)
+    src.sysMessage("Toto si uz otravil.")
+  else
+  	src.sysMessage("Otravil si vodu v sude.")
+  	tag(ovladac).tag(sud_<tag(sud_cislo)>_hrac_[<arg(player)>],1)
+  	if ((tag(ovladac).tag(sud_1_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_2_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_3_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_4_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_5_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_6_hrac_[<arg(player)>]) == 1))
+      src.sysMessage("Uz si otravil vsetky sudy s vodou.")
+      tag(ovladac).f_water_tag_remover(<arg(player)>)
+      src.qtag(q038_ocs,23,44)  
+    endif
+  endif
+elseif (<src.qtag(q038_ocs)> == 8) 
+  if (tag(ovladac).tag(sud_<tag(sud_cislo)>_hrac_[<arg(player)>]) == 1)
+    src.sysMessage("Tu si uz neutralizator prilial.")
+  else
+  	src.sysMessage("Neutralizoval si vodu v sude.")
+  	tag(ovladac).tag(sud_<tag(sud_cislo)>_hrac_[<arg(player)>],1)
+  	if ((tag(ovladac).tag(sud_1_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_2_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_3_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_4_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_5_hrac_[<arg(player)>]) == 1) && (tag(ovladac).tag(sud_6_hrac_[<arg(player)>]) == 1))
+      src.sysMessage("Neutralizoval si uz vodu vo vsetkych sudoch.")
+      tag(ovladac).f_water_tag_remover(<arg(player)>)
+      src.qtag(q038_ocs,9,44)  
+    endif
+  endif
+else
+	src.sysMessage("Tu pre teba nic nieje")
+endif
+return 0
+
+[itemdef i_q038_ocs_sud_ovladac]
+ID=01174
+Type=t_normal
+Name=Sud - ovladac 
+
+ON=@Create
+attr=090
+color=0986
+
+on=@timer
+return 1
+
+/////////////////
+
+[ITEMDEF i_q038_ocs_mushroom]
+ID=0d16
+NAME=Muchotravka
+TYPE=t_normal
+
+on=@create
+attr=attr_move_never
+color=00
+
+on=@userdclick
+if (<src.qtag(q038_ocs)> == 6)
+  src.qtag(q038_ocs,7,44)
+  src.sysmessage("Sebral si muchotravku, snad je to to, co chcela liecitelka.")
+elseif (<src.qtag(q038_ocs)> == 20)
+  src.qtag(q038_ocs,21,44)
+  src.sysmessage("Sebral si muchotravku, snad je to to, co chcela carodejnica.")
+else 
+  src.sysmessage("Tak toto ti nebude na nic.")
+endif
+return 1

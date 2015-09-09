@@ -1,0 +1,473 @@
+//SPEECH//
+
+[speech spk_q029_murlay_namornik]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+f_qSpeech(f_q029_murlay_namornik)
+
+[function f_q029_murlay_namornik]
+if (<src.flags>&statf_dead)
+ return 1
+else
+  dialog(d_q029_murlay_namornik)
+endif
+
+
+//////////////////////
+
+[speech spk_q029_murlay_etiras]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+f_qSpeech(f_q029_murlay_etiras)
+
+[function f_q029_murlay_etiras]
+if (<src.flags>&statf_dead)
+ return 1
+else
+  dialog(d_q029_murlay_etiras)
+endif
+
+//////////////////////
+
+[speech spk_q029_murlay_sevedia]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+f_qSpeech(f_q029_murlay_sevedia)
+
+[function f_q029_murlay_sevedia]
+if (<src.flags>&statf_dead)
+ return 1
+else
+  dialog(d_q029_murlay_sevedia)
+endif
+
+
+///////////////////
+// DIALOG MURLAY //
+///////////////////
+
+[dialog d_q029_murlay_namornik]
+argo.questDialog_create(03104,"Narmonik Murlay")
+
+argo.dialog_newPage("Pozdrav")
+arg(q029_murlay,<eval src.qtag(q029_murlay_namornik)>)
+
+if (<arg(q029_murlay)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Co tady delas?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"No, neco by se tady mohlo najit...")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"*Nakoupit*")
+  argo.questDialog_addResponse(0,1,1,"buy",1) 
+
+argo.dialog_page("Nesu ti")
+  if (<arg(q029_murlay)> == 0 )
+    argo.setText(argo.newTextLine,"A co pekneho pro mne mas?")
+  else
+    argo.setText(argo.newTextLine,"No co, mas uz tu plachtu?")
+  endif
+  argo.questDialog_HTMLGUMP
+  
+  if (<arg(q029_murlay)> == 5 )    
+    if (<arg(q029_murlay)> == 5 )
+      argo.setText(argo.newTextLine,"Ano ano, tady je ta plachta.")
+      argo.questDialog_addResponse(0,1,1,"Ukol_plachta_giveCollector") 
+    else
+    argo.setText(argo.newTextLine,"Ne, zatim se mi to nepodarilo sehnat.")
+    argo.questDialog_addResponse(0,1,1,"Ukol_Plachta_notFoundYet") 
+    endif
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Tvar Murlaye je zohavena vetrem, je dost spinavy a na pohled odpudivy. Je videt, ze stravil dlouhe hodiny na mori a videl toho mnoho. Hlas ma pevny a je z nej citit, ze se nikoho a niceho neboji.*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Pozdrav")
+  if (<arg(q029_murlay)> == 0)
+    argo.setText(<argo.newTextLine>,"Bud pozdraven.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q029_murlay)> < 6)
+    argo.setText(<argo.newTextLine>,"Zdravim te, <src.sex("priteli muj","pritelkyne moje")>! Podarilo se ti uz dostat tu plachtu od te stare baby?")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(<argo.newTextLine>,"Ahoj! Dekuji ti za tu plachtu. Moji muzi ji prave pripevnuji! Co nevidet pujdeme za hospodskym. Doufam, ze se jeste nekdy setkame.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  endif
+
+argo.dialog_page("Hledam praci")
+  if (<arg(q029_murlay)> == 0)
+    argo.setText(argo.newTextLine,"Rad bych ti pomohl, ale ja beru do sve posadky jen velke a silne chlapy.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q029_murlay)> < 6)
+    argo.setText(argo.newTextLine,"Ale vzdyt ja jsem ti uz dal ukol! Tak se ho snaz co nejdrive dokoncit!")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"Moje posadka je uz plne obsazena, ale pokud mi nekdo odpadne, tak potom by se tu pro tebe neco urcite naslo.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+if (<arg(q029_murlay)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Ach, jsem rad, ze tu vidim nekoho noveho. Uz jsem myslel, ze se z tech stale stejnych tvari zblaznim! <def_questDialog_colorTextEmote>*Smeje se*<def_questDialog_colorTextNormal> Ja jsem namornik a kapitan teto lodi. Co te ke mne privadi? Doufam, ze jsi <src.sex("neztroskotal","neztroskotala")> tak, jako ja...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Moje jmeno je <?src.name?> a <?src.sex("chtel","chtela")?> jsem jet na ledovy ostrov lovit snezna monstra. Po ceste jsem <?src.sex("videl","videla")?> tvoji lod.")
+    argo.questDialog_addResponse(1,0,1,"q029_gohunting") 
+
+argo.dialog_page("Co tady delas?")
+    argo.setText(argo.newTextLine,"No vis, vnuk jednoho meho pritele, Eriola z Pelenorskych poli, je vazne nemocny a ja jsem slysel, ze mistni hospodsky zna lek na vsechny choroby, tak jsem ho chtel jit navstivit a pozadat o recept na ten jeho magicky lek, ale zasahla nas silna boure a roztrhala lodni plachty.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"To vam patri! Nemate co lezt na more!")
+    argo.questDialog_addResponse(0,1,0,"refuse") 
+    argo.setText(argo.newTextLine,"A <?src.sex("mohl","mohla")?> bych ti nejak pomoci?")
+    argo.questDialog_addResponse(0,0,1,"q029_help") 
+    argo.setText(argo.newTextLine,"Aha, no ja se omlouvam, ale jdu na lov.")
+    argo.questDialog_addResponse(0,0,1,"q029_notime") 
+
+  argo.dialog_page("q029_gohunting")
+    argo.setText(argo.newTextLine,"Ahaa... tak to asi osud chtel, abys nas <src.sex("potkal, pomohl","potkala, pomohla")> bys mi?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ale ja nato nemam cas.")
+    argo.questDialog_addResponse(0,1,0,"refuse") 
+    argo.setText(argo.newTextLine,"Tak co uz s tebou, pomuzu ti.")    
+    argo.questDialog_addResponse(0,0,0,"Co tady delas?") 
+
+argo.dialog_page("q029_help")
+    argo.setText(argo.newTextLine,"No, vedel bych, jak bys nam velmi <src.sex("pomohl","pomohla")>, abysme se dostali za tim hospodskym...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja na to vlastne nemam vubec cas. Nezajima me to...")
+    argo.questDialog_addResponse(0,1,0,"refuse") 
+    argo.setText(argo.newTextLine,"A jak bych vam teda <?src.sex("pomohl","pomohla")?>?")
+    argo.questDialog_addResponse(0,0,1,"q029_worksheet") 
+ 
+
+  argo.dialog_page("q029_notime")
+    argo.setText(argo.newTextLine,"Aha, tak to jsi se ani <src.sex("nemusel","nemusela")> zastavovat. O lidi jako ty tu nestojime...")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("q029_worksheet")
+    argo.setText(argo.newTextLine,"Na jednom z vetrnych ostrovu by mela zit zena, ktera dokaze utkat nejkvalitnejsi plachtu v cele Stredozemi. Prosim, jdi za ni a pozadej ji, at pro me usije plachtu na mou lod.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, pokusim se o to.")
+    argo.questDialog_addResponse(0,1,1,"Ukol_plachta_accept") 
+    argo.setText(argo.newTextLine,"Hmm, to daleko. Promin, ale to neudelam...")
+    argo.questDialog_addResponse(0,1,0,"refuse") 
+endif
+
+[dialog d_q029_murlay_namornik button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("refuse"))
+  say("No, tak pokud nam nechces pomoci, tak tu nemas co delat...")
+elseif (<argn> == argo.dialog_linkButton("Ukol_plachta_accept"))
+  say("Vyborne! Doufam, ze se ti ji podari na tom ostrove najit... a pospes si!")
+  src.qtag(q029_murlay_namornik,1,39)
+elseif (<argn> == argo.dialog_linkButton("buy"))
+  say("Ruzne mapky na prodej, za velmi vyhodne ceny")
+  buy
+elseif (<argn> == argo.dialog_linkButton("Ukol_plachta_notFoundYet"))
+  say("Prosim te, jdi rychle, potrebujeme co nejdrive vyrazit...")
+elseif (<argn> == argo.dialog_linkButton("Ukol_Plachta_giveCollector"))
+ if (<eval src.qtag(q029_murlay_namornik)> == 5 )
+    say("Vyyyyborne! Velmi ti dekuji, ted muzeme vyrazit na ostrov.")
+    src.qtag(q029_murlay_namornik,6,39)
+    src.addexp(500)
+    src.giveitem(i_u_treasure_map)
+    f_quest_complete(39)  // splnenie questu "Narmornik Murlay"
+  else
+    say(Ale vzdyt ty jeste nemas tu plachtu! Jdi ji rychle sehnat.")
+  endif
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Tobe take hodne stesi priteli...")
+endif
+
+///////////////////
+// dialog etiras //
+///////////////////
+
+[dialog d_q029_murlay_etiras]
+argo.questDialog_create(03070,"Putnik Etiras")
+
+argo.dialog_newPage("Pozdrav")
+arg(q029_murlay,<eval src.qtag(q029_murlay_namornik)>)
+
+if (<arg(q029_murlay)> == 1)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Potrebuji...")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Ja pro tebe opravdu nic zajimaveho nemam...")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Hmm?")
+  argo.questDialog_HTMLGUMP
+  
+  if (<arg(q029_murlay)> == 2)
+    if (<src.f_collector_isFull(i_q029_murlay_kolektor_1)>)
+      argo.setText(argo.newTextLine,"Mam pro tebe ten prach ze zeleznych spiritu.")
+      argo.questDialog_addResponse(0,0,1,"q029_hasCollector") 
+    endif
+    argo.setText(argo.newTextLine,"Ne, zatim se mi to nepodarilo sehnat.")
+    argo.questDialog_addResponse(0,1,1,"q029_notFoundYet") 
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Poutnik Etiras vypada privetive a dost opustene. Zda se, ze pro neco nebo nekoho truchli...*")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Pozdrav")
+  if (<arg(q029_murlay)> < 2)
+    argo.setText(<argo.newTextLine>,"Zdravim te.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q029_murlay)> == 2)
+    argo.setText(<argo.newTextLine>,"Bud <src.sex("zdrav","zdrava")>! Jsem rad, ze te vidim. Tak co, jak jsi <src.sex("byl uspesny","byla uspesna")>? Mas uz ten muj prach? Tak prozrad mi to! Potrebuji uz svou mast! Bez ni ta bolest v moji noze neprestane!")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(q029_murlay)> == 3)||(<arg(q029_murlay)> == 4)||(<arg(q029_murlay)> == 5)||(<arg(q029_murlay)> == 6))
+    argo.setText(<argo.newTextLine>,"Zdravim te. Ten prach mi skvele poslouzil na vyrobu masti. Dekuji ti jeste jednou.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  endif
+
+argo.dialog_page("Hledam praci")
+  if ((<arg(q029_murlay)> == 0)||(<arg(q029_murlay)> == 1))
+    argo.setText(argo.newTextLine,"Ja ti nemam za tvoji praci co nabidnout, takze u me nepochodis.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q029_murlay)> == 2)
+    argo.setText(argo.newTextLine,"Ale ja uz jsem ti praci dal! tak ji dokonci!")
+    argo.questDialog_HTMLGUMP
+  elseif ((<arg(q029_murlay)> == 3)||(<arg(q029_murlay)> == 4)||(<arg(q029_murlay)> == 5)||(<arg(q029_murlay)> == 6))
+    argo.setText(argo.newTextLine,"Ted me nenapada, jak bys mi <src.sex("mohol","mohola")> pomoct.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+if (<arg(q029_murlay)> == 1)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Moje jmeno je Etiras. Kdysi davno jsem zil i se svoji manzelkou v Umbaru. Popravde, rusny zivot nas nebavil, tak jsme chteli najit trochu odpocinku na tomto ostrove...")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Potrebuji...")
+    argo.setText(argo.newTextLine,"Co potrebujes? Jestli jsi <src.sex("prisel","prisla")> kvuli latce, tak tu vyrabela moje manzelka, ne ja, a jak jsem ti uz rekl, ona ode me udesla...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Tak to je asi tvoje chyba, ze ti odesla!")
+    argo.questDialog_addResponse(0,1,0,"Urazka") 
+    argo.setText(argo.newTextLine,"Aha! To jsem <src.sex("nevedel","nevedela")>! To je mrcha...")
+    argo.questDialog_addResponse(0,0,1,"mrcha_manzelka") 
+    argo.setText(argo.newTextLine,"A nevis, kde bych ji <src.sex("mohl","mohla")> najit?")
+    argo.saveTextLine("q029_whereIsShe")
+    argo.questDialog_addResponse(0,0,1,"q029_whereIsShe") 
+
+  argo.dialog_page("q029_whereIsShe")  
+    argo.setText(argo.newTextLine,"No, mohl bych vedet, kde je, ale zadarmo ani kure nehrabe.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja pro tebe nebudu nic delat!")
+    argo.questDialog_addResponse(0,1,0,"Urazka") 
+    argo.setText(argo.newTextLine,"A co bych pro tebe <src.sex("mel","mela")> udelat?")
+    argo.questDialog_addResponse(0,0,1,"q029_workspirits") 
+
+  argo.dialog_page("mrcha_manzelka")  
+    argo.setText(argo.newTextLine,"A vis, co mi jeste rekla? Ze pry jsem stary a skaredy!")
+    argo.questDialog_HTMLGUMP
+      argo.questDialog_addSameResponse(0,0,"q029_whereIsShe")
+
+  argo.dialog_page("q029_workspirits")  
+    argo.setText(argo.newTextLine,"Kdyz jsem prisel na tento ostrov, dost nepekne me zranil zelezny Spirit. Noha mi opuchla a dost me boli, takze bych od tebe potreboval, abys mi <src.sex("prinesl","prinesla")> popel ze sedmi, ne, radeji z osmi zeleznych spiritu, abych si z toho mohl vytvorit mast.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, pokusim se to pro tebe udelat!")
+    argo.questDialog_addResponse(0,1,1,"q029_accept") 
+    argo.setText(argo.newTextLine,"Ne, toto je na me moc, promin.")
+    argo.questDialog_addResponse(0,1,0,"Urazka")
+elseif (<arg(q029_murlay)> == 2) && (<src.f_collector_isFull(i_q029_murlay_kolektor_1)>)
+  argo.dialog_page("q029_hasCollector")
+    argo.setText(argo.newTextLine,"Vyborne! Ted konecne muzu svuj recept vyzkouset, moje zena se jmenuje Sevedia. Myslim, ze ji najdes na ostrove piratu.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Predat nasbirany prach.*")
+      argo.questDialog_addResponse(0,1,1,"q029_giveCollector",1) 
+
+endif
+
+[dialog d_q029_murlay_etiras button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q029_accept"))
+  say("Vyborne, vem si tento vacek a kdyz nejakeho zabijes, rychle z neho seber popel.")
+  src.qtag(q029_murlay_namornik,2,39)
+  src.newitem(i_q029_murlay_kolektor_1)
+  src.act.bounce
+elseif (<argn> == argo.dialog_linkButton("Urazka"))
+  say("Aha, tak potom me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("q029_notFoundYet"))
+  say("Tak se prosim snaz, ta noha me velmi boli!")
+elseif (<argn> == argo.dialog_linkButton("q029_giveCollector"))
+  if (<src.f_collector_isFull(i_q029_murlay_kolektor_1)>)
+    src.consume(i_q029_murlay_kolektor_1)
+    src.qtag(q029_murlay_namornik,3,39)
+    src.addexp(300)
+  else
+    say("Ale vzdyt ty to jeste nemas!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Tobe take hodne stesi <src.sex("priteli","pritelkyne")>...")
+endif
+
+////////////////////
+// DIALOG SEVEDIA //
+////////////////////
+
+[dialog d_q029_murlay_sevedia]
+argo.questDialog_create(03114,"Sevedia")
+
+argo.dialog_newPage("Pozdrav")
+arg(q029_murlay,<eval src.qtag(q029_murlay_namornik)>)
+
+if (<arg(q029_murlay)> < 4)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+if (<arg(q029_murlay)> == 3)
+  argo.questDialog_baseButt(2,21,"Potrebuji...")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Nevim, co bych ti mohla nabidnout.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Hmm?")
+  argo.questDialog_HTMLGUMP
+  
+  if (<arg(q029_murlay)> == 4)
+    if (<src.f_collector_isFull(i_q029_murlay_kolektor_2)>)
+      argo.setText(argo.newTextLine,"Mam pro tebe ty bulvy z adamantinovych oci.")
+      argo.questDialog_addResponse(0,1,1,"q029_giveCollector") 
+    endif
+    argo.setText(argo.newTextLine,"Ne, zatim se mi to nepodarilo sehnat.")
+    argo.questDialog_addResponse(0,1,1,"q029_notFoundYet") 
+  endif
+
+argo.dialog_page("Prohlednout")
+if (<arg(q029_murlay)> < 5)
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Sevedia vypada na pohled odpudive. Na tvari ma zvlastni vyrazku. Jeden se az boji jit k ni bliz...*")
+else
+  argo.setText(<argo.newTextLine>,"<def_questDialog_colorTextEmote>*Sevediina tvar je ted pekna. Z odpudive zeny se po poziti elixiru stala zena pritazliva.*")
+endif
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Pozdrav")
+  if (<arg(q029_murlay)> < 4)
+    argo.setText(<argo.newTextLine>,"Zdravim te.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q029_murlay)> == 4)
+    argo.setText(<argo.newTextLine>,"Bud <src.sex("zdrav","zdrava")>! Tak jak pokracujes s temi bulvami? Uz se chci vratit k memu manzelovi...")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(<argo.newTextLine>,"Ahoj! Velmi ti dekuji, ten elixir zaucinkoval. Konecne se mohu vratit ke svemu muzi.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) 
+  endif
+
+argo.dialog_page("Hledam praci")
+  if (<arg(q029_murlay)> < 4))
+    argo.setText(argo.newTextLine,"Nevim jak bych te mohla zamestnat...")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q029_murlay)> == 4)
+    argo.setText(argo.newTextLine,"Uz ode me ulohu prece mas!")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q029_murlay)> < 7))
+    argo.setText(argo.newTextLine,"Uz tu nemam nic, s cim bys mi mohl pomoct.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+if (<arg(q029_murlay)> < 3)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jdi odeme pryc!")
+    argo.questDialog_HTMLGUMP
+elseif (<arg(q029_murlay)> == 3)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Ahoj! Jmenuji se Sevedia! Jdi odemne nechci s nikym mluvit!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Ty jsi Sevedia? Hledam te uz hrozne dlouho! <src.sex("Byl","Byla")> jsem na Vetrnych ostrovech, ale <src.sex("nasel","nasla")> jsem tam jen tveho manzela. Rekl mi, ze bys mohla byt tady. Poslal me za tebou namornik Murlay. Rikal, ze vis, jak vytvorit nejpevnejsi plachtu na lod.")
+    argo.questDialog_addResponse(1,0,1,"q029_needsheet") 
+   
+argo.dialog_page("Potrebuji...")
+    argo.setText(argo.newTextLine,"Co by si ode me potreboval?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No prece plachtu na lod! Hloupa zenska!")
+    argo.questDialog_addResponse(0,1,0,"urazka") 
+ 
+
+  argo.dialog_page("q029_needsheet")  
+    argo.setText(argo.newTextLine,"Ty jsi videl meho manzela? Meho Etirase?! Musela jsem ho opustit. Pochop, na tento ostrov jsem utekla pote, co me na ostrovech bodla nejaka havet. Behem nekolika dni mi nemoc zcela zdeformovala tvar! Ja nemohla dopustit, aby me manzel videl takto zohavenou...<def_questDialog_colorTextEmote>*Zena zacala stenat*<def_questDialog_colorTextNormal> Plachtu ti mohu usit pevnou jako skala a pruznou jako fretka v riji, ale zadarmo to urcite nebude...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Tak nato zapomen, nic pro teba neudelam!")
+    argo.questDialog_addResponse(0,1,0,"urazka") 
+    argo.setText(argo.newTextLine,"A co bys za ni chtela?")
+    argo.questDialog_addResponse(0,0,1,"q029_workeye") 
+
+  argo.dialog_page("q029_workeye")  
+    argo.setText(argo.newTextLine,"Jednou jsem slysela o elixiru krasy. Mam vse potrebne , ale jeste potrebuji 3 bulvy adamantiovych oci. Potom uz budu mit vse a budu se moci vratit ke svemu manzelovi.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, pokusim se to pro tebe udelat!")
+    argo.questDialog_addResponse(0,1,1,"q029_accept") 
+    argo.setText(argo.newTextLine,"Ne, s tema potvorama ja nechci mit nic spolecneho.")
+    argo.questDialog_addResponse(0,1,0,"Urazka") 
+endif
+
+[dialog d_q029_murlay_sevedia button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("Urazka"))
+  say("Nech me nech byt!")
+elseif (<argn> == argo.dialog_linkButton("q029_accept"))
+  say("Vyborne, vem si tento vacek a kdyz nejake zabijes, rychle mu seber ocni bulvu.")
+  src.qtag(q029_murlay_namornik,4,39)
+  src.newitem(i_q029_murlay_kolektor_2)
+  src.act.bounce
+elseif (<argn> == argo.dialog_linkButton("q029_notFoundYet"))
+  say("Tak se prosim snaz, memu muzi jiste chybim.")
+elseif (<argn> == argo.dialog_linkButton("q029_giveCollector"))
+  if (<src.f_collector_isFull(i_q029_murlay_kolektor_2)>)
+    say("Skvele! Jdu ten elixir pripravit!")
+    src.consume(i_q029_murlay_kolektor_2)
+    src.qtag(q029_murlay_namornik,5,39)
+    src.SysMessage("<?src.sex(Prijal,Prijala)?> jsi plachtu na lod")
+    src.addexp(500)
+  else
+    say("Ale vzdyt ty to jeste nemas!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Tobe take hodne stesi priteli...")
+endif

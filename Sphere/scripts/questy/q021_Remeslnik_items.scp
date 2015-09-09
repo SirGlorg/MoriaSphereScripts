@@ -1,0 +1,107 @@
+//////////////////////////////////////////////////
+/////Questovni predmety - recept
+[itemdef i_q021_recept]
+
+id = 0e34
+type = t_scroll_blank
+name = Recept na lecivou mast
+
+on=@create
+attr_newbie=1
+color=colors_blue
+
+ON=@USERDCLICK
+src.scroll sc_q021_recept
+return 1
+
+[scroll sc_q021_recept]
+10 Lecivych bylinek (rostou na zelenych planich)
+Kozi sadlo
+Vsechno odnest laciteli Horadovi. 
+Vetsinou se potuluje nekde nad Ereborem.
+
+//////////////////////////////////////////////////
+//////Questovni predmety - bylinka
+
+[ITEMDEF i_q021_bylinka]
+ID=i_flower_orfluer
+NAME=Leciva bylinka
+TYPE=t_normal
+
+ON=@Create
+attr=attr_move_always
+color=098c
+
+
+ON=@dropon_ground
+SRC.SYSMESSAGE("Drobna bylinka ti nekam zapadla.")
+REMOVE
+
+ON=@userCLICK
+src.sysmessage Zvlastni kytka s cervenym kvetem
+ON=@userDCLICK
+src.sysmessage Zvlastne voni, ale k jidlu asi nebude
+return 1
+
+//////////////////////////////////////////////////
+//////Questovni predmety - kozi sadlo
+
+[ITEMDEF i_q021_sadlo]
+ID=0142b
+NAME=Kozi sadlo
+TYPE=t_normal
+
+ON=@userCLICK
+src.sysmessage Hutne, mazlave kozi sadlo
+ON=@userDCLICK
+src.sysmessage No tohle si asi na chleba mazat nebudes
+return 1
+
+//////////////////////////////////////////////////
+//////Questovni predmety - leciva mast
+
+[ITEMDEF i_q021_mast]
+ID=09ec
+NAME=Leciva mast
+TYPE=t_normal
+
+ON=@Create
+color=0909
+
+ON=@userCLICK
+src.sysmessage Leciva mast z bylinek a koziho sadla
+ON=@userDCLICK
+src.sysmessage Divne to smrdi a tak od blizsiho zkoumani radeji upoustis
+return 1
+
+//////////////////////////////////////////////////
+//////Questovni predmety - kericek s bylinkama
+
+[ITEMDEF i_q021_kerik]
+ID=0cc1
+NAME=Kerik lecivych bylinek
+TYPE=t_normal
+
+CATEGORY=Moria Questy
+SUBSECTION=Carodejka
+DESCRIPTION=Kericek s bylinkama
+
+on=@create 
+attr=attr_move_never
+color=098c
+more1=2 //pocet kolik kytek bude na keriku
+
+on=@userdclick 
+if(<more1> > 0) 
+//snizit citac 
+more1 =<eval <more1>-1> 
+tag(mytimer,<eval serv.time+60*90>) 
+src.giveitem(i_q021_bylinka) 
+//snizil-li se citac uz na 0 
+else 
+src.sysmessage(Vsechno uz je otrhano) 
+endif 
+if (tag(mytimer)< serv.time) 
+more1=2
+endif
+return 1

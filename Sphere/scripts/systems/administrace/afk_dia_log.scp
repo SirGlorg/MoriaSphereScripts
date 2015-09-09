@@ -1,0 +1,242 @@
+[function countmsgs]
+arg(u,1)
+while(tag(message_<u>))
+ if((<u> % 100) == 0)
+  sysmessage(MSG <u>: <tag(message_<u>)>)
+ endif
+ arg(u,#+1)
+endwhile
+sysmessage(celkem: <u> messages)
+
+[function vypislog]
+newitemsafe(i_vypisovac)
+if(argv(0))
+ lastnew.more1=<argv(0)>
+endif
+lastnew.equip
+
+[itemdef i_vypisovac]
+id=i_memory
+type=t_eq_script
+name=Vypisovac messagí
+
+on=@create
+more1=0
+timerd=5
+
+on=@timer
+timerd=5
+if(<eval more1> <= <eval cont.tag(messagescount)>)
+ more1=<eval (<eval more1>+1)>
+ cont.sysmessage(Zpr <eval more1>: <cont.tag(message_<eval more1>)>)
+else
+ remove
+endif
+return 1
+
+[function afklog] //args - kriterium
+dialog(d_afk_dialog,0,<args>)
+
+[function afk_section]//y,index,text
+arg(text,<argv(2)>)
+arg(i,3)
+while(i < argvcount) 
+ arg(text,<arg(text)>-<argv(i)>)
+ arg(i,#+1)
+endwhile
+texta(<tag(sloupec_x[1])>+<d_def_odsazeni>,argv(0),955,<arg(text)>)
+button(<tag(sloupec_x[0])>,argv(0),0fb1,0fb3,1,0,argv(1)) //cudlik "smazat"
+if(strmatch(<arg(text)>,"*lagru*")) //afk log_message kde se vyskytuje slovo "lagru"
+ button(<tag(sloupec_x[2])>+5,argv(0),4005,4007,1,0,100000+<argv(1)>) //Trest
+ button(<tag(sloupec_x[3])>+5,argv(0),0fb4,0fb6,1,0,1000000+<argv(1)>) //Milost
+endif
+return <eval argv(0)+d_def_radek_vyska>
+
+[dialog d_afk_dialog]//argv(1) - pokud je - vyhledávací kriterium argv(2)(zrusene) - limit sprav (kolko sprav od poslednej dozadu)
+20,20
+noclose=1
+argo.events=+e_afk_dialog
+src.accmsg(Otevrel afklog s filtrem <argv(1)>)
+argo.tag(zprav,<src.tag(messagescount)>)
+argo.tag(kriterium,<argv(1)>)
+arg(zjistena_sirka,<src.zjisti_sirku(0,<argo.tag(zprav)>)>)
+if(argo.tag(zprav) == 0)
+ src.sysmessage(Zadne zpravy k zobrazeni)
+ return 1
+endif											  //2*cudlik			
+argo.tag(sirka,<eval (<zjistena_sirka>+<d_def_okraj>+<d_def_skvira>+2*29)>)
+argo.tag(vyska,<eval ((2+<d_max_zprav>)*<d_def_radek_vyska>)+(2*d_def_okraj)+(2*d_def_skvira)>)
+
+argo.dialog_prvni
+
+//Horni prouzek s texty a vyhledavacim polem
+argo.dialog_pozadi(<argo.tag(nexty)>,1,200,250,32) //dve pole navic - napis o dialogu a poctu zprav, editacni pole a cudlik.
+argo.checkertrans(<d_def_okraj>,<d_def_okraj>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),(<d_def_radek_vyska>+<d_def_okraj>))
+argo.settext(200,"")
+argo.textA(<argo.dialog_textpos(0,1)>,0481,"Vyhledavaci kriterium: ")
+argo.textEntry(<argo.tag(sloupec_x[1])>+180,<argo.tag(obj_y[0])>,115,d_def_radek_Vyska,0481,1,200) //index 1 - pro argtxt(1) že? :) 
+button(<argo.tag(sloupec_x[2])>+1,<argo.tag(obj_y[0])>-1,4011,4013,1,0,3)//Vyhledat
+
+//Druhej prouzek s popisy sloupecku
+ 			       //smaz, text, trest, milost
+argo.dialog_pozadi(<argo.tag(nexty)>,1,35,<zjistena_sirka>-75,40) 
+argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[1])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),(2*<d_def_radek_vyska>+<d_def_okraj>))
+									//treti sloupec - cudlik na trest 
+argo.texta(<argo.dialog_textpos(1,0)>,955,"Smaz")
+argo.texta(<argo.dialog_textpos(1,1)>,955,"Text zpravy") 
+argo.texta(<argo.dialog_textpos(1,2)>,955,"Trest")
+argo.texta(<argo.dialog_textpos(1,3)>,955,"Milost")
+//cudlik smaz, TEXT, cudliky potrestat a zrusit trest
+argo.dialog_pozadi(<argo.tag(nexty)>,<d_max_zprav>,29,<eval (<zjistena_sirka>-79-<d_def_okraj>)>,41)
+argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[2])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),<d_max_zprav>*<d_def_radek_vyska>) 
+
+//Zbytek dialogu
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+
+arg(ypos,<argo.tag(obj_y[2])>)
+argo.tag(firsti,<eval argv(0)>)
+arg(i,<argo.tag(firsti)>+1)
+if (<i>-1)
+ argo.button(<argo.tag(sirka)>-<d_def_okraj>,<argo.tag(obj_y[1])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval (<argo.tag(firsti)>+<d_max_zprav>)>)
+
+//argo.tag(limit,1000)
+//if (<argv(2)>)
+//  if (<eval argv(2)> < <eval argo.tag(zprav)>)//limit nemoze byt vacsi ako pocet sprav
+//    argo.tag(limit,<eval argv(2)>)
+//  endif
+//endif
+
+arg(citac,1)
+//if (<eval argo.tag(zprav)> > <eval argo.tag(limit)>)
+//  arg(citac,<eval argo.tag(zprav)> - <eval argo.tag(limit)>)
+//endif
+arg(msgs,0)
+//naplnime pole pro vyhovujici zpravy
+src.sysmessage(Kriterium: <argo.tag(kriterium)>)
+//src.sysmessage(Limit: <argo.tag(limit)>)
+while(<arg(citac)> <= <argo.tag(zprav)>)
+ if(strlen(<argo.tag(kriterium)>)) //bylo zadano kriterium?  
+  if(strmatch(<src.tag(message_<arg(citac)>)>,"*<argo.tag(kriterium)>*"))
+   arg(msgs,#+1)   
+   afk_array_add_string(<src.tag(message_<arg(citac)>)>,<arg(msgs)>,<arg(citac)>)    
+  endif
+ else //bez kriteria - berem vsechny zpravy
+  arg(msgs,#+1)
+  afk_array_add_string(<src.tag(message_<arg(citac)>)>,<arg(msgs)>,<arg(citac)>)
+ endif
+ arg(citac,#+1)
+endwhile
+while(<arg(i)> <= <arg(imax)>) && (<arg(i)> <= <arg(msgs)>)
+ //src.sysmessage(Poradi: <i> Origmessage: Ziskana: <src.tag(message_<message_number(<i>)>)> Z pole: <afk_array_get_string(<i>)>)
+ arg(ypos,<argo.afk_section(<arg(ypos)>,<message_number(<arg(i)>)>+10000,<afk_array_get_string(<arg(i)>)>)>)
+ arg(i,#+1)
+endwhile
+afk_array_clear
+//while(i <= imax) && (i <= <argo.tag(zprav)>)
+// if(strlen(<argo.tag(kriterium)>)) //bylo zadano kriterium?  
+//  if(strmatch(<src.tag(message_<i>)>,"*<argo.tag(kriterium)>*"))
+//   arg(ypos,<argo.sms_section(<ypos>,<i>+10000,<src.tag(message_<i>)>)>)			
+//   arg(msgs,#+1)	
+//  endif	
+// else
+//  arg(ypos,<argo.sms_section(<ypos>,<i>+10000,<src.tag(message_<i>)>)>)
+//  arg(msgs,#+1)
+// endif
+// arg(i,#+1)
+//endwhile
+//if (<argo.tag(zprav)> > i)
+// argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(vyska)>-(<d_def_okraj>+<d_def_button_vyska>),0fc,0fd,1,0,2) // next
+//endif
+if (msgs > i)
+ argo.button(<argo.tag(sirka)>-<d_def_okraj>,<argo.tag(vyska)>-(<d_def_okraj>+<d_def_button_vyska>),0fc,0fd,1,0,2) // next
+endif
+
+//horni napis s napoctenym poctem zprav
+argo.texta(<argo.dialog_textpos(0,0)>,colors_blue,Vyhovujici zpravy: <msgs> celkem: <argo.tag(zprav)>)
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_afk_dialog button]
+on=0 //cancel
+
+on=1 //prev
+dialog(d_afk_dialog,(<argo.tag(firsti)>-<d_max_zprav>),<argo.tag(kriterium)>)
+
+on=2 //next
+dialog(d_afk_dialog,(<argo.tag(firsti)>+<d_max_zprav>),<argo.tag(kriterium)>)
+
+on=3 //vyhledat
+dialog(d_afk_dialog,<argo.tag(firsti)>,<argtxt(1)>) //text z editacniho pole
+
+on=@anybutton //smazat zpravu
+if(<argn> > 1000000) //milost
+ arg(jecko,<argn>-1010000)
+ var(macroersUID,<parseUID(<src.tag(message_<jecko>)>)>) 
+ src.potvrdit(nullAFKTrest,"Opravdu chces anulovat jeden trest hraci <macroersUID> <macroersUID.name>?")
+else
+ if(<argn> > 100000) //trest
+  arg(jecko,<argn>-110000) 
+  var(macroersUID,<parseUID(<src.tag(message_<jecko>)>)>)
+  var(macroersAction,<parseAction(<src.tag(message_<jecko>)>)>) 
+  var(macroersSkill,<parseSkill(<macroersAction>)>)
+  src.input("O kolik snizit skill <macroersSkill> hraci <macroersUID.name>?. (Nyni ma <macroersUID.<macroersSkill>>):",dropSkill,"10.0") 
+ else
+  if(<argn> > 10000)
+   arg(jecko,<argn>-10000)
+   src.tag.remove(message_<jecko>)
+   //posunout ostatni na jeji misto
+   while(jecko < <src.tag(messagescount)>)
+    arg(icko,<eval <jecko>+1>)
+    src.tag(message_<jecko>,<src.tag(message_<icko>)>)
+    arg(jecko,#+1)
+   endwhile
+   src.tag(messagescount,<eval (<src.tag(messagescount)>-1)>)
+   //jeste tu posledni
+   src.tag.remove(message_<jecko>)
+   if(<src.tag(messagescount)>==0)
+    src.tag.remove(messagescount)
+   else
+    if(src.tag(messagescount) > <argo.tag(firsti)>)
+     src.dialog(d_afk_dialog,<argo.tag(firsti)>,<argo.tag(kriterium)>)
+    else //posuneme o stranu zpet
+     src.dialog(d_afk_dialog,<argo.tag(firsti)>-<d_max_zprav>,<argo.tag(kriterium)>)
+    endif
+   endif
+  endif
+ endif
+endif
+
+[typedef e_afk_dialog]
+on=@unequip
+src=cont
+cont.afk_array_clear
+
+[function afk_array_add_string]//like the one before
+//<argv(0)>   value 
+//<argv(1)>   poøadí
+//<argv(2)>   poøadí originální
+src.tag(filteredmsg_<argv(1)>,<argv(0)>)
+src.tag(orderfiltered_<argv(1)>,<argv(2)>) //pomocné pole ve kterém je info o tom kolikátá ta msg byla v pùvodním seznamu
+
+[function afk_array_clear]
+arg(u,1)
+while (strlen(<src.tag(filteredmsg_<u>)>))
+ //if((u % 10) ==0)
+ // src.sysmessage(mazu zpravu <u> = <src.tag(filteredmsg_<u>)>)
+ //endif
+ src.tag.remove(filteredmsg_<u>)
+ src.tag.remove(orderfiltered_<u>)
+ //if((u % 10) ==0)
+ // src.sysmessage(Smazano <u> = <src.tag(filteredmsg_<u>)>)
+ //endif
+ arg(u,#+1) 
+endwhile 
+
+[function afk_array_get_string]//like the one before
+//<argv(0)> position
+return<src.tag(filteredmsg_<argv(0)>)>
+
+[function message_number] //arg-kolikátá v našem poli
+return<src.tag(orderfiltered_<argv(0)>)>

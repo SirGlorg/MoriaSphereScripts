@@ -1,0 +1,90 @@
+[chardef c_hm_hatlend]
+id=c_man
+name=Hatlend
+
+attack=85
+ARMOR=70
+moverate=4
+
+TEVENTS=e_character
+TEVENTS=e_npc_critic
+TEVENTS=e_summoneater
+TEVENTS=e_hatlend
+
+CATEGORY=Dungy
+SUBSECTION=HM
+DESCRIPTION=Hatlend
+
+on=@UserDclick
+q042_hm_hatlend
+
+on=@create
+NPC=brain_human
+COLOR=color_clovek
+STR=2000
+DEX=1000
+INT=1000
+
+maxhits={6000 7000}
+maxstam={1000 1050}
+maxmana=0
+
+tag(noanimate,1)
+tag.experience=<eval {200.0 250.0}>
+
+tag.npc_critic_chance=500         //50% chance
+tag.npc_critic_dmg=25,28
+
+//other resists
+tag(resist_poison,600)
+tag.resist_para=<eval {600 750}>
+tag(resist_summon,350)
+tag(resist_bleed,200)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)
+tag(resist_pierce,150)
+tag(resist_blunt,00)
+
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,250)
+tag(resist_cold,100)
+
+//typ monstra
+tag(monstertype,humanoid)
+
+PARRYING={100.0 120.0}
+TACTICS={90.0 100.0}
+WRESTLING={100.0 120.0}
+
+ITEMnewbie=i_sword_long_mithril
+COLOR=083A
+ITEMNEWBIE=i_studded_gorget_mithril
+COLOR=0845
+NAME=Satek
+ITEMNEWBIE=i_cape
+COLOR=0845
+ITEMNEWBIE=i_hair_short
+COLOR=0455
+ITEMNEWBIE=i_leather_sleeves
+COLOR=047D
+ITEMNEWBIE=i_boots_calf
+COLOR=0845
+ITEMNEWBIE=i_studded_leggings_mithril
+COLOR=047D
+NAME=Kozene kalhoty
+ITEMNEWBIE=i_studded_tunic_mithril
+COLOR=0456
+NAME=Tunika
+ITEMNEWBIE=i_mithril_platmail_gauntlets
+COLOR=0456
+NAME=Tvrzene rukavice
+
+
+[EVENTS e_hatlend]
+ON=@NPCSeeNewPlayer
+if (<src.qtag(q042_hatlend_rulik)> == 4)
+  attack(<src>)
+endif 

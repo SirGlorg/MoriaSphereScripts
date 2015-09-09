@@ -1,0 +1,214 @@
+[function f_skillhide]
+stopscriptedskills
+skill -1
+reveal
+newitemsafe(i_hiding_timer)
+equip(lastnew)
+lastnew.link=<uid>
+lastnew.more1=1
+lastnew.timerdelay(<promilerange(<hiding>,<skill_hiding.delay>)>)
+
+[itemdef i_stealthbonus]
+ID=i_memory
+TYPE=t_eq_script
+name=stealthbonus
+
+on=@create
+timer=5
+tag(hidetime,<serv.time>+30) // probodavat az po 5 sekundach!
+
+on=@equip
+if safe src.findid(i_backstab)
+ findid(i_backstab).remove
+endif
+tag(dark,(<cont.sector.light>*10))
+cont.stealth=<eval <cont.stealth>+tag(dark)>
+return 0
+
+on=@unequip
+if (safe.tag(orig_stealth)) // podminku casem odebrat
+  cont.stealth=<tag(orig_stealth)>
+endif
+cont.stealth=<cont.stealth> - <tag(dark)>
+return 0
+
+on=@timer
+if (cont.flag_hidden==1) && !(cont.isdead)
+  if (safe.tag(tma)) // podminku casem odebrat
+    tag(dark,<tag(tma)>)
+    tag(tma,"")
+    tag(orig_stealth,"")
+  endif
+  arg(current_dark,<cont.sector.light>*10)
+  if (<tag(dark)> == <current_dark>)
+  else
+    cont.stealth=<cont.stealth>+<current_dark>-<tag(dark)>
+    tag(dark,<current_dark>)
+  endif
+  timer=5
+  return 1
+endif
+remove  
+
+[itemdef i_hiding_timer]
+ID=i_memory
+TYPE=t_eq_script
+name=hiding
+
+on=@timer
+src=<cont>
+if (more1)
+  if (src.hiding > rand(1025))
+    link.hide
+    src.classmessage(Skryti se povedlo.)
+    remove
+    return 1
+  endif
+endif
+src.redmessage(Nepovedlo se ti schovat.)
+remove
+return 1
+
+[function hide]
+events=-e_spelleffect
+spelleffect(s_invisibility,1000)
+events=+e_spelleffect
+flag_invisible=0
+flag_hidden=1
+if (findid(i_stealthbonus))
+else
+ newitemsafe(i_stealthbonus)
+ arg(hiditem,<lastnew>)
+ equip(hiditem)
+ hiditem.link=<uid>
+ hiditem.more1=1
+endif
+//resync
+
+
+//////////////////detect///////////////////
+
+
+[function f_testreveal]
+stopscriptedskills
+skill -1
+reveal
+if (isnonmobile)
+  sysmessage(You are frozen and cannot move.)
+  return 1 
+elseif (<src.flags>&statf_dead)
+  sysmesasge(You are dead!)
+  return 1
+elseif (tag(nextdetect)>serv.time)&&(src.isgm==0)
+  sysmessage(Jeste nelze pouzit.)
+  return 1
+endif
+sysMessage("Prozkoumavas sve okoli")
+tag(nextdetect,<eval serv.time+(<promilerange(<detectinghidden>,<skill_detecthidden.delay>)>)>)
+newitemsafe(i_detect_srcChanger)
+lastnew.p=<src.p>
+lastnew.z=-100
+lastnew.link=<uid>
+lastnew.timer=2 //jak dlouho trva detect
+
+
+
+
+[itemdef i_detect_srcChanger]
+id=i_memory
+layer=77
+type=t_src_changer
+name=detect srcChanger
+
+on=@timer
+var(detect_src,<link>)
+sector.allchars(tryreveal)
+link.sysmessage("Hledani ukonceno.")
+remove
+return 1
+
+[function tryreveal]
+if (isGM)||(flag_invul==1)||(isDead)
+ return 1
+endif
+if (flag_invisible==1) || (flag_hidden==1) || ((flag_insubstantial==1) && (tag(potvorathief)==1))
+  arg(detectMemory,<f_detectHidden_findMemory>)
+  if (detectMemory.f_detectHidden_canBeDetected(<var(detect_src)>))
+    arg(distance,<eval distancefrom(var(detect_src))>)
+    detectMemory.f_detectHidden_saveDetector(<var(detect_src)>)
+    if (hiding > <eval(((var(detect_src).detectinghidden/{50 400})+(arg(distance)))*50)>)
+      sysMessage(<var(detect_src).name> se te pokousi objevit.)
+    endif
+    arg(itemBonus,<eval((hiding-1000)*2)>)
+    if (arg(itemBonus) < 0)
+      arg(itemBonus,0)
+    endif
+    arg(detectorCoefficient,<eval((var(detect_src).detectinghidden-hiding)+(1000-(<eval arg(distance)>*nastaveni_detectHidden_distanceDrop)))>)
+    arg(hiddenCoefficient,<eval({0 hiding} + arg(itemBonus))>) // hodnota itemu zapoctena celkem 3x (1x ve skillu, 2x v itembonusu)
+    arg(strop2,<eval(hiding + arg(itemBonus))>)
+    if (<arg(detectorCoefficient)> > <arg(hiddenCoefficient)>)
+      reveal
+      var(detect_src).sysMessage("<var(detect_src).sex(Objevil,Objevila)> jsi <name>.")
+    endif
+  else
+    detectMemory.timer=<detectMemory.tag(runTime)>
+  endif
+endif
+
+[function f_detectHidden_canBeDetected] //argv(0) <detector>; returns 1 if true, 0 if false
+f_detectHidden_clearDetectors //removes inactive tags
+arg(i,0)
+arg(detectorAmount,<tag(detectorAmount)>)
+while (<arg(i)> < <arg(detectorAmount)>)
+  if (<return_nth(1,<tag(detector[<eval arg(i)>])>)> == <argv(0)>)
+    return 0
+  endif
+  arg(i,#+1)
+endwhile
+return 1
+
+[function f_detectHidden_saveDetector] //argv(0) <detector>; saves detector to the memory
+tag(detector[<eval tag(detectorAmount)>],<argv(0)>,<eval(<serv.time>+nastaveni_detectHidden_detectInvul)>)
+tag(detectorAmount,#+1)
+timer=<tag(runTimer)>
+
+[function f_detectHidden_clearDetectors]
+arg(detectorAmount,<tag(detectorAmount)>)
+arg(decreaser,0)
+arg(i,0)
+while (<arg(i)> < <arg(detectorAmount)>)
+  if (<serv.time> > <return_nth(2,<tag(detector[<eval arg(i)>])>)>)
+    tag.remove(detector[<eval arg(i)>])
+    arg(decreaser,#+1)
+  elseif (<arg(decreaser)>)
+    tag(detector[<eval(arg(i)-arg(decreaser))>],<tag(detector[<eval arg(i)>])>)
+    tag.remove(detector[<eval arg(i)>])
+  endif
+  arg(i,#+1)
+endwhile
+tag(detectorAmount,#-<arg(decreaser)>)
+
+[function f_detectHidden_findMemory] // returns memory UID
+arg(memoryDetectors,<findID(i_detectHidden_memoryDetectors)>)
+if !(<arg(memoryDetectors)>)                                                                                                   
+  newequip(i_detectHidden_memoryDetectors)
+  arg(memoryDetectors,<lastnew>)
+endif
+return<arg(memoryDetectors)>
+
+
+[itemdef i_detectHidden_memoryDetectors]
+NAME=Memory detectHidden Detectors
+id=i_memory
+TYPE=T_eq_SCRIPT
+
+on=@create
+attr=090
+tag(detectorAmount,0)
+tag(runTimer,60)
+timer=60
+
+on=@Timer
+remove
+
+[eof]

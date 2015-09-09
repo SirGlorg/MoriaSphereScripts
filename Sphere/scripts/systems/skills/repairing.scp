@@ -1,0 +1,54 @@
+[function craftrepairthis] //pusti se na itemu ktery se ma opravit. src je craft. predpoklada se ze nastroj (kladivo) ma.
+if (!typedef.can_repair)
+	src.sysmessage("Tohle neni opravitelne")
+elseif (more1l >= more1h)
+	src.sysmessage("Netreba opravovat")
+elseif (!src.isneartype(t_anvil,1)) //src musi bejt u kovadliny
+	src.sysmessage("Musis stat u kovadliny")
+else
+	splitresources(<typedef.resources>)
+	arg(frresbase,<findres(itemdef, var(frstr))>)
+	arg(secresbase,<findres(itemdef, var(secstr))>)
+	//u prvni resource se predpoklada ze je vzdy platna
+	if (isarmor)
+		arg(frneededamount,<eval( ((more1h - more1l)*var(frnumb))/more1h)>) //nejmene 0
+	else
+		arg(frneededamount,<eval( var(frnumb) - ((more1l * var(frnumb)) / more1h))>)  //nejmene 1
+	endif
+	if (src.rescount(arg(frresbase)) < arg(frneededamount))
+		src.sysmessage("Nemas dost materialu (<?<arg(frresbase)>.name?>)")
+		return 1
+	endif
+	
+	arg(secneededamount,0)
+	if (arg(secresbase) != i_unused) //druha resource se testuje jestli existuje
+		if ((<arg(secresbase)>.type == t_ingot) || (<arg(secresbase)>.type == t_log)) //a jestli je to log/ingot
+			arg(secneededamount,<eval( ((more1h - more1l)*var(secnumb))/more1h)>) //nejmene 0
+			if (src.rescount(arg(secresbase)) < arg(secneededamount))
+				src.sysmessage("Nemas dost materialu (<?<arg(secresbase)>.name?>)")
+				return 1
+			else
+				src.consume(<arg(secresbase)>, <arg(secneededamount)>)
+			endif
+		endif
+	endif
+	src.consume(<arg(frresbase)>, <arg(frneededamount)>)
+	more1h = more1h-1 //snizime o 1 durabilitu
+	
+	if (isbow)
+		arg(skillvalue, <src.bowcraft>)
+	elseif (isstaff)
+		arg(skillvalue, <src.carpentry>)
+	else
+		arg(skillvalue, <src.blacksmithing>)
+	endif
+	
+	if (arg(skillvalue) > rand(1025))
+		more1l = more1h
+		src.sysmessage("Oprava se povedla")
+	else
+		src.sysmessage("Oprava se nepovedla")
+	endif
+	src.anim(9)
+	src.sound(02a)
+endif

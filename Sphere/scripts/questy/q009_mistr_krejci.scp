@@ -1,0 +1,483 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                       Kvest Neutralni-009 Krejci                                 //
+//                            (c)-Sir Glorg-                                        //
+//                         myslenka by: -GM Stin-                                   //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+// tagy:
+// q009_krejci == 1 -> mas donyst sek na 5M
+// q009_krejci == 2 -> cekej den na prsten
+// q009_krejci == 3 -> hotovo + mas prsten
+// q009_krejci_ringtime == <serv.time> -> cas, kdy uz je mozne si prsten vyzvednout
+
+
+[speech spk_q009_krejci]
+on=*ahoj*
+on=*zdrav*
+on=*ukol*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+ f_q009_krejci
+endif
+
+[function f_q009_krejci]
+if (<src.tag.q009_krejci> == 3)
+  DIALOG(d_q009_krejci_6)
+elseif ((<src.tag.q009_krejci> == 2) && (<src.tag.q009_krejci_ringtime> < <serv.time>))
+  DIALOG(d_q009_krejci_5)
+elseif (<src.tag.q009_krejci> == 2)
+  src.tag.q009_krejci_ringtime= (<src.tag(q009_krejci_ringtime)>+10800)
+  DIALOG(d_q009_krejci_4)
+elseif ((<src.tag.q009_krejci> == 1) && (<src.findlayer(21).findid(i_cashiers_check).more1> == 5000000 ))
+  DIALOG(d_q009_krejci_3)
+elseif (<src.tag.q009_krejci> == 1)
+  DIALOG(d_q009_krejci_2)
+elseif (<src.tag.q009_krejci> == 0)
+  DIALOG(d_q009_krejci_1)
+else
+  src.redmessage("Neosetrena chyba v dialogu. Napis page nebo kontaktuj GM Yavannu na e-mail")
+endif
+
+
+
+///////// Krejci dialog 1 /////////
+
+[dialog d_q009_krejci_1]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Kdo jsi ?     
+text 217 331 1152 1   // 
+button 325 330 0988 0988 0 3 0  // Mohu pomoct ? 
+text 370 331 1152 2    //
+button 490 330 0988 0988 0 4 0  // Prohlednout ...
+text 535 331 142 3   //
+button 490 360 0988 0988 1 0 2  // Obchodovat?
+text 540 361 1152 4   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,5,0,36)
+
+
+page 2 // kdo jsi?
+HTMLGUMP(170,230,440,100,6,0,36)
+
+
+page 3 // Mohu ti pomoci ?
+HTMLGUMP(170,230,440,100,7,0,36)
+button 25 395 0fa5 0fa7 0 5 0  // tvuj obchod je prednejsi
+text 60 397 152 11
+button 25 415 0fa5 0fa7 0 6 0  // mas krasny saty
+text 60 417 152 12
+text 60 432 152 13
+
+
+page 4 // prohlednout...
+HTMLGUMP(170,230,440,100,8,0,36)
+
+
+page 5 // tvuj obchod je prednejsi
+HTMLGUMP(170,230,440,100,14,0,36)
+
+
+page 6 // mas krasny saty
+HTMLGUMP(170,230,440,100,15,0,36)
+button 25 395 0fa5 0fa7 0 8 0  // mam zajem
+text 60 398 152 16
+button 25 415 0fa5 0fa7 0 7 0  // nic pro mne
+text 60 417 152 17
+
+
+page 7 // nic pro mne
+HTMLGUMP(170,230,440,100,18,0,36)
+
+
+page 8 // mam zajem
+HTMLGUMP(170,230,440,100,19,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // souhlasit
+text 60 398 142 20
+button 25 415 0fa5 0fa7 0 9 0  // neni to trochu moc ?
+text 60 417 152 21
+
+page 9 // mam zajem
+HTMLGUMP(170,230,440,100,22,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // souhlasit
+text 60 398 142 20
+button 25 415 0fa5 0fa7 0 7 0  // nic pro mne
+text 60 417 152 17
+
+
+[dialog d_q009_krejci_1 text]
+Krejci                                                                                //0
+Kdo jsi?                                                                              //1
+Mohu pomoci?                                                                          //2
+-Prohlednout-                                                                         //3
+Obchodovat?                                                                           //4
+Vitej v mem kramku !                                                                  //5
+Jmenuji se Talathwen. Jsem zde jedina poradna krejci. Nikdy zbrkle nevyhazuj svuj strhany odev, divil by ses, co vsechno se da spravit nekolika stehy.//6
+No nevim, jsem v tezke situaci. Kvalitni zbozi si dnes koupi jen malokdo a hrozi mi bankrot. I mistni si uz kupuji sve veci u tech pochybnych prodejcu na trzisti. Je to skupina drzgresli, co svou praci odbydou, a aby ne, vzdyt ji vetsinou ani poradne neznaji. Prodala bych snad cokoliv, abych udrzela rodinny obchod v pohybu, ale nemam ti moc co nabidnout. Snad jen... *povzdechla*  //7
+Trochu vystredne oblecena, zrala zena. Na jeji dnes jiz lehce zvrasnene tvari je videt jiskra mladosti a citis, ze byla kdysi obletovana davy muzu. I kdyz i mene zkusenemu oku nemuze uniknout, ze jeji hrudnik je z velke casti pouze krejcirska kamuflaz. //8
+Neni mi jasna tva nerozvaznost. O co jde?                                             //9
+Vis, jiz leta pouziva nase rodina k siti zvlastni prsten. S jeho pouziti budes schopen pracovat daleko presneji a tva latka bude daleko pevnejsi a kvalitnejsi... Nevim vsak, zda jeho prodejem neuskodim rodinnemu dedictvi vice, jak ztratou obchodu.        //10
+Jsem si jist, ze tvuj obchod je prednejsi.                                            //11
+Vsiml jsem si dokonalych tvaru tvych satu. Jejich strih a puvab preci nemuze byt //12
+dilem JEN tak nejakeho prstenu!                                                                              //13
+Myslim, ze tva odpoved je hnana lacnosti a touhou vynikat. Cloveku jako ty nesverim vse, co davalo memu remeslu smysl a me vuli silu pokracovat!         //14
+Ah *Talathwen je zaskocena, ale potesena tvou lichotkou* .. Jsi dobry clovek, ale presto si nejsem jista, zda by pro tebe mel tento predmet takovou hodnotu na jakou si jej cenim. Ale jsem tedy rozhodnuta. Mas o nej zajem ? //15
+Ano mam !                                                                             //16
+Bohuzel, toto neni nic pro mne...                                                     //17
+Skoda, u tebe by byl jiste v dobrych rukou... Kdyby jsi o nej mel precijen nekdy zajem, zastav se ! //18
+Dobra tedy ! Prines mi sek na 5M zlatych a prsten muze byt tvuj!                      //19
+*souhlasit*                                                                           //20
+Uff ! To je trochu moc, nemyslis ?                                                     //21
+Ne, jsem si vedoma zavratnosti teto castky, avsak nepolevim. Je to rodinny klenot a ja jej prodam jen tehdy, bude-li pro mne jeho cena znamenat naprostou jistotu pro muj obchod.    //22
+
+
+[dialog d_q009_krejci_1 button]
+on=1
+ src.tag.q009_krejci = 1
+ SAY=Dones mi tedy ten sek a dohodneme se.
+
+on=2
+ SAY=U mne najdes vse, co zkusena svadlena potrebuje.
+ buy
+
+
+
+
+
+
+
+
+
+
+
+///////// Krejci dialog 2 /////////
+
+[dialog d_q009_krejci_2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 490 330 0988 0988 0 2 0  // Prohlednout ...
+text 535 331 142 1   //
+button 490 360 0988 0988 1 0 2  // Obchodovat?
+text 540 361 1152 2   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,3,0,36)
+
+
+page 2 // prohlednout...
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+[dialog d_q009_krejci_2 text]
+Krejci                                                                                //0
+-Prohlednout-                                                                         //1
+Obchodovat?                                                                           //2
+Rada te tu opet vidim. Pamatuj, neprodam ten prsten za mene, jak 5M. Staci donest sek a bude tvuj.    //3
+Trochu vystredne oblecena, zrala zena. Na jeji dnes jiz lehce zvrasnene tvari je videt jiskra mladosti a citis, ze byla kdysi obletovana davy muzu. I kdyz i mene zkusenemu oku nemuze uniknout, ze jeji hrudnik je z velke casti pouze krejcirska kamuflaz. //4
+
+
+
+[dialog d_q009_krejci_2 button]
+on=2
+ SAY=U mne najdes vse, co zkusena svadlena potrebuje.
+ buy
+
+
+
+
+
+
+
+///////// Krejci dialog 3 /////////
+
+[dialog d_q009_krejci_3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 490 330 0988 0988 0 2 0  // Prohlednout ...
+text 535 331 142 1   //
+button 490 360 0988 0988 1 0 2  // Obchodovat?
+text 540 361 1152 2   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,3,0,36)
+button 25 395 0fa5 0fa7 0 3 0  // mam tu pro tebe ten sek
+text 60 398 152 5
+
+
+page 2 // prohlednout...
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+page 3 // mam ten sek..
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // mam tu pro tebe ten sek
+text 60 398 142 7
+button 25 415 0fa5 0fa7 0 4 0  // neni to trochu moc ?
+text 60 417 152 8
+
+page 4 // kde mam jistotu, ze s gp nezmizis ?
+HTMLGUMP(170,230,440,100,9,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // mam tu pro tebe ten sek
+text 60 398 142 7
+
+
+[dialog d_q009_krejci_3 text]
+Krejci                                                                                //0
+-Prohlednout-                                                                         //1
+Obchodovat?                                                                           //2
+Rada te tu opet vidim. Koupis tedy ten prsten?                                        //3
+Trochu vystredne oblecena, zrala zena. Na jeji dnes jiz lehce zvrasnene tvari je videt jiskra mladosti a citis, ze byla kdysi obletovana davy muzu. I kdyz i mene zkusenemu oku nemuze uniknout, ze jeji hrudnik je z velke casti pouze krejcirska kamuflaz. //4
+Mam tu pro tebe ten sek.                                                              //5
+Vyborne ! Nech mne tedy zmerit tvuj prst a zitra si pro ten prsten prijd. Musi ti presne padnout, jinak je k nicemu.    //6
+*Predat krejci sek na 5 000 000 gp.*                                                  //7
+Jak mi muzes zarucit, ze s temi penezi nezmizis ?                                    //8
+Mas jen me slovo a jistotu, ze opustit toto staveni by pro mne bylo tezsi nez smrt.   //9
+
+
+[dialog d_q009_krejci_3 button]
+on=1
+ if (<src.findlayer(21).findid(i_cashiers_check).more1> == 5000000 )
+   SAY=Tedy dohodnuto, stav se zde zitra, prsten by mel byt pripraven.
+   src.findlayer(21).findid(i_cashiers_check).remove
+   src.tag.q009_krejci_ringtime= (<serv.time>+86400)
+   src.tag.q009_krejci=2
+ else
+   SAY=Kam jsi dal ten sek ?
+ endif
+
+
+on=2
+ SAY=U mne najdes vse, co zkusena svadlena potrebuje.
+ buy
+
+
+
+
+
+
+
+
+
+
+
+///////// Krejci dialog 4 /////////
+
+[dialog d_q009_krejci_4]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 490 330 0988 0988 0 2 0  // Prohlednout ...
+text 535 331 142 1   //
+button 490 360 0988 0988 1 0 2  // Obchodovat?
+text 540 361 1152 2   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,3,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // odejit
+text 60 398 142 5
+
+
+page 2 // prohlednout...
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+
+[dialog d_q009_krejci_4 text]
+Krejci                                                                                //0
+-Prohlednout-                                                                         //1
+Obchodovat?                                                                           //2
+Rada te tu opet vidim. Ten prsten jeste neni hotovy, stav se pozdeji.                 //3
+Trochu vystredne oblecena, zrala zena. Na jeji dnes jiz lehce zvrasnene tvari je videt jiskra mladosti a citis, ze byla kdysi obletovana davy muzu. I kdyz i mene zkusenemu oku nemuze uniknout, ze jeji hrudnik je z velke casti pouze krejcirska kamuflaz. //4
+*Odejit*                                                                              //5
+
+
+[dialog d_q009_krejci_4 button]
+on=1
+ SAY=Pokusim se upravu prstenu uspisit. Bohuzel mne ted stale nekdo otravuje a to mi protahuje praci...
+ src.tag.q009_krejci_ringtime= (<src.tag(q009_krejci_ringtime)>-3600)
+ 
+on=2
+ SAY=U mne najdes vse, co zkusena svadlena potrebuje.
+ buy
+ 
+ 
+
+
+
+
+
+
+///////// Krejci dialog 5 /////////
+
+[dialog d_q009_krejci_5]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 490 330 0988 0988 0 2 0  // Prohlednout ...
+text 535 331 142 1   //
+button 490 360 0988 0988 1 0 2  // Obchodovat?
+text 540 361 1152 2   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,3,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // odejit
+text 60 398 142 5
+
+
+page 2 // prohlednout...
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+
+[dialog d_q009_krejci_5 text]
+Krejci                                                                                //0
+-Prohlednout-                                                                         //1
+Obchodovat?                                                                           //2
+Aaah vyborne ! Tva odmena je hotova, tady vezmi si ji. Jeste ti vysvetlim, jak jej pouzit a bude to vse.       //3
+Trochu vystredne oblecena, zrala zena. Na jeji dnes jiz lehce zvrasnene tvari je videt jiskra mladosti a citis, ze byla kdysi obletovana davy muzu. I kdyz i mene zkusenemu oku nemuze uniknout, ze jeji hrudnik je z velke casti pouze krejcirska kamuflaz. //4
+*Prevzit prsten a vyslechnout si podrobnosti o jeho pouziti*                                                                      //5
+
+
+[dialog d_q009_krejci_5 button]
+on=1
+ SAY=... a to je cele. Opatruj ho velmi peclive. Verim, ze u tebe bude v dobrych rukou
+ if (<src.tailoring> < 1000)
+   src.sysmessage("Vubec jsi nepochopil, o cem ta svadlena mluvila... snad to nebyly vyhozene penize.")
+ endif
+ src.tag.q009_krejci=3
+ src.tag(q009_krejci_ringtime).remove
+ src.newitemsafe(i_q009_ring_tailor)
+ lastnew.tag.ownerid = <src>
+ lastnew.bounce
+
+on=2
+ SAY=U mne najdes vse, co zkusena svadlena potrebuje.
+ buy
+ 
+ 
+
+
+
+
+
+
+
+
+///////// Krejci dialog 6 /////////
+
+[dialog d_q009_krejci_6]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03000 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 490 330 0988 0988 0 2 0  // Prohlednout ...
+text 535 331 142 1   //
+button 490 360 0988 0988 1 0 2  // Obchodovat?
+text 540 361 1152 2   //
+
+
+page 1 // pozdrav
+HTMLGUMP(170,230,440,100,3,0,36)
+button 25 395 0fa5 0fa7 1 0 1  // odejit
+text 60 398 142 5
+
+
+page 2 // prohlednout...
+HTMLGUMP(170,230,440,100,4,0,36)
+
+
+
+[dialog d_q009_krejci_6 text]
+Krejci                                                                                //0
+-Prohlednout-                                                                         //1
+Obchodovat?                                                                           //2
+Vitej v mem kramku! Jsem ti stale vdecna za tvou velkorysou nabidku za prsten. Muj obchod se od te doby postavil na nohy.       //3
+Trochu vystredne oblecena, zrala zena. Na jeji dnes jiz lehce zvrasnene tvari je videt jiskra mladosti a citis, ze byla kdysi obletovana davy muzu. I kdyz i mene zkusenemu oku nemuze uniknout, ze jeji hrudnik je z velke casti pouze krejcirska kamuflaz. //4
+*Odejit*                                                                              //5
+
+
+[dialog d_q009_krejci_6 button]
+on=1
+ SAY=Rada te tu zase nekdy uvidim !
+
+on=2
+ SAY=U mne najdes vse, co zkusena svadlena potrebuje.
+ buy
+  
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+////////////////////////////////////
+//////////// I  T  E  M ////////////
+////////////////////////////////////
+
+[itemdef i_q009_ring_tailor]
+id=i_ring_gold
+name=Prsten Krejciho
+type=t_jewelry
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-009 Krejci
+DESCRIPTION=Prsten
+
+ON=@Create
+color=0999
+
+ON=@Equip
+if (<src.tailoring>>999) && (<tag(ownerid)> == <src>)
+ src.tag(altered_ta,1)
+ src.tailoring=(<src.tailoring>+100)
+ src.sysmessage="Mistrovstvi spjate s timto prstenem ti zveda obratnost pri vyrobe odevu."
+elseif (<tag(ownerid)> == <src>)
+ src.redmessage="K manipulaci s timto prstenem nemas dost zkusenosti."
+ bounce
+ return 1
+else
+ src.redmessage="Tento prsten ti nepadne. Je na nem vyryto jmeno <tag(ownerid).name>"
+ bounce
+ return 1
+endif
+
+ON=@UnEquip
+if(src.tag(altered_ta))
+ if(<src.tag(altered_ta)>==1)
+  src.tag.remove(altered_ta)
+  src.tailoring=(<src.tailoring>-100)
+ endif
+endif

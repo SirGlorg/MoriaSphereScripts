@@ -1,0 +1,77 @@
+[SPEECH spk_strazcelagru]
+
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+if (<src.account.tag(lagr)><8)
+  say (Musis ziskat <eval(<src.tag(lagrlogu)>/100)> propoustecich zlataku. Ziskas je u me vymenou za drevo, kdyz reknes "vymena". Pokud nemas svetlo, rekni "svetlo", pokud postradas sekeru, rekni "sekera". Az budes mit propousteci zlataky, oslov mne "propustit". Mas-li hlad, rekni "jidlo".)
+//say (Musis ziskat <eval(<trest_<src.account.tag(lagr)>>/100)> propoustecich zlataku. Ziskas je u me vymenou za drevo, kdyz reknes "vymena". Pokud nemas svetlo, rekni "svetlo", pokud postradas sekeru, rekni "sekera". Az budes mit propousteci zlataky, oslov mne "propustit". Mas-li hlad, rekni "jidlo".)
+else
+  if (src.tag(lagrlogu))
+    say (Musis ziskat <eval(<src.tag(lagrlogu)>/100)> propoustecich zlataku. Ziskas je u me vymenou za drevo, kdyz reknes "vymena". Pokud nemas svetlo, rekni "svetlo", pokud postradas sekeru, rekni "sekera". Az budes mit propousteci zlataky, oslov mne "propustit". Mas-li hlad, rekni "jidlo".)
+  else
+    say Kontaktuj GM pres page, tva postava je recidivista, ktery dostane specialni trest.
+  endif
+endif
+
+ON=*vymena*
+if (<src.restest(100,i_log_lager)>)
+  src.consume(i_log_lager,100)
+  var(lagrlogscount,<src.rescount(i_gold_lagr)>)
+  src.tag(lastlagrlogscount,<var(lagrlogscount)>)
+  src.consume(i_gold_lagr,<var(lagrlogscount)>)
+  src.newitem(i_gold_lagr)
+  src.act.bounce
+  lastnew.amount=<eval(<var(lagrlogscount)>+1)>
+  //src.newitem(i_gold_lagr)
+  //src.act.bounce
+else
+  say Nemas dost dreva - pokud mi reknes "vymena", vymenim 100 spruce logu za 1 propusteci zlatak, nebo kvalitnejsi logy za spruce logy.
+endif
+
+ON=*sekera*
+if (<src.restest 1 i_hatchet>)
+ say Sekeru mas, tak sekej.
+else 
+ src.newequip=i_hatchet
+ say Dal jsem ti novou sekeru.
+endif
+
+ON=*svetlo*
+src.spelleffect 6 1000 
+
+ON=*jidlo*
+src.food=15
+
+ON=*propustit*
+if (<src.account.tag(lagr)><8)
+ //if (<src.restest <eval(<trest_<src.account.tag(lagr)>>/100)> i_gold_lagr>)
+ if (<src.restest <eval(<src.tag(lagrlogu)>/100)> i_gold_lagr>)
+  src.lagrpustit
+  //src.consume i_hatchet
+  //src.consume i_armor_female_skirt
+  //src.tag.remove(trestanec)
+  //src.account.tag.remove(vlagru)
+  //src.kills=<src.tag(lagrkills)>
+  //src.name=<src.tag(lagrname)>
+  //src.lumberjacking=<src.tag(lumberpits)>
+  //src.consume=<eval(<trest_<src.account.tag(lagr)>>/100)> i_gold_lagr
+  //src.findlayer(21).findid(i_gold_lagr).remove
+  //src.forgive
+  //src.sysmessage ("Jsi propusten.")
+  //src.gohome
+ else
+  //say Potrebujes <eval(<trest_<src.account.tag(lagr)>>/100)> propoustecich zlataku, ty ziskas vymenou za normalni drevo, az budes mit dostatek dreva oslov me "vymena".
+  say("Mas u sebe jen <eval <src.rescount(i_gold_lagr)>> zlataku.")
+  say("Potrebujes celkem <eval(<src.tag(lagrlogu)>/100)> propoustecich zlataku. Ty ziskas vymenou za normalni drevo. Az budes mit dostatek dreva, oslov me "vymena".")
+ endif
+else
+  if (src.tag(lagrlogu))
+    if (<src.restest <eval(<src.tag(lagrlogu)>/100)> i_gold_lagr>)
+      src.lagrpustit
+    else
+      say Potrebujes <eval(<src.tag(lagrlogu)>/100)> propoustecich zlataku, ty ziskas vymenou za normalni drevo, az budes mit dostatek dreva oslov me "vymena".
+    endif
+  else
+  say ("Kontaktuj GM pres page, tva postava je recidivista, ktery dostane specialni trest.")
+endif

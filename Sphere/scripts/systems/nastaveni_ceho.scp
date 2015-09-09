@@ -1,0 +1,2563 @@
+[function nastaveni_check]
+nastaveni_finish_globals
+if (i_cm_check.id==2)
+ i_cm_check.id=1
+ nastaveni_uplatni_mining
+ nastaveni_uplatni_craftmenu
+ allplayers(fixweight)
+endif
+if (i_armor_check.id==2)
+ i_armor_check.id=1
+ nastaveni_uplatni_armors
+ nastaveni_uplatni_weapons_armors
+endif
+if (i_skills_check.id==2)
+ i_skills_check.id=1
+ nastaveni_uplatni_skills  
+endif
+if (i_weapon_check.id==2)
+ i_weapon_check.id=1
+ nastaveni_uplatni_weapons
+ nastaveni_uplatni_weapons_armors
+endif
+//if (i_resources_check.id==2)
+// i_resources_check.id=1
+// nastaveni_uplatni_value
+//endif
+if (i_spells_check.id==2)
+ i_spells_check.id=1
+ nastaveni_uplatni_spells
+endif
+
+[function fixplayerweight]
+contents2(trytofixweight)
+fixweight
+
+[function trytofixweight]
+safe(fixweight)
+
+[function nastaveni_uplatni_regions]
+logmsg(uplatneni nastaveni regions)
+tag(storep,<p>)
+p=100,100 //region Stredozeme ! 
+region.sectors.allitems(nastav_townstones)
+region.sectors.allitems(nastav_generalstones)
+region.sectors.allitems(nastav_captainstones)
+nastav_vyjimku(Esgaroth,Dol) //ktery mesto, na ktery linknout
+nastav_vyjimku(Helmuv Zleb,Edoras)
+nastav_vyjimku(Severni ctvrtka,Hobitin)
+nastav_vyjimku(Parezov,Hobitin)
+nastav_vyjimku(Radovsko,Hobitin)
+nastav_vyjimku(Zabovresky,Hobitin)
+nastav_vyjimku(Calembel,Dol Amroth)
+nastav_vyjimku(Pelargir,Dol Amroth)
+nastav_vyjimku(Lorien,Kralovstvi lesnich elfu)
+nastav_vyjimku(Cair Andros,Minas Tirith)
+//nastav_vyjimku(Pelenorska pole,Minas Tirith)
+nastav_vyjimku(Forondon,Fornost)
+nastav_vyjimku(Hurecko,Fornost)
+nastav_vyjimku(1592 1938,Fornost) //Tharbad - .go tharbad hazi na gondorske uzemi kousek vedle  !
+nastav_vyjimku(Hurka,Fornost)
+//nastav_vyjimku(3492 3190,Nurn)  //Nurnen - zruseno, je to cely obrovsky uzemi :)
+nastav_vyjimku(Nurnske hradiste,3470 3249 12)  //Nurn
+nastav_vyjimku(Tahabar,Umbar)
+nastav_vyjimku(Oaza Hagir,Umbar)
+nastav_vyjimku(Bagronk,Barad-dur)
+p=<tag(storep)>
+tag.remove(storep)
+
+[function nastav_townstones]
+if(!strcmpi(<baseid>,i_townstone))||(!strcmpi(<baseid>,i_shrine_power))
+ region.tag(townstone,<uid>)
+endif
+
+[function nastav_generalstones]
+if(!strcmpi(<baseid>,i_generalstone))||(!strcmpi(<baseid>,i_lordnazgulsstone))
+ region.tag(generalstone,<uid>)
+endif
+
+[function nastav_captainstones]
+if(!strcmpi(<baseid>,i_captainstone))||(!strcmpi(<baseid>,i_mordorcaptainstone))
+ region.tag(keep,<uid>)
+endif
+
+[function nastav_vyjimku] //argv(0) - ktery mesto, argv(1) - na ktery linknout
+p=<argv(1)>
+arg(townstone,<region.tag(townstone)>)
+arg(generalstone,<region.tag(generalstone)>)
+p=<argv(0)>
+region.tag(townstone,<arg(townstone)>)
+region.tag(generalstone,<arg(generalstone)>)
+
+
+
+[function nastaveni_uplatni_spells]
+logmsg(uplatneni nastaveni spells)
+nastaveni_cleartag
+tag(nastaveni_prefnametype,"findres(spell,")
+tag(nastaveni_sufnametype,").defname")
+tag(nastaveni_sufname,".name")
+tag(nastaveni_prefvaluetype,"findres(spell,")
+tag(nastaveni_sufvaluetype,").defname")
+tag(nastaveni_prefdefaulttype,"findres(spell,")
+tag(nastaveni_sufdefaulttype,").defname")
+f_nastaveni_uplatneni_spells
+nastaveni_cleartag
+tag(nastaveni_prefnametype,"findres(spell,")
+tag(nastaveni_sufnametype,"+50).defname")
+tag(nastaveni_sufname,".name")
+tag(nastaveni_prefvaluetype,"findres(spell,")
+tag(nastaveni_sufvaluetype,"+50).defname")
+tag(nastaveni_prefdefaulttype,"findres(spell,")
+tag(nastaveni_sufdefaulttype,"+50).defname")
+f_nastaveni_uplatneni_spells
+
+[function f_nastaveni_uplatneni_spells]
+tag(nastaveni_prefvalue,"nastaveni_spellmana_")
+tag(nastaveni_sufdefault,".manause")
+f_nastaveni_setdefault
+tag(nastaveni_prefvalue,"nastaveni_spelleffect_")
+tag(nastaveni_sufdefault,".effect")
+f_nastaveni_setdefault
+tag(nastaveni_prefvalue,"nastaveni_spelltime_")
+tag(nastaveni_sufdefault,".casttime")
+f_nastaveni_setdefault
+tag(nastaveni_prefvalue,"nastaveni_duration_")
+tag(nastaveni_sufdefault,".duration")
+f_nastaveni_setdefault
+tag(nastaveni_prefvalue,"nastaveni_SKILLREQ_")
+tag(nastaveni_sufdefault,".SKILLREQ")
+f_nastaveni_setdefault
+
+[function nastaveni_uplatni_armors]
+//armor:
+logmsg(uplatneni nastaveni armors)
+nastaveni_cleartag
+tag(nastaveni_prefvalue,"nastaveni_armorarmor")
+tag(nastaveni_prefvaluetype,"f_nastav_armorvar(")
+tag(nastaveni_sufvaluetype,")")
+tag(nastaveni_prefdefault,"f_nastav_armor_default(")
+tag(nastaveni_prefdefaulttype,"n_armor[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,",armor)")
+f_nastav_allarmors(armor,0)
+nastaveni_cleartag
+tag(nastaveni_prefvalue,"nastaveni_armorweight")
+tag(nastaveni_prefdefault,"eval (f_nastav_armor_default(")
+tag(nastaveni_prefdefaulttype,"n_armor[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,",weight))*4")
+f_nastav_allarmors(weight,1)
+nastaveni_cleartag
+
+[function nastaveni_uplatni_skills]
+logmsg(uplatneni nastaveni skills)
+nastaveni_cleartag
+tag(nastaveni_prefvaluetype,"findres(skill,")
+tag(nastaveni_sufvaluetype,").defname")
+tag(nastaveni_prefdefaulttype,"findres(skill,")
+tag(nastaveni_sufdefaulttype,").defname")
+tag(nastaveni_prefvalue,"nastaveni_skilleffect_")
+tag(nastaveni_sufdefault,".EFFECT")
+f_nastaveni_weapdamage_finish
+tag(nastaveni_prefvalue,"nastaveni_skilldelay_")
+tag(nastaveni_sufdefault,".delay")
+f_nastaveni_weapdamage_finish
+tag(nastaveni_prefvalue,"nastaveni_skilladvrate_")
+tag(nastaveni_sufdefault,".ADVRATE")
+f_nastaveni_weapdamage_finish
+nastaveni_cleartag
+
+[function nastaveni_uplatni_weapons]
+logmsg(uplatneni nastaveni Weapons)
+nastaveni_cleartag
+tag(nastaveni_prefvaluetype,"n_weapon[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_prefdefaulttype,"n_weapon[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_copper")
+tag(nastaveni_sufdefault,"_copper.dam")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Iron")
+tag(nastaveni_sufdefault,"_Iron.dam")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Verite")
+tag(nastaveni_sufdefault,"_Verite.dam")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Valorite")
+tag(nastaveni_sufdefault,"_Valorite.dam")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Obsidian")
+tag(nastaveni_sufdefault,"_Obsidian.dam")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Adamantinum")
+tag(nastaveni_sufdefault,"_Adamantinum.dam")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Mithril")
+tag(nastaveni_sufdefault,"_Mithril.dam")
+f_nastaveni_weapdamage_finish
+nastaveni_cleartag
+
+[function nastaveni_uplatni_weapons_armors]
+logmsg(uplatneni nastaveni Weapons a Armors)
+tag(nastaveni_prefvalue,"nastaveni_resources_")
+tag(nastaveni_prefvaluetype,"n_weapons_armors[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_prefdefault,"ret1000(")
+tag(nastaveni_prefdefaulttype,"n_weapons_armors[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+f_nastav_weapons_armors_resources
+nastaveni_cleartag
+tag(nastaveni_prefvalue,"nastaveni_REQSTR_")
+tag(nastaveni_prefvaluetype,"n_weapons_armors[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_prefdefault,"ret1000(")
+tag(nastaveni_prefdefaulttype,"n_weapons_armors[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+f_nastav_weapons_armors_reqstr
+nastaveni_cleartag
+
+[function nastaveni_uplatni_mining]
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"n_Mining[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,".name")
+tag(nastaveni_prefvaluetype,"n_Mining[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_prefdefaulttype,"n_Mining[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_prefvalue,"nastaveni_miningskill_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_sufdefault,".SKILL")
+f_nastaveni_setdefault
+tag(nastaveni_prefvalue,"nastaveni_miningamount_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_sufdefault,".amount")
+f_nastaveni_setdefault
+tag(nastaveni_prefvalue,"nastaveni_miningRegen_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_sufdefault,".Regen")
+f_nastaveni_setdefault
+nastaveni_cleartag
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"n_regiontype[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,".name")
+tag(nastaveni_prefvaluetype,"n_regiontype[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_prefdefaulttype,"n_regiontype[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_prefvalue,"nastaveni_miningvyskyt_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_sufdefault,".resources")
+f_nastaveni_setdefault
+nastaveni_cleartag
+
+//[function nastaveni_uplatni_value]
+//tag(nastaveni_prefvalue,nastaveni_value_)
+//tag(nastaveni_prefvaluetype,"n_material[")
+//tag(nastaveni_sufvaluetype,"]")
+//tag(nastaveni_prefdefault,"findres(item,")
+//tag(nastaveni_prefdefaulttype,"n_material[")
+//tag(nastaveni_sufdefaulttype,"]")
+//tag(nastaveni_sufdefault,").value")
+//f_nastaveni_setdefault
+//nastaveni_cleartag
+
+[function nastaveni_finish_globals]
+if (serv.STAMINALOSSATWEIGHT!=<nastaveni_global_STAMINALOSSATWEIGHT>)
+ accmsg(Uplatneni hodnoty:'serv.STAMINALOSSATWEIGHT=<nastaveni_global_STAMINALOSSATWEIGHT>')
+ serv.STAMINALOSSATWEIGHT=<nastaveni_global_STAMINALOSSATWEIGHT>
+endif
+if (serv.RUNNINGPENALTY!=<nastaveni_global_RUNNINGPENALTY>)
+ accmsg(Uplatneni hodnoty:'serv.RUNNINGPENALTY=<nastaveni_global_RUNNINGPENALTY>')
+ serv.RUNNINGPENALTY=<nastaveni_global_RUNNINGPENALTY>
+endif
+
+[menu menu_nastaveni]
+NASTAVENI SVETA
+
+on=0 Globalni nastaveni
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"Globalni modifikatory")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_global_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_")
+tag(nastaveni_prefvaluetype,"n_global[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_global_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Globalni nastaveni 2
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"Globalni modifikatory 2")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_global2_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_")
+tag(nastaveni_prefvaluetype,"n_global2[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_global2_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Globalni nastaveni 3
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"Globalni modifikatory 3")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_global3_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_")
+tag(nastaveni_prefvaluetype,"n_global3[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_global3_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Ability, vlastnosti povolani
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"Vlastnosti povolani a abilit (Maxstat: VIT,STR,DEX,INT )")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_ability_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_")
+tag(nastaveni_prefvaluetype,"n_ability[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_ability_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Ability, vlastnosti povolani 2
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"Vlastnosti povolani a abilit 2 (Maxstat: VIT,STR,DEX,INT )")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_ability2_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_")
+tag(nastaveni_prefvaluetype,"n_ability2[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_ability2_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Ability, vlastnosti povolani 3
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"Vlastnosti povolani a abilit 3 (Maxstat: VIT,STR,DEX,INT )")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_ability3_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_")
+tag(nastaveni_prefvaluetype,"n_ability3[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_ability3_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+
+ON=0 Zbrane
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"n_weapon[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,".name")
+
+tag(nastaveni_prefvaluetype,"n_weapon[")
+tag(nastaveni_sufvaluetype,"]")
+
+tag(nastaveni_prefdefaulttype,"n_weapon[")
+tag(nastaveni_sufdefaulttype,"]")
+menu menu_nastaveni_zbrane
+
+on=0 Kouzla 1
+tag(nastaveni_finishfunkce,f_nastaveni_setdefault)
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"findres(spell,")
+tag(nastaveni_sufnametype,").defname")
+tag(nastaveni_sufname,".name")
+tag(nastaveni_prefvaluetype,"findres(spell,")
+tag(nastaveni_sufvaluetype,").defname")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_prefdefaulttype,"findres(spell,")
+tag(nastaveni_sufdefaulttype,").defname")
+menu menu_nastaveni_kouzla1
+
+on=0 Kouzla 2
+tag(nastaveni_finishfunkce,f_nastaveni_setdefault)
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"findres(spell,")
+tag(nastaveni_sufnametype,"+50).defname")
+tag(nastaveni_sufname,".name")
+tag(nastaveni_prefvaluetype,"findres(spell,")
+tag(nastaveni_sufvaluetype,"+50).defname")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_prefdefaulttype,"findres(spell,")
+tag(nastaveni_sufdefaulttype,"+50).defname")
+menu menu_nastaveni_kouzla1
+
+on=0 Armory
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_armor[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvaluetype,"f_nastav_armorvar(")
+tag(nastaveni_sufvaluetype,")")
+tag(nastaveni_sufvalue,"")
+menu menu_nastaveni_armor
+
+on=0 Skilly
+tag(nastaveni_finishfunkce,f_nastaveni_weapdamage_finish)
+
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"findres(skill,")
+tag(nastaveni_sufnametype,").defname")
+tag(nastaveni_sufname,".name")
+
+tag(nastaveni_prefvaluetype,"findres(skill,")
+tag(nastaveni_sufvaluetype,").defname")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_prefdefaulttype,"findres(skill,")
+tag(nastaveni_sufdefaulttype,").defname")
+menu menu_nastaveni_skills
+
+//on=0 Vyroba - hodnota kovu a drev 
+//tag(nastaveni_nadpis,"Vyroba - hodnota kovu a drev a jinych materialu pro urceni expu craftum")
+//tag(nastaveni_finishfunkce,f_nastaveni_setdefault)
+//
+//tag(nastaveni_prefname,"findres(itemdef,")
+//tag(nastaveni_prefnametype,"n_material[")
+//tag(nastaveni_sufnametype,"]")
+//tag(nastaveni_sufname,").name")
+//
+//tag(nastaveni_prefvalue,nastaveni_value_)
+//tag(nastaveni_prefvaluetype,"n_material[")
+//tag(nastaveni_sufvaluetype,"]")
+//tag(nastaveni_sufvalue,"")
+//
+//tag(nastaveni_prefdefault,"findres(itemdef,")
+//tag(nastaveni_prefdefaulttype,"n_material[")
+//tag(nastaveni_sufdefaulttype,"]")
+//tag(nastaveni_sufdefault,").value")
+//nastaveni_dialog
+
+ON=0 Mining , lumberjacking, fishing
+tag(nastaveni_finishfunkce,"f_nastaveni_setdefault")
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"n_Mining[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,".name")
+
+tag(nastaveni_prefvaluetype,"n_Mining[")
+tag(nastaveni_sufvaluetype,"]")
+
+tag(nastaveni_prefdefaulttype,"n_Mining[")
+tag(nastaveni_sufdefaulttype,"]")
+menu menu_nastaveni_mining
+
+on=0 Potiony
+tag(nastaveni_finishfunkce,"")
+tag(nastaveni_nadpis,"Ucinnost lektvaru")
+
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"n_potions[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,".name")
+
+tag(nastaveni_prefvalue,nastaveni_potions_)
+tag(nastaveni_prefvaluetype,"n_potions[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"ret1000(")
+tag(nastaveni_prefdefaulttype,"n_potions[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Jedy
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"system jedu")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_poison_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_poison_")
+tag(nastaveni_prefvaluetype,"n_poison[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_poison_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+
+on=0 Craftmenu
+menu menu_nastaveni_Craftmenu
+
+on=0 Jine
+menu menu_nastaveni_jine
+
+[menu menu_nastaveni_mining]
+Mining
+
+on=0 Skill
+tag(nastaveni_nadpis,"Skill potrebny k vykopani, skill pro nejlepsi mozne kopani")
+tag(nastaveni_prefvalue,"nastaveni_miningskill_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_sufdefault,".SKILL")
+nastaveni_dialog
+
+on=0 Mnozstvi
+tag(nastaveni_nadpis,"Mnozstvi jednotlivych tezitelnych itemu v jednom tile")
+tag(nastaveni_prefvalue,"nastaveni_miningamount_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_sufdefault,".amount")
+nastaveni_dialog
+
+on=0 Regen time
+tag(nastaveni_nadpis,"Cas nez se obnovi policko")
+tag(nastaveni_prefvalue,"nastaveni_miningregen_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_sufdefault,".Regen")
+nastaveni_dialog
+
+on=0 Vyskyt
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"n_regiontype[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,".name")
+tag(nastaveni_prefvaluetype,"n_regiontype[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_prefdefaulttype,"n_regiontype[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_nadpis,"Mnozstvi jednotlivych tezitelnych itemu v jednom tile")
+tag(nastaveni_prefvalue,"nastaveni_miningvyskyt_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_sufdefault,".resources")
+var(nastaveni_entrylength,5000)
+nastaveni_dialog
+var(nastaveni_entrylength,300)
+
+[menu menu_nastaveni_Craftmenu]
+Nastaveni itemu v craftmenu
+on=0 Tinkering
+nastav_cm(Tinkering)
+on=0 Tailoring
+nastav_cm(Tailoring)
+on=0 Inscription
+nastav_cm(Inscription)
+on=0 Cooking
+nastav_cm(Cooking)
+on=0 Carpentry
+nastav_cm(Carpentry)
+on=0 Bowcrafting
+nastav_cm(Bowcrafting)
+on=0 Blacksmithing
+nastav_cm(Blacksmithing)
+on=0 Alchemy
+nastav_cm(Alchemy)
+on=0 Service
+nastav_cm(Service)
+
+[menu menu_nastaveni_skills]
+Skilly
+on=0 Ucinek
+tag(nastaveni_nadpis,"Ucinek Skillu")
+tag(nastaveni_prefvalue,"nastaveni_skilleffect_")
+tag(nastaveni_sufdefault,".EFFECT")
+nastaveni_dialog
+
+on=0 Prodleva
+tag(nastaveni_nadpis,"Prodleva Skillu")
+tag(nastaveni_prefvalue,"nastaveni_skilldelay_")
+tag(nastaveni_sufdefault,".delay")
+nastaveni_dialog
+
+on=0 Rychlost rustu
+tag(nastaveni_nadpis,"Rust Skillu - priblizne na nejnizsi urovni, na 50.0 a na 100.0. Neplati pro cooking a taming.")
+tag(nastaveni_prefvalue,"nastaveni_skilladvrate_")
+tag(nastaveni_sufdefault,".ADVRATE")
+nastaveni_dialog
+
+[menu menu_nastaveni_armor]
+Armory
+
+on=0 Armor
+tag(nastaveni_finishfunkce,f_nastav_allarmors(armor,0))
+tag(nastaveni_nadpis,"Armor kompletu")
+
+tag(nastaveni_prefvalue,"nastaveni_armorarmor")
+
+tag(nastaveni_prefdefault,"f_nastav_armor_default(")
+tag(nastaveni_prefdefaulttype,"n_armor[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,",armor)")
+nastaveni_dialog
+
+on=0 Obrana Mysli
+tag(nastaveni_finishfunkce,f_nastav_allarmors(OM,2))
+tag(nastaveni_nadpis,"Obrana Mysli kompletu")
+
+tag(nastaveni_prefvalue,"nastaveni_armorOM")
+
+tag(nastaveni_prefdefault,"f_nastav_armor_defOM(")
+tag(nastaveni_prefdefaulttype,"n_armor[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Vaha
+tag(nastaveni_finishfunkce,f_nastav_allarmors(weight,1))
+tag(nastaveni_nadpis,"Vaha kompletu")
+
+tag(nastaveni_prefvalue,"nastaveni_armorweight")
+
+tag(nastaveni_prefdefault,"eval (f_nastav_armor_default(")
+tag(nastaveni_prefdefaulttype,"n_armor[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,",weight))*4")
+nastaveni_dialog
+
+on=0 Resources (i zbrane)
+tag(nastaveni_nadpis,"Resources - specificky pro kov * Relativni resources brneni (komplet) a zbrani podle typu")
+tag(nastaveni_finishfunkce,"")
+tag(nastaveni_prefvalue,"nastaveni_resources_")
+tag(nastaveni_prefvaluetype,"n_weapons_armors[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefname,"weaparmors_name(")
+tag(nastaveni_prefnametype,"n_weapons_armors[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefdefault,"ret1000(")
+tag(nastaveni_prefdefaulttype,"n_weapons_armors[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+
+tag(nastaveni_finishfunkce,f_nastav_weapons_armors_resources)
+nastaveni_dialog
+
+on=0 STR requirement (i zbrane)
+tag(nastaveni_nadpis,"REQSTR - specificky pro kov * Relativni REQSTR brneni (komplet) a zbrani podle typu")
+tag(nastaveni_finishfunkce,"")
+tag(nastaveni_prefvalue,"nastaveni_REQSTR_")
+tag(nastaveni_prefvaluetype,"n_weapons_armors[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefname,"weaparmors_name(")
+tag(nastaveni_prefnametype,"n_weapons_armors[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefdefault,"ret1000(")
+tag(nastaveni_prefdefaulttype,"n_weapons_armors[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+
+tag(nastaveni_finishfunkce,f_nastav_weapons_armors_reqstr)
+nastaveni_dialog
+
+on=0 Durabilita (i zbrane)
+tag(nastaveni_nadpis,"Durabilita specificka pro kov * Relativni durabilita brneni (komplet) a zbrani podle typu")
+tag(nastaveni_finishfunkce,"")
+tag(nastaveni_prefvalue,"nastaveni_durability_")
+tag(nastaveni_prefvaluetype,"n_weapons_armors[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefname,"weaparmors_name(")
+tag(nastaveni_prefnametype,"n_weapons_armors[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefdefault,"ret1000(")
+tag(nastaveni_prefdefaulttype,"n_weapons_armors[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+[function weaparmors_name]
+if (<?safe.<args>?>)
+ return"<?<args>.name?>"
+else
+ return"<args>"
+endif
+
+[menu menu_nastaveni_kouzla1]
+Nastaveni kouzel
+
+on=0 Mana
+tag(nastaveni_nadpis,"Spotreba many kouzel")
+tag(nastaveni_prefvalue,"nastaveni_spellmana_")
+tag(nastaveni_sufdefault,".manause")
+nastaveni_dialog
+
+on=0 Effect - sila kouzla
+tag(nastaveni_nadpis,"Effect - sila kouzla")
+tag(nastaveni_prefvalue,"nastaveni_spelleffect_")
+tag(nastaveni_sufdefault,".effect")
+nastaveni_dialog
+
+on=0 Cast time
+tag(nastaveni_nadpis,"Prodleva kouzla")
+tag(nastaveni_prefvalue,"nastaveni_spelltime_")
+tag(nastaveni_sufdefault,".casttime")
+nastaveni_dialog
+
+on=0 Duration
+tag(nastaveni_nadpis,"Vydrz kouzla - netyka se pochopitelne vsech")
+tag(nastaveni_prefvalue,"nastaveni_duration_")
+tag(nastaveni_sufdefault,".duration")
+nastaveni_dialog
+
+on=0 skill requirement
+tag(nastaveni_nadpis,"potrebna magery a tudiz i narocnost kouzla. stejne jako u craftmenu v zasade (ale nejdou tu zkratky :)")
+tag(nastaveni_prefvalue,"nastaveni_SKILLREQ_")
+tag(nastaveni_sufdefault,".SKILLREQ")
+nastaveni_dialog
+
+[menu menu_nastaveni_zbrane]
+NASTAVENI ZBRANI
+on=0 Rychlost
+tag(nastaveni_nadpis,"RYCHLOST ZBRANI")
+tag(nastaveni_finishfunkce,"serv.allclients(temporary_null)")
+tag(nastaveni_prefvalue,"nastaveni_weapspeed_")
+tag(nastaveni_sufvalue,"")
+tag(nastaveni_prefdefault,"weightspeed[")
+tag(nastaveni_sufdefault,".weight]")
+nastaveni_dialog
+
+on=0 damage Copper/Spruce zbrani
+tag(nastaveni_nadpis,"damage Copper/Spruce zbrani")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_copper")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_sufdefault,"_copper.dam")
+tag(nastaveni_finishfunkce,f_nastaveni_weapdamage_finish)
+nastaveni_dialog
+
+on=0 damage Iron/Chestnut zbran
+tag(nastaveni_nadpis,"damage Iron/Chestnut zbrani")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_Iron")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_sufdefault,"_Iron.dam")
+tag(nastaveni_finishfunkce,f_nastaveni_weapdamage_finish)
+nastaveni_dialog
+
+on=0 damage Verite/Oak zbrani
+tag(nastaveni_nadpis,"damage Verite/Oak zbrani")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_Verite")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_sufdefault,"_Verite.dam")
+tag(nastaveni_finishfunkce,f_nastaveni_weapdamage_finish)
+nastaveni_dialog
+
+on=0 damage Valorite/Teak zbrani
+tag(nastaveni_nadpis,"damage Valorite/Teak zbrani")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_Valorite")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_sufdefault,"_Valorite.dam")
+tag(nastaveni_finishfunkce,f_nastaveni_weapdamage_finish)
+nastaveni_dialog
+
+on=0 damage Obsidian/Mahagon zbrani
+tag(nastaveni_nadpis,"damage Obsidian/Mahagon zbrani")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_Obsidian")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_sufdefault,"_Obsidian.dam")
+tag(nastaveni_finishfunkce,f_nastaveni_weapdamage_finish)
+nastaveni_dialog
+
+on=0 damage Adamantinum/Eben zbrani
+tag(nastaveni_nadpis,"damage Adamantinum/Eben zbrani")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_Adamantinum")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_sufdefault,"_Adamantinum.dam")
+tag(nastaveni_finishfunkce,f_nastaveni_weapdamage_finish)
+nastaveni_dialog
+
+on=0 damage Mithril/Elven zbrani
+tag(nastaveni_nadpis,"damage Mithril/Elven zbrani")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_Mithril")
+tag(nastaveni_prefdefault,"")
+tag(nastaveni_sufdefault,"_Mithril.dam")
+tag(nastaveni_finishfunkce,f_nastaveni_weapdamage_finish)
+nastaveni_dialog
+
+on=0 SM bonus holi
+tag(nastaveni_nadpis,"Faktor SM pro hole")
+tag(nastaveni_finishfunkce,"")
+
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"n_staff[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,".name")
+
+tag(nastaveni_prefvalue,"nastaveni_staffSMbonus_")
+tag(nastaveni_prefvaluetype,"n_staff[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"n_staffpower[")
+tag(nastaveni_prefdefaulttype,"n_staff[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,".tdata1]")
+nastaveni_dialog
+
+on=0 Maxmana holi
+tag(nastaveni_nadpis,"Maximalni ulozena mana v holich")
+tag(nastaveni_finishfunkce,"")
+
+tag(nastaveni_prefname,"")
+tag(nastaveni_prefnametype,"n_staff[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,".name")
+
+tag(nastaveni_prefvalue,"nastaveni_staffmaxmana_")
+tag(nastaveni_prefvaluetype,"n_staff[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"staffmana[")
+tag(nastaveni_prefdefaulttype,"n_staff[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,".tdata1]")
+nastaveni_dialog
+
+on=0 Damage sipu a sipek
+tag(nastaveni_nadpis,"Relativni bonus k UC sipu a sipek podle materialu, navyseni UC pro Piercing verze podle AR cile")
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_arrows[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_arrowdefault[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+
+tag(nastaveni_prefvalue,"nastaveni_arrowdamage_")
+tag(nastaveni_prefvaluetype,"onestring(")
+tag(nastaveni_sufvaluetype,")")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_finishfunkce,"")
+nastaveni_dialog
+
+on=0 Bleed
+tag.nastaveni_nadpis="'Trhavost' zbrani - ucinnost bleedingu"
+tag.nastaveni_finishfunkce="serv.allclients(temporary_null)"
+tag.nastaveni_prefvalue="nastaveni_weapbleed_"
+tag.nastaveni_sufvalue=
+tag.nastaveni_prefdefault="weightspeed["
+tag.nastaveni_sufdefault=".weight]"
+nastaveni_dialog
+
+on=0 Piercing
+tag.nastaveni_nadpis="pruraznost zbrani - procentualni piercing"
+tag.nastaveni_finishfunkce="serv.allclients(temporary_null)"
+tag.nastaveni_prefvalue="nastaveni_weappiercing_"
+tag.nastaveni_sufvalue=
+tag.nastaveni_prefdefault="ret0("
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Poison
+tag.nastaveni_nadpis="'Otravitelnost' skill,%sily jedu,max vydrz"
+tag.nastaveni_finishfunkce="serv.allclients(temporary_null)"
+tag.nastaveni_prefvalue="nastaveni_weappoison_"
+tag.nastaveni_sufvalue=
+tag.nastaveni_prefdefault="ret0("
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+[menu menu_nastaveni_jine]
+Jine
+on=0 Craft Mistr Remesel 2
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"Jine - Craft Mistr Remesel 2")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_jine_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_")
+tag(nastaveni_prefvaluetype,"n_jine[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_jine_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+on=0 Sheep Game
+tag(nastaveni_finishfunkce,nastaveni_finish_globals)
+tag(nastaveni_nadpis,"Jine - Sheep Game")
+
+tag(nastaveni_prefname,"onestring(")
+tag(nastaveni_prefnametype,"n_sg_name[")
+tag(nastaveni_sufnametype,"]")
+tag(nastaveni_sufname,")")
+
+tag(nastaveni_prefvalue,"nastaveni_")
+tag(nastaveni_prefvaluetype,"n_sg[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_sufvalue,"")
+
+tag(nastaveni_prefdefault,"onestring(")
+tag(nastaveni_prefdefaulttype,"n_sg_default[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_sufdefault,")")
+nastaveni_dialog
+
+
+[function f_nastaveni_weapdamage_finish]
+f_nastaveni_setdefault
+serv.allclients(temporary_null)
+
+[function f_nastav_armor_default]
+arg(text,<f_<argv(1)>defname(1,<argv(0)>)>)
+return"<?safe <arg(text)>.<argv(2)>?>"
+
+[function f_nastav_armor_defOM]
+arg(text,<f_<argv(1)>defname(1,<argv(0)>)>)
+arg(text,<?safe.<arg(text)>.tdata1?>)
+return"<safe armor_md[arg(text)]>"
+
+[function f_nastav_armorvar]
+return"<onestring2(<safe.n_armor[<argv(0)>]>)>"
+
+//[function f_nastav_arrowvar]
+//return <onestring2(<safe.n_arrows[<argv(0)>]>)>
+
+
+[function f_nastav_allarmors]
+//<argv(0)>	propertyname
+//<argv(1)>	class property / variable
+arg(u,0)
+while (arg(u)<51)
+ arg(metaldruh,"<safe n_armor[arg(u)]>")
+ if (strcmpi(,<arg(metaldruh)>))
+  arg(string,<onestring2(<arg(metaldruh)>)>)
+  arg(value,<?safe <tag.nastaveni_prefvalue><arg(string)>?>)
+  f_nastav_armorset(<arg(metaldruh)>,<argv(0)>,<arg(value)>,<argv(1)>)
+ endif 
+ //smsg <arg(metaldruh)>
+ arg(u,<arg(u)>+1)
+endwhile
+
+[function splitresources]
+if (strlen(<argv(1)>))
+	singleparse(<argv(0)>)
+	var(frnumb,<firstnumb>)
+	var(frstr,<secondnumb>)
+	singleparse(<argv(1)>)
+	var(secnumb,<firstnumb>)
+	var(secstr,<secondnumb>)
+else
+	singleparse(<argv(0)>)
+	var(frnumb,<firstnumb>)
+	var(frstr,<secondnumb>)
+	var(secnumb,0)
+	var(secstr,0)
+endif
+
+[function f_nastav_weapons_armors_reqstr]
+arg(u,35)
+while (arg(u)<44)
+ arg(v,0)
+ while (arg(v)<34)
+  arg(value,<eval (<nastaveni_REQSTR_<n_weapons_armors[<arg(v)>]>>*<nastaveni_REQSTR_<n_weapons_armors[arg(u)]>>)/1000>)
+  arg(defname,<n_weapons_armors[arg(v)]>_<n_weapons_armors[arg(u)]>)
+  if (<?safe.<arg(defname)>?>)//dana vec existuje
+   arg(defproperty,<arg(defname)>.REQSTR)
+   if (<?eval <arg(defproperty)>?>!=<?arg(value)?>)
+    accmsg("Uplatneni hodnoty:'<arg(defproperty)>=<?arg(value)?>'")
+    <arg(defproperty)>="<?arg(value)?>"
+   endif
+  endif
+  arg(v,<arg(v)>+1)
+ endwhile
+ arg(u,<arg(u)>+1)
+endwhile
+
+arg(u,35)
+while (arg(u)<44)
+ arg(v,45)
+ while (arg(v)<50)
+  arg(value,<eval (<nastaveni_REQSTR_<n_weapons_armors[arg(v)]>>*<nastaveni_REQSTR_<n_weapons_armors[arg(u)]>>)/1000>)
+  f_nastav_armorset(<n_weapons_armors[arg(u)]>,<n_weapons_armors[arg(v)]>,reqstr,<arg(value)>,5)
+  arg(v,<arg(v)>+1)
+ endwhile
+ arg(u,<arg(u)>+1)
+endwhile
+
+[function f_nastav_weapons_armors_resources]
+arg(u,35)
+while (arg(u)<44)
+ arg(v,0)
+ while (arg(v)<34)
+  arg(value,<eval (<nastaveni_resources_<n_weapons_armors[<arg(v)>]>>*<nastaveni_resources_<n_weapons_armors[arg(u)]>>)/1000>)
+  arg(defname,<n_weapons_armors[arg(v)]>_<n_weapons_armors[arg(u)]>)
+  if (<?safe.<arg(defname)>?>)//dana vec existuje
+   arg(defproperty,<arg(defname)>.resources)
+   //logmsg("<arg(defname)>.resources:<?<arg(defname)>.resources?>")
+   splitresources(<?<arg(defproperty)>?>)
+   if (<eval <secnumb>>)
+    arg(bothvals,<eval <frnumb>+<secnumb>>)
+    arg(firstvalue,<eval (((<arg(value)>*1000)/<arg(bothvals)>)*<frnumb>)/1000>)
+    arg(secondvalue,<eval <arg(value)>-<arg(firstvalue)>>)
+    arg(string,"<arg(firstvalue)> <frstr>, <arg(secondvalue)> <secstr>")
+   else
+    arg(firstvalue,<arg(value)>)
+    arg(string,"<arg(firstvalue)> <frstr>")
+   endif
+   if (<?eval <arg(defproperty)>?>!=<?arg(firstvalue)?>)
+    accmsg("Uplatneni hodnoty:'<arg(defproperty)>=<?arg(string)?>'")
+    <arg(defproperty)>="<?arg(string)?>"
+   endif
+  endif
+  arg(v,<arg(v)>+1)
+ endwhile
+ arg(u,<arg(u)>+1)
+endwhile
+
+arg(u,35)
+while (arg(u)<44)
+ arg(v,45)
+ while (arg(v)<50)
+  arg(value,<eval (<nastaveni_resources_<n_weapons_armors[arg(v)]>>*<nastaveni_resources_<n_weapons_armors[arg(u)]>>)/1000>)
+  f_nastav_armorset(<n_weapons_armors[arg(u)]>,<n_weapons_armors[arg(v)]>,resources,<arg(value)>,3)
+  arg(v,<arg(v)>+1)
+ endwhile
+ arg(u,<arg(u)>+1)
+endwhile
+//weapons_armors[]
+
+//34
+//43
+//45
+//48
+
+[function f_nastav_armorset]
+//<argv(0)>	metal
+//<argv(1)>	druh
+//<argv(2)>	property
+//<argv(3)>	value
+//<argv(4)>	
+//	0 - class property, 
+//	1 - layer armor percentage dependent class property, 
+//	2 - variable , 
+//	3 - like 1 + stringrest
+//	5 - like 0, bez uprav pro stit
+
+//used:
+//0 - armor
+//1 - weight
+//2 - OM
+//3 - resources
+//5 - reqstr
+arg(u,<f_<argv(1)>defname(0,<argv(0)>)>)
+while (arg(u)>0)
+ arg(defname,<f_<argv(1)>defname(<arg(u)>,<argv(0)>)>)
+ arg(value,<argv(3)>)
+ if (<argv(4)>!=5)&&(<argv(4)>!=3)
+  if (<?eval <safe.<arg(defname)>.type>?>==t_shield)
+   arg(value,<argv(3)>/6)
+   if (!argv(4))
+    if (<arg(defname)>.tdata3==armortype_plate)
+     arg(value,<eval arg(value)+nastaveni_global_plateshield_armor_decrease>)//postih pro armor stitu plate brneni (heather shield)
+    endif
+   endif
+  endif
+ endif
+ if (<argv(4)>==1)||(<argv(4)>==3)
+  arg(value,<?eval ((<layerar[<arg(defname)>.layer]>*<arg(value)>)+50)/100?>)
+ endif
+ if (<?safe.<arg(defname)>?>)//dana vec existuje
+  <arg(defname)>.tdata3=<?armortype_<argv(1)>?>
+ endif
+ if (<argv(4)>==0)||(<argv(4)>==5)
+  if (<?safe <arg(defname)>?>)//dana vec existuje
+   arg(defname,"<arg(defname)>.<argv(2)>")
+   if (<?<arg(defname)>?>!=<?arg(value)?>)
+    //smsg Nastaveno:<arg(defname)>=<arg(value)>
+    accmsg(Uplatneni hodnoty:'<arg(defname)>=<arg(value)>')
+    <arg(defname)>=<arg(value)>
+   endif
+  endif
+ elseif (<argv(4)>==1)
+  //arg(defname,"<arg(defname)>.<argv(2)>")
+  if (<?safe.<arg(defname)>?>)//dana vec existuje
+   //arg(defvalue,<?<arg(defname)>.<argv(2)>?>)
+   arg(defname,<arg(defname)>.<argv(2)>)
+   arg(defvalue,<eval <arg(defname)>.<argv(2)>>)
+   //logmsg(<arg(defname)> layer:<arg(value)> puvodni: <?<arg(defname)>?> eval:<arg(defvalue)>)
+   if (<arg(defvalue)>!=<arg(value)>)
+   // smsg Nastaveno:<arg(defname)>=<arg(value)>
+    accmsg(Uplatneni hodnoty:'<arg(defname)>=<arg(value)>')
+    <arg(defname)>=<arg(value)>
+   endif
+  endif
+ elseif (<argv(4)>==2)
+  if (<?safe.nastaveni_armorparts_<argv(2)>_<arg(defname)>?>!=<?arg(value)?>)
+   //smsg nastaveno: var.nastaveni_armorparts_<argv(2)>_<arg(defname)>=<arg(value)>
+   accmsg(uplatneni hodnoty:'var.nastaveni_armorparts_<argv(2)>_<arg(defname)>=<arg(value)>')
+   var(nastaveni_armorparts_<argv(2)>_<arg(defname)>,<arg(value)>)
+  endif
+ else
+  //arg(defname,"<arg(defname)>.<argv(2)>")
+  //accmsg(huhle)
+  if (<?safe <arg(defname)>?>)//dana vec existuje
+   //arg(defvalue,<?<arg(defname)>.<argv(2)>?>)
+   arg(defproperty,<arg(defname)>.<argv(2)>)
+   arg(defvalue,<eval <arg(defproperty)>>)
+   arg(defstring,"<?<arg(defproperty)>?>")
+   arg(stringrest,"<strmid("<arg(defstring)>",<STRLEN("<arg(defvalue)>")>,64)>")
+   //logmsg("<?arg(defproperty)?> layerhodnota:<?arg(value)?> puvodni: <?arg(defstring)?> eval:<?arg(defvalue)?> strr:<?arg(stringrest)?>")
+   if (<arg(defvalue)>!=<arg(value)>)
+    accmsg(Uplatneni hodnoty:'<arg(defproperty)>=<?arg(value)?><?arg(stringrest)?>')
+    <arg(defproperty)>="<?arg(value)?><?arg(stringrest)?>"
+   endif
+  endif
+ endif
+ arg(u,<arg(u)>-1)
+endwhile
+
+
+[function ret1000]
+return 1000
+
+[function ret0]
+return"0"
+
+//////////////////////////////// SEM SE KOUKNOUT //////////////////////////// + RADEK 1166(uz asi iny (tento +8 ?))
+[function f_nastaveni_setdefault]
+arg(number,0)
+while (arg(number)<51)
+ arg(dynamvartext,<safe <tag.nastaveni_prefvaluetype><arg(number)><tag.nastaveni_sufvaluetype>>)
+ arg(vysledvar,<safe <tag.nastaveni_prefvalue><arg(dynamvartext)><tag.nastaveni_sufvalue>>)//slozena hodnota
+ if (strlen(<arg(vysledvar)>))
+  arg(dynamdeftext,<safe.<tag.nastaveni_prefdefaulttype><arg(number)><tag.nastaveni_sufdefaulttype>>)
+  arg(vysleddeftext,<tag.nastaveni_prefdefault><arg(dynamdeftext)><tag.nastaveni_sufdefault>)//slozenej nazev default (soucasne) hodnoty
+  arg(vysleddef,<?safe.<arg(vysleddeftext)>?>)//soucasna hodnota
+  if (strcmpi("<arg(vysleddef)>","<arg(vysledvar)>"))
+   if (strlen(<StrGetTok("<arg(vysleddeftext)>",0,".")>)) //delka prvniho argumentu pred teckou je nenulova, tj nemame tady neco jako ".resources(XY)"
+    //logmsg(Uplatneni hodnoty:'<arg(vysleddeftext)>(<arg(vysledvar)>)')
+    <arg(vysleddeftext)>(<arg(vysledvar)>)
+   endif
+  endif
+ endif
+ arg(number,<arg(number)>+1)
+endwhile
+
+[function nastaveni]
+if (iscommander)
+ nastaveni_cleartag
+ menu menu_nastaveni
+else
+ smsg Tato funkce neni urcena pro tebe.
+endif
+return 0
+
+[defnames nastaveni]
+n_mining[0]	o_copper       
+n_mining[1]	o_iron         
+n_mining[2]	o_silver       
+n_mining[3]	o_gold         
+n_mining[4]	o_verite       
+n_mining[5]	o_Valorite     
+n_mining[6]	o_obsidian     
+n_mining[7]	o_adamantinum  
+n_mining[8]	o_shadow       
+n_mining[9]	o_mithril            
+
+n_mining[11]	o_diamond      
+n_mining[12]	o_ruby         
+n_mining[13]	o_citrine      
+n_mining[14]	o_Emerald      
+n_mining[15]	o_Star_Sapphire
+n_mining[16]	o_Sapphire
+n_mining[17]	o_Amethyst
+n_mining[18]	o_Tourmaline
+
+
+n_mining[20]	o_pisek
+n_mining[21]	o_marble
+
+n_mining[25]	l_copper
+n_mining[26]	l_iron
+n_mining[27]	l_verite
+n_mining[28]	l_valorite
+n_mining[29]	l_obsidian
+n_mining[30]	l_adamantinum
+n_mining[31]	l_mithril
+
+n_mining[33]	w_fish1
+n_mining[34]	w_fish2
+n_mining[35]	w_fish3
+n_mining[36]	w_fish4
+
+n_mining[38]	w_treasure_map
+n_mining[40]	w_jf1
+n_mining[41]	w_jf2
+n_mining[42]	w_jf3
+n_mining[43]	w_jf4
+n_mining[44]	w_jf5
+n_mining[45]	w_jf6
+n_mining[46]	w_jf7
+n_mining[47]	w_jf8
+n_mining[48]	w_jf9
+n_mining[49]	w_jf10
+
+n_regiontype[0]	r_default_rock
+n_regiontype[1]	r_doly
+n_regiontype[2]	r_default_tree
+n_regiontype[3]	r_default_water
+n_regiontype[4]	r_default_grass
+
+n_potions[0]	i_potion_AgilityLess    
+n_potions[1]	i_potion_Agility        
+n_potions[2]	i_potion_AgilityGreat   
+n_potions[3]    i_potion_AgilityElixir
+n_potions[5]	i_potion_CureLess       
+n_potions[6]	i_potion_Cure           
+n_potions[7]	i_potion_CureGreat      
+n_potions[9]	i_potion_ExplosionLess  
+n_potions[10]	i_potion_Explosion      
+n_potions[11]	i_potion_ExplosionGreat 
+n_potions[12]	i_potion_Lava           
+n_potions[14]	i_potion_HealLess       
+n_potions[15]	i_potion_Heal           
+n_potions[16]	i_potion_HealGreat
+n_potions[17]   i_potion_HealElixir      
+n_potions[19]	i_potion_RefreshLess    
+n_potions[20]	i_potion_Refresh        
+n_potions[21]	i_potion_RefreshGreater 
+n_potions[22]	i_potion_RefreshElixir
+n_potions[24]	i_potion_StrengthLess   
+n_potions[25]	i_potion_Strength       
+n_potions[26]	i_potion_StrengthGreat  
+n_potions[27]	i_potion_StrengthElixir 
+n_potions[29]	i_potion_Invisibility   
+n_potions[31]	i_potion_CleverLess     
+n_potions[32]	i_potion_Clever         
+n_potions[33]	i_potion_CleverGreat    
+n_potions[34]	i_potion_CleverElixir
+n_potions[36]	i_potion_Shield
+n_potions[37]	i_potion_Shieldelixir
+n_potions[38]	i_potion_EnergyLess     
+n_potions[39]	i_potion_Energy         
+n_potions[40]	i_potion_EnergyGreat
+n_potions[41]	i_potion_EnergyElixir    
+n_potions[42]	i_potion_Stoneskin 
+n_potions[43]	i_potion_Stoneskinelixir
+n_potions[44]	i_potion_Mobility
+n_potions[45]   i_potion_nightsight
+n_potions[47]	i_potion_Explosiondispell
+//n_material[0]	i_ingot_copper
+//n_material[1]	i_ingot_iron
+//n_material[2]	i_ingot_silver
+//n_material[4]	i_ingot_gold
+//n_material[5]	i_ingot_verite
+//n_material[6]	i_ingot_valorite
+//n_material[8]	i_ingot_obsidian
+//n_material[9]	i_ingot_adamantinum
+//n_material[10]	i_ingot_mithril
+//
+//n_material[12]	i_log
+//n_material[13]	i_log_copper
+//n_material[14]	i_log_iron
+//n_material[15]	i_log_verite
+//n_material[16]	i_log_valorite
+//n_material[17]	i_log_obsidian         
+//n_material[18]	i_log_adamantinum      
+//n_material[19]	i_log_mithril    
+
+
+n_staff[0]	i_staff_black_copper
+n_staff[1]	i_staff_quarter_copper
+n_staff[2]	i_staff_gnarled_copper
+n_staff[4]	i_staff_black_iron  
+n_staff[5]	i_staff_quarter_iron
+n_staff[6]	i_staff_gnarled_iron
+n_staff[8]	i_staff_black_verite  
+n_staff[9]	i_staff_quarter_verite
+n_staff[10]	i_staff_gnarled_verite
+n_staff[12]	i_staff_black_valorite  
+n_staff[13]	i_staff_quarter_valorite
+n_staff[14]	i_staff_gnarled_valorite
+n_staff[16]	i_staff_black_obsidian  
+n_staff[17]	i_staff_quarter_obsidian
+n_staff[18]	i_staff_gnarled_obsidian
+n_staff[20]	i_staff_black_adamantinum  
+n_staff[21]	i_staff_quarter_adamantinum
+n_staff[22]	i_staff_gnarled_adamantinum
+n_staff[25]	i_staff_black_mithril  
+n_staff[26]	i_staff_quarter_mithril
+n_staff[27]	i_staff_gnarled_mithril
+
+n_weapon[0]	i_pitchfork
+n_weapon[1]	i_axe
+n_weapon[2]	i_axe_two_hand
+n_weapon[3]	i_axe_exec
+n_weapon[4]	i_axe_double
+n_weapon[5]	i_axe_battle
+n_weapon[6]	i_axe_battle_large
+n_weapon[7]	i_axe_war
+n_weapon[8]	i_bardiche
+n_weapon[9]	i_halberd
+n_weapon[10] 	i_dagger
+n_weapon[11]    i_kryss
+n_weapon[12]	i_cutlass
+n_weapon[13]	i_war_fork
+n_weapon[14]	i_scimitar
+n_weapon[15]	i_spear_short
+n_weapon[16]	i_katana
+n_weapon[17]	i_sword_broad
+n_weapon[18]	i_sword_long
+n_weapon[19]	i_spear
+n_weapon[20]	i_sword_viking
+n_weapon[22]	i_club
+n_weapon[23]	i_mace
+n_weapon[24]	i_mace_war
+n_weapon[26]	i_shepherds_crook
+n_weapon[27]	i_staff_black
+n_weapon[28]	i_staff_quarter
+n_weapon[29]	i_staff_gnarled//
+n_weapon[31]	i_hammer_pick
+n_weapon[32]	i_hammer_war
+n_weapon[33]	i_maul//
+n_weapon[35]	i_bow
+n_weapon[36]	i_crossbow
+n_weapon[37]	i_crossbow_heavy
+
+n_weapons_armors[0]	i_pitchfork
+n_weapons_armors[1]	i_axe
+n_weapons_armors[2]	i_axe_two_hand
+n_weapons_armors[3]	i_axe_exec
+n_weapons_armors[4]	i_axe_double
+n_weapons_armors[5]	i_axe_battle
+n_weapons_armors[6]	i_axe_battle_large
+n_weapons_armors[7]	i_axe_war
+n_weapons_armors[8]	i_bardiche
+n_weapons_armors[9]	i_halberd
+n_weapons_armors[10]    i_kryss
+n_weapons_armors[11]	i_cutlass
+n_weapons_armors[12]	i_war_fork
+n_weapons_armors[13]	i_scimitar
+n_weapons_armors[14]	i_spear_short
+n_weapons_armors[15]	i_katana
+n_weapons_armors[16]	i_sword_broad
+n_weapons_armors[17]	i_sword_long
+n_weapons_armors[18]	i_spear
+n_weapons_armors[19]	i_sword_viking
+n_weapons_armors[20]	i_club
+n_weapons_armors[21]	i_mace
+n_weapons_armors[22]	i_mace_war
+n_weapons_armors[23]	i_shepherds_crook
+n_weapons_armors[24]	i_staff_black
+n_weapons_armors[25]	i_staff_quarter
+n_weapons_armors[26]	i_staff_gnarled//
+n_weapons_armors[27]	i_hammer_pick
+n_weapons_armors[28]	i_hammer_war
+n_weapons_armors[29]	i_maul//
+n_weapons_armors[30]	i_bow
+n_weapons_armors[31]	i_crossbow
+n_weapons_armors[32]	i_crossbow_heavy
+n_weapons_armors[33] 	i_dagger
+
+n_weapons_armors[35]	copper
+n_weapons_armors[36]	iron
+n_weapons_armors[37]	silver
+n_weapons_armors[38]	golden
+n_weapons_armors[39]	verite
+n_weapons_armors[40]	valorite
+n_weapons_armors[41]	obsidian
+n_weapons_armors[42]	adamantinum
+n_weapons_armors[43]	mithril
+
+n_weapons_armors[45]	studded
+n_weapons_armors[46]	bone
+n_weapons_armors[47]	ring 
+n_weapons_armors[48]	chain
+n_weapons_armors[49]	plate
+
+n_arrows[1]	copper
+n_arrows[2]	iron
+n_arrows[3]	verite
+n_arrows[4]	valorite
+n_arrows[5]	obsidian
+n_arrows[6]	adamantinum
+n_arrows[7]	mithril
+
+
+n_arrows[11]	"copper,bleed sipky" 
+n_arrows[12]	"iron,bleed sipky"
+n_arrows[13]	"verite,bleed sipky"
+n_arrows[14]	"valorite,bleed sipky"
+n_arrows[15]	"obsidian,bleed sipky"
+n_arrows[16]	"adamantinum,bleed sipky"
+n_arrows[17]	"mithril,bleed sipky"
+
+
+n_arrows[25]	"copper,piercing"
+n_arrows[26]	"iron,piercing"
+n_arrows[27]	"verite,piercing"
+n_arrows[28]	"valorite,piercing"
+n_arrows[29]	"obsidian,piercing"
+n_arrows[30]	"adamantinum,piercing"
+n_arrows[31]	"mithril,piercing"
+
+
+n_arrows[36]	copper,bleeding exponent
+n_arrowdefault[36] 1000
+n_arrows[37]	iron,bleeding exponent
+n_arrowdefault[37] 1000
+n_arrows[38]	verite,bleeding exponent
+n_arrowdefault[38] 1000
+n_arrows[39]	valorite,bleeding exponent
+n_arrowdefault[39] 1000
+n_arrows[40]	obsidian,bleeding exponent
+n_arrowdefault[40] 1000
+n_arrows[41]	adamant.,bleeding exponent
+n_arrowdefault[41] 1000
+n_arrows[42]	mithril,bleeding exponent
+n_arrowdefault[42] 1000
+
+//nastaveni_weapspeed_barehands
+
+n_armor[0]	"copper,plate"
+n_armor[1]	"copper,chain"
+n_armor[2]	"copper,ring"
+n_armor[3]	"copper,bone"
+n_armor[4]	"copper,studded"
+n_armor[5]	"iron,plate"
+n_armor[6]	"iron,chain"
+n_armor[7]	"iron,ring"
+n_armor[8]	"iron,bone"
+n_armor[9]	"iron,studded"
+n_armor[10]	"silver,plate"
+n_armor[11]	"silver,chain"
+n_armor[12]	"silver,ring"
+n_armor[13]	"silver,bone"
+n_armor[14]	"silver,studded"
+n_armor[15]	"golden,plate"
+n_armor[16]	"golden,chain"
+n_armor[17]	"golden,ring"
+n_armor[18]	"golden,bone"
+n_armor[19]	"golden,studded"
+n_armor[20]	"verite,plate"
+n_armor[21]	"verite,chain"
+n_armor[22]	"verite,ring"
+n_armor[23]	"verite,bone"
+n_armor[24]	"verite,studded"
+n_armor[25]	"valorite,plate"
+n_armor[26]	"valorite,chain"
+n_armor[27]	"valorite,ring"
+n_armor[28]	"valorite,bone"
+n_armor[29]	"valorite,studded"
+n_armor[30]	"obsidian,plate"
+n_armor[31]	"obsidian,chain"
+n_armor[32]	"obsidian,ring"
+n_armor[33]	"obsidian,bone"
+n_armor[34]	"obsidian,studded"
+n_armor[35]	"adamantinum,plate"
+n_armor[36]	"adamantinum,chain"
+n_armor[37]	"adamantinum,ring"
+n_armor[38]	"adamantinum,bone"
+n_armor[39]	"adamantinum,studded"
+n_armor[40]	"mithril,plate"
+n_armor[41]	"mithril,chain"
+n_armor[42]	"mithril,ring"
+n_armor[43]	"mithril,bone"
+n_armor[44]	"mithril,studded"
+
+n_global[0]		global_UC              
+n_global_name[0]	"Utocne cislo P "
+n_global_default[0]	1000   
+n_global[1]		global_MUC
+n_global_name[1]	"Utocne cislo M "
+n_global_default[1]	1000   
+n_global[2]		global_PvPweapattack
+n_global_name[2]	"PvP fyz. utok "
+n_global_default[2]	750    
+n_global[3]		global_vMweapattack
+n_global_name[3]	"fyz. utok vs M "
+n_global_default[3]	1300   
+n_global[4]		global_Marmor
+n_global_name[4]	"ucinnost armoru M"
+n_global_default[4]	1000
+n_global[5]		global_Parmor    
+n_global_name[5]	"ucinnost armoru P"
+n_global_default[5]	1000             
+n_global[6]		global_PvPweapdam
+n_global_name[6]	"damage (vs armor) PvP"
+n_global_default[6]	1000
+n_global[7]		global_vMweapdam
+n_global_name[7]	"damage (vs armor) vs M"
+n_global_default[7]	1000
+n_global[8]		global_Mvweapdam      
+n_global_name[8]	"damage (vs armor) od M"
+n_global_default[8]	1000       
+n_global[9]		global_mystikvM
+n_global_name[9]	"bonus utoku mystik vs M"
+n_global_default[9]	1000
+n_global[10]     	global_magicIdam
+n_global_name[10]	"damage zbrane pri kouzleni"
+n_global_default[10]	100
+n_global[11]		global_physIdam
+n_global_name[11]     	"damage zbrane pri uderu"   
+n_global_default[11]    100
+n_global[12]     	global_armorIdam
+n_global_name[12]     	"damage Armoru pri zasahu"
+n_global_default[12]    100
+n_global[13]     	
+n_global_name[13]     	
+n_global_default[13]	
+n_global[14]     	craftexp_factor
+n_global_name[14]       craft expy - celkem
+n_global_default[14]    1000
+n_global[15]     	craftexp_gold
+n_global_name[15]     	penez za expy
+n_global_default[15]    1000
+n_global[16]     	craftexp_skill_alchemy
+n_global_name[16]     	hodnota alchemy
+n_global_default[16]	1000
+n_global[17]     	craftexp_SKILL_Blacksmith
+n_global_name[17]       hodnota Blacksmithing
+n_global_default[17]	1000
+n_global[18]     	craftexp_Skill_Bowcraft
+n_global_name[18]       hodnota Bowcrafting
+n_global_default[18]	1000
+n_global[19]     	craftexp_skill_carpentry
+n_global_name[19]       hodnota carpentry
+n_global_default[19]    1000
+n_global[20]     	craftexp_skill_cartography
+n_global_name[20]       hodnota cartography
+n_global_default[20]    1000
+n_global[21]     	craftexp_skill_cooking
+n_global_name[21]       hodnota cooking
+n_global_default[21]	1000
+n_global[22]     	craftexp_skill_inscription
+n_global_name[22]       hodnota inscription
+n_global_default[22]	1000
+n_global[23]     	craftexp_skill_tailoring
+n_global_name[23]       hodnota tailoring
+n_global_default[23]	1000
+n_global[24]     	craftexp_skill_tinkering
+n_global_name[24]       hodnota tinkering
+n_global_default[24]    1000
+
+n_global[25]     	global_SM                    
+n_global_name[25]     	"Sila mysli P"
+n_global_default[25]	1000                         
+n_global[26]     	global_MvSM           
+n_global_name[26]	"Sila mysli M"
+n_global_default[26]    1000                         
+n_global[27]     	global_pvpSM          
+n_global_name[27]	"PvP magicky utok"
+n_global_default[27]	1000                         
+n_global[28]     	global_vMsm           
+n_global_name[28]	"magicky utok vs M"
+n_global_default[28]	1000                         
+n_global[29]     	global_Spellpower            
+n_global_name[29]	"Sila kouzel celkove"
+n_global_default[29]	1000                         
+n_global[30]     	global_runbowdam             
+n_global_name[30]       "Utok run zbrani"
+n_global_default[30]    500                          
+n_global[31]	        global_Runbowrangepvp        
+n_global_name[31]	"pvp runbow range"
+n_global_default[31]	9                            
+n_global[32]     	global_runbowrangepvm        
+n_global_name[32]	"pvm runbow range"
+n_global_default[32]	12                           
+n_global[33]		global_runbowfizzle          
+n_global_name[33]	"pvp runbow fizzle"
+n_global_default[33]	300                          
+n_global[34]     	global_weapspeed             
+n_global_name[34]       "celkova rychlost zbrani"
+n_global_default[34]    1000                         
+n_global[35]     	weapspeed_barehands          
+n_global_name[35]       "rychlost pesti"
+n_global_default[35]    100                          
+n_global[36]     	weapspeed_npc     
+n_global_name[36]	"rychlost boje NPC"
+n_global_default[36]    100                             
+n_global[37]     	global_strUC                
+n_global_name[37]	"vliv STR na UC" 
+n_global_default[37]	500                          
+n_global[38]		global_intSM                 
+n_global_name[38]	"vliv INT na SM" 
+n_global_default[38]	700                          
+n_global[39]		staffSMbonus_barehands       
+n_global_name[39]	"SM bonus bez hole" 
+n_global_default[39]	500                          
+n_global[40]		global_armorOM               
+n_global_name[40]	"vliv brneni na OM" 
+n_global_default[40]	1000                         
+n_global[41]		global_om                   
+n_global_name[41]	"celkova OM" 
+n_global_default[41]	1000                        
+n_global[42]		global_STAMINALOSSATWEIGHT  
+n_global_name[42]	"staminaloss at weight"
+n_global_default[42]	150                         
+n_global[43]		global_RUNNINGPENALTY       
+n_global_name[43]	"running penalty"
+n_global_default[43]	50                          
+n_global[44]		global_potiondelay          
+n_global_name[44]	"prodleva potionu (1/10 s)"
+n_global_default[44]	50                         
+n_global[45]		weapdam_guardspawntime
+n_global_name[45]	"Guard spawn time"
+n_global_default[45]	"30,60"
+n_global[46]		global_MvP_armorfactor
+n_global_name[46]	"delitel armoru pro MvP"
+n_global_default[46]	150
+n_global[47]		global_MvP_randomfactor
+n_global_name[47]	"nahodnost damage MvP "
+n_global_default[47]	"800 1200"
+n_global[47]		global_durabilitykvocient
+n_global_name[47]	"%% damage zbrane pri 0 dur"
+n_global_default[47]	0
+n_global[48]		global_potiondelay2          
+n_global_name[48]	"prodleva delsich potionu (1/10 s)"
+n_global_default[48]	200                         
+n_global[49]		global_reflectSPlowering
+n_global_name[49]	"%% spellpower odrazenyho kouzla"
+n_global_default[49]	0          
+
+n_global2[0]		global_armorchange_vM_war
+n_global2_name[0]	"zmena AC vM war"
+n_global2_default[0]	0                        
+n_global2[1]		global_armorchange_vM_necro
+n_global2_name[1]	"zmena AC vM necro"
+n_global2_default[1]	0                        
+n_global2[2]		global_armorchange_vM_mag
+n_global2_name[2]	"zmena AC vM mag"
+n_global2_default[2]	0                        
+n_global2[3]		global_armorchange_vM_ranger
+n_global2_name[3]	"zmena AC vM ranger"
+n_global2_default[3]	0                        
+n_global2[4]		global_armorchange_vM_thief
+n_global2_name[4]	"zmena AC vM thief"
+n_global2_default[4]	0                        
+n_global2[5]		global_armorchange_vM_priest
+n_global2_name[5]	"zmena AC vM priest"
+n_global2_default[5]	0                        
+n_global2[6]		global_armorchange_vM_shaman
+n_global2_name[6]	"zmena AC vM shaman"
+n_global2_default[6]	0                        
+n_global2[7]		global_armorchange_vM_mystik
+n_global2_name[7]	"zmena AC vM mystik"
+n_global2_default[7]	0                        
+n_global2[8]		global_armorchange_vM_craft
+n_global2_name[8]	"zmena AC vM craft"
+n_global2_default[8]	0                        
+n_global2[9]		global_armorchange_vM_druid
+n_global2_name[9]	"zmena AC vM druid"
+n_global2_default[9]	0                        
+n_global2[10]     	
+n_global2_name[10]	
+n_global2_default[10]	
+n_global2[11]		global_armorchange_vP_war   
+n_global2_name[11]     	"zmena AC vP war"           
+n_global2_default[11]   0                            
+n_global2[12]     	global_armorchange_vP_necro 
+n_global2_name[12]     	"zmena AC vP necro"         
+n_global2_default[12]   0                            
+n_global2[13]     	global_armorchange_vP_mag   
+n_global2_name[13]     	"zmena AC vP mag"           
+n_global2_default[13]	0                           
+n_global2[14]     	global_armorchange_vP_ranger
+n_global2_name[14]      "zmena AC vP ranger"         
+n_global2_default[14]   0                            
+n_global2[15]     	global_armorchange_vP_thief 
+n_global2_name[15]     	"zmena AC vP thief"         
+n_global2_default[15]   0                            
+n_global2[16]     	global_armorchange_vP_priest
+n_global2_name[16]     	"zmena AC vP priest"        
+n_global2_default[16]	0                           
+n_global2[17]     	global_armorchange_vP_shaman
+n_global2_name[17]      "zmena AC vP shaman"         
+n_global2_default[17]	0                           
+n_global2[18]     	global_armorchange_vP_mystik
+n_global2_name[18]      "zmena AC vP mystik"         
+n_global2_default[18]	0                           
+n_global2[19]     	global_armorchange_vP_craft 
+n_global2_name[19]      "zmena AC vP craft"          
+n_global2_default[19]   0                            
+n_global2[20]     	global_armorchange_vP_druid 
+n_global2_name[20]      "zmena AC vP druid"          
+n_global2_default[20]   0         
+n_global2[21]     	global_plateshield_armor_decrease
+n_global2_name[21]      "snizeni AR plate shieldu"
+n_global2_default[21]	5
+n_global2[25]		global_armorchangeom_vP_war   
+n_global2_name[25]     	"zmena OM vP war"           
+n_global2_default[25]   0                            
+n_global2[26]     	global_armorchangeom_vP_necro 
+n_global2_name[26]     	"zmena OM vP necro"         
+n_global2_default[26]   0                            
+n_global2[27]     	global_armorchangeom_vP_mag   
+n_global2_name[27]     	"zmena OM vP mag"           
+n_global2_default[27]	0                           
+n_global2[28]     	global_armorchangeom_vP_ranger
+n_global2_name[28]      "zmena OM vP ranger"         
+n_global2_default[28]   0                            
+n_global2[29]   	global_armorchangeom_vP_thief 
+n_global2_name[29]     	"zmena OM vP thief"         
+n_global2_default[29]   0                            
+n_global2[30]     	global_armorchangeom_vP_priest
+n_global2_name[30]     	"zmena OM vP priest"        
+n_global2_default[30]	0                           
+n_global2[31]     	global_armorchangeom_vP_shaman
+n_global2_name[31]      "zmena OM vP shaman"         
+n_global2_default[31]	0                           
+n_global2[32]     	global_armorchangeom_vP_mystik
+n_global2_name[32]      "zmena OM vP mystik"         
+n_global2_default[32]	0                           
+n_global2[33]     	global_armorchangeom_vP_craft 
+n_global2_name[33]      "zmena OM vP craft"          
+n_global2_default[33]   0                            
+n_global2[34]     	global_armorchangeom_vP_druid 
+n_global2_name[34]      "zmena OM vP druid"          
+n_global2_default[34]   0                            
+n_global2[35]     	
+n_global2_name[35]      
+n_global2_default[35]   
+n_global2[36]     	vzdalenost_guardspawn
+n_global2_name[36]      "Vzdalenost guardspawnu od sebe"          
+n_global2_default[36]   7      
+n_global2[37]     	
+n_global2_name[37]      
+n_global2_default[37]
+n_global2[38]     	afk_toggleonoff
+n_global2_name[38]      "Zap/vyp kontroly AFK"
+n_global2_default[38]   1
+n_global2[39]     	afk_fakeonoff
+n_global2_name[39]      "Zap/vyp fake AFK"
+n_global2_default[39]   0
+n_global2[40]     	afk_tolerance
+n_global2_name[40]      "Trvani AFK dialogu [sec]"
+n_global2_default[40]   20
+n_global2[41]           afk_countdown       
+n_global2_name[41]      "Odpocet pred AFK kontrolou [sec]"
+n_global2_default[41]   20 
+n_global2[42]           povoleno_AFKfails     
+n_global2_name[42]      "Pocet tolerovanych AFK za mesic"
+n_global2_default[42]   3
+n_global2[43]			uspesnych_AFK_k_odmazani
+n_global2_name[43]		"uspesnych afk k 1 odmazani"
+n_global2_default[43]	75
+n_global2[44]			AFK_dniKOdmazani
+n_global2_name[44]		"pocet dni k 1 odmazani"
+n_global2_default[44]	15
+n_global2[45]           sance_rozbiti_lahve     
+n_global2_name[45]      "sance na rozbiti lahve"
+n_global2_default[45]   3
+n_global2[46]		weapdam_barehands           
+n_global2_name[46]	"Utok pesti"
+n_global2_default[46]	30                
+n_global2[47]		weappiercing_00
+n_global2_name[47]	"piercing pesti"
+n_global2_default[47]	0
+n_global2[48]		max_amount_mesec
+n_global2_name[48]	"max amount mesce"
+n_global2_default[48]	60000
+n_global2[49]		max_amount_pokladnice
+n_global2_name[49]	"max amount pokladnicky"
+n_global2_default[49]	200000
+
+
+n_global3[0]		pevnosti_doba_prolomeni
+n_global3_name[0]	"Doba prolomeni [s]"
+n_global3_default[0]	900                        
+n_global3[1]		pevnosti_cas_na_dobyti
+n_global3_name[1]	"Cas na dobyti [s]"
+n_global3_default[1]	1000
+n_global3[2]		pevnosti_vzdal_guard_pevnost
+n_global3_name[2]	"Vzdalenost guardu od pevnosti"
+n_global3_default[2]	10
+n_global3[3]		pevnosti_vzdal_guard_vzajemne
+n_global3_name[3]	"Pevnostni guardi od sebe"
+n_global3_default[3]	5
+n_global3[4]		pevnosti_recall_palantir_dist
+n_global3_name[4]	"Recall vzdalenost od palantiru"
+n_global3_default[4]	30
+n_global3[5]		spellcast_silence_after
+n_global3_name[5]	"Silence po zakuzleni po x sec."
+n_global3_default[5]	5
+n_global3[6]		silence_mana_return
+n_global3_name[6]	"Vratenie many za x sec."
+n_global3_default[6]	3
+n_global3[7]		silence_using
+n_global3_name[7]	"Pouzivat silencer"
+n_global3_default[7]	1
+n_global3[8]		detectHidden_detectInvul
+n_global3_name[8]	"detectHidden invul/ds"
+n_global3_default[8]	70
+n_global3[9]		detectHidden_distanceDrop
+n_global3_name[9]	"detectHidden koeficient"
+n_global3_default[9]	90
+n_global3[10]		body_looting_timer
+n_global3_name[10]	"timer - lootenie tiel hracov"
+n_global3_default[10]	897
+                        
+n_ability[0]		ability_leaprange
+n_ability_name[0]	Leap Range
+n_ability_default[0]	6
+n_ability[1]		ability_leapdelay
+n_ability_name[1]	Leap Delay
+n_ability_default[1]	 30
+n_ability[2]		ability_openbankdelay_succes
+n_ability_name[2]	openbank delay success
+n_ability_default[2]	6000
+n_ability[3]		ability_openbankdelay_fail
+n_ability_name[3]	openbank delay fail
+n_ability_default[3]	750
+n_ability[4]		ability_resurrectiondelay_succes
+n_ability_name[4]	Resurrection delay success
+n_ability_default[4]	36000
+n_ability[5]		ability_resurrectiondelay_fail
+n_ability_name[5]	Resurrection delay fail
+n_ability_default[5]	750
+n_ability[6]		ability_maskdelay_success
+n_ability_name[6]	Mask delay success
+n_ability_default[6]	9000
+n_ability[7]		ability_maskdelay_fail
+n_ability_name[7]	Mask delay fail
+n_ability_default[7]	1200
+n_ability[8]		ability_leapchange
+n_ability_name[8]	sance na leap
+n_ability_default[8]	10
+n_ability[9]		ability_pvMdodge
+n_ability_name[9]	PvM uhnuti,absorb sance
+n_ability_default[9]	10
+n_ability[10]     	ability_leechpower
+n_ability_name[10]	Vysati ucinnost
+n_ability_default[10]	10
+n_ability[11]		ability_berssniper
+n_ability_name[11]     	Ucinnost berserk/sniper
+n_ability_default[11]   1600
+n_ability[12]     	ability_enlightment
+n_ability_name[12]     	Enlightment delay
+n_ability_default[12]   5
+n_ability[13]     	ability_ripper
+n_ability_name[13]     	ucinnost Ripper
+n_ability_default[13]	100
+n_ability[14]     	ability_ripperdelay
+n_ability_name[14]      prodleva Ripper
+n_ability_default[14]   20
+n_ability[15]     	ability_concentration
+n_ability_name[15]     	ucinnost concentration
+n_ability_default[15]   1000
+n_ability[16]     	ability_mystikUC
+n_ability_name[16]     	UC mystika vzhledem k SM
+n_ability_default[16]	150
+n_ability[17]     	weapspeed_mystik
+n_ability_name[17]      rychlost utoku mystika
+n_ability_default[17]	100
+n_ability[18]     	global_mystikrangepvp
+n_ability_name[18]      pvp dostrel mystika
+n_ability_default[18]	5
+n_ability[19]     	global_mystikrangepvm
+n_ability_name[19]      pvm dostrel mystika
+n_ability_default[19]   8
+n_ability[20]     	ability_shaman_maxmorph
+n_ability_name[20]      shamanuv maximalni morph statcap
+n_ability_default[20]   100
+n_ability[21]     	ability_craft_vigour
+n_ability_name[21]      Vigour ability bonus
+n_ability_default[21]   100
+n_ability[22]     	
+n_ability_name[22]      
+n_ability_default[22]	
+n_ability[23]     	ability_animatemanadrain
+n_ability_name[23]      "animate - mana drain (exp/x)"
+n_ability_default[23]	200
+n_ability[24]     	ability_staminalowering 
+n_ability_name[24]      "ubyvani stam(/10 sekund)"
+n_ability_default[24]   10
+
+n_ability[25]     	povolani_maxstats_war
+n_ability_name[25]     	maxstaty War
+n_ability_default[25]	"0,0,0,0"
+n_ability[26]     	povolani_maxstats_necro
+n_ability_name[26]	maxstaty necro
+n_ability_default[26]   "0,0,0,0"
+n_ability[27]     	povolani_maxstats_priest
+n_ability_name[27]	maxstaty priest
+n_ability_default[27]	"0,0,0,0"
+n_ability[28]     	povolani_maxstats_mag
+n_ability_name[28]	maxstaty mag
+n_ability_default[28]	"0,0,0,0"
+n_ability[29]		povolani_maxstats_craft
+n_ability_name[29]	maxstaty craft
+n_ability_default[29]	"0,0,0,0"
+n_ability[30]     	povolani_maxstats_thief
+n_ability_name[30]      maxstaty thief
+n_ability_default[30]   "0,0,0,0"
+n_ability[31]	        povolani_maxstats_ranger
+n_ability_name[31]	maxstaty ranger
+n_ability_default[31]	"0,0,0,0"
+n_ability[32]     	povolani_maxstats_shaman
+n_ability_name[32]	maxstaty shaman
+n_ability_default[32]	"0,0,0,0"
+n_ability[33]		povolani_maxstats_mystik
+n_ability_name[33]	maxstaty mystik
+n_ability_default[33]	"0,0,0,0"
+n_ability[34]     	
+n_ability_name[34]      
+n_ability_default[34]   
+n_ability[35]     	thief_backstabM_bonus
+n_ability_name[35]      "thief backstab bonus vM"
+n_ability_default[35]   2000
+n_ability[36]     	thief_backstabP_bonus
+n_ability_name[36]	"thief backstab bonus vP"
+n_ability_default[36]   1500
+n_ability[37]     	thief_backstabM_chance
+n_ability_name[37]	"thief backstab sance vM"
+n_ability_default[37]	100
+n_ability[38]		thief_backstabP_chance
+n_ability_name[38]	"thief backstab sance vP"
+n_ability_default[38]	100
+n_ability[39]     	ability_mystikUCbezpary
+n_ability_name[39]     	UC mystika vzhledem k SM bez pary
+n_ability_default[39]	150
+n_ability[40]		mystik_manaloss
+n_ability_name[40]	"mana po uderu mystika v %%"
+n_ability_default[40]	950
+n_ability[41]		mystik_abilitychance_vM
+n_ability_name[41]	"modifier mystikovy sance na paru - PvM"
+n_ability_default[41]	500
+n_ability[42]		mystik_abilitychance_vP
+n_ability_name[42]	"modifier mystikovy sance na paru - PvP"
+n_ability_default[42]	500
+n_ability[43]		warcry_delay
+n_ability_name[43]	"prodleva mezi pokusy o warcry"
+n_ability_default[43]	300
+n_ability[44]		warcry_effecttime
+n_ability_name[44]	"doba ucinku warcry"
+n_ability_default[44]	10
+n_ability[45]		warcry_chance
+n_ability_name[45]	"modifier sance uspechu warcry"
+n_ability_default[45]	500
+n_ability[46]		warcry_range
+n_ability_name[46]	"dosah warcry"
+n_ability_default[46]	5
+n_ability[47]     	
+n_ability_name[47]      
+n_ability_default[47]   
+n_ability[48]		maxbleed
+n_ability_name[48]	"max damage bleedu"
+n_ability_default[48]	50
+n_ability[49]		ability_mystikUClightning
+n_ability_name[49]	"UC mystika pri lightning dmg"
+n_ability_default[49]	0,15
+
+n_ability2[0]		rangearrow_chance
+n_ability2_name[0]	sance na longrange
+n_ability2_default[0]	900
+n_ability2[1]		rangearrow_delay
+n_ability2_name[1]	prodleva longrange
+n_ability2_default[1]	300
+n_ability2[2]		rangearrow_dstbonus
+n_ability2_name[2]	o kolik poli vic
+n_ability2_default[2]	2
+n_ability2[3]		rangearrow_effecttime
+n_ability2_name[3]	longrange trvani
+n_ability2_default[3]	10
+n_ability2[4]     	
+n_ability2_name[4]      
+n_ability2_default[4]   
+n_ability2[5]     	throw_delay
+n_ability2_name[5]      prodleva vrhacich nozu
+n_ability2_default[5]   1
+n_ability2[6]     	throw_staminaloss
+n_ability2_name[6]      kolik zere staminy
+n_ability2_default[6]   30
+n_ability2[7]     	throw_dist
+n_ability2_name[7]      vzdalenost k cili
+n_ability2_default[7]   7
+n_ability2[8]     	throw_dist_bomb
+n_ability2_name[8]      totez u bomb
+n_ability2_default[8]   5
+n_ability2[9]           stuntattack	
+n_ability2_name[9]      stuntattack trvani
+n_ability2_default[9]   1
+n_ability2[10]          stuntattack_chance
+n_ability2_name[10]     stuntattack sance
+n_ability2_default[10]  300
+n_ability2[11]     	
+n_ability2_name[11]      
+n_ability2_default[11]   
+n_ability2[12]          roundattack_chance
+n_ability2_name[12]     sance na roundattack
+n_ability2_default[12]  300
+n_ability2[13]          roundattack_delay
+n_ability2_name[13]     prodleva na roundattack
+n_ability2_default[13]  60
+n_ability2[14]          roundattack_postih
+n_ability2_name[14]      % ze standard utoku
+n_ability2_default[14]  60
+n_ability2[15]     	
+n_ability2_name[15]      
+n_ability2_default[15]   
+n_ability2[16]          doubleswing
+n_ability2_name[16]     ucinnost doubleswingu
+n_ability2_default[16]  2000
+n_ability2[17]          doubleswing_chance
+n_ability2_name[17]     sance na dvojity zasah
+n_ability2_default[17]  300
+n_ability2[18]     			doubleswing_stam
+n_ability2_name[18]     spotreba staminy doubleswingu
+n_ability2_default[18]  20
+n_ability2[19]          woodoo_chance
+n_ability2_name[19]     sance na woodoo pri copperu
+n_ability2_default[19]  900
+n_ability2[20]          woodoo_delay
+n_ability2_name[20]     pauza po woodoo
+n_ability2_default[20]  600
+n_ability2[21]        
+n_ability2_name[21]   
+n_ability2_default[21]
+n_ability2[22]          lordnazguls_fear_distance
+n_ability2_name[22]     dosah Lordnazg fearu
+n_ability2_default[22]  12
+n_ability2[23]          nazguls_fear_distance
+n_ability2_name[23]     dosah Nazg fearu
+n_ability2_default[23]  10
+n_ability2[24]          fear_delay_counter
+n_ability2_name[24]     prodleva Fearu(sec)
+n_ability2_default[24]  180
+n_ability2[25]         	fear_effect_counter
+n_ability2_name[25]     trvani Fearu(sec)
+n_ability2_default[25]  300
+n_ability2[26]         	
+n_ability2_name[26]     
+n_ability2_default[26]  
+n_ability2[27]         	generals_honor_distance
+n_ability2_name[27]     dosah Generalova honoru
+n_ability2_default[27]  8
+n_ability2[28]          honor_delay_counter
+n_ability2_name[28]     prodleva Honoru(sec)
+n_ability2_default[28]  300
+n_ability2[29]         	honor_effect_counter
+n_ability2_name[29]     trvani Honoru(sec)
+n_ability2_default[29]  300 
+n_ability2[30]         	
+n_ability2_name[30]     
+n_ability2_default[30]  
+n_ability2[31]         	hypnoza_povolena
+n_ability2_name[31]     povol/zakaz(1/0) hypnozu
+n_ability2_default[31]  1  
+n_ability2[32]         	
+n_ability2_name[32]     
+n_ability2_default[32]  
+n_ability2[33]          knockback_chance
+n_ability2_name[33]     sance na odstrceni
+n_ability2_default[33]  900
+n_ability2[34]         	knockback_range
+n_ability2_name[34]     o kolik poli
+n_ability2_default[34]  3
+n_ability2[35]	        knockback_effecttime
+n_ability2_name[35]     knockback trvani
+n_ability2_default[35]	10
+n_ability2[36]	        knockback_delay
+n_ability2_name[36]	knockback pauza
+n_ability2_default[36]	10
+n_ability2[37]	                       
+n_ability2_name[37]	
+n_ability2_default[37]	               
+n_ability2[38]	        efekt_mithril
+n_ability2_name[38]	sila mithril bonusu
+n_ability2_default[38]	1000
+n_ability2[39]	        efekt_shadow               
+n_ability2_name[39]	sila stinoveho bonusu
+n_ability2_default[39]	1000            
+n_ability2[40]	        hitsleech_max
+n_ability2_name[40]	max sani zivotu
+n_ability2_default[40]	50
+n_ability2[41]	        stamleech_max
+n_ability2_name[41]	max sani staminy
+n_ability2_default[41]	50
+n_ability2[42]	        manaleech_max
+n_ability2_name[42]	max sani many
+n_ability2_default[42]	50
+n_ability2[43]	                       
+n_ability2_name[43]	
+n_ability2_default[43]	               
+n_ability2[44]	       bleed_bolt
+n_ability2_name[44]    sila bleedu kuse
+n_ability2_default[44] 0
+n_ability2[45]	       postih_jedu
+n_ability2_name[45]    procento jedu kudly
+n_ability2_default[45] 50
+n_ability2[46]	       sip_jed
+n_ability2_name[46]    procento jedu sipu
+n_ability2_default[46] 50
+n_ability2[47]	       modifikace_drzeni
+n_ability2_name[47]    soucinitel ubytku many pri sevreni
+n_ability2_default[47] 1000
+n_ability2[48]	       max_doba_drzeni
+n_ability2_name[48]    maximalni doba sevreni
+n_ability2_default[48] 1000
+
+
+n_ability3[0]		forceback_delay
+n_ability3_name[0]	prodleva u forceback
+n_ability3_default[0]	5
+n_ability3[1]		controlnpc_chance
+n_ability3_name[1]	"modifier sance uspechu ovladni"
+n_ability3_default[1]	500
+n_ability3[2]		
+n_ability3_name[2]	
+n_ability3_default[2]	
+n_ability3[3]		ms_manasuck_time
+n_ability3_name[3]	"prodleva manashield klesani many"
+n_ability3_default[3]	1
+n_ability3[4]		ms_manasuck_amount
+n_ability3_name[4]	"pokles many pri manashieldu"
+n_ability3_default[4]	3
+n_ability3[5]	
+n_ability3_name[5]
+n_ability3_default[5]	
+n_ability3[6]		cs_101_manause
+n_ability3_name[6]	"frost bolt mana"
+n_ability3_default[6]	20
+n_ability3[7]		cs_101_casttime
+n_ability3_name[7]	"frost bolt casttime"
+n_ability3_default[7]	5
+n_ability3[8]		cs_101_effect
+n_ability3_name[8]	"frost bolt power"
+n_ability3_default[8]	20,40,800 //min, max, piercing
+n_ability3[9]
+n_ability3_name[9]
+n_ability3_default[9]
+n_ability3[10]		standcast_sm
+n_ability3_name[10]	"standcast SM"
+n_ability3_default[10]	10
+n_ability3[11]		mysticLvL_sm
+n_ability3_name[11]	"mystic LvLbonus SM"
+n_ability3_default[11]	10
+n_ability3[12]		throw_immune
+n_ability3_name[12]	"imunita po hozeni kudlou/ds"
+n_ability3_default[12]	2
+n_ability3[13]		defstance_dmgplayer
+n_ability3_name[13]	"snizeni dmg hrace v %"
+n_ability3_default[13]	30
+n_ability3[14]		defstance_dmgnpc
+n_ability3_name[14]	"snizeni dmg od npc v %"
+n_ability3_default[14]	15
+n_ability3[15]		defstance_delay
+n_ability3_name[15]	"prodleva defstance v sec"
+n_ability3_default[15]	150
+n_ability3[16]		bloodpact_dmg
+n_ability3_name[16]	"bloodpact dmg v %"
+n_ability3_default[16]	10
+n_ability3[17]		pact_delay
+n_ability3_name[17]	"shaman pacts max trvanie v sec"
+n_ability3_default[17]	300
+n_ability3[18]		pact_again
+n_ability3_name[18]	"shaman pacts znovu v sec"
+n_ability3_default[18]	600
+n_ability3[19]		voodoocontrol_again
+n_ability3_name[19]	"voodoocontrol znovu v sec"
+n_ability3_default[19]	90
+n_ability3[19]		voodooshield_again
+n_ability3_name[19]	"voodooshield znovu v sec"
+n_ability3_default[19]	90
+n_ability3[20]		lifepact_again
+n_ability3_name[20]	"lifepact znovu v min"
+n_ability3_default[20]	60
+n_ability3[21]		lifepact_fail
+n_ability3_name[21]	"lifepact znovu(fail) v min"
+n_ability3_default[21]	10
+n_ability3[22]		throw_staminaloss_thief
+n_ability3_name[22]	"kudla -stamina na 1 pole"
+n_ability3_default[22]	3
+n_ability3[23]		leap_staminaloss_war
+n_ability3_name[23]	"leap -stamina na 1 pole"
+n_ability3_default[23]	0
+n_ability3[24]		ability_mystikBleskDmg
+n_ability3_name[24]	"mystikBleskDmg"
+n_ability3_default[24]	1000
+n_ability3[25]		reactivea_pvm_return //reactivea = reactive armor
+n_ability3_name[25]	"Reactive A. pvm return %"
+n_ability3_default[25]	50
+n_ability3[26]		reactivea_pvm_absorb
+n_ability3_name[26]	"Reactive A. pvm absorb %"
+n_ability3_default[26]	50
+n_ability3[27]		reactivea_pvp_return
+n_ability3_name[27]	"Reactive A. pvp return %"
+n_ability3_default[27]	10
+n_ability3[28]		reactivea_pvp_absorb
+n_ability3_name[28]	"Reactive A. pvp absorb %"
+n_ability3_default[28]	10
+n_ability3[29]
+n_ability3_name[29]
+n_ability3_default[29]
+n_ability3[30] 		
+n_ability3_name[30] "Dragon resist armor:"
+n_ability3_default[30]
+n_ability3[31] 		dragon_resist_hrud
+n_ability3_name[31] "Hrud: "
+n_ability3_default[31] 10
+n_ability3[32] 		dragon_resist_nohy
+n_ability3_name[32] "Nohy: "
+n_ability3_default[32] 8
+n_ability3[33] 		dragon_resist_lokte
+n_ability3_name[33] "Lokte: "
+n_ability3_default[33] 8
+n_ability3[34] 		dragon_resist_rukavice
+n_ability3_name[34] "Rukavice: "
+n_ability3_default[34] 6
+n_ability3[35] 		dragon_resist_helma
+n_ability3_name[35] "Helma: "
+n_ability3_default[35] 6
+n_ability3[36] 		dragon_resist_krk
+n_ability3_name[36] "Krk: "
+n_ability3_default[36] 5
+n_ability3[37] 		
+n_ability3_name[37]
+n_ability3_default[37] 
+n_ability3[38] 		mystik_doubleswing_strength
+n_ability3_name[38] "% sila mystik doubleswing"
+n_ability3_default[38] 75
+n_ability3[39] 		mystik_doubleswing_stam
+n_ability3_name[39] "Ubytok staminy po mystik doubleswingu"
+n_ability3_default[39] 30
+
+
+n_poison[0]		poison_absoluteDmg
+n_poison_name[0]	rychlost bezneho jedu
+n_poison_default[0]	5
+n_poison[1]		poison_c
+n_poison_name[1]	rychlost procentualniho jedu
+n_poison_default[1]	5
+n_poison[2]		i_potion_poisonless
+n_poison_name[2]	sila lesser
+n_poison_default[2]	1,64
+n_poison[3]		i_potion_poison
+n_poison_name[3]	sila normal
+n_poison_default[3]	64,128
+n_poison[4]		i_potion_poisongreat
+n_poison_name[4]	sila greater
+n_poison_default[4]	128,196
+n_poison[5]		i_potion_poisondeadly
+n_poison_name[5]	sila deadly
+n_poison_default[5]	1,255
+n_poison[6]		
+n_poison_name[6]	
+n_poison_default[6]	
+n_poison[7]		poison_para
+n_poison_name[7]	rychlost para jed
+n_poison_default[7]	10
+n_poison[8]		i_potion_poison_para
+n_poison_name[8]	sila para jed (vuci resistu)
+n_poison_default[8]	750,999
+n_poison[9]		
+n_poison_name[9]	
+n_poison_default[9]	
+n_poison[10]		poison_fizz
+n_poison_name[10]	rychlost poison fizz
+n_poison_default[10]	5
+n_poison[11]		i_potion_poison_fizz
+n_poison_name[11]	fizz %sance
+n_poison_default[11]	10,50
+n_poison[12]		
+n_poison_name[12]	
+n_poison_default[12]	
+n_poison[13]		poison_stamina
+n_poison_name[13]	rychlost poison stamina
+n_poison_default[13]	5
+n_poison[14]		i_potion_poison_stamina
+n_poison_name[14]	% staminy
+n_poison_default[14]	1,20
+n_poison[15]		
+n_poison_name[15]	
+n_poison_default[15]	
+n_poison[16]		poison_clumsy
+n_poison_name[16]	rychlost/trvani clumsy
+n_poison_default[16]	5
+n_poison[17]		i_potion_poison_clumsy
+n_poison_name[17]	-dex
+n_poison_default[17]	1,20
+n_poison[18]		
+n_poison_name[18]	
+n_poison_default[18]	
+n_poison[19]		poison_weaken
+n_poison_name[19]	rychlost/trvani weaken
+n_poison_default[19]	5
+n_poison[20]		i_potion_poison_weaken
+n_poison_name[20]	-str
+n_poison_default[20]	1,20
+n_poison[21]		
+n_poison_name[21]	
+n_poison_default[21]	
+n_poison[22]		poison_feeblemind
+n_poison_name[22]	rychlost/trvani feeblemind
+n_poison_default[22]	5
+n_poison[23]		i_potion_poison_feeblemind
+n_poison_name[23]	-int
+n_poison_default[23]	1,20
+n_poison[24]
+n_poison_name[24]
+n_poison_default[24]
+n_poison[25]		mvm_coefficient
+n_poison_name[25]	Koeficient MvM jedu
+n_poison_default[25]	100
+n_poison[26]		pvm_coefficient
+n_poison_name[26]	Koeficient PvM jedu
+n_poison_default[26]	2500
+n_poison[27]
+n_poison_name[27]
+n_poison_default[27]
+n_poison[28]		use_custom_poison
+n_poison_name[28]	pouzivat custom poison
+n_poison_default[28] 0
+
+n_jine[0]		craftexp_i_log_copper
+n_jine_name[0]	"Craftexp - spruce"
+n_jine_default[0]	0
+n_jine[1]		craftexp_i_log_iron
+n_jine_name[1]	"Craftexp - chestnut"
+n_jine_default[1]	0
+n_jine[2]		craftexp_i_log_verite
+n_jine_name[2]	"Craftexp - oak"
+n_jine_default[2]	0
+n_jine[3]		craftexp_i_log_valorite
+n_jine_name[3]	"Craftexp - teak"
+n_jine_default[3]	4
+n_jine[4]		craftexp_i_log_obsidian
+n_jine_name[4]	"Craftexp - mahagon"
+n_jine_default[4]	46
+n_jine[5]		craftexp_i_log_adamantinum
+n_jine_name[5]	"Craftexp - eben"
+n_jine_default[5]	350
+n_jine[6]		craftexp_i_log_mithril
+n_jine_name[6]	"Craftexp - elven"
+n_jine_default[6]	0
+n_jine[7]		craftexp_i_ingot_copper
+n_jine_name[7]	"Craftexp - copper ingot"
+n_jine_default[7]	0
+n_jine[8]		craftexp_i_ingot_iron
+n_jine_name[8]	"Craftexp - iron ingot"
+n_jine_default[8]	0
+n_jine[9]		craftexp_i_ingot_verite
+n_jine_name[9]	"Craftexp - verite ingot"
+n_jine_default[9]	0
+n_jine[10]		craftexp_i_ingot_valorite
+n_jine_name[10]	"Craftexp - valorite ingot"
+n_jine_default[10]	0
+n_jine[11]		craftexp_i_ingot_obsidian
+n_jine_name[11]	"Craftexp - obsidian ingot"
+n_jine_default[11]	52
+n_jine[12]		craftexp_i_ingot_adamantinum
+n_jine_name[12]	"Craftexp - adamantinum ingot"
+n_jine_default[12]	0
+n_jine[13]		craftexp_i_ingot_mithril
+n_jine_name[13]	"Craftexp - mithril ingot"
+n_jine_default[13]	0
+n_jine[14]		craftexp_i_ore_copper
+n_jine_name[14]	"Craftexp - copper ore"
+n_jine_default[14]	0
+n_jine[15]		craftexp_i_ore_iron
+n_jine_name[15]	"Craftexp - iron ore"
+n_jine_default[15]	0
+n_jine[16]		craftexp_i_ore_verite
+n_jine_name[16]	"Craftexp - verite ore"
+n_jine_default[16]	0
+n_jine[17]		craftexp_i_ore_valorite
+n_jine_name[17]	"Craftexp - valorite ore"
+n_jine_default[17]	0
+n_jine[18]		craftexp_i_ore_obsidian
+n_jine_name[18]	"Craftexp - obsidian ore"
+n_jine_default[18]	52
+n_jine[19]		craftexp_i_ore_adamantinum
+n_jine_name[19]	"Craftexp - adamantinum ore"
+n_jine_default[19]	0
+n_jine[20]		craftexp_i_ore_mithril
+n_jine_name[20]	"Craftexp - mithril ore"
+n_jine_default[20]	0
+
+n_sg[0]		sg_playing
+n_sg_name[0]	"Hra sa? 0|1"
+n_sg_default[0]	0
+
+n_sg[1]		sg_position_spectators
+n_sg_name[1]	"Pozicia pre divakov"
+n_sg_default[1]	"5966,143,0,10"
+
+[function f_platedefname]
+doswitch <argv(0)>
+ return 11
+ return"i_<argv(1)>_closed_helm"
+ return"i_<argv(1)>_bascinet"
+ return"i_<argv(1)>_nose_helm" 
+ return"i_<argv(1)>_plate_helm"   
+ return"i_<argv(1)>_platemail_gorget"
+ return"i_<argv(1)>_platemail"
+ return"i_<argv(1)>_female_platemail"
+ return"i_<argv(1)>_platemail_arms"
+ return"i_<argv(1)>_platemail_gauntlets"
+ return"i_<argv(1)>_platemail_leggings"
+ return"i_<argv(1)>_heater_shield"
+enddo
+
+[function f_chaindefname]
+doswitch <argv(0)>
+ return 7
+ return"i_<argv(1)>_chainmail_coif"
+ return"i_<argv(1)>_chainmail_gorget"
+ return"i_<argv(1)>_chainmail_tunic"
+ return"i_<argv(1)>_chainmail_sleeves"
+ return"i_<argv(1)>_chainmail_gloves"
+ return"i_<argv(1)>_chainmail_leggings"
+ return"i_<argv(1)>_metal_shield"
+enddo
+
+[function f_ringdefname]
+doswitch <argv(0)>
+ return 7
+ return"i_<argv(1)>_ringmail_helm"  
+ return"i_<argv(1)>_ringmail_gorget"
+ return"i_<argv(1)>_ringmail_tunic"
+ return"i_<argv(1)>_ringmail_sleeves"
+ return"i_<argv(1)>_ringmail_gloves"
+ return"i_<argv(1)>_ringmail_leggings"
+ return"i_<argv(1)>_kite_wood_shield"
+enddo
+
+[function f_bonedefname]
+doswitch <argv(0)>
+ return 5
+ return"i_bone_helmet_<argv(1)>" 
+ return"i_bone_chest_<argv(1)>"
+ return"i_bone_arms_<argv(1)>"
+ return"i_bone_gloves_<argv(1)>"
+ return"i_bone_leggings_<argv(1)>"
+enddo
+
+[function f_studdeddefname]
+doswitch <argv(0)>
+ return 9
+ return"i_studded_cap_<argv(1)>" 
+ return"i_studded_gorget_<argv(1)>" 
+ return"i_studded_tunic_<argv(1)>"
+ return"i_armor_female_bustier_studded_<argv(1)>"
+ return"i_armor_female_studded_<argv(1)>"
+ return"i_studded_sleeves_<argv(1)>"
+ return"i_studded_gloves_<argv(1)>"
+ return"i_studded_leggings_<argv(1)>"
+ return"i_<argv(1)>_buckler_shield"
+enddo
+
+[function quaddamage]//pustit predem...
+logmsg(uplatneni quaddamage)
+nastaveni_cleartag
+tag(nastaveni_prefvaluetype,"n_weapon[")
+tag(nastaveni_sufvaluetype,"]")
+tag(nastaveni_prefdefaulttype,"n_weapon[")
+tag(nastaveni_sufdefaulttype,"]")
+tag(nastaveni_prefvalue,"nastaveni_weapdam_")
+tag(nastaveni_sufvalue,"_copper")
+tag(nastaveni_sufdefault,"_copper.F_quaddamage")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Iron")
+tag(nastaveni_sufdefault,"_Iron.F_quaddamage")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Verite")
+tag(nastaveni_sufdefault,"_Verite.F_quaddamage")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Valorite")
+tag(nastaveni_sufdefault,"_Valorite.F_quaddamage")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Obsidian")
+tag(nastaveni_sufdefault,"_Obsidian.F_quaddamage")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Adamantinum")
+tag(nastaveni_sufdefault,"_Adamantinum.F_quaddamage")
+f_nastaveni_setdefault
+tag(nastaveni_sufvalue,"_Mithril")
+tag(nastaveni_sufdefault,"_Mithril.F_quaddamage")
+f_nastaveni_weapdamage_finish
+nastaveni_cleartag
+
+[function F_quaddamage]
+if (argvcount>0)
+ dam=<args>
+else
+ return <eval ((<damagelo>+<damagehi>)*2)>
+endif
+
+[eof] 

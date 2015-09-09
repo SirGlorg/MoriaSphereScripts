@@ -1,0 +1,169 @@
+[defnames arrow_toulec]
+toulec_cap[1]	100
+toulec_cap[2]	225
+toulec_cap[3]	400
+toulec_cap[4]	625
+toulec_cap[5]	900
+toulec_cap[6]	1225
+toulec_cap[7]	1600
+
+[itemdef i_toulec_copper]
+id=i_toolkit_empty
+type=t_toulec
+name=spruce toulec
+WEIGHT=50.0
+resources=10 i_log_copper
+SKILLMAKE=CARPENTRY 40.0, t_carpentry
+tdata1=1
+
+on=@create
+color=color_spruce
+
+[itemdef i_toulec_iron]
+id=i_toolkit_empty
+type=t_toulec
+name=chestnut toulec
+WEIGHT=30.0
+resources=10 i_log_iron
+SKILLMAKE=CARPENTRY 50.0, t_carpentry
+tdata1=2
+
+on=@create
+color=color_chestnut
+
+[itemdef i_toulec_verite]
+id=i_toolkit_empty
+type=t_toulec
+name=oak toulec
+WEIGHT=30.0
+resources=10 i_log_verite
+SKILLMAKE=CARPENTRY 60.0, t_carpentry
+tdata1=3
+
+on=@create
+color=color_oak
+
+[itemdef i_toulec_valorite]
+id=i_toolkit_empty
+type=t_toulec
+name=teak toulec
+WEIGHT=30.0
+resources=10 i_log_valorite
+SKILLMAKE=CARPENTRY 70.0, t_carpentry
+tdata1=4
+
+on=@create
+color=color_teak
+
+[itemdef i_toulec_obsidian]
+id=i_toolkit_empty
+type=t_toulec
+name=mahagon toulec
+WEIGHT=30.0
+resources=10 i_log_obsidian
+SKILLMAKE=CARPENTRY 80.0, t_carpentry
+tdata1=5
+
+on=@create
+color=color_mahagon
+
+[itemdef i_toulec_adamantinum]
+id=i_toolkit_empty
+type=t_toulec
+name=eben toulec
+WEIGHT=20.0
+resources=10 i_log_adamantinum
+SKILLMAKE=CARPENTRY 90.0, t_carpentry
+tdata1=6
+
+on=@create
+color=color_eben
+
+[itemdef i_toulec_mithril]
+id=i_toolkit_empty
+type=t_toulec
+name=elven toulec
+WEIGHT=20.0
+resources=10 i_log_mithril
+SKILLMAKE=CARPENTRY 100.0, t_carpentry
+tdata1=7
+
+on=@create
+color=color_elven
+
+[typedef t_toulec]
+on=@userdclick
+if (topobj.uid!=src.UID)
+src.sysmessage Toulec musis mit u sebe.
+return 1
+elseif (<tag.ammotype>==<src.findlayer(2).typedef.tdata3>)//&&(morex)
+ toulec_vysypat(<src.tag.toulec>)
+elseif (morex>toulec_cap[<typedef.tdata1>])
+ toulec_vysypat(<morex>)
+else
+ target Ktere sipy chces dat do toulce?
+endif
+return 1
+
+ON=@TARGON_ITEM
+if (src.targ.isweapon)
+ toulec_vysypat(<morex>)
+ return 1
+elseif (src.targ.type!=t_weapon_arrow)&&(src.targ.type!=t_weapon_bolt)&&(src.targ.type!=t_weapon_bolt_jagged)
+src.sysmessage Tohle se do toulce nevejde.
+dclick
+return 1
+elseif (src.targ.topobj.uid!=src.UID)
+src.sysmessage Munici musis mit u sebe.
+return 1
+elseif (morex)
+ if (<src.targ.baseid>!=<tag.ammobaseid>)
+  src.sysmessage Nemuzes michat ruzne typy sipu!
+  return 1
+ else
+  morex=<eval <morex>+<src.targ.amount>>
+  src.targ.remove
+ endif
+else
+ tag.ammotype=<src.targ.type>
+ tag.ammobaseID=<src.targ.baseid>
+ tag.ammoname="<src.targ.name>"
+ morex=<eval <src.targ.amount>>
+ src.targ.remove
+endif
+
+if (morex>toulec_cap[<typedef.tdata1>])
+ src.sysmessage Toulec je jiz plny.
+ src.newitem <tag.ammobaseid>
+ src.act.amount=<eval <morex>-<toulec_cap[<typedef.tdata1>]>>
+ morex=<toulec_cap[<typedef.tdata1>]>
+ src.act.bounce
+endif
+name="<tag.ammoname> toulec (<morex>)"
+return 1
+
+[function toulec_vysypat]
+if (morex==0)
+src.sysmessage Toulec je prazdny.
+name=
+return 1
+elseif (<args>>=<morex>)
+ src.sysmessage Toulec vyprazdnen.
+ src.newitem <tag.ammobaseid>
+ src.act.amount=<morex>
+ src.act.bounce
+ morex=0
+ name=
+else
+ src.newitem <tag.ammobaseid>
+ src.act.amount=<args>
+ src.act.bounce
+ src.sysmessage Vyndal jsi <args> <tag.ammoname>. 
+ morex=<eval <morex>-<args>>
+ name=<tag.ammoname> toulec (<morex>)
+endif
+
+[function toulec]
+tag.toulec=<args>
+findtype(t_toulec).toulec_vysypat(<tag.toulec>)
+endif

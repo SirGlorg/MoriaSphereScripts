@@ -1,0 +1,1822 @@
+
+[CHARDEF 056]
+DEFNAME=c_ophidian_warrior
+NAME=Ophidian Warrior
+SOUND=snd_MONSTER_OPHIDIAN_WARRIOR1
+ICON=i_pet_ophid_war
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS
+
+attack=50
+ARMOR=60
+moverate=3
+
+RESOURCES=9 i_ribs_raw
+BLOODCOLOR=0996
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Ophidian
+DESCRIPTION=Ophidian Warrior
+
+ON=@Create
+color=0710
+NPC=brain_monster
+FAME=1
+KARMA={-5000 -5999}
+
+STR=1500
+DEX={165 175}
+INT={46 70}
+
+maxhits={1500 1600}
+maxstam={165 175}
+maxmana=0
+
+tag.experience=<eval {80.0 120.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.weapflag=dam_physical|dam_slashing
+
+//typ monstra
+tag(monstertype,daemon,80)
+
+tag(resist_poison,700)
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,350)
+tag(resist_bleed,300)
+
+tag(resist_sharp,50)
+tag(resist_slash,-150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-250)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+provocation=100.0
+WRESTLING={90.0 100.0}
+resist=250.0
+SWORDSMANSHIP={80.0 95.0}
+SpiritSpeak=40.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 055]
+DEFNAME=c_ophidian_mage
+NAME=Ophidian Mage
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_ophid_mage
+ANIM=07fc7f
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE
+
+attack=40
+ARMOR=35
+moverate=3
+
+RESOURCES=9 i_ribs_raw
+BLOODCOLOR=0996
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explode
+TEVENTS=e_phoenix_fire
+
+CATEGORY=Monsters
+SUBSECTION=Ophidian
+DESCRIPTION=Ophidian Mage
+
+ON=@Create
+color=075a
+NPC=brain_monster
+FAME=1
+KARMA=-1000
+
+STR=750
+DEX={96 120}
+INT=245
+
+
+maxhits={680 720}
+maxstam={96 120}
+maxmana=500
+
+tag.experience=<eval {45.0 55.0}>
+
+tag(poisoning_dmg,14) // affects spell_poison
+tag(poisoning_MvM_dmg,35) // affects spell_poison
+
+Tag.explode_dmg=50
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//typ monstra
+tag(monstertype,daemon,80)
+
+tag.weapflag=dam_physical|dam_slashing
+
+tag(resist_poison,850)
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,350)
+tag(resist_bleed,100)
+
+tag(resist_sharp,50)
+tag(resist_slash,-150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-250)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,200)
+
+PARRYING={85.0 95.0}
+MAGERY={90.0 100.0}
+EI={90.0 100.0}
+Resist=60.0
+TACTICS={65.0 87.0}
+WRESTLING={70.0 80.0}
+SpiritSpeak=35.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_fireball
+addspell=s_poison
+addspell=s_lightning
+
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{5 30}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 01048]
+DEFNAME=c_ophidian_knight
+NAME=Ophidian Knight
+SOUND=snd_MONSTER_OPHIDIAN_WARRIOR1
+ICON=i_pet_ophid_war
+ID=c_OPHIDIAN_WARRIOR
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE
+
+attack=80
+ARMOR=30
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+BLOODCOLOR=0996
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+
+CATEGORY=Monsters
+SUBSECTION=Ophidian
+DESCRIPTION=Ophidian Knight
+
+ON=@Create
+color=0712
+NPC=brain_monster
+FAME=1
+KARMA=-1000
+
+STR=1500
+DEX={155 160}
+INT={95 190}
+
+maxhits={2500 3000}
+maxstam={155 180}
+maxmana={95 190}
+
+tag.experience=<eval {140.0 160.0}>
+
+tag.npc_bleed=600 //60.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.weapflag=dam_physical|dam_slashing
+
+//typ monstra
+tag(monstertype,daemon,70)
+
+tag(resist_poison,750)
+tag.resist_para=<eval {600 750}>
+tag(resist_summon,550)
+tag(resist_bleed,300)
+
+tag(resist_sharp,50)
+tag(resist_slash,-150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-250)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+peacemaking=100.0
+provocation=100.0
+MAGERY={90.0 100.0}
+EI={90.0 100.0}
+SWORDSMANSHIP={60.0 85.0}
+resist=500.0
+SpiritSpeak=45.0
+WRESTLING={80.0 90.0}
+
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{5 20}
+
+////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 01044]
+DEFNAME=c_ophidian_archmage
+NAME=Ophidian Archmage
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_ophid_mage
+ID=c_OPHIDIAN_MAGE
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE
+
+attack=60
+ARMOR=32
+moverate=3
+
+RESOURCES=8 i_ribs_raw
+BLOODCOLOR=0996
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+TEVENTS=e_npc_curse
+
+CATEGORY=Monsters
+SUBSECTION=Ophidian
+DESCRIPTION=Ophidian Archmage
+
+ON=@Create
+color=075f
+NPC=brain_monster
+FAME=1
+KARMA=-1000
+
+STR=1500
+DEX={128 150}
+INT=350
+
+maxhits={1500 1600}
+maxstam={128 150}
+maxmana=1000
+
+tag.experience=<eval {160.0 190.0}>
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=25,30         // delay between another possible strike
+tag.npc_curse_dmg=30,35           // dmg 
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//typ monstra
+tag(monstertype,daemon,70)
+
+tag.weapflag=dam_physical|dam_slashing
+
+tag(resist_poison,800)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,550)
+tag(resist_bleed,300)
+
+tag(resist_sharp,50)
+tag(resist_slash,-150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-250)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,200)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={85.0 90.0}
+MAGERY={100.0 110.0}
+EI={90.0 100.0}
+Resist={75.0 97.0}
+TACTICS={65.0 87.0}
+WRESTLING={70.0 80.0}
+SpiritSpeak=40.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=RANDOM_REAGENT,{15 30}
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 057]
+DEFNAME=c_ophidian_queen
+NAME=Ophidian Queen
+SOUND=snd_MONSTER_OPHIDIAN_QUEEN1
+ICON=i_pet_ophid_queen
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE
+
+attack=80
+ARMOR=35
+moverate=3
+
+BLOODCOLOR=0996
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+TEVENTS=e_explode
+TEVENTS=e_phoenix_fire
+
+CATEGORY=Monsters
+SUBSECTION=Ophidian
+DESCRIPTION=Ophidian Queen
+
+ON=@Create
+color=0994
+NPC=brain_monster
+FAME=100
+KARMA=-1000
+
+STR=1500
+DEX={96 115}
+INT={365 455}
+
+maxhits={1500 1600}
+maxstam={69 115}
+maxmana=1000
+
+tag.experience=<eval {160.0 180.0}>
+
+Tag.explode_dmg=60
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag.weapflag=dam_physical|dam_slashing
+
+//typ monstra
+tag(monstertype,daemon,70)
+
+tag(resist_poison,800)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,750)
+tag(resist_bleed,300)
+
+tag(resist_sharp,50)
+tag(resist_slash,-150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-250)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,200)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={85.0 95.0}
+MAGERY={100.0 110.0}
+necromancy={90.0 100.0}
+EI=90.0
+Resist={90.0 100.0}
+TACTICS={50.0 70.0}
+WRESTLING={80.0 90.0}
+SpiritSpeak=55.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_fireball
+addspell=s_lightning
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{15 30}
+
+////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_ophidian_king] 
+ID=c_ophidian_queen
+NAME=Ophidian King
+SOUND=snd_MONSTER_OPHIDIAN_WARRIOR1
+ICON=i_pet_ophid_war
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_FIRE_IMMUNE|MT_EQUIP
+
+attack=80
+ARMOR=80
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+BLOODCOLOR=0996
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explode
+TEVENTS=e_npc_bleed
+TEVENTS=e_npc_critic 
+TEVENTS=e_npc_curse_stam            //mass sani staminy
+
+CATEGORY=Monsters
+SUBSECTION=Ophidian
+DESCRIPTION=Ophidian King
+
+ON=@Create
+COLOR=0992
+NPC=brain_monster
+FAME=0
+KARMA=-8000 
+
+STR=2500
+DEX=200
+INT=400
+
+maxhits={3500 3700}
+maxstam={200 210}
+maxmana=0
+
+tag.experience=<eval {215.0 235.0}>
+
+Tag.explode_dmg=50
+
+tag.npc_bleed=400 //40.0%
+
+tag.npc_curse_stam_chance=250       // 25% chance to trigger this event
+tag.npc_curse_stam_delay=12,15      // delay between another possible strike
+tag.npc_curse_stam_dmg=50,60        // stam reduce in between 50 and 60
+
+tag.npc_critic_chance=250         //25% chance
+tag.npc_critic_dmg=15,20          //dmg in between
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//typ monstra
+tag(monstertype,daemon,60)
+
+tag.weapflag=dam_physical|dam_slashing
+
+tag(resist_poison,700)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,650)
+tag(resist_bleed,300)
+
+tag(resist_sharp,50)
+tag(resist_slash,-150)        //sekery
+tag(resist_pierce,-50)
+tag(resist_blunt,-250)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,200)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={100.0 150.0} 
+TACTICS={200.0 300.0} 
+WRESTLING={200.0 300.0}
+SpiritSpeak=60.0 
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 01055]
+DEFNAME=c_terathan_avenger
+NAME=Terathan Avenger
+SOUND=snd_MONSTER_TERA_WARRIOR1
+ICON=i_pet_terathan_war
+ID=c_TERATHAN_WARRIOR
+CAN=MT_WALK
+
+attack=30
+ARMOR=25
+moverate=4
+
+RESOURCES=10 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Monsters
+SUBSECTION=Terathans
+DESCRIPTION=Terathan Avenger
+
+ON=@Create
+color=0712
+NPC=brain_monster
+FAME=1
+KARMA=-1000
+
+STR=1000
+DEX={166 175}
+INT=175
+
+
+maxhits={400 450}
+maxstam={166 175}
+maxmana=0
+
+tag.experience=<eval {15.0 17.0}>
+
+//tag.npc_bleed=200 //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,880)
+tag.resist_para=<eval {200 330}>
+tag(resist_summon,350)
+tag(resist_bleed,200)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,50)
+tag(resist_blunt,-100)
+
+tag(resist_fire,100)
+tag(resist_elect,100)
+tag(resist_cold,50)
+
+peacemaking=100.0
+provocation=100.0
+Resist={65.0 80.0}
+WRESTLING={80.0 90.0}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 046]
+DEFNAME=c_terathan_warrior
+NAME=Terathan Warrior
+SOUND=snd_MONSTER_TERA_WARRIOR1
+ICON=i_pet_terathan_war
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS
+
+attack=50
+ARMOR=25
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+
+CATEGORY=Monsters
+SUBSECTION=Terathans
+DESCRIPTION=Terathan Warrior
+
+ON=@Create
+color=0710
+NPC=brain_monster
+FAME=1
+KARMA={-3000 -4999}
+
+STR=1000
+DEX={106 145}
+INT=50
+
+maxhits={1000 1100}
+maxstam={106 145}
+maxmana=0
+
+tag.experience=<eval {35.0 43.0}>
+
+tag.npc_bleed=200 //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,880)
+tag.resist_para=<eval {300 450}>
+tag(resist_summon,350)
+tag(resist_bleed,200)
+
+tag(resist_sharp,00)
+tag(resist_slash,-100)
+tag(resist_pierce,150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={70.0 80.0}
+TACTICS={80.0 100.0}
+WRESTLING={80.0 90.0}
+SpiritSpeak=50.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{5 15}
+
+///////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 047]
+DEFNAME=c_terathan_drone
+NAME=Terathan Drone
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK
+
+attack=40
+ARMOR=35
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_leaper
+
+CATEGORY=Monsters
+SUBSECTION=Terathans
+DESCRIPTION=Terathan Drone
+
+ON=@Create
+color=0710
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR=1000
+DEX=250
+INT=30
+
+maxhits={700 800}
+maxstam={196 245}
+maxmana=0
+
+tag.experience=<eval {30.0 35.0}>
+
+tag.npc_port_timer=15
+tag(npc_port_distance,6)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,880)
+tag.resist_para=<eval {300 330}>
+tag(resist_summon,350)
+tag(resist_bleed,200)
+
+tag(resist_sharp,00)
+tag(resist_slash,-100)
+tag(resist_pierce,150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+PARRYING={70.0 80.0}
+TACTICS={30.0 50.0}
+WRESTLING={80.0 90.0}
+SpiritSpeak=45.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{5 10}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 048]
+DEFNAME=c_terathan_matriarch    
+NAME=Terathan Matriarch
+SOUND=snd_MONSTER_TERA_MATRIARCH1
+ICON=i_pet_terathan_queen
+ANIM=07fc7f
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE
+
+attack=30
+ARMOR=35
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix_fire
+
+CATEGORY=Monsters
+SUBSECTION=Terathans
+DESCRIPTION=Terathan Matriarch
+
+ON=@Create
+color=0712
+NPC=brain_monster
+FAME=1
+KARMA=-1000
+
+STR=2000
+DEX={96 115}
+INT=180
+
+maxhits={2000 2100}
+maxstam={96 115}
+maxmana=1000
+
+tag.experience=<eval {60.0 65.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,800)
+tag.resist_para=<eval {300 450}>
+tag(resist_summon,350)
+tag(resist_bleed,200)
+
+tag(resist_sharp,00)
+tag(resist_slash,-100)
+tag(resist_pierce,50)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={70.0 80.0}
+MAGERY=110.0
+EI=60.0
+Resist={90.0 100.0}
+TACTICS={90.0 100.0}
+WRESTLING={70.0 90.0}
+SpiritSpeak=30.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{5 30}
+
+//////////////////////////////////////////////////////////////
+
+[CHARDEF 098]
+DEFNAME=c_terathan_patriarch
+NAME=Terathan Patriarch
+SOUND=snd_MONSTER_TERA_MATRIARCH1
+ICON=i_pet_terathan_queen
+ANIM=07fc7f
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE
+
+attack=65
+ARMOR=90
+moverate=4
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_roundattack
+
+CATEGORY=Monsters
+SUBSECTION=Terathans
+DESCRIPTION=Terathan Patriarch
+
+ON=@Create
+color=0710
+NPC=brain_monster
+FAME=1
+KARMA=-1000
+
+STR=1500
+DEX=250
+INT=100
+
+maxhits={3000 3500}
+maxstam={96 115}
+maxmana=1000
+
+tag.roundattack_damage=35,50  //dmg od - do
+tag.roundattack_time=10,12    //prodleva od - do v sek
+tag.roundattack_chance=100    //20.0%
+
+
+tag.experience=<eval {90.0 100.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,800)
+tag.resist_para=<eval {900 950}>
+tag(resist_summon,350)
+tag(resist_bleed,200)
+
+tag(resist_sharp,100)
+tag(resist_slash,-100)
+tag(resist_pierce,50)
+tag(resist_blunt,100)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+PARRYING={90.0 100.0}
+WRESTLING={90.0 100.0}
+Resist=200.0
+SpiritSpeak=60.0
+PROVOCATION=100.0
+peacemaking=100.0
+
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+ITEM=RANDOM_REAGENT,{5 30}
+
+
+//////////////////////////////////////////////////////////////
+//////////////////// sem hotovo /////////////////////////
+
+[CHARDEF 030d]
+DEFNAME=c_fireant_worker
+NAME=Fireant Worker
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK
+
+attack=40
+ARMOR=60
+moverate=4
+
+RESOURCES=10 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+CATEGORY=Monsters
+SUBSECTION=Ants
+DESCRIPTION=Fireant Worker
+
+ON=@Create
+color=044c
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR={1000 1605}
+DEX={145 250}
+INT=30
+
+maxhits={1500 1600}
+maxstam={196 245}
+maxmana=0
+
+tag.experience=<eval {30.0 39.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.weapflag=dam_physical|dam_slashing|dam_fire
+
+tag(resist_poison,1000)
+tag(resist_para,560) 
+tag(resist_summon,350)
+tag(resist_bleed,200)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,150)
+tag(resist_blunt,-250)
+
+tag(resist_fire,600)
+tag(resist_elect,200)
+tag(resist_cold,-200)
+
+provocation=100.0
+PARRYING={30.0 40.0}
+TACTICS={100.0 130.0}
+WRESTLING=120.0
+POISONING={50.0 80.0}
+SpiritSPeak=45.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+////////////////////////////////////////////////////////////////
+
+[CHARDEF 030e]
+DEFNAME=c_fireant_warrior
+NAME=Fireant Warrior
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN
+
+attack=60
+ARMOR=80
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_leaper
+
+CATEGORY=Monsters
+SUBSECTION=Ants
+DESCRIPTION=Fireant Warrior
+
+ON=@Create
+color=044c
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR={1000 1605}
+DEX={250 350}
+INT={21 45}
+
+maxhits={2500 3100}
+maxstam={196 245}
+maxmana=0
+
+tag.experience=<eval {80.0 85.0}>
+
+tag.npc_port_timer=15
+tag(npc_port_distance,6)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag.weapflag=dam_physical|dam_slashing|dam_fire
+
+tag(resist_poison,1000)
+tag(resist_para,360) 
+tag(resist_summon,350)
+tag(resist_bleed,400)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,150)
+tag(resist_blunt,-250)
+
+tag(resist_fire,600)
+tag(resist_elect,200)
+tag(resist_cold,-200)
+
+provocation=100.0
+PARRYING={30.0 40.0}
+TACTICS={100.0 130.0}
+WRESTLING=120.0
+POISONING={60.0 80.0}
+SpiritSpeak=55.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_fireant_mage]
+ID=c_fireant_worker
+NAME=Fireant Mage
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK
+
+attack=40
+ARMOR=40
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explode
+TEVENTS=e_phoenix_fire
+TEVENTS=e_parakrik
+
+CATEGORY=Monsters
+SUBSECTION=Ants
+DESCRIPTION=Fireant Mage
+
+ON=@Create
+color=044c
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR={1000 1605}
+DEX={145 250}
+INT=250
+
+maxhits={1000 1100}
+maxstam={196 245}
+maxmana=1400
+
+tag.experience=<eval {75.0 89.0}>
+
+Tag.explode_dmg=40
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+
+tag.weapflag=dam_physical|dam_slashing|dam_fire
+
+tag(resist_poison,1000)
+tag(resist_para,360) 
+tag(resist_summon,350)
+tag(resist_bleed,400)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,150)
+tag(resist_blunt,-250)
+
+tag(resist_fire,800)
+tag(resist_elect,200)
+tag(resist_cold,-200)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={30.0 40.0}
+TACTICS={100.0 130.0}
+WRESTLING={100.0 150.0}
+POISONING={120.0 150.0}
+MAGERY={100.0 150.0}
+EI=90.0
+SpiritSpeak=45.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_spellbook
+addspell=s_firebal
+addspell=s_lightning
+
+ON=@NPCRestock
+ITEM=loot_TERATHAN
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 030f]
+DEFNAME=c_fireant_queen
+NAME=Fireant Queen
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK
+
+attack=100
+ARMOR=100
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+TEVENTS=e_lightnings
+TEVENTS=e_ovinovac
+
+CATEGORY=Monsters
+SUBSECTION=Ants
+DESCRIPTION=Fireant Queen
+
+ON=@Create
+color=044c
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR={1000 1500}
+DEX={100 150}
+INT={21 45}
+
+maxhits={6500 6100}
+maxstam={100 150}
+maxmana=0
+
+tag.experience=<eval {160.0 175.0}>
+
+tag(e_lightnings_chance,67) // 6.7% chance
+tag(e_lightnings_range,5)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag.weapflag=dam_physical|dam_slashing|dam_fire
+
+tag(resist_poison,1000)
+tag(resist_para,760) 
+tag(resist_summon,650)
+tag(resist_bleed,600)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,150)
+tag(resist_blunt,-250)
+
+tag(resist_fire,800)
+tag(resist_elect,200)
+tag(resist_cold,-100)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={30.0 40.0}
+TACTICS={100.0 130.0}
+WRESTLING={100.0 150.0}
+POISONING={200.0 250.0}
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 0318]
+DEFNAME=c_fireant_daemon
+NAME=Fireant Daemon
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN
+
+attack=60
+ARMOR=100
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_parakrik
+TEVENTS=e_lightnings
+TEVENTS=e_ovinovac
+
+CATEGORY=Monsters
+SUBSECTION=Ants
+DESCRIPTION=Fireant Daemon
+
+ON=@Create
+color=044c
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR=1500
+DEX={200 250}
+INT=290
+
+maxhits={9000 9100}
+maxstam={230 300}
+maxmana=700
+
+tag.experience=<eval {250.0 290.0}>
+
+tag(e_lightnings_chance,100) // 10% chance
+tag(e_lightnings_range,5)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag.weapflag=dam_physical|dam_slashing|dam_fire
+
+tag(resist_poison,1000)
+tag(resist_para,860) 
+tag(resist_summon,850)
+tag(resist_bleed,600)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,150)
+tag(resist_blunt,-250)
+
+tag(resist_fire,800)
+tag(resist_elect,200)
+tag(resist_cold,-200)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={30.0 40.0}
+TACTICS={100.0 130.0}
+WRESTLING=120.0
+POISONING={140.0 200.0}
+MAGERY=111.0
+EI=95.0
+SpiritSpeak=75.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_necrobolt
+addspell=s_lightning
+addspell=s_flamestrike
+
+ON=@NPCRestock
+ITEM=loot_TERATHAN
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF 0313]
+DEFNAME=c_bug_giant
+NAME=Giant Bug
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_bullfrog
+ANIM=078c7f
+CAN=MT_WALK
+
+attack=80
+ARMOR=140
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_selfreser
+
+CATEGORY=Monsters
+SUBSECTION=Insect
+DESCRIPTION=Giant Bug
+
+ON=@Create
+color=0710
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -4999}
+
+STR={1000 1605}
+DEX={145 210}
+INT={21 45}
+
+
+maxhits={1500 1600}
+maxstam={206 245}
+maxmana=0
+
+tag.experience=<eval {75.0 80.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(resstimer,<eval {40 60}>)
+
+tag(resist_poison,1000)
+tag(resist_para,560) 
+tag(resist_summon,550)
+tag(resist_bleed,500)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,150)
+tag(resist_blunt,-250)
+
+tag(resist_fire,400)
+tag(resist_elect,200)
+tag(resist_cold,200)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={130.0 140.0}
+TACTICS={100.0 130.0}
+WRESTLING={100.0 120.0}
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////////////
+[CHARDEF 0317]
+
+DEFNAME=c_beetle_giant
+NAME=Beetle Giant
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_bullfrog
+ANIM=078c7f
+CAN=MT_WALK
+
+attack=40
+ARMOR=40
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_selfreser
+
+CATEGORY=Monsters
+SUBSECTION=Insect
+DESCRIPTION=Giant Beetle
+
+ON=@Create
+color=0710
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -4999}
+STR={1000 1605}
+DEX={145 250}
+INT={21 45}
+
+
+maxhits={700 760}
+maxstam={96 145}
+maxmana=0
+
+tag.experience=<eval {35.0 39.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(resstimer,<eval {50 70}>)
+
+tag(resist_poison,1000)
+tag(resist_para,560)
+tag(resist_summon,550)
+tag(resist_bleed,500)
+
+tag(resist_sharp,00)
+tag(resist_slash,00)
+tag(resist_pierce,150)
+tag(resist_blunt,-250)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,200)
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={130.0 140.0}
+TACTICS={100.0 130.0}
+WRESTLING={100.0 120.0}
+SpiritSpeak=45.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////////////////// 
+
+[CHARDEF c_caveant_warrior]
+ID=c_fireant_warrior
+NAME=Caveant
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=80
+ARMOR=90
+moverate=5
+
+RESOURCES=10 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_fire
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Caveant Warrior
+
+ON=@Create
+color=0836
+
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR=1300
+DEX={250 300}
+INT={21 45}
+
+maxhits={3500 4500}
+maxstam={255 295}
+maxmana=0
+
+tag.experience=<eval {75.0 89.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,500)
+tag(resist_para,700)
+tag(resist_summon,750)
+tag(resist_bleed,300)
+
+//weap resists
+tag(resist_sharp,300)
+tag(resist_slash,-100)
+tag(resist_pierce,-200)
+tag(resist_blunt,400)
+
+//magic resists
+tag(resist_fire,950)
+tag(resist_elect,350)
+tag(resist_cold,-500)
+
+//typ monstra
+tag(monstertype,fire)
+//weap flags
+tag.weapflag=dam_magic|dam_fire
+
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={90.0 140.0}
+TACTICS={100.0 130.0}
+WRESTLING={100.0 150.0}
+POISONING={120.0 180.0}
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_TERATHAN
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_caveant_worker]
+ID=c_fireant_worker
+NAME=Caveant Elder
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=60
+ARMOR=70
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_fire
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Caveant Worker
+
+ON=@Create
+color=0836
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR=1500
+DEX={145 200}
+INT={210 350}
+
+maxhits={4000 4500}
+maxstam={150 200}
+maxmana=1400
+
+tag.experience=<eval {75.0 89.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,500)
+tag(resist_para,700)
+tag(resist_summon,750)
+tag(resist_bleed,300)
+
+//weap resists
+tag(resist_sharp,300)
+tag(resist_slash,-100)
+tag(resist_pierce,-200)
+tag(resist_blunt,400)
+
+//magic resists
+tag(resist_fire,950)
+tag(resist_elect,350)
+tag(resist_cold,-500)
+
+//typ monstra
+tag(monstertype,fire)
+//weap flags
+tag.weapflag=dam_magic|dam_fire
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={90.0 140.0}
+TACTICS={100.0 130.0}
+WRESTLING={100.0 150.0}
+MAGERY={100.0 150.0}
+EI={90.0 95.0}
+SpiritSpeak=45.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+
+ON=@NPCRestock
+ITEM=loot_TERATHAN
+item=i_gold
+
+/////////////////////////////////////////////////////////////////
+
+[CHARDEF c_caveant_lord]
+
+ID=c_fireant_queen
+NAME=Caveant Lord
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=110
+ARMOR=100
+moverate=3
+
+RESOURCES=10 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_fire
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Caveant Lord
+
+ON=@Create
+color=0836
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR=1500
+DEX={200 250}
+INT={21 45}
+
+maxhits={4500 5500}
+maxstam={190 275}
+maxmana=0
+
+tag.experience=<eval {125.0 130.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,500)
+tag(resist_para,700)
+tag(resist_summon,750)
+tag(resist_bleed,450)
+
+//weap resists
+tag(resist_sharp,200)
+tag(resist_slash,-100)
+tag(resist_pierce,-200)
+tag(resist_blunt,400)
+
+//magic resists
+tag(resist_fire,950)
+tag(resist_elect,350)
+tag(resist_cold,-500)
+
+//typ monstra
+tag(monstertype,fire)
+
+//weap flags
+tag.weapflag=dam_magic|dam_fire
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={90.0 140.0}
+TACTICS={100.0 130.0}
+WRESTLING={100.0 150.0}
+POISONING={200.0 250.0}
+SpiritSpeak=65.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_TERATHAN
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_caveant_daemon]
+ID=c_fireant_daemon
+NAME=Caveant Daemon
+SOUND=snd_MONSTER_TERA_DRONE1
+ICON=i_pet_terathan_drone
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=60
+ARMOR=100
+moverate=3
+
+RESOURCES=20 i_ribs_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_fire
+
+CATEGORY=Dungy
+SUBSECTION=Shagar
+DESCRIPTION=Caveant Daemon
+
+ON=@Create
+color=0836
+NPC=brain_monster
+FAME=1
+KARMA={-2000 -2999}
+
+STR={1000 1605}
+DEX={200 250}
+INT=250
+
+maxhits={5000 5100}
+maxstam={220 320}
+maxmana=700
+
+tag.experience=<eval {200.0 210.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,500)
+tag(resist_para,700)
+tag(resist_summon,750)
+tag(resist_bleed,200)
+
+//weap resists
+tag(resist_sharp,300)
+tag(resist_slash,-100)
+tag(resist_pierce,-200)
+tag(resist_blunt,400)
+
+//magic resists
+tag(resist_fire,950)
+tag(resist_elect,350)
+tag(resist_cold,-500)
+
+//typ monstra
+tag(monstertype,fire)
+
+//weap flags
+tag.weapflag=dam_magic|dam_fire
+
+peacemaking=100.0
+provocation=100.0
+PARRYING={90.0 140.0}
+TACTICS={100.0 130.0}
+WRESTLING={100.0 150.0}
+POISONING={150.0 200.0}
+MAGERY={100.0 120.0}
+EI={90.0 95.0}
+SpiritSpeak=60.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_flamestrike
+
+ON=@NPCRestock
+ITEM=loot_TERATHAN
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////////////////

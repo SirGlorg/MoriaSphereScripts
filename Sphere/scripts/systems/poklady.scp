@@ -1,0 +1,206 @@
+[itemdef i_mem_poklad]
+ID = i_memory
+TYPE = t_eq_script
+LAYER = layer_special
+name=generator pokladu
+
+on=@create
+timer=<cont.tag(mytimer)>//nastavi timer memory itemu podle udaje na pokladnikovi
+attr=010
+
+on=@timer
+//timer=cont.tag(mytimer)//nastavi timer memory itemu podle udaju na pokladnikovi plus rozhodi nahodu
+if (cont.tag(mapa)) // tag mapa = max pocet minut spawnu
+	timer=<eval {0 <eval <cont.tag(mapa)>*60>}>
+elseif (cont.tag(anomalie)) // tag anomalie = pocet minut spawnu + 10 hodin - 5 hodin
+	timer=<eval {<eval (<eval(<eval <cont.tag(anomalie)>*60>-18000)>)>  <eval (<eval(<eval <cont.tag(anomalie)>*60>+36000)>)>}>
+else
+	timer=<eval {<eval (<eval(90000-18000)>)>  <eval (<eval(90000+36000)>)>}>// 25 hodin plus 10 hodin / minus 5 hodin
+endif
+if (finduid(cont.tag(mylastnew)))//truhla existuje
+ if (finduid(cont.tag(mylastnew)).timer < 0)//neni otevrena
+  if (finduid(cont.tag(mylastnew)).id==i_poklad)
+   return 1
+  endif
+ endif
+endif
+cont.newitem(i_poklad)
+cont.act.p=<cont.p>
+cont.tag(mylastnew,<cont.act>)//zapamatuje si uid truhly
+cont.act.tag(vytvoreno,<serv.time>)//pro kontrolu
+cont.act.attr(010)
+cont.act.tag(pokladnik,<cont>)//zapise na truhlu uid pokladnika
+if (cont.tag(lockpick))
+ cont.act.type=t_container_locked
+ cont.act.tag(lockpick,<cont.tag(lockpick)>)
+endif
+return 1
+
+[itemdef i_poklad_fake]
+id=i_chest_metal
+name=poklad
+attr=010
+category=poklady
+subsection=truhly_s_poklady
+description=fake vygenerovaneho pokladu zjistuje zda je spawnuty strazce
+
+on=@UserDClick
+if (src.isGM)
+  target("Zamer spawn ktery ma byt vybity")
+  return 1
+else
+  if (<link>)
+    if (<link.more2>) // je neco spawnutyho ?
+      src.jail
+      src.newitem(i_pergamen).bounce
+      lastnew.tag(done,1)
+      lastnew.tag(radek_1,Copak smrade co ! ?)
+      lastnew.tag(radek_2,Otevrel jsi truhlu pokladu, jejiz strazce byl stale nazivu.)
+      lastnew.tag(radek_3,Zneuzil jsi tedy bugu a tvuj trest bude tvrdy !)
+      lastnew.tag(radek_4,Napis page a upozorni GM na tento svitek)
+      lastnew.color=color_o_mithril
+      lastnew.attr=010
+      return 1
+    endif
+  endif
+endif
+
+on=@TargOn_Item
+if (src.targ.type==t_spawn_char)
+	src.sysMessage("Zamerujes spawn strazce")
+	link=<src.targ>
+	return 1
+endif
+
+[itemdef i_poklad]
+id=i_chest_metal
+name=poklad
+category=poklady
+subsection=truhly_s_poklady
+description=vygenerovany poklad nepouzivat
+
+on=@userdclick
+if (<eval finduid(tag(pokladnik)).tag(provereno)>==1)
+  finduid(tag(pokladnik)).tag.remove(provereno)
+endif
+tag(klikos,<src>)
+if (src.isGM)
+  src.sysmessage(nesahej na to, rozbijes to!)
+  src.sysmessage(nesahat ! kazdej dvojklik zpusobi, ze poklad do hodiny zmizi a novej bude mit mene penez, protoze se to pocita podle stari truhly)
+  src.sysmessage(ale kdyzs uz na me kliknul tak je tu zatim <eval (<serv.time>-<finduid(tag(pokladnik)).tag(lastopen)>)/10*<finduid(tag(pokladnik)).tag(prachy)>> gp)
+  return 1
+elseif (type!=t_container_locked)
+  if (<eval tag(wasSpawned)>==0)	//je odemcena ale jeste nevyskocili guardi - probiha, pokud se o otevreni nestara lockpick
+    timer=3600		//aby truhla za hodinu po spawnu guardu zmizela
+    tag(wasSpawned,1)
+    if (tag(pokladnik).findlayer(29).rescount)
+      f_poklad_throwGuards
+      return 1
+    endif
+  endif
+  if (<eval tag(wasOpened)>==0)
+    tag(wasOpened,1)
+    arg(lastOpen,<eval finduid(<tag(pokladnik)>).tag(lastopen)>)
+    finduid(<tag(pokladnik)>).tag(lastopen,<serv.time>) // nastavit dobu otevreni pokladu drive, nez dojde k jeho generovani pro pripad, ze by se generovani pokladu nezdarilo.
+    tag(pokladnik).findlayer(21).contents(f_poklad(<uid>,<src>,<arg(lastOpen)>))//na vsechno v baglu pokladnika provede funkci, uid hrace posilano kvuli logovani
+    finduid(<tag(pokladnik)>).f_dejprachy(<uid>,<src>,<arg(lastOpen)>)
+  endif
+  if !(<eval tag(pokladnik).tag(noOpenLog)>)
+    src.accMsg("hrac <src.name> (acc <src.account.name>,Lvl <eval src.tag(level)>) otevrel poklad (UID: <uid>) na souradnicich -<p>-, <src.region.name>")
+  endif
+  open
+  return 1
+endif
+
+
+[function f_poklad_throwGuards]
+tag(pokladnik).f_guarditAdv_RemoveAllSpawns	//vycisti pamet drive vygenerovanych spawnu
+tag(pokladnik).findlayer(29).contents(f_hlidaci(<uid>))
+tag(guardSpawnTime,<serv.time>)	// pro osetreni otevreni truhly pred spawnutim guardu...
+type=t_poklad_guarded
+src.sysmessage("Truhla je hlidana!")
+
+
+[function f_poklad_addSpawns]
+if (<type> == t_spawn_char)
+  topobj.say("pridavam: <uid>")
+  topobj.f_guarditAdv_addSpawn(<uid>)
+endif
+
+//argv(0) -> uid truhly
+//argv(1) -> uid hrace
+//argv(2) -> tag lastOpen ~ serv.time posledniho predchoziho otevreni truhly (== stari pokladu)
+[function f_poklad]
+if (<tag(periodic)>)//jedna se o item jehoz mnozstvi se casem zvysuje
+  runxtimes(<eval <eval ( <serv.time>-<argv(2)> )*<tag(periodic)>>/846000>,f_dejpoklad(<argv(0)>,<argv(1)>))
+else
+  f_dejpoklad(<argv(0)>,<argv(1)>)
+endif
+
+//argv(0) -> uid truhly
+//argv(1) -> uid hrace
+[function f_dejpoklad]
+if ({0 100} < <tag(chance)>)||(!<tag(chance)>)//resi procenta a tam kde neni uvedeno pusti rovnou
+  topobj.newitem(<id>)
+  arg(createdItem,<topobj.act>)
+  createdItem.cont=<argv(0)>
+  createdItem.amount=<amount>
+  createdItem.more1=<more1>
+  createdItem.color=<color>
+  if(tag(my_id))
+    createdItem.name=<name>
+    createdItem.tag(my_id,<tag(my_id)>)
+    createdItem.type=t_figurine_2
+    createdItem.tag(myhits,<tag(myhits)>)
+    createdItem.tag(myfood,<tag(myfood)>)
+  elseif(type==t_figurine_2)
+    createdItem.type=t_figurine
+  endif
+  argv(1).AccMsg("BYL VYTVOREN predmet v pokladu - uid: <createdItem> jmeno: <createdItem.name>, container: (<argv(1)>,<argv(1).name>).")
+endif
+
+
+//argv(0) -> uid truhly
+//argv(1) -> uid hrace
+//argv(2) -> tag lastOpen - serv.time posledniho predchoziho otevreni truhly (== stari pokladu)
+[function f_dejprachy]
+argv(1).f_vytvor_mesec(<eval ( ( <serv.time> - <argv(2)> ) / (<tag(prachy)> * 10) )>,<argv(0)>) //prvni arg == kolik penez, druhej arg == kam ma ladovat truhly, spusteno nad hracem kvuli logovani
+if (tag(sek))
+  argv(1).f_vytvor_mesec(<eval {<tag(sek)>}>,<argv(0)>)
+endif 
+
+[function f_hlidaci]	//argv(0) - uid pokladu
+src.f_spawninit(1,<more1>,60,60,12)
+if (tag(guarded))//bude hlidat
+  topobj.f_guarditAdv_addSpawn(<var(spawnuid)>) //spawn
+endif
+argv(0).type=t_poklad_guarded
+topobj.newitem(i_randompotvora)
+arg(createdMonster,<topobj.act>)
+createdMonster.p=<topobj.p>
+createdMonster.tag(mrchaspawn,<var(spawnuid)>)
+createdMonster.timer=3700 //hlidace nechame jeste trochu dyl nez poklad. Pro sychr
+
+[typedef t_poklad_guarded]
+on=@userdclick
+if (<tag(pokladnik).f_guarditAdv_CheckSpawns>)
+  src.sysmessage("Nedostanes se dovnitr, dokud je strazce nazivu!")
+  return 1
+elseif (<eval (<serv.time> - <tag(guardSpawnTime)>)> < 90) // otevrit truhlu pujde az 5s po vygenerovani npc
+  src.sysMessage("Jeste ne ! ! ! ")
+  return 1
+else
+  type=t_container
+endif
+
+[function showTreasureTime]
+arg(tm,<serv.time>-<tag(lastopen)>)
+src.sysMessage("<dsToRTime(<arg(tm)>)>")
+
+
+[function f_showPeriode]
+src.sysMessage("periodic <eval <eval ( <serv.time>-<topobj.tag(lastopen)> )*<tag(periodic)>>/846000>")
+
+
+
+[eof]

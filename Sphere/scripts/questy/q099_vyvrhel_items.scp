@@ -1,0 +1,167 @@
+//////////////////////////////////////////////////
+/////CHARs
+
+[CHARDEF c_q099_vyvrhel]
+name=Podivin
+id=c_man
+
+can=mt_equip|mt_walk|mt_run|mt_usehands
+attack=50
+armor=40
+
+tspeech=spk_q099_vyvrhel
+tevents=e_character
+
+category=Moria
+subsection=NPC na vyvrhela
+description=Podivin
+
+on=@create
+NAME=Podivin
+color=colors_skin
+npc=brain_vendor
+fame=10
+karma=5000
+str=250
+dex=250
+int=200
+
+maxhits={1000 1200}
+maxstam={200 310}
+maxmana=50
+
+tag(noanimate,1)
+tag(hypnotizable,0)
+
+itemnewbie=random_male_hair
+itemnewbie=random_facial_hair
+
+itemnewbie=i_candle_lit 
+itemnewbie=i_spellbook_8 
+name=Kniha temnoty
+color=098b
+itemnewbie=i_robe
+color=099a
+itemnewbie=i_cape
+color=099a
+itemnewbie=i_pants_short 
+Color=0988
+itemnewbie=i_shirt_plain 
+Color=0988
+itemnewbie=i_sandals 
+Color=0988
+itemnewbie=i_hat_feather 
+Color=0988
+
+wrestling={150.0 200.0}
+Resist={120.0 150.0}
+tactics={150.0 200.0}
+
+ON=@UserDClick
+if(src.targ.distance>3)
+	src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+else
+	f_q099_vyvrhel
+endif
+
+//////////////////////////////////////////////////
+/////ITEMs
+
+// collector grizzly
+[itemdef i_q099_vyvrhel_1]
+id=i_bag
+name=Vacek na stehna grizliho
+type=t_collector
+weight=10
+
+on=@create
+color=059
+attr=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="grizliho ocasku."
+tag.contentsamount=0
+tag.maxcontents=100
+tag.target_remove=1
+tag.target_desc="Kteremu grizlimu ocasek? "
+tag.target_id="Body of Grizzly"
+tag.absolute_success=100
+tag.value_to_check=50
+tag.contentscount=0
+tag.fail_msg="Nepovedlo se!"
+
+ON=@CollectorCheck
+
+//collector earth elemental
+[itemdef i_q099_vyvrhel_2]
+id=i_bag
+name=Vacek na esenci elementala zeme
+type=t_collector
+weight=10
+
+on=@create
+color=042
+attr=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="usi elementala zeme"
+tag.contentsamount=0
+tag.maxcontents=80
+tag.target_remove=1
+tag.target_desc="Kteremu elementalovy chces vzit ucho?"
+tag.target_id="Body of Earth Elemental"
+tag.absolute_success=100
+tag.value_to_check=50
+tag.contentscount=0
+tag.fail_msg="Nepovedlo se!"
+
+ON=@CollectorCheck
+
+//collector eye
+[itemdef i_q099_vyvrhel_3]
+id=i_bag
+name=Vacek na esenci oci
+type=t_collector
+weight=10
+
+on=@create
+color=042
+attr=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="esenci oci."
+tag.contentsamount=0
+tag.maxcontents=50
+tag.target_remove=1
+tag.target_desc="Kteremu oku chces vzit esenci?"
+tag.target_id="Body of Eye"
+tag.absolute_success=100
+tag.value_to_check=50
+tag.contentscount=0
+tag.fail_msg="Nepovedlo se!"
+
+ON=@CollectorCheck
+
+//collector phoenix
+[itemdef i_q099_vyvrhel_4]
+id=i_bag
+name=Vacek na pirka z Jedoveho Fenixe
+type=t_collector
+weight=10
+
+on=@create
+color=042
+attr=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="pirek Fenixe"
+tag.contentsamount=0
+tag.maxcontents=5
+tag.target_remove=1
+tag.target_desc="Kteremu Fenixovi vytrhnes pirko? "
+tag.target_id="Body of Phoenix"
+tag.color=097F
+tag.absolute_success=100
+tag.value_to_check=50
+tag.contentscount=0
+tag.fail_msg="Nepovedlo se!"
+
+
+ON=@CollectorCheck
+f_collectorFixTargetId("Body of Phoenix",097F)

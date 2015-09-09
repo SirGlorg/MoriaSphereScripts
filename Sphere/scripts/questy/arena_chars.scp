@@ -1,0 +1,96 @@
+[CHARDEF c_arena_obchodnik]  
+NAME=Zastupce Umbarske Spolecnosti
+ID=c_man 
+DESIRES=i_gold,t_wand,t_reagent,t_bone 
+AVERSIONS=t_TRAP,t_eerie_stuff 
+dam=60 
+ARMOR=80 
+CAN=MT_WALK|mt_run
+TSPEECH=spk_crunch_arenavchod
+ 
+TEVENTS=e_character
+
+
+
+ON=@Create 
+STR=600 
+DEX=200 
+INT=100 
+NPC=brain_vendor 
+tag.experience=0
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+COLOR=colors_skin 
+ITEMNEWBIE=i_surcoat 
+COLOR=0986
+NAME=Halenka vysivana zlatou niti
+ITEMNEWBIE=i_sandals 
+COLOR=001 
+ITEMNEWBIE=i_pants_long 
+COLOR=color_snow
+NAME=kalhoty prosivane snehovou bavlnou.  
+
+tag(hypnotizable,0)
+tag(noanimate,1)
+
+ON=@NPCRestock 
+
+ON=@npcseenewplayer 
+dorand 3 
+  SAY("Mas pocit, ze jsi k nicemu bojovnik? Pojd do areny a ukaz, co je v tobe!") 
+  SAY("Co tu chce takovy chcipacek, jako jsi ty? Pojd se necemu priucit do areny!") 
+  SAY("Vypadas jako <src.sex(tvrdy chlapik... dokazal,tvrda dama... dokazala)> bys ale prezit v arene?") 
+enddo
+
+
+[CHARDEF c_arena_strazce] 
+
+NAME=Strazce Areny
+ID=c_man 
+DESIRES=i_gold,t_wand,t_reagent,t_bone 
+AVERSIONS=t_TRAP,t_eerie_stuff 
+dam=60 
+ARMOR=80 
+CAN=MT_WALK|mt_run|
+TSPEECH=spk_crunch_strazceareny
+ 
+TEVENTS=e_character 
+
+ 
+ 
+ON=@Create 
+STR=600 
+DEX=200 
+INT=100 
+NPC=brain_vendor
+tag.experience=0
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+COLOR=colors_skin 
+ITEMNEWBIE=i_bardiche
+COLOR=0989
+ITEMNEWBIE=i_platemail_chest 
+COLOR=0989
+ITEMNEWBIE=i_platemail_arms 
+COLOR=0989
+ITEMNEWBIE=i_platemail_gloves 
+COLOR=0989
+ITEMNEWBIE=i_platemail_gorget 
+COLOR=0989
+ITEMNEWBIE=i_platemail_helm 
+COLOR=0989
+ITEMNEWBIE=i_platemail
+COLOR=0989
+ITEMNEWBIE=i_sandals
+color=001
+ITEMNEWBIE=i_platemail_legs 
+color=0989
+
+tag(hypnotizable,0)
+tag(noanimate,1)
+
+ON=@NPCRestock
+
+[eof]

@@ -1,0 +1,515 @@
+[typedef t_fort_cashbox]
+on=@userdclick
+if(<src>==<more2>) //je to opravneny klikatel
+ say("Bylo ve me nashromazdeno <eval more1> zlatych.")
+ src.newitemsafe(i_cashiers_check)
+ lastnew.more1=<more1>
+ lastnew.cont=<src>
+ lastnew.update
+ more1=0
+ more2=0
+ events=-t_fort_cashbox
+endif
+return 1
+
+[itemdef i_fortress_palantir]
+id=i_crystal_ball
+name=Pevnostni palantir
+type=t_script
+
+on=@create
+attr=attr_move_never
+tag(owners_realm,<src.region.tag(realm)>) //realm majitele pevnosti, na zacatek default
+tag(conquerors_realm,0) //realm toho kdo pevnost dobyva, na konci boje se z nej nastavi novy "owners_realm"
+tag(timer_prolomeni,<nastaveni_pevnosti_doba_prolomeni>) //default
+tag(prolomeni,0) //indikator zda bylo prolomeno ci ne (meni se v prubehu boje)
+tag(fortstones,0) //pocet pevnosti v oblasti
+tag(money_safe,0) //truhlicka na penize
+tag(nearest_fort,0) //nejblizsi pevnost (kamen pevnosti) tato se bude kontrolovat na straze a jeji kapitan bude 
+                    //ten hlavni kapo oblasti kterej nakonec shrabne prachy po dobyti (pri "uteku" z dobyte pevnosti)
+
+on=@userdclick
+if(src.isgm)
+ if(<eval <tag(fortstones)>>==0)
+  src.sysmessage("Vyhledavam pevnostni kameny...")
+  addFortressStones //pridat vsechny pevnosti z oblasti k palantiru
+  arg(realmName,<qval <eval region.tag(realm)-1>,"Mordor","Gondor">)
+  arg(conquer_area,<abs(<region.tag(bf)>)>)
+  tag(fort_name,<realmName>_<conquer_area>) //napr: Mordor_1, Gondor_3 atd.
+  tag(fort_level,<region.tag(bf)>)
+  var(palantir_<tag(fort_name)>,<uid>)
+  name=Palantir <d_area_<tag(fort_name)>_1>
+ endif 
+ if(<eval tag(money_safe)>==0)
+  src.newitemsafe(i_box_brass)
+  arg(newbox,<lastnew>)
+  newbox.p=<p>
+  newbox.attr=attr_move_never
+  newbox.link=<uid>
+  newbox.more1=0 //kolik penez
+  newbox.more2=0 //Kdo ma pravo prachy vybrat
+  newbox.tag(last_conquered,<serv.time>) //cas posledniho vydani penez
+  tag(money_safe,<newbox>)  
+ endif
+ message("Palantir pevnosti <d_area_<tag(fort_name)>_1>")
+else //Klika bud dobyvatel nebo obyvatel - odlisime tyto dva stavy :)
+ var(palantir_<tag(fort_name)>,<uid>) //pro jistotku prenastavit promennou
+ if(src.isdead)
+  src.redmessage("Tahni pryc, mrtvolo!")
+  return 1
+ endif
+ if(<eval tag(fortstones)>==0)
+  src.redmessage("Pevnost neni nastavena, kontaktuj Dinivana.")
+  return 1
+ endif
+ if(<eval src.tag(realm)>!=<eval tag(owners_realm)>) //klika budouci dobyvatel (mozna)
+  if(<eval tag(prolomeni)>==0) //jeste neprolomili   
+   if(wasDeclaredWar(<tag(fort_name)>,<src.tag(realm)>)) //byla vubec valka vyhlasena?
+		if !(<eval(src.tag(can_declare_war_on_Gondor))>||<eval(src.tag(can_declare_war_on_Mordor))>)	//ak to nieje vyhlasovatel vojny
+			src.redmessage("Nejsi <src.sex(vyzyvatelem,vyzyvatelkou)>, nejsi <src.sex(opravnen,opravnena)>.")
+			return 1
+		endif
+    if(!aretheremoreguards)
+     switchColor(<src.tag(realm)>)
+     timer=1
+     say("Obrana pevnosti byla prolomena! Uhlidej palantir po dobu <tag(timer_prolomeni)> s.")
+     scylla.delayedmessage("Dobyvani: <serverTime> obrana <d_area_<tag(fort_name)>_1> prolomena <src>-<src.name>(<src.account.name>)")
+     tag(conquerors_realm,<src.tag(realm)>) //zapamatovat realm dobyvatele
+     tag(prolomeni,1)
+     return 1
+    else
+     src.sysmessage("Jeste zbyvaji nejake straze k zabiti.")
+     scylla.delayedmessage("Dobyvani: <serverTime> Obrana <d_area_<tag(fort_name)>_1> neprolomena <src>-<src.name>(<src.account.name>) - zbyvaji straze k zabiti.")
+     return 1
+    endif
+   else //neni vyhlasena valka
+    return 1
+   endif    
+  else //uz prolomili   
+   src.sysmessage("Obrana jiz prolomena byla.")
+   scylla.delayedmessage("Dobyvani: <serverTime> Obrana <d_area_<tag(fort_name)>_1> jiz byla prolomena, nyni klikal <src>-<src.name>(<src.account.name>), zbyva uhlidat <tag(timer_prolomeni)> s.")
+   return 1 
+  endif
+ else //klikl obrance
+  if(<eval tag(prolomeni)>==0)
+   src.sysmessage("Palantir pevnosti <d_area_<tag(fort_name)>_1>. Dobre jej hlidej!")
+   return 1
+  else //odvraceni prolomeni   
+   say("Prolomeni bylo prozatim zvraceno.")
+   switchColor(<src.tag(realm)>)
+   scylla.delayedmessage("Dobyvani: <serverTime> prolomeni <d_area_<tag(fort_name)>_1> odvraceno <src>-<src.name>(<src.account.name>).")
+   tag(prolomeni,0)
+   tag(conquerors_realm,<src.tag(realm)>)
+   timer=1
+   return 1    	    
+  endif
+ endif
+endif
+return 1
+
+on=@timer
+if(<tag(owners_realm)>==2)
+ arg(which_realm,1)
+else
+ arg(which_realm,2)
+endif
+if(wasdeclaredwar(<tag(fort_name)>,<which_realm>) == 0) //byla vubec valka vyhlasena? (neskoncil uz nahodou odpocet?)
+ say("Cas na uspesne dobyti pevnosti vyprsel. Pevnost byla ubranena.")
+ scylla.delayedmessage("Dobyvani: <serverTime> pevnost <d_area_<tag(fort_name)>_1> byla ubranena, vyprsel cas na dobyti.")
+ tag(prolomeni,0)
+ tag(conquerors_realm,<tag(owners_realm)>) //vratit realm na default
+ tag(timer_prolomeni,<nastaveni_pevnosti_doba_prolomeni>) //default
+ color=0 //neutralni barva
+ return 1
+endif
+if(<tag(prolomeni)>==1) //vyprsel timer a mame prolomeni
+ if(<tag(timer_prolomeni)> > 0) 
+  tag(timer_prolomeni,<eval (<tag(timer_prolomeni)>-1)>) //odpocet
+  if(<eval (<tag(timer_prolomeni)> % 10)> == 0) //Obcas hlaska 
+   say("Uhlidej palantir jeste <tag(timer_prolomeni)> s.")
+   if(<eval (<tag(timer_prolomeni)> % 60)> == 0) //Obcas zprava 
+    scylla.delayedmessage("Dobyvani: <serverTime> <d_area_<tag(fort_name)>_1> jeste zbyva uhlidat <tag(timer_prolomeni)> s.")   
+   endif
+  endif
+  timer=1
+  return 1
+ else //vyprselo to uplne (dano nastavenim doby prolomeni)
+  say("Pevnost byla dobyta.")  
+  scylla.delayedmessage("Dobyvani: <serverTime> <d_area_<tag(fort_name)>_1> byla dobyta.")   
+  handleConqueredFort
+  if(<tag(owners_realm)>==1) //hlasi novy gondorsky palantir
+   arg(gondr_msg,"Dobyli jsme pevnost <d_area_<tag(fort_name)>_1>!")
+   arg(mordr_msg,"Ztratili jsme pevnost <d_area_<tag(fort_name)>_1>!")
+  else
+   arg(gondr_msg,"Ztratili jsme pevnost <d_area_<tag(fort_name)>_1>!")
+   arg(mordr_msg,"Dobyli jsme pevnost <d_area_<tag(fort_name)>_1>!") 
+  endif
+  var(chatmessage,"*Gondorsky herold* <gondr_msg>")
+  serv.allclients(delayedWarMessage(1,<chatmessage>))    
+  var(chatmessage,"*Mordorsky herold* <mordr_msg>")
+  serv.allclients(delayedWarMessage(2,<chatmessage>))
+  return 1  
+ endif
+else //jen odvraceno prolomeni 
+ if(<eval tag(timer_prolomeni)> < <nastaveni_pevnosti_doba_prolomeni>)
+  tag(timer_prolomeni,<eval (<tag(timer_prolomeni)>+1)>) //pripocet
+  arg(k_ubraneni_zbyva,<eval (<nastaveni_pevnosti_doba_prolomeni>-<eval tag(timer_prolomeni)>)>)
+  if(<eval (<eval k_ubraneni_zbyva> % 10)> == 0)
+   say("Nedovol nepriteli dotknout se palantiru jeste alespon <k_ubraneni_zbyva> s.")
+   if(<eval (<eval k_ubraneni_zbyva> % 60)> == 0) //obcas zprava
+    scylla.delayedmessage("Dobyvani: <serverTime> <d_area_<tag(fort_name)>_1> odvraceno prolomeni jeste zbyva uhlidat <tag(timer_prolomeni)> s.")   
+   endif
+  endif
+  timer=1
+ else //pripocet dobehl az nahoru - konec prolomeni, ted to nevyslo
+  say("Prolomeni odvraceno.")
+  scylla.delayedmessage("Dobyvani: <d_area_<tag(fort_name)>_1> odpocet dobehl - prolomeni odvraceno.")   
+  tag(prolomeni,0)
+  timer=-1  
+  color=0 //neutralni barva, bez prolomeni
+  //handleSecuredFort
+ endif
+ return 1 
+endif
+
+[function switchColor] //barva palantiru podle prolomeni
+if(<argv(0)>==1) //gondor
+ color=05 //modra
+else
+ if(<argv(0)>==2) //mordor
+  color=022 //ruda
+ endif
+endif
+
+[function addFortressStones]
+tag(home_position_X,<p_x>)//store position
+tag(home_position_Y,<p_y>)//store position
+tag(home_position_Z,<p_z>)//store position
+arg(realmName,<qval <eval region.tag(realm)-1>,"Mordor","Gondor">)
+arg(conquer_area,<abs(<region.tag(bf)>)>)
+arg(i,1)
+while(i <= <d_areas_<realmName>_<conquer_area>>) //iterate through regions in the particular conquer area
+ src.sysmessage("Jdu na d_area_<realmName>_<conquer_area>_<i>.")
+ p=<d_area_<realmName>_<conquer_area>_<i>> //move to the particular region
+ region.sectors.allitems(findFortresses(<uid>))
+ arg(i,#+1)
+endwhile
+p=<tag(home_position_X)> <tag(home_position_Y)> <tag(home_position_Z)> //return to the original position
+update
+
+[function findFortresses] //arg - palantirs uid, arg
+if(baseid==i_captainstone)||(baseid==i_mordorcaptainstone)
+ arg(palantir,<finduid(<argv(0)>)>)
+   src.newitemsafe(i_bag) //helping item for recognizing home position of the palantir
+   arg(lstnw,<lastnew>)
+   lstnw.p=<palantir.tag(home_position_X)> <palantir.tag(home_position_Y)> <palantir.tag(home_position_Z)>
+ if(<eval palantir.tag(nearest_fort)> > 0) 
+  arg(actual_dist,<distancefrom(<lstnw>)>) //vzdalenost prave zkoumane pevnosti
+  arg(nearest_dist,<palantir.tag(nearest_fort).distancefrom(<lstnw>)>) //vzdalenost te co je ulozena v tagu jako "nearest"
+  if(actual_dist < nearest_dist) //nasel jsem nejakou pevnost co je bliz nez ulozena - ukladam ji
+   palantir.tag(nearest_fort,<uid>)
+  endif
+ else //prvni nalezena pevnost
+  palantir.tag(nearest_fort,<uid>)    
+ endif
+ if(<eval palantir.tag(fortstones)> > 0)
+  arg(w,1)
+  arg(isSaved,0)
+  while(w <= <eval palantir.tag(fortstones)>)
+   if(palantir.tag(fortstone_<w>) == uid) //jen pokud jeste neni v poli 
+    arg(isSaved,1) //uz tam je - nize se to pozna
+   endif
+   arg(w,#+1)
+  endwhile  
+  if(isSaved == 0) //jen pokud jeste neni v poli
+   src.sysmessage("Pridavam kamen <uid> v dalce <actual_dist> _ nejblizsi je <nearest_dist>.")
+   arg(u,<eval <palantir.tag(fortstones)>+1>)
+   palantir.tag(fortstone_<u>,<uid>)
+   palantir.tag(fortstones,<u>)
+  endif
+ else //nova pevnost, zadne kameny
+  palantir.tag(fortstone_1,<uid>)
+  palantir.tag(fortstones,1)
+  src.sysmessage("Ukladam prvni novou pevnost.")
+ endif
+ lstnw.remove
+endif 
+
+[function canbewar]
+arg(actHour,<getHour>)
+//kermel.sysmessage("Hodina: <getHour>/<tag(war_begins_hour)>, den: <getDay>/<tag(war_begins_day)>, mesic: <getMonth>/<tag(war_begins_month)>")
+if (<getDay> >= <eval tag(war_begins_day)>) && (<getMonth> >= <eval tag(war_begins_month)>)
+  //kermel.sysmessage("Den a mesic sedi.")
+  if (isWeekend(<getYear>,<getMonth>,<getDay>))
+    if (isHourOK(<actHour>,<d_fort_weekend_warFrom>,<d_fort_weekend_warTo>))
+      if (<actHour> >= <eval tag(war_begins_hour)>) 
+        return 1
+      endif
+    endif
+  else
+    if (isHourOK(<actHour>,<d_fort_warFrom>,<d_fort_warTo>))
+      //kermel.sysmessage("Hodina v povolenem rozsahu. Checkujem oproti <tag(war_begins_hour)>, resp. mensi nez <eval d_fort_warTo>.")  
+      if ((<actHour> >= <eval tag(war_begins_hour)>) || (<actHour> <= <eval d_fort_warTo>)) //treba je uz po pulnoci...
+        //kermel.sysmessage("Hodina sedi.")
+        return 1
+      endif
+    endif
+  endif
+endif
+return 0
+
+[function wasDeclaredWar]//argv0 - jmeno pevnosti kde zkoumam, argv1 - realm vyhlasovatele
+arg(declarator,<var(war_declarator_<argv(1)>)>) //jsou dva globalni itemy na vyhlasovani valky - G a M
+if(!strcmpi(<declarator.tag(war_declared_on)>,<argv(0)>))
+ if(declarator.canbewar) //je na to dobry cas?
+  return 1
+ else
+  src.redmessage("Jeste neprisla hodina valky.")
+  return 0
+ endif
+else
+ src.redmessage("Teto pevnosti nebyla vyhlasena valka.")
+ return 0
+endif
+
+[function aretheremoreguards]//uid - uid palantiru 
+//Zkoumame jen tu "nearest" pevnost
+//arg(u,1)
+//while(u < <eval <tag(fortstones)>>)
+// arg(fort,<finduid(<tag(fortstone_<u>)>)>)
+ arg(fort,<tag(nearest_fort)>)
+ arg(guardscont,<finduid(<fort.tag(kingguardcont)>)>)
+ arg(v,0)
+ while(v < guardscont.rescount-1)
+  arg(guardcrystal,<guardscont.findcont(v)>)
+  if(finduid(<guardcrystal.link.tag(lastspawned)>))
+   if(finduid(<guardcrystal.link.tag(lastspawned)>).ischar) //je na spawnu tohoto guarda neco spawnuteho?
+    return 1
+   endif 
+  endif
+  arg(v,#+1)
+ endwhile
+// arg(u,#+1)
+//endwhile
+return 0
+
+[function respawnguards]
+arg(fort,<finduid(<tag(nearest_fort)>)>)
+arg(guardscont,<finduid(<fort.tag(kingguardcont)>)>)
+ arg(v,0)
+ while(v <= guardscont.rescount-1)
+  arg(guardcrystal,<guardscont.findcont(v)>)
+  guardcrystal.link.timer=0
+  arg(v,#+1)
+ endwhile
+
+[function handleSecuredFort] // co se vsechno stane v okamziku, kdyz obranci pevnost uhlidaji
+if(<eval tag(conquerors_realm)>==1) //ti co to ubranili (puvodni obyvatele)
+ arg(conqueror,2) //opacny realm - neuspesny dobyvatel
+else
+ if(<eval tag(conquerors_realm)>==2)
+  arg(conqueror,1) //opacny realm - neuspesny dobyvatel
+ endif
+endif
+say("Dobyvatel, co to zkazil: <arg(conqueror)>")
+arg(declarstone,<var(war_declarator_<arg(conqueror)>)>)
+tag(conquerors_realm,0)
+declarstone.tag(war_declared_on,0) //Rychle smazat info o valce - uz nikdo nesmi mit moznost kliknout na sutrak :)
+declarstone.tag(war_begins_hour,0) 
+declarstone.tag(war_begins_day,0) 
+declarstone.tag(war_begins_month,0)
+
+//nemeli by obranci dostat penize? aby z toho taky neco meli?
+finduid(<declarstone.tag(war_lord)>).redmessage("Dobyvani se nezdarilo, obranci pevnost ubranili.")
+declarstone.tag(war_lord,0)
+
+[function handleConqueredFort]//co se vsechno stane v okamziku dobyti
+arg(winners_realm,<eval tag(conquerors_realm)>)
+arg(loosers_realm,<eval tag(owners_realm)>)
+arg(winners_declarstone,<var(war_declarator_<winners_realm>)>)
+arg(loosers_declarstone,<var(war_declarator_<loosers_realm>)>)
+
+tag(owners_realm,<tag(conquerors_realm)>)
+tag(conquerors_realm,0)
+tag(prolomeni,0)
+tag(timer_prolomeni,<nastaveni_pevnosti_doba_prolomeni>)
+color=00 //neutralni barva
+
+winners_declarstone.tag(war_declared_on,0) //Rychle smazat info o valce - uz nikdo nesmi mit moznost kliknout na sutrak :)
+winners_declarstone.tag(war_begins_hour,0) 
+winners_declarstone.tag(war_begins_day,0) 
+winners_declarstone.tag(war_begins_month,0)
+
+//zrusit pravo na vyhlaseni valky u warlordu
+arg(u,0)
+while(<u> < <winners_declarstone.array_size(tag.warlords)>)
+ arg(wld,<winners_declarstone.array_get(tag.warlords,<u>)>)
+ //finduid(01).sysmessage("Rusim <wld.name>.")
+ wld.tag.remove(can_declare_war_on_Gondor)
+ wld.tag.remove(can_declare_war_on_Mordor)
+ arg(u,#+1)
+endwhile
+//vysictit pole
+winners_declarstone.array_clear(tag.warlords)
+winners_declarstone.array_clear(tag.begins_day)
+winners_declarstone.array_clear(tag.begins_month)
+winners_declarstone.array_clear(tag.begins_hour)
+
+//zaznamenat ze dobyl tu a tu pevnost
+//pr. Gondor dobyl -1, Mordoru se nastavi -2  => priste Gondor -2, Mordor -1, 
+//	Gondor znovudobyl svou 2, Mordoru se nastavi 1 => priste Gondor 1, Mordor 2
+//pr. Mordor dobyl 2, Gondoru se nastavi 3 => priste Mordor 3, Gondor 2
+//	Mordor znovudobyl svou -3, Gondoru se nastavi -2 => priste Mordor -2, Gondor -3
+//jestlize Gondor dobyl -3, nedobyva nic, Mordoru se nastavi -4, priste dobyva -3
+//jestlize Mordor dobyl 3, nedobyva nic, Gondoru se nastavi 4, priste dobyva 3
+//osetreni nul: Mordor znovudobyl svou -1 -Gondor vlastni ted jakoby 0, priste dobyva -1 
+//Gondor znovudobyl 1, priste muze dobyvat -1 
+winners_declarstone.tag(conquered,<tag(fort_level)>)
+if(<loosers_realm> == 1) //prohral Gondor (Mordor dobyval pevnost) 
+ loosers_declarstone.tag(conquered,<eval <eval tag(fort_level)>+1>)
+ if(<eval winners_declarstone.tag(conquered)> == -1)
+  //jestlize mordor dobyl -1, priste dobyva 1, nastavime mu tedka tudiz 0
+  winners_declarstone.tag(conquered,0)
+ endif
+else //prohral Mordor, dobyval Gondor
+ loosers_declarstone.tag(conquered,<eval <eval tag(fort_level)>-1>)
+ if(<eval winners_declarstone.tag(conquered)> == 1)
+  //jestlize Gondor dobyl 1, priste dobyva -1, nastavime mu tedka tudiz 0
+  winners_declarstone.tag(conquered,0)
+ endif
+endif
+//kermel.delayedmessage("Dobyvani: <d_area_<tag(fort_name)>_1> skoncilo, vitez ma dobyto: <winners_declarstone.tag(conquered)>, looser ma dobyto: <loosers_declarstone.tag(conquered)>.")   
+
+//zkontrolovat jestli na looserove declarstonu nebyla vyhlasena valka a kdyztak upravit oznacenou dobyvanou pevnost
+if(strlen(<loosers_declarstone.tag(war_declared_on)>) > 1) //neni tam jen 0 (tj valka by nebyla vyhlasena), je tam nejakej text
+ if(<eval loosers_declarstone.tag(conquered)> < 0)
+  if(<loosers_realm> == 1) //Gondor prohral, priste bude dobyvat pevnost o 1 mensiho cisla nez ma ted nastaveno
+   //odecitame od zaporneho cisla, na nulu se dostat nemuzeme
+   loosers_declarstone.tag(war_declared_on,"Mordor_<abs(<eval <eval loosers_declarstone.tag(conquered)>-1>)>")
+  else //Mordorum to posouvame o 1 nahoru - pozor na nulu
+   arg(to_beat,<eval <eval loosers_declarstone.tag(conquered)>+1>)
+   if(to_beat == 0) //jeste o 1 vic    
+    loosers_declarstone.tag(war_declared_on,"Gondor_1") //jasny 
+   else //stale jeste jsme mensi nez 0
+    loosers_declarstone.tag(war_declared_on,"Mordor_<abs(<to_beat>)>")
+   endif
+  endif
+ else
+  if(<eval loosers_declarstone.tag(conquered)>==0) //kdyz je to 0 tak zalezi na realmu
+   if(<loosers_realm> == 1) //Gondor ma ted 0 - dobyvat bude -1
+    loosers_declarstone.tag(war_declared_on,"Mordor_1")
+   else //Mordor ma ted 0 - dobyvat bude 1
+    loosers_declarstone.tag(war_declared_on,"Gondor_1")
+   endif
+  else //je to kladne cislo
+   if(<loosers_realm> == 1) //Gondor prohral, priste dobyva pevnost o 1 mensi
+    arg(to_beat,<eval <eval loosers_declarstone.tag(conquered)>-1>)
+    if(to_beat == 0) //jeste o 1 min
+     loosers_declarstone.tag(war_declared_on,"Mordor_1") 
+    else //porad jsme kladny
+     loosers_declarstone.tag(war_declared_on,"Gondor_<to_beat>") 
+    endif
+   else //Mordorum posouvame o 1 nahoru (jen do kladnych cisel)
+    loosers_declarstone.tag(war_declared_on,"Gondor_<eval <eval loosers_declarstone.tag(conquered)>+1>")
+   endif   
+  endif
+ endif
+ //kermel.delayedmessage("Dobyvani: <d_area_<tag(fort_name)>_1> skoncilo, looseri maji vyhlasenou valku: <loosers_declarstone.tag(war_declared_on)>.")   
+endif
+
+//Truhlicku s penezi naplnit a informovat o dobyvateli (jen on dostane penize) a resetovat timer
+tag(money_safe).more1=<eval (<serv.time> - <tag(money_safe).tag(last_conquered)>)/50> //petina poctu sekund
+tag(money_safe).more2=<winners_declarstone.tag(war_lord)>
+tag(money_safe).events=+t_fort_cashbox
+tag(money_safe).tag(last_conquered,<serv.time>)
+
+//vyhodit kapitany pevnosti a prespawnovat straze
+arg(i,1)
+while(i <= <eval tag(fortstones)>)
+ tag(fortstone_<i>).kapitanmake(0)
+ tag(fortstone_<i>).swapGuards
+ arg(i,#+1)
+endwhile
+
+//udelat noveho kapitana hlavni pevnosti
+makePlayerCaptain(<winners_declarstone.tag(war_lord)>,<tag(nearest_fort)>)
+//vzit warlordovi dalsi pravo
+finduid(<winners_declarstone.tag(war_lord)>).tag.remove(can_declare_war_on_Gondor)
+finduid(<winners_declarstone.tag(war_lord)>).tag.remove(can_declare_war_on_Mordor)
+winners_declarstone.tag(war_lord,0)
+winners_declarstone.timer=0
+//winners_declarstone.more1=0
+
+[function makePlayerCaptain]//argv(0) - vitez, argv(1) - pevnost
+arg(plr,<finduid(<argv(0)>)>)
+arg(fort,<finduid(<argv(1)>)>)
+if(plr.isgm)
+ plr.sysmessage("GM nepotrebuji byt kapitani.")
+ return 1
+endif
+if(<plr.tag(starosta)>)
+ plr.sysmessage("Jako starosta nemuzes byt zaroven kapitanem.")
+ return 1
+endif
+if(<plr.tag(general)>)
+ plr.sysmessage("Jako general nemuzes byt degradovan na pouheho kapitana.")
+ return 1
+endif
+if(<plr.tag(captain)>)
+ plr.sysmessage("Jako kapitan se nemuzes stat kapitanem jine pevnosti.")
+ return 1
+endif
+if(plr.isnazgul)
+ plr.sysmessage("Jako nazgul nemuzes byt kapitanem.")
+ return 1
+endif
+plr.tag(real_name,<plr.name>)
+plr.name=Kapitan <plr.name>
+plr.tag(captain,1)
+plr.tag(keep,<fort>)
+fort.link=<plr>
+plr.classmessage("<src.sex(Byl jsi jmenovan kapitanem,Byla jsi jmenovana kapitankou)> pevnosti <fort.tag(jmeno_mesta)>.")
+scylla.delayedmessage("Hrac <plr>-<plr.name>(<plr.account.name>) byl jmenovan kapitanem pevnosti <fort.tag(jmeno_mesta)>.")   
+return 1
+
+[function swapGuards] //Vymenit guardy v pevnosti za jejich protejsky
+arg(guardscont,<finduid(<tag(kingguardcont)>)>)
+arg(v,0)
+while(v < guardscont.rescount)
+  arg(guardcrystal,<guardscont.findcont(v)>)
+  arg(opposite_guard,<findres(chardef,<guardcrystal.tag(guarddefname)>).tag(guardopposite)>)
+  //finduid(01).smsg(jegrd: <guardcrystal.tag(guarddefname)>)
+  //finduid(01).smsg(opgrd: <opposite_guard>)
+  guardcrystal.tag(guarddefname,<opposite_guard>) //reset guard on crystal
+  guardcrystal.name=<findres(chardef,<guardcrystal.tag(guarddefname)>).name>
+  if(guardcrystal.tag(guardspawn)) //je nastaven spawn guarda? (ten je take ulozen v linku)  
+    guardcrystal.link.more1=<opposite_guard>
+    if(guardcrystal.link.tag(lastspawned))
+      if(finduid(<guardcrystal.link.tag(lastspawned)>)) //je na spawnu tohoto guarda neco spawnuteho?
+        if(finduid(<guardcrystal.link.tag(lastspawned)>).ischar)
+          guardcrystal.link.tag(lastspawned).remove //jen odstranit, spawnou se uz sami...        
+        endif
+      endif  
+    endif 
+  endif 
+  arg(v,#+1)
+endwhile
+//now reset guards on the whole stone (guards for hireing)
+arg(w,0)
+arg(decreaser,0)
+arg(pocet_guardu,<kingGuardcount_<tag(jmeno_mesta)>>)
+while(<arg(w)> < <arg(pocet_guardu)>) // switch all guards on the stone
+  arg(opposGuard,<findres(chardef,<tag(allowhire[<w>])>).tag(guardopposite)>) // opposite guard definition
+  //finduid(01).smsg(stongrd: <tag(allowhire[<w>])> opgrd: <opposGuard>)
+  if (<strlen(<arg(opposGuard)>)>)
+    tag(allowhire[<<arg(w)> - <arg(decreaser)>>],<arg(opposGuard)>) // switches current guard
+  else
+    arg(decreaser,#+1) // bad definitions will be ommited and the number of guards will decrease by this number
+  endif
+  arg(w,#+1)
+endwhile
+
+[function testboj]
+tag(war_begins_day,<getDay>)
+tag(war_begins_hour,<getHour>)
+timer=1

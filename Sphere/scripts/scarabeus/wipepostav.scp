@@ -1,0 +1,91 @@
+[ITEMDEF i_wipe_postav_tool]
+ID=i_wand_1
+NAME=Wipe Postav
+
+//CATEGORY=Scarabeus
+//SUBSECTION=GM Tools
+//DESCRIPTION=Wipovacka
+
+ON=@CREATE
+ATTR=010
+COLOR=0987
+
+ON=@userDCLICK
+if (src.isgm)&&(src==094dfd)
+wipepostav
+else
+src.redmessage(Nesahej na to, jak se to pouziva se zeptej Dinivana nebo Scaraba)
+endif
+RETURN 1
+
+[function wipepostav]
+src.redmessage(OK)
+arg(accounts_celkem,1)
+arg(chars_celkem,0)
+arg(chars_level,0)
+arg(chars_level_nelog,0)
+arg(chars_level_nelog_skill,0)
+arg(accounts_blocked,0)
+arg(chars_deleted,0)
+arg(chars_na_accu,0)
+arg(pocet_dni_n,14)
+arg(makro_skill,300)
+arg(pocet_dni,<eval serv.time-(arg(pocet_dni_n)*24*60*60*10)>)
+while (accountmgr.findenum(<accounts_celkem>))
+ if (accountmgr.findenum(<accounts_celkem>).chars != 0)
+  arg(chars_celkem,#+accountmgr.findenum(<accounts_celkem>).chars)
+  arg(pom,<accountmgr.findenum(<accounts_celkem>).chars>-1)
+   while (<pom> != -1)
+    if (accountmgr.findenum(<accounts_celkem>).char(<pom>).tag(level) == 0)
+     arg(chars_level,#+1)
+     if (accountmgr.findenum(<accounts_celkem>).char(<pom>).tag(lastlogoutedAt) < <pocet_dni>)
+      arg(chars_level_nelog,#+1)
+      if (accountmgr.findenum(<accounts_celkem>).char(<pom>).alchemy > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).blacksmithing > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).bowcraft > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).carpentry > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).cartography > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).cooking > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).fishing > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).inscription > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).lockpicking > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).tailoring > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).taming > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).tinkering > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).lumberjacking > <makro_skill>)||(accountmgr.findenum(<accounts_celkem>).char(<pom>).mining > <makro_skill>)
+       arg(chars_level_nelog_skill,#+1)
+      else
+       accountmgr.findenum(<accounts_celkem>).char(<pom>).remove=1
+       arg(chars_deleted,#+1)
+      endif
+     endif
+    endif
+    arg(pom,<arg(pom)>-1)
+   endwhile
+ endif
+arg(accounts_celkem,#+1)
+endwhile
+src.sysmessage "Pocet accountu celkem: <arg(accounts_celkem)>"
+src.sysmessage "Pocet accountu bloknutych: <arg(accounts_blocked)>"
+src.sysmessage "Pocet postav celkem: <arg(chars_celkem)>"
+src.sysmessage "Pocet postav level 0: <arg(chars_level)>"
+src.sysmessage "Pocet postav level 0 nelognutych <arg(pocet_dni_n)> dni: <arg(chars_level_nelog)>"
+src.sysmessage "z toho ma makrovaci skill nad 30: <arg(chars_level_nelog_skill)>"
+src.sysmessage "Postav smazano: <arg(chars_deleted)>"
+
+[function wipeacc]
+arg(accounts_celkem,1)
+arg(starsi_2003,0)
+arg(starsi_05,0)
+arg(starsi_10,0)
+arg(accounts_deleted,0)
+arg(accounts_blocked,0)
+while (accountmgr.findenum(<accounts_celkem>))
+ if (<accountmgr.findenum(<accounts_celkem>).chars> == 0)
+  if (<strleft("<accountmgr.findenum(<accounts_celkem>).lastconnectdate>",4)> < 2003)
+   accountmgr.findenum(<accounts_celkem>).delete
+   arg(accounts_deleted,#+1)
+   arg(starsi_2003,#+1)
+  elseif (<strmid("<accountmgr.findenum(<accounts_celkem>).lastconnectdate>",5,2)> < 05)
+   accountmgr.findenum(<accounts_celkem>).delete
+   arg(accounts_deleted,#+1)
+   arg(starsi_05,#+1)
+  elseif (<strmid("<accountmgr.findenum(<accounts_celkem>).lastconnectdate>",8,2)> < 10)
+   accountmgr.findenum(<accounts_celkem>).delete
+   arg(starsi_10,#+1)
+   arg(accounts_deleted,#+1)
+  endif
+ endif
+ arg(accounts_celkem,#+1)
+endwhile
+src.sysmessage "Pocet accountu celkem: <arg(accounts_celkem)>"
+src.sysmessage "Pocet accountu prazdnych a smazanych: <arg(accounts_deleted)>"
+src.sysmessage "Pocet accountu blocknutych: <arg(accounts_blocked)>"

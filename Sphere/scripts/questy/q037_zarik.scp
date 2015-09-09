@@ -1,0 +1,916 @@
+/////////////////////
+//// opily Zarik ////
+// Enzo + Skleena  //
+/////////////////////
+
+/////////////////////
+// TAGY
+// q037_zarik - 1  - zadal si quest u Zarika 
+// q037_zarik - 2  - pokecal s hospodskym
+// q037_zarik - 3  - nasiel Bertove telo
+// q037_zarik - 4  - pokecal s hospodskym + zaplatili 67k
+// q037_zarik - 5  - pokecal so sabrinou
+// q037_zarik - 6  - pokecal s hospodskym + dal flasku rumu
+// q037_zarik - 7  - pokecal s Urmughorgom
+// q037_zarik - 8  - vymlatil jaskynu + 2 klikol na truhlu
+// q037_zarik - 9  - pokecal s Urmughorgom
+// q037_zarik - 10 - vymlatil dung + pokecal s Wocasom
+// q037_zarik - 11 - pokecal s hospodskym + priniesol drevo
+// q037_zarik - 12 - pokecal s Varjusom
+// q037_zarik - 13 - nazbieral penisy strazcov
+// q037_zarik - 14 - pokecal so Zarikom - quest hotovy
+/////////////////////
+
+/////////////////////
+/// ZARIK
+///
+
+[speech spk_q037_zarik]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q037_zarik)
+
+[function f_q037_zarik]
+if (<src.flags>&statf_dead)
+ return 1
+elseif (<src.tag.level> < 90)
+  say("Promin, ale mam trochu...ehm... delikatni problem. Chce to nekoho zkusenejsiho.")
+else 
+  dialog(d_q037_zarik)
+endif
+
+[dialog d_q037_zarik]
+argo.questDialog_create(03164,"Opily Zarik")
+
+argo.dialog_newPage("Pozdrav")
+arg(q037_zarik,<eval src.qtag(q037_zarik)>)
+
+if (<arg(q037_zarik)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Muzu pomoci?")
+endif 
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"A-<def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal>-hoj.")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q037_zarik)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jmenuji se... hmm... jo,  Zarik! Vcera jsme s kamarady dosli Mahatske... <def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal> ...podzemi a trochu to pak sli oslavit. Ale nedopadlo to dobre, to tedy ne!")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Muzu pomoci?")
+    argo.setText(argo.newTextLine,"Hmm, zkusenosti ti nechybi, jak vidim. Muj problem je ale velice delikatni... <def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal> Jak vidis, trochu jsem vcera pri te pitce poztracel sve obleceni, vsechny penize... a zda se, ze i pamet, jelikoz si pamatuju prvniho panaka v hospode na ledovem ostrove a potom mam absolutni okno... Kdyby se ti podarilo zjistit od hospodskeho na ledovem ostrove, co se vcera vlastne stalo a kam se podely vsechny moje veci, byl bych ti moc a moc vdecny... Ale mozna se radsi ptej jeho pomocnika, hospodsky asi bude dost nastvany, trochu jsme to tam vcera roztocili...znas to... <def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal> A zjisti, kam se podeli ti proklatci, kteri me vcera takhle zridili! To jsou teda kamaradi, to ti povim...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Fuj, ty ozralo! Takovym ja, skrz naskrz abstinent, nepomaham!")
+    argo.questDialog_addResponse(0,1,1,"q037_refuse") 
+    argo.setText(argo.newTextLine,"Hehe, boli hlavinka, co? Dobra, sjedu do hospody a zjistim, co se stalo.")
+    argo.questDialog_addResponse(0,1,1,"q037_accept_work")
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Smarja, jen se na me podivej... <def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal> vypadam snad jako nekdo, kdo by mel neco, s cim by mohl obchodovat? A co se tyce jinych sluzeb... na nic bych se po vcerejsku stejne nezmohl...")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+  if ((<arg(q037_zarik)> == 0)||(<arg(q037_zarik)> == 14))
+    argo.setText(argo.newTextLine,"Boli me hlava...<def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal>...vlastne vsechny tri hlavy.. mam svych problemu dost, natoz pak nekoho zamestnavat...")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q037_zarik)> > 0)
+    argo.setText(argo.newTextLine,"Vzdyt uz jsem te zaukoloval...<def_questDialog_colorTextEmote>*hic*<def_questDialog_colorTextNormal> tak nevymejslej a hybaj za hospodskym!")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Nesu ti")  
+  if ((<arg(q037_zarik)> == 0)||(<arg(q037_zarik)> == 14))
+    argo.setText(argo.newTextLine,"Copak mi neses?")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"Copak pro me mas? Podarilo se ti ziskat vsechny me veci?")
+    argo.questDialog_HTMLGUMP
+  endif
+  argo.setText(argo.newTextLine,"Vlastne nemam nic, promin.")
+  argo.questDialog_addResponse(0,1,1,"goodbye") 
+  if (<arg(q037_zarik)> == 13)
+    argo.setText(argo.newTextLine,"Ano! Mam tvoje obleceni i vacek s penezi!")
+    argo.questDialog_addResponse(0,1,1,"q037_complete")
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Az na osoupane sandaly uplne nahy a nevyzpitatelne vravorajici chlapec, jednou rukou se drzi za hlavu a druhou si kryje choulostive partie. Tahne z nej alkohol a bolestive stena...*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q037_zarik button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q037_complete"))
+ if (<eval src.qtag(q037_zarik)> == 13)
+    say("Parada! Diky za obleceni!")
+    src.qtag(q037_zarik,14,43)
+    src.addexp(12000)
+    src.newitem(i_mi_bag_high)
+    src.act.bounce
+    src.SysMessage("<?src.sex(Odovzdal,Odovzdala)?> jsi obleceni a mesec s penezi.")
+    f_quest_complete(43)  // splnenie questu "Uhrovity Jonas"
+  else
+    say("Ale vzdyt to nemas!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q037_accept_work"))
+  say("Vyborne, zkus od nej neco zjistit...")
+  src.qtag(q037_zarik,1,43)
+elseif (<argn> == argo.dialog_linkButton("q037_refuse"))
+  say("Tak si trhni a uz me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+endif
+
+/////////////////////
+/// POMOCNIK HOSPODSKEHO
+///
+
+[speech spk_q037_zarik_hospodsky]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q037_zarik_hospodsky)
+
+[function f_q037_zarik_hospodsky]
+if (<src.flags>&statf_dead)
+ return 1
+else 
+  dialog(d_q037_zarik_hospodsky)
+endif
+
+[dialog d_q037_zarik_hospodsky]
+argo.questDialog_create(03100,"Hospodskeho pomocnik")
+
+argo.dialog_newPage("Pozdrav")
+arg(q037_zarik,<eval src.qtag(q037_zarik)>)
+
+if (<arg(q037_zarik)> == 1)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+if ((<arg(q037_zarik)> == 1)||(<arg(q037_zarik)> == 3)||(<arg(q037_zarik)> == 5)||(<arg(q037_zarik)> == 10))
+  argo.questDialog_baseButt(2,21,"Zarik?")
+endif 
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Vitej v nasi hospode, kde mame vsechny drinky ledove vychlazeny!")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q037_zarik)> == 1)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Zatim jsem jen pomocnik tady naseho stareho hospodskeho... ale jednou budu mit taky takovy podnik!")
+    argo.questDialog_HTMLGUMP
+endif
+ 
+if ((<arg(q037_zarik)> == 1)||(<arg(q037_zarik)> == 3)||(<arg(q037_zarik)> == 5)||(<arg(q037_zarik)> == 10))
+  argo.dialog_page("Zarik?")
+    if (<arg(q037_zarik)> == 1)    
+    	argo.setText(argo.newTextLine,"Zarik, Zarik... to jmeno mi neco rika... aha, uz vim. TENHLE Zarik! No to bylo teda nadeleni, vcera vecer tu byl i s partou ctyr pochybnych kamaradicku, dokonce jedna zenska tam byla... to bylo teda nadeleni. Takovy bordel, jaky tu vcera predvedli, tu jsem uz hodne dlouho nevidel... Tihle dobrodruzi, ti teda umi chlastat, to ti povim! Proc te to zajima?")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Hmm... to je fuk, promin za vyruseni.")
+      argo.questDialog_addResponse(0,1,1,"goodbye")
+      argo.setText(argo.newTextLine,"Poslal me sem, abych zjistil, co se tu vcera vecer delo. ")
+      argo.questDialog_addResponse(0,0,1,"q037_first_work_info")
+
+    elseif (<arg(q037_zarik)> == 3)
+      argo.setText(argo.newTextLine,"Uz jsem ti rekl, kde hledat prvniho z nich... dokud nebudu mit zaplacenou utratu, nic vic nereknu!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"<?src.sex(Nasel,Nasla)?> jsem jeho mrtve a docista o vsechno obrane telo... penize u sebe bohuzel zadne nemel...")
+      argo.questDialog_addResponse(0,0,1,"q037_second_work_info")
+      argo.setText(argo.newTextLine,"Vlastne ani nevim, promin.")
+      argo.questDialog_addResponse(0,1,1,"goodbye")
+    elseif (<arg(q037_zarik)> == 5)
+      argo.setText(argo.newTextLine,"Nasel jsi Sabrinu?")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jeste ne.")
+      argo.questDialog_addResponse(0,1,1,"goodbye")
+      argo.setText(argo.newTextLine,"Ano ano, podarilo se mi ji najit. Je to pekne kvitko!")
+      argo.questDialog_addResponse(0,0,1,"q037_third_work_info")
+    elseif (<arg(q037_zarik)> == 10)
+      argo.setText(argo.newTextLine,"Mas pro me drevo na opravu toho zniceneho stolu?")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ano, <?src.sex(prinesl,prinesla)?> jsem ti ho.")
+      argo.questDialog_addResponse(0,0,1,"q037_fourth_work_info")
+      argo.setText(argo.newTextLine,"Jeste ne.")
+      argo.questDialog_addResponse(0,1,1,"goodbye")
+    endif
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Ale jiste, kup si neco tady u nas v hospode. Ale musis za hospodskym, ja mam ted pauzu.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Promin, ale ja jsem rad, ze sam mam do ceho pichnout... zkus hospodskeho, jinak netusim.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"refuse") 
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Mlady, mrstny a ukecany chlapik. Zda se, ze hospodsky si nemohl vybrat lepsiho pomocnika.*")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q037_zarik)> == 1)
+	argo.dialog_page("q037_first_work_info")
+	  argo.setText(argo.newTextLine,"No to bylo neco... ten blazen se priserne opil, porozdaval svoje obleceni a pak uplne odpadl... ale spolecne se svymi kumpany tady udelali peknou paseku, jen co je pravda... Muzu ti zkusit poradit, kdy a kam odesli jeho kamaradicci, treba se ti z meho a jejich vypraveni podari nejak si poskladat, co se tu vcera delo...")
+    argo.questDialog_HTMLGUMP
+	  argo.setText(argo.newTextLine,"To je super! Tak povidej!")
+    argo.questDialog_addResponse(0,0,1,"q037_about_first_work")
+  
+  argo.dialog_page("q037_about_first_work")
+  	argo.setText(argo.newTextLine,"Nooo, prvni z te jejich povedene party se jmenoval, pokud se nepletu... Bert, nebo tak nejak. Takovy pohubly, slachovity cahoun, byl z nich v nalade snad jako prvni. I kdyz je pravda, ze Zarik ho dost rychle stihal. Kdyz si Bert usmyslel, ze uz vypil dost, zacal odchazet k odchodu. Zarik se ale rozcilil, ze kdo nepije s nimi, pije proti nim, vyskocil na stul, sundal si pred vsemi hosty kalhoty a hodil je Bertovi na hlavu, ze pry mu je nedovoli sundat, dokud nesvoli, ze si s nimi da jeste jednu rundu. Bert ale odvravoral i s kalhotami na hlave ven z hospody, skocil do lodi a odjel nekam smerem k ostrovu piratu... Co je ale hlavni, UTEKL MI BEZ PLACENI! Jestli ho najdes, vyrid mu, ze mi dluzi 57000 zlatych za vsechnu tu koralku! Dokud je z nej nedostanes a utrata nebude zaplacena, o dalsich clenech ty jejich povedeny particky ti rozhodne nic nepovim...")
+    argo.questDialog_HTMLGUMP
+	  argo.setText(argo.newTextLine,"Ostrov piratu? Tam nejedu, tam clovek snadno prijde o zivot.")
+    argo.questDialog_addResponse(0,1,1,"q037_refuse")
+	  argo.setText(argo.newTextLine,"Dobra, pokusim se o to. Zni to jako dobra vyzva!")
+    argo.questDialog_addResponse(0,1,1,"q037_first_work_accept")
+endif
+
+if (<arg(q037_zarik)> == 3)
+	argo.dialog_page("q037_second_work_info")
+	  argo.setText(argo.newTextLine,"A mas tech 57000 zlatych?")
+    argo.questDialog_HTMLGUMP
+	  argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Berta jsem <?src.sex(nasel,nasla)?> mrtveho na ostrove Piratu, zadne penize ani nic jineho mu nenechali...Bohuzel to tedy na zaplaceni utraty moc nevypada.")
+    argo.questDialog_addResponse(1,0,1,"q037_about_second_work")
+
+ 
+	argo.dialog_page("q037_about_second_work")
+	  argo.setText(argo.newTextLine,"Mne je popravde uplne fuk, co se s tim ozralou stalo. I kdyby sis na to mel od nekoho pujcit, dokud neuvidim svych 57000, s informacemi o druhem cloveku z jejich party se rozluc!")
+    argo.questDialog_HTMLGUMP
+    IF (<SRC.RESTEST 57000 i_gold>)
+    	argo.setText(argo.newTextLine,"Tak dobre, ty penize ti dam ja...")
+      argo.questDialog_addResponse(0,0,1,"q037_give_gold")
+    endif
+    argo.setText(argo.newTextLine,"Ja ti nic nedam, nejsem charita...")
+    argo.questDialog_addResponse(0,1,1,"q037_refuse")
+    
+
+IF (<SRC.RESTEST 57000 i_gold>)  
+  argo.dialog_page("q037_give_gold")
+    IF (<SRC.RESTEST 57000 i_gold>)
+    	argo.setText(argo.newTextLine,"Vyborne, diky... Dalsi, kdo tam toho vecera se Zarikem pil, byla zena. Pekna baba, to se musi nechat. Mela krasne vyvinute...hmmm... hrudnik.  Nekdy hodinu po tom, co utekl Bert, se zvedla, ze pro tuhle vyjimecnou udalost to chce mimoradne piti a ze ma nekde ve sve skrysi u zapadniho okraje Temneho lesa flasku nejakeho vyborneho rumu. Pamatuju si, ze se uz dost opily Zarik zvednul, sundal si tricko a dal ji ho, aby mela flasku do ceho zabalit - to aby se nerozbila, az ji Sabrina, jak se ta zenska jmenovala, poveze zpatky. pravdou vsak zustava, ze uz se nevratila ani ona se svymi krasnymi... ehm, hrudnikem... ani ten rum. Ale ten rum, ten me zajima! Privez mi od ni trochu na ochutnavku, jinak ti uz nic vic nereknu!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jako by toho chlastu uz nebylo dost! Do toho nejdu.")
+      argo.questDialog_addResponse(0,1,0,"q037_refuse")
+    	argo.setText(argo.newTextLine,"Hmm, rum povidas? Jdu na to!")
+      argo.questDialog_addResponse(0,1,1,"q037_second_work_accept")
+    else
+    	argo.setText(argo.newTextLine,"Nesnaz se me oklamat! Takovyhle ja znam, jsou vycurany jak dira do snehu! Dokud neprineses penize, nic ti nepovim!")
+      argo.questDialog_HTMLGUMP
+    endif
+endif
+endif
+
+if (<arg(q037_zarik)> == 5)
+	argo.dialog_page("q037_third_work_info")
+	  argo.setText(argo.newTextLine,"A <?src.sex(prinesl,prinesla)?> jsi mi ten rum na ochutnavku?")
+    argo.questDialog_HTMLGUMP
+	  argo.setText(argo.newTextLine,"Ano, mam ho ale musis mi povedet o tech dalsich...")
+    argo.questDialog_addResponse(0,0,1,"q037_about_third_work")
+    
+  argo.dialog_page("q037_about_third_work")
+    argo.setText(argo.newTextLine,"Skvele, diky! Dalsi, co tu s nimi popijel, byl skret. Jak byl osklivej, tak byl i ozralej. Ale ani se nedivim - takovych koralek, co tu za vecer vypil, normalni clovek neda ani za tyden... Rikali mu Urmughorg - alespon tedy myslim, kdo se ma v tech jejich prisernejch jmenech vyznat... Cely vecer tu vyrvaval, ze zna jednu jeskyni, kde ziji silene krvelacne obludy, do ktere se nikdo se zdravym rozumem neodvazi. Tedy nikdo krome jeho, ze on by to tam pry vybil i se zavrenyma ocima... na to konto si Zarik sundal satek, ktery mel uvazan na hlave, a zavazal ho skretovi pres oci - ze pry jestli to tedy zvladne i v tomhle stavu, ma u Zarika flasku koralky. Ten blbec jen dopil, co mel pred sebou na stole, a pak trisknul korbelem o desku stolu, az ji celou rozlomil. Idiot, byl to vzacny druh dreva, ktery jsme tu v hospode shaneli snad tri roky! Vyrid Urmughorgovi, az ho potkas, ze mi dluzi drevo na opravu toho stolu! Do te doby ti uz nic dalsiho nepovim...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobra, zkusim ho najit, opilce jednoho.")
+    argo.questDialog_addResponse(0,1,1,"q037_third_work_accept")
+    argo.setText(argo.newTextLine,"Drazdit ozralyho skreta? Promin, ale mam rozum, do toho nejdu...")
+    argo.questDialog_addResponse(0,1,1,"q037_refuse")
+endif
+
+if (<arg(q037_zarik)> == 10)
+	argo.dialog_page("q037_fourth_work_info")
+		argo.setText(argo.newTextLine,"Vyborne! Posledni z ty jejich pochybny party byl Varjusa, takovy statny valecnik. Pil sice stejne co ostatni, ale zdalo se, ze to na nej nejmene pusobilo. A byl to smejd uz od pohledu, na takovy ja mam cuch! Kdyz tu zustali sami dva jen se Zarikem, ktery uz byl uplne na mol, ze skoro nebyl schopen ani sedet na zidli (naposledy se nam tu takhle pred lety opil valecnik Marfushak, to byla sranda!), Varjusa ho popadl, ze mu pomuze dostat se domu. Ale bylo to presne jak jsem ocekaval! Zarika jen dotahl za dvere a z okna jsem videl, jak ho uplne bezvladneho hodil prevoznikovi na lod, vzal si jeho vacek s penezi a zmizel bez rozlouceni nekam tady na ostrov...")
+    argo.questDialog_HTMLGUMP
+	  argo.setText(argo.newTextLine,"Dobre, dekuju za pomoc. Jdu ho zkusit najit.")
+    argo.questDialog_addResponse(0,1,1,"q037_fourth_work_accept")
+endif
+
+[dialog d_q037_zarik_hospodsky button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q037_first_work_accept"))
+  say("A pospes si s temi penezi!")
+  src.qtag(q037_zarik,2,43)
+elseif (<argn> == argo.dialog_linkButton("q037_second_work_accept"))
+  IF (<SRC.RESTEST 57000 i_gold>)
+    say("At ti to netrva celou vecnost...")
+    src.consume(57000 i_gold)
+    src.SysMessage("<?src.sex(Odevzdal,Odevzdala)?> jsi penize.")
+    src.qtag(q037_zarik,4,43)
+  else
+    say("Ale vzdyt ty zadne penize nemas!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q037_third_work_accept"))
+  say("Hodne stesti...")
+  src.SysMessage("<?src.sex(Odevzdal,Odevzdala)?> jsi rum.")
+  src.qtag(q037_zarik,6,43)
+elseif (<argn> == argo.dialog_linkButton("q037_fourth_work_accept"))
+  say("A davej si pozor, je slizky jako had!")
+  src.SysMessage("<?src.sex(Odevzdal,Odevzdala)?> jsi vzacne drevo.")
+  src.qtag(q037_zarik,11,43)
+elseif (<argn> == argo.dialog_linkButton("q037_refuse"))
+  say("Tak si trhni a uz me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Mej se...")
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Tak me neotravuj!")
+endif
+
+/////////////////////
+/// SABRINA
+///
+
+[speech spk_q037_zarik_sabrina]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q037_zarik_sabrina)
+
+[function f_q037_zarik_sabrina]
+if (<src.flags>&statf_dead)
+ return 1
+else 
+  dialog(d_q037_zarik_sabrina)
+endif
+
+[dialog d_q037_zarik_sabrina]
+argo.questDialog_create(03090,"Sabrina")
+
+argo.dialog_newPage("Pozdrav")
+arg(q037_zarik,<eval src.qtag(q037_zarik)>)
+
+if (<arg(q037_zarik)> == 4)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Zarik?")
+endif 
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Ahoj. Co rikas na pocasi? Stoji to za starou belu, co?")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q037_zarik)> == 4)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jmenuji se Sabrina a kdyz zrovna nepopijim nekde ve spolecnosti, ziji dobrodruznym zivotem...")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Zarik?")
+   	argo.setText(argo.newTextLine,"Toho mi ani nepripominej. Jeste ted me boli hlava, jak jsme se posledne opili na ledovem ostrove! Ale jinak je to fajn chlap, nedavno jsem s nim a par dalsima vybila Mahatske podzemi!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Poslal me za tebou. Ma po te pitce tak trochu vypadek pameti a shani sve veci, o ktere prisel. Jo a hospodsky by chtel na ochutnavku trochu toho tveho rumu.")
+    argo.questDialog_addResponse(1,0,1,"q037_finding_clothes")
+
+  argo.dialog_page("q037_finding_clothes")
+    if (<eval src.qtag(q036_jonas)> == 11)
+    	argo.setText(argo.newTextLine,"No... zadarmo sice ani kure nehrabe, ale od meho kamarada Jonase vim, ze jsi mu <?src.sex(pomohl,pomohla)?> ziskat mec jeho otce. Tak ze jsi to ty, dam ti jak Zarikovo tricko, tak trochu rumu pro hospodskeho. ")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Parada, dekuji!")
+      argo.questDialog_addResponse(0,1,1,"q037_accept_clothes")
+    else
+    	argo.setText(argo.newTextLine,"Mam Zarikovo tricko, no... ale zadarmo ani kure nehrabe! Muj kamarad Jonas, ktery zije u skal, kde konci cesta, co vede pod Lorienem, ma nejake trable s otcem ci co. Kdysi davno mi o nem vypravel... Pomoz mu vyresit jeho problem a ja ti dam to tricko i rum pro hospodskeho...")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Hmm, dobre, pokusim se o to.")
+      argo.questDialog_addResponse(0,1,1,"goodbye")
+    endif
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Promin, ale nic neprodavam.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  if (<eval src.qtag(q036_jonas)> == 11)
+  	argo.setText(argo.newTextLine,"Vypadas sice dostatecne zkusene, ale momentalne zadnou praci nemam, promin.")
+    argo.questDialog_HTMLGUMP
+  else
+  	argo.setText(argo.newTextLine,"Ja bohuzel zadnou praci nemam, ale vim, ze muj kamarad Jonas, ktery zije u skal, kde konci cesta pod Lorienem, shanel nekoho, kdo by mu pomohl. Mozna uz to neni aktualni, ale urcite bych to zkusila.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Hmm, dobre, pokusim sa o to")
+    argo.questDialog_addResponse(0,1,1,"goodbye")
+  endif
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"refuse") 
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Velice pohledna zena. Prestoze ma dosti svalnatou postavu, je videt, ze predevsim v urcitych damskych partiich v oblasti hrudniku ji vsechno narostlo tak, jak spravne zene ma.*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q037_zarik_sabrina button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q037_accept_clothes"))
+  say("Prosim, tady to mas: Zarikovo tricko a rum pro hospodskeho")
+  src.SysMessage("<?src.sex(Prijal,Prijala)?> jsi tricko a rum.")
+  src.qtag(q037_zarik,5,43)
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Tak me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("goodbye"))
+  say("Mej se...")
+endif
+
+/////////////////////
+/// Urmughorg
+///
+
+[speech spk_q037_zarik_urmughorg]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q037_zarik_urmughorg)
+
+[function f_q037_zarik_urmughorg]
+if (<src.flags>&statf_dead)
+ return 1
+else 
+  dialog(d_q037_zarik_urmughorg)
+endif
+
+[dialog d_q037_zarik_urmughorg]
+argo.questDialog_create(03072,"Skret Urmughorg")
+
+argo.dialog_newPage("Pozdrav")
+arg(q037_zarik,<eval src.qtag(q037_zarik)>)
+
+if (<arg(q037_zarik)> == 6)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Zarik?")
+endif 
+if ((<arg(q037_zarik)> == 7)||(<arg(q037_zarik)> == 8))
+	argo.questDialog_baseButt(2,21,"Jeskyne")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"No nazdar...")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q037_zarik)> == 6)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Rikaji mi Urmughorg a radil bych ti nic si se mnou nezacinat. Mozna si lizu rany z posledniho boje, ale s mecem se umim ohanet porad!")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Zarik?")
+   	argo.setText(argo.newTextLine,"Ach, Zarik, ten ochlasta! Tak trochu jsme si spolecne vyhodili z kopytka a ja mu prozradil o tehle jeskyni... ziji tam snad ty nejkrvelacnejsi monstra, co znam... No a jak jsme meli vsichni poradne nameteno, tak jsem trochu neuvazene rekl, ze jsem schopen tu jeskyni vybit i poslepu... a Zarik, ten blboun, se toho chytil... no, abych to zkratil... dostal jsem samozrejme silene po tlame, krvacel jsem z nekolika ran a nebyt toho Zarikova satku, co jsem mel puvodne pres oci, asi bych tam i vykrvacel, kdybych si nemel cim obvazat tu nejhorsi ranu na koleni. Kazdopadne ta monstra jdou po krvi jak po flusu, nepodarilo by se mi utect, kdybych nezahodil ten skrz naskrz krvavy satek na druhou stranu jeskyne a neutekl, kdyz jsem je odlakal...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Pche, takhle utect... to si rikas bojovnik? Odchazim.")
+    argo.questDialog_addResponse(0,1,1,"q037_refuse")
+    argo.setText(argo.newTextLine,"Aha, hmm. Ja se prave pokousim najit jeho obleceni a tak...")
+    argo.questDialog_addResponse(0,0,1,"q037_finding_clothes")
+
+  argo.dialog_page("q037_finding_clothes")
+    argo.setText(argo.newTextLine,"Tak to ti nezavidim. Ja uz do ty jeskyne ani nepachnu, ten satek tam urcite jeste nekde bude, ale me uz tam nikdo nedostane... navic tramy u vchodu jsou cele ztrouchnivele, nedivil bych se, kdyby to za chvilku cele spadlo...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"A kudy se tam tedy dostanu?")
+    argo.questDialog_addResponse(0,0,1,"q037_about_dungeon")
+    argo.setText(argo.newTextLine,"Dobre, kdyz ty ne, tak ja tam taky nejdu. Sbohem.")
+    argo.questDialog_addResponse(0,1,0,"q037_refuse")
+    
+  argo.dialog_page("q037_about_dungeon")
+    argo.setText(argo.newTextLine,"Tady hned za mnou je ten polorozboreny vchod. Ale jak uz jsem rikal, ty tramy moc dlouho nevydrzi. Vidim to tak na jednoho, mozna dva lidi, potom se to cely zasype a nikdo se nedostane ani dovnitr, ani ven...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Jit tam jen ve dvou? Do toho teda nejdu...")
+    argo.questDialog_addResponse(0,1,0,"q037_refuse")
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Hmm, dobre. Jo a jeste neco! Hospodskemu pry dluzis nejake vzacne drevo na opravu tebou rozbiteho stolku!")
+    argo.questDialog_addResponse(1,0,1,"q037_need_wood")
+    
+  argo.dialog_page("q037_need_wood")
+    argo.setText(argo.newTextLine,"Hmm, mozna jsem tak trochu bouchnul do stolu okovanou rukavici, no, co si tak matne vzpominam. Tak dobre - pokud jeskyni vybijes, vratis Zarikovi onen satek a reknes, ze jsem ti ho dal ja a ze jsem celou jeskyni vymlatil se zavazanyma ocima, na dreve se domluvime. Musim preci dbat o svou povest!!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobra, zkusim to.")
+    argo.questDialog_addResponse(0,1,1,"q037_accept_work")
+    argo.setText(argo.newTextLine,"Ale to by byl PODVOD! Ma cest mi to nedovoli...")
+    argo.questDialog_addResponse(0,1,0,"q037_refuse")
+endif
+
+if ((<arg(q037_zarik)> == 7)||(<arg(q037_zarik)> == 8))
+	argo.dialog_page("Jeskyne")
+   	argo.setText(argo.newTextLine,"Tak co, podarilo se? Je to tam dost o krk, co?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Zatim se nepodarilo...")
+    argo.questDialog_addResponse(0,1,1,"refuse")
+    if (<arg(q037_zarik)> == 8)
+    argo.setText(argo.newTextLine,"To teda! Ale satek mam. Ted mi dej to drevo!")
+    argo.questDialog_addResponse(0,0,1,"q037_give_me_wood")
+    endif
+
+if (<arg(q037_zarik)> == 8) 
+	argo.dialog_page("q037_give_me_wood")
+   	argo.setText(argo.newTextLine,"Pche, jsem snad nejaky drevorubec, ci co? Podivej se na me - pripadam ti jako drevorubec? He? Ja to drevo samozrejme u sebe nemam, co bych s nim taky delal... Ale muzu ti rict, kde bys k nemu prisel.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No jo, asi na tom neco bude, kdyz se rika, ze se skretum neda verit. Ale pokracuj.")
+    argo.questDialog_addResponse(0,0,1,"q037_about_wood")
+    argo.setText(argo.newTextLine,"Se mnou si nikdo takhle hrat nebude! S tebou koncim!")
+    argo.questDialog_addResponse(0,1,0,"refuse")
+
+	argo.dialog_page("q037_about_wood")
+   	argo.setText(argo.newTextLine,"Jeden davny pritel mi dluzi sluzbicku... a je to shodou okolnosti drevorubec... takovej podivin, seka si vzdycky uplne sam na mistech, kam by se clovek se zdravym rozumem neodvazil. Rikaji mu Wohy. Asi se k nemu jen tak nedostanes, bude zas zalezlej kdesi, kam se ziva duse jen tak nedostane. Ale v ledove jeskyni zije jeden mag - George nebo tak nejak. S kouzly to pomerne umi a kdyz ho poprosis a reknes mu, ze jdes ode me, urcite te dokaze prenest az do mist, kde se Wohy toula. Jestli se dostanes az k nemu, to uz je na tobe... Ale garantuji ti, ze lehke to nebude... Wohy je tak trochu magor, bezpecno tam asi nebude...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Pff, stacila mi ta jeskyne. Dalsi zatuchly podzemi uz vybijet nebudu.")
+    argo.questDialog_addResponse(0,1,0,"refuse")
+    argo.setText(argo.newTextLine,"Dobra, zkusim Wohyho najit.")
+    argo.questDialog_addResponse(0,1,1,"q037_accept_wood")
+endif
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Jsem bojovnik, ne obchodnik! Pripadam ti snad jako obchodnik?")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  if (<arg(q037_zarik)> == 7)
+  	argo.setText(argo.newTextLine,"Svuj ukol uz mas...")
+    argo.questDialog_HTMLGUMP
+  else
+  	argo.setText(argo.newTextLine,"Zkus to ve meste a neotravuj...")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"goodbye") 
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Obrovsky, odporny skret. Dost silne zapacha - a to nejenom z ust. Krom toho, ze to asi neni ten typ na nedelni sachove partie u cajicku, je od hlavy az k pate od krve. Vypada to ale, ze vetsina te krve je jeho vlastni. Asi se mu v poslednim boji presprilis nedarilo. Podle vyrazu v jeho tvari je zrejme, ze ho tato skutecnost vubec nepotesila a ze mu do zpevu moc neni. Na druhou stranu - kdy by si pral slyset zpivat skreta.*")
+  argo.questDialog_HTMLGUMP
+
+
+[dialog d_q037_zarik_urmughorg button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q037_accept_wood"))
+  say("Stastnou cestu...")
+  src.qtag(q037_zarik,9,43)
+elseif (<argn> == argo.dialog_linkButton("q037_accept_work"))
+  say("A davej pozor, vazne to neni jednoduche!")
+  src.qtag(q037_zarik,7,43)
+elseif (<argn> == argo.dialog_linkButton("refuse"))
+  say("Tak me neotravuj!")
+elseif (<argn> == argo.dialog_linkButton("q037_refuse"))
+  say("V tom pripade padej!")
+elseif (<argn> == argo.dialog_linkButton("goodbye"))
+  say("Mej se...")
+endif
+
+/////////////////////
+/// George v ledovke
+///
+
+[function f_q037_zarik_george]
+if (<src.flags>&statf_dead)
+ return 1
+else 
+  dialog(d_q037_zarik_george)
+endif
+
+[dialog d_q037_zarik_george]
+argo.questDialog_create(03107,"Poustevnik George")
+
+argo.dialog_newPage("Pozdrav")
+arg(q037_zarik,<eval src.qtag(q037_zarik)>)
+
+if (<arg(q037_zarik)> == 9)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Les?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Vitej, uz dlouho jsem tu nikoho nevidel.")
+  argo.questDialog_HTMLGUMP
+  
+if (<arg(q037_zarik)> == 9)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Ahoj, jsem George poustevnik. Ziji zde, jelikoz me ten strazce pruchodu na konci ledove jeskyne nechce pustit ven a tohle misto mi konec koncu ve vysledku prijde docela utulne.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Les?")
+   	argo.setText(argo.newTextLine,"Hmm... proc te to zajima?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Skret Urmughorg rikal, ze me budes umet dostat na uzemi, kde je les, ve kterem seka drevorubec Wohy.")
+    argo.questDialog_addResponse(1,0,1,"q037_about_wood")
+
+  argo.dialog_page("q037_about_wood")
+    argo.setText(argo.newTextLine,"Ano, to je pravda... Uz jsem tam dlouho nebyl, ale to misto si vybavuji. Vlastne si ho vybavuji natolik dobre, ze se mi tam uz znovu ani moc nechce. Neni tam zrovna prilis zivotu bezpecno. Chces tam tedy prenest?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ano, to by bylo skvele!")
+    argo.questDialog_addResponse(0,1,1,"q037_go_to_wood")
+    argo.setText(argo.newTextLine,"No... vlastne radsi ani ne.")
+    argo.questDialog_addResponse(0,1,1,"q037_refuse")
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Promin, ale vsechno, co mam, potrebuji pro sebe. Nemam, co bych ti nabidnul.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Tady? Rozhledni se kolem...")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"goodbye") 
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Podivny chlapik se zamyslenym vyrazem a vrascitou tvari. To depresivni, ledove prostredi mu asi taky prilis nepridalo.*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q037_zarik_george button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q037_go_to_wood"))
+  if (<eval src.qtag(q037_zarik)> == 9)
+    src.go(5393,2471,32,11)
+    say("Tak hodne stesti!")
+  else
+  	say("Ty si to nezaslouzis!")
+  endif
+elseif (<argn> == argo.dialog_linkButton("q037_refuse"))
+  say("To je skoda, uz jsem pripravoval branu.")
+elseif (<argn> == argo.dialog_linkButton("goodbye"))
+  say("Mej se...")
+endif
+
+/////////////////////
+/// Wohy
+///
+
+[speech spk_q037_zarik_wohy]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q037_zarik_wohy)
+
+[function f_q037_zarik_wohy]
+if (<src.flags>&statf_dead)
+ return 1
+else 
+  dialog(d_q037_zarik_wohy)
+endif
+
+[dialog d_q037_zarik_wohy]
+argo.questDialog_create(03096,"Drevorubec Wohy")
+
+argo.dialog_newPage("Pozdrav")
+arg(q037_zarik,<eval src.qtag(q037_zarik)>)
+
+if (<arg(q037_zarik)> == 9)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Urmughorg?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Vitej! Uz dlouho jsem tu nikoho nepotkal... a pritom je tu tak krasne!")
+  argo.questDialog_HTMLGUMP
+
+if (<arg(q037_zarik)> == 9)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jmenuji se Wohy a zivim se drevorubectvim... poctive remeslo pro poctive lidi! Ted se posledni dobou zdrzuji hlavne v tomto magickem lese... cas od casu se mi podari seknout i vzacne kousky dreva...")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Urmughorg?")
+   	argo.setText(argo.newTextLine,"Pche, co s nim? Je sice pravda, ze mi rekl o tehle krasne lokalite, takze bych mu mel byt vdecny... ale nechci s nim mit nic spolecneho.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Aha, tak nic.")
+    argo.questDialog_addResponse(0,1,1,"q037_refuse")
+    argo.setText(argo.newTextLine,"Posila me za tebou... Pry mu dluzis laskavost, je to pravda?")
+    argo.questDialog_addResponse(0,0,1,"q037_urmughorg_send_him")
+
+  argo.dialog_page("q037_urmughorg_send_him")
+    argo.setText(argo.newTextLine,"No, bohuzel ano... jak uz jsem rikal - prozradil mi, jak se dostat sem na toto krasne misto a za to jsem mu vdecny...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Hmm, to je sice desne krasny, ale uz jsi me omrzel, sbohem.")
+    argo.questDialog_addResponse(0,1,0,"q037_refuse")
+    argo.setText(argo.newTextLine,"Poslal me k tobe pro trochu vzacneho dreva na opravu stolu, ktery se mu podarilo poskodit...")
+    argo.questDialog_addResponse(0,0,1,"q037_need_wood")
+
+  argo.dialog_page("q037_need_wood")
+    argo.setText(argo.newTextLine,"No..hmm... tak co muzu delat, no. Alespon budu mit z krku tu laskavost, co mu dluzim. Tak pockej, dam ti ho.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vyborne, diky!")
+    argo.questDialog_addResponse(0,1,1,"q037_accept_wood")
+    argo.setText(argo.newTextLine,"Kasli na to, uz ho nechci.")
+    argo.questDialog_addResponse(0,1,0,"q037_refuse")
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Promin, ale nejdrive si musim nasekat drevo na vlastni strechu nad hlavou. Teprve potom budu moct s nekym obchodovat...")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Nemas do ceho pichnout? Zkus to ve meste, ja zadneho pomocnika nepotrebuji, sil mam jeste dost.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"goodbye") 
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Urostly chlap se sekerou v ruce... tak nejak podivne kouka na vsechny ty stromy kolem... asi to nebude mit v hlave uplne v poradku. Na druhou stranu kdo se zdravym rozumem by mohl dobrovolne zit zrovna tady...*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q037_zarik_wohy button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q037_accept_wood"))
+  say("A vzkaz mu, ze jsme si kvit!")
+  src.SysMessage("<?src.sex(Prijal,Prijala)?> jsi vzacne drevo.")
+  src.qtag(q037_zarik,10,43)
+elseif (<argn> == argo.dialog_linkButton("q037_refuse"))
+  say("Tak me ale nezdrzuj...")
+elseif (<argn> == argo.dialog_linkButton("goodbye"))
+  say("Mej se...")
+endif  
+
+/////////////////////
+/// Varjusa
+///
+
+[speech spk_q037_zarik_varjusa]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+on = *hi*
+f_qSpeech(f_q037_zarik_varjusa)
+
+[function f_q037_zarik_varjusa]
+if (<src.flags>&statf_dead)
+ return 1
+else 
+  dialog(d_q037_zarik_varjusa)
+endif
+
+[dialog d_q037_zarik_varjusa]
+argo.questDialog_create(03106,"Varjusa")
+
+argo.dialog_newPage("Pozdrav")
+arg(q037_zarik,<eval src.qtag(q037_zarik)>)
+
+if (<arg(q037_zarik)> == 11)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Zarik?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  argo.setText(<argo.newTextLine>,"Hmm, Ahoj.")
+  argo.questDialog_HTMLGUMP
+
+if (<arg(q037_zarik)> == 11)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Jmenuji se Varjusa a to je asi tak vsechno, co potrebujes vedet.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Zarik?")
+   	argo.setText(argo.newTextLine,"Zarik? Co s nim? Znam ho, no. Nedavno jsme spolu dost popili, je to muj pritel.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Pekny pritel... hospodskeho pomocnik te videl, jak jsi ho hned za dvermi putyky okradlo o mesec s penezi!")
+    argo.questDialog_addResponse(1,0,1,"q037_is_it_true")
+    argo.setText(argo.newTextLine,"Ale nic, jen jsem si na nej vzpomnel...")
+    argo.questDialog_addResponse(0,1,1,"q037_refuse")
+
+  argo.dialog_page("q037_is_it_true")
+    argo.setText(argo.newTextLine,"Udelal jsem to, no a co? Stejne byl tak na mol, ze si z toho nic nepamatuje! A penize se cloveku vzdycky hodi, znas to.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ted ale posila me, ze chce vsechny sve veci, o ktere prisel, zpet!")
+    argo.questDialog_addResponse(0,0,1,"q037_want_money")
+    argo.setText(argo.newTextLine,"Pravdu dis. Mej se.")
+    argo.questDialog_addResponse(0,1,0,"q037_refuse")
+
+  argo.dialog_page("q037_want_money")
+    argo.setText(argo.newTextLine,"Haha, co si o sobe myslis? Rozhodne bych ti nedoporucoval zkouset je ze me vymlatit, takovou chybu uz mnozi udelali a ted toho lituji... ale mozna bychom se mohli dohodnot - ty mi prineses takovou vecicku a ja ti mesec vratim...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Pro zlodeje nedelam!!")
+    argo.questDialog_addResponse(0,1,0,"q037_refuse")
+    argo.setText(argo.newTextLine,"Dobra, o co jde?")
+    argo.questDialog_addResponse(0,0,1,"q037_work_info")
+
+  argo.dialog_page("q037_work_info")
+    argo.setText(argo.newTextLine,"Vis o tom, ze hospodsky Igor dela skvelou koprovku? Je to jeho specialita... jako zvlastni prisadu tam primichava zpocene chlupy z podpazdi strazcu... a ja mu je za - samozrejme velice nelichotivou cenu, hehe - prodavam. Prines mi ctyri chlupy ze ctyr strazcu a udelame vymenu...")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"No fuj, do tohodle fakt nejdu.")
+    argo.questDialog_addResponse(0,1,0,"q037_refuse")
+    argo.setText(argo.newTextLine,"Hmm, nekde doma mam pinzetu. Dobra, jdu na to!")
+    argo.questDialog_addResponse(0,1,1,"q037_accept_work")
+endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Neobchoduji s lidmi, ktere neznam. Jdi pryc.")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Hledam praci")
+  if (<arg(q037_zarik)> == 12)
+  	argo.setText(argo.newTextLine,"Uz jsem ti praci dal!")
+    argo.questDialog_HTMLGUMP
+  else
+  	argo.setText(argo.newTextLine,"Nemam te jak zamestnat...")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co mi neses?")
+  argo.questDialog_HTMLGUMP
+	argo.setText(argo.newTextLine,"Vlastne nic...")
+  argo.questDialog_addResponse(0,1,1,"goodbye") 
+  if (<arg(q037_zarik)> == 12) && (<src.f_collector_isFull(i_q037_zarik_collector_strazce)>)
+	  argo.setText(argo.newTextLine,"Uz mam ty chlupy!")
+    argo.questDialog_addResponse(0,1,1,"q037_finish_work") 
+  endif
+  
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Klasicky zlodej. Dlouhe prsty a atleticka postava. Od toho radsi dal.*")
+  argo.questDialog_HTMLGUMP
+  
+[dialog d_q037_zarik_varjusa button]
+on=@AnyButton
+if (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+if (<argn> == argo.dialog_linkButton("q037_finish_work"))
+	if (<src.f_collector_isFull(i_q037_zarik_collector_strazce)>)
+    say("Diky ti za chlupy!")
+    src.SysMessage("<?src.sex(Prijal,Prijala)?> jsi vacek s penezi.")
+    src.qtag(q037_zarik,13,43)
+    src.consume(i_q037_zarik_collector_strazce)
+  else
+  	say("Ale vzdyt to jeste nemas!")
+  endif  
+elseif (<argn> == argo.dialog_linkButton("q037_accept_work"))
+  say("A pohni si!")
+  src.qtag(q037_zarik,12,43)
+  src.newitem(i_q037_zarik_collector_strazce)
+  src.act.bounce
+elseif (<argn> == argo.dialog_linkButton("q037_refuse"))
+  say("Tak me nezdrzuj...")
+elseif (<argn> == argo.dialog_linkButton("goodbye"))
+  say("Mej se...")
+endif  

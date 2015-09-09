@@ -1,0 +1,1794 @@
+
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Saturday, June 3, 2000
+//
+//VERSION=0.55
+
+
+[ITEMDEF i_potion_ExplosionDispell]
+NAME=Dispell Explosion
+ID=i_bottle_empty
+TYPE=T_POTION_BOMBA
+TDATA1=i_bottle_empty
+RESOURCES=3 i_reag_sulfur_ash , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 35.0
+
+ON=@Create
+color=0993
+tag(bum,3)
+tag(bomba,dispellbomb)
+
+
+on=@userdclick
+on=@userdeath
+on=@potioneffect
+if (src)
+  src.trigger(@DrinkingPotion)
+endif
+
+
+[ITEMDEF i_potion_ExplosionLess]
+NAME=Lesser Explosion
+ID=i_bottle_empty
+TYPE=T_POTION_BOMBA
+TDATA1=i_bottle_empty
+RESOURCES=3 i_reag_sulfur_ash , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 35.0
+
+ON=@Create
+color=0e2
+tag(bum,3)
+
+
+on=@userdclick
+on=@userdeath
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+
+[ITEMDEF i_potion_Explosion]
+NAME=Explosion
+ID=i_bottle_empty
+TYPE=T_POTION_bomba
+TDATA1=i_bottle_empty
+RESOURCES=5 i_reag_sulfur_ash, i_reag_volcanic_ash, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 55.0
+
+ON=@Create
+color=01e
+tag(bum,3)
+
+on=@userdclick
+on=@userdeath
+on=@potioneffect
+if (src)
+  src.trigger(@DrinkingPotion)
+endif
+
+
+[ITEMDEF i_potion_ExplosionGreat]
+NAME=Greater Explosion
+ID=i_bottle_empty
+TYPE=T_POTION_bomba
+TDATA1=i_bottle_empty
+RESOURCES=8 i_reag_sulfur_ash, 2 i_reag_volcanic_ash, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 75.0
+
+ON=@Create
+color=017
+tag(bum,3)
+
+on=@userdclick
+on=@userdeath
+on=@potioneffect
+if (src)
+  src.trigger(@DrinkingPotion)
+endif
+
+
+[ITEMDEF i_potion_Lava]
+ID=i_bottle_empty
+NAME=Lava Bomb
+TYPE=T_POTION_bomba
+TDATA1=i_bottle_empty
+
+RESOURCES=14 i_reag_sulfur_ash, 4 i_reag_volcanic_ash, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 99.0
+
+ON=@Create
+color=0de
+tag(bum,3)
+
+on=@userdclick
+on=@userdeath
+on=@potioneffect
+if (src)
+  src.trigger(@DrinkingPotion)
+endif
+
+
+[ITEMDEF i_potion_AgilityLess]
+ID=i_bottle_empty
+NAME=Lesser Agility
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=2 i_reag_blood_moss, i_bottle_empty
+SKILLMAKE=ALCHEMY 0.1
+
+ON=@Create
+color=06
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_agility_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Agilityless>)>,s_agility)
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_Agility]
+ID=i_bottle_empty
+NAME=Agility
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=3 i_reag_blood_moss, i_reag_mandrake_root, i_bottle_empty
+SKILLMAKE=ALCHEMY 30.0
+
+ON=@Create
+color=05
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_agility_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Agility>)>,s_agility)
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_AgilityGreat]
+ID=i_bottle_empty
+TYPE=t_speedpotions
+NAME=Greater Agility
+TDATA1=i_bottle_empty
+
+RESOURCES=6 i_reag_blood_moss, 2 i_reag_mandrake_root, i_bottle_empty
+SKILLMAKE=ALCHEMY 60.0
+
+ON=@Create
+color=0cf
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_agility_potion,<nastaveni_potion(<nastaveni_potions_i_potion_AgilityGreat>)>,s_agility)
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_AgilityElixir]
+ID=i_flask1_blue
+TYPE=t_speedpotions
+NAME=Elixir Agility
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=0cf
+
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_agility_potion,<nastaveni_potion(<nastaveni_potions_i_potion_AgilityElixir>)>,s_agility)
+return 1
+on=@userdeath
+
+
+[itemdef i_a_nightsight_potion]
+id=i_rune_night_sight
+type=t_eq_script
+layer=layer_potion_ns
+
+on=@create
+//events +t_spellrune
+
+on=@equip
+cont.tag(lastlogoutedAt,<serv.time>)	//we need this to ensure regular upgrade of the tag, for players are being kicked out of dungeons after sphere falls and starts again without proper player logouts
+cont.flag_nightsight=1
+cont.resync
+return 0
+
+on=@unequip
+cont.flag_nightsight=0
+cont.resync
+return 0
+
+
+[itemdef i_a_agility_potion]
+id=i_rune_agility
+type=t_custom_spell
+layer=44
+on=@create
+events +t_spellrune
+on=@equip
+cont.dex=<cont.dex>+<more1>
+return 0
+on=@unequip
+cont.dex=<cont.dex>-<more1>
+return 0
+
+[ITEMDEF i_potion_CureLess]
+ID=i_bottle_empty
+TYPE=t_speedpotions
+NAME=Lesser Cure
+TDATA1=i_bottle_empty
+
+RESOURCES=2 i_reag_garlic, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 20.0
+
+ON=@Create
+color=02d
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.dospell_final(s_cure,1000)
+
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_Cure]
+NAME=Cure
+ID=i_bottle_empty
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=3 i_reag_garlic , i_reag_ginseng, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+color=02b
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.dospell_final(s_cure,1000)
+src.poisonManager.f_pm_setImmunity(<nastaveni_potions_i_potion_Cure>)
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_CureGreat]
+NAME=Greater Cure
+ID=i_bottle_empty
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=4 i_reag_garlic , 2 i_reag_ginseng, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 65.0
+
+ON=@Create
+color=08e
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.dospell_final(s_cure,1000)
+src.poisonManager.f_pm_setImmunity(<nastaveni_potions_i_potion_Curegreat>)
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_HealLess]
+NAME=Lesser Heal
+ID=i_bottle_empty
+RESOURCES=2 i_reag_ginseng, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 20.0
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=0100
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+if (<src.hits> > 0)
+  src.hits=<eval src.hits+(<random2(<nastaveni_potions_i_potion_HealLess>)>)>
+  if (src.hits>src.maxhits)
+    src.hits=src.maxhits
+  endif
+endif
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_Heal]
+NAME=Heal
+ID=i_bottle_empty
+RESOURCES=4 i_reag_ginseng, i_reag_garlic , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 50.0
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=099
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+if (<src.hits> > 0)
+  src.hits=<eval src.hits+(<random2(<nastaveni_potions_i_potion_Heal>)>)>
+  if (src.hits>src.maxhits)
+    src.hits=src.maxhits
+  endif
+endif
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_HealGreat]
+NAME=Greater Heal
+ID=i_bottle_empty
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+RESOURCES=7 i_reag_ginseng, 2 i_reag_garlic , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 85.0
+
+ON=@Create
+color=0160
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+if (<src.hits> > 0)
+  src.hits=<eval src.hits+(<random2(<nastaveni_potions_i_potion_HealGreat>)>)>
+  if (src.hits>src.maxhits)
+    src.hits=src.maxhits
+  endif
+endif
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_HealElixir]
+NAME=Heal Elixir
+ID=i_flask1_blue
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=0160
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+if (<src.hits> > 0)
+  src.hits=<eval src.hits+promilerange(<random2(<nastaveni_potions_i_potion_HealElixir>)>,0,<src.maxhits>)>
+  if (src.hits>src.maxhits)
+    src.hits=src.maxhits
+  endif
+endif
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_Nightsight]
+NAME=Nightsight
+ID=i_bottle_empty
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_spider_silk , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 5.0
+
+ON=@Create
+color=0980
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.effect=3,<s_night_sight.EFFECTID>,6,15,1
+src.f_eqrune_nodispell(i_a_nightsight_potion,<nastaveni_potions_i_potion_nightsight>)>,s_night_sight)
+return 1
+
+on=@userdeath
+
+
+[ITEMDEF i_potion_Poison_para]
+NAME=Paralyze poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_nightshade , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=128
+color=0314
+tag(jed_typ,poison_para)
+
+on=@userdclick
+f_poisoning
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_Poison_fizz]
+NAME=Fizzle poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_nightshade , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=128
+color=022d
+tag(jed_typ,poison_fizz)
+
+on=@userdclick
+f_poisoning
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_Poison_stamina]
+NAME=Stamina poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_nightshade , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=128
+color=02f
+tag(jed_typ,poison_stamina)
+
+on=@userdclick
+f_poisoning
+return 1
+on=@userdeath
+
+
+[ITEMDEF i_potion_Poison_weaken]
+NAME=Weaken poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_nightshade , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=128
+color=02e6
+tag(jed_typ,poison_weaken)
+
+on=@userdclick
+f_poisoning
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_Poison_clumsy]
+NAME=Clumsy poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_nightshade , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=128
+color=02ed
+tag(jed_typ,poison_clumsy)
+
+on=@userdclick
+f_poisoning
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_Poison_feeblemind]
+NAME=Feeblemind poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_nightshade , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=128
+color=02c9
+tag(jed_typ,poison_feeblemind)
+
+on=@userdclick
+f_poisoning
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_PoisonLess]
+NAME=Lesser Poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=2 i_reag_nightshade , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 30.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=64
+color=0b0
+
+on=@userdclick
+tag(jed_typ,poison_absoluteDmg)
+f_poisoning
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_Poison]
+NAME=Poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_nightshade , i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=128
+color=0b2
+
+on=@userdclick
+tag(jed_typ,poison_absoluteDmg)
+f_poisoning
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_PoisonGreat]
+NAME=Greater Poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=7 i_reag_nightshade, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 70.0
+
+ON=@Create
+MORE1=s_poison
+MORE2=192
+color=0179
+
+on=@userdclick
+tag(jed_typ,poison_absoluteDmg)
+f_poisoning
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_PoisonDeadly]
+NAME=Deadly Poison
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=13 i_reag_nightshade, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 99.9
+
+ON=@Create
+MORE1=s_poison
+MORE2=256
+color=0593
+
+on=@userdclick
+tag(jed_typ,poison_absoluteDmg)
+f_poisoning
+return 1
+
+on=@userdeath
+
+[ITEMDEF i_potion_RefreshLess]
+NAME=Lesser Refresh
+ID=i_bottle_empty
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+RESOURCES=2 i_reag_black_pearl, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 11.0
+
+ON=@Create
+color=029
+
+on=@potioneffect//
+src.trigger(@DrinkingPotion)
+src.stamina=<eval src.stamina+promilerange(<random2(<nastaveni_potions_i_potion_RefreshLess>)>,0,<src.maxstam>)>
+if (src.stamina>src.maxstam)
+ src.stamina=src.maxstam
+endif
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_Refresh]
+NAME=Refresh
+ID=i_bottle_empty
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+RESOURCES=2 i_reag_black_pearl, i_reag_spider_silk,  i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 25.0
+
+ON=@Create
+color=027
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.stamina=<eval src.stamina+promilerange(<random2(<nastaveni_potions_i_potion_Refresh>)>,0,<src.maxstam>)>
+if (src.stamina>src.maxstam)
+ src.stamina=src.maxstam
+endif
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_RefreshGreater]
+ID=i_bottle_empty
+NAME=Greater Refresh
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_black_pearl, 2 i_reag_spider_silk,  i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+color=0ed
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.stamina=<eval src.stamina+promilerange(<random2(<nastaveni_potions_i_potion_RefreshGreater>)>,0,<src.maxstam>)>
+if (src.stamina>src.maxstam)
+ src.stamina=src.maxstam
+endif
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_RefreshElixir]
+ID=i_flask1_blue
+NAME=Refresh Elixir
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=0ed
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.stamina=<eval src.stamina+promilerange(<random2(<nastaveni_potions_i_potion_RefreshElixir>)>,0,<src.maxstam>)>
+if (src.stamina>src.maxstam)
+ src.stamina=src.maxstam
+endif
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_StrengthLess]
+ID=i_bottle_empty
+NAME=Lesser Strength
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES=2 i_reag_mandrake_root, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 25.0
+
+ON=@Create
+color=0835
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_strength.EFFECTID>,6,15,1
+src.f_eqrune(i_a_strength_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Strengthless>)>,s_strength)
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_Strength]
+ID=i_bottle_empty
+NAME=Strength
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES=3 i_reag_mandrake_root, i_reag_nightshade, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 40.0
+
+ON=@Create
+color=0388
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_strength.EFFECTID>,6,15,1
+src.f_eqrune(i_a_strength_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Strength>)>,s_strength)
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_StrengthGreat]
+NAME=Greater Strength
+ID=i_bottle_empty
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_mandrake_root, 2 i_reag_nightshade, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 65.0
+
+ON=@Create
+color=076b
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_strength.EFFECTID>,6,15,1
+src.f_eqrune(i_a_strength_potion,<nastaveni_potion(<nastaveni_potions_i_potion_StrengthGreat>)>,s_strength)
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_StrengthElixir]
+NAME=Elixir Strength
+ID=i_flask1_blue
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=076b
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_strength.EFFECTID>,6,15,1
+src.f_eqrune(i_a_strength_potion,<nastaveni_potion(<nastaveni_potions_i_potion_StrengthElixir>)>,s_strength)
+return 0
+on=@userdeath
+
+[itemdef i_a_strength_potion]
+id=i_rune_strength
+type=t_custom_spell
+layer=44
+on=@create
+events +t_spellrune
+on=@equip
+cont.str=<eval cont.str+more1>
+return 0
+on=@unequip
+cont.str=<eval cont.str-more1>
+return 0
+
+
+[ITEMDEF i_potion_Shrink]
+ID=i_bottle_empty
+NAME=Shrink
+TYPE=T_potion_shrink
+TDATA1=i_bottle_empty
+RESOURCES=1 i_gem_diamond, 5 i_reag_spider_silk ,10 i_reag_pumice,5 i_reag_eye_of_newt, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 80.0, t_book_shrink
+
+ON=@Create
+COLOR=0995
+
+
+[ITEMDEF i_potion_Invisibility]
+ID=i_bottle_empty
+NAME=Invisibility
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+RESOURCES=3 i_reag_worm_heart, 2 i_reag_pig_iron, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 75.0
+
+ON=@Create
+COLOR=0447
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+safe(findlayer(50).remove)
+src.newitemsafe(1)
+lastnew.type=t_potion
+lastnew.MORE1=s_Invisibility
+lastnew.MORE2=1000
+lastnew.p=<src.p>
+lastnew.dclick
+src.findlayer(44).timer=<nastaveni_potions_i_potion_Invisibility>
+return 1
+on=@userdeath
+
+//[ITEMDEF i_potion_Manaless]
+//ID=i_bottle_black
+//NAME=Lesser Mana Refresh
+//TYPE=T_POTION
+//TDATA1=i_bottle_empty
+//RESOURCES=3 i_reag_eye_of_newt, i_reag_black_pearl, i_reag_fertile_dirt, i_reag_black_pearl, i_bottle_EMPTY
+//SKILLMAKE=ALCHEMY 85.0
+//
+//ON=@Create
+//MORE1=s_mana
+//MORE2={ 10.0 20.0 } //20
+//COLOR=03c1
+//
+//[ITEMDEF i_potion_Mana]
+//ID=i_bottle_black
+//NAME=Mana Refresh
+//TYPE=T_POTION
+//TDATA1=i_bottle_empty
+//RESOURCES=3 i_reag_eye_of_newt, 2 i_reag_black_pearl,1 i_reag_fertile_dirt,i_reag_black_pearl, i_bottle_EMPTY
+//SKILLMAKE=ALCHEMY 90.0
+//
+//ON=@Create
+//MORE1=s_mana
+//MORE2={ 40.0 50.0 }//40
+//COLOR=03e7
+//
+//[ITEMDEF i_potion_ManaGreater]
+//ID=i_bottle_black
+//NAME=Greater Mana Refresh
+//TYPE=T_POTION
+//TDATA1=i_bottle_empty
+//RESOURCES=6 i_reag_eye_of_newt, 2 i_reag_black_pearl,2 i_reag_fertile_dirt,i_reag_black_pearl, i_bottle_EMPTY
+//SKILLMAKE=ALCHEMY 98.0
+//
+//ON=@Create
+//MORE1=s_mana
+//MORE2={ 88.0 120.0 }//80
+//COLOR=03e5
+
+[ITEMDEF i_potion_CleverLess]
+// This potion gives a temporary boost to intelligence.
+ID=i_bottle_empty
+NAME=Lesser Cleverness
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES=2 i_reag_fertile_dirt, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 35.0
+
+ON=@Create
+color=06c2
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_Cunning.EFFECTID>,6,15,1
+src.f_eqrune(i_a_cunning_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Cleverless>)>,s_cunning)
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_Clever]
+// This potion gives a temporary boost to intelligence.
+ID=i_bottle_empty
+NAME=Cleverness
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES=3 i_reag_fertile_dirt, i_reag_obsidian, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 50.0
+
+ON=@Create
+color=073e
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_Cunning.EFFECTID>,6,15,1
+src.f_eqrune(i_a_cunning_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Clever>)>,s_cunning)
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_CleverGreat]
+// This potion gives a temporary boost to intelligence.
+ID=i_bottle_empty
+NAME=Great Cleverness
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES=4 i_reag_fertile_dirt, 2 i_reag_obsidian, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 75.0
+
+ON=@Create
+color=047d
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_Cunning.EFFECTID>,6,15,1
+src.f_eqrune(i_a_cunning_potion,<nastaveni_potion(<nastaveni_potions_i_potion_CleverGreat>)>,s_cunning)
+return 0
+on=@userdeath
+
+[ITEMDEF i_potion_CleverElixir]
+// This potion gives a temporary boost to intelligence.
+ID=i_flask1_blue
+NAME=Cleverness Elixir
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=047d
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_Cunning.EFFECTID>,6,15,1
+src.f_eqrune(i_a_cunning_potion,<nastaveni_potion(<nastaveni_potions_i_potion_CleverElixir>)>,s_cunning)
+return 0
+on=@userdeath
+
+[itemdef i_a_cunning_potion]
+id=i_rune_cunning
+type=t_custom_spell
+layer=44
+on=@create
+events +t_spellrune
+on=@equip
+cont.intel=<cont.intel>+<more1>
+return 0
+on=@unequip
+cont.intel=<cont.intel>-<more1>
+return 0
+
+
+[ITEMDEF i_potion_Stoneskinelixir]
+// This potion turns your skin into stone, giving a boost to your AR.
+NAME=Elixir Stoneskin
+ID=i_flask1_blue
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES= 2 i_reag_Garlic, 2 i_reag_ginseng, 2 i_reag_mandrake_root, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 85.0
+
+ON=@Create
+color=0999
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_protection.EFFECTID>,6,15,1
+src.f_eqrune(i_a_steelskin_potion,<nastaveni_potion(<nastaveni_potions_i_potion_stoneskinelixir>)>,s_steelskin)
+return 0
+
+on=@userdeath
+
+[itemdef i_a_steelskin_potion]
+id=i_rune_alchem_3
+type=t_spell
+layer=layer_stoneskin //LAYER_FLAG_Potion
+
+on=@create
+morex=s_steelskin
+on=@unequip
+safe(findlayer(i_a_stoneskin_potion.layer).remove)
+
+
+[ITEMDEF i_potion_Stoneskin]
+// This potion turns your skin into stone, giving a boost to your AR.
+NAME=Stoneskin
+ID=i_bottle_empty
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES= 2 i_reag_Garlic, 2 i_reag_ginseng, 2 i_reag_mandrake_root, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 85.0
+
+ON=@Create
+color=0999
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_protection.EFFECTID>,6,15,1
+src.f_eqrune(i_a_stoneskin_potion,<nastaveni_potion(<nastaveni_potions_i_potion_stoneskin>)>,s_stoneskin)
+return 0
+
+on=@userdeath
+
+[itemdef i_a_stoneskin_potion]
+id=i_rune_alchem_3
+type=t_spell
+layer=layer_stoneskin //LAYER_FLAG_Potion
+
+on=@create
+morex=s_stoneskin
+on=@unequip
+safe(findlayer(i_a_stoneskin_potion.layer).remove)
+
+[ITEMDEF i_potion_mobility]
+// This potion prevents you from paralyze
+NAME=Mobility
+ID=i_bottle_empty
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+RESOURCES= 2 i_reag_Garlic, 2 i_reag_ginseng, 2 i_reag_mandrake_root, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 85.0
+
+ON=@Create
+color=0f
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_protection.EFFECTID>,6,15,1
+src.f_eqrune(i_a_mobility_potion,<nastaveni_potion(<nastaveni_potions_i_potion_mobility>)>)
+return 0
+
+on=@userdeath
+
+[itemdef i_a_mobility_potion]
+id=i_rune_paralyze_field
+type=t_custom_spell
+name=mobility
+layer=44
+on=@create
+events +t_spellrune
+on=@equip
+cont.tag(resist_para,<eval cont.tag(resist_para)+more1>)
+return 0
+on=@unequip
+cont.tag(resist_para,<eval cont.tag(resist_para)-more1>)
+return 0
+
+
+
+[ITEMDEF i_potion_EnergyLess]
+ID=i_bottle_empty
+NAME=Lesser Energy
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=2 i_reag_blood_moss, i_bottle_empty
+SKILLMAKE=ALCHEMY 0.1
+
+ON=@Create
+color=060
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_Energy_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Energyless>)>,s_agility)
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_Energy]
+ID=i_bottle_empty
+NAME=Energy
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=3 i_reag_blood_moss, i_reag_mandrake_root, i_bottle_empty
+SKILLMAKE=ALCHEMY 30.0
+
+ON=@Create
+color=05d
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_Energy_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Energy>)>,s_agility)
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_EnergyGreat]
+ID=i_bottle_empty
+TYPE=t_speedpotions
+NAME=Greater Energy
+TDATA1=i_bottle_empty
+
+RESOURCES=6 i_reag_blood_moss, 2 i_reag_mandrake_root, i_bottle_empty
+SKILLMAKE=ALCHEMY 60.0
+
+ON=@Create
+color=0c5
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_Energy_potion,<nastaveni_potion(<nastaveni_potions_i_potion_EnergyGreat>)>,s_agility)
+return 1
+on=@userdeath
+
+[ITEMDEF i_potion_EnergyElixir]
+ID=i_flask1_blue
+TYPE=t_speedpotions
+NAME=Energy Elixir
+TDATA1=i_bottle_empty
+
+ON=@Create
+color=0c5
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_Energy_potion,<nastaveni_potion(<nastaveni_potions_i_potion_EnergyElixir>)>,s_agility)
+return 1
+on=@userdeath
+
+
+[itemdef i_a_Energy_potion]
+id=i_rune_create_food
+type=t_custom_spell
+name=Energy
+layer=44
+on=@create
+events +t_spellrune
+on=@equip
+cont.vit(<eval cont.vit+more1>)
+return 0
+on=@unequip
+cont.vit(<eval cont.vit-more1>)
+return 0
+
+[ITEMDEF i_potion_reflection]
+ID=i_bottle_empty
+NAME=Reflection
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=2 i_reag_blood_moss, i_bottle_empty
+SKILLMAKE=ALCHEMY 0.1
+
+ON=@Create
+color=0985
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_magic_reflection.EFFECTID>,6,15,1
+SRC.SPELLEFFECT 36 1000
+return 1
+on=@userdeath
+
+
+[ITEMDEF i_potion_reactive]
+ID=i_bottle_empty
+NAME=Reactive armor
+TYPE=t_allpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=2 i_reag_blood_moss, i_bottle_empty
+SKILLMAKE=ALCHEMY 0.1
+
+ON=@Create
+color=00a82
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_reactive_armor.EFFECTID>,6,15,1
+SRC.SPELLEFFECT 7 1000
+return 1
+on=@userdeath
+
+
+
+[ITEMDEF i_potion_Shieldelixir]
+ID=i_flask1_blue
+NAME=Elixir Spell Shield
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=2 i_reag_blood_moss, i_bottle_empty
+SKILLMAKE=ALCHEMY 0.1
+
+ON=@Create
+color=059
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_Shield_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Shieldelixir>)>,s_agility)
+return 1
+on=@userdeath
+
+
+[ITEMDEF i_potion_Shield]
+ID=i_bottle_empty
+NAME=Spell Shield
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+RESOURCES=2 i_reag_blood_moss, i_bottle_empty
+SKILLMAKE=ALCHEMY 0.1
+
+ON=@Create
+color=059
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.EFFECT=3,<s_agility.EFFECTID>,6,15,1
+src.f_eqrune(i_a_Shield_potion,<nastaveni_potion(<nastaveni_potions_i_potion_Shield>)>,s_agility)
+return 1
+on=@userdeath
+
+[itemdef i_a_Shield_potion]
+id=i_rune_energy_field
+type=t_custom_spell
+name=Shield
+layer=44
+on=@create
+events +t_spellrune
+on=@equip
+cont.resist(<eval cont.resist+more1>)
+return 0
+on=@unequip
+cont.resist(<eval cont.resist-more1>)
+return 0
+
+
+////////////////////////////////
+//// dragon potions
+
+[ITEMDEF i_potion_dragon_poison]
+ID=i_flask1_blue
+NAME=Protijed na draci jed
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+SKILLMAKE=ALCHEMY 200.0
+
+ON=@Create
+color=097f
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+if (<src.restest(i_fire_dragon_efect_poison)>)
+	src.consume(1,i_fire_dragon_efect_poison)
+	src.sysmessage("Draci jed vyprchal!")
+	src.effect(3,i_fx_bless_effect,3,16,0)
+endif
+return 1
+
+on=@DROPON_GROUND
+src.sysmessage("Ups, rozbila se...")
+remove
+return 0
+
+[ITEMDEF i_potion_dragon_fire]
+ID=i_flask1_blue
+NAME=Lek na popaleniny
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+SKILLMAKE=ALCHEMY 200.0
+
+ON=@Create
+color=098e
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+if (<src.restest(i_fire_dragon_efect_fire)>)
+	src.consume(1,i_fire_dragon_efect_fire)
+	src.sysmessage("Draci ohen zmizel!")
+	src.effect(3,i_fx_bless_effect,3,16,0)
+endif
+return 1
+
+on=@DROPON_GROUND
+src.sysmessage("Ups, rozbila se...")
+remove
+return 0
+
+[ITEMDEF i_potion_dragon_white]
+ID=i_flask1_blue
+NAME=Ochrana mysli
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+SKILLMAKE=ALCHEMY 200.0
+
+ON=@Create
+color=0481
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+if (<src.restest(i_fire_dragon_efect_white)>)
+	src.consume(1,i_fire_dragon_efect_white)
+	src.sysmessage("Draci ohen zmizel!")
+	src.effect(3,i_fx_bless_effect,3,16,0)
+endif
+return 1
+
+on=@DROPON_GROUND
+src.sysmessage("Ups, rozbila se...")
+remove
+return 0
+
+[ITEMDEF i_potion_dragon_resist]
+ID=i_flask1_blue
+NAME=Lektvar ochrany proti drakum
+TYPE=t_speedpotions
+TDATA1=i_bottle_empty
+
+SKILLMAKE=ALCHEMY 200.0
+
+ON=@Create
+color=09ce
+
+on=@potioneffect
+src.trigger(@DrinkingPotion)
+src.effect(3,i_fx_bless_effect,3,16,0)
+src.f_eqrune(i_a_dragon_resist_potion,300,10,10)
+return 1
+
+on=@DROPON_GROUND
+src.sysmessage("Ups, rozbila se...")
+remove
+return 0
+
+[itemdef i_a_dragon_resist_potion]
+id=02081
+type=t_custom_spell
+name=dragon resist
+layer=44
+on=@create
+events +t_spellrune
+on=@equip
+if (cont.tag(dragon_resist))
+	cont.tag(dragon_resist,<eval <cont.tag(dragon_resist)>+10>)
+else
+	cont.tag(dragon_resist,10)
+endif
+cont.classmessage("Vypil jsi lektvar, tvuj draci resist je nyni <cont.tag(dragon_resist)>%")
+return 0
+
+on=@unequip
+cont.tag(dragon_resist,<eval <cont.tag(dragon_resist)>-10>)
+cont.classmessage("Ucinek lektvaru skoncil, tvuj draci resist je nyni <cont.tag(dragon_resist)>%")
+return 0
+
+////////////////////////////////
+
+[ITEMDEF 0f06]
+//Potion (Black)
+DEFNAME=i_bottle_black
+TYPE=t_potion
+TDATA1=i_bottle_empty
+RESOURCES=i_bottle_empty
+WEIGHT=1.0
+DESCRIPTION=Potion (Black)(Nightsite)
+SUBSECTION=Potions
+CATEGORY=Provisions - Alchemy & Magic
+
+ON=@Create
+MORE1=S_f_Sight
+MORE2={ 30.0 90.0 }
+
+[ITEMDEF 0f07]
+//Potion (Orange)
+DEFNAME=i_bottle_orange
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_bottle_empty
+WEIGHT=1.0
+DESCRIPTION=Potion (Orange)(Cure)
+SUBSECTION=Potions
+CATEGORY=Provisions - Alchemy & Magic
+
+ON=@Create
+MORE1=s_cure
+MORE2={ 300 900 }
+
+[ITEMDEF 0f08]
+//Potion (Blue)
+DEFNAME=i_bottle_blue
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_bottle_empty
+WEIGHT=1.0
+DESCRIPTION=Potion (Blue)(Agility)
+SUBSECTION=Potions
+CATEGORY=Provisions - Alchemy & Magic
+
+ON=@Create
+MORE1=s_agility
+MORE2={ 300 900 }
+
+[ITEMDEF 0f09]
+//Potion (White)
+DEFNAME=i_bottle_white
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_bottle_empty
+WEIGHT=1.0
+DESCRIPTION=Potion (White)(Strength)
+SUBSECTION=Potions
+CATEGORY=Provisions - Alchemy & Magic
+
+ON=@Create
+MORE1=s_Strength
+MORE2={ 300 900 }
+
+[ITEMDEF 0f0a]
+//Potion (Green)
+DEFNAME=i_bottle_green
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_bottle_empty
+WEIGHT=1.0
+DESCRIPTION=Potion (Green)(Poison)
+SUBSECTION=Potions
+CATEGORY=Provisions - Alchemy & Magic
+
+ON=@Create
+MORE1=s_Poison
+MORE2={ 300 900 }
+
+[ITEMDEF 0f0b]
+//Potion (Red)
+DEFNAME=i_bottle_red
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_bottle_empty
+WEIGHT=1.0
+DESCRIPTION=Potion (Red)(Refresh)
+SUBSECTION=Potions
+CATEGORY=Provisions - Alchemy & Magic
+
+ON=@Create
+MORE1=s_refresh
+MORE2={ 300 900 }
+
+[ITEMDEF 0f0c]
+//Potion (Yellow)
+DEFNAME=i_bottle_yellow
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_bottle_empty
+WEIGHT=1.0
+DESCRIPTION=Potion (Yellow)(Heal)
+SUBSECTION=Potions
+CATEGORY=Provisions - Alchemy & Magic
+
+ON=@Create
+MORE1=s_heal
+MORE2={ 300 900 }
+
+[ITEMDEF 0f0d]
+//Potion (Purple)
+DEFNAME=i_bottle_purple
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_bottle_empty
+WEIGHT=1.0
+DESCRIPTION=Potion (Purple)(Explosion)
+SUBSECTION=Potions
+CATEGORY=Provisions - Alchemy & Magic
+
+ON=@Create
+MORE1=s_explosion
+MORE2={ 30.0 80.0 }
+
+[ITEMDEF 0fa9]
+//Dyes
+// DEFNAME2=DYE_BOWL
+DEFNAME=i_dyes
+TYPE=T_DYE
+WEIGHT=3.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Dyes
+
+SKILLMAKE=ALCHEMY 10.0
+RESOURCES=i_log,i_reag_blood_moss
+RESOURCES3=1 I_EGGSHELLS, 1 i_reag_blood_moss, 1 i_reag_sulfur_ash, 1 i_reag_serpent_scale, 1 i_reag_black_pearl
+RESOURCES2=1 i_log,1 i_reag_blood_moss,1 i_reag_sulfur_ash,1 i_reag_serpent_scale,1 i_reag_black_pearl
+
+
+//dekorace:
+
+[ITEMDEF 0182a]
+DEFNAME=i_flask1_blue
+TYPE=T_DRINK
+TDATA1=i_flask1_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask (Blue Liquid)
+
+[ITEMDEF 0182b]
+DEFNAME=i_flask1_orange
+TYPE=T_DRINK
+TDATA1=i_flask1_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask (Orange Liquid)
+
+[ITEMDEF 0182c]
+DEFNAME=i_flask1_red
+TYPE=T_DRINK
+TDATA1=i_flask1_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask (Red Liquid)
+
+
+[ITEMDEF 0182e]
+DEFNAME=i_beaker1_orange
+TYPE=T_DRINK
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Beaker (Orange Liquid)
+
+[ITEMDEF 0182f]
+DEFNAME=i_beaker1_red
+TYPE=T_DRINK
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Beaker (Red liquid)
+
+[ITEMDEF 01830]
+DEFNAME=i_beaker1_blue
+TYPE=T_DRINK
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Beaker (Blue Liquid)
+
+[ITEMDEF 01831]
+DEFNAME=i_beaker1_green
+TYPE=T_DRINK
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Beaker (Green Liquid)
+
+[ITEMDEF 01832]
+DEFNAME=i_beaker2_empty
+RESOURCES=2 i_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 02 (Empty)
+DUPELIST=01835
+
+[ITEMDEF 01833]
+DEFNAME=i_beaker2_red
+TYPE=T_DRINK
+TDATA1=i_beaker2_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 02 (Red Liquid)
+
+[ITEMDEF 01834]
+DEFNAME=i_beaker2_teal
+TYPE=T_DRINK
+TDATA1=i_beaker2_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 02 (Teal Liquid)
+
+[ITEMDEF 01835]
+DUPEITEM=01832
+
+[ITEMDEF 01836]
+DEFNAME=i_beaker2_blue
+TYPE=T_DRINK
+TDATA1=i_beaker2_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 02 (Blue Liquid)
+
+[ITEMDEF 01837]
+DEFNAME=i_beaker_2_green
+TYPE=T_DRINK
+TDATA1=i_beaker2_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 02 (Green Liquid)
+
+[ITEMDEF 01838]
+DEFNAME=i_flask2_red
+TYPE=T_DRINK
+TDATA1=i_flask2_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 03 (Red Liquid)
+
+[ITEMDEF 01839]
+DEFNAME=i_flask2_purple
+TYPE=T_DRINK
+TDATA1=i_flask2_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 03 (Purple Liquid)
+
+[ITEMDEF 0183a]
+DEFNAME=i_flask2_empty
+TYPE=T_DRINK
+RESOURCES=2 i_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 03 (Empty)
+
+[ITEMDEF 0183b]
+DEFNAME=i_FLASK_LONG_orange
+TYPE=T_DRINK
+TDATA1=i_flask_long_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 04 (Orange Liquid)
+
+[ITEMDEF 0183c]
+DEFNAME=i_FLASK_LONG_purple
+TYPE=T_DRINK
+TDATA1=i_flask_long_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 04 (Purple Liquid)
+
+[ITEMDEF 0183d]
+DEFNAME=i_flask_long_empty
+TYPE=T_DRINK
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 04 (Empty)
+
+[ITEMDEF 0183e]
+DEFNAME=i_flask2_red_anim
+TYPE=T_DRINK
+TDATA1=i_flask2_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 03 (Red Liquid)
+DUPELIST=0183f,01840
+
+[ITEMDEF 0183f]
+//red peppermill flask with animated bubbles
+DUPEITEM=0183e
+
+[ITEMDEF 01840]
+//red peppermill flask with animated bubbles
+DUPEITEM=0183e
+
+[ITEMDEF 01841]
+DEFNAME=i_FLASK_LONG_purple_anim
+TYPE=t_DRINK
+TDATA1=i_flask_long_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask 04 (Purple Liquid)
+DUPELIST=01842,01843
+
+[ITEMDEF 01842]
+//large sleek flask with purple liquid with animated bubbles
+DUPEITEM=01841
+
+[ITEMDEF 01843]
+//large sleek flask with purple liquid with animated bubbles
+DUPEITEM=01841
+
+[ITEMDEF 01844]
+DEFNAME=i_flask1_blue_anim
+TYPE=t_DRINK
+TDATA1=i_flask1_empty
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask (Blue Liquid)
+DUPELIST=01845,01846
+
+[ITEMDEF 01845]
+//flask blue liquid with animated bubbles
+DUPEITEM=01844
+
+[ITEMDEF 01846]
+//flask blue liquid with animated bubbles
+DUPEITEM=01844
+
+[ITEMDEF 01847]
+DEFNAME=i_FLASK_SMALL
+RESOURCES=1 i_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask (Small & Empty)
+
+[ITEMDEF 01848]
+DEFNAME=i_FLASK_SMALL_GREEN
+RESOURCES=1 i_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Flask (Small & Green Liquid)
+
+[ITEMDEF 0e25]
+DEFNAME=i_bottle
+RESOURCES=5 I_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=BOTTLE
+DUPELIST=0efd
+
+[ITEMDEF 0e26]
+DEFNAME=i_bottle_2
+RESOURCES=5 I_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=BOTTLE 2
+DUPELIST=0efe
+
+[ITEMDEF 0e28]
+DEFNAME=i_bottle_3
+RESOURCES=5 I_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=BOTTLE 3
+DUPELIST=0f00
+
+[ITEMDEF 0e29]
+DEFNAME=i_bottle_4
+RESOURCES=5 I_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=BOTTLE 4
+DUPELIST=0f01
+
+[ITEMDEF 0e2a]
+DEFNAME=i_bottle_5
+RESOURCES=5 I_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=BOTTLE 5
+DUPELIST=0f02
+
+[ITEMDEF 0e2b]
+DEFNAME=i_bottle_6
+RESOURCES=5 I_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=BOTTLE 6
+DUPELIST=0f03
+
+[ITEMDEF 0e2c]
+DEFNAME=i_bottle_7
+RESOURCES=5 I_SAND
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Bottle
+DUPELIST=0f04
+
+[ITEMDEF 0efb]
+//bottle
+DEFNAME=i_bottle_8
+RESOURCES=1 I_SAND
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Bottle
+
+[ITEMDEF 0efc]
+//bottle
+DEFNAME=i_bottle_9
+RESOURCES=1 I_SAND
+CATEGORY=Items by Professions
+SUBSECTION=Alchemist
+DESCRIPTION=Bottle
+
+[ITEMDEF 0efd]
+//bottle
+DUPEITEM=0e25
+
+[ITEMDEF 0efe]
+//bottle
+DUPEITEM=0e26
+
+[ITEMDEF 0f00]
+//bottle
+DUPEITEM=0e28
+
+[ITEMDEF 0f01]
+//bottle
+DUPEITEM=0e29
+
+[ITEMDEF 0f02]
+//bottle
+DUPEITEM=0e2a
+
+[ITEMDEF 0f03]
+//bottle
+DUPEITEM=0e2b
+
+[ITEMDEF 0f04]
+//bottle
+DUPEITEM=0e2c
+
+[ITEMDEF 01c18]
+DEFNAME=i_oil_flask
+RESOURCES3=1 i_OIL, 1 i_FLASK
+VALUE=3
+WEIGHT=1.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Etc.
+DESCRIPTION=Oil Flask
+
+
+[EOF]

@@ -1,0 +1,399 @@
+[CHARDEF c_hadi_kralovna]
+ID=c_serpent_giant
+NAME=Hadi kralovna
+attack=45
+ARMOR=15
+
+moverate=4
+
+CATEGORY=Moria Questy
+SUBSECTION=M2 - Mistrovsky quest
+DESCRIPTION=Hadi kralovna
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_summoning
+
+ON=@Create
+NPC=brain_monster
+FAME=1
+
+KARMA={-3000 -3999}
+COLOR=0481
+STR=500
+DEX=150
+INT=90
+
+maxhits={1000 1100}
+maxstam=100
+maxmana=0
+
+tag.experience=<eval {60.0 65.0}>
+
+tag(resist_poison,1000)
+tag(resist_para,560) 
+tag(resist_summon,450)
+tag(resist_bleed,-100)
+
+tag(resist_sharp,0)
+tag(resist_slash,-50)
+tag(resist_pierce,250)
+tag(resist_blunt,-150)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,300)
+
+tag(npc_summoning_chance,33) //3.3% chance
+tag(npc_summoning_time,30)
+tag(npc_summoning_count,2)
+tag(npc_summoning_char[0],c_hadi_obraz)
+tag(npc_summoning_char[1],c_hadi_obraz)
+
+PROVOCATION=100.0
+PEACEMAKING=100.0
+RESIST=10.0
+TACTICS=70.0
+WRESTLING={70.0 100.0}
+POISONING={90.0 100.0}
+
+ON=@NPCRestock
+item=i_hadi_vejce
+
+//////////////////////////////////////////////////
+
+[CHARDEF c_hadi_obraz]
+ID=c_serpent_giant
+NAME=Hadi kralovna
+attack=35
+ARMOR=15
+
+moverate=4
+
+CATEGORY=Moria Questy
+SUBSECTION=M2 - Mistrovsky quest
+DESCRIPTION=Hadi kralovna - obraz
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+ON=@Create
+NPC=brain_monster
+FAME=1
+
+KARMA={-3000 -3999}
+COLOR=0481
+STR=500
+DEX=100
+INT=90
+
+maxhits={1 10}
+maxstam={70 85}
+maxmana=0
+
+tag.experience=0
+tag.resist_poison=1000.0
+tag.resist_summon=500.0
+
+PROVOCATION=200.0
+PEACEMAKING=200.0
+RESIST=10.0
+TACTICS=70.0
+WRESTLING={70.0 100.0}
+POISONING={90.0 100.0}
+
+ON=@NPCRestock
+
+
+
+//////////////////////////////////////////////
+[CHARDEF c_lenastir]
+NAME=Mistr Lenastir
+ID=C_MAN
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+ARMOR=95
+DAM=100
+CAN=MT_WALK|MT_run|MT_FLY|MT_FEMALE
+//SPELLCIRCLES=3-7
+
+//TSPEECH=spk_human_prime
+//TSPEECH=jobmageshop
+TSPEECH=Lenastirovarec
+
+//
+
+TEVENTS=e_character
+
+CATEGORY=Moria Questy
+SUBSECTION=M2 - Mistrovsky quest
+DESCRIPTION=Mistr Lenastir
+
+ON=@Create
+NPC=brain_human
+COLOR=1152
+STR=1500
+DEX=150
+INT=200
+INVUL=1
+
+ALCHEMY=100.0
+
+
+FAME=1
+KARMA=100
+
+
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+
+ON=@NPCRestock
+ITEMnewbie=i_hat_wizards
+color=1153
+ITEMnewbie=i_sandals
+color=1153
+ITEMnewbie=i_robe
+color=1153
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_serpent_silver_mistr]
+
+ID=c_serpent_giant
+NAME=Silver Serpent
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+
+CAN=MT_WALK|MT_run
+attack=15
+ARMOR=10
+
+moverate=3
+
+RESOURCES=8 i_ribs_raw,8 i_reag_serpent_scale
+FOODTYPE=
+
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_serpent
+
+
+CATEGORY=Monsters
+SUBSECTION=Serpents
+DESCRIPTION=Silver Serpent - mistr quest
+
+ON=@Create
+COLOR=color_o_silver
+NPC=brain_monster
+FAME={1 20}
+karma=-3000
+
+STR=300
+DEX=70
+INT=80
+
+maxhits={375 425}
+maxstam={155 185}
+maxmana=0
+
+tag.experience=<eval {18.0 20.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[2]>
+//other resists
+
+tag(resist_poison,1000)
+tag(resist_para,360) 
+tag(resist_summon,450)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-350)
+tag(resist_pierce,250)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,200)
+
+tag(monstertype,serpent)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+
+TACTICS=100.0
+WRESTLING={70.0 100.0}
+POISONING={70.0 100.0}
+SpiritSpeak=10.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_serpent
+item=i_gold
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_serpent_gold_mistr]
+
+ID=c_serpent_giant
+NAME=Gold Serpent
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+
+CAN=MT_WALK|MT_run
+attack=20
+ARMOR=10
+
+moverate=3
+
+RESOURCES=8 i_ribs_raw,8 i_reag_serpent_scale
+FOODTYPE=
+
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_serpent
+
+
+CATEGORY=Monsters
+SUBSECTION=Serpents
+DESCRIPTION=Gold Serpent - mistr quest
+
+ON=@Create
+COLOR=colors_drag_gold
+NPC=brain_monster
+FAME={1 20}
+karma=-3000
+
+STR=300
+DEX=70
+INT=80
+
+maxhits={475 525}
+maxstam={155 185}
+maxmana=0
+
+tag.experience=<eval {22.0 25.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[2]>
+//other resists
+
+tag(resist_poison,1000)
+tag(resist_para,360) 
+tag(resist_summon,450)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-350)
+tag(resist_pierce,250)
+tag(resist_blunt,-150)
+
+tag(resist_fire,250)
+tag(resist_elect,250)
+tag(resist_cold,250)
+
+tag(monstertype,serpent)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+
+TACTICS=100.0
+WRESTLING={70.0 100.0}
+POISONING={70.0 100.0}
+SpiritSpeak=10.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_serpent
+item=i_gold
+
+///////////////////////////////////////////////////////////
+[CHARDEF c_serpent_black_mistr]
+
+ID=c_serpent_giant
+NAME=Black Serpent
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+
+CAN=MT_WALK|MT_run
+attack=30
+ARMOR=10
+
+moverate=3
+
+RESOURCES=8 i_ribs_raw,8 i_reag_serpent_scale
+FOODTYPE=
+
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_serpent
+
+
+CATEGORY=Monsters
+SUBSECTION=Serpents
+DESCRIPTION=Black Serpent - mistr quest
+
+ON=@Create
+COLOR=0690
+NPC=brain_monster
+FAME={1 20}
+karma=-3000
+
+STR=300
+DEX=70
+INT=80
+
+maxhits={575 625}
+maxstam={155 185}
+maxmana=0
+
+tag.experience=<eval {29.0 31.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[2]>
+//other resists
+
+tag(resist_poison,1000)
+tag(resist_para,360) 
+tag(resist_summon,450)
+tag(resist_bleed,100)
+
+tag(resist_sharp,-50)
+tag(resist_slash,-350)
+tag(resist_pierce,250)
+tag(resist_blunt,-150)
+
+tag(resist_fire,300)
+tag(resist_elect,300)
+tag(resist_cold,300)
+
+tag(monstertype,serpent)
+//weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+
+TACTICS=100.0
+WRESTLING={70.0 100.0}
+POISONING={70.0 100.0}
+SpiritSpeak=10.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_serpent
+item=i_gold

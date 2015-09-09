@@ -1,0 +1,147 @@
+[defnames accinfo]
+accinfo_1_rows		12
+accinfo_1_row[0]	iflag_nowrite			,Name
+accinfo_1_row[1]	iflag_adminwr			,Plevel
+accinfo_1_row[2]	0				,Privflags
+accinfo_1_row[3]	iflag_nowrite			,TotalConnectTime
+accinfo_1_row[4]	iflag_nowrite			,LastConnectTime
+accinfo_1_row[5]	iflag_nowrite			,FirstConnectDate
+accinfo_1_row[6]	iflag_nowrite			,LastConnectDate
+accinfo_1_row[7]	iflag_nowrite|iflag_button	,FirstIP,	,f_accIP
+accinfo_1_row[8]	iflag_nowrite|iflag_button	,LastIP,	,f_accIP
+accinfo_1_row[9]	iflag_string			,Comment
+accinfo_1_row[10]	iflag_adminwr|iflag_string	,Email
+accinfo_1_row[11]	iflag_adminrea|iflag_string	,password
+
+accinfo_2_rows		14									//command blank
+accinfo_2_row[0]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,reserved, 	,priv_Server		
+accinfo_2_row[1]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,GM,		,priv_GM		        
+accinfo_2_row[2]	iflag_rename|iflag_check|iflag_bitmask|iflag_nowrite	,privflags	,connected,	,priv_Connected		
+accinfo_2_row[3]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,hear pages,	,priv_GMPageHear	        
+accinfo_2_row[4]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,hearall,	,priv_HearAll		
+accinfo_2_row[5]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,allmove,	,priv_AllMove		
+accinfo_2_row[6]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,detail,	,priv_Detail		
+accinfo_2_row[7]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,debug,		,priv_Debug		
+accinfo_2_row[8]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,emailvalid,	,priv_EMailValid	        
+accinfo_2_row[9]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,privshow,	,priv_PrivHide		
+accinfo_2_row[10]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,jailed,	,priv_Jailed		
+accinfo_2_row[11]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,blocked,	,priv_Blocked		
+accinfo_2_row[12]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,allshow,	,priv_AllShow		
+accinfo_2_row[13]	iflag_rename|iflag_check|iflag_bitmask			,privflags	,temporary,	,priv_Temporary 	        
+//text 15 254 37 23       
+//text 35 275 995 24      
+//
+[function f_accIP]
+src.dialog d_accounts,1,list_ip,<args>
+
+[function accountinfo]
+accinfo(<args>)
+
+[function accinfo]
+if (argvcount)
+ dialog(d_account,<accountmgr.findname(<argv(0)>)>)
+else
+ dialog(d_account,<account>)
+endif
+
+[DIALOG d_account]
+0,0
+argo.tag(sirka,<d_def_accinfo_sirka>)
+argo.tag(vyska,<d_def_accinfo_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+//argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,15,160,29,350,150)
+
+arg(presloupec_x[0],<argo.tag(sloupec_x[0])>)
+arg(presloupec_x[1],<argo.tag(sloupec_x[1])>)
+arg(presloupec_x[2],<argo.tag(sloupec_x[2])>)
+arg(presloupec_x[3],<argo.tag(sloupec_x[3])>)
+arg(presloupec_x[4],<argo.tag(sloupec_x[4])>)
+
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,5,29,180,180,180,60)
+//argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_zpruhledni
+
+argo.tag(from,<finduid(<argv(0)>)>)
+
+texta(<argo.dialog_textpos(0,0)>,2301,ACCOUNT INFO - <argo.tag(from).name>)
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (index<<accinfo_1_rows>)
+ argo.f_inforow(<ypos>,<presloupec_x[0]>,<presloupec_x[1]>,<presloupec_x[2]>,<accinfo_1_row[index]>)
+
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (index<<accinfo_2_rows>)
+ argo.f_inforow(<ypos>,<presloupec_x[3]>,<presloupec_x[4]>,<presloupec_x[4]>,<accinfo_2_row[index]>)
+
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+// argo.button(<argo.tag(sloupec_x[1])>,ypos,4005,4007,1,0,(4*index)+10)
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+//chars:
+
+texta(<argo.dialog_textpos(2,1)>	,2301,Name)
+texta(<argo.dialog_textpos(2,2)>	,2301,Class)
+texta(<argo.dialog_textpos(2,3)>	,2301,Rasa)
+texta(<argo.dialog_textpos(2,4)>	,2301,Level)
+texta(<argo.dialog_textpos(2,5)>	,2301,Position)
+//texta(<argo.dialog_textpos(2,9)>	,2301,lastIP)
+
+arg(ypos,<argo.tag(obj_y[3])>)
+arg(index,0)
+
+while (index<argo.tag(from).chars)
+ arg(charcolor,<argo.tag(from).char(index).getNameHue>)
+ if (safe argo.tag(from).char(index).tag(classcolor))
+  arg(profcolor,<argo.tag(from).char(index).tag(classcolor)>)
+ else
+  arg(profcolor,<charcolor>)
+ endif
+
+ IF (argo.tag(from).char(index)==argo.tag(from).lastcharuid)
+  argo.dialog_zvyrazni(<ypos>)
+ endif
+ argo.texta(<argo.tag(sloupec_x[1])>+<d_def_odsazeni>,<ypos>,charcolor,<argo.tag(from).char(index).name>)
+ argo.texta(<argo.tag(sloupec_x[2])>+<d_def_odsazeni>,<ypos>,profcolor,<argo.tag(from).char(index).profession.name>)
+ argo.texta(<argo.tag(sloupec_x[3])>+<d_def_odsazeni>,<ypos>,charcolor,<argo.tag(from).char(index).tag.race>)
+ argo.texta(<argo.tag(sloupec_x[4])>+<d_def_odsazeni>,<ypos>,charcolor,<argo.tag(from).char(index).tag.level>) 
+ argo.texta(<argo.tag(sloupec_x[5])>+<d_def_odsazeni>,<ypos>,charcolor,"<argo.tag(from).char(index).p>") 
+
+ argo.button(<argo.tag(sloupec_x[0])>,ypos,4005,4007,1,0,index+1000)
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+
+[dialog d_account button]
+on=1
+arg(index,100)
+while (index<=argo.tag(rowcount))
+ argo.f_inforow_apply(<index>,"<eval argchk(index)>","<safe argtxt(index)>",<argo.tag(row_ret[index])>)
+ arg(index,#+1)
+endwhile
+
+on=@anybutton
+if (argn>=1000)
+ arg(charnumb,<argn>-1000)
+ argo.tag(from).char(charnumb).tweak
+ return 0
+endif
+
+if (argn>=100)
+ argo.f_inforow_button(<argn>,<argo.tag(row_ret[argn])>)
+endif
+
+[eof]

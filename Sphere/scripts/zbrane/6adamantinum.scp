@@ -1,0 +1,642 @@
+
+
+//lehke:
+
+[ITEMDEF i_dagger_adamantinum]
+NAME=adamantinum dagger
+ID=i_dagger
+RESOURCES=2 i_ingot_adamantinum
+DAM=7
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Dagger
+SKILLMAKE=BLACKSMITHING 90.0, TINKERING 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (src.act.id==i_flesh_head)||(src.act.id==i_flesh_HEAD_2)
+ woodoo(6)
+endif
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+if (src.act.id==i_gem_amber) && (src.profession==class_shaman)
+ src.consume(i_gem_amber,1)
+ tag(manatransfer,10)
+ src.sysmessage("Dyka je nasycena magii.")¨
+ src.EFFECT=3,i_fx_glow_spike,0,20,10
+return 1
+endif
+
+on=@targon_char
+if (<src.targ.uid>==<src.targ>) && (tag(manatransfer)>=1) && (src.profession==class_shaman)
+src.say("blublu")
+src.mana=<src.mana>+80
+src.hits=<src.hits>-80
+tag(manatransfer,#-1)
+src.EFFECT=3,i_fx_glow_spike,0,20,10
+elseif (tag(manatransfer)==0) || !(tag(manatransfer)) && (src.profession==class_shaman)
+src.sysmessage("Dyka je za soucasneho stavu k obradum nepouzitelna.")
+endif
+if (src.mana>src.maxmana) && (src.profession==class_shaman)
+src.mana=<src.maxmana>
+endif
+return 1
+
+[ITEMDEF i_club_adamantinum]
+NAME=eben club
+ID=i_club
+RESOURCES=1 I_LOG_adamantinum
+DAM=10
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Maces & Hammers
+DESCRIPTION=club
+SKILLMAKE=Carpentry 87.5, t_carpentry
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+on=@targon_item
+f_wrongBlacksmithUsage_LogMessage
+//return(<blacksmithing_targon_item>)	//pokud chceme, aby sel blacksmith
+
+[ITEMDEF i_kryss_adamantinum]
+NAME=adamantinum kryss
+ID=i_kryss
+RESOURCES=8 i_ingot_adamantinum
+DAM=10
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Kryss
+SKILLMAKE=BLACKSMITHING 90.0, TINKERING 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_cutlass_adamantinum]
+NAME=adamantinum cutlass
+ID=i_cutlass
+RESOURCES=10 i_ingot_adamantinum
+DAM=11,12
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Cutlass
+SKILLMAKE=BLACKSMITHING 90.0, TINKERING 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_mace_adamantinum]
+NAME=adamantinum mace
+ID=i_mace
+RESOURCES=10 i_ingot_adamantinum, 2 I_LOG_adamantinum
+DAM=15
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Maces & Hammers
+DESCRIPTION=Mace
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+f_wrongBlacksmithUsage_LogMessage
+//return(<blacksmithing_targon_item>)	//pokud chceme, aby sel blacksmith
+
+[ITEMDEF i_scimitar_adamantinum]
+NAME=adamantinum scimitar
+ID=i_scimitar
+RESOURCES=14 i_ingot_adamantinum
+DAM=15,16
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Scimitar
+SKILLMAKE=BLACKSMITHING 90.0, TINKERING 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_axe_adamantinum]
+NAME=adamantinum axe
+ID=i_axe
+RESOURCES=8 i_ingot_adamantinum, 2 I_LOG_adamantinum
+DAM=13,14
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Axe
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_shepherds_crook_adamantinum]
+NAME=eben crook
+ID=i_shepherds_crook
+RESOURCES=12 I_LOG_adamantinum
+DAM=15,16
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Staves
+DESCRIPTION=Sheperd's Crook
+SKILLMAKE=Carpentry 87.5, t_carpentry
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+[ITEMDEF i_staff_black_adamantinum]
+NAME=eben black staff
+ID=i_staff_black
+DAM=19,20
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Staves
+DESCRIPTION=Black Staff
+SKILLMAKE=Carpentry 87.5, t_carpentry
+RESOURCES=14 I_LOG_adamantinum
+tdata1=6
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+[ITEMDEF i_katana_adamantinum]
+NAME=adamantinum katana
+ID=i_katana
+RESOURCES=16 i_ingot_adamantinum
+DAM=19,20
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Katana
+SKILLMAKE=BLACKSMITHING 90.0, TINKERING 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_spear_short_adamantinum]
+NAME=adamantinum short spear
+ID=i_spear_short
+RESOURCES=6 i_ingot_adamantinum, 10 I_LOG_adamantinum
+DAM=19,20
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Short Spear
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+[ITEMDEF i_war_fork_adamantinum]
+NAME=adamantinum war fork
+ID=i_war_fork
+RESOURCES=14 i_ingot_adamantinum, 4 I_LOG_adamantinum
+DAM=20
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=War Fork
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+[ITEMDEF i_sword_broad_adamantinum]
+NAME=adamantinum broad sword
+ID=i_sword_broad
+RESOURCES=18 i_ingot_adamantinum
+DAM=20
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Broadsword
+SKILLMAKE=BLACKSMITHING 90.0, TINKERING 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_mace_war_adamantinum]
+NAME=adamantinum war mace
+ID=i_mace_war
+RESOURCES=16 i_ingot_adamantinum, 4 I_LOG_adamantinum
+DAM=23
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Maces & Hammers
+DESCRIPTION=War Mace
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+f_wrongBlacksmithUsage_LogMessage
+//return(<blacksmithing_targon_item>)	//pokud chceme, aby sel blacksmith
+
+[ITEMDEF i_sword_long_adamantinum]
+NAME=adamantinum long sword
+ID=i_sword_long
+RESOURCES=22 i_ingot_adamantinum
+DAM=24
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Longsword
+SKILLMAKE=BLACKSMITHING 90.0, TINKERING 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_sword_viking_adamantinum]
+NAME=adamantinum viking sword
+ID=i_sword_viking
+RESOURCES=24 i_ingot_adamantinum
+DAM=28
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Onehanded
+DESCRIPTION=Viking Sword
+SKILLMAKE=BLACKSMITHING 90.0, TINKERING 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_staff_quarter_adamantinum]
+NAME=eben quarter staff
+ID=i_staff_quarter
+RESOURCES=18 I_LOG_adamantinum
+SKILLMAKE=Carpentry 87.5, t_carpentry
+DAM=24
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Staves
+DESCRIPTION=Quarter Staff
+tdata1=6
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+[ITEMDEF i_axe_battle_adamantinum]
+NAME=adamantinum battle axe
+ID=i_axe_battle
+RESOURCES=15 i_ingot_adamantinum, 3 I_LOG_adamantinum
+DAM=25,26
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Battle Axe
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_hammer_pick_adamantinum]
+NAME=adamantinum hammer pick
+ID=i_hammer_pick
+DAM=25,26
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Maces & Hammers
+DESCRIPTION=Hammer Pick
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+RESOURCES=16 i_ingot_adamantinum, 4 I_LOG_adamantinum
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+f_wrongBlacksmithUsage_LogMessage
+//return(<blacksmithing_targon_item>)	//pokud chceme, aby sel blacksmith
+
+[ITEMDEF i_pitchfork_adamantinum]
+NAME=adamantinum pitchfork
+ID=i_pitchfork
+RESOURCES=16 i_ingot_adamantinum, 4 I_LOG_adamantinum
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+DAM=25,26
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Pitchfork
+
+ON=@Create
+weaponcreate(adamantinum)
+
+[ITEMDEF i_axe_exec_adamantinum]
+NAME=adamantinum executioners axe
+ID=i_axe_exec
+RESOURCES=18 i_ingot_adamantinum, 4 I_LOG_adamantinum
+DAM=29,30
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Executioner's Axe
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_axe_double_adamantinum]
+NAME=adamantinum double axe
+ID=i_axe_double
+RESOURCES=18 i_ingot_adamantinum, 4 I_LOG_adamantinum
+DAM=29
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Double Axe
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_hammer_war_adamantinum]
+NAME=adamantinum war hammer
+ID=i_hammer_war
+RESOURCES=19 i_ingot_adamantinum, 5 I_LOG_adamantinum
+DAM=30
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Maces & Hammers
+DESCRIPTION=War Hammer
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+f_wrongBlacksmithUsage_LogMessage
+//return(<blacksmithing_targon_item>)	//pokud chceme, aby sel blacksmith
+
+[ITEMDEF i_axe_two_hand_adamantinum]
+NAME=adamantinum two handed axe
+ID=i_axe_two_hand
+RESOURCES=19 i_ingot_adamantinum, 5 I_LOG_adamantinum
+DAM=30
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Two Handed Axe
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_spear_adamantinum]
+NAME=adamantinum spear
+ID=i_spear
+RESOURCES=11 i_ingot_adamantinum, 15 I_LOG_adamantinum
+DAM=25
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Spear
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+[ITEMDEF i_staff_gnarled_adamantinum]
+NAME=eben gnarled staff
+ID=i_staff_gnarled
+DAM=31
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Staves
+DESCRIPTION=Gnarled Staff
+SKILLMAKE=Carpentry 87.5, t_carpentry
+RESOURCES=26 I_LOG_adamantinum
+tdata1=6
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+[ITEMDEF i_axe_war_adamantinum]
+NAME=adamantinum war axe
+ID=i_axe_war
+RESOURCES=20 i_ingot_adamantinum, 6 I_LOG_adamantinum
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+DAM=32
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=War Axe
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_axe_battle_large_adamantinum]
+NAME=adamantinum battle large axe
+ID=i_axe_battle_large
+RESOURCES=21 i_ingot_adamantinum, 7 I_LOG_adamantinum
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+DAM=35
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Large Battle Axe
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_bardiche_adamantinum]
+NAME=adamantinum bardiche
+ID=i_bardiche
+RESOURCES=23 i_ingot_adamantinum, 7 I_LOG_adamantinum
+DAM=37
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Bardiche
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_maul_adamantinum]
+NAME=adamantinum maul
+ID=i_maul
+RESOURCES=23 i_ingot_adamantinum, 7 I_LOG_adamantinum
+DAM=34
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Maces & Hammers
+DESCRIPTION=Maul
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+f_wrongBlacksmithUsage_LogMessage
+//return(<blacksmithing_targon_item>)	//pokud chceme, aby sel blacksmith
+
+[ITEMDEF i_halberd_adamantinum]
+NAME=adamantinum halberd
+ID=i_halberd
+RESOURCES=24 i_ingot_adamantinum, 8 I_LOG_adamantinum
+DAM=36
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Twohanded
+DESCRIPTION=Halberd
+SKILLMAKE=BLACKSMITHING 90.0, CARPENTRY 85.0
+
+ON=@Create
+weaponcreate(adamantinum)
+
+on=@targon_item
+if (f_weapon_sharp_targon_item)
+  return 1
+endif
+
+[ITEMDEF i_bow_adamantinum]
+NAME=eben bow
+ID=i_bow
+type=t_weapon_bow_run
+SKILLMAKE=87.5 BOWCRAFT
+RESOURCES=8 I_LOG_adamantinum
+DAM=11,12
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Bows
+DESCRIPTION=Bow
+
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+[ITEMDEF i_crossbow_adamantinum]
+NAME=eben crossbow
+ID=i_crossbow
+RESOURCES=18 I_LOG_adamantinum
+SKILLMAKE=87.5 BOWCRAFT
+DAM=20
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Bows
+DESCRIPTION=Crossbow
+
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+ON=@Equip
+src.events=+e_bleed_bolt
+return 0
+
+on=@unequip
+src.events=-e_bleed_bolt
+return 0
+
+
+[ITEMDEF i_crossbow_heavy_adamantinum]
+NAME=eben heavy crossbow
+ID=i_crossbow_heavy
+SKILLMAKE=87.5 BOWCRAFT
+RESOURCES=26 I_LOG_adamantinum
+DAM=30
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Bows
+DESCRIPTION=Heavy Crossbow
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+[ITEMDEF i_bow_adamantinum_run]
+NAME=Run eben bow
+ID=i_bow
+type=t_weapon_bow_run
+SKILLMAKE=87.5 BOWCRAFT
+RESOURCES=8 I_LOG_adamantinum
+DAM=0
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Bows
+DESCRIPTION=Bow RUN
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+[ITEMDEF i_crossbow_adamantinum_run]
+NAME=Run eben crossbow
+ID=i_crossbow
+type=t_weapon_bow_run
+RESOURCES=18 I_LOG_adamantinum
+SKILLMAKE=87.5 BOWCRAFT
+DAM=0
+CATEGORY=Provisions - Weapons - Colored
+SUBSECTION=adamantinum Bows
+DESCRIPTION=Crossbow RUN
+
+ON=@Create
+weaponcreate(adamantinum,eben)
+
+on=@equip
+switchthisbow
+
+
+//[ITEMDEF i_crossbow_heavy_adamantinum_run]
+//NAME=Run eben heavy crossbow
+//ID=i_crossbow_heavy
+//type=t_weapon_bow_run
+//SKILLMAKE=87.5 BOWCRAFT
+//RESOURCES=26 I_LOG_adamantinum
+//DAM=0
+//CATEGORY=Provisions - Weapons - Colored
+//SUBSECTION=adamantinum Bows
+//DESCRIPTION=Heavy Crossbow RUN
+//
+//ON=@Create
+//weaponcreate(adamantinum,eben)
+
+[EOF]

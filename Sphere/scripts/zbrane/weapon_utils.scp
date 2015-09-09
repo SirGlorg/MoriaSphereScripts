@@ -1,0 +1,26 @@
+[function f_markIfCorpse] //funkce pro oznaceni rozrezane mrtvoly (pro event selfresser)
+//pripadnou_corpse_oznac
+if (src.targ.type==t_corpse)
+  src.targ.tag(rozrezano,1)
+  src.sysMessage("<src.sex(Rozrezal,Rozrezala)> jsi mrtvolu.")
+  return 1
+else 
+  return 0
+endif
+
+[function f_weapon_sharp_targon_item]
+f_markIfCorpse
+if (itemExists(<src.targ>))
+  if (src.targ.type==t_fruit)
+    return 1
+  endif
+  if (src.targ.link)
+    if (playerExists(<src.targ.link>))&&(src.targ.type==t_corpse)
+      addflesh
+      return 1
+    endif
+  endif
+endif
+return 0
+
+[EOF]

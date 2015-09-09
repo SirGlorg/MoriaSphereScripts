@@ -1,0 +1,5036 @@
+///****************************************************************************
+//SPHERE by : Menasoft ©1997-2006
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Friday, April 28, 2000
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+///////////////    Gondor   a ti dobri      ////////////////////////////////////////////////
+//  NPC                                   Odmena            Hotovo | Co ma delat ?
+//
+//  Mestky pruvodce                       exp 000             100 %            
+//  Mestane minas Tirith                  exp 000               0 %  okrasa.. tlachaji     
+//  Daster zastupce spravce minas Tirith  exp 000               0 %  okrasa.. tlachaji       
+//  Banker                                exp 000               0 %  
+//
+/////
+//  DANTE strazce poradku v knihovne      exp 000             100 %  Okrasa  rady
+//  Targqell Matiash vedec z Muzea        exp 000               0 %  Dozvedel ses Od Targqella Matiashe o stracenem znamem hledaci pokladu a historie. Tirtilovi. Zapadni piramidy prepaden loupezniky zabit. odkupuje par pamatek.
+//  Profesoru Kolmalnovy z Knihovny       exp 000               0 %  Dozvedel ses Od profesora Kolmalna z Knihovny o hledani vzacnych knih pro potreby badani.
+//  Manweho knezi                         exp 000               0 %  okrasa.. tlachaji
+//  Manveho knez velmistr chramu          exp 000               0 %  ukol manveho novic 1
+//  Manweho knez stary Darek              exp 000               0 %  odnes pro davneho pritele nejake knihy..
+//  Vardin Knez v minas Tirith            exp 000               0 %
+//  Vardin Knez v Edorasu                 exp 000               0 %
+//  Doran poustevnicky knez..             exp 000               0 % prijme knihy..  a poprosi o navraceni jeho knihy do knihovny v minas tirith,  je nemocny nemuze cestovat.  jeden syn tez Klerik (Morian) se sel vyucit knezem do minas Tirith. Druhy syn (Dorian) sel pred dvema dny na lov a jeste se nevratil..
+//  Dorian syn Doranuv                    exp 000
+//  Mabel krejcova z Pelargiru            exp 000               0 % dodavky obleku pro nanveho chram..   pozada te o info proc ji jeji dodavatel Dornan poustevnicky knez nedodal posledni varku kozesin..
+//  Truhlar Hladik z MT
+////
+//                                        exp 000
+//  Pomocnik knihovnika                   exp 000               0 %
+/////                                     exp 000
+//  Kapitan v Pelargiru                   exp 000               0 % preprava lodi.. do pelagrilu,Dol Amroth,Umbaru,Sedych pristavu
+//                                        exp 000             
+////                                      exp 000             
+//  Aristotle prekupnik kovu              exp 000               0 % Poslat dopis s pozadavkem o zviseni objednavky kovu..     do Kralovskych dolu..
+//  Hornik                                exp 000               0 % okrasa
+//  Waine Hrudak                          exp 000               0 % Predak v Gondorskych kralovskych dolech..
+//  vstupni ochranka v Kralovskych dole   exp 000               0 %
+//  ochranka v kralovskem dole            exp 000               0 %
+///////////////////////////////////////////////////////////////////////////////////////////
+//
+
+//html texty
+//<a href = "?ForceTopic97">Condemned</a>
+//Locate the Haven Bank (use the teleporter in Uzeraan's Mansion if necessary), which lies <a href = "?ForceTopic13">South-East</a> of Uzeraan's Mansion.  Once there, <a href="?ForceTopic86">cash your check</a>.
+//<BODY><BASEFONT COLOR=#DFDFC0>To cast this spell, you'll double click the words, <BASEFONT COLOR=#FFFFFF>Pain Spike<BASEFONT COLOR=#DFDFC0>, in your spellbook, and then left click on the mongbat with the targeting cursor. Repeat this until you've defeated the mongbat.</BASEFONT></BODY>
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////        script skilu Obchodnictvi              /////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  TAGY        hodnota    ucel 
+//
+//  tag.skill_obchodnictvi      hodnota obchodniho sklilu
+//  tag.obch_investoval      hodnota celkovych investic do obchodu
+//  tag.obch_pravevydelal      hodnota aktualniho prodejoveho vydelku kterou funkce dostava v dobe obchodu pak se hned maze 
+//  tag.obch_celkemzisk      celkem vydelano na obchodech.
+//  tag.pom_vypocetvydelku      pomocna promena vypoctu obchodu  
+//
+//  FUNKCE          UCEL
+//  
+//  f_probehl_obchod      vypocitava prirustek expu za obchod
+//
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[function f_prohledat_listky_i_mt_prepravka_povlaky_kval]
+if (type == t_ucetni_doklad)
+  if (tag.iditemu==i_mt_prepravka_povlaky_kval)
+    src.tag.mamuctenkynagp=(<?src.tag.mamuctenkynagp?>+<?tag.investice?>)
+    src.tag.mamuctenkynakusu=(<?src.tag.mamuctenkynakusu?>+<?tag.pocet_kusu?>)
+    //src.say="mam uctenky na <?src.tag.mamuctenkynakusu?> kusu za <?src.tag.mamuctenkynagp?> GP"
+  endif
+endif
+
+[function f_smazat_listky_i_mt_prepravka_povlaky_kval]
+if (type == t_ucetni_doklad)
+  if (tag.iditemu==i_mt_prepravka_povlaky_kval)
+    remove
+  endif
+endif
+
+[FUNCTION f_pokus333]
+src.say="<?src.tag.obch_investoval?>"
+// src.tag.obch_investoval=850
+
+/////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_porter_poznani] // obnovi nepoznani pruvodce
+src.ensureTag(hotoveQuesty_2)
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~01
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~040
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~080
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~0100
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~02000
+src.tag.hotovequesty_2 = 0
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_porter_mt]
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude.")
+  return 1
+endif
+if (src.tag.realm==2)
+  DORAND 4
+    say("Jedes?!")
+    say("Pomoc, straze!")
+    say("Nepriblizuj se ke mne!")
+    say("Budu se branit! Zmizni!")
+  ENDDO
+  return
+endif
+src.ensureTag(hotoveQuesty_2)
+if (<src.tag.hotovequesty_2>&02000)
+  say("Nyni uz si nemame co rici. Prijd az s nejakym napadem na udobreni.")
+  return
+endif
+if (<src.tag.hotovequesty_2>&01000) // Pruvodce s tebou nebude dal mluvit, dokud ho nepodplatis
+  DIALOG(d_porter_predstavitsemu)
+  return
+endif
+if (<src.tag.hotovequesty_2>&0800) // Pruvodce vi, ze jsi nekromant
+  say("Dnes je opravdu tezke vyzit. Neustale se zdrazuje a zdrazuje.")
+  DIALOG(d_porter_necro_pozdrav)
+  return
+endif
+
+if (<src.tag.hotovequesty_2>&01)
+  DIALOG(d_porter_mt)
+  return
+else
+  src.say("Prochazis se tu a koukas po mne. Kdo jsi?")
+  say("Zdravim a vitam te v Minas Tirith. Kdo jsem? No, na to je jednoducha odpoved - jsem pruvodce.")
+  DIALOG(d_porter_poznani)
+  return
+endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_pani_roouse_mt]
+  if (SRC.TARG.DISTANCE > 3)
+    SRC.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude.")
+    return 1
+  endif
+
+  if (src.tag.realm==2)
+    say("Jedes, potvoro?!")
+    return 1
+  endif
+  src.ensureTag(hotoveQuesty_2)
+  if (<src.tag.hotovequesty_2>&010000)
+    f_pani_roouse_mt_tfiefornecro
+    return 1
+  endif
+  
+  if (<src.tag.hotovequesty_2>&04000)&&(<src.tag.hotovequesty_2>&020000)
+    say("Ha, <?src.NAME?>! Tahni ven! V mem podniku uz nemas co pohledavat.")
+  elseif (<src.tag.hotovequesty_2>&020000)
+    say("Tahni ven! V mem podniku uz nemas co pohledavat.")
+  endif
+  
+  if !(<src.tag.hotovequesty_2>&010000)
+    if !(<src.tag.hotovequesty_2>&020000)
+      DIALOG(d_pani_roouse_mt)
+    endif
+  endif
+  
+///////////////////////////////////////////////////////////
+
+[FUNCTION f_pani_roouse_mt_tfiefornecro]
+if (src.profession==class_thief)
+  DIALOG(d_pani_roouse_mt_to_thief)
+endif
+if (src.profession==class_necro)
+  DIALOG(d_pani_roouse_mt_to_necro)
+endif
+
+////////////////////////////////////////////////////
+
+[function f_mt_jidlo_dnu]
+if (<src.tag.mt_uroouse_predplatne_jidla>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_predplatne_jidla)-serv.time)/86400)>
+endif
+//jidlo vstahujci se k ubytovani
+if (<src.tag.mt_uroouse_najemce_c_1>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_1)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_2>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_2)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_3>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_3)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_4>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_4)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_5>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_5)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_6>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_6)-serv.time)/86400)>
+endif
+
+///////////////////////////////////////////////////////////////////
+
+[function f_mt_najem_dnu]
+if (<src.tag.mt_uroouse_najemce_c_1>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_1)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_2>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_2)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_3>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_3)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_4>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_4)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_5>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_5)-serv.time)/86400)>
+endif
+if (<src.tag.mt_uroouse_najemce_c_6>><?srv.time?>)
+  return <eval ((src.tag(mt_uroouse_najemce_c_6)-serv.time)/86400)>
+endif
+src.ensureTag(hotoveQuesty_2)
+if !(<src.tag.hotovequesty_2>&0100000)
+  return 00
+endif
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+[function f_mt_zrusit_najem]
+if (<src.tag.mt_uroouse_najemce_c_1>><?srv.time?>)
+  tag.mt_uroouse_pronajmut_pc_1=<?serv.time?>
+  src.tag.remove.mt_uroouse_najemce_c_1
+endif
+if (<src.tag.mt_uroouse_najemce_c_2>><?srv.time?>)
+  tag.mt_uroouse_pronajmut_pc_2=<?serv.time?>
+  src.tag.remove.mt_uroouse_najemce_c_2
+endif
+if (<src.tag.mt_uroouse_najemce_c_3>><?srv.time?>)
+  tag.mt_uroouse_pronajmut_pc_3=<?serv.time?>
+  src.tag.remove.mt_uroouse_najemce_c_3
+endif
+if (<src.tag.mt_uroouse_najemce_c_4>><?srv.time?>)
+  tag.mt_uroouse_pronajmut_pc_4=<?serv.time?>
+  src.tag.remove.mt_uroouse_najemce_c_4
+endif
+if (<src.tag.mt_uroouse_najemce_c_5>><?srv.time?>)
+  tag.mt_uroouse_pronajmut_pc_5=<?serv.time?>
+  src.tag.remove.mt_uroouse_najemce_c_5
+endif
+if (<src.tag.mt_uroouse_najemce_c_6>><?srv.time?>)
+  tag.mt_uroouse_pronajmut_pc_6=<?serv.time?>
+  src.tag.remove.mt_uroouse_najemce_c_6
+endif
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+[function f_resetpokoju]
+tag.remove.mt_uroouse_najemce_c_1
+tag.remove.mt_uroouse_najemce_c_2
+tag.remove.mt_uroouse_najemce_c_3
+tag.remove.mt_uroouse_najemce_c_4
+tag.remove.mt_uroouse_najemce_c_5
+tag.remove.mt_uroouse_najemce_c_6
+
+////////////////////////////////////////
+
+[dialog d_pani_roouse_mt]
+5,5
+page 0
+  resizepic 20 200 2620 640 350 
+  gumppic 30 210 03182 // podklad pod ksichtiky  
+  gumppic 40 215 03131 // ksichtik   3000-3164
+  text 220 210 52 0     // Jmeno a titul pozdraveneho
+
+page 1
+  HTMLGUMP(170,230,440,100,1,0,36)
+  button 160 330 0988 0988 1 0 1  // Objednam si ?
+  text 200 332 1152 2    // 
+  button 325 330 0988 0988 1 0 2  // Nejake drby ?
+  text 350 330 1152 3    //
+  button 490 330 0988 0988 0 4 0  // Obchodovat ?
+  text 510 330 1152 4   //
+  button 160 360 0988 0988 1 0 7  // Hledam praci
+  text 190 360 1152 5   //
+  button 325 360 0988 0988 1 0 6  // Nesu ti ...
+  text 350 360 1152 6   //
+  button 490 360 0988 0988 0 7 0  // Proverit
+  text 520 360 1152 7   //
+  src.ensureTag(hotoveQuesty_2)
+  if (<src.tag.hotovequesty_2>&0100000)||(<src.tag.hotovequesty_2>&080000)
+    argo.button 490 390 0988 0988 1 0 3  //sluzby
+    argo.text 510 390 1152 14
+  endif
+
+page 2 // Objednam si
+  HTMLGUMP(170,230,440,100,46,0,36)
+  gumppic 30 210 03182 // podklad pod ksichtiky  
+
+page 3  
+
+page 4
+  if (<src.tag.hotovequesty_2>&04000)//znaho a neni to craft
+    if !(profession==class_craft)
+      argo.HTMLGUMP(170,230,440,140,9,0,36)
+    endif
+  endif  
+  if (<src.tag.hotovequesty_2>&04000)//znaho a je to craft
+    if (profession==class_craft)
+      argo.HTMLGUMP(170,230,440,140,10,0,36)
+    endif
+  endif
+  if !(<src.tag.hotovequesty_2>&04000)//neznaho
+    argo.HTMLGUMP(170,230,440,140,15,0,36)
+  endif  
+  button 25 395 0fa5 0fa7 1 0 4        //Obchodovani prvni nabidka
+  text 60 395 152 16
+  button 25 415 0fa5 0fa7 0 1 0
+  text 60 415 152 17
+
+page 5                               //Hledam praci
+  HTMLGUMP(170,230,440,100,11,0,36)
+
+page 6                                //Nesu ti
+  HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7                                //informace o postave
+  HTMLGUMP(170,230,440,100,13,0,36)
+
+page 8 // Rozvetvene mluvy
+  HTMLGUMP(170,230,440,100,22,0,36)
+
+[dialog d_pani_roouse_mt text]
+Pani Roose // Jmeno a titul pozdraveneho
+Ano?
+Objednam si..
+Nejake drby?
+Obchodovat
+Hledam praci
+Nesu vam...
+Prohlednout
+Copak by sis chtel objednat? // 8
+No ne, <? src.sex "nas","nase" ?> <? src.name ?> se <? src.sex "dal na drahu obchodnika","dala na drahu obchodnice" ?>? Co mi chces nabidnout za obchod? Upozornuji te ale dopredu, ze neprijmu nic nekvalitniho. Mam podepsanou smlouvu z kralovskym palacem. Dodavame jim tam jidla a chci, aby tomu tak bylo i nadale.
+No ne, <? src.sex "nas","nase" ?> <? src.name ?> nezapre svou obchodnickou dusi. Co mi chces nabidnout za obchod ? Upozornuji te ale dopredu, ze neprijmu nic nekvalitniho. Mam podepsanou smlouvu z kralovskym palacem. Dodavame jim tam jidla a chci, aby tomu tak bylo i nadale.
+Praci pro tebe? Hmmm... prace se samozrejme vzdycky nejaka najde. Ale nemysli si, ze zacnes hned brat velke penize. A navic u me musis zacit uplne od piky, tedy chci rici lavoru s nadobim. Hmm? *usmiva se* Tak uz te to preslo?
+U Mandose, co ty mi muzes chtit dat? Varuji te, jestli smrt, tak ta mi bouzel neni souzena... he he. No dobra, co to je?
+Od pohledu kus zenske... Co ztraci na stihlosti a krase, to dohani charakterovymi vlastnostmi. Je to clovek, ktery te snadno privede do dobre nalady.
+Sluzby podniku // 14
+Nevedela jsem, ze jsi tu obchodne. Vypadas spise jako... jako... no, to je fuk. Co mi chces nabidnout za obchod? Upozornuji te ale dopredu, ze neprijmu nic nekvalitniho. Mam podepsanou smlouvu z kralovskym palacem. Dodavame jim tam jidla a chci, aby tomu tak bylo i nadale.
+K obchodu mam tu...
+Vlastne chci neco jineho.
+
+[dialog d_pani_roouse_mt button]
+on=0
+return 1
+
+on=1
+DIALOG(d_pani_roouse_mt_vyber)
+
+on=2
+src.ensureTag(hotoveQuesty_2)
+if (<src.tag.hotovequesty_2>&04000)&&(<src.tag.hotovequesty_2>&040000)
+  DIALOG(d_pani_roouse_mt_drby)
+  src.consume=40 i_gold
+elseif (<src.tag.hotovequesty_2>&04000)
+  DIALOG(d_pani_roouse_mt_drby)
+else
+  DIALOG(d_pani_roouse_mt_predstavitse)
+endif
+
+on=3
+DIALOG(d_pani_roouse_mt_sluzby)
+on=4
+DIALOG(d_pani_roouse_mt_obchod)
+on=6
+DIALOG(d_pani_roouse_mt_nesuvam)
+on=7
+go(<src.p>)
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_obchod]
+5,5
+page 0
+  resizepic 20 200 2620 640 350 
+  gumppic 30 210 03182
+  gumppic 40 215 03131
+  text 220 210 52 0
+page 1
+  HTMLGUMP(170,230,440,100,1,0,36)
+  button 25 395 0fa5 0fa7 1 0 1
+  text 60 395 152 8
+  button 25 415 0fa5 0fa7 0 2 0
+  text 60 415 152 2
+  // button 25 435 0fa5 0fa7 1 0 3
+  // text 60 435 152 4
+  // button 25 455 0fa5 0fa7 1 0 4
+  // text 60 455 152 5
+page 2
+  HTMLGUMP(170,230,440,140,3,0,36)
+  button 25 395 0fa5 0fa7 0 3 0
+  text 60 395 152 4
+  button 25 415 0fa5 0fa7 0 4 0
+  text 60 415 152 7
+page 3
+  HTMLGUMP(170,230,440,140,5,0,36)//za 870
+  button 25 395 0fa5 0fa7 1 0 2
+  text 60 395 152 6
+page 4
+  HTMLGUMP(170,230,440,140,9,0,36)
+  button 25 395 0fa5 0fa7 1 0 3//880
+  text 60 395 152 10
+  button 25 415 0fa5 0fa7 1 0 4//890
+  text 60 415 152 11
+  button 25 435 0fa5 0fa7 1 0 5//900
+  text 60 435 152 12
+  button 25 455 0fa5 0fa7 1 0 6//920
+  text 60 455 152 13
+  button 25 475 0fa5 0fa7 1 0 7//950
+  text 60 475 152 14
+
+
+[dialog d_pani_roouse_mt_obchod text] // gramaticky neupraveno
+Pani Roose // Jmeno a titul pozdraveneho
+povidej.
+Nepotrebujete ubrusy nebo povlaky na postele ?
+Popravde vlastne jo ale rozhodujci je cena pochopitelne. Jsem schopna pristoupit na cenu 870 GP za baleni dvaceti kvalitnich prosteradel. A kdyz rikam kvalitni tak tim myslim vazne kvalitni a ne neco co se prosoupe hned po prvni neklidne noci.
+Skvele to mohu obstarat chtela by jste ?  //4
+Ale ano nabidku prijmam.
+Dobra ujednano.
+870 ? V M.T. Kvalitni nesezenete pod 1200 GP 
+Vlastne nic k nabidce nemam.
+Uha koukam ze mas i dokonce prehled. Mas samozrejme pravdu, ovsem kdybych je chtela koupit za 1200 tak bych se nezatezovala tvou nabidkou ze ?
+Ma nabidka je 880 GP za baleni *obchodovani*   //10
+Ma nabidka je 890 GP za baleni *obchodovani*
+Ma nabidka je 900 GP za baleni *obchodovani*
+Ma nabidka je 920 GP za baleni *obchodovani*
+Ma nabidka je 950 GP za baleni *obchodovani*
+Ma nabidka je 880 GP za baleni *zlodejska vymluvnost*
+
+[dialog d_pani_roouse_mt_obchod button]
+on=0
+DIALOG(d_pani_roouse_mt)
+on=1
+DIALOG(d_pani_roouse_mt)
+on=2
+src.ensureTag(hotoveQuesty_3)
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|0400 //za 900 gp
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|010000 //obchoduje z rous
+DIALOG(d_pani_roouse_mt)
+on=3
+src.ensureTag(hotoveQuesty_3)
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|0800
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|010000 //obchoduje z rous  
+DIALOG(d_pani_roouse_mt)
+on=4
+src.ensureTag(hotoveQuesty_3)
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|01000
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|010000 //obchoduje z rous  
+DIALOG(d_pani_roouse_mt)
+on=5
+src.ensureTag(hotoveQuesty_3)
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|02000
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|010000 //obchoduje z rous  
+DIALOG(d_pani_roouse_mt)
+on=6
+src.ensureTag(hotoveQuesty_3)
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|04000
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|010000 //obchoduje z rous
+DIALOG(d_pani_roouse_mt)
+on=7
+src.ensureTag(hotoveQuesty_3)
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|08000
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>|010000 //obchoduje z rous
+DIALOG(d_pani_roouse_mt)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+[dialog d_pani_roouse_mt_nesuvam]
+  5,5
+  src.findlayer(21).contents(f_prohledat_listky_i_mt_prepravka_povlaky_kval)
+  f_mt_rous_zjisti_za_kolik
+  f_mt_rous_vypocet_pro_gump
+
+  src.ensureTag(hotoveQuesty_3)
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  page 1
+    if !(<src.tag.hotovequesty_3>&010000)
+    argo.HTMLGUMP(170,230,440,140,1,0,36)
+    argo.button 25 395 0fa5 0fa7 1 0 1
+    argo.text 60 395 152 2
+    endif
+    if (<src.tag.hotovequesty_3>&010000)//obchoduje z rous
+    argo.HTMLGUMP(170,230,440,140,3,0,36)
+    argo.button 25 395 0fa5 0fa7 1 0 1
+    argo.text 60 395 152 2
+    argo.button 25 415 0fa5 0fa7 0 2 0
+    argo.text 60 415 152 4
+    endif
+  page 2
+    HTMLGUMP(170,230,440,140,5,0,36)
+    if !(<?src.rescount i_mt_prepravka_povlaky_kval?>==0)
+    argo.button 25 395 0fa5 0fa7 0 4 0
+    argo.text 60 395 152 6
+    argo.tilepic 430 390 03006
+    endif
+    if !(<?src.rescount i_mt_prepravka_povlaky?>==0)    
+    argo.button 25 415 0fa5 0fa7 0 3 0
+    argo.text 60 415 152 7
+    argo.tilepic 450 410 03006
+    endif    
+  page 3
+    HTMLGUMP(170,230,440,140,8,0,36)
+    button 25 395 0fa5 0fa7 1 0 1
+    text 60 395 152 9
+  page 4
+    if (<?src.tag.mamuctenkynakusu?>==<?src.rescount i_mt_prepravka_povlaky_kval?>)
+    argo.HTMLGUMP(170,230,440,140,10,0,36)
+    argo.text 60 395 152 13
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    endif
+    if (<?src.tag.mamuctenkynakusu?><<?src.rescount i_mt_prepravka_povlaky_kval?>)
+    argo.HTMLGUMP(170,230,440,140,11,0,36)
+    argo.text 60 395 152 14
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    endif
+    if (<?src.tag.mamuctenkynakusu?>><?src.rescount i_mt_prepravka_povlaky_kval?>)
+    argo.HTMLGUMP(170,230,440,140,12,0,36)
+    argo.text 60 395 152 14
+    argo.button 25 395 0fa5 0fa7 1 0 3
+    endif
+    
+[dialog d_pani_roouse_mt_nesuvam text]
+  Pani Roose // <?Title?> //    Jmeno a titul pozdraveneho
+  U Mandose co ty me muzes chtit dat ?  Varuji te, na smrt jeste nejsem pripravena. *usmev*  
+  Vlastne nic Rouus. Jen sem se prerekl.
+  Jeje <?Src.Sex "chlape koukam ze nelenis a dal ses","holka koukam ze nelenis a dala ses"?> do toho obchodniceni vazne. *usmev*
+  Mam tu varku tech slibenych prosteradel.//4
+  Hmm. Tak se vytas co mas *usmev*
+  <?src.rescount i_mt_prepravka_povlaky_kval?>x prepravka s kvalitnimy povlaky a prosteradly
+  <?src.rescount i_mt_prepravka_povlaky?>x prepravka s povlaky a prosteradly//7
+  Lituji ale nemyslim si ze je prave toto tak kvalitni zbozi jak bych potrebovala. Hele podivej na ty svy vidis jak uz ted povoluji ? A to je to uplne nove. Kdepak tohle od tebe nevezmu.
+  Oki rous snad to udam jinde.//9
+  Mas <?src.rescount i_mt_prepravka_povlaky_kval?> prepravek ktere od tebe vykoupim za <?src.tag.kupuje_za?> GP kus. *Chvilku v hlave prepocitava* Takze po me za vsechny budes chtit jestli se nepletu <?src.tag.obch_snadvydelam?> GP. Prodas mi vsechno co mas nebo jen cast ?
+  Mas <?src.rescount i_mt_prepravka_povlaky_kval?> prepravek, ale uctenky mas vystavene jen na <?src.tag.mamuctenkynakusu?> prepravek za <?src.tag.mamuctenkynagp?> gp. Koupim od tebe jen zbozi ktere muzes radne dolozit.    To co u sebe mas od tebe vykoupim za <?src.tag.obch_snadvydelam?> GP pri cene <?src.tag.kupuje_za?> GP za kus. 
+  Mas jen <?src.rescount i_mt_prepravka_povlaky_kval?> prepravek, ale podle uctenky mas mit <?src.tag.mamuctenkynakusu?> prepravek. Koupim od tebe zbozi ktere prave u sebe mas a vystavim ti uctenku novou, na zbyvajci nedodane zbozi. Doklady musi sedet, nerada bych mela problemy z bernakem. To co u sebe mas od tebe vykoupim za <?src.tag.obch_snad_pouze_vydelam?> GP pri cene <?src.tag.kupuje_za?> GP za kus. 
+  prodam vam vse.
+  Rozumim prodam jen co mohu dolozit.
+
+[dialog d_pani_roouse_mt_nesuvam button]
+on=0
+    //  smazu po sobe vsechny tagy 
+    src.tag.remove.obch_pravevydelal
+    src.tag.remove.obch_pravevydelalhrubeho
+    src.tag.remove.obch_puvodne_investovovane
+    src.tag.remove.obch_snadvydelam
+    src.tag.remove.obch_snad_pouze_vydelam
+    src.tag.remove.obch_snad_pouze_vedelam_cisteho
+          src.tag.remove.melsemkusu
+    src.tag.remove.mamuctenkynagp
+    src.tag.remove.mamuctenkynakusu
+  DIALOG(d_pani_roouse_mt)
+on=1
+  DIALOG(d_pani_roouse_mt)
+on=2
+  if (<?src.rescount i_mt_prepravka_povlaky_kval?>==<?src.tag.mamuctenkynakusu?>)||(<?src.rescount i_mt_prepravka_povlaky_kval?>><?src.tag.mamuctenkynakusu?>)             //jestli ma stejne (zbozi) (uctenkykusu)a nebo vic zbozi nez na uctenkach
+    src.tag.obch_pravevydelal=(<?src.tag.obch_snadvydelam?>-<?src.tag.mamuctenkynagp?>)  //kratkodobej citej zisk 
+    src.tag.obch_pravevydelalhrubeho=<?src.tag.obch_snadvydelam?>       //kolik dostane penez
+    src.tag.obch_investoval=(<?src.tag.obch_investoval?>-<?src.tag.mamuctenkynagp?>)//odmaze investice
+    src.findlayer(21).contents(f_smazat_listky_i_mt_prepravka_povlaky_kval)    //smaze vsechny listky na dane zbozi
+    SRC.CONSUME <?src.tag.mamuctenkynakusu?> i_mt_prepravka_povlaky_kval     //smaze vsechno zbozi na ktere si mel uctenky  
+    f_probehl_obchod
+    DIALOG(d_pani_roouse_mt)
+  else
+    src.tag.bonzuji_bugerstvi=("Snazil sem se manipulovat z Obchodnim zbozim behem obchodu")
+    src.f_bonzuji_bugerstvi
+  endif
+on=3
+  if (<?src.rescount i_mt_prepravka_povlaky_kval?><<?src.tag.mamuctenkynakusu?>)&&(<?src.tag.obch_snad_pouze_vydelam?>==(<?src.tag.kupuje_za?>*<?src.rescount i_mt_prepravka_povlaky_kval?>))   //jestli mam vic uctenek nez zbozi
+    f_obchod_s_navracenim_uctenky
+    src.tag.obch_pravevydelal=<?src.tag.obch_snad_pouze_vedelam_cisteho?>
+    src.tag.obch_pravevydelalhrubeho=<?src.tag.obch_snad_pouze_vydelam?>
+    src.tag.obch_investoval=(<?src.tag.obch_investoval?>-<?src.tag.obch_puvodne_investovovane?>)//odmaze invesice
+    f_probehl_obchod
+    DIALOG(d_pani_roouse_mt)
+  else
+    src.tag.bonzuji_bugerstvi=("Snazil sem se manipulovat z Obchodnim zbozim behem obchodu")
+    src.f_bonzuji_bugerstvi    
+  endif
+
+[function f_mt_rous_vypocet_pro_gump]
+  src.tag.obch_snadvydelam=(<?src.tag.kupuje_za?>*<?src.tag.mamuctenkynakusu?>)
+  if (<?src.rescount i_mt_prepravka_povlaky_kval?><<?src.tag.mamuctenkynakusu?>)
+    src.tag.obch_snad_pouze_vydelam=(<?src.tag.kupuje_za?>*<?src.rescount i_mt_prepravka_povlaky_kval?>)
+    src.tag.obch_puvodne_investovovane=(850*<?src.rescount i_mt_prepravka_povlaky_kval?>)
+    arg.pomocnej_vypocet_obch=(850*<?src.rescount i_mt_prepravka_povlaky_kval?>)  
+    src.tag.obch_snad_pouze_vedelam_cisteho=(<?src.tag.obch_snad_pouze_vydelam?>-<?arg.pomocnej_vypocet_obch?>)
+    src.say="vydelek cisteho by mohl byt  <?src.tag.obch_snad_pouze_vedelam_cisteho?> GP"
+  endif
+
+[FUNCTION f_probehl_obchod]
+src.newitem i_gold
+src.act.Amount=<?src.tag.obch_pravevydelalhrubeho?>
+src.act.bounce
+src.say("Prave jsem vydelal <? src.tag.obch_pravevydelal ?> zlatych cisteho.")
+src.tag.obch_celkemzisk=(<?src.tag.obch_celkemzisk?>+<?src.tag.obch_pravevydelal?>)
+f_probehl_obchod_gainovani //prida body ke skillu obchodnictvi
+//  smazu po sobe vsechny tagy 
+src.tag.remove.obch_pravevydelal
+src.tag.remove.obch_puvodne_investovovane
+src.tag.remove.obch_snadvydelam
+src.tag.remove.obch_snad_pouze_vydelam
+src.tag.remove.obch_snad_pouze_vedelam_cisteho
+src.tag.remove.melsemkusu
+src.tag.remove.mamuctenkynagp
+src.tag.remove.mamuctenkynakusu
+
+/////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_probehl_obchod_gainovani]
+  if(<?src.tag.skill_obchodnictvi?><100)
+    dorand 3
+    f_probehl_obchod_skill
+    f_probehl_obchod_skill
+    enddo
+  endif
+  if(<?src.tag.skill_obchodnictvi?>>99)&&(<?src.tag.skill_obchodnictvi?><300)
+    dorand 4
+    f_probehl_obchod_skill
+    f_probehl_obchod_skill
+    enddo
+  endif
+  endif
+  if(<?src.tag.skill_obchodnictvi?>>299)&&(<?src.tag.skill_obchodnictvi?><600)
+    dorand 5
+    f_probehl_obchod_skill
+    f_probehl_obchod_skill
+    enddo
+  endif
+  endif
+  if(<?src.tag.skill_obchodnictvi?>>599)&&(<?src.tag.skill_obchodnictvi?><900)
+    dorand 6
+    f_probehl_obchod_skill
+    enddo
+  endif
+  endif
+  if(<?src.tag.skill_obchodnictvi?>>899)&&(<?src.tag.skill_obchodnictvi?><1001)
+    dorand 7
+    f_probehl_obchod_skill
+    enddo
+  endif
+  endif
+  if(<?src.tag.skill_obchodnictvi?>>1000)
+    src.sysmessage="Jsi bozskym obchodnikem"
+  endif
+
+[FUNCTION f_probehl_obchod_skill]
+  if (<?src.tag.obch_pravevydelal?><1)
+    src.classmessage(balance tohoto obchodu je <?src.tag.obch_pravevydelal?> gp.)
+  endif
+  if (<?src.tag.obch_pravevydelal?>>0)&&(<?src.tag.obch_pravevydelal?><300)
+    src.tag.skill_obchodnictvi=<?src.tag.skill_obchodnictvi?>+1
+    src.Sysmessagecol(0bf,"obchodni skusenost stoupla o 1 Odtet jej umis na <?f_procenta_obchodnictvi?> %")
+  endif
+  if (<?src.tag.obch_pravevydelal?>>299)&&(<?src.tag.obch_pravevydelal?><599)
+    src.tag.skill_obchodnictvi=<?src.tag.skill_obchodnictvi?>+2
+    src.Sysmessagecol(0bf,"obchodni skusenost stoupla o 2 Odtet jej umis na <?f_procenta_obchodnictvi?> %")
+  endif
+  if (<?src.tag.obch_pravevydelal?>>599)&&(<?src.tag.obch_pravevydelal?><1000)
+    src.tag.skill_obchodnictvi=<?src.tag.skill_obchodnictvi?>+3
+    src.Sysmessagecol(0bf,"obchodni skusenost stoupla o 3 Odtet jej umis na <?f_procenta_obchodnictvi?> %")
+  endif
+  if (<?src.tag.obch_pravevydelal?>>999)&&(<?src.tag.obch_pravevydelal?><2000)
+    src.tag.skill_obchodnictvi=<?src.tag.skill_obchodnictvi?>+4
+    src.Sysmessagecol(0bf,"obchodni skusenost stoupla o 4 Odtet jej umis na <?f_procenta_obchodnictvi?> %")
+  endif
+  if (<?src.tag.obch_pravevydelal?>>1999)
+    src.tag.skill_obchodnictvi=<?src.tag.skill_obchodnictvi?>+5
+    src.Sysmessagecol(0bf,"obchodni skusenost stoupla o 5 Odtet jej umis na <?f_procenta_obchodnictvi?> %")
+  endif
+
+[FUNCTION f_procenta_obchodnictvi]
+arg.celecislo=(<?src.tag.skill_obchodnictvi?>/10)
+arg.desetinecislo=<?src.tag.skill_obchodnictvi?>-(<?arg.celecislo?>*10)
+return"<arg.celecislo>.<arg.desetinecislo>"
+[function f_obchod_s_navracenim_uctenky]
+  src.findlayer(21).contents(f_smazat_listky_i_mt_prepravka_povlaky_kval)  //smazu vsechny pozadovane uctenky
+  src.tag.melsemkusu=<?src.rescount i_mt_prepravka_povlaky_kval?>    //docasne ulozi kolik mel zbozi
+  SRC.CONSUME <?src.tag.mamuctenkynakusu?> i_mt_prepravka_povlaky_kval  //smaz vsechno pozadovane zbozi
+  src.newitem i_ud_krejcova_Mabel
+  src.act.tag.pocet_kusu=(<?src.tag.mamuctenkynakusu?>-<?src.tag.melsemkusu?>)
+  src.act.tag.investice=(<?src.act.tag.pocet_kusu?>*850)
+  src.act.tag.prodavane_zbozi="prepravka s kvalitnimy povlaky a prosteradly"
+  src.act.tag.iditemu=i_mt_prepravka_povlaky_kval
+  src.act.tag.jmeno_prodavajciho="<?name?>"
+  src.act.tag.nazev_oblasti="Minas Tirith"
+  src.act.tag.preprodejnihodnota=100
+  src.act.attr=attr_newbie
+  src.act.attr=attr_move_never
+  src.act.bounce
+
+[FUNCTION f_pokus777]
+src.ensureTag(hotoveQuesty_3)
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>&~0800
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>&~01000
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>&~02000
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>&~04000
+src.tag.hotovequesty_3 = <src.tag.hotovequesty_3>&~08000
+
+[FUNCTION f_odstranit_minusovenaklady]
+if (<?src.tag.obch_investoval?><0)
+  src.tag.obch_investoval=0
+endif
+
+[function f_mt_rous_zjisti_za_kolik]
+src.ensureTag(hotoveQuesty_3)
+if (<src.tag.hotovequesty_3>&0400)
+  src.tag.kupuje_za=870
+endif
+if (<src.tag.hotovequesty_3>&0800)
+  src.tag.kupuje_za=880
+endif
+if (<src.tag.hotovequesty_3>&01000)
+  src.tag.kupuje_za=890
+endif
+if (<src.tag.hotovequesty_3>&02000)
+  src.tag.kupuje_za=900
+endif
+if (<src.tag.hotovequesty_3>&04000)
+  src.tag.kupuje_za=920
+endif
+if (<src.tag.hotovequesty_3>&08000)
+  src.tag.kupuje_za=950
+endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_predstavitse]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  page 1
+    dorand 2
+    argo.HTMLGUMP(170,230,440,100,1,0,36)
+    argo.HTMLGUMP(170,230,440,100,2,0,36)
+    enddo
+    if (src.profession==class_thief)
+    argo.button 25 395 0fa5 0fa7 1 0 1  //  varovani pro thifa + boton pro thifa
+    argo.text 60 395 152 6
+    endif
+    if (src.profession==class_necro)
+    argo.button 25 395 0fa5 0fa7 1 0 2  //  zvlastni boton pro necra
+    argo.text 60 395 152 3
+    endif
+    if !(src.profession==class_thief)
+    if !(src.profession==class_necro)
+    argo.button 25 395 0fa5 0fa7 1 0 3  //  reknes pravdu ?
+    argo.text 60 395 152 3
+    endif
+    endif
+    button 25 415 0fa5 0fa7 1 0 4  //  Reknes lez ?
+    text 60 415 152 4
+    button 25 435 0fa5 0fa7 0 2 0  //  zakecas to..      
+    text 60 435 152 5
+  page 2
+    HTMLGUMP(170,230,440,100,8,0,36)
+    button 25 435 0fa5 0fa7 1 0 5  //  zakecas to..      
+    text 60 435 152 7
+
+[dialog d_pani_roouse_mt_predstavitse text]
+  Pani Roose   //    Jmeno a titul pozdraveneho
+  Drby ? Tak ty si sama rada vyslechnu..  Napriklad o vas  kdo jste a cim se zivite  ?  *sibalsky na tebe mrkla*
+  Drby ? Tak to jsi samozrejme na spravnem miste, zde se drbe neustale o vsem a o nicem. Ale driv nez se zacnes vyptavat rada bych vedela skym mam tu cest mluvit. Zatim si pro mne jen <?Src.Sex "Pan ZAHADNEJ","Slecna ZAHADNA"?>
+  *Reknes o sobe celou pravdu*  //
+  *Reknes lez*  //4
+  *Zakecas to*
+  *reknes o sobe celou pravdu* (Zlodejna)*varovani*
+  Ale jo v pohode trebas to pivko za 40 a ted ty novinky.
+  No okecavat umis pekne jo to jo. Inu co si k tomu memu povidani das k piti ? 
+
+
+[dialog d_pani_roouse_mt_predstavitse button]
+on=0
+  DIALOG(d_pani_roouse_mt)
+
+on=1//thief rika pravdu
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|010000
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|04000
+  DIALOG(d_pani_roouse_mt_to_thief)
+
+on=2//necro rika pravdu
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|010000
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|04000
+  DIALOG(d_pani_roouse_mt_to_necro)
+
+on=3//ostatni rika pravdu
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|04000
+  DIALOG(d_pani_roouse_mt_drby)
+
+on=4//reknes o sobe lez
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|04000
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|08000
+  DIALOG(d_pani_roouse_mt_testlhani)
+
+on=5//zakecas to
+  DIALOG(d_pani_roouse_mt_drby)
+
+/////////////////////////////////////////////////////////////////////
+
+
+[dialog d_pani_roouse_mt_to_thief]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  page 1
+    dorand 2
+    argo.HTMLGUMP(170,230,440,100,1,0,36)
+    argo.HTMLGUMP(170,230,440,100,2,0,36)
+    enddo
+
+[dialog d_pani_roouse_mt_to_thief text]
+  Pani Roose // <?Title?> //    Jmeno a titul pozdraveneho
+  Ty jsi <?Src.Sex "sprostej zlodej","sprosta zlodejka"?>!?  Odejdi pric z meho domu uz te tu nechci videt. A pamatuj jestli se sem vratis necham na tebe zavolat straze !
+  Uhh.  Ty <?Src.Sex "sprostej zlodeji","sprosta zlodejko"?> okamzite odejdi pric z meho domu uz te tu vickrat nechci videt! A pamatuj jestli sem prijdes poslu na tebe straze !
+
+[dialog d_pani_roouse_mt_to_thief button]
+on=0
+
+[dialog d_pani_roouse_mt_to_necro]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  page 1
+    dorand 2
+    argo.HTMLGUMP(170,230,440,100,1,0,36)
+    argo.HTMLGUMP(170,230,440,100,2,0,36)
+    enddo
+
+[dialog d_pani_roouse_mt_to_necro text]
+  Pani Roose // <?Title?> //    Jmeno a titul pozdraveneho
+  Ty jsi <?Src.Sex "prahbidnej Necromant","Prahbidna nekromantka"?>?  Odejdi pric z meho domu, uz te tu nechci videt. A pamatuj jestli se sem vratis necham na tebe zavolat straze! V tomhle dome se narizeni Krale Elessara dodrzuji to si pamatuj !
+  Uhh.  Ty <?Src.Sex "Smradlavej Necromante","Smradlava Necromantko"?> okamzite odejdi pric z meho domu uz te tu vickrat nechci videt. A pamatuj jestli sem prijdes poslu na tebe straze! Melo mi to byt hned jasne jak sem z tebe citila tu zatuchlinu. 
+
+[dialog d_pani_roouse_mt_to_necro button]
+on=0
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_nemas_prachy]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  page 1
+    HTMLGUMP(170,230,440,100,1,0,36)
+    button 25 395 0fa5 0fa7 0 2 0
+    text 60 395 152 2
+    button 25 415 0fa5 0fa7 0 3 0
+    text 60 415 152 5
+  page 2
+    HTMLGUMP(170,230,440,100,3,0,36)
+    button 25 395 0fa5 0fa7 1 0 1  //Piti
+    text 60 395 152 4
+  page 3
+    HTMLGUMP(170,230,440,100,6,0,36)
+    button 25 395 0fa5 0fa7 0 2 0
+    text 60 395 152 7
+    button 25 415 0fa5 0fa7 0 4 0
+    text 60 415 152 8
+  page 4
+    HTMLGUMP(170,230,440,100,9,0,36)
+    button 25 395 0fa5 0fa7 1 0 2
+    text 60 395 152 10
+    button 25 415 0fa5 0fa7 0 2 0
+    text 60 415 152 11
+
+[dialog d_pani_roouse_mt_nemas_prachy text]
+  Pani Roose // <?Title?> //    Jmeno a titul pozdraveneho
+  <?Src.Sex "Hele socialni usmrkance","Hele holcicko"?> tohle na mne nezkousej. Tady se plati predem tak kdyz uz si neco objednas tak na to alspon mej penize!
+  U manweho omlouvam se pani Roous ja si nevsiml.
+  Uh promin. byla jsem asi moc prikra ale musis mne chapat chodi sem ruzna individua a znazi se uzmout co se da. Jeste jednou promin.
+  V nejlepsim poradku vyberu si hold neco jineho.
+  Jak si mi to rekla ty CUBKO ? //5
+  Rekla jsem ti <?Src.Sex "SOCIALNI USMRKANCE","HOLCICKO"?> a jestli se ti to nelibi tak okradat si muzes jit nekam jinam. Toto je slusnej podnik a ne nejakej pajzl U Podloubi.
+  Grrr.. Ja se omlouvam (SLECNO) Roous ale okrast sem vas vazne <?Src.Sex "nechtel","nechtela"?>.
+  Doprr...  Nikoho jsem okrast nechtel  asi mne nekdo obral.//8
+  To jako tady ? V mem hostinci ? Tady se nekrade to si pamatuj, personal mam proverenej a hoste co se zde prave nachazi jsou vicemene stali zakaznici. Neverim tomu ze by te zde nekdo okradl, stim bez nekam.
+  No a ja tvrdim ze obral. Nejspis si to byla ty ty CUBKO
+  Ale vite co ? nechci se hadat omlouvam se.
+
+[dialog d_pani_roouse_mt_nemas_prachy button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+on=1
+  DIALOG(d_pani_roouse_mt_vyber)
+on=2
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|020000
+  say="A ven ! Tahni ty nerade uz te tu nechci videt !! "
+
+/////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_prejeden]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  page 1
+    dorand 4
+    argo.HTMLGUMP(170,230,440,100,1,0,36)
+    argo.HTMLGUMP(170,230,440,100,2,0,36)
+    argo.HTMLGUMP(170,230,440,100,3,0,36)
+    argo.HTMLGUMP(170,230,440,100,4,0,36)
+    enddo
+    button 25 395 0fa5 0fa7 1 0 1
+    text 60 395 152 5
+
+[dialog d_pani_roouse_mt_prejeden text]
+  Pani Roose // <?Title?> //    Jmeno a titul pozdraveneho
+  <?Src.Sex "chlape","holka"?> Tak jestli tohle do sebe dostanes tak ti snad i vratim za to jidlo penize. *usmev*
+  Tohle nesnis i kdyby ses <?Src.Sex "zblaznil","zblaznila"?>.
+  Dyt uz ted vypadas najedene a to chces jeste pozrit tohle?  Nebut blazen tohle by do sebe narval snad jen Jindra Sroba ale ten uz odpociva na hrbitove.  Necht je mu zeme lehka .. jojo to byl vazne vytecnej zakaznik. V podstate kdyz se mi sem posadil na zidli tak to bylo jako kdyz na ni sedi zakazniku sest.
+  No tak to jsem vazne zvedava jak tohle snis. Tolik by nesnedl ani Tonda Horacku a  ze je to o proti tobe chlap jak hora.
+  Pani Roous mate recht tohle uz nepozru.
+
+[dialog d_pani_roouse_mt_prejeden button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+on=1
+  DIALOG(d_pani_roouse_mt)
+
+/////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_testlhani]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  page 1
+    HTMLGUMP(170,230,440,100,1,0,36)
+    button 25 395 0fa5 0fa7 0 3 0
+    text 60 395 152 2
+    button 25 415 0fa5 0fa7 0 2 0
+    text 60 415 152 3
+  page 2
+    HTMLGUMP(170,230,440,100,4,0,36)
+    button 25 395 0fa5 0fa7 0 3 0 
+    text 60 395 152 5
+  page 3
+    HTMLGUMP(170,230,440,100,6,0,36)
+    button 25 395 0fa5 0fa7 1 0 1 //levou zadni
+    text 60 395 152 7
+    button 25 415 0fa5 0fa7 1 0 1 //pokusim
+    text 60 415 152 8
+    button 25 435 0fa5 0fa7 1 0 2  //  neumim  
+    text 60 435 152 9
+
+[dialog d_pani_roouse_mt_testlhani text]
+Pani Roose // <?Title?> //    Jmeno a titul pozdraveneho
+Coze? Ty jsi <?Src.Sex "obstojnej kuchar","obstojna kucharka"?> ? No to je vytecny tak to bych tu pro tebe mela i praci za velmy slusne penize. Samozrejme ale ze nez te prijmu tak si te poradne ozkousim *usmev* 
+Samozrejme rad vam ukazi sve kucharske umeni.
+Eh prominte ale na to ted nemam cas.//3
+Nemas cas ? vzdyt ses tu jeste predchvili ptal na praci.  Tak nemel a ukaz ze jsi <?Src.Sex "Muz","Zena"?> jak ma byt.  Jinak bych zacala pochybovat o tve pravdomluvnosti a to by sis urcite <?Src.Sex "nepral","neprala"?> ze ?
+Ano to bych si <?Src.Sex "nepral","neprala"?> 
+Vitecne Tak co takhle <?Src.Sex "zvladl","zvladla"?> by jsi upect chleba ?
+Levou zadni 
+Uhmm  pokusim se
+Popravde nezvladl to jeste neumim.
+
+[dialog d_pani_roouse_mt_testlhani button]
+on=0
+  DIALOG(d_pani_roouse_mt_testlhani)
+on=1
+  if (<src.cooking><5.0)//chleba skazil
+    DIALOG(d_pani_roouse_mt_pribeh_dialog)
+  endif
+  if (<src.cooking>>4.9)&&(<src.cooking><9.9)
+    DIALOG(d_pani_roouse_mt_pribeh_dialog)
+  endif
+
+on=2
+  src.ensureTag(hotoveQuesty_2)
+  src.sysmessage "Roous te ma odted za vejtahu a lhare. Pocitej s nasledky."
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|040000 //rous te ma za vejtahu a lhare
+  DIALOG(d_pani_roouse_mt)//rous te ma o
+
+//////////////////////////////////////////////////////////////////////////////////
+[dialog d_pani_roouse_mt_pribeh_dialog]
+  0,0
+  page 0
+    resizepic 0 0 2620 800 600 
+    gumppic 30 30 03183 // podklad pod ksichtiky  
+    gumppic 650 30 03185
+    HTMLGUMP(170,130,440,200,0,0,36)
+  
+[dialog d_pani_roouse_mt_pribeh_dialog text]
+  <BASEFONT SIZE="+5">  Pani Roose <?Title?> ti venovala potrebne suroviny a ty ses pustil v jeji kuchyni do prace. I kdyby te snad napadlo tam neco lohnout tak by si <?Src.Sex "nemel","nemela"?> sanci. Po celou dobu te neustale sledovali jak jeji zamestnanci tak ona sama. To samo o sobe vedlo ke stresu jez se podilel na tvem vytvoru. <br>  Prezto vsechno se ti nakonec preci jen podarilo dva bochniky upeci a co vic, byly i chutne a tim si ziskal duveru madam Roous </BASEFONT>
+  
+[dialog d_pani_roouse_mt_pribeh_dialog button]
+on=0
+    DIALOG(d_pani_roouse_mt_testlhani)
+//////////////////////////////////////////////////////////////////////////////
+[dialog d_pani_roouse_mt_drby]
+  5,5
+  src.ensureTag(hotoveQuesty_2)
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  page 1
+    dorand 14
+      argo.HTMLGUMP(170,230,440,130,4,0,36)
+      argo.HTMLGUMP(170,230,440,130,5,0,36)
+      argo.HTMLGUMP(170,230,440,130,6,0,36)
+      argo.HTMLGUMP(170,230,440,130,7,0,36)
+      argo.HTMLGUMP(170,230,440,130,8,0,36)
+      argo.HTMLGUMP(170,230,440,130,9,0,36)
+      argo.HTMLGUMP(170,230,440,130,10,0,36)
+      argo.HTMLGUMP(170,230,440,130,11,0,36)
+      argo.HTMLGUMP(170,230,440,130,12,0,36)
+      argo.HTMLGUMP(170,230,440,130,13,0,36)
+      argo.HTMLGUMP(170,230,440,130,14,0,36)
+      argo.HTMLGUMP(170,230,440,130,15,0,36)
+      argo.HTMLGUMP(170,230,440,130,16,0,36)
+      argo.HTMLGUMP(170,230,440,130,17,0,36)
+    enddo
+    if (<src.tag.hotovequesty_2>&04000) // madam te zna
+      if !(<src.tag.hotovequesty_2>&040000)
+        argo.button 25 395 0fa5 0fa7 1 0 1
+        argo.text 60 395 152 1
+      endif
+    endif
+    if (<src.tag.hotovequesty_2>&040000)//rous te ma za vejtahu a lhare
+      argo.button 25 395 0fa5 0fa7 1 0 2
+      argo.text 60 395 152 2
+    endif
+    if !(<src.tag.hotovequesty_2>&04000) // madam te nezna
+    if !(<src.tag.hotovequesty_2>&040000)//rous te ma za vejtahu a lhare
+      argo.button 25 395 0fa5 0fa7 1 0 2
+      argo.text 60 395 152 2
+    endif
+    endif
+    button 25 415 0fa5 0fa7 1 0 3  // uz te to nezajima
+    text 60 415 152 3
+
+[dialog d_pani_roouse_mt_drby text]
+Pani Roose   //    Jmeno a titul pozdraveneho
+Jeste neco se povida ?
+Jeste neco se povida ? Mimoto objednam si jeste jedno pivo za 40 GP
+No drby uz mne nezajimaj rad bych neco jineho.
+Stara Blazkova ma o dvacet let mladsiho milence.
+V druhem mestkem okruhu se dela nejaka pristavba a predak kterej sem chodi na objedy mi rikal ze schanej nejake pomocniky.
+Od te doby co Marek C neni Gondorskym Generalem tak je generalaska korouhev videt i na bojisti a ne jen za krbem.
+Mistni mistri kamenici maji cas od casu problemy s dodavkou vhodneho materialu pro sochy.
+Obnovil se opet RAD Patronu bileho stromu. Teda popravde neni to ten RAD co zalozil Elendill a o jakem se da docist z knih. Ale ta Guilda se  snazi na starou slavu a tradice navazat.  Lide je tu maji radi a dost casto se predstavitel Gildy stava i Minaskym Radnim.
+Zrovna predvcirem sem zavitala ta Blaznivka Mikena z Magovy veze a jen tak mezi reci utrousila ze je pekne v brinde a potrebuje nejakou KURU. Pres veskere starosti a praci tady doma nema cas se pro ni vydat.
+Ve meste ma sidlo pomerne velka Guilda blaznivich dobrodruhu kteri se nazivaji Protektori. <?Src.Sex "neveril bys","neverila bys"?> kolik se jich najde. Nad tim vzdy musim jen kroutit hlavou kolik lidi je ochotnych ryskovat zivot nazdarbuch.
+Obcas sem zajde dobry pritel Klaj a nabada mne abych upozornovala nove duse na Minaskou Knihovnu. To vis mladym lidem se do studovani Historii moc nechce a tak je knihovna spise liduprazdna.  No  abych rekla  pravdu  tak podle meho je to zpusobeno tim ze se tam vystavuje malo novich knih. Knihovnik tam take vecne neni. Ale  co.. To je jina Historie.  
+Ve meste  se nachazi mensi guilda potrhlich dobrodruhu kteri se nazivaji Uroboros. Jako co je jejich cilem to presne nevim se jich zeptej <?Src.Sex "sam","sama"?>. Poznas je podle symbolu hada pozirajiciho si vlasni ocas. 
+V Muzeu pry postradaj nejakeho hledace pokladu co se vidal pred delsim casem na zapad k Piramidam a je to dlouho co se nevratil.
+Ve meste pry snad sidli zvlastni cult dobrodruhu kteri se pry snazeji zvratit zlo jez obleha Gondorske zeme. Ja sama jsem snimy osobne nikdy nemluvila a ani to nemam nastesti zapotrebi.  Nevim jak konkretne oni ale mam spatne skusenosti s kultem "radostneho sneni". Ti se ze zacatku zdali take fajn ale kdyz pak najednou chteli pujcovat na sve projekty tak sem to snimy hned zabalila. Od te doby mi sem nesmi.  
+Domy leceni prej maji nejakou krizi s obstaravanim lecivich  bylin. Ma to na svedomi snad ta nemoc co tu radila pred mesicem a co na ni pomrelo dost decek.
+Ancu Puloucu pred dvema dny znasilnili primo na ulici. A to ani nebyla noc, bylo k veceru a na ulicich se nachazelo jeste dost lidi ale  zadnej znich se ji nepokusil zachranit !!   Tohle je bida, ta holka si sice o to tim svim oblecenim koledovala ale i tak ...  ehh uz o tom nechci mluvit.
+Od te doby co Doltnovim zemreli pri te nemoci minuly mesic obe deti tak jsou uplne mimo.  Dokonce se prej Pani Doltnova pokousela spachat sebevrazdu. Sluzebnictvo ji sice naslo vcas na to aby zastavili krvaceni, ale jeji dusi, tu uz se zachranit nepodarilo. Ted je chudera v domech uzdravovani a jak to tak vypada tak tam take dozije.
+
+
+[dialog d_pani_roouse_mt_drby button]
+on=0
+  DIALOG(d_pani_roouse_mt)
+
+on=1//dalsi drby
+  DIALOG(d_pani_roouse_mt_drby)
+
+on=2 //dalsi drby  ale koupit si pivo za 40 GP
+  src.consume=40 i_gold
+  DIALOG(d_pani_roouse_mt_drby)
+
+on=3//zakladni vyber
+  DIALOG(d_pani_roouse_mt)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_vyber]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  
+  page 1
+    dorand 2
+      argo.HTMLGUMP(170,230,440,100,1,0,36)
+      argo.HTMLGUMP(170,230,440,100,2,0,36)
+    enddo
+    button 25 395 0fa5 0fa7 1 0 1  //Piti
+    text 60 395 152 3
+    button 25 415 0fa5 0fa7 1 0 2  //Dezerty
+    text 60 415 152 4
+    button 25 435 0fa5 0fa7 1 0 3  //polevky
+    text 60 435 152 5
+    button 25 455 0fa5 0fa7 1 0 4  //jidlo
+    text 60 455 152 6
+    button 25 475 0fa5 0fa7 1 0 5  //Objedy
+    text 60 475 152 7
+    button 25 495 0fa5 0fa7 1 0 6  //Nocleh
+    text 60 495 152 8
+    src.ensureTag(hotoveQuesty_2)
+    if (<src.tag.hotovequesty_2>&0100000)||(<src.tag.hotovequesty_2>&080000)
+      argo.button 25 515 0fa5 0fa7 1 0 7  //sluzby
+      argo.text 60 515 152 9
+    endif
+
+[dialog d_pani_roouse_mt_vyber text]
+  Pani Roose   //    Jmeno a titul pozdraveneho
+  ano?
+  Copak by sis chtel objednat ?
+  Piti
+  Dezerty
+  Polevky a salaty
+  Hlavni jidlo
+  Objedy
+  Nocleh
+  Sluzby
+
+[dialog d_pani_roouse_mt_vyber button]
+on=0
+  DIALOG(d_pani_roouse_mt)
+on=1
+  DIALOG(d_pani_roouse_mt_piti)
+on=2
+  DIALOG(d_pani_roouse_mt_dezerty)
+on=3
+  DIALOG(d_pani_roouse_mt_polevky)
+on=4
+  DIALOG(d_pani_roouse_mt_jidlo)
+on=5
+  DIALOG(d_pani_roouse_mt_objedy)
+on=6
+  src.ensureTag(hotoveQuesty_2)
+  if (<src.tag.hotovequesty_2>&0100000)
+    DIALOG(d_pani_roouse_mt_pokoje_nelzevic)
+  else
+    DIALOG(d_pani_roouse_mt_nocleh)
+  endif
+
+on=7
+  DIALOG(d_pani_roouse_mt_sluzby)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_piti]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  page 1 // Objednam si
+    dorand 3
+    argo.HTMLGUMP(170,230,440,140,16,0,36)
+    argo.HTMLGUMP(170,230,440,140,17,0,36)
+    argo.HTMLGUMP(170,230,440,140,18,0,36)
+    enddo
+    button 25 395 0fa5 0fa7 1 0 10  //sklenka jablecny mostu
+    tilepic 55 395 01f7e
+    text 90 395 152 3
+    button 25 415 0fa5 0fa7 1 0 11  //Sklenka Liqueru
+    tilepic 55 415 01f86
+    text 90 415 152 4
+    button 25 435 0fa5 0fa7 1 0 12  //Sklenka vina
+    tilepic 55 435 01f8e
+    text 90 435 152 5
+    button 25 455 0fa5 0fa7 1 0 13  //Sklenka mlika
+    tilepic 55 453 01f8a
+    text 90 455 152 6
+    button 25 475 0fa5 0fa7 1 0 14  //Sklenka vody
+    tilepic 55 475 01f92
+    text 90 475 152 7
+    button 25 495 0fa5 0fa7 1 0 15  //lahev piva 
+    tilepic 55 495 099f
+    text 90 495 152 8
+    button 25 515 0fa5 0fa7 1 0 16  //lahev vina
+    tilepic 55 519 09c7
+    text 90 515 152 9
+    /////////
+    button 325 395 0fa5 0fa7 1 0 17  //lahev liqueru
+    tilepic 355 395 099b
+    text 390 395 152 10
+
+[dialog d_pani_roouse_mt_piti text]
+  Pani Roose   //    Jmeno a titul pozdraveneho
+  ano?
+  Copak by sis chtel objednat ?   //2
+  30   GP Sklenka jablecneho mostu
+  850  GP Sklenka Liqueru
+  120  GP Sklenka vina
+  40   GP sklenka mlika
+  10   GP sklenka vody
+  40   GP lahev piva
+  240  GP lahev vina
+  1700 GP lahev Liqueru
+  10   GP xxxx
+  10   GP xxxx
+  10   GP xxxx
+  10   GP xxxx
+  10   GP xxxx//15
+  Nas jablecnej most ti vyzene z hlavy vsechny starosti. Ale popravde moc ti ho nedoporucuji, pokud tedy nechces oslepnout  nebo davat krysam  dobrou noc. 
+  V mliku je schovano zdravy, tak to alspon rikala ma babicka.
+  Nabizim nejznackovejsi liquer jakej se da sehnat. Ta cena je hodne pod urovni jeho kvality. Doporucuji.
+
+[dialog d_pani_roouse_mt_piti button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+on=10
+  IF (<SRC.RESTEST 30 i_gold>)
+    src.consume=30 i_gold
+    src.newitem=i_glass_of_cider
+    src.act.name=sklenka jablecneho mostu
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=11
+  IF (<SRC.RESTEST 850 i_gold>)
+    src.consume=850 i_gold
+    src.newitem=i_glass_of_liquor
+    src.act.name=sklenka draheho Liqueru
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=12
+  IF (<SRC.RESTEST 120 i_gold>)
+    src.consume=120 i_gold
+    src.newitem=i_glass_of_wine
+    src.act.name=sklenka vina
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=13
+  IF (<SRC.RESTEST 40 i_gold>)
+    src.consume=40 i_gold
+    src.newitem=i_glass_of_milk
+    src.act.name=sklenka mleka
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=14
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_glass_of_water
+    src.act.name=sklenka vody
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=15
+  IF (<SRC.RESTEST 40 i_gold>)
+    src.consume=40 i_gold
+    src.newitem=i_bottle_ale
+    src.act.name=lahev piva
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=16
+  IF (<SRC.RESTEST 240 i_gold>)
+    src.consume=240 i_gold
+    src.newitem=i_bottle_wine
+    src.act.name=lahev kvalitniho vina z Dol Amroth
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=17
+  IF (<SRC.RESTEST 1700 i_gold>)
+    src.consume=1700 i_gold
+    src.newitem=i_bottle_liquor
+    src.act.name="lahev kvalitniho draheho liqueru (zn.) Draci dech"
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+
+///////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_dezerty]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  page 1 // Objednam si
+    dorand 3
+    argo.HTMLGUMP(170,230,440,140,18,0,36)
+    argo.HTMLGUMP(170,230,440,140,19,0,36)
+    argo.HTMLGUMP(170,230,440,140,20,0,36)
+    enddo
+    button 25 395 0fa5 0fa7 1 0 10  //  pizza
+    tilepic 50 395 01040
+    text 90 395 152 3
+    button 25 415 0fa5 0fa7 1 0 11  //  bochnik chleba
+    tilepic 55 415 0103c
+    text 90 415 152 4
+    button 25 435 0fa5 0fa7 1 0 12  //  peceny kolacek
+    tilepic 55 435 01041
+    text 90 435 152 5
+    button 25 455 0fa5 0fa7 1 0 13  // pecene kolacky
+    tilepic 55 453 0160b
+    text 90 455 152 6
+    button 25 475 0fa5 0fa7 1 0 14  // koblihy
+    tilepic 55 475 01ad3
+    text 90 475 152 7
+    button 25 495 0fa5 0fa7 1 0 15  // Bagety
+    tilepic 55 495 098c
+    text 90 495 152 8
+    button 25 515 0fa5 0fa7 1 0 16  // Vdolek
+    tilepic 55 519 09ea
+    text 90 515 152 9
+    //////
+    button 325 395 0fa5 0fa7 1 0 17  //  Dortik
+    tilepic 350 395 09e9
+    text 390 395 152 10
+    button 325 415 0fa5 0fa7 1 0 18  //  darkovy Dortik s venovanim
+    tilepic 350 415 09e9
+    text 390 415 152 11
+
+[dialog d_pani_roouse_mt_dezerty text]
+  Pani Roose   //    Jmeno a titul pozdraveneho
+  ano?
+  Copak by sis chtel objednat ?   //2
+  10 GP Pizza
+  20 GP Bochnik chleba
+  10 GP Peceny kolacek
+  10 GP Pecene kolacky
+  10 GP Koblihy
+  10 GP Bagety
+  10 GP Vdolek
+  15 GP Dortik
+  50 GP Darkovy dort z venovanim
+  xx
+  xx
+  xx
+  xx
+  xx
+  xx//17
+  Doporucuji ti se pred hlavnim chodem nadlabnout nejakym zakuskem. Z plnym zaludkem se dela mnohem lip.  
+  Ty koblihy ktere jsou v ceniku si tu delame sami.  Mestka straz si je nemuze vynachvalit a to nam zarucuje pomerne castou nastuvu jejich prislusniku. A take  vlasne i ochranu pred otrapy.
+  Ten chleba je otrosku drazsi  od te doby co Mordori delaji najezdy na Pelenorska pole. Musime dovazet  mouku z vetsich dalek.
+
+[dialog d_pani_roouse_mt_dezerty button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+on=10
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_pizza
+    src.act.name=pizza
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=11
+  IF (<SRC.RESTEST 20 i_gold>)
+    src.consume=20 i_gold
+    src.newitem=i_bread_wonder
+    src.act.name=bochnik chleba
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=12
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_pie_baked
+    src.act.name=peceny kolac
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=13
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_pan_cookies
+    src.act.name=male kolacky
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=14
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_donuts
+    src.act.name=koblihy
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=15
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_bread_french
+    src.act.name=bagety
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=16
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_muffin
+    src.act.name=vdolek
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=17
+  IF (<SRC.RESTEST 15 i_gold>)
+    src.consume=15 i_gold
+    src.newitem=i_cake
+    src.act.name=Dortik
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=18
+  IF (<SRC.RESTEST 50 i_gold>)
+    src.consume=50 i_gold
+    src.newitem=i_cake
+    src.act.name=Dort *jako darek venuje <?Src.Sex "verny pritel","verna pritelkine"?> <?src.name?>*
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_polevky]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  page 1 // Objednam si
+    dorand 3
+    argo.HTMLGUMP(170,230,440,140,18,0,36)
+    argo.HTMLGUMP(170,230,440,140,19,0,36)
+    argo.HTMLGUMP(170,230,440,140,20,0,36)
+    enddo
+    button 25 395 0fa5 0fa7 1 0 10  //  Mrkvova
+    tilepic 50 395 015f9
+    text 90 395 152 3
+    button 25 415 0fa5 0fa7 1 0 11  //  Kukuricna polevka
+    tilepic 55 415 015fa
+    text 90 415 152 4
+    button 25 435 0fa5 0fa7 1 0 12  //  Hrachova
+    tilepic 55 435 015fc 
+    text 90 435 152 5 
+    button 25 455 0fa5 0fa7 1 0 13  // Misa z hlavkovim salatem
+    tilepic 55 453 015fb
+    text 90 455 152 6
+    button 25 475 0fa5 0fa7 1 0 14  // koblihy
+    tilepic 55 475 01606
+    text 90 475 152 7
+    button 25 495 0fa5 0fa7 1 0 15  // Bagety
+    tilepic 55 495 01606
+    text 90 495 152 8
+    button 25 515 0fa5 0fa7 1 0 16  // Vdolek
+    tilepic 55 519 01606
+    text 90 515 152 9
+
+[dialog d_pani_roouse_mt_polevky text]
+  Pani Roose   // Jmeno a titul pozdraveneho
+  ano?
+  Copak by sis chtel objednat ?   //2
+  10   GP Misa s mrkvi
+  10   GP Kukuricna misa
+  10   GP Misa s hrachem
+  10   GP Misa z hlavkovim salatem
+  10   GP Rajiska polevka
+  10   GP Cervencova polevka
+  10   GP Gulasova polevka
+
+
+[dialog d_pani_roouse_mt_polevky button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+on=10
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_bowl_wood_carrots
+    src.act.name=misa s mrkvi
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=11
+  IF (<SRC.RESTEST 20 i_gold>)
+    src.consume=20 i_gold
+    src.newitem=i_bowl_wood_corn
+    src.act.name=kukuricna misa
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=12
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_bowl_wood_peas
+    src.act.name=misa s hrachem
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=13
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_bowl_wood_lettuce
+    src.act.name=misa s hlavkovim salatem
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=14
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_bowl_tomato_soup
+    src.act.name=rajska polevka
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=15
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_bowl_tomato_soup
+    src.act.name=cervencova polevka
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=16
+  IF (<SRC.RESTEST 10 i_gold>)
+    src.consume=10 i_gold
+    src.newitem=i_bowl_tomato_soup
+    src.act.name=Gulasova polevka
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_pani_roouse_mt_jidlo]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1
+    dorand 3
+    argo.HTMLGUMP(170,230,440,140,13,0,36)
+    argo.HTMLGUMP(170,230,440,140,14,0,36)
+    argo.HTMLGUMP(170,230,440,140,15,0,36)
+    enddo
+    button 25 395 0fa5 0fa7 1 0 10  //  rousiny zebirka
+    text 90 395 152 3
+    button 25 415 0fa5 0fa7 1 0 11  //  utopenci
+    text 90 415 152 4
+    button 25 435 0fa5 0fa7 1 0 12  //  hovezi pecene
+    text 90 435 152 5
+    button 25 455 0fa5 0fa7 1 0 13 // loupeznicky blaf
+    text 90 455 152 6
+    button 25 475 0fa5 0fa7 1 0 14 // kralova pecinka
+    text 90 475 152 7
+    button 25 495 0fa5 0fa7 1 0 15 // uzeniny
+    text 90 495 152 8
+    button 25 515 0fa5 0fa7 1 0 16 // veprova pecene
+    text 90 515 152 9
+
+[dialog d_pani_roouse_mt_jidlo text]
+  Pani Roose
+  ano?
+  Copak by sis chtel objednat ?   //2
+  250  GP Rousiny zebirka, pikantni sos, knedlik,
+  179  GP Utopenci
+  249  GP Hovezi pecene, zeli 
+  119  GP Loupeznicky blaf
+  750  GP Kralova pecinka
+  119  GP uzeniny,hrachova kase
+  3022 GP Veprova pecene
+  xx
+  xx
+  xx
+  Doporucuji ty zebirka. Vydatne a velmi dobre jidlo. Je to delane podle meho vlastniho receptu kterej je pochopitelne tajnej. *usmala se*
+  Kralovska pecene  je doopravdy kralovska *usmev* Opravdu kral Elessar si je nechava od nas osobne delat. Pry je umime udelat lip nez kralovska kuchyne. Ostatne uz nekolikrat se mne snazili presvedcit at jdu delat do Citadely. Ale kdepak ..  ja vim kde je me  misto..   tam bych byla NECO..  zde  jsem NEKDO.  
+  Veprova pecene je jen pro jedliky kteri se radi preziraj  a neni jim lito sahnout hluboko do kapsy.
+
+[dialog d_pani_roouse_mt_jidlo button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+on=10
+  IF (<SRC.RESTEST 250 i_gold>)&&(<src.food><16)
+    src.consume=250 i_gold
+    sfx=036
+    sfx=031
+    src.food=<?src.food?>+(12)
+    src.say=" *krrrk* Vyborny  ty zebirka jsou opravdu vyborny  "
+    DIALOG(d_pani_roouse_mt_vyber)
+  elseif (<SRC.RESTEST 250 i_gold>)
+    DIALOG(d_pani_roouse_mt_prejeden)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=11
+  IF (<SRC.RESTEST 179 i_gold>)&&(<src.food><16)
+    src.consume=179 i_gold
+    sfx=036
+    sfx=031
+    src.food=<?src.food?>+(6)
+    src.say=" *krrrk* Vyborny  ty utopenci se vazne povedly"
+    DIALOG(d_pani_roouse_mt_vyber)
+  elseif (<SRC.RESTEST 179 i_gold>)
+    DIALOG(d_pani_roouse_mt_prejeden)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=12
+  IF (<SRC.RESTEST 249 i_gold>)&&(<src.food><16)
+    src.consume=249 i_gold
+    sfx=036
+    sfx=031
+    src.food=<?src.food?>+(10)
+    src.say=" *mlask* mnam mnam hovezi peceni se zelim to ja rad. Vazne se vam to povedlo Pani Roous. "
+    DIALOG(d_pani_roouse_mt_vyber)
+  elseif (<SRC.RESTEST 249 i_gold>)
+    DIALOG(d_pani_roouse_mt_prejeden)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=13
+  IF (<SRC.RESTEST 119 i_gold>)&&(<src.food><16)
+    src.consume=119 i_gold
+    sfx=036
+    sfx=031
+    src.food=<?src.food?>+(14)
+    src.say=" *mlask* Vyborny, opravdu skvele uvareny a hodne syty jidlo. Vyzvidat z ceho to delate zrejme nema cenu co ? Mno ja jen doufam ze to neni z narezanych loupezniku.  "
+    DIALOG(d_pani_roouse_mt_vyber)
+  elseif (<SRC.RESTEST 119 i_gold>)
+    DIALOG(d_pani_roouse_mt_prejeden)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=14
+  IF (<SRC.RESTEST 750 i_gold>)&&(<src.food><16)
+    src.consume=750 i_gold
+    sfx=036
+    sfx=031
+    src.food=<?src.food?>+(11)
+    src.say=" *mlask mlask mlask* Tak ted uz chapu proc by vas chtel i kral na hrad. Tohle jidlo je vinikajci. "
+    DIALOG(d_pani_roouse_mt_vyber)
+  elseif (<SRC.RESTEST 750 i_gold>)
+    DIALOG(d_pani_roouse_mt_prejeden)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=15
+  IF (<SRC.RESTEST 119 i_gold>)&&(<src.food><16)
+    src.consume=119 i_gold
+    sfx=036
+    sfx=031
+    src.food=<?src.food?>+(6)
+    src.say=" Vyborny pani Roous "
+    DIALOG(d_pani_roouse_mt_vyber)
+  elseif (<SRC.RESTEST 119 i_gold>)
+    DIALOG(d_pani_roouse_mt_prejeden)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+on=16
+  IF (<SRC.RESTEST 3022 i_gold>)
+    src.consume=3022 i_gold
+    src.newitem=i_pig_roast
+    src.act.name="pecene prase"
+    src.act.bounce
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_nemas_prachy)
+  endif
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_nocleh]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1 // Objednam si
+    HTMLGUMP(170,230,440,140,2,0,36)
+    if !(<tag.mt_uroouse_pronajmut_pc_1>><?serv.time?>)
+    argo.button 25 395 0fa5 0fa7 1 0 1  //  pokoj cislo: 1
+    argo.text 60 395 152 3
+    endif
+    if !(<tag.mt_uroouse_pronajmut_pc_2>><?serv.time?>)
+    argo.button 25 415 0fa5 0fa7 1 0 2  //  pokoj cislo: 2
+    argo.text 60 415 152 4
+    endif
+    if !(<tag.mt_uroouse_pronajmut_pc_3>><?serv.time?>)
+    argo.button 25 435 0fa5 0fa7 1 0 3  //  pokoj cislo: 3
+    argo.text 60 435 152 5
+    endif
+    if !(<tag.mt_uroouse_pronajmut_pc_4>><?serv.time?>)
+    argo.button 25 455 0fa5 0fa7 1 0 4  // pokoj cislo: 4
+    argo.text 60 455 152 6
+    endif
+    if !(<tag.mt_uroouse_pronajmut_pc_5>><?serv.time?>)
+    argo.button 25 475 0fa5 0fa7 1 0 5  // pokoj cislo: 5
+    argo.text 60 475 152 7
+    endif
+    if !(<tag.mt_uroouse_pronajmut_pc_6>><?serv.time?>)
+    argo.button 25 495 0fa5 0fa7 1 0 6  // pokoj cislo 6
+    argo.text 60 495 152 8
+    endif
+    if !(<tag.mt_uroouse_pronajmut_pc_7>><?serv.time?>)
+    argo.button 25 515 0fa5 0fa7 1 0 7  // Jine ubytovani ?
+    argo.text 60 515 152 9
+    endif
+
+[dialog d_pani_roouse_mt_nocleh text]
+  Pani Roose   //    Jmeno a titul pozdraveneho
+  ano?
+  Mame tu celkem sedm pokuju vcetne meho. Je tu prvotridni ubytovani a v cene jsou zahrnuty i objedy a jine sluzby. Jeden pokoj je dokonce s luxusnim vybavenim. Tak co si vyberes ?  pokoje 1 az 5 jsou za 2000 medaku na tyden, a luxusni pokoj cislo 6 za 5000 na tyden.
+  pokoj cislo 1 za 2000 GP.
+  pokoj cislo 2 za 2000 GP.
+  pokoj cislo 3 za 2000 GP.
+  pokoj cislo 4 za 2000 GP.
+  pokoj cislo 5 za 2000 GP.
+  pokoj cislo 6 za 5000 GP.
+  Jine ubytovani ?
+  obsazeno
+
+[dialog d_pani_roouse_mt_nocleh button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+on=1
+  src.ensureTag(hotoveQuesty_2)
+  if (<src.tag.hotovequesty_2>&0100000)
+  DIALOG(d_pani_roouse_mt_pokoje_nelzevic)
+  return 1
+  endif
+  IF (<SRC.RESTEST 2000 i_gold>)
+    src.consume=2000 i_gold
+    tag.mt_uroouse_pronajmut_pc_1=<?serv.time?>+(604800)  //ulozi na roous
+    src.tag.mt_uroouse_najemce_c_1=<?serv.time?>+(604800)  //ulozi na hrace
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|0100000  //ma pronajmut pokoj
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|080000   //ma objednane jidlo u rouuse
+    sfx=036 //zaplaceni
+    DIALOG(d_pani_roouse_mt_pokoj)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+on=2
+  IF (<SRC.RESTEST 2000 i_gold>)
+    src.consume=2000 i_gold
+    sfx=036
+    tag.mt_uroouse_pronajmut_pc_2=<?serv.time?>+(604800)
+    src.tag.mt_uroouse_najemce_c_2=<?serv.time?>+(604800)
+    src.ensureTag(hotoveQuesty_2)
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|0100000
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|080000
+    DIALOG(d_pani_roouse_mt_pokoj)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+on=3
+  IF (<SRC.RESTEST 2000 i_gold>)
+    src.consume=2000 i_gold
+    sfx=036
+    tag.mt_uroouse_pronajmut_pc_3=<?serv.time?>+(604800)
+    src.tag.mt_uroouse_najemce_c_3=<?serv.time?>+(604800)
+    src.ensureTag(hotoveQuesty_2)
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|0100000
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|080000
+    DIALOG(d_pani_roouse_mt_pokoj)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+on=4
+  IF (<SRC.RESTEST 2000 i_gold>)
+    src.consume=2000 i_gold
+    sfx=036
+    tag.mt_uroouse_pronajmut_pc_4=<?serv.time?>+(604800)
+    src.tag.mt_uroouse_najemce_c_4=<?serv.time?>+(604800)
+    src.ensureTag(hotoveQuesty_2)
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|0100000
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|080000
+    DIALOG(d_pani_roouse_mt_pokoj)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+on=5
+  IF (<SRC.RESTEST 2000 i_gold>)
+    src.consume=2000 i_gold
+    sfx=036
+    tag.mt_uroouse_pronajmut_pc_5=<?serv.time?>+(604800)
+    src.tag.mt_uroouse_najemce_c_5=<?serv.time?>+(604800)
+    src.ensureTag(hotoveQuesty_2)
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|0100000
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|080000
+    DIALOG(d_pani_roouse_mt_pokoj)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+on=6
+  IF (<SRC.RESTEST 2000 i_gold>)
+    src.consume=2000 i_gold
+    sfx=036
+    tag.mt_uroouse_pronajmut_pc_6=<?serv.time?>+(604800)
+    src.tag.mt_uroouse_najemce_c_6=<?serv.time?>+(604800)
+    src.ensureTag(hotoveQuesty_2)
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|0100000
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|080000
+    DIALOG(d_pani_roouse_mt_pokoj)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+on=7
+  tag.remove.mt_uroouse_pronajmut_pc_1
+  tag.remove.mt_uroouse_pronajmut_pc_2
+  tag.remove.mt_uroouse_pronajmut_pc_3
+  tag.remove.mt_uroouse_pronajmut_pc_4
+  tag.remove.mt_uroouse_pronajmut_pc_5
+  tag.remove.mt_uroouse_pronajmut_pc_6
+  tag.remove.naobjedvalse_uroouse
+
+///////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_pokoj]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1 
+    HTMLGUMP(170,230,440,140,1,0,36)
+    button 25 395 0fa5 0fa7 1 0 1  //  pokoj cislo: 1
+    text 60 395 152 2
+
+[dialog d_pani_roouse_mt_pokoj text]
+  Pani Roose   //    Jmeno a titul pozdraveneho
+  Dobra chces teda tento podnajem. Penize si beru predem a jak uz jsem rekla v cene sou zahrnuty i objedy a uklidy pokoje. Musim te pozadat aby sis <?Src.Sex "sam hlidal","sama hlidala"?> kdy ti skonci najemne a zavcasu si pokoj <?Src.Sex "vyklidil popripade priplatil","vyklidila popripade priplatila"?> najem na dalsi cas. Nebot mi proste nejsme dobrocinecka uschovna takze by tvuj skromnej majetek dostal dalsi podnajemnik. Jinak kdyby si cokoliv potreboval ohledne sluzeb podniku tak se stim na mne obrat.
+  Beru na vedomi
+
+[dialog d_pani_roouse_mt_pokoj button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+
+on=1
+  DIALOG(d_pani_roouse_mt)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_pokoje_nemampenize]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1 
+    HTMLGUMP(170,230,440,140,1,0,36)
+    button 25 395 0fa5 0fa7 1 0 1  //  pokoj cislo: 1
+    text 60 395 152 2
+
+[dialog d_pani_roouse_mt_pokoje_nemampenize text]
+  Pani Roose
+  Vypada to ze budu mit noveho zakaznika. Samozrejme ti je jasne ze se plati predem hmm ? *nastavi dlan*
+  Ted u sebe nemam dostatek penez takze vezmu neco jineho.
+
+[dialog d_pani_roouse_mt_pokoje_nemampenize button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+
+on=1
+  DIALOG(d_pani_roouse_mt_vyber)
+
+  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_pani_roouse_mt_pokoje_nelzevic]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1 
+    HTMLGUMP(170,230,440,140,1,0,36)
+    button 25 395 0fa5 0fa7 1 0 1  //  pokoj cislo: 1
+    text 60 395 152 2
+
+[dialog d_pani_roouse_mt_pokoje_nelzevic text]
+  Pani Roose
+  Promin ale vic pokoju ti nepronajmu. Zdali mas pocit nadbytku penez tak si ve meste pronajmy cely dum. Pokoje tu v podstate mam jako doplnek nabydky sluzeb pro nove ve meste.
+  Rozumim ale ted bych <?Src.Sex "rad","rada"?> neco jineho.
+
+
+[dialog d_pani_roouse_mt_pokoje_nelzevic button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+
+on=1
+  DIALOG(d_pani_roouse_mt_vyber)
+
+
+////////////////////////////////////////////////////////////////
+[dialog d_pani_roouse_mt_sluzby]
+  5,5
+  src.ensureTag(hotoveQuesty_2)
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1
+    HTMLGUMP(170,230,440,100,1,0,36)
+    if (<src.tag.hotovequesty_2>&0100000)
+    argo.button 25 395 0fa5 0fa7 0 2 0  //Pritel
+    argo.text 60 395 152 2
+    argo.button 25 415 0fa5 0fa7 0 3 0  //najem pokoje
+    argo.text 60 415 152 3
+    endif
+    button 25 435 0fa5 0fa7 0 4 0//objedy
+    text 60 435 152 4
+    button 25 455 0fa5 0fa7 0 5 0//stezovat si
+    text 60 455 152 5
+    button 25 475 0fa5 0fa7 1 0 6//trvani sluzeb
+    text 60 475 152 12
+    button 25 495 0fa5 0fa7 1 0 7//zrusit nektere sluzby
+    text 60 495 152 13
+  page 2
+    HTMLGUMP(170,230,440,100,6,0,36)
+    IF (<SRC.RESTEST 200 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 1
+    argo.text 60 395 152 7
+    endif
+    IF !(<SRC.RESTEST 200 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 5
+    argo.text 60 395 152 8
+    endif
+  page 3
+    HTMLGUMP(170,230,440,100,9,0,36)
+    if (<src.tag.mt_uroouse_najemce_c_1>><?srv.time?>)&&(<SRC.RESTEST 2000 i_gold>)
+    if (<SRC.RESTEST 2000 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    argo.text 60 395 152 10
+    endif
+    endif
+    if (<src.tag.mt_uroouse_najemce_c_2>><?srv.time?>)&&(<SRC.RESTEST 2000 i_gold>)
+    if (<SRC.RESTEST 2000 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    argo.text 60 395 152 10
+    endif
+    endif
+    if (<src.tag.mt_uroouse_najemce_c_3>><?srv.time?>)&&(<SRC.RESTEST 2000 i_gold>)
+    if (<SRC.RESTEST 2000 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    argo.text 60 395 152 10
+    endif
+    endif
+    if (<src.tag.mt_uroouse_najemce_c_4>><?srv.time?>)&&(<SRC.RESTEST 2000 i_gold>)
+    if (<SRC.RESTEST 2000 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    argo.text 60 395 152 10
+    endif
+    endif
+    if (<src.tag.mt_uroouse_najemce_c_5>><?srv.time?>)
+    if (<SRC.RESTEST 2000 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    argo.text 60 395 152 10
+    endif
+    endif
+    if (<src.tag.mt_uroouse_najemce_c_6>><?srv.time?>)
+    if (<SRC.RESTEST 5000 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    argo.text 60 395 152 11
+    endif
+    endif
+    IF !(<SRC.RESTEST 2000 i_gold>)
+    argo.button 25 395 0fa5 0fa7 1 0 5
+    argo.text 60 395 152 8
+    endif
+  page 4  //priplatit objedy
+    HTMLGUMP(170,230,440,100,14,0,36)
+    button 25 395 0fa5 0fa7 1 0 3  //tyden
+    text 60 395 152 15
+    button 25 415 0fa5 0fa7 1 0 4  //mesic
+    text 60 415 152 16
+    button 25 435 0fa5 0fa7 1 0 9//rok
+    text 60 435 152 17
+  page 5 //stiznosti 
+    HTMLGUMP(170,230,440,100,18,0,36)
+    button 25 395 0fa5 0fa7 0 1 0
+    text 60 395 152 19
+    if (<src.tag.hotovequesty_2>&04000000)
+    argo.button 25 415 0fa5 0fa7 1 0 8
+    argo.text 60 415 152 20
+    endif
+    if !(<src.tag.hotovequesty_2>&04000000)
+    argo.button 25 415 0fa5 0fa7 0 6 0
+    argo.text 60 415 152 21
+    endif
+  page 6
+    HTMLGUMP(170,230,440,100,22,0,36)
+    button 25 395 0fa5 0fa7 0 1 0
+    text 60 395 152 23
+
+
+
+[dialog d_pani_roouse_mt_sluzby text]
+  Pani Roose   //Jmeno a titul pozdraveneho
+  Je tu neco scim ti mohu pomoci ohledne poskytovanych sluzeb ?
+  Rad bych umoznil priteli vstup do meho pokoje a k mim vecem.
+  Rad bych si priplatil najem.
+  Rad bych jeste predplatil objedy.
+  Stezovat si. //5
+  Ale jiste tohle se da zaridit, Ovsem budu po tobe chtit 200 GP  za udelani noveho nahradniho klice do zasoby. Ne ze by byl tak drahej u klicnika je mnohem levnejsi , ale ja pravidelne nechavam menit cele zamky po odchodu najemniku. A dej mu ho co nejdriv snadno se strati jak je malej.
+  samozrejme zde jsou.
+  prominte ale ted na to nemam.//8
+  To rada slysim. V podstate to znamena ze jsi zde <?Src.Sex "spokojen","spokojena"?>. Inu cenik je samozrejme stejny, Pokoje jedna az pet jsou za za dva tisice na tyden a sestka je za pet tisic GP. Najem ti bude prodlouzen o dalsi tyden.
+  Jiste zde jsou 2000 GP
+  Jiste zde je 5000 GP
+  Trvani sluzeb
+  Zrusit nektere sluzby //13
+  No a na jak dlouho ?
+  Na dalsi tyden *za 500 GP*
+  Na dalsi mesic *za 2000 GP*
+  Na ROK * za 24000 GP* 
+  Uha stiznost, a na copak ? Upozornuji te ze na priprave jidel se tu dohlizi jako nikde jinde takze ti neskocim na to ze ti v polivce plave neco co nema. 
+  Vlastne si stezovat nechci.
+  Kdepak jidlo, ale bordel tu je na zemi. videl sem blitky! //20
+  Stezuji si, ze se neda na nic stezovat.
+  <?Src.Sex "Hernajs","Holka"?> ty jsi mi ale vtipalek. *usmev* Co vlastne potrebujes ?
+  *smejes se*  vlastne nic*
+
+[dialog d_pani_roouse_mt_sluzby button]
+on=0
+  DIALOG(d_pani_roouse_mt)
+
+on=1
+  if (<src.tag.mt_uroouse_najemce_c_1>><?srv.time?>)
+  src.newitem(i_mt_urouse_key_pk_1)
+  src.bounce(lastnew)
+  endif
+  
+  if (<src.tag.mt_uroouse_najemce_c_2>><?srv.time?>)
+  src.newitem(i_mt_urouse_key_pk_2)
+  src.bounce(lastnew)
+  endif
+  
+  if (<src.tag.mt_uroouse_najemce_c_3>><?srv.time?>)
+  src.newitem(i_mt_urouse_key_pk_3)
+  src.bounce(lastnew)
+  endif
+  
+  if (<src.tag.mt_uroouse_najemce_c_4>><?srv.time?>)
+  src.newitem(i_mt_urouse_key_pk_4)
+  src.bounce(lastnew)
+  endif
+  
+  if (<src.tag.mt_uroouse_najemce_c_5>><?srv.time?>)
+  src.newitem(i_mt_urouse_key_pk_5)
+  src.bounce(lastnew)
+  endif
+  
+  if (<src.tag.mt_uroouse_najemce_c_6>><?srv.time?>)
+  src.newitem(i_mt_urouse_key_pk_6)
+  src.bounce(lastnew)
+  endif
+  src.consume=200 i_gold
+  sfx=036
+on=2
+  if (<src.tag.mt_uroouse_najemce_c_1>><?srv.time?>)
+    src.consume=2000 i_gold
+    sfx=036 //zaplaceni
+    tag.mt_uroouse_pronajmut_pc_1=(<?tag.mt_uroouse_pronajmut_pc_1?>+(604800))
+    src.tag.mt_uroouse_najemce_c_1=(<?src.tag.mt_uroouse_najemce_c_1?>+(604800))
+    DIALOG(d_pani_roouse_mt_pokoj)
+  endif
+  if (<src.tag.mt_uroouse_najemce_c_2>><?srv.time?>)
+    src.consume=2000 i_gold
+    sfx=036 //zaplaceni
+    tag.mt_uroouse_pronajmut_pc_2=(<?tag.mt_uroouse_pronajmut_pc_2?>+(604800))
+    src.tag.mt_uroouse_najemce_c_2=(<?src.tag.mt_uroouse_najemce_c_2?>+(604800))
+    DIALOG(d_pani_roouse_mt_pokoj)
+  endif
+  if (<src.tag.mt_uroouse_najemce_c_3>><?srv.time?>)
+    src.consume=2000 i_gold
+    sfx=036 //zaplaceni
+    tag.mt_uroouse_pronajmut_pc_3=(<?tag.mt_uroouse_pronajmut_pc_3?>+(604800))
+    src.tag.mt_uroouse_najemce_c_3=(<?src.tag.mt_uroouse_najemce_c_3?>+(604800))
+    DIALOG(d_pani_roouse_mt_pokoj)
+  endif
+  if (<src.tag.mt_uroouse_najemce_c_4>><?srv.time?>)
+    src.consume=2000 i_gold
+    sfx=036 //zaplaceni
+    tag.mt_uroouse_pronajmut_pc_4=(<?tag.mt_uroouse_pronajmut_pc_4?>+(604800))
+    src.tag.mt_uroouse_najemce_c_4=(<?src.tag.mt_uroouse_najemce_c_4?>+(604800))
+    DIALOG(d_pani_roouse_mt_pokoj)
+  endif
+  if (<src.tag.mt_uroouse_najemce_c_5>><?srv.time?>)
+    src.consume=2000 i_gold
+    sfx=036 //zaplaceni
+    tag.mt_uroouse_pronajmut_pc_5=(<?tag.mt_uroouse_pronajmut_pc_5?>+(604800))
+    src.tag.mt_uroouse_najemce_c_5=(<?src.tag.mt_uroouse_najemce_c_5?>+(604800))
+    DIALOG(d_pani_roouse_mt_pokoj)
+  endif
+  if (<src.tag.mt_uroouse_najemce_c_6>><?srv.time?>)
+    src.consume=5000 i_gold
+    sfx=036 //zaplaceni
+    tag.mt_uroouse_pronajmut_pc_6=(<?tag.mt_uroouse_pronajmut_pc_6?>+(604800))
+    src.tag.mt_uroouse_najemce_c_6=(<?src.tag.mt_uroouse_najemce_c_6?>+(604800))
+    DIALOG(d_pani_roouse_mt_pokoj)
+  endif
+
+on=3//predplatit objedy na 7 dni
+  IF (<SRC.RESTEST 500 i_gold>)
+    src.consume=500 i_gold
+    sfx=036
+    src.tag.mt_uroouse_predplatne_jidla=<?src.tag.mt_uroouse_predplatne_jidla?>+(604800)
+    DIALOG(d_pani_roouse_mt_zbyva_sluzeb)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+on=4//predplatit objedy na mesic
+  IF (<SRC.RESTEST 2000 i_gold>)
+    src.consume=2000 i_gold
+    sfx=036
+    src.tag.mt_uroouse_predplatne_jidla=<?src.tag.mt_uroouse_predplatne_jidla?>+(2764800)
+    DIALOG(d_pani_roouse_mt_zbyva_sluzeb)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+
+on=5
+  DIALOG(d_pani_roouse_mt)
+
+on=6
+  DIALOG(d_pani_roouse_mt_zbyva_sluzeb)
+
+on=7
+  DIALOG(d_pani_roouse_mt_zrusit_sluzby)
+
+on=8   //stezovat si
+  DIALOG(d_pani_roouse_mt_stezujesi)
+
+on=9  //predplatit objedy na ROK dopredu
+  IF (<SRC.RESTEST 24000 i_gold>)
+    src.consume=24000 i_gold
+    sfx=036
+    src.tag.mt_uroouse_predplatne_jidla=<?src.tag.mt_uroouse_predplatne_jidla?>+(31536000)
+    DIALOG(d_pani_roouse_mt_zbyva_sluzeb)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+
+on=10
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_stezujesi]
+  5,5
+  src.ensureTag(hotoveQuesty_2)
+  page 0
+    f_vyp_kolik_dnu
+    resizepic 20 200 2620 640 350
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1 
+    if (<src.tag.hotovequesty_2>&08000000)//uz to jednou vyridila
+    argo.HTMLGUMP(170,230,440,140,1,0,36)
+    argo.button 25 395 0fa5 0fa7 1 0 1
+    argo.text 60 395 152 2
+    argo.button 25 415 0fa5 0fa7 1 0 2
+    argo.text 60 415 152 3    
+    else
+    argo.HTMLGUMP(170,230,440,140,4,0,36)
+    argo.button 25 395 0fa5 0fa7 0 2 0
+    argo.text 60 395 152 5
+    argo.button 25 415 0fa5 0fa7 1 0 1
+    argo.text 60 415 152 6
+    endif
+  page 2
+    HTMLGUMP(170,230,440,140,7,0,36)
+    button 25 395 0fa5 0fa7 1 0 1
+    text 60 395 152 8
+    button 25 415 0fa5 0fa7 0 3 0
+    text 60 415 152 9
+  page 3
+    HTMLGUMP(170,230,440,140,10,0,36)
+    button 25 395 0fa5 0fa7 1 0 3
+    text 60 395 152 11
+    button 25 415 0fa5 0fa7 1 0 1
+    text 60 415 152 8
+
+[dialog d_pani_roouse_mt_stezujesi text]
+  Pani Roose
+  O co se jako pokousis ? Dyt uz jsem jednou za tvou schovivast zaplatila.
+  Jiste  omlouvam se. Chtel sem neco jineho.
+  No a ted prave nastal cas zaplatit znova. Za nove blitky //3
+  Uh spina na zemi ? Jiste mas na mysli sem tam nejake to smitko co upadne hostum u jidla na zem. To ale neni nic zas tak moc hrozneho nemyslis ?
+  Smitko? Ja tu mluvim o vzratkach. Az se to rozkrikne...
+  Ale v podstate ano  nic tak hrozneho.
+  Rozkrikne ? Proboha jen to ne. Mohlo by mne to poskodit vic nez si myslis. Kral by urcite nechal zrusit styky z mou kuchyni. Co takhle se domluvit? *vystrasena*
+  V podstate se nic nestalo Roous. //8
+  Domluvit?
+  Ano domluvit. Dam ti 500 GP a tim si koupim tvou mlcenlivost.
+  Domluveno. *vzit penize a stat se vydirakem*
+    
+
+
+[dialog d_pani_roouse_mt_stezujesi button]
+on=0
+  DIALOG(d_pani_roouse_mt_sluzby)
+
+on=1    //pouze navrat do sluzeb
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~04000000//zrusi blitek
+  DIALOG(d_pani_roouse_mt_sluzby)
+
+on=2  //druhe vydirani prestane se s hracem bavit.
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|020000
+  say="Tak za tohle vydirani uz do meho podniku nepachnes."
+  
+on=3  //prvni vydirani
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|08000000//byla vydirana
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~04000000//zrusi blitek
+  src.newitem=i_gold
+  src.act.amount=500
+  src.act.bounce
+  DIALOG(d_pani_roouse_mt_sluzby)
+
+//////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_pani_roouse_mt_zbyva_sluzeb]
+  5,5
+  src.ensureTag(hotoveQuesty_2)
+  page 0
+    f_vyp_kolik_dnu
+    resizepic 20 200 2620 640 350
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1 
+    if !(<src.tag.hotovequesty_2>&0100000)
+      argo.HTMLGUMP(170,230,440,140,2,0,36)
+    else
+      argo.HTMLGUMP(170,230,440,140,1,0,36)
+    endif
+    button 25 395 0fa5 0fa7 1 0 1  //  pokoj cislo: 1
+    text 60 395 152 3
+
+[dialog d_pani_roouse_mt_zbyva_sluzeb text]
+  Pani Roose
+  Ted tu mas zaplacen pokoj na <?f_mt_najem_dnu?> dnu. a objedy na <?f_mt_jidlo_dnu?> dnu.
+  Ted tu mas zaplacene objedy na <?f_mt_jidlo_dnu?> dnu.
+  oki
+
+
+[dialog d_pani_roouse_mt_zbyva_sluzeb button]
+on=0
+  DIALOG(d_pani_roouse_mt_sluzby)
+
+on=1
+  DIALOG(d_pani_roouse_mt_sluzby)
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_pani_roouse_mt_zrusit_sluzby]
+  5,5
+  src.ensureTag(hotoveQuesty_2)
+  page 0
+    f_vyp_kolik_dnu
+    resizepic 20 200 2620 640 350
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1 
+    HTMLGUMP(170,230,440,140,1,0,36)
+    if (<src.tag.hotovequesty_2>&0100000)//ubytovan
+    argo.button 25 395 0fa5 0fa7 0 2 0
+    argo.text 60 395 152 2
+    endif
+    if (<src.tag.hotovequesty_2>&080000)//jidlo
+    argo.button 25 415 0fa5 0fa7 0 5 0
+    argo.text 60 415 152 3
+    endif
+  page 2
+    HTMLGUMP(170,230,440,140,4,0,36)
+    button 25 395 0fa5 0fa7 1 0 2//podekuje a odjde
+    text 60 395 152 5
+    button 25 415 0fa5 0fa7 1 0 3
+    text 60 415 152 6
+    button 25 435 0fa5 0fa7 0 3 0
+    text 60 435 152 7
+  page 3
+    HTMLGUMP(170,230,440,140,8,0,36)
+    button 25 395 0fa5 0fa7 0 4 0//sranda
+    text 60 395 152 9
+    button 25 415 0fa5 0fa7 1 0 5//urazil
+    text 60 415 152 10
+  page 4
+    HTMLGUMP(170,230,440,140,10,0,36)
+    button 25 395 0fa5 0fa7 1 0 4//podekuje a odjde
+    text 60 395 152 11
+  page 5 //jidlo
+    HTMLGUMP(170,230,440,140,13,0,36)
+    button 25 395 0fa5 0fa7 0 1 0//omyl
+    text 60 395 152 14
+    button 25 415 0fa5 0fa7 1 0 6//odhlasit
+    text 60 415 152 15
+    button 25 435 0fa5 0fa7 1 0 5//urazil
+    text 60 435 152 16
+
+[dialog d_pani_roouse_mt_zrusit_sluzby text]
+  Pani Roose
+  Ted tu mas zaplacen pokoj na <?f_mt_najem_dnu?> dnu. a objedy na <?f_mt_jidlo_dnu?> dnu. Co se stalo ?  To se mi nestava ze by nekdo rusil sluzby. Jedna se o ubytovani, jidla nebo uklid pokoje?
+  O ubytovani.. nasel sem konecne domek.
+  O objedy.
+  Tak to jo. Preji ti at se ti vnem libi. <?Src.Sex "Jinak jestli sis nasel k domu i zenu, tak doufam ze i tak sem obcas zajdes na jidlo *usmev* ","Jinak presto ze uz mas vek na to aby si umela varit a mit deti. Tak ze presto sem obcas zajdes na jidlo. *usmev* "?> 
+  Roous dekuji za vse. A mejte se.   //5
+  Jasne ze pridu, takhle varit se nenaucim ani za sto let.
+  Popravde uz asi asi neprijdu.
+  proc?
+  Delam si srandu *usmejes se*
+  Je to tu hrozny. Vsechno. Ubytovani, jidlo a hlavne TY. //10
+  Ach tak <?Src.Sex "pan je vtpalek *usmev*  "," holka je vtipalek *usmev* "?> 
+  Presne tak vtipalek. *usmev*
+  Proc ?  Nechutna ti tu? zda se ti to drahe ?
+  Vlastne ne ani nevim. Rekl jsem blbos chtel sem neco jineho.
+  Uz zde nebudu pobyvat a dlouho se tu neukazi.
+  Ano. HUMUS jidlo a priserna obsluha vcetne tebe.
+
+[dialog d_pani_roouse_mt_zrusit_sluzby button]
+on=0
+  DIALOG(d_pani_roouse_mt_sluzby)
+on=1
+  DIALOG(d_pani_roouse_mt_sluzby)
+on=2//zrusi ubytovani a odejde
+  say="Mejte se"
+  src.say="Roous dekuji za vse. A mejte se."
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~0100000
+  f_mt_zrusit_najem
+on=3//zrusi ubytovani a dal tlacha
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~0100000
+  f_mt_zrusit_najem
+  DIALOG(d_pani_roouse_mt_sluzby)
+on=4//vtip
+  say=""ch tak <?Src.Sex "pan je vtpalek *usmev*  "," holka je vtipalek *usmev* "?> 
+  src.say="Presne tak vtipalek. *usmev*"
+  DIALOG(d_pani_roouse_mt_sluzby)
+on=5//urazil roous
+  say=""Uz te tu nechci videt ty <?Src.Sex "nerade. Bidaku pamatuj ze tady si skoncil."," mrcho. Pamatuj ze sem uz nepachnes."?> 
+  src.say="konecne.. "
+  src.ensureTag(hotoveQuesty_2)
+  if (<src.tag.hotovequesty_2>&0100000)//ubytovan
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~0100000
+    f_mt_zrusit_najem
+  endif
+  if (<src.tag.hotovequesty_2>&080000)//jidlo
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~080000
+    src.tag.remove.mt_uroouse_predplatne_jidla
+  endif
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|020000 //odmita  nadale bavit  
+on=6//zrusil predplatne jidla
+  say="Mejte se.." 
+  src.say="zbohem "
+  src.ensureTag(hotoveQuesty_2)
+  if (<src.tag.hotovequesty_2>&080000)//jidlo
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>&~080000
+    src.tag.remove.mt_uroouse_predplatne_jidla
+  endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_pani_roouse_mt_objedy]
+  5,5
+  page 0
+    f_vyp_kolik_dnu
+    resizepic 20 200 2620 640 350
+    gumppic 30 210 03182
+    gumppic 40 215 03131
+    text 220 210 52 0
+  page 1 
+    src.ensureTag(hotoveQuesty_2)
+    if (<src.tag.hotovequesty_2>&080000)||(<src.tag.hotovequesty_2>&0100000)
+    dorand 8
+    argo.HTMLGUMP(170,230,440,140,1,0,36)
+    argo.HTMLGUMP(170,230,440,140,2,0,36)
+    argo.HTMLGUMP(170,230,440,140,3,0,36)
+    argo.HTMLGUMP(170,230,440,140,4,0,36)
+    argo.HTMLGUMP(170,230,440,140,5,0,36)
+    argo.HTMLGUMP(170,230,440,140,6,0,36)
+    argo.HTMLGUMP(170,230,440,140,7,0,36)
+    argo.HTMLGUMP(170,230,440,140,8,0,36)
+    enddo
+    argo.button 25 395 0fa5 0fa7 1 0 1
+    argo.text 60 395 152 9
+    else
+    argo.HTMLGUMP(170,230,440,140,10,0,36)
+    argo.button 25 395 0fa5 0fa7 1 0 2
+    argo.text 60 395 152 11
+    endif
+
+[dialog d_pani_roouse_mt_objedy text]
+  Pani Roose
+  Objedy mas predplacene na <?f_mt_jidlo_dnu?> dnu. Takze ted se jeste muzes v pohode najist. Nech mne hadat dnes to bude Bramboracka ?  koukam ze se usmivas, takze jsem se trefila dobre. Mas stesti akorad se v kuchyni dovarila takze momentik  *popojde vedle ke dverim do kuchyne a za chvilku se vrati z plnou porci Gulasove polevky a kusu chleba*   Tak tady mas a preji dobrou chut.
+  Objedy mas predplacene na <?f_mt_jidlo_dnu?> dnu. Takze ted se jeste muzes v pohode najist. Nech mne hadat dnes to bude Zelnacka ?  koukam ze se usmivas, takze jsem se trefila dobre. Mas stesti akorad se v kuchyni dovarila takze momentik  *popojde vedle ke dverim do kuchyne a za chvilku se vrati z plnou porci Zelnackove polevky a kusu chleba*   Tak tady mas a preji dobrou chut.
+  Objedy mas predplacene na <?f_mt_jidlo_dnu?> dnu. Takze ted se jeste muzes v pohode najist. Nech mne hadat dnes to bude Krupicka ?  koukam ze se usmivas, takze jsem se trefila dobre. Mas stesti akorad se v kuchyni dovarila takze momentik  *popojde vedle ke dverim do kuchyne a za chvilku se vrati z plnou porci krupicne kase*   Tak tady mas a preji dobrou chut.
+  Objedy mas predplacene na <?f_mt_jidlo_dnu?> dnu. Takze ted se jeste muzes v pohode najist. Nech mne hadat dnes to bude Smouli polevka ?  koukam ze se usmivas, takze jsem se trefila dobre. Mas stesti akorad se v kuchyni dovarila takze momentik  *popojde vedle ke dverim do kuchyne a za chvilku se vrati z plnou porci Smouli polevky a kusu chleba*   Tak tady mas a preji dobrou chut.
+  Objedy mas predplacene na <?f_mt_jidlo_dnu?> dnu. Takze ted se jeste muzes v pohode najist. Nech mne hadat dnes to budou Uzenace ?  koukam ze se usmivas, takze jsem se trefila dobre. Jeste stesti ze se tu dnes nestavil Jindra Sroba, ten by je vyjedl a nezbylo by ti nic. *popojde vedle ke dverim do kuchyne a za chvilku se vrati z plnou sklenici Uzenacu a kusu chleba*   Tak tady mas a preji dobrou chut.
+  Objedy mas predplacene na <?f_mt_jidlo_dnu?> dnu. Takze ted se jeste muzes v pohode najist. Nech mne hadat dnes to bude Jetrnicka ?  koukam ze se usmivas, takze jsem se trefila dobre. Mas stesti zrovna predchvili je donesli od reznika.  *popojde vedle ke dverim do kuchyne a za chvilku se vrati Jetrnickou a kusem chleba*   Tak tady mas a preji dobrou chut.
+  Objedy mas predplacene na <?f_mt_jidlo_dnu?> dnu. Takze ted se jeste muzes v pohode najist. Nech mne hadat dnes to budou kolinka na sladko ?  koukam ze se usmivas, takze jsem se trefila dobre. Mas stesti ze tu dnes jeste nebyl Vypravejda, ten by ti to snedl. *popojde vedle ke dverim do kuchyne a za chvilku se vrati z plnou misou kolinek na sladko posipanych kakaem*   Tak tady mas a preji dobrou chut.
+  Objedy mas predplacene na <?f_mt_jidlo_dnu?> dnu. Takze ted se jeste muzes v pohode najist. Nech mne hadat dnes to bude vyvar z Tarovych fusekli ?  koukam ze se moc neuusmivas takze ti prinesu neco jineho. Treba vdolky  Mas stesti akorad se v kuchyni dopekli takze momentik  *popojde vedle ke dverim do kuchyne a za chvilku se vrati z plnou misu vdolku a sklenku mlika*   Tak tady mas a preji dobrou chut.
+  dekuji *snis si objed*
+  Jestli si prejes tak si u mne za 500 GP muzes predplatit objedy dopredu. nejen ze ti to pozdeji ulehci starosti s hledanim srajtofle, ale navic na tom scela urcite usetris.
+  Zni to skele, predplatim si.  *dat 500 GP*//11
+
+[dialog d_pani_roouse_mt_objedy button]
+on=0
+  DIALOG(d_pani_roouse_mt_vyber)
+on=1
+  IF (<src.food><16)
+    sfx=031
+    src.food=<?src.food?>+(3)
+    src.say="*krrrk* Vyborny  skvelej objed"
+    DIALOG(d_pani_roouse_mt_vyber)
+  else
+    DIALOG(d_pani_roouse_mt_prejeden)
+  endif
+on=2
+  IF (<SRC.RESTEST 500 i_gold>)
+    src.consume=500 i_gold
+    sfx=036
+    src.tag.mt_uroouse_predplatne_jidla=<?serv.time?>+(604800)
+    src.ensureTag(hotoveQuesty_2)
+    src.tag.hotovequesty_2=<src.tag.hotovequesty_2>|080000
+    DIALOG(d_pani_roouse_mt_objedy)
+  else
+    DIALOG(d_pani_roouse_mt_pokoje_nemampenize)
+  endif
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[dialog d_pani_roouse_or_hrobar_mt]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky  
+gumppic 40 215 03131 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0  // Objednam si ?     
+text 200 332 1152 2    // 
+button 325 330 0988 0988 0 3 0  // Nejake drby ? 
+text 350 330 1152 3    //
+button 490 330 0988 0988 0 4 0  // Obchodovat ?  
+text 510 330 1152 4   //
+button 160 360 0988 0988 0 5 0  // Hledam praci  
+text 190 360 1152 5   //
+button 325 360 0988 0988 0 6 0  // Nesu ti ...   
+text 350 360 1152 6   //
+button 490 360 0988 0988 0 7 0  // Proverit      
+text 520 360 1152 7   //
+
+page 1
+HTMLGUMP(170,230,440,100,1,0,36)
+
+page 2 // Objednam si
+HTMLGUMP(170,230,440,100,46,0,36)
+button 25 395 0fa5 0fa7 0 19 0  //  nechi te pozvat !!!       
+text 60 395 152 44
+button 25 415 0fa5 0fa7 0 7 0  //  dobra  pozvu te..       
+text 60 415 152 45
+button 25 435 0fa5 0fa7 1 0 9  //  nemas penize ?
+text 60 435 152 47
+
+
+page 3   //  neco rici o sobe...     
+HTMLGUMP(170,230,440,100,9,0,6)
+button 25 395 0fa5 0fa7 0 12 0  //  reknes pravdu ?       
+text 60 395 152 28
+button 25 415 0fa5 0fa7 0 13 0  //  Reknes lez ?       
+text 60 415 152 29
+button 25 435 0fa5 0fa7 0 14 0  //  zakecas to..      
+text 60 435 152 30
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+button 25 395 0fa5 0fa7 0 8 0  //  obchodovani prvni nabidka       
+text 60 395 152 23
+
+page 5                          //Hledam praci
+HTMLGUMP(170,230,440,100,11,0,36)
+
+page 6                            //Nesu ti
+HTMLGUMP(170,230,440,100,12,0,36)
+
+page 7                            //informace o postave
+HTMLGUMP(170,230,440,100,13,0,36)
+
+page 8      // Vber  objednavek
+HTMLGUMP(170,230,440,100,22,0,36)
+button 25 395 0fa5 0fa7 0 10 0  //  kde najdu ?       
+text 60 395 152 28
+button 25 415 0fa5 0fa7 0 11 0  //  kde najdu ?       
+text 60 415 152 29
+button 25 435 0fa5 0fa7 0 12 0  //  kde najdu ?     
+text 60 435 152 30
+button 25 455 0fa5 0fa7 0 13 0  // kde najdu ?       
+text 60 455 152 31
+button 25 475 0fa5 0fa7 0 14 0  //  Kde najdu ?       
+text 60 475 152 32
+button 25 495 0fa5 0fa7 0 15 0  //  Kde najdu ?       
+text 60 495 152 33
+button 25 515 0fa5 0fa7 0 16 0  //  kde najdu ?       
+text 60 515 152 34
+
+
+
+
+
+[dialog d_pani_roouse_or_hrobar_mt text]
+Pani Roose   //    Jmeno a titul pozdraveneho
+ano?
+Preji si..
+Nejake drby ?
+Obchodovat ?
+Hledam praci
+Nesu ti ...
+Prohlednout..
+Copak by sis chtel objednat ?   //8
+Drby ? Tak ty si sama rada vyslechnu..   napriklad o vas  kdo jste a cim se zivite  ?  *sibalsky na tebe mrkla*
+Nevedela jsem ze tu jsi obchodne.  Vypadas spise jako..   jako.. no to je fuk.  Co mi chces nabidnout za obchod ?   Upozorniji te ale dopredu ze neprijmu nic nekvalitniho.. Mam podepsanou smlouvu z kralovskym palacem..  Dodavame jim tam jidla a chci aby tomu tak bylo i nadale.
+Praci pro tebe ?    Hmmm.. prace se samozrejme vzdycky nejaka najde..   Ale nemyslisi ze zacnes hned brat nejake veci penize..  A navic u me musis zacit uplne od pyky, teda  chci rict lavoru z nadobim..    Hmm ?   *usmiva se*   Tak uz te to preslo ?
+U Mandose co ty me muzes chtit dat ?  Varuji te jestli smrt tak ta mi bouzel neni souzena.. hehehe                 No dobra  co to je ?  
+*INFO* Od pohledu kus zensky...  Co straci na stihlosti a krase to dohani charakterovymi vlastnosmi. Je to clovek kterej te snadno privede do dobre nalady..  
+xxxxx1  //prechody minas tirith 
+xxxxx2  //15
+xxxxx3
+xxxxx4
+xxxxx5
+xxxxx6
+xxxxx7  //20
+xxxxx8
+xxxxx9
+xxxx10
+xxxxx11 
+xxxxx12     //25      
+xxxxx13     
+xxxxx14           
+xxxxx15 
+xxxxx16  
+
+
+
+[dialog d_pani_roouse_or_hrobar_mt button]
+on=0
+return 1
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[SPEECH spk_strazce_knihovny]
+
+ON=*ahoj*
+ON=*hi*
+  say="Ja nemam cas na zabavu. Pokud zde namas co pohledavat nebo nemas povoleni ke vstupu tak odejdi "
+  DIALOG(d_strazce_knihovny)
+
+
+
+[dialog d_strazce_knihovny]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03029 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+    button 160 330 0988 0988 0 7 0  // Kdo jsi ?     
+    text 200 332 1152 2    // 
+    button 325 330 0988 0988 0 2 0  // Nejake drby ? 
+    text 350 330 1152 3    //
+    button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+    text 510 330 1152 4   //
+    button 160 360 0988 0988 0 4 0  // Hledam praci  
+    text 190 360 1152 5   //
+    button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+    text 350 360 1152 6   //
+    button 490 360 0988 0988 0 6 0  // Proverit      
+    text 520 360 1152 7   //
+  page 1
+    HTMLGUMP(170,230,440,100,1,0,36)
+  page 2
+    HTMLGUMP(170,230,440,100,8,0,6)
+  page 3
+    HTMLGUMP(170,230,440,100,9,0,36)
+  page 4
+    HTMLGUMP(170,230,440,100,10,0,36)
+  page 5
+    HTMLGUMP(170,230,440,100,11,0,36)
+  page 6
+    HTMLGUMP(170,230,440,100,27,0,36)
+  page 7      // Rozvetvene mluvy
+    HTMLGUMP(170,230,440,100,22,0,36)
+    button 25 395 0fa5 0fa7 0 10 0  //  kde najdu ?       
+    text 60 395 152 28
+    button 25 415 0fa5 0fa7 0 11 0  //  kde najdu ?       
+    text 60 415 152 29
+    button 25 435 0fa5 0fa7 0 12 0  //  kde najdu ?     
+    text 60 435 152 30
+  page 8
+  page 9
+  page 10
+    HTMLGUMP(170,230,440,100,35,0,36)
+    button 25 395 0fa5 0fa7 0 17 0    
+    text 60 395 152 25
+  page 11
+    HTMLGUMP(170,230,440,100,36,0,36)
+    button 25 395 0fa5 0fa7 0 17 0
+    text 60 395 152 25
+  page 12
+    HTMLGUMP(170,230,440,100,37,0,36)
+    button 25 395 0fa5 0fa7 0 17 0     
+    text 60 395 152 25
+  page 13
+    HTMLGUMP(170,230,440,100,38,0,36)
+  button 25 395 0fa5 0fa7 0 17 0
+    text 60 395 152 25
+  page 14
+    HTMLGUMP(170,230,440,100,39,0,36)
+    button 25 395 0fa5 0fa7 0 17 0
+    text 60 395 152 25
+  page 15
+    HTMLGUMP(170,230,440,100,40,0,36)
+    button 25 395 0fa5 0fa7 0 17 0
+    text 60 395 152 25
+  page 16
+    HTMLGUMP(170,230,440,100,41,0,36)
+    button 25 395 0fa5 0fa7 0 17 0 
+    text 60 395 152 25
+  page 17
+    HTMLGUMP(170,230,440,100,42,0,36)
+
+[dialog d_strazce_knihovny text]
+  DANTE strazce poradku v knihovne   //    Jmeno a titul pozdraveneho
+  Hmmm ?
+  mohu se zeptat ? 
+  Nejake drby ?
+  Obchodovat ?
+  Hledam praci
+  Nesu ti ...
+  Prohlednout..
+  hehe..  Mno drby tak stim ti nepomohu ja je neposloucham ani neposilam dal.. 
+  Myslis si ze jsem zde  od toho abych tu obchodoval ? Ja nejsem obchodnik jasny ?
+  Jedine do Armady..  nic jineho nema budoucnost..  Ta te nakrmi pobavi i zahubi.. vse v jednom baleni..  Stalo by zato navtivit but kapitana mestske straze  nebo narukovat k Armade..   Inu to vis..Tohle je stred sveta.. Hlavni mesto Gondoru.. jsou zde tri rozdilne ozbrojene  slozky..
+  copak neses ?  
+  K citadele.. 
+  K hlavni brane
+  K Trznici
+  K Soudni budove
+  K domu leceni..
+  K hlavni Bance
+  K mestskym laznim
+  K Manwemu Chramu
+  K Mestske Knihovne..
+  Dekuji Ale nemam nemam zajem rad bych se zeptal na neco jineho..
+  Jiste ptej se..
+  Hmm a je neco na vyber nebo tak nejak ?  //  23
+  Ale Jiste.. Jiste..   Vecina lidi se chce kouknout Trochu z blyzka na Kralovsky Palac a jeho okoli jez je uplne nahore hory. Ale zavest te mohu vlastne kamkoli treba k Trznici , budouve soudu ,, hlavni brane nebo k Bance potrebujesli neco hodne ceneho smenit. Nebo se chces rekreovat v laznich ? nebo navstivit Manweho chram ? Ci navstivit vladni ctvrt ? kde je Reprezentacni palac , kasarny a Knihovna ?  
+  Pokracovat..
+  Tak kam to bude ?
+  *INFO* Tento mlady muz rozhodne nevypada nato ze svou dosavadni sluzbu prozil prave v knihovne..  Na obliceji i na rukach vidis typicke opotrebovani tech jez se casteji biji nez spi..  Ale i pres tyto valecne rysi jde vytusit ze pred tebou stoji  osoba jez by dobrakovy neublizila... 
+  Nevite kde najdu Knihovnika ?    // 28
+  Mohu si zapujcit nejakou knihu domu ?
+  Nekterym kniham ani zamak nerozumim. Jakto ?
+  de najdu Nejake Hostinece ?
+  Kde najdu Kamenika ?
+  Kde najdu Obchodni Cech ?   //33
+  Kde najdu Gondorskeho Spravce ?
+  Mno pokud neni nekde tady.. tak bude u sebe doma.  Knihovnik Klaj prebyva  v Minas Tirith. Zeptej se lidi ukazou ti kde bydli 
+  Hmmm   Pokud vim tak pokud se nejedna o nejaka obzvlaste vyznamna dila tak to jde..  Samozrejme ale jen za ucasti knihovnika..  
+  Ale samozrejme...  Zdejsi knihovna je jednou z nejvecich na svete..  Troufam si rict ze asi uplne nejvetsi.. Kazdopadne v knihovne se nalezaji i mnohe knihy napsane starymi Elfimi jazyky..Sildarstina a Quenejstina cico..  dokonce se tu pry da najt neco malo co je napsano v hieroglifech tech blaznivich Trpasliku..  Tyto knihy pry bylo sehnat nejtezsi..  Nevim sice proc ale kazdopadne je tomu tak.. Ty si domu asi nezapujcite..
+  Hmm krcem je tu povicero..   To vis velke mesto..    Kazdopadne  vsechny tri najdes v nejspodnejsim mestkem Kruhu..   nevim proc ale je to k vuli nejakemu narizeni Krale Elessara..
+  Kamenika najdes v druhem mestkem kruhu..  u Hlavni Banky zatoc v levo a nemuzes to minout..
+  Mno  samozrejme vim kde to je.. ale popravde musim ti dopredu rict ze pokud dopredu nevis kvuli cemu tam vlastne jdes. tak te tam snad ani nepusti..
+  Gondorskym spravcem je pan Faramir a nejcasteji jej lze zastihnout v jeho dome na Cair Andros
+  hmmm?    //42
+
+[dialog d_strazce_knihovny button]
+on=0
+return 1
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[function f_manwehoknez]
+  if (SRC.TARG.DISTANCE > 3)
+    SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+    return 1
+  endif
+  if (src.tag.realm==2)
+    act.say= "jedes  potvoro !!!!"
+    return 1
+  endif
+
+  IF (<SRC.BODY> == c_ghost_man)
+  //if (SRC.TARG.ISDEAD)
+    DIALOG(d_manwehoknez_oziveni)
+    return 1
+  endif
+  if (src.profession==class_necro)
+    say= "Odejdi zde nemas co pohledavat ! Toto je stanek zivota a ne smrti !"
+    return 1
+  endif
+  if (src.profession!=class_priest)
+    DORAND 3
+      say= "Manwe te ochranuj"
+      say= "Zdravim synu."
+      say= "Pan snami synu"
+    ENDDO
+    DIALOG(d_manwehoknez)
+    return 1
+  endif
+  IF (<SRC.BODY> == c_man)&&(src.profession==class_priest)
+          DORAND 4
+      say= "Manwe te ochranuj"
+      say= "Zdravim bratre.."
+      say= "Pan snami bratre"
+      say= "tys bratr <src.name> jestli se nepletu..    Co odemne potrebujes ?"
+    ENDDO
+           DIALOG(d_manwehoknez)
+           return 1
+  ELSE (<SRC.BODY> == c_woman)&&(src.profession==class_priest)
+    DORAND 4
+      say= "Manwe te ochranuj"
+      say= "Zdravim sestro.."
+      say= "Pan snami sestro"
+      say= "tys sestra <src.name> jestli se nepletu. Jen malo zen je takovich jako ty.  Co te privadi ?"
+    ENDDO
+          DIALOG(d_manwehoknez)
+          return 1
+  ENDIF
+
+/////////////////////
+
+[dialog d_manwehoknez]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    //resizepic 20 200 9380 640 350  pergamen
+    //resizepic 20 200 9350 640 350
+    //resizepic 20 200 9300 640 350
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03049 // ksichtik   3000-3164
+    gumppic 30 215 06f // kriz
+    text 220 210 52 0 // Jmeno a titul pozdraveneho
+  
+  page 1
+    HTMLGUMP(170,230,440,100,2,0,1)
+    button 160 330 0988 0988 0 4 0  // O vire            
+    text 200 332 1152 3    //
+    button 325 330 0988 0988 0 1 0  // Nejake drby ?        
+    text 350 330 1152 4    //
+    button 490 330 0988 0988 0 1 0  // Obchodovat ?         
+    //text 510 330 1152 5   //
+    button 160 360 0988 0988 0 4 0  // Hledam praci         
+    text 190 360 1152 6   //
+    button 325 360 0988 0988 0 50 0  // Nesu ti ...          
+    text 350 360 1152 7   //
+    button 490 360 0988 0988 0 3 0  // Prohlednout             
+    text 520 360 1152 8 //     
+  
+  page 2                                                    
+    HTMLGUMP(170,230,440,100,1,0,1)  //o cem chces presne hovorit ?    
+
+
+
+[dialog d_manwehoknez text]
+  <?name?> Manweho knez   // Jmeno a titul pozdraveneho
+  Hmmm ?
+  O cem presne chces hovorit ?
+  O vire
+  Nejake drby ?
+  Obchodovat ?
+  Hledam praci
+  Nesu vám ...
+  Prohlednout..
+  xx
+  xx
+  xx
+  xx
+  xx
+  xx
+  xx
+  xx
+  xx
+
+[dialog d_manwehoknez button]
+  on=0
+    return 1
+    
+  
+  ON=1
+    src.sysmessage pergamen pojmenovan: <argtxt(0)>.
+    name=<argtxt(0)>
+    f_setpermiss
+    RETURN 1
+  
+  ON=2
+    src.sysmessage " NPC dostalo tag: <argtxt(0)>. "
+    tag.nasetreno=<argtxt(0)>
+    tag.guest=<argtxt(1)>
+    src.addexp(200)
+    RETURN 1
+
+
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_manwehoveleknez]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03049 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+    button 160 330 0988 0988 0 7 0  // Kdo jsi ?     
+    text 200 332 1152 2    // 
+    button 325 330 0988 0988 0 2 0  // Nejake drby ? 
+    text 350 330 1152 3    //
+    button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+    text 510 330 1152 4   //
+    button 160 360 0988 0988 0 4 0  // Hledam praci  
+    text 190 360 1152 5   //
+    button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+    text 350 360 1152 6   //
+    button 490 360 0988 0988 0 6 0  // Proverit      
+    text 520 360 1152 7   //
+  
+  page 1
+    HTMLGUMP(170,230,440,100,1,0,36)
+    button 25 395 0fa5 0fa7 0 8 0  //  obchodovat       
+    text 60 395 152 23
+    button 25 415 0fa5 0fa7 0 7 0  //  jine otazky       
+    text 60 415 152 21
+
+
+  page 2
+    HTMLGUMP(170,230,440,100,8,0,6)
+  
+  page 3
+    HTMLGUMP(170,230,440,100,9,0,36)
+    button 25 395 0fa5 0fa7 0 8 0  //  obchodovat       
+    text 60 395 152 23
+  
+  page 4
+    HTMLGUMP(170,230,440,100,10,0,36)
+  
+  page 5
+    HTMLGUMP(170,230,440,100,11,0,36)
+  
+  page 6
+    HTMLGUMP(170,230,440,100,27,0,36)
+
+  page 7      // Rozvetvene mluvy
+    HTMLGUMP(170,230,440,100,22,0,36)
+    button 25 395 0fa5 0fa7 0 10 0  //  kde najdu ?       
+    text 60 395 152 28
+    button 25 415 0fa5 0fa7 0 11 0  //  kde najdu ?       
+    text 60 415 152 29
+    button 25 435 0fa5 0fa7 0 12 0  //  kde najdu ?     
+    text 60 435 152 30
+    button 25 455 0fa5 0fa7 0 13 0  // kde najdu ?       
+    text 60 455 152 31
+    button 25 475 0fa5 0fa7 0 14 0  //  Kde najdu ?       
+    text 60 475 152 32
+    button 25 495 0fa5 0fa7 0 15 0  //  Kde najdu ?       
+    text 60 495 152 33
+    button 25 515 0fa5 0fa7 0 16 0  //  kde najdu ?       
+    text 60 515 152 34
+  
+  page 8
+    HTMLGUMP(170,230,440,100,24,0,36)
+    button 25 395 0fa5 0fa7 0 9 0  /    /  pokracuj       
+    text 60 395 152 25
+
+  page 9
+    HTMLGUMP(170,230,440,100,26,0,36)    //  cestovani
+    button 25 395 0fa5 0fa7 1 0 7  //  k Citadele       
+    text 60 395 152 12
+    button 25 415 0fa5 0fa7 1 0 8  //  k hlavni brane       
+    text 60 415 152 13
+    button 25 435 0fa5 0fa7 1 0 9  //  k Trznici       
+    text 60 435 152 14
+    button 25 455 0fa5 0fa7 1 0 10  //  k soudni budove       
+    text 60 455 152 15
+    button 25 475 0fa5 0fa7 1 0 11  //  k domu leceni       
+    text 60 475 152 16
+    button 25 495 0fa5 0fa7 1 0 12  //  k hlavni BANCE       
+    text 60 495 152 17
+    button 25 515 0fa5 0fa7 1 0 13  //  k mestskym laznim       
+    text 60 515 152 18
+    button 225 395 0fa5 0fa7 1 0 14  //  k manwemu chramu       
+    text 260 395 152 19
+    button 225 415 0fa5 0fa7 1 0 15  //  ke Knihovne       
+    text 260 415 152 20
+
+  page 10
+    HTMLGUMP(170,230,440,100,35,0,36)
+    button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 11
+    HTMLGUMP(170,230,440,100,36,0,36)
+    button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 12
+    HTMLGUMP(170,230,440,100,37,0,36)
+    button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 13
+    HTMLGUMP(170,230,440,100,38,0,36)
+    button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 14
+    HTMLGUMP(170,230,440,100,39,0,36)
+    button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 15
+    HTMLGUMP(170,230,440,100,40,0,36)
+    button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+    text 60 395 152 25
+
+  page 16
+    HTMLGUMP(170,230,440,100,41,0,36)
+    button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 17
+    HTMLGUMP(170,230,440,100,42,0,36)
+
+
+[dialog d_manwehoveleknez text]
+  VELEKNEZ   //    Jmeno a titul pozdraveneho
+  Hmmm ?
+  mohu se zeptat ? 
+  Nejake drby ?
+  Obchodovat ?
+  Hledam praci
+  Nesu ti ...
+  Prohlednout..
+  hehe..  Mno drby tak stim ti nepomohu ja je neposloucham ani neposilam dal.. 
+  Myslis si ze jsem zde  od toho abych tu obchodoval ?
+  Jedine do Armady..  nic jineho nema budoucnost..  Ta te nakrmi pobavi i zahubi.. vse v jednom baleni..  Stalo by zato navtivit but kapitana mestske straze  nebo narukovat k Armade..   Inu to vis..Tohle je stred sveta.. Hlavni mesto Gondoru.. jsou zde tri rozdilne ozbrojene  slozky..
+  copak neses ?  
+  // prechody minas tirith
+  K citadele.. 
+  K hlavni brane
+  K Trznici
+  K Soudni budove
+  K domu leceni..
+  K hlavni Bance
+  K mestskym laznim
+  K Manwemu Chramu
+  K Mestske Knihovne..
+  Dekuji Ale nemam nemam zajem rad bych se zeptal na neco jineho..
+  Jiste ptej se..
+  Hmm a je neco na vyber nebo tak nejak ?  //  23
+  Ale Jiste.. Jiste..   Vecina lidi se chce kouknout Trochu z blyzka na Kralovsky Palac a jeho okoli jez je uplne nahore hory. Ale zavest te mohu vlastne kamkoli treba k Trznici , budouve soudu ,, hlavni brane nebo k Bance potrebujesli neco hodne ceneho smenit. Nebo se chces rekreovat v laznich ? nebo navstivit Manweho chram ? Ci navstivit vladni ctvrt ? kde je Reprezentacni palac , kasarny a Knihovna ?  
+  Pokracovat..
+  Tak kam to bude ?
+  *INFO* Tento mlady muz rozhodne nevypada nato ze svou dosavadni sluzbu prozil prave v knihovne..  Na obliceji i na rukach vidis typicke opotrebovani tech jez se casteji biji nez spi..  Ale i pres tyto valecne rysi jde vytusit ze pred tebou stoji  osoba jez by dobrakovy neublizila... 
+  Kde najdu citadelu ?    // 28
+  Kde najdu Spravce Minas Tirith ?
+  Kde najdu Divadlo ?
+  Kde najdu Nejake Hostinece ?
+  Kde najdu Kamenika ?
+  Kde najdu Obchodni Cech ?   //33
+  Kde najdu Centralni skladiste ?
+  *kouka se rozpacite* Heh  clovece ted si mi vyrazil deh..   mno. ciste teoreticky to bude tamhleta vez tamhle uplne nahore...   pfff  Ale fakt nevim.. mozna to bude nekde v nejake bocni  ulicce..co myslis ? Kazdopadne jestli chces tak te tam nebo kamkoliv jinam zavest za 5 zlatek..
+  Jo tak tenhle typek byva nejcasteji k zastizeni na Radnici. A Radnici mesta nelze minout, je to velika budova v severni casti Elendilova namesti. Ve spodni casti komplexu je zbudovana hlavni Gondorska banka.
+  Aaaa  no jsem rad ze sem zavita obcas i nejakej vzdelanec..  Inu to najdes v druhem mestkem okruhu..   Musis se vydat od druhe brany do leva a urcite na to drive ci pozdeji narazis..  
+  Hmm krcem je tu povicero..   To vis velke mesto..    Kazdopadne  vsechny najdes jen v nejspodnejsim mestkem Kruhu..   Nevim proc, ale je to k vuli nejakemu narizeni Krale Elessara..
+  Kamenika najdes v druhem mestkem kruhu..  u druhe brany zatoc v levo a nemuzes to minout..  Je to budouva tesne pred stoupanim do dalsiho mestkeho okruhu.
+  Mno  samozrejme vim kde to je.. ale popravde musim ti dopredu rict ze pokud dopredu nevis kvuli cemu tam vlastne jdes. tak te tam snad ani nepusti..  Sidlo cechu se nachazi v druhem meskem okruhu, smerem na pravo od druhe brany. Pujdes az uplne nakonec cesty a tam je velkej dvojpatrovej dum atipicke architektury.  Nelze to prehlednout.
+  Centralni sklady je ta podlouhla nizka budova hned vedle amfiteatru.
+  hmmm?    //42
+
+[dialog d_manwehoveleknez button]
+on=0
+  return 1
+
+//  tlacitka cestovani
+on=7   
+  src.say Rad bych k Citadele..
+  SRC.CONSUME=5 i_gold
+  src.go 5844 3875 20 
+  return 0
+
+on=8
+  src.say Rad bych k hlavni brane mesta..
+  SRC.CONSUME=5 i_gold
+  src.go 5930 3948 -80 
+  return 0
+
+on=9
+  src.say nejspise se kouknu k Trznici..
+  SRC.CONSUME=5 i_gold
+  src.go 5876 3955 -40 
+  return 0
+
+on=10
+  src.say Neco si musim vyridit u Soudu..
+  SRC.CONSUME=5 i_gold
+  src.go 5922 3849 -60 
+  return 0
+
+on=11
+  src.say navstivim Domy Leceni...
+  SRC.CONSUME=5 i_gold
+  src.go 5796 3889 10
+  return 0
+
+on=12
+  src.say Musim nutne k Hlavni Bance..
+  SRC.CONSUME=5 i_gold
+  src.go 5923 3895 -60
+  return 0
+
+on=13
+  src.say Chci se rekreovat ve zdejsich vehlasnych laznich..
+  SRC.CONSUME=5 i_gold
+  src.go 5931 3786 -80 
+  return 0
+
+on=14
+  src.say Hmmm co tahle navstivit Manweho Chram ?..
+  SRC.CONSUME=5 i_gold
+  src.go 5879 3858 -20
+  return 0
+
+on=15
+  src.say chci ke knihovne...vzdelavat se je potreba..
+  SRC.CONSUME=5 i_gold
+  src.go 5821 3852 
+  return 0
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////
+//                  Prazdy priparavek Gumpu
+/////////////////////////////////////////////////////////////////////////
+[dialog d_Pripravek_gumpu]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03131 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+    button 160 330 0988 0988 0 2 0  // Objednam si ?     
+    text 200 332 1152 2    // 
+    button 325 330 0988 0988 0 3 0  // Nejake drby ? 
+    text 350 330 1152 3    //
+    button 490 330 0988 0988 0 4 0  // Obchodovat ?  
+    text 510 330 1152 4   //
+    button 160 360 0988 0988 0 5 0  // Hledam praci  
+    text 190 360 1152 5   //
+    button 325 360 0988 0988 0 6 0  // Nesu ti ...   
+    text 350 360 1152 6   //
+    button 490 360 0988 0988 0 7 0  // Proverit      
+    text 520 360 1152 7   //
+  
+  page 1
+    HTMLGUMP(170,230,440,100,1,0,36)
+
+  page 2 // Objednam si
+    HTMLGUMP(170,230,440,100,46,0,36)
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    //button 25 395 0fa5 0fa7 0 19 0  //  nechi te pozvat !!!       
+    //text 60 395 152 44
+    //button 25 415 0fa5 0fa7 0 7 0  //  dobra  pozvu te..       
+    //text 60 415 152 45
+    //button 25 435 0fa5 0fa7 1 0 9  //  nemas penize ?
+    //text 60 435 152 47
+  
+
+  page 3   //  neco rici o sobe...     
+    HTMLGUMP(170,230,440,100,9,0,6)
+    button 25 395 0fa5 0fa7 0 12 0  //  reknes pravdu ?       
+    text 60 395 152 28
+    button 25 415 0fa5 0fa7 0 13 0  //  Reknes lez ?       
+    text 60 415 152 29
+    button 25 435 0fa5 0fa7 0 14 0  //  zakecas to..      
+    text 60 435 152 30
+  
+  page 4
+    HTMLGUMP(170,230,440,100,10,0,36)
+    button 25 395 0fa5 0fa7 0 8 0  //  obchodovani prvni nabidka       
+    text 60 395 152 23
+  
+  page 5                          //Hledam praci
+    HTMLGUMP(170,230,440,100,11,0,36)
+  
+  page 6                            //Nesu ti
+    HTMLGUMP(170,230,440,100,12,0,36)
+  
+  page 7                            //informace o postave
+    HTMLGUMP(170,230,440,100,13,0,36)
+
+  page 8      // Rozvetvene mluvy
+    HTMLGUMP(170,230,440,100,22,0,36)
+    //button 25 395 0fa5 0fa7 0 10 0  //  kde najdu ?       
+    //text 60 395 152 28
+    //button 25 415 0fa5 0fa7 0 11 0  //  kde najdu ?       
+    //text 60 415 152 29
+    //button 25 435 0fa5 0fa7 0 12 0  //  kde najdu ?     
+    //text 60 435 152 30
+    //button 25 455 0fa5 0fa7 0 13 0  // kde najdu ?       
+    //text 60 455 152 31
+    //button 25 475 0fa5 0fa7 0 14 0  //  Kde najdu ?       
+    //text 60 475 152 32
+    //button 25 495 0fa5 0fa7 0 15 0  //  Kde najdu ?       
+    //text 60 495 152 33
+    //button 25 515 0fa5 0fa7 0 16 0  //  kde najdu ?       
+    //text 60 515 152 34
+
+
+
+
+
+[dialog d_Pripravek_gumpu text]
+  Pani Roose   //    Jmeno a titul pozdraveneho
+  ano?
+  Objednam si..
+  Nejake drby ?
+  Obchodovat ?
+  Hledam praci
+  Nesu ti ...
+  Prohlednout..
+  Copak by sis chtel objednat ?   //8
+  Drby ? Tak ty si sama rada vyslechnu..   napriklad o vas  kdo jste a cim se zivite  ?  *sibalsky na tebe mrkla*
+  Nevedela jsem ze tu jsi obchodne.  Vypadas spise jako..   jako.. no to je fuk.  Co mi chces nabidnout za obchod ?   Upozorniji te ale dopredu ze neprijmu nic nekvalitniho.. Mam podepsanou smlouvu z kralovskym palacem..  Dodavame jim tam jidla a chci aby tomu tak bylo i nadale.
+  Praci pro tebe ?    Hmmm.. prace se samozrejme vzdycky nejaka najde..   Ale nemyslisi ze zacnes hned brat nejake veci penize..  A navic u me musis zacit uplne od pyky, teda  chci rict lavoru z nadobim..    Hmm ?   *usmiva se*   Tak uz te to preslo ?
+  U Mandose co ty me muzes chtit dat ?  Varuji te jestli smrt tak ta mi bouzel neni souzena.. hehehe                 No dobra  co to je ?  
+  *INFO* Od pohledu kus zensky...  Co straci na stihlosti a krase to dohani charakterovymi vlastnosmi. Je to clovek kterej te snadno privede do dobre nalady..  
+  xxxxx1  //
+  xxxxx2  //15
+  xxxxx3
+  xxxxx4
+  xxxxx5
+  xxxxx6
+  xxxxx7  //20
+  xxxxx8
+  xxxxx9
+  xxxx10
+  xxxxx11 
+  xxxxx12     //25      
+  xxxxx13     
+  xxxxx14           
+  xxxxx15 
+  xxxxx16  
+
+
+
+[dialog d_Pripravek_gumpu button]
+on=0
+  return 1
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_karlos_mt_necro]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03136 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  
+  page 1
+    HTMLGUMP(170,230,440,140,1,0,36)
+    button 25 395 0fa5 0fa7 0 18 0  // jakej hrbitov ?
+    text 60 395 152 2// 
+    button 25 415 0fa5 0fa7 1 0 1  //  nezajima ho hrbitov
+    text 60 415 152 3
+  
+  page 2
+    HTMLGUMP(170,230,440,140,6,0,36)
+    button 160 330 0988 0988 0 7 0  // zeptat se ?     
+    text 200 332 1152 60    // 
+  
+  
+  page 18 // jakej hrbitov ?
+    HTMLGUMP(170,230,440,140,6,0,36)
+    button 25 395 0fa5 0fa7 0 19 0  //  ano mas pravdu
+    text 60 395 152 7
+    button 25 415 0fa5 0fa7 0 7 0  //  milis se
+    text 60 415 152 8
+  
+  page 19  //jakej hrbit/ano mas pravdu/
+    HTMLGUMP(170,230,440,140,9,0,36)  //  ano tusil jsem to
+    button 25 395 0fa5 0fa7 0 20 0  //XXXX
+    text 60 395 152 10
+  
+  page 20  //
+    HTMLGUMP(170,230,440,140,11,0,36)  //
+    button 25 395 0fa5 0fa7 0 21 0  //XXXX      
+    text 60 395 152 12
+  
+  page 21  //
+    HTMLGUMP(170,230,440,140,13,0,36)  //
+    button 25 395 0fa5 0fa7 0 22 0  //XXXX      
+    text 60 395 152 14
+  
+  page 22  //
+    HTMLGUMP(170,230,440,140,15,0,36)  //
+    button 25 395 0fa5 0fa7 0 23 0  //Pan Daster ?      
+    text 60 395 152 16
+    button 25 415 0fa5 0fa7 1 0 16  //promluvim si frenkem
+    text 60 415 152 17
+  
+  page 23  //
+    HTMLGUMP(170,230,440,140,18,0,36)  //
+    button 25 395 0fa5 0fa7 0 24 0  //XXXX      
+    text 60 395 152 19
+  
+  page 24  //
+    HTMLGUMP(170,230,440,140,20,0,36)  //
+    button 25 395 0fa5 0fa7 0 25 0  //XXXX      
+    text 60 395 152 21
+
+[dialog d_karlos_mt_necro text]
+  MESTKY PRUVODCE   //    Jmeno a titul pozdraveneho
+  Ehh hledas-li hrbitov, tak ten je pred mestem.. Nevim, cim se zivis a je mi to jedno, ale z Hrobarem Frenkym by sis velice rozumel. Nejsem si jistej, ze bych pro tebe mohl neco udelat, tak mne radeji nech napokoji.. *nenapadne si zacpava nos*
+  Jakej Hrbitov ? 
+  Hrbitov ? Me je vas hrbitov ukradenej. kdo jsi ?
+  Pokracovat..
+  hmmm?   //5
+  Eee  nerad bych urazil....   Ale ty jsi tu urcite jako vypomoc ne ?  Myslim  tim  ze se motas kolem hrobu a tak pod.. he ?
+  Ano mas pravdu motam se kolem toho remesla.. 
+  Ne..  nejsem tu jako vypomoc! chci se jen zeptat na par veci.
+  Tusil sem to..  To vis mam uz na lidi cich.   Jinak kdyby si nemohl najit Frenka  tak   ten chodi do hostince "U Rousee"
+  Frenk ?  kdo to ma jako byt ?  //10
+  Frenk..  Frenk je nas hrobnik...  Ale  jaksi to nezvlada...  nebo lepe rceno od te doby co tu je se deji podivne veci na Minaskem Hrbitove..    
+  Podivne veci ?  Povidej to mne docela zajima..
+  No podivne.. podivne..      Proste kdyz nekdo zemre a je pohreb tak je vse v pohode..  Ale jakmile to skonci a lidi odejdou  domu..  tak na hrbitove zacnou vylejzat mrtvi...   Nemusim ti rikat ze normalni lidi cekaj az nekdo cizi umre, jen aby mohli jit dat kvetiny na hroby svych pribuznych..   Je to tragedie a ostuda naseho mesta.
+  Hmm  a co na to Starosta ? 
+  Starosta ?  Ten o tom nejspis nevi.  Nebo alspon oficialne se tak tvari...    Vsechny prani a stiznosti  stejnak  resi jeho zastupce pan Daster .
+  pan Daster ?     //
+  Hmm...     kouknu se po tom vasem hrobnikovy   urcite si snim mam o cem promluvit..
+  Pan Daster...    vis nemel bych o tom mluvit  je to totiz vlastne muj primej nadrizenej..    No  skratka mi chlapy od mestkych pruvodcu si myslime ze pad Daster filtruje veci ktere by mel slyset Starosta Mesta. Snazi se aby Starosta stratil oblibu u lidi  a on pak mohl po nem prevzit Starostovani.  Samozrejme  je to jen nazor..  nerikam ze tomu tak je doopravdy...   a jestli by te nekdy napadlo rikat ze to mas ode mne tak vsechno zapru  jasny ? 
+  To zni docela silene..  A to se uz nikdo nepokusil toho Dastera vystrnadit  nebo tak neco ?
+  No  nevim jak to presne myslis.. ale on je z velmi velmi vazene  stare rodiny..   pry nema mysenou krev takze  stari se mu vyhyba obloukem.. a navic ma konexe  uplne vsude.  U Generala, Obchodniho cechu, soudcu , i podsveti..  Popravde  mozna sem si ted nadelal na velikej prusvih jestli jsi jeho informator nebo tak neco... 
+  Neboj pro zadneho Dastera nedelam, a rozhodne to nemam v umyslu. Nicmene rad bych vedel kdo vlasne jsi ?
+  Rad bych se jeste na neco zeptal  mohu ?  //
+  zeptat se
+
+[dialog d_karlos_mt_necro button]
+on=0
+  return 1
+
+on=1
+//portnuti na upravenej dialog pro necra
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//          PRUVODCE PO MINAS TIRITH
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[dialog d_porter_nabidka_prace]
+5,5
+src.ensureTag(hotoveQuesty_2)
+
+page 0
+resizepic 20 200 2620 640 350
+gumppic 30 210 03182 // podklad pod ksichtiky  
+gumppic 40 215 03136 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+page 1
+if (src.profession==class_necro)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,3,0,36)
+  endif
+endif
+if (src.profession==class_priest)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,4,0,36)
+  endif
+endif
+if (src.profession==class_war)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,5,0,36)
+  endif
+endif
+if (src.profession==class_mag)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,6,0,36)
+  endif
+endif
+if (src.profession==class_thief)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,7,0,36)
+  endif
+endif
+if (src.profession==class_mystik)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,8,0,36)
+  endif
+endif
+if (src.profession==class_shaman)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,9,0,36)
+  endif
+endif
+if (src.profession==class_craft)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,10,0,36)
+  endif
+endif
+if (src.profession==class_ranger)
+  if (<src.tag.hotovequesty_2>&040)
+    ARGO.HTMLGUMP(170,230,440,150,11,0,36)
+  endif
+endif
+if (<src.tag.hotovequesty_2>&080) // Pruvodce zna jen tve jmeno
+  ARGO.HTMLGUMP(170,230,440,150,12,0,36)
+endif
+if (<src.tag.hotovequesty_2>&0100) // Lhal jsi pruvodci
+  ARGO.HTMLGUMP(170,230,440,150,13,0,36)
+endif
+button 25 395 0fa5 0fa7 1 0 1
+text 60 395 152 1
+button 25 415 0fa5 0fa7 1 0 2
+text 60 415 152 2
+
+
+[dialog d_porter_nabidka_prace text]
+Mestsky pruvodce // Jmeno a titul pozdraveneho
+Dekuji, ale rad bych se zeptal jeste na neco.
+Diky, to je vse. *odejit*
+*ztisi hlas* Takze hledate neco kolem hrobu, co? V podstate je sance, ze byste se mohl uchytit na minasskem hrbitove. Je tu kolem toho hodne problemu a Frenky to sam nezvlada. Abych byl presnejsi, podle meho je vam v mnohem podobny, myslim zatuchly zapach a ten divny pohled v ocich. Ano, budete si rozumet. Frenka najdete bud v hostinci u Roouse, nebo na hrbitove.
+Praci pro vas? Zkuste se zeptat v chramech, knezi vam reknou vic, jak byste mohl pomoci. V tomhle meste se nachazeji tri knezske rady. Myslim, ze kdyz si date zalezet, najdete je sam. Ten nejmensi se nachazi hned u hlavni mestske brany. Je to v patre.
+<?src.name?>, velky valecnik a hrdina, co? Jak uz jsem rekl, poohlednete se po gondorskem zmocnenci v hornim patre banky. Ten vam rekne vic.
+Odkdy magove hledaji praci? <?Src.Sex "Chlape","Zenska"?>, poohlednete se po Magove vezi. Taci jako vy se schazeji prave tam.
+Rikal jste, ze jste kuchar? *znechucen* Jak jsem rekl, dam si na vas pozor. Vykaslete se na to a najdete si cokoli cestneho. Treba se zkuste prosadit jako ten kuchar. Nebo zednici, ti vzdy potrebuji pomocnou ruku.
+Prominte, ale opravdu nevim, co takzvani mystici delaji nebo jsou ochotni delat. Radim vam: projdete mesto a ptejte se lidi. Snad vam nekdo neco poradi nebo primo nabidne.
+V soucasnosti o zadne poradane vyprave do barbarskych zemi nevim. A kde jinde by se dalo vase samanstvi vyuzit - to vskutku netusim.
+<?Src.Sex "Chlape","Zenska"?>, vy si urcite poradite. Obejdete stanky a obchodniky a urcite najdete nekoho, kdo by od vas neco potreboval. V nejhorsim muzete sve vyrobky zkusit prodat primo na trznici. Pokud vim, nikdo to nekontroluje, takze poplatek byste platit nemusel... pokud nebudete stat primo v nejakem stanku.
+Prace pro vas je vzdycky dost. Pokud mate dostatecne lovecke zkusenosti. Za ochoceneho hrebce dostanete furu penez.
+Hledate praci a presto jste mi ani nerekl, cim se zabyvate a co delate? Mne je to fuk, obecne vam reknu asi jen toto: stavbari potrebuji sem tam vypomoc - vsak vite, vetsinou delat podavace. Obcas si bohati mestane nabiraji osobni ochranky... Nebo muzete zkusit sve stesti u armady.
+Dereku, rikal jste, ze jste obstojny kuchar, ze? Tak zkuste sve stesti v hostinci u Roouse. Je to zde nejvyhlasenejsi hostinec a v podstate nove sily nabiraji stale.
+
+[dialog d_porter_nabidka_prace button]
+on=0
+DIALOG(d_porter_mt)
+
+on=1
+src.say("Nepovidejte, tady je padesat zlatych a bude hned lip.")
+DIALOG(d_porter_mt)
+
+on=2 
+src.say("Diky, to je vse.")
+
+on=3 
+say("Mejte se pekne, <?src.name?>.")
+src.say("No nic, to je vse. Nashle.")
+
+////////////////////////////////////////////////////////////////////
+
+[dialog d_porter_necro_pozdrav]
+5,5
+
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky  
+gumppic 40 215 03136 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+page 1
+HTMLGUMP(170,230,440,130,1,0,36)
+if (<SRC.RESTEST 50 i_gold>)
+  argo.button 25 395 0fa5 0fa7 1 0 1
+  argo.text 60 395 152 2
+endif
+if !(<SRC.RESTEST 50 i_gold>)
+  argo.button 25 395 0fa5 0fa7 1 0 3
+  argo.text 60 395 152 3
+endif
+button 25 415 0fa5 0fa7 1 0 2
+text 60 415 152 4
+
+
+[dialog d_porter_necro_pozdrav text]
+MESTKY PRUVODCE // Jmeno a titul pozdraveneho
+Dnes je vazne tezke vyzit. Porad se zdrazuje a zdrazuje.
+Nepovidejte, tady je padesat zlatych a bude hned lip.
+Rad bych vam pomohl, ale zrovna nic nemam...
+Pardon, omyl.
+
+[dialog d_porter_necro_pozdrav button]
+on=0
+say("Mejte se pekne, <?src.name?>.")
+src.say("No nic, to je vse. Nashle.")
+return 1
+
+on=1
+src.say("Nepovidejte, tady je padesat zlatych a bude hned lip.")
+src.consume=50 i_gold
+DIALOG(d_porter_mt)
+
+on=2
+src.say("Rad bych vam pomohl, ale zrovna nic nemam...")
+
+on=3 
+say("Mejte se pekne, <?src.name?>.")
+src.say("No nic, to je vse. Nashle.")
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_porter_mt]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03136 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+    button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+    text 200 332 1152 2    // 
+    button 325 330 0988 0988 0 2 0  // Nejake drby ? 
+    text 350 330 1152 3    //
+    button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+    text 510 330 1152 4   //
+    button 160 360 0988 0988 1 0 2  // Hledam praci  
+    text 190 360 1152 5   //
+    button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+    text 350 360 1152 6   //
+    button 490 360 0988 0988 0 6 0  // Proverit      
+    text 520 360 1152 7   //
+  
+  page 1
+    HTMLGUMP(170,230,440,100,1,0,36)
+    button 25 395 0fa5 0fa7 0 8 0  //  obchodovat       
+    text 60 395 152 23
+    button 25 415 0fa5 0fa7 0 7 0  //  jine otazky       
+    text 60 415 152 21
+  
+  
+  page 2
+    HTMLGUMP(170,230,440,100,8,0,6)
+
+  page 3
+    HTMLGUMP(170,230,440,100,9,0,36)
+    button 25 395 0fa5 0fa7 0 8 0  //  obchodovat       
+    text 60 395 152 23
+  
+
+  page 4
+    HTMLGUMP(170,230,440,100,10,0,36)
+  
+  page 5
+    HTMLGUMP(170,230,440,100,11,0,36)
+  
+  page 6
+    HTMLGUMP(170,230,440,100,27,0,36)
+  
+  page 7      // Rozvetvene mluvy
+    HTMLGUMP(170,230,440,100,22,0,36)
+    button 25 395 0fa5 0fa7 0 10 0  //  kde najdu ?       
+    text 60 395 152 28
+    button 25 415 0fa5 0fa7 0 11 0  //  kde najdu ?       
+    text 60 415 152 29
+    button 25 435 0fa5 0fa7 0 12 0  //  kde najdu ?     
+    text 60 435 152 30
+    button 25 455 0fa5 0fa7 0 13 0  // kde najdu ?       
+    text 60 455 152 31
+    button 25 475 0fa5 0fa7 0 14 0  //  Kde najdu ?       
+    text 60 475 152 32
+    button 25 495 0fa5 0fa7 0 15 0  //  Kde najdu ?       
+    text 60 495 152 33
+    button 25 515 0fa5 0fa7 0 16 0  //  kde najdu ?       
+    text 60 515 152 34
+  
+  page 8
+    HTMLGUMP(170,230,440,100,24,0,36)
+    button 25 395 0fa5 0fa7 0 9 0  /    /  pokracuj       
+    text 60 395 152 25
+
+  page 9
+    HTMLGUMP(170,230,440,100,26,0,36)    //  cestovani
+    button 25 395 0fa5 0fa7 1 0 7  //  k citadele       
+    text 60 395 152 12
+    button 25 415 0fa5 0fa7 1 0 8  //  k hlavni brane       
+    text 60 415 152 13
+    button 25 435 0fa5 0fa7 1 0 9  //  k trznici       
+    text 60 435 152 14
+    button 25 455 0fa5 0fa7 1 0 10  //  k soudni budove       
+    text 60 455 152 15
+    button 25 475 0fa5 0fa7 1 0 11  //  k Domum leceni       
+    text 60 475 152 16
+    button 25 495 0fa5 0fa7 1 0 12  //  k hlavni BANCE       
+    text 60 495 152 17
+    button 25 515 0fa5 0fa7 1 0 13  //  k mestskym laznim       
+    text 60 515 152 18
+    button 225 395 0fa5 0fa7 1 0 14  //  k Manweho chramu       
+    text 260 395 152 19
+    button 225 415 0fa5 0fa7 1 0 15  //  ke knihovne       
+    text 260 415 152 20
+  
+  page 10
+    HTMLGUMP(170,230,440,100,35,0,36)
+    button 25 395 0fa5 0fa7 0 7 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 11
+    HTMLGUMP(170,230,440,100,36,0,36)
+    button 25 395 0fa5 0fa7 0 7 0  /    /  kde najdu ?       
+    text 60 395 152 25
+
+  page 12
+    HTMLGUMP(170,230,440,100,37,0,36)
+    button 25 395 0fa5 0fa7 0 7 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 13
+    HTMLGUMP(170,230,440,100,38,0,36)
+    button 25 395 0fa5 0fa7 0 7 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 14
+    HTMLGUMP(170,230,440,100,39,0,36)
+    button 25 395 0fa5 0fa7 0 7 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 15
+    HTMLGUMP(170,230,440,100,40,0,36)
+    button 25 395 0fa5 0fa7 0 7 0  /    /  kde najdu ?       
+    text 60 395 152 25
+  
+  page 16
+    HTMLGUMP(170,230,440,100,41,0,36)
+    button 25 395 0fa5 0fa7 0 7 0  /    /  kde najdu ?       
+    text 60 395 152 25
+
+  page 17
+    HTMLGUMP(170,230,440,100,42,0,36)
+
+
+[dialog d_porter_mt text]
+Mestsky pruvodce // Jmeno a titul pozdraveneho
+Hmmm?
+Vase sluzby
+Nejake drby?
+Obchodovat
+Hledam praci
+Nesu vam...
+Prohlednout
+Tady se toho napovida hodne - to vite, velke mesto... Jednou nekdo pomlouva krale pro vysoke dane, podruhe nadavaji, ze neni dost strazi, a tak porad furt dokola. I kdyz vlastne... Posledni dobou tu jsou famy o monstrech v kanalizaci, ale moc jim neverim. To spis beru ty zvesti ze na severu, ze u cest radi bandyte. Kazdopadne se rika, ze se pres noc ztraci nejaci lide. No, jelikoz se ztratili jenom ti chudi, tak se to nechava bez povsimnuti panu z uradu. A je jasne, ze k usim krale se to ani nedostalo.
+Kdepak, ja nejsem obchodnik... Nanejvys vas nekam mohu po meste za pet zlatek doprovodit.
+Hmm, nevim, co by vam sedlo nejlepe. Kazdopadne v tomhle meste se prace vzdycky najde. Konkretne vim, ze nabiraji nove rekruty u mestske gardy. Stavbari potrebuji sem tam vypomoc, obcas si bohati mestane nabiraji osobni ochranky... Casto odtud dokonce vyrazeji velke vypravy, aby vydobyly nejake poklady z dungeonu... Ale popravde - pokud nejste blazen, tak se takovym vyhnete.
+Copak nesete?
+// Prechody Minas Tirith
+K citadele 
+K hlavni brane
+K divadlu
+K soudni budove
+K Domum leceni
+Ke kolbisti
+K mestskym laznim
+K Manweho chramu
+K mestske knihovne
+Potrebuji poradit, kde najdu...
+Jiste, ptejte se.
+Kam me muzete zavest? // 23
+Ale jiste, jiste... Vetsina lidi se chce kouknout trochu z blizka na kralovsky palac a jeho okoli, jez je uplne nahore hory. Ale zavest vas mohu vlastne kamkoli treba: k trznici, budouve soudu, divadlu, hlavni brane nebo k bance, potrebujete-li neco cenneho smenit. Nebo se chcete rekreovat v laznich? Ci navstivit Manweho chram? Nebo vladni ctvrt, kde je Reprezentacni palac, kasarna a knihovna?
+Pokracovat...
+Tak kam to bude?
+Vypada jako muz privydelavajici si poctivou praci. Nejspise nebude zdatny v bojovych dovednostech a z vyrazu jeho tvare muzes usuzovat, ze o magiii vi maximalne to, ze je... Od toho ti nebezpeci nehrozi.
+Kde najdu citadelu? // 28
+Kde najdu spravce Minas Tirith?
+Kde najdu divadlo?
+Kde najdu nejake hostinece?
+Kde najdu kamenika?
+Kde najdu obchodni cech? // 33
+Kde najdu centralni skladiste?
+*kouka se rozpacite* Tedy, clovece, ted jste mi vyrazil dech. No, ciste teoreticky... to bude tamhleta vez tamhle uplne nahore... Pfff, ale opravdu nevim. Mozna to bude nekde v nejake bocni ulicce... co myslite? Tak ci tak, jestli chcete, tak vas tam nebo kamkoli jinam mohu zavest za pet zlatek.
+Tenhle clovek byva nejcasteji k zastizeni na radnici. A tu nelze minout, je to velika budova v severni casti Elendilova namesti. Ve spodnim patre je zbudovana hlavni gondorska banka.
+Aaaa, no, jsem rad, ze sem zavita obcas i nejaky vzdelanec. Inu, to najdete v druhem mestskem okruhu. Musite se vydat od druhe brany doleva a urcite na nej drive ci pozdeji narazite.
+Hmm, krcem je tu povicero. To vite, velke mesto... Kazdopadne vsechny najdete jen v nejspodnejsim mestkem kruhu. Nevim proc, ale je to k vuli nejakemu narizeni krale Elessara.
+Kamenika najdete v druhem mestkem kruhu. Z druhe brany zatocte vlevo a nemuzete to minout. Je to budouva tesne pred stoupanim do dalsiho mestkeho okruhu.
+No, samozrejme vim, kde to je... Ale popravde, musim vam rici, ze pokud dopredu nevite, kvuli cemu tam vlastne jdete, tak vas tam snad ani nepusti. Sidlo cechu se nachazi v druhem meskem okruhu, smerem doprava od druhe brany. Pujdete az uplne na konec cesty a tam je velky dvojpatrovy dum atypicke architektury. Nelze to prehlednout.
+Centralni sklad je ta podlouhla nizka budova hned vedle divadla. Je to smerem, jako kdyz se vracite dolu do spodnich casti mesta.
+Hmmm? // 42
+
+[dialog d_porter_mt button]
+on=0
+  say("Mejte se pekne, <?src.name?>.")
+  src.say("No nic, to je vse. Nashle.")
+  return 1
+
+on=2
+  DIALOG(d_porter_nabidka_prace)
+
+//  tlacitka cestovani
+on=7   
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  elseif (!strcmpi(<src.tag.nation>,"Gondoran"))
+    say("Dobra, zavedu vas k citadele.")
+    SRC.CONSUME=5 i_gold
+    src.go 5591 3870 0 
+    tag.nasetrino=<tag.nasetrino>+(5)
+    return 1
+  else
+    say("Zavedu vas k posledni brane pred citadelou. Jak se dostanete dovnitr, to je na vas.")
+    SRC.CONSUME=20 i_gold
+    src.go 5591 3870 0 
+    tag.nasetrino=<tag.nasetrino>+(20)
+    return 0
+  endif
+
+
+on=8
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  else
+    say("Dobra, zavedu vas k hlavni brane mesta.")
+    SRC.CONSUME=5 i_gold
+    src.go 5678 3872 -80 
+    tag.nasetrino=<tag.nasetrino>+(5)
+    return 0
+  endif
+  
+on=9
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  else
+    say("Dobra, zavedu vas k divadlu.")
+    SRC.CONSUME=5 i_gold
+    src.go 5600 3955 -40
+    tag.nasetrino=<tag.nasetrino>+(5) 
+    return 0
+  endif
+
+
+on=10
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  else
+    say("Jak je libo. Kdyz k soudu, tak k soudu.")
+    SRC.CONSUME=5 i_gold
+    src.go 5648 3849 -60 
+    tag.nasetrino=<tag.nasetrino>+(5)
+    return 0
+  endif
+
+
+on=11
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  else
+    say("Dobra, navstivime Domy leceni...")
+    SRC.CONSUME=5 i_gold
+    src.go 5524 3913 0
+    tag.nasetrino=<tag.nasetrino>+(5)
+    return 0
+  endif
+
+
+on=12
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  else
+    say("Ke kolbisti? Inu, tak vyrazime.")
+    SRC.CONSUME=5 i_gold
+    src.go 5564 3753 -80
+    //tag.remove.nasetrino
+    tag.nasetrino=<tag.nasetrino>+(5)
+    return 0
+  endif
+  
+  
+on=13
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  else
+    say("Chcete se rekreovat ve zdejsich vehlasnych laznich? Nu dobra, pojdte...")
+    SRC.CONSUME=5 i_gold
+    tag.nasetrino=<tag.nasetrino>+(5)
+    src.go 5659 3786 -80 
+    return 0
+  endif
+
+
+on=14
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  else
+    say("Navstivit Manweho chram? Inu, pojdme.")
+    SRC.CONSUME=5 i_gold
+    src.go 5607 3858 -20
+    tag.nasetrino=<tag.nasetrino>+(5)
+    return 0
+  endif
+
+
+on=15
+  if (SRC.TARG.DISTANCE > 5 )
+    src.sysmessage("Prilis jsi se od pruvodce vzdalil.")
+    return 1
+  else
+    say("Chcete ke knihovne? Inu, vzdelavat se je potreba.")
+    SRC.CONSUME=5 i_gold
+    src.go 5543 3836
+    tag.nasetrino=<tag.nasetrino>+(5)
+    return 0
+  endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[dialog d_porter_poznani]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03136 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  page 1
+    HTMLGUMP(170,230,440,130,1,0,36)
+    button 25 395 0fa5 0fa7 0 2 0      
+    text 60 395 152 2
+   
+  page 2
+    HTMLGUMP(170,230,440,130,3,0,36)
+    button 25 395 0fa5 0fa7 0 3 0
+    text 60 395 152 4
+    button 25 415 0fa5 0fa7 0 4 0
+    text 60 415 152 5
+  
+  page 3//zdarma ?
+    HTMLGUMP(170,230,440,130,6,0,36)
+    button 25 395 0fa5 0fa7 0 6 0  //       
+    text 60 395 152 7
+  
+  page 4
+    HTMLGUMP(170,230,440,130,8,0,36)
+    button 25 395 0fa5 0fa7 0 6 0
+    text 60 395 152 11
+    if (src.body==c_woman)
+      argo.button 25 415 0fa5 0fa7 0 5 0
+      argo.text 60 415 152 9
+    endif
+  
+  page 5
+    HTMLGUMP(170,230,440,130,10,0,36)
+    button 25 395 0fa5 0fa7 0 6 0
+    text 60 395 152 11
+  
+  page 6
+    HTMLGUMP(170,230,440,130,12,0,36)
+    button 25 395 0fa5 0fa7 0 7 0
+    text 60 395 152 13
+  
+  page 7
+    HTMLGUMP(170,230,440,130,14,0,36)
+    button 25 395 0fa5 0fa7 1 0 1 //rici o sobe vse.
+    if (src.profession==class_thief)
+      argo.text 60 395 152 18 //zlodejna 
+    else
+      argo.text 60 395 152 15
+    endif
+    button 25 415 0fa5 0fa7 1 0 2 //rict prave jmeno ale nerict vse
+    text 60 415 152 16
+    button 25 435 0fa5 0fa7 1 0 3  //lhat       
+    text 60 435 152 17
+
+
+[dialog d_porter_poznani text]
+Mestsky pruvodce // Jmeno a titul pozdraveneho
+Hmm?
+Prochazite se tu a koukate po mne. Kdo jste?
+Zdravim a vitam vas v Minas Tirith. Kdo jsem? Nu, na to je jednoducha odpoved: jsem mestsky pruvodce. Jsem tu, abych poskytoval v ramci sluzeb mesta bezpecny a rychly doprovod na nejdulezitejsi mista.
+No, takovahle sluzba se zdarma vzdycky hodi.
+To ale asi nebude zadarmo, ze?
+Zdarma? <? src.sex "Chlape","Zenska" ?> blazniva... Pamatujte si, v tomhle meste neni nic zadarmo. Kdybyste <? src.sex "byl nadtim trochu premyslel, tak byste to nevypustil z ust","byla nad tim trochu premyslela, ta byste to nemohla vypustit z ust." ?>
+No dobra, dobra. A to je vse, co delate? // 7
+Presne tak, zde neni prakticky nic zadarmo. To si <? src.sex "pamatujte.","pamatujte, draha. Leda ze byste si tu ve meste namluvila nejakeho bohateho slechtice. Postavu na to mate." ?>
+Bohateho slechtice? Vite o nekom, koho bych ulovila?
+Eh, tak preci dev... eee... jsem vas odhadl spravne. Hledate tedy bohateho slechtice, co by vam snesl modre z nebe. Hmm, popravde... ne, nevim o nikom volnem. Tedy pominu-li mne, ja volny jsem, ale zato nejsem ani slechtic, ani bohaty...
+No, a to jsou veskere sluzby, ktere nabizite? Jen doprovazite?
+Pfff, kdepak. Vicemene tu jsem i pro podavani nejruznejsich informaci, ktere by mohly nastevniky mesta zajimat. Nase mesto je basta vedomosti a historie celeho sveta. Cestuji sem vsichni obyvatele Stredozeme, kteri hledaji nadeji, slavu, bohatstvi - a samozrejme odpovedi.
+No, to je skvele... A muzete mi tedy neco doporucit? Napriklad kam se prvne podivat? // 13
+Hehe, pomalu, pomalu. <? src.sex "Osamoceny muz","Osamocena zena"?>, <? src.tag.race ?>, odhadem nejspis <? src.tag.nation ?>. To je vse, co o vas vim, nebo co si myslim, ze o vas vim, soude podle vzhledu a prizvuku. Co umite, nebo cim se chcete ucit? Kdyz se mi predstavite a reknete mi sve jmeno a cim se zabyvate, tak bych se o vas mohl eventuelne v dobrem zminit u par mych pratel, popripade vam sam poradit, kde co hledat.
+*rici o sobe pravdu*
+*prozradit sve jmeno, ale pomlcet o svem povolani apod.*
+*lhat, vymyslet si, co te napadne*
+*rici o sobe pravdu (zlodejina)* Tohle urcite nechces.
+
+[dialog d_porter_poznani button]
+on=0
+  say("Mejte se pekne.")
+  src.say("No nic, to je zatim vse. Nashle.")
+  return 1
+  
+on=1 //rici pravdu 
+src.ensureTag(hotoveQuesty_2)
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|01
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|040
+if (src.profession==class_necro)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|0800
+endif
+DIALOG(d_porter_predstavitsemu)
+
+on=2 //nerict uplnou pravdu
+src.ensureTag(hotoveQuesty_2)
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|01
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|080
+DIALOG(d_porter_predstavitjenjmeno)
+
+on=3 //lhat
+src.ensureTag(hotoveQuesty_2)
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|01
+src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|0100
+DIALOG(d_porter_predstalhat)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[dialog d_porter_predstavitsemu]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03136 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  page 1
+    if (src.profession==class_mag)
+    argo.HTMLGUMP(170,230,440,130,2,0,36)
+    endif
+    if (src.profession==class_mystik)
+    argo.HTMLGUMP(170,230,440,130,3,0,36)
+    endif
+    if (src.profession==class_war)
+    argo.HTMLGUMP(170,230,440,130,4,0,36)
+    endif
+    if (src.profession==class_thief)
+    argo.HTMLGUMP(170,230,440,130,5,0,36)
+    endif
+    if (src.profession==class_shaman)
+    argo.HTMLGUMP(170,230,440,130,6,0,36)
+    endif
+    if (src.profession==class_craft)
+    argo.HTMLGUMP(170,230,440,130,7,0,36)
+    endif
+    if (src.profession==class_priest)
+    argo.HTMLGUMP(170,230,440,130,8,0,36)
+    endif
+    if (src.profession==class_necro)
+    argo.HTMLGUMP(170,230,440,130,9,0,36)
+    endif
+    if (src.profession==class_necro)
+    argo.button 25 395 0fa5 0fa7 0 2 0
+    argo.text 60 395 152 10
+    else
+    argo.button 25 395 0fa5 0fa7 1 0 4
+    argo.text 60 395 152 1
+    endif
+    if (src.profession==class_ranger)
+    argo.HTMLGUMP(170,230,440,130,22,0,36)
+    endif
+
+  page 2
+    HTMLGUMP(170,230,440,130,11,0,36)
+    button 25 395 0fa5 0fa7 1 0 2
+    text 60 395 152 12
+    button 25 415 0fa5 0fa7 0 3 0
+    text 60 415 152 13
+  
+  page 3
+    HTMLGUMP(170,230,440,130,14,0,36)
+    button 25 395 0fa5 0fa7 1 0 2
+    text 60 395 152 12
+    button 25 415 0fa5 0fa7 0 4 0
+    text 60 415 152 15
+
+  page 4
+    HTMLGUMP(170,230,440,130,16,0,36)
+    IF (<SRC.RESTEST 1000 i_gold>)
+      argo.button 25 395 0fa5 0fa7 1 0 1//ziskals pomoc
+      argo.text 60 395 152 17
+    else
+      argo.button 25 395 0fa5 0fa7 1 0 2//odkladas pomoc
+      argo.text 60 395 152 18
+    endif
+    button 25 415 0fa5 0fa7 1 0 3//pruvodce se stebou uz nikdy bavit nebude.
+    text 60 415 152 19
+
+
+
+[dialog d_porter_predstavitsemu text]
+Mestsky pruvodce // Jmeno a titul pozdraveneho
+Hmm... A mohl bych se jeste zeptat na par veci?
+<?Src.Sex "Mlady","Slecna"?> <?src.name?>? <?src.tag.nation?> <?src.tag.race?>, co <?Src.Sex "sam","sama"?> bada po vedeni magie. Urcite navstivte Magovu vez, ktera se nachazi v severni casti nejspodnejsiho mestkeho kruhu. Sidli tam spolek magu a alchymistu, se kterymi si budete urcite rozumet.
+<?Src.Sex "Mlady","Slecna"?> <?src.name?>? <?src.tag.nation?> <?src.tag.race?>, <?Src.Sex "ktery","ktera"?> se zabyva mystickym poznanim? Popravde, s takovymi se moc nesetkavam a nevim, kam vas nasmerovat. Samozrejme - rad vas poznavam, to ano, ale co vam poradit? Snad se zkuste podivat do Magovy veze - tam uz mozna budou vedet, co s vami. Kdybyste ji <?Src.Sex "hledal","hledala"?>, nachazi se v severni casti nejspodnejsiho mestkeho kruhu.
+<?Src.Sex "Mlady","Slecna"?> <?src.name?>? <?src.tag.nation?> <?src.tag.race?>, co se chce stat slavnym valecnikem. Doporucil bych vam navstivit mestska kasarna, tam je takovych vzdy potreba. Nachazeji se zapadne od knihovny.
+To myslite vazne? <?Src.Sex "Zlodej","Zlodejka"?> <?src.name?>, co se mi otevrene prizna k tomu, co je zac? Pamatujte - tohle uz od vas vickrat nechci slyset. Pro me jste a budete <?Src.Sex "slusnym kucharem","nadanou kucharkou"?>. Nikomu o tom, kym jste - opravdu jste -, nepovim, pokud se nedozvim, ze se kolem vas deji nejake nekale veci... Vite, jak to myslim.
+<?Src.Sex "Mlady","Slecna"?> <?src.name?>, co se chce stat kmenovym samanem? Prominte, ale s tim vam moc neporadim - tohle je vznesene mesto se slavnou historii a zde samany nemame.
+<?Src.Sex "Mlady","Slecna"?> <?src.name?>? <?src.tag.nation?> <?src.tag.race?>, co se chce stat <?Src.Sex "zrucnym remeslnikem a vehlasnym obchodnikem","zrucnou remeslnici a vehlasnou obchodnici"?>. Popravde, tech tu je uz mnoho a bude to pro vas velmi tezke se zde prosadit. Tim vam vas napad samozrejme nevymlouvam, jen te v dobrem varuji. Nerad bych zas nekoho videl utapet svuj zal v nekterem z nasich hostincu.
+<?Src.Sex "Mlady","Slecna"?> <?src.name?>? <?src.tag.nation?> <?src.tag.race?>, co hleda ve svete uplatneni jako <?Src.Sex "siritel","siritelka"?> viry a dobra. Jiste jsi uz <?Src.Sex "slysel","slysela"?> o Manweho chramu - mohu te zavest primo k nemu.
+<?src.name?> <?Src.Sex "Nekromant","Nekromantka"?>? Uh, nechci ti zpusobit problemy a ty se je nesnaz zpusobit mne. Kazdy ve meste vi, ze kral Elessar hned po svem nastupu na trun zakazal v cele sve risi uctivani TECH, O NICHZ SE NESMI MLUVIT. Nekromancie je s jejich ucenim a silou primo spjata. Radim vam dobre - nikomu v Bilem meste o tom, co delate, nerikejte. Mych sluzeb uz nevyuzivejte, nechci skoncit na sibenici za napomahani temnym prisluhovacum!
+No, a co mam jako ted delat? // 10
+Popravde, delat toho moc nemuzete. Pokud zde nemate pratele, kteri by vam mohli byt napomocni, nebo nejake dulezite poslani, tak se radeji Gondoru vyhebejte. V Rohanu se vam bude darit mnohem lepe, tam jsou jednodussi lide a temer zadne zakony.
+Hmm, diky, budu se tim ridit.
+Hmm... A vazne nemam sanci na pomoc od mistnich? Trebas od tebe?
+Ode mne? Blazne blazniva, myslis si, ze dam svou hlavu jen tak zadarmo na spalek? Mozna, kdyby slo jen o me, tak bych vam samozrejme pomohl, ale ja mam na starost i o svou zenu a deti.
+Jsem samozrejme ochoten za vasi pomoc zaplatit. // 15
+*Pruvodce se poskrabal na hlave a zaroven se rozhledl, zda vas nikdo neposloucha. Pote podstatne tissim hlasem pokracuje.* Hmm, dobra, tak rekneme, ze mi ted date tisic zlatych a pokazde, kdyz se na mne obratite, zaplatite, jen za to, ze se vam budu venovat, padesat dalsich. Toto je ma jedina nabidka a nebudu ji opakovat. Berte, nebo nechte byt! A penize chci na ruku! Zadne upisy neberu, bud mi je dejte, rovnou nebo zmizte.
+*s podminkami souhlasis a zaplatis 1000 zlatych*
+*s podminkami souhlasis, ale ted 1000 zlatych nemas*
+*nabydku odmitnes a odejdes*
+Hmm... Tak prijd, az penize budes mit.
+konec rozhovoru
+<?Src.Sex "Mladik","Slecna"?> <?src.name?>? <?src.tag.nation?> <?src.tag.race?>, co by se nejspis <?Src.Sex "chtel","chtela"?> zivit ochocovanim zvirat? Hmmm, tak to praci najdes urcite v Rohanu. Tam je dobry chovatel vzdy potreba.
+
+[dialog d_porter_predstavitsemu button]
+on=0
+  say("Mejte se pekne, <?src.name?>.")
+  src.say("No nic, to je vse. Nashle.")
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|01000
+  return 1
+
+on=1 // odted mas pristup ke sluzbam pruvodce
+  src.ensureTag(hotoveQuesty_2)
+  IF (<SRC.RESTEST 1000 i_gold>)&&(<src.tag.hotovequesty_2>&0800)
+    src.consume=1000 i_gold
+    tag.nasetrino_sobe=<tag.nasetrino_sobe>+(1000)
+    src.sysmessage("<src.sex(Vykoupil,Vykoupila)> sis uplatou sluzby od pruvodce.")
+    src.sysmessage=("<src.sex(Prisel,Prisla)> jsi o 1000 zlatych.")
+    DIALOG(d_porter_mt)
+  //if (<src.tag.hotovequesty_2>&0800)
+  
+  else
+    src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|01000
+    say("Tyhle potize jste si <src.sex("udelal sam","udelala sama")>!")
+    src.go bug
+    src.f_bugar_minas_porter
+  endif
+
+on=2 nekromant smireny se svou situaci
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|01000
+  
+on=3 // pruvodce se uz z tebou bavit nebude
+  src.ensureTag(hotoveQuesty_2)
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|02000
+
+on=4 // nejsi nekromant, muzes pokracovat
+  DIALOG(d_porter_mt)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_porter_predstavitjenjmeno]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03136 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  page 1
+    HTMLGUMP(170,230,440,130,1,0,36)
+    button 25 395 0fa5 0fa7 1 0 1
+    text 60 395 152 2
+
+
+[dialog d_porter_predstavitjenjmeno text]
+Mestsky pruvodce //Jmeno a titul pozdraveneho
+<?Src.Sex "Mlady","Slecna"?> <?src.name?>? Hmm, moc jste mi toho <?Src.Sex "nerekl","nerekla"?>, ale co se da delat. Kazdy znas ma pravo na nejake to sve tajemstvi, ze?
+Tak nejak... <?Src.Sex "mohl","mohla"?> bych se na neco zeptat?
+
+
+[dialog d_porter_predstavitjenjmeno button]
+on=0
+  src.ensureTag(hotoveQuesty_2)
+  say("Mejte se pekne, <?src.name?>.")
+  src.say("No nic, to je vse. Nashle.")
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|01000
+  return 1
+  
+on=1
+  DIALOG(d_porter_mt)
+  
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[dialog d_porter_predstalhat]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03136 // ksichtik   3000-3164
+    text 220 210 52 0     // Jmeno a titul pozdraveneho
+  
+  page 1
+    HTMLGUMP(170,230,440,130,1,0,36)
+    button 25 395 0fa5 0fa7 1 0 1
+    text 60 395 152 2
+
+
+[dialog d_porter_predstalhat text]
+Mestsky pruvodce //Jmeno a titul pozdraveneho
+<?Src.Sex "Hmm, Dareku, rikate, ze jste obstojny kuchar? ","Hmm, Lilie je krasne jmeno. Rikate obstojna kucharka?"?> No, tak zkuste sve stesti v hostinci u Roouse. Je to zde nejvyhlasenejsi hostinec a nove sily nabiraji stale.
+Diky moc, urcite se do toho hostince podivam. A nyni <?Src.Sex "bych se rad zeptal na neco jineho.","mluvme o necem jinem."?>
+
+
+[dialog d_porter_predstalhat button]
+on=0
+  src.ensureTag(hotoveQuesty_2)
+  say="Mejte se <?src.name?>"
+  src.say="No nic to je vse ahoj"
+  src.tag.hotovequesty_2 = <src.tag.hotovequesty_2>|01000
+  return 1
+
+on=1
+  DIALOG(d_porter_mt)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_hrobnik_mt]
+  5,5
+  page 0
+  resizepic 20 200 2620 640 350 
+  gumppic 30 210 03182 // podklad pod ksichtiky  
+  gumppic 40 215 03030 // ksichtik   3000-3164
+  text 220 210 52 0     // Jmeno a titul pozdraveneho
+  button 160 330 0988 0988 0 18 0  // jakej hrbitov ?     
+  text 200 332 1152 2    // 
+  button 325 330 0988 0988 0 2 0  // Nejake drby ? 
+  text 350 330 1152 3    //
+  button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+  text 510 330 1152 4   //
+  button 160 360 0988 0988 0 4 0  // Hledam praci  
+  text 190 360 1152 5   //
+  button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+  text 350 360 1152 6   //
+  button 490 360 0988 0988 0 6 0  // Proverit      
+  text 520 360 1152 7   //
+  
+  page 1
+  HTMLGUMP(170,230,440,100,1,0,36)
+  
+  page 2
+  HTMLGUMP(170,230,440,100,8,0,6)
+  
+  page 3
+  HTMLGUMP(170,230,440,100,9,0,36)
+  button 25 395 0fa5 0fa7 0 8 0  //  obchodovani prvni nabidka       
+  text 60 395 152 23
+  
+  page 4
+  HTMLGUMP(170,230,440,100,10,0,36)
+  
+  page 5
+  HTMLGUMP(170,230,440,100,11,0,36)
+  
+  page 6
+  HTMLGUMP(170,230,440,100,27,0,36)
+  
+  page 7      // Rozvetvene mluvy
+  HTMLGUMP(170,230,440,100,22,0,36)
+  button 25 395 0fa5 0fa7 0 10 0  //  kde najdu ?       
+  text 60 395 152 28
+  button 25 415 0fa5 0fa7 0 11 0  //  kde najdu ?       
+  text 60 415 152 29
+  button 25 435 0fa5 0fa7 0 12 0  //  kde najdu ?     
+  text 60 435 152 30
+  button 25 455 0fa5 0fa7 0 13 0  // kde najdu ?       
+  text 60 455 152 31
+  button 25 475 0fa5 0fa7 0 14 0  //  Kde najdu ?       
+  text 60 475 152 32
+  button 25 495 0fa5 0fa7 0 15 0  //  Kde najdu ?       
+  text 60 495 152 33
+  button 25 515 0fa5 0fa7 0 16 0  //  kde najdu ?       
+  text 60 515 152 34
+  
+  page 8
+  HTMLGUMP(170,230,440,100,24,0,36) // vysvetleni zakazek ...  :o)
+  button 25 395 0fa5 0fa7 0 9 0  //  pokracuj       
+  text 60 395 152 25
+  
+  page 9
+  HTMLGUMP(170,230,440,100,35,0,36)
+  
+  page 10
+  HTMLGUMP(170,230,440,100,35,0,36)
+  button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+  text 60 395 152 25
+  
+  page 11
+  HTMLGUMP(170,230,440,100,36,0,36)
+  button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+  text 60 395 152 25
+  
+  page 12
+  HTMLGUMP(170,230,440,100,37,0,36)
+  button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+  text 60 395 152 25
+  
+  page 13
+  HTMLGUMP(170,230,440,100,38,0,36)
+  button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+  text 60 395 152 25
+  
+  page 14
+  HTMLGUMP(170,230,440,100,39,0,36)
+  button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+  text 60 395 152 25
+  
+  page 15
+  HTMLGUMP(170,230,440,100,40,0,36)
+  button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+  text 60 395 152 25
+  
+  page 16
+  HTMLGUMP(170,230,440,100,41,0,36)
+  button 25 395 0fa5 0fa7 0 17 0  /    /  kde najdu ?       
+  text 60 395 152 25
+  
+  page 17
+  HTMLGUMP(170,230,440,100,42,0,36)
+  
+  page 18 // jakej hrbitov ?
+  HTMLGUMP(170,230,440,100,46,0,36)
+  button 25 395 0fa5 0fa7 0 19 0  //  nechi te pozvat !!!       
+  text 60 395 152 44
+  button 25 415 0fa5 0fa7 0 7 0  //  dobra  pozvu te..       
+  text 60 415 152 45
+  button 25 435 0fa5 0fa7 1 0 9  //  nemas penize ?
+  text 60 435 152 47
+  
+  
+  page 19  // ma pravdu..
+  HTMLGUMP(170,230,440,100,46,0,36)
+  button 25 395 0fa5 0fa7 0 8 0  //  obchodovat       
+  text 60 395 152 45
+  //button 25 415 0fa5 0fa7 0 7 0  //  jine otazky       
+  //text 60 415 152 47
+
+
+
+[dialog d_hrobnik_mt text]
+  Hrobnik Frenk   //    Jmeno a titul pozdraveneho
+  Co je? Co po me chcete?  To uz zas nekdo zarval?
+  Zarval ? nechapu. 
+  Nejake drby ?
+  Obchodovat ?
+  Hledam praci
+  Nesu ti ...
+  Prohlednout..
+  Jo drby ? ...   Mozna  mozna  ze nejake znam....ale ted si nemohu vspomenout jak mam hlad..  tak se to spatne vybavuje..   jiste chapes ne ?                                                              V podstate  urcite toho vim hodne  hodne moc..
+  Ja to vedel..  No a kdy zemrel a kdo to je ?  za vykopani hrobu si uctuju tri tisice GP. HEHEHE To vis  deti.. placeni dani... nove obleky  at k pod..   Ty tri tisice to je samozrejme jen za vykopani..    kdyz pridas jeste dva tisice tak se postaram i o sehnani nahrobku  a udelani rakve.. Staci mi rict rozmery dotycneho  ...   popripade dotycne....   
+  A to ti ji mam jako nabydnout ja ?   hehe  Ne  i kdybych mel na to te  zaplatit tak ty nejsi ten typ kterej by mi mohl pomoci
+  U Mandose co ty me muzes chtit dat ?  Varuji te jestli smrt tak ta mi bouzel neni souzena.. hehehe                 No dobra  co to je ?  
+  xxxxx1 // prechody minas tirith 
+  xxxxx2
+  xxxxx3
+  xxxxx4
+  xxxxx5
+  xxxxx6
+  xxxxx7
+  xxxxx8
+  xxxxx9
+  Dekuji Ale nemam zajem rad bych se zeptal na neco jineho..
+  Jiste ptej se..
+  Hmm a je neco na vyber nebo tak nejak ?  //  23
+  Jako z ceho ?  Z pozice diry a jejich rozmeru ? z nahrobniho kamene ? Proste vsechno vcetne rakve jde udelat na zakazku podle prani...     samozrejme po priplatku..     
+  Dekuji  ale v podstate jsem chtel znat jen nabydku sluzeb..
+  Tak kam to bude ?
+  *INFO* V pritomnosti tohoto cloveka se ti dela spatne..   Tenhle chlapek si zrejme jeste neuvedomil ze je mrtvej a tak tu zrejme strasi. Kolem jeho osoby se siri pach smrti. Na sobe ma spinavej habit obvesenej nejruznejsima cetkama o jejichs puvodu radeji nechces nic vedet. 
+  xxxxx1  // 28    
+  xxxxx2 
+  xxxxx3           
+  xxxxx4     
+  xxxxx5           
+  xxxxx6   //33 
+  xxxxx7  
+  *Zasmal se* To mas recht.. jeden nikdy nevi kdy bude potrebovat mich  sluzeb.
+  Jo tak tenhle typek bydli v tom nacincanem dome naproti hlavni Brane do mesta..   To nemuzes Minout, dole v Patre se tez nachazi Holic a mala soukromna Banka.. 
+  Aaaa  no jsem rad ze sem zavita obcas i nejakej umelec..  inu to najdes v druhem mestkem oblouku..   musis se vydat od Hlavni banky do leva a urcite na to drive ci pozdeji narazis..
+  Hmm krcem je tu povicero..   To vis velke mesto..    Kazdopadne  vsechny tri najdes v nejspodnejsim mestkem Kruhu..   nevim proc ale je to k vuli nejakemu narizeni Krale Elessara..
+  Kamenika najdes v druhem mestkem kruhu..  u Hlavni Banky zatoc v levo a nemuzes to minout..
+  Mno  samozrejme vim kde to je.. ale popravde musim ti dopredu rict ze pokud dopredu nevis kvuli cemu tam vlastne jdes. tak te tam snad ani nepusti..
+  Centralni sklady je ta podlouhla nizka budova hned vedle Hlavniho Trziste..   je to smerem jako kdyz se vracis dolu..
+  hmmm?    //42
+  Eee  nerad bych urazil....   Ale ty jsi tu urcite jako vypomoc ne ?  Myslim  tim  ze se motas kolem hrobu  a tak pod.. he ?
+  COZE ?? Ja te pozvat  nechtel a znat te rozhodne take nechci.  Pobudo 
+  Ergh...   No  nic takoveho sem nemel v umyslu ale proc ne...  
+  Jo tak...  Ty nevis kdo jsem co ?    No to je dobre alspon se muzem seznamit. Velmi rad od tebe vezmu pozvani k objedu..    To pro mne v dnesni dobe malo kdo udela.. 
+  No vlastne jsem se chtel zeptat jestli nemas nejake drobne jsem uplne svorc..
+
+[dialog d_hrobnik_mt button]
+on=0
+  return 1
+on=7   
+  if (SRC.TARG.DISTANCE > 5 )
+    SRC.SYSMESSAGE="VZDALIL SES NEPRIMERENE DALEKO OD PRUVODCE !!!!!!!!!"
+    return 1
+  elseif (!strcmpi(<src.tag.nation>,"Gondoran"))
+    say Dobra zavedu te k Citadele..
+    SRC.CONSUME=50 i_gold
+    src.go 5853 3870 0
+    return 1
+  else
+    say="Zavedu te k posledni brane pred Citadelou..    Ale jak se dostanes dovnitr  to je na tobe."
+    SRC.CONSUME=50 i_gold
+    src.go 5864 3872 0 
+    return 0
+  endif
+on=8
+  if (SRC.TARG.DISTANCE > 5 )
+    SRC.SYSMESSAGE="VZDALIL SES NEPRIMERENE DALEKO OD PRUVODCE !!!!!!!!!"
+    return 1
+  elseif (<SRC.RESTEST 50 i_gold>)
+    say="dobra zavedute k hlavni brane mesta..      a  je to vydelano 50 zlatek na smradochovy.."
+    SRC.CONSUME=50 i_gold
+    src.go 5955 3872 -80 
+    return 0
+  else
+    say= "Ale zaplatit se musi predem !  Nebo mas pocit ze jsme charita ?"
+  endif
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[itemdef i_info_bugar_orter]
+id=i_memory
+type=t_eq_script
+layer=131
+name=Hlaseni o bugerstvi
+
+on=@timer
+if (cont)
+  dorand 3
+    f_info_bugar_porter_1
+    f_info_bugar_porter_2
+    f_info_bugar_porter_3
+  enddo 
+  return 1
+endif
+remove
+return 1
+
+
+
+[function f_info_bugar_porter_1]
+  cont.body=c_pig
+  cont.say="Jsem Bugerske prase a zaslouzim si vymaz."
+  timer=5
+return 1
+
+[function f_info_bugar_porter_2]
+  cont.body=c_man
+  cont.say="pokousel jsem se bugovat a ocekavam trest !! "
+  timer=5
+return 1
+
+
+[function f_info_bugar_porter_3]
+  cont.say="<?tag.bonzuji_bugerstvi?>"
+  timer=5
+return 1
+
+
+
+
+[function f_bonzuji_bugerstvi]
+src.go=bug
+src.newitem(i_info_bugar_porter)
+equip(lastnew)
+lastnew.tag.bonzuji_bugerstvi=<?src.tag.bonzuji_bugerstvi?>
+lastnew.timer 3
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[itemdef i_hospodsky_animator_1]
+id=i_memory
+type=t_eq_script
+layer=132
+name=hozpodskej animator 1
+
+on=@timer
+if (cont)
+  dorand 8
+    f_hosp_anim_skytani
+    f_hosp_anim_skytani
+    f_hosp_anim_skytani
+    f_hosp_anim_tlachani
+    f_hosp_anim_tlachani
+    f_hosp_anim_tlachani
+    f_hosp_anim_tlachani
+    f_hosp_anim_informacni
+  enddo 
+  return 1
+endif
+  remove
+return 1
+
+
+[function f_hosp_anim_skytani]
+  dorand 3
+    cont.say="hic"
+    cont.say="skit"
+    cont.say="skrund"
+  enddo 
+  cont.f_hosp_anim_poblilse
+  timer=10
+return 1
+
+
+[function f_hosp_anim_tlachani]
+
+  dorand 20
+    cont.say="No a tak sem ti ho popadl a rikam mu hele mladej tohle je moje postel a moje zena. A on na to.. "
+    cont.say="Hehe  chlapy ze ma Roous ale peknou postavu co ? S takovou bych si dal hned rict"
+    cont.say="Manwas ty jsi prase vyndej si tu vidlicku z nosu"
+    cont.say="Jo jo to uz jsem slysel.."
+    cont.say="Hernajs nestrkej do mne"
+    cont.say="Tralalala   trala la  la    traaaala la laaalaaa   Tralala la la"
+    cont.say="Proc mi to udelala ? Dyt se u mne mela jak v bavlnce"
+    cont.say=".. ale na ty hrebiky si musis davat pozor joudo..."
+    cont.say=".. no a kdyz si vezmes ze on mel sedm sudu  a ona  tri tak se tam zaziva nemohli vejit.."
+    cont.say="hahahaaa   tak to jo tohle.."
+    cont.say="hehe hehe"
+    cont.say="Jo tak tohle jsem jeste neslysel"
+    cont.say=" nepovidej tohle neni mozne..      Kdo  ona jo ?"
+    cont.say="...no a pak hodim navnadu potreti...   "
+    cont.say="....normalne byla uplne naha.."
+    cont.say="..nakonec kdyz uz byly oba vysileni se obratili proti..."
+    cont.say="..  kvetiny kvetiny..    ty me nezajimaj   mluv o necem jinem"
+    cont.say="..odsoudili ho na tri roky..."
+    cont.say="...a pak prej Gandalf stalul v tvari tvar sesti balrogum a vsechny je schodil do propasti... "
+    cont.say="..Daster je stejnak hajzl k pohledani..."
+  enddo 
+  timer=23
+return 1
+
+[function f_hosp_anim_snizit_poblilse]
+  dorand 3
+    cont.f_hosp_anim_poblilse
+    f_hosp_anim_tlachani
+    f_hosp_anim_tlachani
+  enddo
+
+[function f_hosp_anim_poblilse]
+  src.say="..dopr..*skit* sem se skalil.. bleeee    *poblilse*"
+  src.newitem i_mt_uroous_blitek
+  src.act.p=<src.p>
+  timer=31
+
+[function f_hosp_anim_informacni]
+  dorand 4
+    f_hosp_anim_snizit_poblilse
+    cont.say="Chlapy slyseli jste o tech premnozenych podkanech v kanalech ?  Radni prej vyhradil urcitou cast vynosu z dani na odmeny lovcum krys"
+    cont.say="Zda se ze nam dostali pana Faramira"
+    cont.say="Teda uz jste slyseli o tom stracenem archeologovi ?"
+  enddo
+  timer=17
+return 1
+
+
+
+[function f_stamgasta_1]
+  src.newitem(i_hospodsky_animator_1)
+  equip(lastnew)
+  lastnew.more1=<eval argv(0)>
+  //lastnew.more2=<eval argv(1)>
+  lastnew.timer 1
+
+/////////////////////////////////////////////////////////////////////////////////
+[FUNCTION f_banker_ok]
+if (src.tag(realm)==<tag.realm>)
+else
+  say="Jedes potvoro !!!!"
+  return 1
+endif
+
+if (src.findlayer(4)||src.findlayer(22)||src.findlayer(23))
+else  
+  say="Tahni uchyle !!!!"
+  return 1
+endif
+
+src.tag(lastgumpvendor,<uid>)  
+src.events=+e_vendor_check
+DIALOG(d_banker_ok)
+
+
+
+[dialog d_banker_ok]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182 // podklad pod ksichtiky  
+    gumppic 40 215 03000 // ksichtik   3000-3164
+    //gumppic 30 215 06f // kriz
+    text 220 210 52 0 // Jmeno a titul pozdraveneho
+  
+  page 1
+    HTMLGUMP(170,230,440,100,2,0,1)
+    button 160 330 0988 0988 1 0 1  // Bankovni sluzby
+    text 200 332 1152 3    //
+    button 325 330 0988 0988 1 0 2  // Nejake drby ?        
+    text 365 332 1152 4    //
+    //button 490 330 0988 0988 0 1 0  // Obchodovat ?         
+    //text 510 330 1152 5   //
+    button 160 360 0988 0988 0 3 0  // Hledam praci   //tag.q30_zmocnenecg a neco pro mordor jako podminka pro kvest prevozu penez
+    text 205 362 1152 6   //
+    //button 325 360 0988 0988 0 50 0  // Nesu ti ...          
+    //text 350 360 1152 7   //
+    button 490 330 0988 0988 0 2 0  // Prohlednout             
+    text 538 332 1152 8    //
+    if(tag(butonek_<src.uid>)==2)
+     argo.text 60 395 1152 18
+     tag.remove(butonek_<src.uid>)
+    endif
+
+  
+  page 2  
+    button 160 330 0988 0988 1 0 1  // Bankovni sluzby
+    text 200 332 1152 3    //
+    button 325 330 0988 0988 1 0 2  // Nejake drby ?        
+    text 365 332 1152 4    //
+    //button 490 330 0988 0988 0 1 0  // Obchodovat ?         
+    //text 510 330 1152 5   //
+    button 160 360 0988 0988 0 3 0  // Hledam praci   //tag.q30_zmocnenecg a neco pro mordor jako podminka pro kvest prevozu penez
+    text 205 362 1152 6   //
+    //button 325 360 0988 0988 0 50 0  // Nesu ti ...          
+    //text 350 360 1152 7   //
+    button 490 330 0988 0988 0 2 0  // Prohlednout             
+    text 538 332 1152 8    //
+    if(src.bankbalance >= 1000000)
+     arg(cumenda,{15 17})
+     argo.HTMLGUMP(170,230,440,100,<?arg(cumenda)?>,0,1)
+    endif
+    if(src.bankbalance > 50000)&&(src.bankbalance < 1000000)
+     arg(cumenda,{9 11})
+     argo.HTMLGUMP(170,230,440,100,<?arg(cumenda)?>,0,1)
+    endif
+    if(src.bankbalance <= 50000)
+     arg(cumenda,{12 14})
+     argo.HTMLGUMP(170,230,440,100,<?arg(cumenda)?>,0,1)
+    endif
+
+  page 3 
+    button 160 330 0988 0988 1 0 1  // Bankovni sluzby
+    text 200 332 1152 3    //
+    button 325 330 0988 0988 1 0 2  // Nejake drby ?        
+    text 365 332 1152 4    //
+    //button 490 330 0988 0988 0 1 0  // Obchodovat ?         
+    //text 510 330 1152 5   //
+    button 160 360 0988 0988 0 3 0  // Hledam praci   //tag.q30_zmocnenecg a neco pro mordor jako podminka pro kvest prevozu penez
+    text 205 362 1152 6   //
+    //button 325 360 0988 0988 0 50 0  // Nesu ti ...          
+    //text 350 360 1152 7   //
+    button 490 330 0988 0988 0 2 0  // Prohlednout             
+    text 538 332 1152 8    //
+    arg(cumenda,19)
+    if(src.tag(realm)==1)&&(tag(realm)==1)
+     arg(cumenda,20)
+    endif
+    argo.HTMLGUMP(170,230,440,100,<?arg(cumenda)?>,0,1)
+
+[dialog d_banker_ok text]
+  <?name?>, banker mesta <?region.name?>   // Jmeno a titul pozdraveneho
+  Hmmm ?
+  O cem presne chces hovorit ?
+  Bankovni sluzby
+  Nejake drby ?
+  Obchodovat ? //5
+  Hledam praci
+  Nesu vám ...
+  Prohlednout..
+  Banker pusobi solidnim dojmem a diva se na tebe s uctivym zajmem.
+  Typicky banker. Formalni a nudny. //10
+  Banker zkusenym zrakem odhaduje vysi tveho majetku.
+  Pod jeho odsuzujicim pohledem si pripadas jak posledni zebrak.
+  Banker pusobi dojmem nafoukaneho urednika a zhlizi na tebe se spatne skryvanym despektem. 
+  V tehle bance zrejme nemaji moc zajem o drobne stradatele.
+  Banker se ti zda az trapne servilini. //15
+  V soustredenem vyrazu bankere lze jasne vycist hlad po tvych penezich.
+  Je k nevire, ze cloveku tak nizkeho puvodu, je dovoleno se starat o tvoje penize.
+  Kdepak <?src.sex "pane","pani"?>. Banka je seriozni instituce, zadne drby zde netrpime.
+  Pro praci v bance je nutna vysoka kvalifikace, duveryhodnost a smysl pro loajalitu.
+  Pokud mas odvahu, hledej praci u zmocnence Gondoru. Lide v jeho sluzbach uspesni, najdou uplatneni i pri nasich delikatnich zakazkach.
+
+[dialog d_banker_ok button]
+on=0
+  return 1
+    
+  
+ON=1
+  DIALOG(d_banker_bank)
+  //RETURN 1
+  
+ON=2
+  tag(butonek_<src.uid>,2)
+  dialog(d_banker_ok)
+  RETURN 1
+
+
+[dialog d_banker_bank]
+  5,5
+  page 0
+    resizepic 20 200 2620 640 350 
+    gumppic 30 210 03182
+    gumppic 40 215 03000
+    text 220 210 52 0
+  page 1
+                if(src.bankbalance >= 1000000)
+     argo.HTMLGUMP(170,230,440,100,1,0,36)
+    endif
+    if(src.bankbalance > 50000)&&(src.bankbalance < 1000000)
+     argo.HTMLGUMP(170,230,440,100,4,0,36)
+    endif
+    if(src.bankbalance <= 50000) 
+     argo.HTMLGUMP(170,230,440,100,5,0,36)
+    endif
+                button 25 415 0fa5 0fa7 1 0 1// Banka
+    text 60 415 152 2
+    button 25 435 0fa5 0fa7 1 0 2//sek
+    text 60 435 152 3
+    
+
+
+
+[dialog d_banker_bank text]
+  <?name?>, banker mesta <?region.name?>   // Jmeno a titul pozdraveneho
+  <?Src.Sex "Velevazeny pane","Vzacna pani?"> <?src.name?>, jmenem nasi banky si dovoluji Vam nabidnout nase skromne sluzby.<br>Vase hotovost v bance cini <?src.bankbalance?> zlatych.
+  Otevrit banku.
+  Proplatit upisy.
+  Vase hotovost v bance cini <?src.bankbalance?> zlatych.
+        A jeje. <?Src.Sex "Pan","Pani"?> z Nemanic.<br>Vase hotovost v bance cini <?src.bankbalance?> zlatych.
+
+[dialog d_banker_bank button]
+on=0
+dialog(d_banker_ok)
+return 1
+    
+  
+ON=1
+if !(src.isevent(e_vendor_check))
+  SRC.RedMessage("Behem hovoru se nesmis hybat !")
+  return 0
+endif
+
+if (FINDUID(<src.tag(lastgumpvendor)>).DISTANCE > 6)
+  SRC.RedMessage("Jsi prilis daleko od bankere !!")
+else
+  src.bankself    
+  RETURN 1
+endif
+
+ON=2
+if !(src.isevent(e_vendor_check))
+  SRC.RedMessage("Behem hovoru se nesmis hybat !")
+  return 0
+endif
+
+if (FINDUID(<src.tag(lastgumpvendor)>).DISTANCE > 6)
+  SRC.RedMessage("Jsi prilis daleko od bankere !!")
+  return 1
+endif
+
+arg(sek,<src.findid(i_cashiers_check)>)
+if(<arg(sek)>)
+  while (<arg(sek)>)
+    if (<finduid(<arg(sek)>).topobj>==<src>)
+      if (<finduid(<arg(sek)>).more> <= 0)
+        finduid(<arg(sek)>).remove
+        say("Bohuzel, sek nebyl kryty zadnym zlatem.")
+      else
+      	if (!(finduid(<arg(sek)>).tag(check_value))&&(<finduid(<arg(sek)>).more> > 10000000))
+      		src.redmessage("Tvoj sek ma prilis velku hodnotu a je stary, nemozem ho preplatit. Napis si page a bude vymeneny za novy.")
+      		return 0
+      	elseif (!(<finduid(<arg(sek)>).more> == <finduid(<arg(sek)>).tag(check_value)>)&&(<finduid(<arg(sek)>).more> > 10000000))
+      		src.redmessage("Tvoj sek je bugly, pis page!")
+      		src.jail
+      		return 0
+      	endif
+        src.findlayer(29).givegold(<finduid(<arg(sek)>).more>)
+      	src.AccMsg("BYL PROPLACEN SEK: uid: <finduid(<arg(sek)>)>, hodnota: <finduid(<arg(sek)>).more> gp.")
+        src.sound=037
+        src.sysmessage("Do banky bylo vlozeno <finduid(<arg(sek)>).more> gp.")
+        finduid(<arg(sek)>).remove
+      endif 
+    endif
+    arg(sek,<src.findid(i_cashiers_check)>)
+  endwhile
+  say("Rad jsem poslouzil.")
+else
+  say("Nemas u sebe zadny sek.")
+endif
+return 1
+
+/////////////////////////////////////////////////////////////////////////////////
+[ITEMDEF i_krizovnik_mt_hostinec]
+ID=0AEC
+Name=krizovnik
+
+
+CATEGORY=Krizovniky
+SUBSECTION=Minas Tirith
+DESCRIPTION=Roous-trznice
+
+ON=@Create
+  color=062
+  attr_movenever(1)
+  attr_invis(1)
+  more1=0
+
+ON=@STEP
+//  if (src.tag.smeruji_k_trznici=1)
+    src.say="menim si houme pozici na <?morep?>"
+    src.home=<morep>
+//  endif
+
+//////////////////////////////////////////////////////////////////////////
+[function f_nasleduj]
+  src.newitem(i_hospodsky_animator_1)
+  equip(lastnew)
+  lastnew.more1=<eval argv(0)>
+  //lastnew.more2=<eval argv(1)>
+  lastnew.timer 1
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+[SPEECH namestek_valky_g]
+
+ON=*ahoj*
+ON=*hi*
+say "Ja nemam cas na zabavu. Pokud zde namas co pohledavat nebo nemas povoleni ke vstupu tak odejdi "
+   DIALOG(d_strazce_knihovny)
+
+
+
+[dialog d_minas_namestek_valky_g]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky  
+gumppic 40 215 03029 // ksichtik   3000-3164
+
+
+page 1
+HTMLGUMP(170,230,440,100,1,0,36)
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 8 0  // Kdo jsi ?
+text 200 332 1152 2    // 
+button 325 330 0988 0988 0 2 0  // Nejake drby ?
+text 350 330 1152 3    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?
+text 510 330 1152 4   //
+button 160 360 0988 0988 0 4 0  // Hledam praci
+text 190 360 1152 5   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...
+text 350 360 1152 6   //
+button 490 360 0988 0988 0 6 0  // Proverit
+text 520 360 1152 7   //
+
+
+
+//button 25 395 0fa5 0fa7 0 8 0  //  obchodovat       
+//text 60 395 152 23
+//button 25 415 0fa5 0fa7 0 7 0  //  jine otazky       
+//text 60 415 152 21
+
+
+page 2
+HTMLGUMP(170,230,440,140,8,0,6)
+button 25 395 0fa5 0fa7 0 1 0  //  navrat
+text 60 395 152 15
+
+page 3
+HTMLGUMP(170,230,440,140,9,0,36)
+button 25 395 0fa5 0fa7 0 1 0  //  navrat
+text 60 395 152 15
+
+page 4
+HTMLGUMP(170,230,440,140,10,0,36)
+button 25 395 0fa5 0fa7 0 1 0  //  navrat
+text 60 395 152 15
+
+page 5
+HTMLGUMP(170,230,440,140,11,0,36)
+button 25 395 0fa5 0fa7 0 1 0  //  navrat
+text 60 395 152 16
+
+page 6
+HTMLGUMP(170,230,440,140,13,0,36)
+button 25 395 0fa5 0fa7 0 1 0  //  navrat
+text 60 395 152 15
+
+page 7
+HTMLGUMP(170,230,440,140,14,0,36)
+//button 25 395 0fa5 0fa7 0 8 0  //  obchodovat       
+//text 60 395 152 23
+
+page 8
+HTMLGUMP(170,230,440,140,14,0,36)
+button 25 395 0fa5 0fa7 0 9 0     
+text 60 395 152 17 //ano to mi vzhovuje zaplatim 50 000 GP
+button 25 415 0fa5 0fa7 0 1 0  //  jine otazky       
+text 60 415 152 18 //
+
+page 9
+HTMLGUMP(170,230,440,140,19,0,36)
+button 25 395 0fa5 0fa7 1 0 1     
+text 60 395 152 20 //ano to mi vzhovuje zaplatim 50 000 GP
+button 25 415 0fa5 0fa7 0 1 0  //  jine otazky       
+text 60 415 152 15 //
+
+[dialog d_minas_namestek_valky_g text]
+Namestek valky   //    Jmeno a titul pozdraveneho
+Hmmm ?
+Vyhlasit utok 
+Nejake drby ?
+Obchodovat ?
+Hledam praci
+Nesu ti ...
+Prohlednout..   //7
+hehe..  Mno drby tak stim ti nepomohu ja je neposloucham ani neposilam dal.. 
+Myslis si ze jsem zde  od toho abych tu obchodoval ? Ja nejsem obchodnik jasny ?
+Jedine do Armady..  nic jineho nema budoucnost..  Ta te nakrmi pobavi i zahubi.. vse v jednom baleni..  Stalo by zato navtivit but kapitana mestske straze  nebo narukovat k Armade..   Inu to vis..Tohle je stred sveta.. Hlavni mesto 
+Pokracovat..
+Tak kam to bude ?    //12
+*INFO* Tento mlady muz rozhodne nevypada nato ze svou dosavadni sluzbu prozil prave v knihovne..  Na obliceji i na rukach 
+Jejda <?SRC.SEX "mladej panacek","slecna"?> porada utok na nove pevnosti ?  NO tak ber ale na vedomi ze te to bude neco stat. Uredni schvaleni, glejd, zalohy na leky pro ranene z fronty. No rekneme ze celkem mi sem slozis 100 tisic GP jasny ?
+neco jineho..
+vlastne nic nemam..
+ano to mi vzhovuje zaplatim 100 000 GP
+100 tisic je pro me moc penez, rad bzch neco jineho
+Dobra tedy, sloz penize <?SRC.SEX "dobyvateli","dobyvatelko"?> a ostatni veci si zarid na zde na kameni 
+zaplatit 100 tisic
+
+
+[dialog d_minas_namestek_valky_g button]
+on=0
+return 1
+
+on=1
+if(<eval src.tag(skillrank)> < 3 && <eval src.tag(level)> < 30)
+ say("Je mi lito na nejaky realny uspech ve valce nemas dostatek zkusenosti")
+ return 1
+endif
+if(strlen(<src.tag(captain)>) > 0) //uz je kapitanem
+ say("Ty uz kapitanem jsi. Starej se o svou pevnost a vedeni dalsi valky prenech jinemu")
+ return 1
+endif
+arg(jehorealm,<eval src.tag(realm)>)
+if(<jehorealm> == 1)
+ if(<eval var(war_declarator_<jehorealm>).tag(conquered)) == -3>
+  //Gondor uz dobyl vse az po pevnost -3
+  say("Vzdyt uz jsi tem Mordoranum vsechno dobyl!")
+  return 1
+ endif
+else
+ if(<eval var(war_declarator_<jehorealm>).tag(conquered)) == 3>
+  //Mordor uz dobyl vse az po pevnost -3
+  say("Vzdyt uz jsi tem prasivejm Gondorum vsechno dobyl!")
+  return 1
+ endif
+endif
+if(src.tag(can_declare_war_on_<qval <eval <jehorealm>-1>,"Gondor","Mordor">))
+ say("Je zbytecne platit mi za dalsi vyhlasovani valky kdyz uzs to jednou udelal")
+ return 1
+endif
+if(src.pay(100000))
+ src.tag(can_declare_war_on_<qval <eval <jehorealm>-1>,"Gondor","Mordor">,1)
+endif
+
+
+[EOF]

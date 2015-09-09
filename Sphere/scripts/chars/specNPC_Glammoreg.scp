@@ -1,0 +1,1788 @@
+// Glamor in Roeg - ozvena demonu
+// id - 026 - mage daemon
+// id - 028 a 09 - mlatic (09 slabej)
+
+/////////////////////////////////////////
+
+[chardef c_glmm_rat] //nachylny na magy a Archery
+id=0D7
+NAME=Krysa
+CAN=MT_WALK
+
+attack=95
+ARMOR=55
+moverate=3
+
+FOODTYPE=20 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_npc_leaper
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_detect
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Krysa Demonic
+
+ON=@Create
+NPC=brain_monster
+color=0453
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=10
+
+maxhits={520 550}
+maxstam={250 350}
+maxmana=0
+
+tag.experience=<eval {30.0 35.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[3]>//dex
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,daemon,50)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {400 550}>
+tag(resist_summon,950)
+tag(resist_bleed,400)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,-150)
+tag(resist_blunt,550)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=55.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+//	D E M O N I   F y z i c k y                 //
+//           (c) Yavanna & Marek                    //
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_phys_lvl_1] //nachylny Blunt a Cold + buff STR
+id=028
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=120
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Physical lvl 1
+
+ON=@Create
+NPC=brain_monster
+COLOR=0909
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=100
+
+maxhits={3000 3500}
+maxstam={150 220}
+maxmana=0
+
+tag.experience=<eval {140.0 150.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,daemon,50)
+
+tag.npc_bleed=300 //30.0%
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,550)
+tag(resist_blunt,250)
+
+tag(resist_fire,900)
+tag(resist_elect,800)
+tag(resist_cold,0)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=65.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_phys_lvl_2]
+id=028
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=120
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_leaper
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Physical lvl 2
+
+ON=@Create
+NPC=brain_monster
+color=0907
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=50
+
+maxhits={3000 3200}
+maxstam={150 220}
+maxmana=0
+
+tag.experience=<eval {200.0 240.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+tag.npc_bleed=400 //40.0%
+
+tag(monstertype,daemon,50)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {600 750}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,550)
+tag(resist_blunt,250)
+
+tag(resist_fire,900)
+tag(resist_elect,800)
+tag(resist_cold,0)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=75.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_phys_lvl_3]
+id=028
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=135
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_npc_leaper
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_stun
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Physical lvl 3
+
+ON=@Create
+NPC=brain_monster
+color=090d
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=50
+
+maxhits={4600 5000}
+maxstam={150 220}
+maxmana=0
+
+tag.experience=<eval {600.0 675.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+tag.npc_bleed=500 //50.0%
+
+tag(monstertype,daemon,50)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,550)
+tag(resist_blunt,250)
+
+tag(resist_fire,900)
+tag(resist_elect,800)
+tag(resist_cold,0)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=85.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_phys_lvl_4]
+id=028
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=135
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_stun
+TEVENTS=e_npc_roundattack
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Physical lvl 4
+
+ON=@Create
+NPC=brain_monster
+color=090
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=50
+
+maxhits={7500 7900}
+maxstam={250 320}
+maxmana=0
+
+tag.experience=<eval {800.0 950.0}>
+
+tag.roundattack_damage=60,65  //dmg od - do
+tag.roundattack_time=10,12    //prodleva od - do v sek
+tag.roundattack_chance=400    //40.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,daemon,40)
+
+tag.npc_bleed=600 //60.0%
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {800 950}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,550)
+tag(resist_blunt,250)
+
+tag(resist_fire,900)
+tag(resist_elect,800)
+tag(resist_cold,0)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=95.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_phys_lvl_5]
+id=028
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=140
+ARMOR=105
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_parakrik
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_npc_leaper
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_pushall
+TEVENTS=e_explosiondispell
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Physical lvl 5
+
+ON=@Create
+NPC=brain_monster
+color=02A
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=100
+
+maxhits={9000 9500}
+maxstam={250 320}
+maxmana=0
+
+tag.experience=<eval {1200.0 1300.0}>
+
+tag.roundattack_damage=70,80  //dmg od - do
+tag.roundattack_time=5,7      //prodleva od - do v sek
+tag.roundattack_chance=200    //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+
+tag(monstertype,daemon,30)
+
+tag.npc_bleed=900 //90.0%
+
+tag(e_pushall_time,30)
+tag(e_pushall_chance,50)  //5% chance
+
+tag(e_explosiondispell_chance,300) //30% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,550)
+tag(resist_blunt,250)
+
+tag(resist_fire,900)
+tag(resist_elect,800)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=120.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+//	D E M O N I   M e n t a l n i               //
+//           (c) Yavanna & Marek                    //
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mental_lvl_1] //nachylny slash a elect + buff dmg
+ID=c_daemon_mage1
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=120
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_npc_multishot
+TEVENTS=e_explode
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mental lvl 1
+
+ON=@Create
+NPC=brain_monster
+color=0377
+FAME=500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=100
+
+maxhits={3000 3500}
+maxstam={150 220}
+maxmana=0
+
+tag.experience=<eval {150.0 175.0}>
+
+Tag.explode_dmg=30
+
+tag.multishot_chance=200                       // 20% chance pri zasahu monstra
+tag.multishot_delay=15,20                      // prodleva nez znovu
+tag.multishot_dmg=30,40                        // dmg in between 30 and 40
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,daemon,50)
+
+tag.npc_bleed=200 //20.0%
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {400 550}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,450)
+tag(resist_pierce,650)
+tag(resist_blunt,550)
+
+tag(resist_fire,900)
+tag(resist_elect,400)
+tag(resist_cold,750)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=85.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mental_lvl_2]
+ID=c_daemon_mage1
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=120
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_stun
+TEVENTS=e_npc_multishot
+TEVENTS=e_explode
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mental lvl 2
+
+ON=@Create
+NPC=brain_monster
+color=02b4
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=100
+
+maxhits={3000 3200}
+maxstam={150 220}
+maxmana=0
+
+tag.experience=<eval {225.0 250.0}>
+
+Tag.explode_dmg=35
+
+tag.multishot_chance=200                       // 20% chance pri zasahu monstra
+tag.multishot_delay=15,20                      // prodleva nez znovu
+tag.multishot_dmg=30,40                        // dmg in between 30 and 40
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,daemon,50)
+
+tag.npc_bleed=300 //30.0%
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,450)
+tag(resist_pierce,650)
+tag(resist_blunt,550)
+
+tag(resist_fire,900)
+tag(resist_elect,400)
+tag(resist_cold,750)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=95.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mental_lvl_3]
+ID=c_daemon_mage1
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=135
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_multishot
+TEVENTS=e_npc_detect
+TEVENTS=e_explode
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mental lvl 3
+
+ON=@Create
+NPC=brain_monster
+color=057
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=100
+
+maxhits={4000 4500}
+maxstam={150 220}
+maxmana=0
+
+tag.experience=<eval {620.0 650.0}>
+
+Tag.explode_dmg=40
+
+tag.multishot_chance=200                       // 20% chance pri zasahu monstra
+tag.multishot_delay=15,20                      // prodleva nez znovu
+tag.multishot_dmg=30,40                        // dmg in between 30 and 40
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag(monstertype,daemon,50)
+
+tag.npc_bleed=400 //40.0%
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {600 750}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,450)
+tag(resist_pierce,650)
+tag(resist_blunt,550)
+
+tag(resist_fire,900)
+tag(resist_elect,400)
+tag(resist_cold,750)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=105.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mental_lvl_4]
+ID=c_daemon_mage1
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=135
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_roundattack
+TEVENTS=e_explode
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mental lvl 4
+
+ON=@Create
+NPC=brain_monster
+color=0124
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=100
+
+maxhits={6000 6500}
+maxstam={250 320}
+maxmana=0
+
+tag.experience=<eval {870.0 900.0}>
+
+Tag.explode_dmg=45
+
+tag.roundattack_damage=30,40  //dmg od - do
+tag.roundattack_time=10,12    //prodleva od - do v sek
+tag.roundattack_chance=200    //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,daemon,40)
+
+tag.npc_bleed=500 //50.0%
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,450)
+tag(resist_pierce,650)
+tag(resist_blunt,550)
+
+tag(resist_fire,900)
+tag(resist_elect,400)
+tag(resist_cold,750)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=125.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mental_lvl_5]
+ID=c_daemon_mage1
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=140
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_rawBLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_npc_leaper
+TEVENTS=e_explosiondispell
+TEVENTS=e_npc_multishot
+TEVENTS=e_parakrik
+TEVENTS=e_explode
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mental lvl 5
+
+ON=@Create
+NPC=brain_monster
+color=05c
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=100
+
+maxhits={9000 9500}
+maxstam={250 320}
+maxmana=0
+
+tag.experience=<eval {1200.0 1350.0}>
+
+Tag.explode_dmg=50
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+
+tag(monstertype,daemon,30)
+
+tag.npc_bleed=600 //60.0%
+
+tag.roundattack_damage=50,60  //dmg od - do
+tag.roundattack_time=15,17      //prodleva od - do v sek
+tag.roundattack_chance=500    //50.0%
+
+tag.multishot_chance=50                        // 5% chance pri zasahu monstra
+tag.multishot_delay=15,20                      // prodleva nez znovu
+tag.multishot_dmg=30,40                        // dmg in between 30 and 40
+
+tag(e_explosiondispell_chance,100) //10% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,450)
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,400)
+tag(resist_cold,750)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=145.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+//          D E M O N I   K O U Z L I V C I         //
+//                 (c) Yavanna & Marek              //
+//////////////////////////////////////////////////////
+
+
+[chardef c_glmm_daemon_mage_lvl_1] //nachylny sharps a archery + buff int
+ID=c_daemon_large
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=90
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix_fire
+TEVENTS=e_managain
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mage lvl 1
+
+ON=@Create
+NPC=brain_monster
+color=0345
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=300
+
+maxhits={3000 3500}
+maxstam={150 200}
+maxmana=1000
+
+tag.experience=<eval {200.0 225.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,daemon,50)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {700 850}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,150)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,850)
+tag(resist_cold,850)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+magery=120.1
+ei=75.0
+peacemaking=100.0
+provocation=100.0
+POISONING={80.0 120.0}
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=75.0
+
+itemnewbie=i_spellbook
+addspell=s_mass_curse
+addspell=s_magic_reflection
+addspell=s_lightning
+//addspell=s_mana_drain
+//addspell=s_flamestrike
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mage_lvl_2]
+ID=c_daemon_large
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=95
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix_fire
+TEVENTS=e_managain
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mage lvl 2
+
+ON=@Create
+NPC=brain_monster
+color=027D
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=350
+
+maxhits={4000 4500}
+maxstam={150 200}
+maxmana=1000
+
+tag.experience=<eval {250.0 275.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,daemon,50)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {750 900}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,200)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,850)
+tag(resist_cold,850)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+magery=120.1
+ei=85.0
+peacemaking=100.0
+provocation=100.0
+POISONING={90.0 130.0}
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=85.0
+
+itemnewbie=i_spellbook
+addspell=s_mass_curse
+addspell=s_magic_reflection
+addspell=s_lightning
+//addspell=s_mana_drain
+//addspell=s_flamestrike
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mage_lvl_3]
+ID=c_daemon_large
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=105
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_summoneater             //smaze summona, co zasahne
+TEVENTS=e_explosiondispell
+TEVENTS=e_managain
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mage lvl 3
+
+ON=@Create
+NPC=brain_monster
+color=01B5
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=400
+
+maxhits={6000 6500}
+maxstam={150 200}
+maxmana=1000
+
+tag.experience=<eval {670.0 700.0}>
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+tag(monstertype,daemon,50)
+
+tag(e_explosiondispell_chance,67) //6.7% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {800 950}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,650)
+tag(resist_slash,850)
+tag(resist_pierce,250)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,850)
+tag(resist_cold,850)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+magery=120.1
+ei=95.0
+peacemaking=100.0
+provocation=100.0
+POISONING={100.0 140.0}
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=95.0
+
+itemnewbie=i_spellbook
+addspell=s_mass_curse
+addspell=s_magic_reflection
+addspell=s_lightning
+//addspell=s_mana_drain
+//addspell=s_flamestrike
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mage_lvl_4]
+ID=c_daemon_large
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=120
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_roundattack
+TEVENTS=e_autoreflect
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+TEVENTS=e_explosiondispell
+TEVENTS=e_parakrik
+TEVENTS=e_managain
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mage lvl 4
+
+ON=@Create
+NPC=brain_monster
+color=0ED
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=400
+
+maxhits={7000 7500}
+maxstam={150 200}
+maxmana=1000
+
+tag.experience=<eval {900.0 999.0}>
+
+tag.roundattack_damage=30,40  //dmg od - do
+tag.roundattack_time=15,17    //prodleva od - do v sek
+tag.roundattack_chance=200    //20.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+tag(monstertype,daemon,40)
+
+tag(e_explosiondispell_chance,150) //15% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(npc_summoner_count,2)
+tag(npc_summoner_char[0],c_glmm_rat)
+tag(npc_summoner_char[1],c_glmm_rat)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {850 980}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,650)
+tag(resist_slash,850)
+tag(resist_pierce,350)
+tag(resist_blunt,550)
+
+tag(resist_fire,900)
+tag(resist_elect,850)
+tag(resist_cold,850)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+magery=120.1
+ei={115.0 120.0}
+peacemaking=100.0
+provocation=100.0
+POISONING={150.0 200.0}
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=135.0
+
+itemnewbie=i_spellbook
+addspell=s_mass_curse
+addspell=s_lightning
+//addspell=s_mana_drain
+//addspell=s_flamestrike
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_mage_lvl_5]
+ID=c_daemon_large
+Name=Balrogh
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+attack=130
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_phoenix
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_autoreflect
+TEVENTS=e_explosiondispell
+TEVENTS=e_npc_summoner
+TEVENTS=e_npc_summoning
+TEVENTS=e_parakrik
+TEVENTS=e_managain
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Mage lvl 5
+
+ON=@Create
+NPC=brain_monster
+color=0988
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=200
+INT=400
+
+maxhits={10500 11000}
+maxstam={150 200}
+maxmana=2000
+
+tag.experience=<eval {1500.0 1700.0}>
+
+tag.roundattack_damage=50,60  //dmg od - do
+tag.roundattack_time=10,15    //prodleva od - do v sek
+tag.roundattack_chance=400    //40.0%
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[9]>
+
+tag(monstertype,daemon,30)
+
+tag(npc_summoner_count,2)
+tag(npc_summoner_char[0],c_glmm_rat)
+tag(npc_summoner_char[1],c_glmm_rat)
+
+tag(npc_summoning_chance,20)  //2.0% chance
+tag(npc_summoning_time,60)
+tag(npc_summoning_count,2)
+tag(npc_summoning_char[0],c_mahat_boss_leaper)
+tag(npc_summoning_char[1],c_mahat_boss_etheric)
+
+tag(e_explosiondispell_chance,100) //10% chance
+tag(e_explosiondispell_range,5)
+tag(e_explosiondispell_time,30)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {900 1000}>
+tag(resist_summon,950)
+tag(resist_bleed,800)
+
+tag(resist_sharp,650)
+tag(resist_slash,850)
+tag(resist_pierce,400)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,850)
+tag(resist_cold,850)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+magery=120.1
+ei={130.0 140.0}
+peacemaking=100.0
+provocation=100.0
+POISONING={200.0 250.0}
+PARRYING={95.0 100.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=200.0
+
+itemnewbie=i_spellbook
+addspell=s_mass_curse
+addspell=s_lightning
+addspell=s_flamestrike
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+
+//////////////////////////////////////////////////////
+//            D E M O N  - Mega M e e l e r         //
+//                 (c) Yavanna & Marek              //
+//////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_melee] //MEga na blizko, na dalku zranitelny a parovatelny
+id=c_fireant_daemon
+Name=Demon armored
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03f
+CAN=MT_WALK|MT_USEHANDS|mt_run
+
+attack=180
+ARMOR=185
+moverate=3
+
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explode
+TEVENTS=e_npc_roundattack
+TEVENTS=e_npc_stun
+TEVENTS=e_npc_leaper
+TEVENTS=e_npc_reactivearmor
+TEVENTS=e_phoenix_fire
+TEVENTS=e_summoneater          //smaze summona, co zasahne
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Armored
+
+ON=@Create
+NPC=brain_monster
+COLOR=0909
+FAME=1500
+KARMA={-5000 -6000}
+
+STR=8000
+DEX=300
+INT=100
+
+maxhits={8000 8600}
+maxstam=300
+maxmana=0
+
+tag.experience=<eval {450.0 475.0}>
+
+Tag.explode_dmg=50
+
+tag.roundattack_damage=30,40  //dmg od - do
+tag.roundattack_time=5,7      //prodleva od - do v sek
+tag.roundattack_chance=400    //40.0%
+
+tag.npc_port_timer=10
+tag(npc_port_distance,9)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[2]>//str
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[8]>
+
+tag(monstertype,daemon,50)
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {400 550}>
+tag(resist_summon,950)
+tag(resist_bleed,200)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)
+tag(resist_pierce,650)
+tag(resist_blunt,350)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,100)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+PARRYING={95.0 120.0}
+TACTICS={85.0 120.0}
+WRESTLING={95.0 100.0}
+SpiritSpeak=75.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_daemon_thief]
+ID=c_mongbat
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03f
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_run
+
+attack=55
+ARMOR=60
+moverate=5
+
+RESOURCES=4 i_ribs_raw, 3 i_reag_daemon_bone
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_massleap
+TEVENTS=e_backstub
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Thief
+
+ON=@Create
+COLOR=07FFF
+NPC=brain_monster
+FAME=1
+KARMA=-1500
+
+STR=2000
+DEX=300
+INT=300
+
+maxhits={1200 1500}
+maxstam={300 350}
+maxmana=0
+
+tag.experience=<eval {70.0 75.0}>
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+tag(monstertype,daemon,50)
+
+tag.weapflag=dam_physical
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,950)
+tag(resist_bleed,600)
+
+tag(resist_sharp,650)
+tag(resist_slash,650)
+tag(resist_pierce,450)
+tag(resist_blunt,350)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+TACTICS=250.0
+WRESTLING=100.0
+POISONING={80.0 120.0}
+SpiritSpeak=55.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+//////////////////////////////////////////////////////
+
+[chardef c_glmm_bomber]
+ID=c_skull_head
+NAME=Follower
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03f
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_run
+
+attack=25
+ARMOR=60
+moverate=4
+
+RESOURCES=1 i_reag_daemon_bone
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explode
+TEVENTS=e_npc_leaper
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Demon Bomber
+
+ON=@Create
+COLOR=07FFF
+NPC=brain_monster
+FAME=1
+KARMA=-1500
+
+STR=2000
+DEX=200
+INT=300
+
+maxhits={800 900}
+maxstam={200 250}
+maxmana=0
+
+tag.experience=<eval {19.0 20.0}>
+
+Tag.explode_dmg=50
+
+tag.npc_port_timer=10
+tag(npc_port_distance,9)
+
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+tag(monstertype,daemon,50)
+tag.weapflag=dam_physical
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,600)
+
+tag(resist_sharp,50)
+tag(resist_slash,50)
+tag(resist_pierce,850)
+tag(resist_blunt,50)
+
+tag(resist_fire,200)
+tag(resist_elect,200)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+TACTICS=250.0
+WRESTLING=100.0
+SpiritSpeak=55.0
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+///////////////////////////////////////////////////////////
+
+[CHARDEF c_glmm_eye]
+id=c_gazer
+NAME=Eye
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+
+attack=60
+ARMOR=20
+moverate=4
+
+resources=i_reag_blood_vial
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_iron_eye
+TEVENTS=e_phoenix_fire
+
+CATEGORY=Dungy
+SUBSECTION=Glammoreg
+DESCRIPTION=Eye
+
+ON=@Create
+color=044c
+NPC=brain_monster
+FAME=150
+KARMA=-2000
+
+STR=1000
+DEX=800
+INT=500
+
+maxhits={800 890}
+maxstam={600 800}
+maxmana=0
+
+tag.experience=<eval {25.0 35.0}>
+
+tag(npc_port_distance,9)
+
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe> 
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg 
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[4]>
+
+tag(monstertype,daemon,50)
+tag.weapflag=dam_physical
+
+tag(resist_poison,1000)
+tag(resist_para,1000) 
+tag(resist_summon,1000)
+tag(resist_bleed,1000)
+
+tag(resist_sharp,750)
+tag(resist_slash,750)
+tag(resist_pierce,450)
+tag(resist_blunt,350)
+
+tag(resist_fire,400)
+tag(resist_elect,400)
+tag(resist_cold,200)
+
+//tag(resist_phys,0)
+//tag(resist_magic,0)
+//tag(resist_acid,0)
+
+
+Resist=200.0
+WRESTLING=100.0
+SpiritSpeak=40.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=i_gold
+ITEM=i_reag_blood_vial,{0 3}
+
+///////////////////////////////////////////////////////////
+
+
+[eof]

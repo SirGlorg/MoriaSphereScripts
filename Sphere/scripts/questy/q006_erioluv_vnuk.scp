@@ -1,0 +1,760 @@
+//////////////////////////////////////////////////
+//////////////q006_erioluv_vnuk.scp///////////////
+//////////////////////////////////////////////////
+
+//////////////////////////////////////////////////
+//////////////dialog eriol////////////////////////
+//////////////////////////////////////////////////
+
+[function f_q006_eriol]
+if (src.qtag(q006)<1)
+  src.qtag(q006,0)
+endif
+//tag.kupilo,tag.splnilo_alchemy,tag.splnilo
+if !(tag(kupilo))
+  tag(kupilo,0)
+endif
+if !(tag(splnilo))
+  tag(splnilo,0)
+endif
+if !(tag(splnilo_alchemy))
+  tag(splnilo_alchemy,0)
+endif
+dialog(d_q006_eriol)
+
+
+
+[DIALOG d_q006_eriol]
+argo.questDialog_create(03070,"<name>")
+
+if (src.isGM)
+  argo.button(640,210,03217,03218,1,0,<f_dialog_newExitButton("q006_GM_Info")>)
+endif
+
+argo.dialog_newPage("Pozdrav")
+
+if (<eval src.qtag(q006)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+else
+  argo.questDialog_baseButt(1,35,"Povidej si")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+//argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  if (<eval src.qtag(q006)> == 0)
+    argo.setText(argo.newTextLine,"Bud <src.sex("zdrav, hrdino","zdrava, hrdinko")>.")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q006)> == 4)
+    argo.setText(argo.newTextLine,"Ahoj! Diky tobe jsem chlapce nalezl!")
+    argo.questDialog_HTMLGUMP
+    elseif (<eval src.qtag(q006)> == 6)
+    argo.setText(argo.newTextLine,"Ten lektvar od tebe nepomohl!")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q006)> == 8)
+    argo.setText(argo.newTextLine,"Posledni lekvar jiz zabral, diky bohu. Vnukovi je trochu lepe.")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q006)> == 10)
+    argo.setText(argo.newTextLine,"Chlapci je ted mnohem lepe, dekuji.")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"Rad te vidim.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+if (<eval src.qtag(q006)> == 0)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(argo.newTextLine,"Jmenuji se <name>, jsem mistni ranhojic. Omlouvam se za spech, ale prave pomaham sve dceri nalezt jejiho ztraceneho syna.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Pokracuj")
+    argo.questdialog_addresponse(0,0,1,"gq006_hearBeginingStory") // short text & page button & new button
+    argo.f_q000_shouldBePromoted_Request
+else
+  argo.dialog_page("Povidej si")
+    if (<eval src.qtag(q006)> == 2)
+      argo.setText(argo.newTextLine,"Dekuji ti za pochodne, ale hodil by se mi jeste pes, aby mi pomohl chlapce najit. Nejlepsi by byl cerstve ochoceny, vycviceny a magicky zmenseny. Ne zadny toulavy pes z okoli.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Hmm, pokusim se tedy sehnat psa.")
+      argo.questdialog_addresponse(0,1,1,"gq006_acceptSubquest_2") // short text & exit button & new button
+    elseif (<eval src.qtag(q006)> == 4)
+      argo.setText(argo.newTextLine,"Chlapec je cely bledy. Nevim, zda bude v poradku. Snad by pomohly tri slabsi protijedy.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Hned pro ne zajdu.")
+      argo.questdialog_addresponse(0,1,1,"gq006_acceptSubquest_3") // short text & exit button & new button
+    elseif (<eval src.qtag(q006)> == 6)
+      argo.setText(argo.newTextLine,"Chlapcuv stav se rychle zhorsuje. Neni cas na experimenty, prines mi nejsilnejsi protijed, co sezenes a radsi rovnou deset kusu!")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Bezim pro ne.")
+      argo.questdialog_addresponse(0,1,1,"gq006_acceptSubquest_4") // short text & exit button & new button
+    elseif (<eval src.qtag(q006)> == 8)
+      argo.setText(argo.newTextLine,"Chlapcuv stav se zlepsil, ale je stale velmi slaby. Prines mi prosim deset cerstvych stehen z grizliho do tohto batohu a tri silne lektvary osvezeni.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Pokusim se to sehnat")
+      argo.questdialog_addresponse(0,1,1,"gq006_acceptSubquest_5") // short text & exit button & new button
+    elseif (<eval src.qtag(q006)> == 10)
+      argo.setText(argo.newTextLine,"Chlapec se zda byt v poradku, ale neustale opakuje neco o prizracich. Nevim, co ma na mysli. Mluvi velmi zmatene. Promluv si o tom prosim se samanem Qworetem. Najdes ho nekde pobliz Osamele Hory a Dolu.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jdu za nim.")
+      argo.questdialog_addresponse(0,1,1,"gq006_acceptSubquest_6") // short text & exit button & new button
+    elseif (<eval src.qtag(q006)> == 11)
+      argo.setText(argo.newTextLine,"Poslal jsem te za Qworetem, uz jsi za nim <src.sex("byl","byla")>?")
+      argo.questDialog_HTMLGUMP
+    elseif (<eval src.qtag(q006)> == 12)
+      argo.setText(argo.newTextLine,"Tak povidej, co ti Qworet rekl?")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*povedet...*")
+      argo.questdialog_addresponse(0,0,1,"gq006_toldQworetStory",1) // short text & page button & new button & emote
+    elseif (<eval src.qtag(q006)> >= 13) && (<eval src.qtag(q006)> < 18)
+      argo.setText(argo.newTextLine,"Na co cekas? Poslal jsem te za Unasem.")
+      argo.questDialog_HTMLGUMP
+    elseif (<eval src.qtag(q006)> == 18)
+      if (src.findid(i_q006_pergamen))
+        argo.setText(argo.newTextLine,"Tak povidej, co ti Unas sdelil...")
+        argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"*podat pergamen a povedet...*")
+        argo.questdialog_addresponse(0,0,1,"gq006_givePergamen",1) // short text & page button & new button & emote
+      else
+        argo.setText(argo.newTextLine,"Na co cekas? Poslal jsem te za Unasem.")
+        argo.questDialog_HTMLGUMP
+      endif
+    elseif (<eval src.qtag(q006)> == 19)
+      argo.setText(argo.newTextLine,"Na co cekas? Poslal jsem te za hospodskym.")
+      argo.questDialog_HTMLGUMP
+    elseif (<eval src.qtag(q006)> == 20)
+      argo.setText(argo.newTextLine,"Tak povidej, co rekl hospodsky?")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Lektvar Ocisteni...")
+      argo.questdialog_addresponse(0,0,1,"gq006_tellAboutPotion") // short text & page button & new button
+    elseif (<eval src.qtag(q006)> == 22)
+      if (<src.alchemy> < 100.0)
+        argo.setText(argo.newTextLine,"Prisady na lektvar jsi mi uz <src.sex("prinesl","prinesla")>. No, jeste nejsi dostatecne <src.sex("zrucny","zrucna")> na jeho zhotoveni. Bohuzel, pokud neovladas alchemii, budu muset pockat na nekoho jineho.")
+        argo.questDialog_HTMLGUMP
+      else
+        argo.setText(argo.newTextLine,"Vyborne! Vidim, ze uz jsi dostatecne <src.sex("zrucny","zrucna")> na vyrobu lektvaru. Tady, vezmi si prisady a udelej Lektvar Ocisteni.")
+        argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"*vzit prisady*")
+        argo.questdialog_addresponse(0,0,1,"gq006_takePurityPotionResources") // short text & page button & new button
+      endif
+    elseif (<eval src.qtag(q006)> == 24)
+      argo.setText(argo.newTextLine,"Rad bych si s tebou povidal, ale ted se musim venovat svemu vnukovi.")
+      argo.questDialog_HTMLGUMP
+    else
+      argo.setText(argo.newTextLine,"Ted nemam cas si povidat!")
+      argo.questDialog_HTMLGUMP
+    endif
+    argo.f_q026_hcnPoison_HealersDialog_Request
+    argo.f_q000_shouldBePromoted_Request
+endif
+
+
+argo.dialog_page("Obchodovat")
+  if (<eval src.qtag(q006)> == 24) && (<src.alchemy> > 99.9) // buy robe
+    argo.setText(argo.newTextLine,"Mohu ti prodat novou robu za 2 000 000 zlataku.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"To beru!")
+    argo.questdialog_addresponse(0,1,1,"gq006_acceptRobe") // short text & exit button & new button
+  else
+    argo.setText(argo.newTextLine,"Promin, ale nemam ti co nabidnout.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Nesu ti")
+  if (<eval src.qtag(q006)> == 1)
+    argo.setText(argo.newTextLine,"Mas ty pochodne?")
+    argo.questDialog_HTMLGUMP
+    if (src.rescount(i_torch)>=10)
+      argo.setText(argo.newTextLine,"Mam je.")
+      argo.questdialog_addresponse(0,0,1,"gq006_haveSubQuestResources_1") // short text & page button & new button
+    endif
+    argo.setText(argo.newTextLine,"Bohuzel jeste ne.")
+    argo.questdialog_addresponse(0,0,1,"gq006_noQuestResources") // short text & page button & new button
+  elseif (<eval src.qtag(q006)> == 3)
+    argo.setText(argo.newTextLine,"Tak co? Podarilo se ti sehnat mi psa?")
+    argo.questDialog_HTMLGUMP
+    if (src.rescount(i_pet_dog)>=1)
+      argo.setText(argo.newTextLine,"Ano, mam ho.")
+      argo.questdialog_addresponse(0,0,1,"gq006_haveSubQuestResources_2") // short text & page button & new button
+    endif
+    argo.setText(argo.newTextLine,"Bohuzel jeste ne")
+    argo.questdialog_addresponse(0,0,1,"gq006_noQuestResources") // short text & page button & new button
+  elseif (<eval src.qtag(q006)> == 5)
+    argo.setText(argo.newTextLine,"Tak co?!? Povidej! Mas ty protijedy?")
+    argo.questDialog_HTMLGUMP
+    if (src.rescount(i_potion_cureless)>=3)
+      argo.setText(argo.newTextLine,"Ano, mam je.")
+      argo.questdialog_addresponse(0,0,1,"gq006_haveSubQuestResources_3") // short text & page button & new button
+    endif
+    argo.setText(argo.newTextLine,"Bohuzel jeste ne")
+    argo.questdialog_addresponse(0,0,1,"gq006_noQuestResources") // short text & page button & new button
+  elseif (<eval src.qtag(q006)> == 7)
+    argo.setText(argo.newTextLine,"Tak co?!? Povidej! Mas ty protijedy?")
+    argo.questDialog_HTMLGUMP
+    if (src.rescount(i_potion_curegreat)>=10)
+      argo.setText(argo.newTextLine,"Ano, mam je.")
+      argo.questdialog_addresponse(0,0,1,"gq006_haveSubQuestResources_4") // short text & page button & new button
+    endif
+    argo.setText(argo.newTextLine,"Bohuzel jeste ne")
+    argo.questdialog_addresponse(0,0,1,"gq006_noQuestResources") // short text & page button & new button
+  elseif (<eval src.qtag(q006)> == 9)
+    argo.setText(argo.newTextLine,"Mas vse, co jsem po tobe chtel?")
+    argo.questDialog_HTMLGUMP
+    if ((src.rescount(i_potion_refreshgreater)>=3) && (<src.f_collector_isFull(i_q006_vacek_stehno)>))
+      argo.setText(argo.newTextLine,"Ano, mam to.")
+      argo.questdialog_addresponse(0,0,1,"gq006_haveSubQuestResources_5") // short text & page button & new button
+    endif
+    argo.setText(argo.newTextLine,"Bohuzel jeste ne")
+    argo.questdialog_addresponse(0,0,1,"gq006_noQuestResources") // short text & page button & new button
+  elseif (<eval src.qtag(q006)> == 21)
+    argo.setText(argo.newTextLine,"Mas ty prisady?")
+    argo.questDialog_HTMLGUMP
+    if (f_q006_hasSubquestResources_7)
+      argo.setText(argo.newTextLine,"Ano, mam to.")
+      argo.questdialog_addresponse(0,0,1,"gq006_haveSubQuestResources_7") // short text & page button & new button
+    endif
+    argo.setText(argo.newTextLine,"Bohuzel jeste ne")
+    argo.questdialog_addresponse(0,0,1,"gq006_noQuestResources") // short text & page button & new button
+  elseif (<eval src.qtag(q006)> == 23)
+    argo.setText(argo.newTextLine,"Uz jsi <src.sex("namichal","namichala")> ten lektvar?")
+    argo.questDialog_HTMLGUMP
+    if (src.rescount(i_potion_ocisteni)>=1)
+      argo.setText(argo.newTextLine,"Ano, tady je.")
+      argo.questdialog_addresponse(0,0,1,"gq006_havePurityPotion") // short text & page button & new button
+    endif
+    argo.setText(argo.newTextLine,"Jeste ne, delam na tom.")
+    argo.questdialog_addresponse(0,0,1,"gq006_noQuestResources") // short text & page button & new button
+  else
+    argo.setText(argo.newTextLine,"Co pro me mas ?")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Prohlednout")
+  if (<eval src.qtag(q006)> == 4)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis vousateho starce v spinave robe, ktera na sobe nese znamky letiteho noseni. Vypada ustarane.*")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q006)> == 6)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis vousateho starce v spinave robe, ktera na sobe nese znamky letiteho noseni. Vypada velmi ustarane.*")
+    argo.questDialog_HTMLGUMP
+  elseif ((<eval src.qtag(q006)> == 10) || (<eval src.qtag(q006)> == 11))
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis vousateho starce v spinave robe, ktera na sobe nese znamky letiteho noseni. Vypada velmi zamyslene.*")
+    argo.questDialog_HTMLGUMP
+  elseif ((<eval src.qtag(q006)> == 18) || (<eval src.qtag(q006)> == 19))
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis vousateho starce v spinave robe, ktera na sobe nese znamky letiteho noseni. Tvari se nedockave.*")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis vousateho starce v spinave robe, ktera na sobe nese znamky letiteho noseni.*")
+    argo.questDialog_HTMLGUMP
+  endif
+
+
+
+if (<eval src.qtag(q006)> == 0)
+  argo.dialog_page("gq006_hearBeginingStory")
+    argo.setText(argo.newTextLine,"Mozna by jsi mi <src.sex("mohl","mohla")> pomoci. Potreboval bych donest deset pochodni.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Prinesu je")
+    argo.questdialog_addresponse(0,1,1,"gq006_acceptSubquest_1") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Lituji, ale na to nemam cas. Mejte se.")
+    argo.questdialog_addresponse(0,1,1,"gq006_emptyExit") // short text & exit button & new button
+elseif (<eval src.qtag(q006)> == 1) // have torches ?
+  if (src.rescount(i_torch)>=10)
+    argo.dialog_page("gq006_haveSubQuestResources_1")
+      argo.setText(argo.newTextLine,"Dekuji ti. Snad mi to v hledani pomuze.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*podat pochodne*")
+      argo.questdialog_addresponse(0,1,1,"gq006_giveSubQuestResources_1",1) // short text & exit button & new button & emote
+  endif
+  argo.dialog_page("gq006_noQuestResources")
+    argo.setText(argo.newTextLine,"Pospes prosim, noc se blizi!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Pokusim se.")
+    argo.questdialog_addresponse(0,1,1,"gq006_emptyExit") // short text & exit button & new button
+elseif (<eval src.qtag(q006)> == 3) // have dog ?
+  if (src.rescount(i_pet_dog)>=1)
+    argo.dialog_page("gq006_haveSubQuestResources_2")
+      argo.setText(argo.newTextLine,"Dekuji ti. Snad mi to v hledani pomuze.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*predat psa*")
+      argo.questdialog_addresponse(0,1,1,"gq006_giveSubQuestResources_2",1) // short text & exit button & new button & emote
+  endif
+  argo.dialog_page("gq006_noQuestResources")
+    argo.setText(argo.newTextLine,"Pokud mi nechces pomoci, tak to rekni.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Nene, pokusim se ho sehnat.")
+    argo.questdialog_addresponse(0,1,1,"gq006_emptyExit") // short text & exit button & existing button
+elseif (<eval src.qtag(q006)> == 5)
+  if (src.rescount(i_potion_cureless)>=3)
+    argo.dialog_page("gq006_haveSubQuestResources_3")
+      argo.setText(argo.newTextLine,"Dekuji, hned bezim za chlapcem.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*podat protijedy*")
+      argo.questdialog_addresponse(0,1,1,"gq006_giveSubQuestResources_3",1) // short text & exit button & new button & emote
+  endif
+  argo.dialog_page("gq006_noQuestResources")
+    argo.setText(argo.newTextLine,"Prosim, neni casu na zbyt.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Jdu je hned sehnat.")
+    argo.questdialog_addresponse(0,1,1,"gq006_emptyExit") // short text & exit button & existing button
+elseif (<eval src.qtag(q006)> == 7)
+  if (src.rescount(i_potion_curegreat)>=10)
+    argo.dialog_page("gq006_haveSubQuestResources_4")
+      argo.setText(argo.newTextLine,"Dekuji, hned bezim za chlapcem.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*podat protijedy*")
+      argo.questdialog_addresponse(0,1,1,"gq006_giveSubQuestResources_4",1) // short text & exit button & new button & emote
+  endif
+  argo.dialog_page("gq006_noQuestResources")
+    argo.setText(argo.newTextLine,"Prosim, pospes. Je mu zle!")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Bezim je hned sehnat.")
+    argo.questdialog_addresponse(0,1,1,"gq006_emptyExit") // short text & exit button & existing button
+elseif (<eval src.qtag(q006)> == 9)
+  if ((src.rescount(i_potion_refreshgreater)>=3) && (<src.f_collector_isFull(i_q006_vacek_stehno)>))
+    argo.dialog_page("gq006_haveSubQuestResources_5")
+      argo.setText(argo.newTextLine,"Dekuji.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*podat vacek a lektvary*")
+      argo.questdialog_addresponse(0,1,1,"gq006_giveSubQuestResources_5",1) // short text & exit button & new button & emote
+  endif
+  argo.dialog_page("gq006_noQuestResources")
+    argo.setText(argo.newTextLine,"Pospes prosim.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Bezim pro to.")
+    argo.questdialog_addresponse(0,1,1,"gq006_emptyExit") // short text & exit button & existing button
+elseif (<eval src.qtag(q006)> == 12)
+  argo.dialog_page("gq006_toldQworetStory")
+    argo.setText(argo.newTextLine,"Obaval jsme se, ze mi saman prilis nepomuze. Budes muset za magem Unasem - ten mi dluzi sluzbicku. Posledni leta pry studuje davne narody u Rhunskych mocalu.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Jedu za nim.")
+    argo.questdialog_addresponse(0,1,1,"q006_goToUnas")
+elseif ((<eval src.qtag(q006)> == 18) && (src.findid(i_q006_pergamen)))
+  argo.dialog_page("gq006_givePergamen")
+    argo.setText(argo.newTextLine,"Dekuji. Mohylovi duchove... S tim si asi neporadime bez pomoci. Stav se za hospodskym, pritelem alchymisty Terlaka. Ten by mohl vedet, co s tim.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, pujdu za nim.")
+    argo.questdialog_addresponse(0,1,1,"q006_goToInnkeeper")
+elseif (<eval src.qtag(q006)> == 20)
+  argo.dialog_page("gq006_tellAboutPotion")
+    argo.setText(argo.newTextLine,"Hmm, Lektvar Ocisteni? To mi ale musis prinest vsechno, co hospodsky rekl.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Prinesu to.")
+    argo.questdialog_addresponse(0,1,1,"gq006_acceptSubquest_7") // Na Lektvar Ocisteni treba dve srdce ptaka krvavce, tri nejsilnejsi protijedy a vzacna bylina.
+elseif (<eval src.qtag(q006)> == 21)
+  if (f_q006_hasSubquestResources_7)
+    argo.dialog_page("gq006_haveSubQuestResources_7")
+      if (<src.alchemy> >= 100.0)
+        argo.setText(argo.newTextLine,"Vidim, ze jsi dostatecne <src.sex("zrucny","zrucna")> na zhotoveni lektvaru. Vezmi si ty prisady a umichej Lektvar Ocisteni.")
+        argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"*pustit se do vyroby lektvaru*")
+        argo.questdialog_addresponse(0,1,1,"gq006_createPurityPotion",1) // short text & exit button & new button & emote
+      else
+        argo.setText(argo.newTextLine,"Bohuzel nejsi dostatecne <src.sex("zrucny","zrucna")> na zhotoveni lektvaru. Ale i tak ti dekuji. Pokud by tva znalost alchemie dosahla vrcholu, prijd za mnou. Zatim mi dej prisady.")
+        argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"*podat prisady*")
+        argo.questdialog_addresponse(0,1,1,"gq006_giveSubQuestResources_7",1) // short text & exit button & new button & emote
+      endif
+  endif
+  argo.dialog_page("gq006_noQuestResources")
+    argo.setText(argo.newTextLine,"Pospes.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Prinesu to.")
+    argo.questdialog_addresponse(0,1,1,"gq006_emptyExit") // short text & exit button & new button
+elseif (<eval src.qtag(q006)> == 23)
+  if (src.rescount(i_potion_ocisteni) >= 1)
+    argo.dialog_page("gq006_havePurityPotion")
+      argo.setText(argo.newTextLine,"Vyborne! Podej mi lektvar a vezmi si svou odmenu.")
+      argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*podat Lektvar Ocisteni*")
+      argo.questdialog_addresponse(0,1,1,"gq006_givePurityPotion",1) // short text & exit button & new button & emote
+  endif
+  argo.dialog_page("gq006_noQuestResources")
+    argo.setText(argo.newTextLine,"Pospes.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Pokusim se.")
+    argo.questdialog_addresponse(0,1,1,"gq006_emptyExit") // short text & exit button & new button
+endif
+argo.f_q026_hcnPoison_HealersDialog_Answer(<uid>)
+argo.f_q000_shouldBePromoted_Answer
+
+
+
+[DIALOG d_q006_eriol button]
+on=@AnyButton
+// no action exits:
+if (<argn> == 0)
+  return
+elseif (<argn> == <argo.dialog_linkButton("gq006_emptyExit")>)
+  return
+endif
+
+// q006 quest buttons:
+if (<eval src.qtag(q006)> == 0) // bring 10 torches
+  if (<argn> == argo.dialog_linkButton("gq006_acceptSubquest_1")) // bring torches
+    say("Dekuji! Doufam, ze se brzy vratis.")
+    src.qtag(q006,1,22)
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 1) // brought 10 torches
+  if (<argn> == argo.dialog_linkButton("gq006_giveSubQuestResources_1"))
+    if (src.rescount(i_torch)>=10)
+      src.consume.(i_torch,10)
+      src.addexp(50)
+      src.qtag(q006,2,22)
+    endif
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 2) // bring a dog
+  if (<argn> == argo.dialog_linkButton("gq006_acceptSubquest_2"))
+    src.qtag(q006,3,22)
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 3) // brought a dog
+  if (<argn> == argo.dialog_linkButton("gq006_giveSubQuestResources_2"))
+    if (src.rescount(i_pet_dog)>=1))
+      src.consume.(i_pet_dog)
+      src.addexp(100)
+      src.qtag(q006,4,22)
+    endif
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 4) // bring 3x lesser cure
+  if (<argn> == argo.dialog_linkButton("gq006_acceptSubquest_3"))
+    src.qtag(q006,5,22)
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 5) // brought 3x lesser cure
+  if (<argn> == argo.dialog_linkButton("gq006_giveSubQuestResources_3"))
+    if (src.rescount(i_potion_cureless)>=3)
+      src.consume(i_potion_cureless,3)
+      src.addexp(50)
+      src.qtag(q006,6,22)
+    endif
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 6) // bring 10x greater cure
+  if (<argn> == argo.dialog_linkButton("gq006_acceptSubquest_4"))
+    src.qtag(q006,7,22)
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 7) // brought 10x greater cure
+  if (<argn> == argo.dialog_linkButton("gq006_giveSubQuestResources_4"))
+    if (src.rescount(i_potion_curegreat)>=10)
+      src.consume(i_potion_curegreat,10)
+      src.addexp(125)
+      src.qtag(q006,8,22)
+    endif
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 8) // bring 3x greater refresh & 10x stehno grizliho
+  if (<argn> == argo.dialog_linkButton("gq006_acceptSubquest_5"))
+    src.giveitem(i_q006_vacek_stehno)
+    src.qtag(q006,9,22)
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 9) // brought 3x greater refresh & 10x stehno grizliho
+  if (<argn> == argo.dialog_linkButton("gq006_giveSubQuestResources_5"))
+    if ((src.rescount(i_potion_refreshgreater)>=3) && (<src.f_collector_isFull(i_q006_vacek_stehno)>))
+      src.consume(i_potion_refreshgreater,3)
+      src.consume(i_q006_vacek_stehno)
+      src.addexp(200)
+      src.qtag(q006,10,22)
+    endif
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 10) // go to qworet ask about wraiths
+  if (<argn> == argo.dialog_linkButton("gq006_acceptSubquest_6"))
+    src.qtag(q006,11,22)
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 12) // go to unas ask for help
+  if (<argn> == argo.dialog_linkButton("q006_goToUnas"))
+    src.addexp(100)
+    src.qtag(q006,13,22)  //qtag=12 byl od shamana qworeta
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 18) // go to inkeeper ask for help
+  if (<argn> == argo.dialog_linkButton("q006_goToInnkeeper"))
+    src.addexp(300)
+    src.qtag(q006,19,22)  //qtag=14-18 byl od carodeje unase
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 20) // bring 2 hearts of ptak krvavec, 3 greater cure & vzacna bylina
+  if (<argn> == argo.dialog_linkButton("gq006_acceptSubquest_7"))
+    src.qtag(q006,21,22)  //qtag=20 byl od hospodskyho
+    src.addexp(100)
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 21) // brought 2 hearts of ptak krvavec, 3 greater cure & vzacna bylina
+  if (<argn> == argo.dialog_linkButton("gq006_giveSubQuestResources_7"))
+    if (f_q006_hasSubquestResources_7)
+      src.consume(i_potion_curegreat,3)
+      src.consume(i_srdiczko,2)
+      src.consume(i_bylina,1)
+      src.qtag(q006,22,22)
+      src.addexp(2000)
+      f_quest_complete(22) // splnenie questu "Erioluv Vnuk - bez roby"
+      //tag.splnilo=<tag.splnilo>+1
+    endif
+  elseif (<argn> == argo.dialog_linkButton("gq006_createPurityPotion")) // player is supposed to create the purity potion
+    if (<src.alchemy> >= 100.0)
+      src.qtag(q006,23,22)
+      src.addexp(2000)
+    endif
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 22) // take resources for the purity potion
+  if (<argn> == argo.dialog_linkButton("gq006_takePurityPotionResources"))
+    src.giveitem(i_potion_curegreat,3)
+    src.giveitem(i_srdiczko)
+    src.giveitem(i_srdiczko)
+    src.giveitem(i_bylina)
+    src.qtag(q006,23,22)
+  endif
+  return
+elseif (<eval src.qtag(q006)> == 23) // give the completed purity potion
+  if (<argn> == argo.dialog_linkButton("gq006_givePurityPotion"))
+    if (src.rescount(i_potion_ocisteni)>=1)
+      src.consume(i_potion_ocisteni,1)
+      src.newitem=i_roba_alchemisty
+      lastnew.bounce
+      lastnew.tag(owner,<src.uid>)
+      src.qtag(q006,24,22)
+      f_quest_complete(22,1)  // splnenie questu "Erioluv Vnuk - roba"
+      //tag.splnilo_alchemy=<tag.splnilo_alchemy>+1
+    endif
+  endif
+elseif (<eval src.qtag(q006)> == 24) && (<src.alchemy> > 99.9) // buy robe
+  if (<argn> == argo.dialog_linkButton("gq006_acceptRobe"))
+    if (src.pay(2000000)) // uz zaplati !
+      src.newitem=i_roba_alchemisty
+      lastnew.bounce
+      lastnew.tag(owner,<src.uid>)
+      tag.kupilo=<tag.kupilo>+1
+    else
+      say("Snazis se me okrast?")
+    endif
+  endif
+  return
+endif
+// gms:
+if (src.isGM)
+  if (<argn> == argo.dialog_linkButton("q006_GM_Info"))
+    dialog(d_q006_gm)
+    return
+  endif
+endif
+// other quests:
+if (argo.f_q026_hcnPoison_HealersDialog_Button(<argn>))
+  return
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+[function f_q006_hasSubquestResources_7]
+if ((src.rescount(i_potion_curegreat)>=3) && (src.rescount(i_bylina) >= 1) &&( src.rescount(i_srdiczko) >= 2))
+  return 1
+else
+ return 0
+endif
+
+
+[speech spk_q006_eriol]
+ON = *ahoj*
+ON = *zdravi*
+ON = *dobry*
+ON = *ukol*
+
+f_qSpeech(f_q006_eriol)
+
+//////////////////////////////////////////////////
+/////////////dialog Unas for q006//////////////////
+//////////////////////////////////////////////////
+
+[function f_q006_Unas_Request_Greeting]
+if (<eval src.qtag(q006)>==13)
+  setText(<newTextLine>,"*Povedet o Eriolovi, jeho vnukovi a prizracich*")
+  questDialog_addResponse(0,0,1,"q006_tellStory",1) // short text & page button & new button & emote text
+endif
+
+[function f_q006_Unas_Request_Bring]
+if (<f_q006_Unas_isEssentionPhase>)
+  setText(newTextLine,"Ohledne tech esenci...")
+  questDialog_addResponse(0,0,1,"q006_aboutEssentials") // short text & link to page & new page
+endif
+
+[function f_q006_Unas_Answer]
+if (<f_q006_Unas_isEssentionPhase>)
+  dialog_page("q006_aboutEssentials")
+    setText(<newTextLine>,"Mas ty esence?")
+    questDialog_HTMLGUMP
+    arg(found,0)
+    if (<eval src.qtag(q006)>==14)
+      if (<src.f_collector_isFull(i_q006_vacek_led)>)
+        arg(found,1)
+      endif
+    elseif (<eval src.qtag(q006)>==15)
+      if (<src.f_collector_isFull(i_q006_vacek_kamen)>)
+        arg(found,1)
+      endif
+    elseif (<eval src.qtag(q006)>==16)
+      if (<src.f_collector_isFull(i_q006_vacek_zem)>)
+        arg(found,1)
+      endif
+    elseif (<eval src.qtag(q006)>==17)
+      if (<src.f_collector_isFull(i_q006_vacek_snih)>)
+        arg(found,1)
+      endif
+    endif
+    if (<arg(found)>)
+      setText(newTextLine,"Ano, mam je.")
+      questDialog_addResponse(0,0,1,"q006_haveResources") // short text & link to page & new page
+      
+      dialog_page("q006_haveResources") // player has been checked for having the required resources
+        if (<eval src.qtag(q006)>==14)
+          setText(newTextLine,"Dekuji, ale to neni vse! Nyni je tvym ukolem sehnat mi dvacet zakladnich esenci kamennych elementalu.")
+          questDialog_HTMLGUMP
+        elseif (<eval src.qtag(q006)>==15)
+          setText(newTextLine,"Dekuji, ale to neni vse! Nyni je tvym ukolem sehnat mi dvacet zakladnich esenci elementalu zeme.")
+          questDialog_HTMLGUMP
+        elseif (<eval src.qtag(q006)>==16)
+          setText(newTextLine,"Dekuji, ale to neni vse! Nyni je tvym ukolem sehnat mi dvacet zakladnich esenci sneznich elementalu.")
+          questDialog_HTMLGUMP
+        elseif (<eval src.qtag(q006)>==17)
+          setText(newTextLine,"Dekuji, zde mas pergamen, ktery bude Eriola zajimat. Ten chlapec prisel do styku s Mohylovymi duchy!")
+          questDialog_HTMLGUMP
+          setText(newTextLine,"*Odevzdat esence a vzit pergamen*")
+          questDialog_addResponse(0,1,1,"q006_takePergamen",1) // short text & exit button & new button
+          return
+        endif
+        setText(newTextLine,"*Odevzdat esence a prijmout dalsi ukol*")
+        questDialog_addResponse(0,1,1,"q006_esentials",1) // short text & exit button & new button
+    else
+      setText(newTextLine,"Ne, jeste to nemam.")
+      questDialog_addResponse(0,0,1,"q006_haveNoResources") // short text & link to page & new page
+      
+      dialog_page("q006_haveNoResources")
+        setText(newTextLine,"Nebudu cekat vecne!")
+        questDialog_HTMLGUMP
+        setText(newTextLine,"Prinesu je!")
+        questDialog_addResponse(0,1,1,"q006_idleExit") // short text & exit button & new button
+    endif
+
+elseif (<eval src.qtag(q006)>==13) // Eriol te poslal promluvit si s carodejem unasem
+  dialog_page("q006_tellStory")
+    if (src.tag(level)>=15)
+      setText(newTextLine,"Eriolovi pomoc dluzim, to mas pravdu, ale tobe ne! Pomohu ti, pokud mi prineses dvacet zakladni esenci z ledoveho elementala!")
+      questDialog_HTMLGUMP
+      setText(newTextLine,"Prinesu je!")
+      questDialog_addResponse(0,1,1,"q006_esentials") // short text & exit button & new button
+    else
+      setText(newTextLine,"Eriolovi pomoc dluzim, to mas pravdu, ale tobe ne! Pomohu ti, pokud nejdriv pomuzes ty me. Ale zatim ses moc slaby. Prijd az zesilis.")
+      questDialog_HTMLGUMP
+      setText(newTextLine,"Dobre, ja se vratim.")
+      questDialog_addResponse(0,1,1,"q006_idleExit") // short text & exit button & new button
+    endif
+endif
+
+[function f_q006_Unas_Button] // argv(0): button number (<argn>)
+if (<f_q006_Unas_isUnasPhase>) // Resim podukoly pro Unase
+  if (<argv(0)> == dialog_linkButton("q006_idleExit"))
+    return 1
+  elseif (<argv(0)> == dialog_linkButton("q006_esentials"))
+    if (<eval src.qtag(q006)>==13)
+      src.giveitem(i_q006_vacek_led)
+      src.qtag(q006,14,22)
+      return 1
+    elseif (<eval src.qtag(q006)>==14)
+      if (<src.f_collector_isFull(i_q006_vacek_led)>) // double check 4 collector
+        src.consume(i_q006_vacek_led)
+        src.giveitem(i_q006_vacek_kamen)
+        src.qtag(q006,15,22)
+        src.addexp(500)
+        return 1
+      endif
+    elseif (<eval src.qtag(q006)>==15)
+      if (<src.f_collector_isFull(i_q006_vacek_kamen)>) // double check 4 collector
+        src.consume(i_q006_vacek_kamen)
+        src.giveitem(i_q006_vacek_zem)
+        src.qtag(q006,16,22)
+        src.addexp(500)
+        return 1
+      endif
+    elseif (<eval src.qtag(q006)>==16)
+      if (<src.f_collector_isFull(i_q006_vacek_zem)>) // double check 4 collector
+        src.consume(i_q006_vacek_zem)
+        src.giveitem(i_q006_vacek_snih)
+        src.qtag(q006,17,22)
+        src.addexp(500)
+        return 1
+      endif
+    endif
+  elseif (<argv(0)> == dialog_linkButton("q006_takePergamen"))
+    if (<src.f_collector_isFull(i_q006_vacek_snih)>) // double check 4 collector
+      src.consume(i_q006_vacek_snih)
+      src.giveitem(i_q006_pergamen)
+      src.qtag(q006,18,22)
+      src.addexp(500)
+      return 1
+    endif
+  endif
+endif
+return 0
+
+[function f_q006_Unas_isUnasPhase]
+if ( (<eval src.qtag(q006)> >= 13) && (<eval src.qtag(q006)> < 18) ) // Resim podukoly pro Unase
+  return 1
+else
+  return 0
+endif
+
+[function f_q006_Unas_isEssentionPhase]
+if ( (<eval src.qtag(q006)> > 13) && (<eval src.qtag(q006)> < 18) )
+  return 1
+else
+  return 0
+endif
+//////////////////////////////////////////////////
+/////////////dialog eriol for gm//////////////////
+//////////////////////////////////////////////////
+
+
+[DIALOG d_q006_gm]
+argo.setlocation=5,5
+
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+
+argo.settext(0,"qtag(006)=1 - 10x [i_torch] -> qtag(006)=2 - splnene")
+argo.text(30,210,1152,0)
+argo.settext(1,"qtag(006)=3 - 1x [i_pet_dog] -> qtag(006)=4 - splnene")
+argo.text(30,230,1152,1)
+argo.settext(2,"qtag(006)=5 - 3x [i_poion_cureless] -> qtag(006)=6 - splnene")
+argo.text(30,250,1152,2)
+argo.settext(3,"qtag(006)=7 - 10x [i_poion_curegreat] -> qtag(006)=8 - splnene")
+argo.text(30,270,1152,3)
+argo.settext(4,"qtag(006)=9 - 10x [i_q006_vacek_stehno], 3x [i_potion_refreshgreater] -> qtag(006)=10 - splnene")
+argo.text(30,290,1152,4)
+argo.settext(5,"qtag(006)=11 - ist k Shaman Qworet(2893,908) | qtag(006)=12 - spat k Eriolovy")
+argo.text(30,310,1152,5)
+argo.settext(6,"qtag(006)=13 - ist k Carodej Unas(3769,1490)")
+argo.text(30,330,1152,6)
+argo.settext(7,"qtag(006)=14 - Unas - 20x [i_q006_vacek_led] | qtag(006)=15 - Unas - 20x [i_q006_vacek_kamen]")
+argo.text(30,350,1152,7)
+argo.settext(8,"qtag(006)=16 - Unas - 20x [i_q006_vacek_zem] | qtag(006)=17 - Unas - 20x [i_q006_vacek_snih]")
+argo.text(30,370,1152,8)
+argo.settext(9,"qtag(006)=18 - zisk [i_q006_pergamen] ist spat k Eriolovy")
+argo.text(30,390,1152,9)
+argo.settext(10,"qtag(006)=19 - ist k hospodsky(164,2150) s [i_q006_pergamen] | qtag(006)=20 - ist k Eriol, rozhovor")
+argo.text(30,410,1152,10)
+argo.settext(11,"qtag(006)=21 - 2x [i_srdiczko] 1x [i_bylina] 3x [i_potion_curegreat] + 100% alchemy")
+argo.text(30,430,1152,11)
+argo.settext(12,"qtag(006)=22 - ak 100 alchemy-vrati prisady a chce potion[i_potion_ocisteni] (konec pre NE-alchymistov)")
+argo.text(30,450,1152,12)
+argo.settext(13,"qtag(006)=23 - caka na lektvar ocisteni | qtag(006)=24 (konec pre alchymistov)")
+argo.text(30,470,1152,13)
+argo.settext(14,"i_srdiczko - c_crunch_krvavec (c_krkavec - fake :-)) | vzacna bylina = vm bylina")
+argo.text(30,490,1152,14)
+argo.settext(15,"roba ma tag 'owner' -> prida 10% alchemy iba tomu koho je, ostatnem pojde nasadit ale neprida")
+argo.text(30,510,1152,15)

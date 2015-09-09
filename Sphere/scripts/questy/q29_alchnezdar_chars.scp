@@ -1,0 +1,111 @@
+[CHARDEF c_q029_alchnezdar]
+NAME=Alchymista Popletalius
+ID=c_man
+CAN=MT_WALK, MT_SPEAK
+
+TSPEECH=spk_q029_alchnezdar
+
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+STR={36 50}
+DEX={36 50}
+INT={51 65}
+
+tag(noanimate,1)
+
+ON=@NPCRestock
+ITEMnewbie=i_shoes_plain
+COLOR=06
+ITEMnewbie=i_pants_long
+COLOR=06
+ITEMnewbie=i_tunic
+COLOR=06
+ITEMnewbie=i_bonnet
+COLOR=025
+ITEMnewbie=i_bear_short
+COLOR=0096f
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+ SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+ return 1
+else
+ f_q029_alchnezdar_DClick
+endif
+
+[CHARDEF c_qv1_slizoun]
+
+ID=c_plague_beast
+NAME=Slizoun
+SOUND=snd_MONSTER_SLIME1
+ICON=i_pet_slime
+ANIM=060c7f
+CAN=MT_WALK|MT_run
+attack=25
+ARMOR=150
+
+moverate=4
+
+
+
+
+RESOURCES=2 i_ribs_raw
+FOODTYPE=
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+
+
+
+CATEGORY=Questy
+
+
+ON=@Create
+COLOR=0690
+NPC=brain_monster
+FAME=100
+KARMA={-4000 -5999}
+STR=500
+DEX=150
+INT=285
+
+
+maxhits={1500 1640}
+maxstam={150 250}
+maxmana=0
+
+tag.experience=<eval {65.0 70.0}>
+tag(hypnotizable,1)
+
+
+tag.weapflag=dam_physical
+
+tag.resist_summon=1000
+tag.resist_phys=986
+tag.resist_poison=1000
+
+
+
+PARRYING=100.0
+poisoning=150.0
+TACTICS=100.0
+WRESTLING=80.0
+MAGERY={500.0 600.0}
+EI={90.0 95.0}
+
+NPC=brain_monster
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_poison
+addspell=s_magic_reflection
+addspell=s_fireball
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_SLIME
+ITEM=i_gold

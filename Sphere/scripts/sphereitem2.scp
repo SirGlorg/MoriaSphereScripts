@@ -1,0 +1,105 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Friday, April 28, 2000
+//VERSION=0.54
+
+
+
+[itemdef I_BOOKOFHELL]
+NAME=Book of Hell
+ID=i_BOOK_OPEN
+
+CATEGORY=Trigger Items
+SUBSECTION=Magic Items
+DESCRIPTION=Book of Hell
+
+ON=@Create
+MORE=b_hitchhiker // some book number
+
+ON=@userDCLICK
+src.effect=3,i_FIRE_COLUMN,6,15,1	// flamestrike
+src.sound=snd_SPELL_FLAMESTRIKE
+src.damage_noresponse(<eval{5 20}>,dam_god)  // damage the person who did this
+timer=4
+
+ON=@timer
+speak Run away !
+return 1
+
+[itemdef I_FIRE_STORM]
+// Fire Storm
+NAME=a Fire Storm
+ID=i_fx_explode
+TYPE=T_SPELL
+
+CATEGORY=TFL Additions
+SUBSECTION=Animations
+DESCRIPTION=Fire Storm Piece
+
+ON=@Create
+	ATTR=attr_magic|attr_move_never
+	MORE=0
+	MOREP=42,55,99
+	timer=1
+
+ON=@userDCLICK
+  MORE=<MORE>+1
+  IF (<MORE> > 15)
+	   REMOVE
+		return 1
+  ENDIF
+  MOREP=<LINK.P>
+  VAR.NEG=RAND(2)
+  VAR.TX=RAND(6)
+  IF (<VAR.NEG> == 1)
+	   MOREX= <MOREX> - <VAR.TX>
+  ELSE
+	   MOREX= <MOREX> + <VAR.TX>
+  ENDIF
+  VAR.NEG=RAND(2)
+  VAR.TY=RAND(6)
+  IF (<VAR.NEG> == 1)
+	   MOREY= <MOREY> - <VAR.TY>
+  ELSE
+	   MOREY= <MOREY> + <VAR.TY>
+  ENDIF
+  ATTR=attr_move_never|attr_invis|attr_magic  //set invs
+  P=<MOREP>
+  ATTR=attr_magic|attr_move_never  //unhide object, shos it at new location
+  MOREP=42,55,99
+  timer=1
+  return 1
+
+[itemdef I_BARDICHE_SA]
+//Bardiche (this may not work!)
+//Using Sword type below
+NAME=Supremely Accurate Bardiche
+ID=i_bardiche
+TYPE=T_WEAPON_SWORD
+RESOURCES=i_bardiche,i_enchant_weapon,i_scroll_bless	// ,5 i_enchant_weapon
+
+ON=@Create
+	HITPOINTS={31 100}
+	COLOR=color_magic_weap
+	ATTR=attr_magic
+	//MOREY=100.0
+
+ON=@EQUIP
+	src.SWORDSMANSHIP=(<src.SWORDSMANSHIP> + 25.0)
+	src.TACTICS=(<src.TACTICS> + 25.0)
+	src.DEX=(<src.DEX> + 1)
+
+ON=@UNEQUIP
+	src.SWORDSMANSHIP=(<src.SWORDSMANSHIP> - 25.0)
+	src.TACTICS=(<src.TACTICS> - 25.0)
+	src.DEX=(<src.DEX> - 1)
+
+[EOF]
+

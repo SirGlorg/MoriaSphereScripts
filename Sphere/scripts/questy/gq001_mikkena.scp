@@ -1,0 +1,494 @@
+[dialog d_gq001_mikkena]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03139 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //      
+text 60 395 152 13
+button 25 415 0fa5 0fa7 0 1 0  //         
+text 60 415 152 14
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)   
+button 25 395 0fa5 0fa7 1 0 2  //      
+text 60 395 152 15
+button 25 415 0fa5 0fa7 0 1 0  //         
+text 60 415 152 16
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+
+[dialog d_gq001_mikkena text]
+Mikkena
+Kdo jsi?
+Muzu pomoci?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Zdravim te! Ja jsem Mikkena, vehlasna alchymistka. Co te privadi?
+Hm... <?src.sex(mohl,mohla)?> bys... shanim ted specialni prisadu pro zvlastni zakazku, ale snad nikdo z mych dodavatelu ji nema skladem a sama si ji opatrit nedokazu. Ale ty bys to snad zvladnout <?src.sex(mohl,mohla)?>. Potrebuji deset kousku kury z mrtveho stromu z Temneho hvozdu. Pomuzes mi?
+Inu, kdybys <?src.sex(prisel,prisla)?> jindy, tak mozna, ale ted se vsechny me zasoby vyprazdnily a ja se soustreduji na zakazky.
+U me ji veru nenajdes. <basefont color="#ffff88">*usmala se*<basefont color="#ffffff"> Ja jsem samostatna, jen obcas si najmu dobrodruhy, pokud potrebuji nejakou vzacnou surovinu... 
+Skutecne? Copak mi neses?
+Alchymistka Mikkena je zena zraleho stredniho veku s delsimi vlasy, do nichz ma zapletene ruzne ozdoby. Na krku ji visi masivni nahrdelnik ve tvaru kruhu. Jeji pomerne stihla postava je zahalena do volnejsiho kozeneho satu. Vyraz jeji tvare neustale vyjadruje jistou zvedavost a sibalsky usmev prozrazuje Mikenninu dobrosrdecnost.
+To je hracka, prinesu ti tve prisady...
+V zadnem pripade, budes si muset sehnat nekoho jineho.
+Nesu ti ty prisady...
+Vlastne nic.
+
+
+
+[dialog d_gq001_mikkena button]
+ON=1
+// button Prijmout
+//
+src.sysMessage("<src.sex(Prijal,Prijala)> jsi ukol na doneseni kury.")
+say("Dekuji. Moc se s tim nezdrzuj, ta zakazka dost specha.")
+src.tag.gq001=1
+
+ON=2
+// button Odevzdat
+//
+if (<src.rescount i_gq001_kura> >= 10)
+  src.consume 10 i_gq001_kura
+  SAY("Dekuji. Tady mas odmenu.")
+  src.tag.gq001=2
+  src.givegold(500) 
+  src.addexp(150+<eval(<src.tag(level)>*10)>)
+else
+  SAY("Jeste ti neco chybi.")
+endif
+
+[dialog d_gq001_mikkena2g]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03139 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //      
+text 60 395 152 13
+button 25 415 0fa5 0fa7 0 1 0  //         
+text 60 415 152 14
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)   
+button 25 395 0fa5 0fa7 1 0 2  //      
+text 60 395 152 15
+button 25 415 0fa5 0fa7 0 1 0  //         
+text 60 415 152 16
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+
+
+[dialog d_gq001_mikkena2g text]
+Mikkena
+Kdo jsi?
+Muzu pomoci?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Zdravim te! Jsem rada ze te znovu vidim. Minule jsi mi moc <src.sex(pomohl,pomohla)>, ty prisady jsem nutne potrebovala...
+Hm... <?src.sex(mohl,mohla)?> bys... uvitala bych dalsi malou pomoc. Muj zakaznik si pro zasilku bohuzel nemuze prijit sam a ja zrovna nemam nikoho, po kom bych to mohla poslat. Ty uz ses <?src.sex(osvedcil,osvedcila)?>. <?src.sex(Odnesl,Odnesla)?> bys prosim tenhle balicek hospodskemu Edwinovi do Hurky? Pak se sem muzes vratit pro odmenu.
+Inu, kdybys <?src.sex(prisel,prisla)?> jindy, tak mozna, ale ted se vsechny me zasoby vyprazdnily a ja se soustreduji na zakazky.
+U me ji veru nenajdes. <basefont color=#ffff88>*usmala se*<basefont color=#ffffff> Ja jsem samostatna, jen obcas si najmu dobrodruhy, pokud potrebuji nejakou vzacnou surovinu...
+Skutecne? Copak mi neses?
+Alchymistka Mikkena je zena zraleho stredniho veku s delsimi vlasy, do nichz ma zapletene ruzne ozdoby. Na krku ji visi masivni nahrdelnik ve tvaru kruhu. Jeji pomerne stihla postava je zahalena do volnejsiho kozeneho satu. Vyraz jeji tvare neustale vyjadruje jistou zvedavost a sibalsky usmev prozrazuje Mikenninu dobrosrdecnost.
+Dobre, odnesu mu to.
+Nene promin, nemuzu.
+<?src.sex(Predal,Predala)?> jsem tu zasilku Edwinovi, posila ti tohle...
+Vlastne nic.
+
+
+[dialog d_gq001_mikkena2g button]
+ON=1
+// button Prijmout
+//
+
+if (<src.rescount i_gq001_sklenice> == 1)
+  SAY("Uz jsi zasilku <src.sex(dostal,dostala)>.")
+elseif (<src.rescount i_gq001_lektvary> >= 1)
+  SAY("Uz jsi zasilku <src.sex(dostal,dostala)>.")
+else
+  SRC.sysMessage("<src.sex(Prijal,Prijala)> jsi ukol na doruceni zasilky.")
+  SAY("Rekni Edwinovi, ze mu neses lektvary, on uz bude vedet, oc se jedna.")
+  src.giveitem(i_gq001_lektvary)
+endif
+
+ON=2
+// button Odevzdat
+//
+if (<src.rescount i_gq001_sklenice> != 1)
+  SAY("Jeste jsi nic <src.sex(nedorucil,nedorucila)>.")
+else
+  SAY("Dekuji za pomoc. Tady mas odmenu.")
+  src.consume(i_gq001_sklenice)
+  src.tag.gq001=3
+  src.givegold(500) 
+  src.addexp(50+<eval(<src.tag(level)>*10)>)
+  f_quest_complete(1)  // splnenie questu "Alchymistka Mikkena"
+endif
+
+[dialog d_gq001_mikkena2m]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03139 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //      
+text 60 395 152 13
+button 25 415 0fa5 0fa7 0 1 0  //         
+text 60 415 152 14
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)   
+button 25 395 0fa5 0fa7 1 0 2  //      
+text 60 395 152 15
+button 25 415 0fa5 0fa7 0 1 0  //         
+text 60 415 152 16
+
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+
+[dialog d_gq001_mikkena2m text]
+Mikkena
+Kdo jsi?
+Muzu pomoci?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Zdravim Te! Jsem rada, ze te znovu vidim. Minule jsi mi moc pomohl, ty prisady jsem nutne potrebovala...
+Hm... <?src.sex(mohl,mohla)?> bys... uvitala bych dalsi malou pomoc. Muj zakaznik si pro zasilku bohuzel nemuze prijit sam a ja zrovna nemam nikoho, po kom bych to mohla poslat. Ty uz ses <?src.sex(osvedcil,osvedcila)?>. <?src.sex(Odnesl,Odnesla)?> bys prosim tenhle balicek hospodskemu Chartonovi do Nurnu? Pak se sem muzes vratit pro odmenu.
+Inu, kdybys <?src.sex(prisel,prisla)?> jindy, tak mozna, ale ted se vsechny me zasoby vyprazdnily a ja se soustreduji na zakazky.
+U me ji veru nenajdes. <basefont color=#ffff88>*usmala se*<basefont color=#ffffff> Ja jsem samostatna, jen obcas si najmu dobrodruhy, pokud potrebuji nejakou vzacnou surovinu...
+Skutecne? Copak mi neses?
+Alchymistka Mikkena je zena zraleho stredniho veku s delsimi vlasy, do nichz ma zapletene ruzne ozdoby. Na krku ji visi masivni nahrdelnik ve tvaru kruhu. Jeji pomerne stihla postava je zahalena do volnejsiho kozeneho satu. Vyraz jeji tvare neustale vyjadruje jistou zvedavost a sibalsky usmev prozrazuje Mikenninu dobrosrdecnost.
+Dobre, odnesu mu to.
+Nene, promin, nemuzu.
+<?src.sex(Predal,Predala)?> jsem tu zasilku Chartonovi, posila ti tohle...
+Vlastne nic.
+
+
+[dialog d_gq001_mikkena2m button]
+ON=1
+// button Prijmout
+//
+
+if (<src.rescount i_gq001_sklenice> == 1)
+  SAY("Uz jsi zasilku <src.sex(dostal,dostala)>.")
+elseif (<src.rescount i_gq001_lektvary> >= 1)
+  SAY("Uz jsi zasilku <src.sex(dostal,dostala)>.")
+else
+  SRC.sysMessage("<src.sex(Prijal,Prijala)> jsi ukol na doruceni zasilky.")
+  SAY("Rekni Chartonovi, ze mu neses lektvary, on uz bude vedet, oc se jedna.")
+  src.giveitem(i_gq001_lektvary)
+endif
+
+ON=2
+// button Odevzdat
+//
+if (<src.rescount i_gq001_sklenice> != 1)
+  SAY("Jeste jsi nic <src.sex(nedorucil,nedorucila)>.")
+else
+  SAY("Dekuji za pomoc. Tady mas odmenu.")
+  src.consume(i_gq001_sklenice)
+  src.tag.gq001=3
+  src.givegold(500) 
+  src.addexp(50+<eval(<src.tag(level)>*10)>)
+endif
+
+[dialog d_gq001_mikkena3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03139 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi ?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Muzu pomoct ? 
+text 350 330 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat ?  
+text 510 330 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 360 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti ...   
+text 350 360 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout ...      
+text 520 360 1152 6   //
+
+
+page 1
+HTMLGUMP(170,230,440,100,7,0,36)
+
+page 2
+HTMLGUMP(170,230,440,100,8,0,36)
+
+page 3
+HTMLGUMP(170,230,440,100,9,0,36)
+
+page 4
+HTMLGUMP(170,230,440,100,10,0,36)
+
+page 5
+HTMLGUMP(170,230,440,100,11,0,36)   
+
+page 6
+HTMLGUMP(170,230,440,100,12,0,36)
+
+
+[dialog d_gq001_mikkena3 text]
+Mikkena
+Kdo jsi?
+Muzu pomoci?
+Obchodovat
+Hledam praci
+Nesu ti
+Prohlednout
+Zdravicko, jsem rada, ze te opet vidim !
+Hm...momentalne nemam nic co bych ti mohla sverit.
+Inu, kdybys <?src.sex(prisel,prisla)?> jindy, tak mozna, ale ted se vsechny me zasoby vyprazdnily a ja se soustreduji na zakazky.
+U me ji veru nenajdes. <basefont color=#ffff88>*usmala se*<basefont color=#ffffff> Ja jsem samostatna, jen obcas si najmu dobrodruhy, pokud potrebuji nejakou vzacnou surovinu...
+Skutecne? Copak mi neses?
+Alchymistka Mikkena je zena zraleho stredniho veku s delsimi vlasy, do nichz ma zapletene ruzne ozdoby. Na krku ji visi masivni nahrdelnik ve tvaru kruhu. Jeji pomerne stihla postava je zahalena do volnejsiho kozeneho satu. Vyraz jeji tvare neustale vyjadruje jistou zvedavost a sibalsky usmev prozrazuje Mikenninu dobrosrdecnost.
+
+
+
+[dialog d_gq001_mikkena3 button]
+
+// Speeche... //
+
+
+[speech spk_gq001_mikkena]
+
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+f_qSpeech(f_gq001_mikkena_DClick)
+
+[function f_gq001_mikkena_DClick]
+if (<src.flags>&statf_dead)
+ return 0
+elseif (<eval src.tag(gq001)>==2)&& (<src.tag(realm)>==1)
+  dialog(d_gq001_mikkena2g)
+elseif (<eval src.tag(gq001)>==2)&& (<src.tag(realm)>==2)
+  dialog(d_gq001_mikkena2m)
+elseif (<eval src.tag(gq001)>==3)
+  dialog(d_gq001_mikkena3)
+else
+  dialog(d_gq001_mikkena)
+endif
+
+
+[speech spk_gq001_edwin]
+
+on = *lektvary*
+on = *ahoj*
+on = *hi*
+on = *ukol*
+if (<src.rescount i_gq001_lektvary> >= 1)
+  src.consume(i_gq001_lektvary)
+  say("Vybornem uz na to cekam.")
+  say("Vyrid Mikkene moje podekovani. A tohle ji prosim vrat.")
+  src.giveitem(i_gq001_sklenice)
+else
+  say("Zdravicko, zdravicko.")
+endif
+
+[speech spk_gq001_charton]
+
+on = *lektvary*
+on = *ahoj*
+on = *hi*
+on = *ukol*
+if (<src.rescount i_gq001_lektvary> >= 1)
+  src.consume(i_gq001_lektvary)
+  say("Vybornem uz na to cekam.")
+  say("Vyrid Mikkene moje podekovani. A tohle ji prosim vrat.")
+  src.giveitem(i_gq001_sklenice)
+else
+  say("Zdravicko, zdravicko.")
+endif
+
+// Itemky //
+
+[ITEMDEF i_gq001_strom]
+ID=0cdd
+NAME=mrtvy strom
+TYPE=t_normal
+
+CATEGORY=Moria Questy
+SUBSECTION=gq001
+DESCRIPTION=mrtvy strom
+
+on=@create 
+attr=attr_move_never
+color=0759
+more1=2 // pocet, kolik kousku kury bude na strome
+
+
+ON=@userCLICK
+src.sysMessage("Vidis davno mrtvy strom s pokroucenymi vetvemi a zcernalou kurou.")
+
+on=@userDClick 
+if (tag(tmr)< serv.time) 
+  more1=2
+endif
+if (<src.tag(gq001)>==1)
+  if(<more1> > 0) 
+  //snizit citac 
+    more1 =<eval <more1>-1> 
+    tag(tmr,<eval serv.time+60*90>) 
+    src.giveitem(i_gq001_kura) 
+  //snizil-li se citac uz na 0 
+  else 
+    src.sysMessage("Tady uz zadna pouzitelna kura neni.") 
+  endif 
+else
+  src.sysMessage("Kura stromu se pri dotyku droli na prach.") 
+endif
+return 1
+
+
+[ITEMDEF i_gq001_kura]
+ID=i_reag_dead_wood
+NAME=kura z mrtveho stromu
+TYPE=t_normal
+
+ON=@Create
+attr=attr_move_never
+color=759
+
+ON=@userCLICK
+src.sysMessage("Kousek kury z mrtveho stromu v Temnem hvozdu")
+
+ON=@userDCLICK
+src.sysMessage("Kura se ti pod rukama rozpadla na prach. Musis byt opatrnejsi.")
+remove
+return 1
+
+
+[ITEMDEF i_gq001_lektvary]
+ID=0185e
+NAME=Balicek lektvaru
+TYPE=t_normal
+
+ON=@Create
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysMessage("Balicek lektvaru podivnych barev")
+
+ON=@userDCLICK
+src.sysMessage("Odrazuje te jiz pouha barva lektvaru.")
+return 1
+
+
+[ITEMDEF i_gq001_sklenice]
+ID=01005
+NAME=Prazdna sklenice
+TYPE=t_normal
+
+ON=@Create
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysMessage("Prazdna sklenice s cervenym vickem")
+
+ON=@userDCLICK
+src.sysMessage("Vazne v ni nic neni!")
+return 1
+
+[eof]

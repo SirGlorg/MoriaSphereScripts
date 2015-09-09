@@ -1,0 +1,209 @@
+[ItemDef 0ee9]
+DUPEITEM = 0e21
+
+[ITEMDEF 0e20]
+DEFNAME=i_bandage_bloody
+TYPE=T_BANDAGE_BLOOD
+RESOURCES=1 I_BANDAGE, 1 I_BLOOD
+WEIGHT=0.1
+CATEGORY=Items by Professions
+SUBSECTION=Healer
+DESCRIPTION=BLOODY BANDAGES
+DUPELIST=0e22
+//
+ON=@Targon_Item
+if (src.findid(i_mem_healing))
+ src.findid(i_mem_healing).remove
+ src.sysmessage "Prerusil jsi leceni."
+endif
+if (src.findid(i_mem_ressurect))
+ src.findid(i_mem_ressurect)remove
+ src.sysmessage "Ozivovani nesmis uspechat!"
+endif
+if (src.targ.type==t_water_wash)  
+ src.giveitem(i_bandage,<amount>)
+ remove
+// src.consume(i_bandage_bloody)
+// src.giveitem(i_bandage)
+ return 1
+endif
+if (src.targ.type!=t_corpse) 
+ SRC.SYSMESSAGE "Na tohle nemuzes obvaz pouzit!"
+ return 1 
+elseif !(SRC.RESTEST(20,i_bandage_bloody)) 
+ SRC.SYSMESSAGE "Nemas dost obvazu!"
+ return 1
+elseif (src.targ.distance>2)
+ src.sysmessage "Telo je prilis daleko."
+ return 1  
+elseif !(SRC.TARG.srccombatLOS) 
+ SRC.SYSMESSAGE "Nevidis na telo."
+ return 1
+elseif (src.ishungrymsg)
+ return 1
+elseif ((src.profession==class_shaman))&&(src.targ.link)
+ if (src.healing<800)
+  src.sysmessage "Nejsi dost dobry lecitel."
+  return 1
+ elseif (src.anatomy<800)
+  src.sysmessage "Nejsi dost vzdelan v anatomii."
+  return 1
+ elseif (src.targ.link.distancefrom(src.targ)>4)
+  src.sysmessage "Duch je prilis daleko."
+  return 1  
+ elseif (src.targ.link.flag_war==0)
+  src.sysmessage "Duch neni ve war modu."
+  return 1  
+ else
+ src.sysmessage "Necht se navrati k zivotu !"
+ healdisarm
+ SRC.CONSUME(20 i_bandage_bloody)
+ SRC.NEWITEMsafe(i_mem_ressurect)
+ lastnew.LINK=<SRC.TARG>
+ lastnew.cont=<src>
+ return 1
+ endif
+else
+ src.redmessage("Jako <src.profession.name> nemuzes takhle ozivovat.")
+Endif
+return 1
+
+ON=@TARGON_CHAR 
+if(src.profession!=class_shaman)
+ src.sysmessage(S timhle to umi jen samani!)
+else
+ bandaonchar(<src.targ>)
+endif
+return 1
+
+[ITEMDEF 0e21]
+DEFNAME=i_bandage
+RESOURCES=i_cloth
+TYPE=T_BANDAGE
+WEIGHT=0.1
+DUPELIST=0ee9
+CATEGORY=Items by Professions
+SUBSECTION=Healer
+DESCRIPTION=Clean Bandages
+
+on=@userdclick
+IF !(src.findid(i_bandage)) 
+ SRC.SYSMESSAGE "Obvazy musis mit u sebe."
+ return 1
+else
+ TARGET Koho chces osetrit?
+endif
+return 1
+
+ON=@Targon_Item
+if (src.findid(i_mem_healing))
+ src.findid(i_mem_healing).remove
+ src.sysmessage "Prerusil jsi leceni."
+endif
+if (src.findid(i_mem_ressurect))
+ src.findid(i_mem_ressurect)remove
+ src.sysmessage "Ozivovani nesmis uspechat!"
+endif
+if (src.targ.type==t_blood)  
+ src.giveitem(i_bandage_bloody,<amount>)
+ remove
+ return 1
+endif
+if (src.targ.type!=t_corpse) 
+ SRC.SYSMESSAGE "Na tohle nemuzes obvaz pouzit!"
+ return 1 
+elseif !(SRC.RESTEST(20,i_bandage)) 
+ SRC.SYSMESSAGE "Nemas dost obvazu!"
+ return 1
+elseif (src.targ.distance>2)
+ src.sysmessage "Telo je prilis daleko."
+ return 1  
+elseif !(SRC.TARG.srccombatLOS) 
+ SRC.SYSMESSAGE "Nevidis na telo."
+ return 1
+elseif (src.ishungrymsg)
+ return 1
+elseif ((src.profession==class_priest)||(src.profession==class_shaman))&&(src.targ.link)
+ if (src.healing<800)
+  src.sysmessage "Nejsi dost dobry lecitel."
+  return 1
+ elseif (src.anatomy<800)
+  src.sysmessage "Nejsi dost vzdelan v anatomii."
+  return 1
+ elseif (src.targ.link.distancefrom(src.targ)>4)
+  src.sysmessage "Duch je prilis daleko."
+  return 1  
+ elseif (src.targ.link.flag_war==0)
+  src.sysmessage "Duch neni ve war modu."
+  return 1     
+ else
+ src.sysmessage "Necht se navrati k zivotu !"
+ healdisarm
+ SRC.CONSUME(20 i_bandage)
+ SRC.NEWITEMsafe(i_mem_ressurect)
+ lastnew.LINK=<SRC.TARG>
+ lastnew.cont=<src>
+ return 1
+ endif
+elseif (src.profession==class_ranger)&&(src.targ.link==0)
+ if (src.veterinary<800)
+  src.sysmessage "Nejsi dost dobry veterinar."
+  return 1
+ elseif (src.animallore<800)
+  src.sysmessage "Nejsi dostatecne znalosti o zviratech."
+  return 1
+ elseif (<src.targ.restest(i_nores)>)||(findres(chardef,<src.targ.morex>).id==c_llama)||(findres(chardef,<src.targ.morex>).id==c_horse_tan)||(findres(chardef,<src.targ.morex>).id==c_horse_gray)||(findres(chardef,<src.targ.morex>).id==c_horse_brown_dk)||(findres(chardef,<src.targ.morex>).id==c_horse_brown_lt)||(findres(chardef,<src.targ.morex>).id==c_horse_pack)||(findres(chardef,<src.targ.morex>).id==c_llama_pack)||(findres(chardef,<src.targ.morex>).id==c_doe)
+     src.sysmessage "Tomu uz nepomuze ani svecena voda"
+  return 1
+ elseif (findres(chardef,<src.targ.morex>).dispid==c_man)||(findres(chardef,<src.targ.morex>).dispid==c_woman)
+  src.sysmessage "Toto neni zvire."
+  return 1  
+ else   
+  if (<eval <src.targ.tag(brain)>-1>) //brain animala = 1, pak je to 0 a jede se dal ; neni li mrtvola animal, tak se neressuje!
+   src.sysmessage(Toto neni zvire.)
+   return 1
+  endif
+  if (<strlen(<src.targ.tag.rozrezano>)>)
+   src.sysmessage("Zvire je vykuchane.")
+   return 1
+  endif
+  src.sysmessage "Pokousis se ozivit mrtvolu zvirete."
+  healdisarm
+  SRC.CONSUME 20 i_bandage 
+  SRC.NEWITEMsafe(i_mem_ressurect)
+  lastnew.more1=1
+  lastnew.LINK=<SRC.TARG>
+  lastnew.cont=<src>
+  return 1
+ endif
+else
+src.redmessage("Jako <src.profession.name> nemuzes ozivovat pomoci obvazu.")
+Endif
+return 1
+ 
+ON=@TARGON_CHAR 
+bandaonchar(<src.targ>)
+return 1
+
+
+[ITEMDEF 0e22]
+DUPEITEM=0e20
+
+[ITEMDEF i_bloody_tub]
+ID=i_dye_tub
+TYPE=t_blood
+NAME=krev
+
+CATEGORY=Items by Professions
+SUBSECTION=healer
+DESCRIPTION=krev
+
+RESOURCES=5 i_log
+SKILLMAKE=CARPENTRY 40.0, t_carpentry
+RESOURCES2=10 i_board
+
+on=@create
+color=098e //dobra krev, lepsi neumim - Dinivan
+
+
+[eof]

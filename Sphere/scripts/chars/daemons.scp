@@ -1,0 +1,1257 @@
+
+[chardef c_demon_noci]     //nejslabsi demon
+id=c_minotaur
+name=Demon Noci
+sound=snd_monster_daemon1
+ICON=i_pet_DAEMON
+anim=0ffc78c7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=50
+ARMOR=40
+moverate=3
+  
+resources=8 i_ribs_raw, 18 i_reag_daemon_bone
+foodtype=15 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_parakrik
+TEVENTS=e_npc_critic
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+Description=Demon Noci
+
+on=@create
+color=0075c
+
+npc=brain_monster
+fame={4000 8000}
+karma={-5000 -5999}
+
+str=1000
+dex={180 195}
+int={160 225}
+
+maxhits={2400 2500}
+maxstam={180 295}
+maxmana=0
+
+tag.experience=<eval {80.0 85.0}>
+
+tag.npc_critic_chance=150         //15% chance
+tag.npc_critic_dmg=10,15          //dmg in between
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,250)
+tag.resist_para=<eval {350 450}>
+tag(resist_summon,250)
+tag(resist_bleed,-200)
+
+//weap resists
+tag(resist_sharp,-100)
+tag(resist_slash,-100)       //sekery
+tag(resist_pierce,-250)
+tag(resist_blunt,-150)
+
+//magic resists
+tag(resist_fire,300)
+tag(resist_elect,00)
+tag(resist_cold,-1000)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon,60)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+parrying=90.0
+resist={85.0 95.0}
+tactics=100.0
+wrestling={85.0 90.0}
+SpiritSpeak=55.0
+peacemaking=100.0
+provocation=100.0
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[chardef c_daemon]         //slaby + stun
+ID=c_daemon_mage1
+Name=Demon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+CAN=MT_WALK|mt_run|mt_usehands
+
+attack=70
+ARMOR=70
+moverate=3
+
+resources=9 i_ribs_raw, 18 i_reag_daemon_bone
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_npc_stun
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Daemon (omracujici)
+
+ON=@Create
+Name=#NAMES_DAEMON
+NPC=brain_monster
+fame={4000 8000}
+karma={-5000 -5999}
+
+STR=1000
+DEX={130 180}
+INT={120 150}
+
+maxhits={2300 2400}
+maxstam={150 230}
+maxmana=0
+
+tag.experience=<eval {110.0 120.0}>
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,250)
+tag.resist_para=<eval {550 700}>
+tag(resist_summon,600)
+tag(resist_bleed,-100)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)       //sekery
+tag(resist_pierce,-250)
+tag(resist_blunt,350)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-400)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+Fencing={90.0 100.0}
+Swordsmanship={90.0 100.0}
+PARRYING={75.0 95.0}
+TACTICS={90.0 100.0}
+WRESTLING={105.0 120.0}
+peacemaking=100.0
+provocation=100.0
+SpiritSpeak=45.0
+
+itemnewbie=i_cutlass
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_sword]  //slaby + bleed
+ID=c_daemon_sword1
+NAME=Demon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=70
+ARMOR=70
+moverate=3
+ 
+RESOURCES=9 i_ribs_raw, 18 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_daemon
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Daemon (bleedujici)
+
+ON=@Create
+Name=#NAMES_DAEMON 
+NPC=brain_monster
+fame={400 800}
+karma={-5000 -5999}
+
+STR=1000
+DEX={130 180}
+INT={120 150}
+
+maxhits={3000 3200}
+maxstam={150 230}
+maxmana=0
+
+tag.experience=<eval {130.0 140.0}>
+
+tag.npc_bleed=150 //15.0%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,200)
+tag.resist_para=<eval {550 680}>
+tag(resist_summon,650)
+tag(resist_bleed,-200)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)       //sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,350)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-400)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+Fencing={80.0 100.0}
+Swordsmanship={80.0 100.0}
+PARRYING={55.0 95.0}
+TACTICS={80.0 100.0}
+WRESTLING={80.0 100.0}
+peacemaking=100.0
+provocation=100.0
+SpiritSpeak=45.0
+
+itemnewbie=i_cutlass
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_sword_ns]  //slaby + kouzlici
+ID=c_daemon_sword1
+NAME=Demon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=50
+ARMOR=70
+moverate=3
+ 
+RESOURCES=9 i_ribs_raw, 18 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_curse
+
+TEVENTS=e_daemon
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Daemon (kouzlici)
+
+ON=@Create
+Name=#NAMES_DAEMON 
+NPC=brain_monster
+fame={400 800}
+karma={-5000 -5999}
+
+STR=1000
+DEX={130 180}
+INT=250
+
+maxhits={2400 2500}
+maxstam={150 230}
+maxmana=1000
+
+tag.experience=<eval {140.0 150.0}>
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=20,25         // delay between another possible strike
+tag.npc_curse_dmg=20,25           // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,300)
+tag.resist_para=<eval {650 780}>
+tag(resist_summon,650)
+tag(resist_bleed,100)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)       //sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,350)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-400)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+Fencing={80.0 90.0}
+Swordsmanship={80.0 90.0}
+PARRYING={55.0 95.0}
+TACTICS={80.0 90.0}
+WRESTLING={80.0 90.0}
+peacemaking=100.0
+provocation=100.0
+ei=100.0
+magery=120.0
+Resist=130.0
+SpiritSpeak=45.0
+
+ITEMNEWBIE=i_light_source
+ITEMnewbie=i_monster_create
+itemnewbie=i_spellbook
+addspell=s_harm
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+ITEM=random_reagent,{30 55}
+
+/////////////////////////////////////////////////////////////
+
+[chardef 026]
+defname=c_daemon_large
+Name=Daemon
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+CAN=MT_WALK|mt_run|mt_usehands
+
+attack=90
+ARMOR=85
+moverate=3
+
+resources=9 i_ribs_raw, 18 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_bleed
+TEVENTS=e_npc_critic
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Demon veliky
+
+ON=@Create
+NPC=brain_monster
+fame={400 800}
+karma={-5000 -5999}
+
+str=10000
+dex={276 295}
+int=200
+
+maxhits={5400 5600}
+maxstam=376
+maxmana=0
+
+tag.experience=<eval {250.0 260.0}>
+
+tag.npc_critic_chance=250      //25% chance
+tag.npc_critic_dmg=20,25       //dmg in between
+
+tag.npc_bleed=300 //30.0%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//other resists
+tag(resist_poison,100)
+tag.resist_para=<eval {550 680}>
+tag(resist_summon,650)
+tag(resist_bleed,100)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)       //sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,350)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-400)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon) //u elemu ruzne
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+parrying={95.0 105.0}
+resist={85.0 105.0}
+tactics={95.0 105.0}
+wrestling={95.0 105.0}
+peacemaking=100.0
+provocation=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_daemon
+ITEM=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_blood]
+ID=c_daemon_sword1
+NAME=Blood Daemon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=80
+ARMOR=100
+moverate=3
+
+resources=9 i_ribs_raw, 18 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_blood
+TEVENTS=e_lifeLeech          //kazda rana saje HP
+TEVENTS=e_npc_critic
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Daemon Blood
+
+ON=@Create
+COLOR=colors_blood
+Name=#NAMES_DAEMON
+NPC=brain_monster
+FAME=300
+KARMA=-5000
+
+str=5000
+dex={276 295}
+int={400 600}
+
+maxhits={5400 5600}
+maxstam={276 295}
+maxmana=0
+
+tag.experience=<eval {190.0 200.0}>
+
+tag.npc_critic_chance=200         //20% chance
+tag.npc_critic_dmg=15,20          //dmg in between
+
+tag.npc_lifeLeech=40,50      //tolik si prida kazdou ranou
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[3]>
+
+//other resists
+tag(resist_poison,100)
+tag.resist_para=<eval {850 980}>
+tag(resist_summon,650)
+tag(resist_bleed,-400)     //blood verze
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)     //sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,350)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-200)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+tag(monstertype2,blood)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+Fencing={90.0 100.0}
+Swordsmanship={90.0 100.0}
+PARRYING={55.0 95.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+resist=100.0
+SpiritSpeak=45.0
+peacemaking=100.0
+provocation=100.0
+
+itemnewbie=i_sword_broad_iron
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+ITEM=i_reag_blood_vial, {20 25} 
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_gold]    //kouzli + weak na crush
+ID=c_daemon_large
+NAME=Demon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=80
+ARMOR=100
+moverate=3
+
+resources=9 i_ribs_raw, 18 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_curse
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Daemon Gold (kouzlici)
+
+ON=@Create
+color=colors_drag_gold
+Name=#NAMES_DAEMON
+NPC=brain_monster
+FAME=1000
+KARMA=-2000
+
+str=5000
+dex={276 295}
+int={250 255}
+
+maxhits={5400 5600}
+maxstam={376 395}
+maxmana=4000
+
+tag.experience=<eval {250.0 270.0}>
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=15,20         // delay between another possible strike
+tag.npc_curse_dmg=30,35           // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+
+//other resists
+tag(resist_poison,100)
+tag.resist_para=<eval {800 980}>
+tag(resist_summon,650)
+tag(resist_bleed,500)
+
+//weap resists
+tag(resist_sharp,600)
+tag(resist_slash,600)       //sekery
+tag(resist_pierce,350)
+tag(resist_blunt,-500)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-400)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+PARRYING={55.0 95.0}
+Resist=100.0
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+MAGERY=130.0
+ei=100.0
+SpiritSpeak=55.0
+peacemaking=100.0
+provocation=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell s_lightning
+addspell s_flamestrike
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_gold_sword]
+ID=c_daemon_large
+NAME=Demon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=100
+ARMOR=100
+moverate=3
+
+resources=9 i_ribs_raw, 18 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_npc_bleed
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_daemon
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Daemon Gold Sword
+
+ON=@Create
+color=colors_drag_gold
+Name=#NAMES_DAEMON 
+NPC=brain_monster
+FAME=1000
+KARMA=-6000
+
+str=5000
+dex={276 295}
+int={250 300}
+
+maxhits={5400 5600}
+maxstam={376 395}
+maxmana=0
+
+tag.experience=<eval {230.0 250.0}>
+
+tag.roundattack_damage=50,60 //dmg od - do
+tag.roundattack_time=20,30   //cas od - do
+tag.roundattack_chance=500   //50.0%
+
+tag.npc_bleed=300 //30.0%
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,100)
+tag.resist_para=<eval {890 990}>
+tag(resist_summon,650)
+tag(resist_bleed,500)
+
+//weap resists
+tag(resist_sharp,600)
+tag(resist_slash,600)       //sekery
+tag(resist_pierce,350)
+tag(resist_blunt,-500)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-400)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical
+
+PARRYING={95.0 105.0}
+TACTICS={90.0 105.0}
+WRESTLING={100.0 110.0}
+resist=100.0
+peacemaking=100.0
+provocation=100.0
+
+itemnewbie=i_sword_viking_iron
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_ice]         //kouzli
+ID=c_daemon_mage1
+NAME=Ledovy demon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=80
+ARMOR=100
+moverate=3
+
+resources=9 i_ribs_raw, 18 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_npc_curse
+TEVENTS=e_parakrik
+TEVENTS=e_summoneater
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Ice demon
+
+ON=@Create
+COLOR=color_ice
+Name=#NAMES_DAEMON
+NPC=brain_monster
+FAME=750
+KARMA=-5000
+
+str=5000
+dex={276 295}
+int={190 240}
+
+maxhits={6400 6600}
+maxstam={376 395}
+maxmana=4000
+
+tag.experience=<eval {300.0 320.0}>
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=25,30         // delay between another possible strike
+tag.npc_curse_dmg=30,35           // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,100)
+tag.resist_para=<eval {950 1000}>
+tag(resist_summon,650)
+tag(resist_bleed,500)     //ice verze
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,300)    //sekery
+tag(resist_pierce,550)
+tag(resist_blunt,-700)   //ice verze
+
+//magic resists
+tag(resist_fire,-800)
+tag(resist_elect,300)
+tag(resist_cold,800)     //ice verze
+
+//typ monstra
+tag(monstertype,daemon)
+tag(monstertype2,snow)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_cold
+
+PARRYING=110.0
+MAGERY=150.0
+EI=100.0
+resist=120.0
+TACTICS=110.0
+WRESTLING={100.0 110.0}
+peacemaking=100.0
+provocation=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+
+//////////////////////////////////////////////////////////////////////////
+
+[chardef 028]
+Defname=c_balron           //kouzli
+Name=Balron
+sound=snd_monster_daemon1
+icon=i_pet_daemon
+anim=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=100
+ARMOR=100
+moverate=4
+
+resources=9 i_ribs_raw, 28 i_reag_daemon_bone
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_explode
+TEVENTS=e_parakrik
+TEVENTS=e_phoenix_fire
+TEVENTS=e_summoneater
+TEVENTS=e_npc_curse
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Balron
+
+on=@create
+color=colors_daemon
+npc=brain_monster
+fame={4000 8000}
+karma={-5000 -5999}
+
+str=5000
+dex=300
+int={290 300}
+
+maxhits={15000 17000}
+maxstam={250 350}
+maxmana=2000
+
+tag.experience=<eval {400.0 420.0}>
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=15,20         // delay between another possible strike
+tag.npc_curse_dmg=35,40           // dmg 
+
+Tag.explode_dmg=50
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,-500)
+tag.resist_para=<eval {850 980}>
+tag(resist_summon,650)
+tag(resist_bleed,-300)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)       //sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,650)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-600)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+peacemaking=100.0
+provocation=100.0
+EI=100.0
+swordsmanship=100.0
+parrying=100.0
+magery=160.0
+resist=100.0
+tactics=100.0
+wrestling=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRESTOCK 
+ITEM=loot_daemon
+item=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_undead]    //kouzli, weak crushing
+ID=c_balron
+NAME=Demon smrti
+SOUND=snd_MONSTER_DAEMON1
+icon=i_pet_daemon
+anim=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=90
+ARMOR=90
+moverate=4
+
+resources=9 i_ribs_raw, 28 i_reag_daemon_bone
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_undead
+TEVENTS=e_npc_infiniteMana
+TEVENTS=e_parakrik
+TEVENTS=e_summoneater
+TEVENTS=e_npc_curse
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Daemon smrti kouzlici
+
+ON=@Create
+color=colors_daemon
+NPC=brain_monster
+fame={4000 8000}
+karma={-5000 -5999}
+
+str=5000
+dex={287 338}
+int=1000
+
+maxhits={15000 16000}
+maxstam={200 300}
+maxmana=5000
+
+tag.experience=<eval {280.0 300.0}>
+
+tag.npc_curse_chance=250          // 25% chance to trigger this event
+tag.npc_curse_delay=15,20         // delay between another possible strike
+tag.npc_curse_dmg=30,35           // dmg 
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[1]>//int
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]>
+
+//other resists
+tag(resist_poison,1000)              //undead
+tag.resist_para=<eval {850 980}>
+tag(resist_summon,850)
+tag(resist_bleed,1000)               //undead
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,100)       //sekery
+tag(resist_pierce,450)
+tag(resist_blunt,-500)      //unbdead
+
+//magic resists
+tag(resist_fire,-700)       // undead
+tag(resist_elect,300)
+tag(resist_cold,400)      
+
+//typ monstra
+tag(monstertype,daemon,60)
+
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+peacemaking=100.0
+provocation=100.0
+EI=95.0
+swordsmanship=100.0
+parrying={85.0 95.0}
+magery=150.0
+resist=150.0
+tactics=100.0
+wrestling=100.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_lightning
+addspell=s_magic_reflection
+
+ITEMnewbie=i_monster_create
+ON=@NPCRESTOCK 
+ITEM=loot_daemon
+item=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_daemon_black]  //melee
+ID=c_balron
+NAME=Demon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FIRE_IMMUNE|mt_run|mt_usehands
+
+Attack=100
+ARMOR=100
+moverate=4
+ 
+resources=9 i_ribs_raw, 38 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_daemon
+TEVENTS=e_npc_roundattack
+TEVENTS=e_parakrik
+TEVENTS=e_phoenix_fire
+TEVENTS=e_npc_critic
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Daemon Black (melee)
+
+ON=@Create
+COLOR=1
+Name=#NAMES_DAEMON
+NPC=brain_monster
+FAME=1100
+KARMA=-5000
+
+str=5000
+dex={287 338}
+int=50
+
+maxhits={15000 17000}
+maxstam={300 350}
+maxmana=0
+
+tag.experience=<eval {400.0 410.0}>
+
+tag.roundattack_damage=30,50 //dmg od - do
+tag.roundattack_time=15,19   //cas od - do
+tag.roundattack_chance=300   //30.0%
+
+tag.npc_critic_chance=250     //25% chance
+tag.npc_critic_dmg=20,25      //dmg in between
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[5]>
+
+//other resists
+tag(resist_poison,-1000)
+tag.resist_para=<eval {850 980}>
+tag(resist_summon,650)
+tag(resist_bleed,-200)
+
+//weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)       //sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,450)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,300)
+tag(resist_cold,-400)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+Fencing={100.0 110.0}
+Swordsmanship={100.0 110.0}
+PARRYING={105.0 115.0}
+resist=150.0
+TACTICS={100.0 110.0}
+WRESTLING={100.0 110.0}
+peacemaking=100.0
+provocation=100.0
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+
+/////////////////////////////////////////////////////////////
+
+[CHARDEF c_balrogh]
+id=c_balron
+NAME=Balrogh
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+can=mt_walk|mt_usehands|mt_run
+
+attack=120
+ARMOR=180
+moverate=3
+ 
+resources=9 i_ribs_raw, 38 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_balrog
+TEVENTS=e_npc_roundattack_pullall
+TEVENTS=e_daemon
+TEVENTS=e_parakrik
+TEVENTS=e_explosiondispell
+TEVENTS=e_npc_curse
+TEVENTS=e_npc_bleed
+//TEVENTS=e_phoenix_fire
+
+CATEGORY=Monsters
+SUBSECTION=Demoni
+DESCRIPTION=Balrogh
+
+ON=@Create
+COLOR=0988
+NPC=brain_monster
+FAME=4500
+KARMA=-3000
+
+str=5000
+dex={276 350}
+int=300
+
+maxhits={25000 26000}
+maxstam={376 450}
+maxmana=0
+
+tag.experience=<eval {750.0 770.0}>
+
+tag.npc_bleed=300             //30%
+
+tag.npc_curse_chance=250       // 25% chance to trigger this event
+tag.npc_curse_delay=15,20      // delay between another possible strike
+tag.npc_curse_dmg=45,55        // dmg 
+
+tag.roundattack_damage=35,55 //dmg od - do
+tag.roundattack_time=10,15   //cas od - do
+tag.roundattack_chance=200   //20.0%
+
+tag(e_explosiondispell_chance,500) //50% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,15)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]> 
+
+//other resists
+tag(resist_poison,1000)
+tag.resist_para=<eval {950 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,400)
+
+//weap resists
+tag(resist_sharp,300)
+tag(resist_slash,300)       //sekery
+tag(resist_pierce,00)
+tag(resist_blunt,750)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,100)
+tag(resist_cold,-300)   //mraz ano
+
+//typ monstra
+tag(monstertype,daemon)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+PARRYING={190.0 200.0}
+Resist=150.0
+TACTICS={100.0 120.0}
+WRESTLING={105.0 120.0}
+Fencing={105.0 110.0}
+SpiritSpeak=190.0
+peacemaking=100.0
+provocation=100.0
+ 
+ITEMnewbie=i_monster_create
+//itemnewbie=i_sword_viking_iron
+
+ON=@NPCRestock
+ITEM=loot_DAEMON
+item=i_gold
+ 
+/////////////////////////////////////////////////////////////
+

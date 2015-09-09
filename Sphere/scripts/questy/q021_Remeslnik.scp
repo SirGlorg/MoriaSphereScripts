@@ -1,0 +1,414 @@
+[function f_q021_checkOldTags]
+if (src.tag(q20z)==1)
+  src.tag.remove(q20z)
+  src.qtag(q021,2,20)
+endif
+
+
+//////////////////////////////////////////////////
+/////Dialog Stary remeslnik
+[speech spk_q021_Remeslnik]
+
+on = *zasilka*
+on = *ingoty*
+on = *ratiste*
+on = *uhli*
+on = *hi*
+on = *dobry*
+on = *den*
+on = *zdrav*
+on = *prace*
+
+if (src.targ.distance > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou remeslnik jednat nebude")
+else
+  f_q021_Remeslnik
+endif
+
+[function f_q021_Remeslnik]
+f_q021_checkOldTags
+Dialog(d_q021_Remeslnik)
+
+[dialog d_q021_Remeslnik]
+5,5
+page 0
+resizepic(20,200,2620,640,350)
+gumppic(30,210,03182)
+gumppic(40,215,03140)
+
+text(220, 210, 52, 0)
+
+argo.button(160,330,0988,0988,0,2,0)  //Kdo jsi?
+argo.text(210,332,1152,1)
+argo.button(325,330,0988,0988,0,3,0)  //Muzu pomoct?
+argo.text(370,330,1152,2)
+argo.button(490,330,0988,0988,0,4,0)  //Obchodovat?
+argo.text(530,330,1152,3)
+argo.button(160,360,0988,0988,0,5,0)  //Hledam praci
+argo.text(210,360,1152,4)
+argo.button(325,360,0988,0988,0,6,0)  //Nesu ti...
+argo.text(370,360,1152,5)
+argo.button(490,360,0988,0988,0,7,0)  //Prohlednout...
+argo.text(530,360,1152,6)
+
+page 1  //prva
+argo.HTMLGUMP(170,230,440,100,7,0,36)
+if (src.qtag(q020)==6)
+  argo.button(25,395,0fa5,0fa7,0,9,0)
+  argo.text(60,395,152,24)
+  if (src.qtag(q022)==1)
+    argo.button(25,415,0fa5,0fa7,0,10,0)
+    argo.text(60,415,152,31)
+  elseif ((src.qtag(q022)==3)&&(src.rescount(i_q022_ingoty)>=1))
+    argo.button(25,415,0fa5,0fa7,0,11,0)
+    argo.text(60,415,152,36)
+  elseif ((src.qtag(q022)==6)&&(src.rescount(i_q022_ratiste)>=1))
+    argo.button(25,415,0fa5,0fa7,0,11,0)
+    argo.text(60,415,152,39)
+  elseif ((src.qtag(q022)==11)&&(src.rescount(i_q022_uhli)>=1))
+    argo.button(25,415,0fa5,0fa7,0,11,0)
+    argo.text(60,415,152,41)
+
+  endif
+else
+  if (src.qtag(q022)==1)
+    argo.button(25,395,0fa5,0fa7,0,10,0)
+    argo.text(60,395,152,31)
+  elseif ((src.qtag(q022)==3)&&(src.rescount(i_q022_ingoty)>=1))
+    argo.button(25,395,0fa5,0fa7,0,11,0)
+    argo.text(60,395,152,36)
+  elseif ((src.qtag(q022)==6)&&(src.rescount(i_q022_ratiste)>=1))
+    argo.button(25,395,0fa5,0fa7,0,11,0)
+    argo.text(60,395,152,39)
+  elseif ((src.qtag(q022)==11)&&(src.rescount(i_q022_uhli)>=1))
+    argo.button(25,395,0fa5,0fa7,0,11,0)
+    argo.text(60,395,152,41)
+  endif
+endif
+
+
+//  argo.button(25,415,0fa5,0fa7,0,10,0)
+//  argo.text(60,415,152,47)
+
+
+page 2  //Kdo jsi?
+argo.HTMLGUMP(170,230,440,100,8,0,36)
+
+page 3  //Muzu pomoct?
+if (src.qtag(q021)<1)
+  argo.HTMLGUMP(170,230,440,100,14,0,36)
+  argo.button(25,395,0fa5,0fa7,0,8,0)
+  argo.text(60,395,152,15)
+elseif (src.qtag(q021)==1)
+  argo.HTMLGUMP(170,230,440,100,18,0,36)
+elseif (src.qtag(q021)==2)
+  argo.HTMLGUMP(170,230,440,100,23,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,14,0,36)
+endif
+
+page 4  //Obchodovat?
+argo.HTMLGUMP(170,230,440,100,9,0,36)
+
+page 5  //Hledam praci
+argo.HTMLGUMP(170,230,440,100,12,0,36)
+
+page 6  //Nesu ti...
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+if (src.qtag(q021)==1)
+  argo.button(25,395,0fa5,0fa7,0,8,0)
+  argo.text(60,395,152,19)
+  if (src.qtag(q020)==7)
+    argo.button(25,415,0fa5,0fa7,0,9,0)
+    argo.text(60,415,152,27)
+  endif
+else
+  if (src.qtag(q020)==7)
+    argo.button(25,395,0fa5,0fa7,0,9,0)
+    argo.text(60,395,152,27)
+  endif
+endif
+
+page 7  //Prohlednout...
+argo.HTMLGUMP(170,230,440,100,10,0,36)
+
+page 8
+if (src.qtag(q021)==1)
+  if (src.rescount(i_q021_mast)>=1)
+    argo.HTMLGUMP(170,230,440,100,20,0,36)
+    argo.button(25,395,0fa5,0fa7,1,0,2)
+    argo.text(60,395,152,21)
+  else
+    argo.HTMLGUMP(170,230,440,100,22,0,36)
+  endif
+else
+argo.HTMLGUMP(170,230,440,100,16,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,1)
+argo.text(60,395,152,17)
+endif
+
+//Carodejka q020
+page 9
+if (src.qtag(q020)==6)
+  argo.HTMLGUMP(170,230,440,100,25,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,3)
+  argo.text(60,395,152,26)
+elseif (src.qtag(q020)==7)
+  if (<src.rescount(i_q020_ruda)> > 0)
+    argo.HTMLGUMP(170,230,440,100,28,0,36)
+    argo.button(25,395,0fa5,0fa7,1,0,4)
+    argo.text(60,395,152,29)
+  else
+    argo.HTMLGUMP(170,230,440,100,30,0,36)
+  endif
+endif
+
+//Transport q022
+page 10
+argo.HTMLGUMP(170,230,440,100,32,0,36)
+argo.button(25,395,0fa5,0fa7,0,11,0)
+argo.text(60,395,152,33)
+    
+page 11
+if ((src.qtag(q022)==3)&&(src.rescount(i_q022_ingoty)>=1))
+  argo.HTMLGUMP(170,230,440,100,37,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,6)
+  argo.text(60,395,152,38)  
+elseif ((src.qtag(q022)==6)&&(src.rescount(i_q022_ratiste)>=1))
+  argo.HTMLGUMP(170,230,440,100,40,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,7)
+  argo.text(60,395,152,38)
+elseif ((src.qtag(q022)==11)&&(src.rescount(i_q022_uhli)>=1))
+  argo.HTMLGUMP(170,230,440,100,42,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,8)
+  argo.text(60,395,152,43)
+else
+  argo.HTMLGUMP(170,230,440,100,34,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,5)
+  argo.text(60,395,152,35)
+endif
+
+  
+[dialog d_q021_Remeslnik text]
+Remeslnik Navin  //0
+Kdo jsi?  //1
+Muzu pomoct?  //2
+Obchodovat?  //3
+Hledam praci  //4
+Nesu ti...  //5
+Prohlednout...  //6
+Zdravim.  //7
+Jmenuji se Navin, jsem remeslnik.  //8
+Nic neprodavam ani nekupuji.  //9
+<basefont color="#ffff88">*Remeslnik je opravdu stary, ale pres jeho stari, vrascitou tvar a shrbena zada z nej vyzaruje vnitrni sila*<basefont color="#ffffff">  //10
+Co mi neses?  //11
+Nemam pro tebe zadnou praci.  //12
+Nic nepotrebuji.  //13
+Desne mne loupe v zadech, leciva mast by mohla zabrat. Chces mi pomoct?  //14
+<?src.sex(Rad,Rada)?> pomuzu, co muzu udelat?  //15
+To je od tebe slechetne. Pockej chvilku, sepisu ti co vsechno bude potreba... Takze 10 Lecivych bylinek, ktere rostou na zelenych planich a kozi sadlo, kozi najdes nekde tady v okoli. Vsechno odnes laciteli Horadovi, ktery se vetsinou potuluje nekde nad Ereborem.  //16
+Jdu na to.  //17
+Muzes, kdyz mi doneses tu mast!  //18
+Mam pro vas tu mast  //19
+Mas to? Skvele. Dekuju ti. <basefont color="#ffff88">*Usmiva se*<basefont color="#ffffff">  //20
+*odevzdat*  //21
+A kde ji mas?!  //22
+Dekuji, ta mast mi tuze pomohla.  //23
+//Carodejka q020
+Carodejka Roxana me posila, potrebuje novej hmozdir.  //24
+Ehm, coze jsi to... jo hmozdir. To nebude snadne, k tomu budeme potrebovat par vecicek. <basefont color="#ffff88">*Sbira par podivnych nastroju z polic, beden a vsemoznych pytliku*<basefont color="#ffffff"> Hmm. Tak z tohohle toho moc neudelam. Budu potrebovat novou rudu. A ty mi ji budes muset obstarat pokud ten Hmozdir chces. <basefont color="#ffff88">*Upira na tebe pronikavy pohled*<basefont color="#ffffff">. Lozisko najdes ve starych trpaslicich dolech ktere lezi na severozapad od Ereboru v Sedych horach. Ale dej si pozor. Jsou opustene uz velmi dlouho a buhvi co se tam za ty leta nastehovalo za havet. Cesta k nim take neni snadna. Rudu kterou potrebujes najdes v sachte cislo tri... Jo, myslim ze by to mela byt trojka. Na konci sachty je nekolik velkych kamenu, kdyz jeden z nich odvalis stranou dostanes se do spodni casti dolu. Tam bys mohl najit to co budu potrebovat. Tadyhle si vem tenhle krumpac, rukama to ze skaly nedostanes. Davej na nej pozor! Jestli ho ztratis, nevim, nevim, jestli tu budu mit jeste nejaky.  //25
+Jdu na to.  //26
+Mam tu rudu!  //27
+Dobra, dobra. Myslim ze toho bude vic nez dost, hned se pustim do vyroby toho hmozdire... A nezapomen odemne pozdravovat carodejku.  //28
+Dobre, dekuji.  //29
+A kde ji mas?!  //30
+//Transport q022
+Dobry den. Posila me Velitel strazi pro zasilku zbrani.  //31
+<basefont color="#ffff88">*Starik zvedl hlavu od kovadliny a prohlizi si te*<basefont color="#ffffff">. Velitel strazi? Pro zasilku? <basefont color="#ffff88">*Chvili na tebe nechapave mzoura, ale pak se mu tvar zachmuri*<basefont color="#ffffff"> Jo, tohleto. <basefont color="#ffff88">*Mraci se*<basefont color="#ffffff"> Tak to jeste neni hotovy. Dosel mi material a nemam cas schanet novy. <basefont color="#ffff88">*Uzavrel jsi dohodu s velitelem strazi tak ji koukej dostat nebo vrat penize! Mracis se pro zmenu ty* *Starik opet ustal v praci a kouka na tebe*<basefont color="#ffffff">. Mno, snad to nebude tak horky. Kdyz mi trochu pomuzes tak to dame behem par dni dokupy. Uz mi chybi dodelat jen par kousku. Kdyz se do toho dame hned tak je to pozitri hotovy. <basefont color="#ffff88">*Jenom jsi neco zabrucel a cekas co dal ze starika vyleze*<basefont color="#ffffff"> //32
+Tak kde zacnem?  //33
+Mno, nejlip asi od zeleza. To mi vetsinou dodava trpaslik Gorug, ted nedavno jsme se ale trosku nepohodli tak asi nebude moc privetivy. Ale snad ti nejake zelezne ingoty ukove. Tak 150 by jich melo stacit. Ale kde ho ted najdes nevim. Naposled kdyz jsem ho videl tak rikal ze uz ma toho komandovani doma pokrk a pujde si provetrat hlavu nekam na venkov. Myslim ze rikal neco o hobitech ale jisty si nejdem. Mno, ale ty si jiste poradis, ze? <basefont color="#ffff88">*S tim s tebou starik pro ted ocividne skoncil, protoze se opet usadil ke kovadline a zacal znovu usilovne klepat kaadivkem*<basefont color="#ffffff">  //34
+Dobre, ja se ho pokusim najit.  //35
+Hotovo. Tady jsou ty ingoty.  //36
+Vyborne, vidim ze sis poradil. <basefont color="#ffff88">*Vzal do ruky jeden z Ingotu a zblizka si ho prohlizi*<basefont color="#ffffff"> Mno zadna slava to neni, jak se ostatne dalo ocekavat, ale nam to bude stacit. Doufam ze stejne dobre pochodis i u truhlare. Jmenuje se Miro a ma svoji dilnu nedaleko Edorasu, nekde na zapad od pevnosti vo Vychodni Marce. Mam u nej objednana ratiste na kopi a halapartny.  //37
+Dobre, jdu pro to...  //38
+Tady je to ratiste.  //39
+Tak a ted uz jen par kyblu uhli a muzeme se do toho pustit. <basefont color="#ffff88">*Schladil te remeslnik*<basefont color="#ffffff"> No moc se neskleb, bez uhli to nepujde. Jediny kdo ho kope je starej Valduk, ale kde ho najit ti neporadim. Porad cestuje z jednoho dolu do druhyho. Nezbyva ti nez hledat.  //40
+Mam to uhli!  //41
+Tak to muzu konecne dononcit... Tady to je, dal sem to vsechno do tyhle bedny. Ale pozor je tezka...  //42
+*vzit bednu*  //43
+
+[dialog d_q021_Remeslnik button]
+on=1
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.qtag(q021,1,20)
+    src.giveitem(i_q021_recept)
+  endif
+on=2
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    if (src.rescount(i_q021_mast)>=1)
+      src.consume(i_q021_recept)
+      src.consume(i_q021_mast)
+      src.givegold(500) 
+      src.addexp(100)
+      src.qtag(q021,2,20)
+      f_quest_complete(20)  // splnenie questu "Remeslnik"
+    endif
+  endif
+//Carodejka q020
+on=3
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.giveitem(i_q020_krumpac)
+    src.qtag(q020,7,19)
+  endif
+on=4
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.consume(i_q020_krumpac)
+    src.consume(i_q020_ruda)
+    src.giveitem(i_q020_hmozdir)
+    src.qtag(q020,8,19)
+  endif
+//Transport q022
+on=5
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.qtag(q022,2,21)
+  endif
+on=6
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.qtag(q022,4,21)
+    src.consume(i_q022_ingoty)
+  endif
+on=7
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.qtag(q022,7,21)
+    src.consume(i_q022_ratiste)
+  endif
+on=8
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    src.qtag(q022,12,21)
+    src.consume(i_q022_uhli)
+    src.giveitem(i_q022_bedna)
+  endif
+
+//////////////////////////////////////////////////
+/////Dialog lecitel
+
+[speech spk_q021_lecitel]
+on=*zdravim*
+on=*hi*
+on=*dobry*
+on=*den*
+on=*ahoj*
+if (src.targ.distance > 3)
+  src.sysMessage("Na takovou vzdalenost s tebou bard jednat nebude")
+else
+  f_q021_Lecitel
+endif
+
+[function f_q021_Lecitel]
+f_q021_checkOldTags
+Dialog(d_q021_Lecitel)
+
+[dialog d_q021_Lecitel]
+5,5
+page 0
+resizepic(20,200,2620,640,350)
+gumppic(30,210,03182)
+gumppic(40,215,03061)
+
+text(220, 210, 52, 0)
+
+argo.button(160,330,0988,0988,0,2,0)  //  Kdo jsi?
+argo.text(210,332,1152,1)
+argo.button(325,330,0988,0988,0,3,0) // Obchodovat ?
+argo.text(370,332,1152,2)
+argo.button(490,330,0988,0988,0,4,0) // Prohlednout
+argo.text(540,332,1152,3)
+
+page 1
+argo.HTMLGUMP(170,230,440,100,4,0,36)
+argo.button(25,395,0fa5,0fa7,0,5,0)
+argo.text(60,395,152,7)
+
+page 2
+argo.HTMLGUMP(170,230,440,100,6,0,36)
+
+page 3
+argo.HTMLGUMP(170,230,440,100,8,0, 36)
+argo.button(25,395,0fa5,0fa7,1,0,1)
+argo.text(60,395,152,9)
+
+page 4
+argo.HTMLGUMP(170,230,440,100,5,0,36)
+
+page 5
+if (src.rescount(i_q021_bylinka)>=10)&& (src.rescount(i_q021_sadlo)>=1)
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,2)
+  argo.text(60,395,152,12)
+else
+  argo.HTMLGUMP(170,230,440,100,11,0,36)
+endif
+
+[dialog d_q021_Lecitel text]
+Lecitel Horad  //0
+Kdo jsi ?  //1
+Obchodovat ?  //2
+Prohlednout...  //3
+Copak te privadi? Jsi zraneny? Nebo potrebujes neco jineho  //4
+Vidis lecitele Horada  //5
+Jmenuji se Horad, snazim se pomahat lidem lecenim.  //6
+Potrebuji mast.  //7
+Prodavam ruzne veci, jen se podivej...  //8
+*podivat se*  //9
+Jiste. Mast ti umicham, chvilku pockej. <SMALL><EM>*micha mast*</EM></SMALL> Tady to je.  //10
+Je mi lito. Na umichani masti nemam dost surovin. Jestli mas recept prines mi vsechno co na nem je.  //11
+*vzit mast*  //12
+
+
+[dialog d_q021_Lecitel button]
+on=1
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    buy
+  endif
+on=2
+  if (src.targ.distance>5)
+    src.sysmessage("Na takovou vzdalenost to nepujde")
+  else
+    if (src.rescount(i_q021_bylinka)>=10)&& (src.rescount(i_q021_sadlo)>=1)
+      src.consume(10,i_q021_bylinka)
+      src.consume(i_q021_sadlo)
+      src.giveitem(i_q021_mast)
+    endif
+  endif
+
+
+//////////////////////////////////////////////////
+/////Dialog Roxana  -  gump v q021_carodejka
+[speech spk_q021_roxana]
+on = *koreni*
+if (src.targ.distance>3)
+  src.sysMessage("Na takovou vzdalenost s tebou carodejnice jednat nebude")
+else
+  f_q021_roxana_zaklad
+endif
+
+
+[eof]

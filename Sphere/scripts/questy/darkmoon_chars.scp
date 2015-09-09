@@ -1,0 +1,579 @@
+////////////////////////////////////////////
+////        Darkmoon         //////////////
+////////////////////////////////////////////
+
+[CHARDEF c_darkmoon]
+id=c_woman
+NAME=Darkmoon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_MAN
+can=mt_walk|mt_usehands|mt_run|mt_equip       // mt_equip - pokud chci oblect co sebere
+ 
+attack=120
+ARMOR=180
+moverate=3
+ 
+resources=9 i_ribs_raw, 38 i_reag_daemon_bone
+FOODTYPE=15 t_meat_raw
+BLOODCOLOR=020
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_explosiondispell
+TEVENTS=e_summoneater              //smaze summona, co zasahne
+TEVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+TEVENTS=e_npc_detect
+TEVENTS=e_illusionist              //vytvoøí svoje kopie
+TEVENTS=e_parakrik
+TEVENTS=e_autoreflect
+TEVENTS=e_managain
+TEVENTS=e_looter
+TEVENTS=e_darkmoon_boss
+
+CATEGORY=Dungy
+SUBSECTION=Darkmoon
+DESCRIPTION=Darkmoon
+
+ON=@Create
+COLOR=041B
+NPC=brain_monster
+FAME=4500
+KARMA=-3000
+
+str=5000
+dex={430 460}
+int=300
+
+maxhits={30000 32000}
+maxstam={376 450}
+maxmana=1200
+
+tag.experience=<eval {1550.0 2000.0}>
+
+tag.npc_bleed=300             //30%
+
+tag.npc_curse_chance=250       // 25% chance
+tag.npc_curse_delay=15,20      // delay between another possible strike
+tag.npc_curse_dmg=45,55        // dmg 
+
+tag(e_explosiondispell_chance,500) //50% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,15)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]> 
+
+//other resists
+tag(resist_poison,900)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,500)
+
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,300)       //sekery
+tag(resist_pierce,400)
+tag(resist_blunt,850)
+
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,600)
+tag(resist_cold,900)   
+
+//typ monstra
+tag(monstertype,humanoid,50)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+PARRYING={190.0 200.0}
+Resist=150.0
+TACTICS={100.0 120.0}
+WRESTLING={105.0 120.0}
+Fencing={105.0 110.0}
+SpiritSpeak=190.0
+peacemaking={190.0 200.0}
+provocation={190.0 200.0}
+MAGERY=450.0
+EI=130.0
+
+ITEMNEWBIE=i_spellbook
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_greater_heal 
+ 
+ITEMnewbie=i_monster_create
+ITEMnewbie=i_hat_cape_4
+COLOR=09CE
+ITEMNEWBIE=i_hair_long
+COLOR=09CE
+ITEMNEWBIE=i_doublet
+COLOR=098F
+ITEMNEWBIE=i_mithril_ringmail_sleeves
+COLOR=09CE
+NAME=Rukavy
+ITEMNEWBIE=i_chainmail_leggings
+COLOR=09CE
+ITEMNEWBIE=i_cape
+COLOR=098F
+ITEMNEWBIE=i_sandals
+COLOR=0736
+
+
+ON=@NPCRestock
+item=i_gold
+ITEM=random_reagent,{45 55}
+
+
+//////////////////////////////////////////
+//// DARK MOON new morf event ////////////
+//////////////////////////////////////////
+
+[events e_darkmoon_boss]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@aftergetswing
+if (tag(time) < <serv.time>)
+  if (chance(200,3))          //20% sance  
+    getMorfBody
+    setMorfBody
+    f_<tag(morfBody)>
+    tag(time,<serv.time> + 200)            //znova po 20 s
+  endif
+endif
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[function getMorfBody]
+dorand 6
+  tag(morfBody,c_darkmoon)
+  tag(morfBody,c_fireant_worker)      
+  tag(morfBody,c_fireant_warrior)      
+  tag(morfBody,c_beetle_giant)         
+  tag(morfBody,c_bug_giant)           
+  tag(morfBody,c_fireant_queen)                        
+enddo
+
+if (tag(actMorf) == tag(morfBody))
+  getMorfBody
+else
+  tag(actMorf,<tag(morfBody)>)
+endif
+
+[function setMorfBody]
+body = tag(morfBody)
+
+///////////////////////////////////////////////////////
+//////////////////FORMA WORKER/////////////////////////
+///////////////////////////////////////////////////////
+
+[function f_c_fireant_worker]
+NAME=Darkmoon
+COLOR=098F
+
+maxhits={30000 32000}
+maxstam={376 450}
+maxmana=0
+
+EVENTS=e_monster
+EVENTS=e_character
+EVENTS=e_npc_bleed
+EVENTS=e_summoneater              //smaze summona, co zasahne
+EVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+EVENTS=e_npc_detect
+EVENTS=e_npc_leaper
+EVENTS=e_illusionist              //vytvoøí svoje kopie
+EVENTS=e_parakrik
+EVENTS=e_npc_summoning
+EVENTS=e_npc_multishot
+EVENTS=e_npc_roundattack_pullall     // mel by pritahnout a pak prastit
+EVENTS=e_darkmoon_boss
+
+tag.experience=<eval {1550.0 2000.0}>
+
+tag.npc_bleed=300             //30%
+
+tag.npc_port_timer=15
+tag(npc_port_distance,6)
+
+//tag.npc_curse_chance=250       // 25% chance
+//tag.npc_curse_delay=15,20      // delay between another possible strike
+//tag.npc_curse_dmg=45,55        // dmg 
+
+tag(npc_summoning_chance,50)                       //5%
+tag(npc_summoning_time,60)                         //nezakouzli znovu 60 sek
+tag(npc_summoning_count,3)                         //pocet
+tag(npc_summoning_char[0],c_bug_shadow)
+tag(npc_summoning_char[1],c_bug_shadow)
+tag(npc_summoning_char[2],c_bug_warrior)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]> 
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,700)
+
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,500)       //sekery
+tag(resist_pierce,200)
+tag(resist_blunt,600)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,500)
+tag(resist_cold,200)   
+
+//typ monstra
+tag(monstertype,animal,60)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+MAGERY=0.0
+EI=0.0
+
+///////////////////////////////////////////////////////
+//////////////////FORMA Warrior////////////////////////
+///////////////////////////////////////////////////////
+
+[function f_c_fireant_warrior]
+NAME=Darkmoon
+COLOR=09CE
+
+maxhits={30000 32000}
+maxstam={376 450}
+maxmana=0
+
+EVENTS=e_monster
+EVENTS=e_character
+EVENTS=e_npc_bleed
+EVENTS=e_summoneater              //smaze summona, co zasahne
+EVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+EVENTS=e_npc_detect
+EVENTS=e_npc_leaper
+EVENTS=e_illusionist              //vytvoøí svoje kopie
+EVENTS=e_parakrik
+EVENTS=e_npc_critic
+EVENTS=e_npc_summoning
+EVENTS=e_npc_multishot
+EVENTS=e_npc_roundattack_pullall     // mel by pritahnout a pak prastit
+EVENTS=e_darkmoon_boss
+
+tag.experience=<eval {1550.0 2000.0}>
+
+tag.npc_bleed=500             //50%
+
+tag.npc_curse_chance=250       // 25% chance
+tag.npc_curse_delay=15,20      // delay between another possible strike
+tag.npc_curse_dmg=45,55        // dmg 
+
+tag.npc_critic_chance=250         //25% chance
+tag.npc_critic_dmg=20,25          //dmg in between
+
+tag.npc_port_timer=15
+tag(npc_port_distance,6)
+
+tag(npc_summoning_chance,50)                       //5%
+tag(npc_summoning_time,60)                         //nezakouzli znovu 60 sek
+tag(npc_summoning_count,3)                         //pocet
+tag(npc_summoning_char[0],c_bug_warrior)
+tag(npc_summoning_char[1],c_bug_elite)
+tag(npc_summoning_char[2],c_bug_warrior)
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+//weap resists
+tag(resist_sharp,300)
+tag(resist_slash,500)       //sekery
+tag(resist_pierce,800)
+tag(resist_blunt,550)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,500)
+tag(resist_cold,200)   
+
+//typ monstra
+tag(monstertype,animal,30)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+MAGERY=0.0
+EI=0.0
+
+///////////////////////////////////////////////////////
+//////////////////FORMA Beetle Giant////////////////////
+///////////////////////////////////////////////////////
+[function f_c_beetle_giant]
+NAME=Darkmoon
+COLOR=00450
+
+maxhits={30000 32000}
+maxstam={376 450}
+maxmana=0
+
+EVENTS=e_monster           
+EVENTS=e_character
+EVENTS=e_npc_bleed
+EVENTS=e_summoneater              //smaze summona, co zasahne
+EVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+EVENTS=e_illusionist
+EVENTS=e_managain               
+EVENTS=e_parakrik
+EVENTS=e_npc_summoning
+EVENTS=e_npc_roundattack_pullall     // mel by pritahnout a pak prastit
+EVENTS=e_darkmoon_boss
+
+tag.npc_bleed=600             //60%
+
+tag.npc_curse_chance=350       // 35% chance
+tag.npc_curse_delay=15,20      // delay between another possible strike
+tag.npc_curse_dmg=45,55        // dmg 
+
+tag(npc_summoning_chance,50)                       //5%
+tag(npc_summoning_time,60)                         //nezakouzli znovu 60 sek
+tag(npc_summoning_count,4)                         //pocet
+tag(npc_summoning_char[0],c_bug_matka)
+tag(npc_summoning_char[1],c_bug_shadow)
+tag(npc_summoning_char[2],c_bug_warrior)
+tag(npc_summoning_char[3],c_bug_warrior)
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,500)
+
+//weap resists
+tag(resist_sharp,700)
+tag(resist_slash,700)       //sekery
+tag(resist_pierce,400)
+tag(resist_blunt,250)
+
+//magic resists
+tag(resist_fire,600)
+tag(resist_elect,200)
+tag(resist_cold,500)   
+
+//typ monstra
+tag(monstertype,animal,60)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+MAGERY=0.0
+EI=0.0
+
+///////////////////////////////////////////////////////
+//////////////////FORMA Bug Giant//////////////////////
+///////////////////////////////////////////////////////
+
+[function f_c_bug_giant]
+NAME=Darkmoon
+COLOR=09CE
+
+maxhits={30000 32000}
+maxstam={376 450}
+maxmana=0
+
+EVENTS=e_monster
+EVENTS=e_character
+EVENTS=e_npc_bleed
+EVENTS=e_summoneater              //smaze summona, co zasahne
+EVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+EVENTS=e_npc_detect
+EVENTS=e_illusionist              //vytvoøí svoje kopie
+EVENTS=e_npc_summoning
+EVENTS=e_npc_multishot
+EVENTS=e_npc_critic
+EVENTS=e_npc_roundattack_pullall     // mel by pritahnout a pak prastit
+EVENTS=e_darkmoon_boss
+
+tag.npc_bleed=500             //50%
+
+tag.npc_curse_chance=250       // 25% chance
+tag.npc_curse_delay=15,20      // delay between another possible strike
+tag.npc_curse_dmg=45,55        // dmg 
+
+tag.npc_critic_chance=350         //35% chance
+tag.npc_critic_dmg=10,15          //dmg in between
+
+tag(npc_summoning_chance,50)                       //5%
+tag(npc_summoning_time,60)                         //nezakouzli znovu 60 sek
+tag(npc_summoning_count,4)                         //pocet
+tag(npc_summoning_char[0],c_bug_shadow)
+tag(npc_summoning_char[1],c_bug_elite)
+tag(npc_summoning_char[2],c_bug_warrior)
+tag(npc_summoning_char[3],c_bug_matka)
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,600)
+
+//weap resists
+tag(resist_sharp,800)
+tag(resist_slash,700)       //sekery
+tag(resist_pierce,400)
+tag(resist_blunt,250)
+
+//magic resists
+tag(resist_fire,300)
+tag(resist_elect,500)
+tag(resist_cold,900)   
+
+//typ monstra
+tag(monstertype,animal,30)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+MAGERY=0.0
+EI=0.0
+
+
+///////////////////////////////////////////////////////
+//////////////////FORMA Queen//////////////////////////
+///////////////////////////////////////////////////////
+
+[function f_c_fireant_queen]
+NAME=Darkmoon
+COLOR=098F
+
+maxhits={30000 32000}
+maxstam={376 450}
+maxmana=1200
+
+EVENTS=e_monster
+EVENTS=e_character
+EVENTS=e_summoneater              //smaze summona, co zasahne
+EVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+EVENTS=e_npc_detect
+EVENTS=e_illusionist              //vytvoøí svoje kopie
+EVENTS=e_parakrik
+EVENTS=e_autoreflect
+EVENTS=e_managain
+EVENTS=e_npc_summoning
+EVENTS=e_npc_multishot
+EVENTS=e_darkmoon_boss
+
+tag.npc_curse_chance=250       // 25% chance
+tag.npc_curse_delay=15,20      // delay between another possible strike
+tag.npc_curse_dmg=45,55        // dmg 
+
+tag(npc_summoning_chance,50)                       //5%
+tag(npc_summoning_time,60)                         //nezakouzli znovu 60 sek
+tag(npc_summoning_count,4)                         //pocet
+tag(npc_summoning_char[0],c_bug_matka)
+tag(npc_summoning_char[1],c_bug_matka)
+tag(npc_summoning_char[2],c_bug_mage)
+tag(npc_summoning_char[3],c_bug_mage)
+
+//other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,500)       //sekery
+tag(resist_pierce,250)
+tag(resist_blunt,550)
+
+//magic resists
+tag(resist_fire,900)
+tag(resist_elect,500)
+tag(resist_cold,200)   
+
+//typ monstra
+tag(monstertype,animal,50)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+ITEMNEWBIE=i_spellbook
+addspell=s_fireball
+addspell=s_lightning
+addspell=s_greater_heal 
+
+MAGERY=450.0
+EI=130.0
+
+
+///////////////////////////////////////////////////////
+//////////////////FORMA Darkmoon///////////////////////
+///////////////////////////////////////////////////////
+
+[function f_c_darkmoon]
+NAME=Darkmoon
+COLOR=041B
+
+maxhits={30000 32000}
+maxstam={376 450}
+maxmana=1200
+
+EVENTS=e_monster
+EVENTS=e_character
+EVENTS=e_explosiondispell
+EVENTS=e_summoneater              //smaze summona, co zasahne
+EVENTS=e_npc_curse                //vsechny viditelne zrani o dmg
+EVENTS=e_npc_detect
+EVENTS=e_illusionist              //vytvoøí svoje kopie
+EVENTS=e_parakrik
+EVENTS=e_autoreflect
+EVENTS=e_managain
+EVENTS=e_looter
+EVENTS=e_darkmoon_boss
+
+tag.npc_curse_chance=250       // 25% chance
+tag.npc_curse_delay=15,20      // delay between another possible strike
+tag.npc_curse_dmg=45,55        // dmg 
+
+tag(e_explosiondispell_chance,500) //50% chance
+tag(e_explosiondispell_range,6)
+tag(e_explosiondispell_time,15)
+
+//mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[7]> 
+
+//other resists
+tag(resist_poison,900)
+tag(resist_para,1000)
+tag(resist_summon,1000)
+tag(resist_bleed,500)
+
+//weap resists
+tag(resist_sharp,500)
+tag(resist_slash,300)       //sekery
+tag(resist_pierce,400)
+tag(resist_blunt,850)
+
+//magic resists
+tag(resist_fire,200)
+tag(resist_elect,600)
+tag(resist_cold,900)   
+
+//typ monstra
+tag(monstertype,humanoid,50)
+//weap flags
+tag.weapflag=dam_slashing|dam_physical|dam_fire
+
+MAGERY=450.0
+EI=130.0

@@ -1,0 +1,151 @@
+[function accIP]
+ src.dialog(d_accounts,1,list_ip,<args>)
+
+
+[function accounts]
+IF (argvcount)
+ src.dialog d_accounts,<argv(0)>
+else
+ src.dialog d_accounts,1
+endif
+
+[dialog d_accounts]
+argo.tag(sirka,<d_def_accounts_sirka>)
+argo.tag(vyska,<d_def_accounts_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,50,29,150,29,150,40,29,120,29)
+
+argo.dialog_zpruhledni
+
+texta(<argo.dialog_textpos(0,0)>,2301,Seznam accountu - barvy plevelu:)
+texta(lastxpos+250		,lastypos,color_plevel[0],<name_PLevel[0]>)
+texta(lastxpos+250+(1*60)	,lastypos,color_plevel[1],<name_PLevel[1]>)
+texta(lastxpos+250+(2*60)	,lastypos,color_plevel[2],<name_PLevel[2]>)
+texta(lastxpos+250+(3*60)	,lastypos,color_plevel[3],<name_PLevel[3]>)
+texta(lastxpos+250+(4*60)	,lastypos,color_plevel[4],<name_PLevel[4]>)
+texta(lastxpos+250+(5*60)	,lastypos,color_plevel[5],<name_PLevel[5]>)
+texta(lastxpos+250+(6*60)	,lastypos,color_plevel[6],<name_PLevel[6]>)
+texta(lastxpos+250+(7*60)	,lastypos,color_plevel[7],<name_PLevel[7]>)
+texta(<argo.dialog_textpos(1,0,1)>,2301,Enum)
+texta(<argo.dialog_textpos(1,2)>,2301,Jmeno acc)
+texta(<argo.dialog_textpos(1,4)>,2301,Posledni postava)
+texta(<argo.dialog_textpos(1,5)>,2301,chars)
+texta(<argo.dialog_textpos(1,7)>,2301,firstIP)
+texta(<argo.dialog_textpos(1,9)>,2301,lastIP)
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,3)//cancel
+
+argo.tag(firsti,<eval argv(0)>)
+if (argo.tag(firsti)<1)
+ argo.tag(firsti,1)
+endif
+
+argo.tag(sort,"<argv(1)>,<argv(2)>")
+
+arg(imax,<argo.tag(firsti)>+<argo.tag(radku)>-1)
+if (imax>serv.stataccounts)
+ arg(imax,<serv.stataccounts>)
+endif
+
+arg(accind,1)
+if (argv(1)==list_ip)//vybrat jen s ip
+ if (<argv(2)>)
+  src.smsg sort ip <argv(2)>
+  arg(index,1)
+  while (index<=imax)&&(accountmgr.findenum(accind))
+   if (<accountmgr.findenum(accind).lastip>==<argv(2)>)||(<accountmgr.findenum(accind).firstip>==<argv(2)>)
+    argo.tag(accindex[index],<accind>)
+    arg(index,#+1)
+   endif
+   arg(accind,#+1)
+  endwhile
+  //arg(index,<accind>)
+  arg(imax,<index>-1)
+ endif 
+else
+ arg(index,<argo.tag(firsti)>)
+ while (index<=imax)
+  argo.tag(accindex[index],<index>)
+  arg(index,#+1)
+ endwhile
+endif
+
+if (argo.tag(firsti)>1)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+if (index<serv.stataccounts)&&(accind<serv.stataccounts)//(<argo.tag(firsti)>+<argo.tag(radku)>)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,1,0,2) // next
+endif
+
+arg(ypos,<argo.tag(obj_y[2])>)
+arg(index,<argo.tag(firsti)>)
+while (index<=imax)
+ arg(accountref,<accountmgr.findenum(<argo.tag(accindex[index])>)>)
+ if (finduid(arg(accountref).lastcharuid))
+   arg(charuid,<arg(accountref).lastcharuid>)
+   argo.button(<argo.tag(sloupec_x[3])>,ypos,4005,4007,1,0,(4*index)+11)
+   argo.texta(<argo.tag(sloupec_x[4])>+<d_def_odsazeni>,<ypos>,<arg(charuid).getNameHue>,<arg(charuid).name>)
+ endif
+ arg(acccolor,<color_plevel[arg(accountref).plevel]>)
+ argo.texta(<argo.tag(sloupec_x[0])>+<d_def_odsazeni>,<ypos>,acccolor,<argo.tag(accindex[index])>)
+ argo.texta(<argo.tag(sloupec_x[2])>+<d_def_odsazeni>,<ypos>,acccolor,<arg(accountref).name>)
+ argo.texta(<argo.tag(sloupec_x[5])>+<d_def_odsazeni>,<ypos>,acccolor,<arg(accountref).chars>)
+ argo.texta(<argo.tag(sloupec_x[7])>+<d_def_odsazeni>,<ypos>,acccolor,<arg(accountref).firstip>) 
+ argo.texta(<argo.tag(sloupec_x[9])>+<d_def_odsazeni>,<ypos>,acccolor,<arg(accountref).lastip>) 
+
+ argo.button(<argo.tag(sloupec_x[1])>,ypos,4005,4007,1,0,(4*index)+10)
+ argo.button(<argo.tag(sloupec_x[6])>,ypos,4005,4007,1,0,(4*index)+12)
+ argo.button(<argo.tag(sloupec_x[8])>,ypos,4005,4007,1,0,(4*index)+13)
+
+ arg(ypos,#+<d_def_radek_vyska>)
+ arg(index,#+1)
+endwhile
+
+[dialog d_accounts button]
+on=0
+
+on=1
+src.dialog d_accounts,<eval <argo.tag(firsti)>-<argo.tag(radku)>>,<argo.tag(sort)>
+
+on=2
+src.dialog d_accounts,<eval <argo.tag(firsti)>+<argo.tag(radku)>>,<argo.tag(sort)>
+
+on=3
+return
+
+ON=@AnyButton 
+arg(radek,<eval (argn-10)/4>)
+arg(accname,<accountmgr.findenum(argo.tag(accindex[radek])).name>)
+
+doswitch <eval argn-(10+(<radek>*4))>
+ accountinfo(<accname>)
+ accountmgr.findname(<accname>).lastcharuid.tweak
+ dialog(d_accounts,1,list_ip,<accountmgr.findname(<accname>).firstip>)
+ dialog(d_accounts,1,list_ip,<accountmgr.findname(<accname>).lastip>)
+enddo
+
+[typedef list_ip]
+
+[defnames colors]
+color_plevel[0]	1
+color_plevel[1]	2301
+color_plevel[2]	063
+color_plevel[3]	01be
+color_plevel[4] 01d1
+color_plevel[5]	033
+color_plevel[6]	02e
+color_plevel[7] 026
+
+name_PLevel[0]	Guest
+name_PLevel[1]	Player
+name_PLevel[2]	Counsel
+name_PLevel[3]	Seer
+name_PLevel[4]	GM
+name_PLevel[5]	Dev
+name_PLevel[6]	Admin
+name_PLevel[7]	Owner
+
+[eof]

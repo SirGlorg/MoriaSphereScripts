@@ -1,0 +1,143 @@
+//-------------Yavanna`s utility----------
+
+///////////////////////////////////////////
+////////       G M   M E N U       ////////
+///////////////////////////////////////////
+
+[function gMenu]
+src.dialog(d_GM_Menu,Base,0)
+
+[defnames def_GM_Menu_types]
+def_GM_Menu_subdialog   1
+def_GM_Menu_function    2
+def_GM_Menu_item        3
+def_GM_Menu_typedef     4
+def_GM_Menu_event       5
+def_GM_Menu_npc         6
+
+[dialog d_GM_Menu] // argv(0): section name // argv(1): page number // argv(2)-argv(<argvcount>-1): previous dialogs
+argo.SetLocation=50,50
+arg(textcolor,52)
+arg(maxRows,9)
+arg(infoTextLength,400)
+argo.tag(sectionName,<argv(0)>)
+argo.tag(pageNumber,<argv(1)>)
+
+arg(totalMenuRows,<eval <def_GM_Menu_<argv(0)>_totalAmount>>) // the total number of rows in category
+arg(firstRow,<eval <argv(1)>*<arg(maxRows)>>) // the ID of first row item
+arg(rowsCount,<arg(totalMenuRows)>-<arg(firstRow)>) // the number of remaining rows
+if (<arg(rowsCount)> > <arg(maxRows)>)
+  arg(rowsCount,<arg(maxRows)>)
+endif
+
+argo.tag(sirka,<eval (d_def_baseMenu_sirka+(2*d_def_skvira)+<arg(infoTextLength)>+(2*d_def_button_sirka))>)
+argo.tag(vyska,<eval <d_def_baseMenu_vyska>+(<d_def_radek_vyska>*<arg(rowsCount)>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<eval arg(rowsCount)>,<d_def_button_sirka>,<arg(infoTextLength)>,<d_def_button_sirka>)
+argo.dialog_zpruhledni
+
+if (strlen(<argv(2)>))
+  argo.tag(previousDialogs,<return_fromNth(3,<args>)>)
+  argo.button(<argo.dialog_buttonpos(0,0,1)>,d_def_button_checkl1,d_def_button_checkl2,1,0,0) // previous dialog
+endif
+
+argo.dialog_textpos(0,0)
+argo.texta(<lastxpos>+<d_def_button_sirka>,<lastypos>,42,<def_GM_Menu_<argv(0)>_sectionName>)
+argo.button(<argo.dialog_but_ru>,d_def_button_cancel1,d_def_button_cancel2,1,0,1) //exit
+argo.button(<lastxbuttpos>-35,<lastybuttpos>,d_def_button_dialog1,d_def_button_dialog2,1,0,2) //help
+
+
+argo.dialog_textpos(1,1)
+argo.dialog_buttonpos(1,0,1) // 3. argument ~ no button indention
+arg(lastxbuttposL,<lastxbuttpos>)
+argo.dialog_buttonpos(1,2,1) // 3. argument ~ no button indention
+arg(lastxbuttposR,<lastxbuttpos>)
+arg(rowItemID,<eval arg(firstRow)>) // determines the value of row item ID
+arg(rowCounter,0) // row counter
+arg(rowsCount,#+<arg(rowItemID)>)
+while (<arg(rowItemID)> < <eval arg(rowsCount)>)
+  argo.texta(lastxpos,lastypos+<arg(rowCounter)>*d_def_radek_vyska,<d_def_writecolor>,<def_GM_Menu_<argv(0)>_name[<eval arg(rowItemID)>]>) // row name
+  argo.button(lastxbuttposL,lastybuttpos+(<arg(rowCounter)>*d_def_radek_vyska),d_def_button_select1,d_def_button_select2,1,0,100+<eval arg(rowItemID)>) // execute this row
+  if (strlen("<safe def_GM_Menu_<argv(0)>_help[<eval arg(rowItemID)>]>"))
+    argo.button(lastxbuttposR,lastybuttpos+(<arg(rowCounter)>*d_def_radek_vyska),d_def_button_dialog1,d_def_button_dialog2,1,0,1000+<eval arg(rowItemID)>) // help
+  endif
+  arg(rowItemID,#+1)
+  arg(rowCounter,#+1)
+endwhile
+
+
+if (<argv(1)> != 0) // this is not the first page
+  argo.button(<argo.dialog_but_ld>,d_def_button_checkl1,d_def_button_checkl2,1,0,3) // previous page
+endif
+if (<arg(rowItemID)> < <arg(totalMenuRows)>) // there are some rows left to show-> this is not the last page
+  argo.button(<argo.dialog_but_rd>,d_def_button_checkr1,d_def_button_checkr2,1,0,4) // next page
+endif
+
+[dialog d_GM_Menu button]
+on=0 // exit or previous dialog
+f_GM_Menu_goBack(<argo>)
+return 1
+
+on=1 // exit
+return 1
+
+on=2 // help
+f_GM_Menu_openSameDialog(<argo>)
+dialog(d_GM_Menu_help)
+
+on=3 // previous page
+f_GM_Menu_openSameDialog(<argo>,-1)
+  
+on=4 // next page
+f_GM_Menu_openSameDialog(<argo>,1)
+
+on=@AnyButton
+if (<argn> >= 1000) // help button
+  f_GM_Menu_openSameDialog(<argo>)
+  dialog(<def_GM_Menu_<argo.tag(sectionName)>_help[<eval <argn>-1000>]>)
+elseif (<argn> >= 100)
+  arg(buttonType,<def_GM_Menu_<argo.tag(sectionName)>_type[<eval <argn>-100>]>)
+  arg(buttonObject,<def_GM_Menu_<argo.tag(sectionName)>_object[<eval <argn>-100>]>)
+  if (<arg(buttonType)> == <def_GM_Menu_subdialog>) // opening subdialog
+    if (strlen(<argo.tag(previousDialogs)>))
+      dialog(d_GM_Menu,<arg(buttonObject)>,0,<argo.tag(sectionName)>,<argo.tag(previousDialogs)>) // add next dialogs
+    else
+      dialog(d_GM_Menu,<arg(buttonObject)>,0,<argo.tag(sectionName)>) // add next dialog
+    endif
+  else
+    f_GM_Menu_openSameDialog(<argo>)
+    if (<arg(buttonType)> == <def_GM_Menu_function>)
+      src.<arg(buttonObject)>
+    elseif (<arg(buttonType)> == <def_GM_Menu_item>)
+      src.static(<arg(buttonObject)>)
+    elseif (<arg(buttonType)> == <def_GM_Menu_typedef>)
+      src.x("type=<arg(buttonObject)>")
+    elseif (<arg(buttonType)> == <def_GM_Menu_event>)
+      src.x("events=+<arg(buttonObject)>")
+    elseif (<arg(buttonType)> == <def_GM_Menu_npc>)
+      src.newnpc(<arg(buttonObject)>)
+    endif
+  endif
+endif
+
+[dialog d_GM_Menu_help]
+argo.setText(1," GM Menu slouzi jako rozcestnik k prehlednemu dohledani pomocnych GM funkci.<br><br> Levy sloupec tlacitek vyvola pozadovanou akci na danem radku. Nasleduje popis sekce nebo funkce v druhem sloupci a posledni sloupec je vyhrazen tlacitku s napovedou k dane polozce, je-li k dispozici.")
+argo.f_dialog_HelpCreator("HELP - GM Menu")
+
+
+[function f_GM_Menu_openSameDialog] //argv(0) - argo; argv(1) - page number increaser/decreaser (the number is added to the current page number)
+if (strlen(<argv(0).tag(previousDialogs)>))
+  dialog(d_GM_Menu,<argv(0).tag(sectionName)>,<eval (argv(0).tag(pageNumber)+<eval argv(1)>)>,<argv(0).tag(previousDialogs)>)
+else
+  dialog(d_GM_Menu,<argv(0).tag(sectionName)>,<eval (argv(0).tag(pageNumber)+<eval argv(1)>)>)
+endif
+
+[function f_GM_Menu_goBack]
+if (strlen(<argv(0).tag(previousDialogs)>))
+  dialog(d_GM_Menu,<return_nth(1,<argv(0).tag(previousDialogs)>)>,0,<return_fromNth(2,<argv(0).tag(previousDialogs)>)>)
+endif
+
+
+[EOF]

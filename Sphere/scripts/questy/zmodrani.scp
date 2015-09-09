@@ -1,0 +1,294 @@
+[itemdef i_level_gate]
+Name=Brana pro upravu levelu
+ID=i_fx_sparkle 
+TYPE=T_SCRIPT
+
+DESCRIPTION=prechodova brana
+CATEGORY=questy
+SUBSECTION=prechod
+
+on=@create
+src.sysMessage(Dej si .x info a v promenne more1l nastav kolik levelu to srazi -kladne cislo)
+src.sysMessage(Default - 10 levelu dolu)
+src.redmessage(Branu odstranuj prikazem .x odstranit_gatu)
+src.newitemsafe(i_tvurce_vortexu)
+lastnew.tag(tagate,<uid>)
+lastnew.equip
+more=10 //kolik levlu
+morep=(1001,1001) //kam hazi
+more2=10 //cas do portu
+
+on=@step
+if (src.isgm) || (<src.tag(pred_chvili_prosel)>)
+  return 0
+endif
+if (src.ismagic) 
+  src.redMessage("Je treba si sundat vsechny magicke predmety nez projdes branou!")
+  return 1
+endif
+if (src.isplayer)
+  if (<src.tag(realm)> < 0) //zaporna cisla maji vyvrhelove, vyvrhel nesmi prechazet ! Zakazujeme to, proste konecna - nejtezsi RP trest. (tag presel nehraje roli)
+    src.redMessage("Tve prohresky se staly prilis velkou hrozbou pro vsechny v tvem okoli.")
+    src.redMessage("Dalsi sanci nedostanes!")
+    src.wait_then_port(<more2>,<morex>,<morey>,<morez>,<morem>)
+    src.level_gate_efekt
+    //odstranit_gatu	// nejakej pozustatek po generovani vortexu nebo co ? snad to uz neni potreba ...
+    return 1
+  endif
+  if !(<src.tag(presel)>) //pokud dotycnej jeste neprechazel, tag(presel) je 0 a tudiz ho nechame prejit
+    src.srazitlevely(<more>)
+    if (<src.tag(realm)> == 2) //je to mordoran
+      src.tag(realm,1)
+      src.kills=0
+      src.karma=0
+      src.home=<home_Gondoran>
+      src.redmessage("Citis se byt <src.sex(ocisten,ocistena)> od svych byvalych hrichu. Gondor te nyni prijme.")
+    elseif (<src.tag(realm)>==1) //je to gondoran
+      src.tag(realm,2)
+      src.kills=30000
+      src.karma=-3000
+      src.home=<home_Mordoran>
+      src.redmessage("Zlo tebou prostupuje, strez se hnevu Gondorskych - nyni patris Temnemu Panu!")
+    endif
+    sound=snd_spell_polymorph
+    src.newitemsafe(i_prave_prosel_levelgatou)
+    lastnew.equip
+    src.wait_then_port(<more2>,<morex>,<morey>,<morez>,<morem>)
+    src.level_gate_efekt
+    src.tag(presel,1) //uz nebude moct prejit znova
+    src.qtag(q041_paserak,10,51)
+    //odstranit_gatu //neni treba
+    return 1
+  else //dotycnej uz presel
+    src.sysMessage("Kdo jednou svuj realm zradi, zpet se jiz nevrat.")
+    src.go(<morex>,<morey>,<morez>,<morem>)
+    return 0
+  endif
+endif
+
+[function vytvor_vortexe] //args - pozice kam
+src.newitemsafe(i_fx_vortex_full)
+//src.sysMessage(vortex <var(kolik_vortexu)> <lastnew> vytvoren)
+//src.sysMessage(<argv(0)>, <argv(1)> argumenty)
+finduid(<tag(tagate)>).tag(vortex<var(kolik_vortexu)>,<lastnew>) //ulozit vortexe pro pozdejsi smazani
+lastnew.p=<argv(0)> <argv(1)> //pozice vortexu
+//src.sysMessage(<lastnew.p_x> <lastnew.p_y> pozice)
+lastnew.update
+var(kolik_vortexu,#-1)
+
+[function odstranit_gatu]
+var(kolik_vortexu,4)
+while(<var(kolik_vortexu)>)
+  odstran_vortexe(<tag(vortex<var(kolik_vortexu)>)>)
+endwhile
+var(kolik_vortexu,"") //odstranit promennou  
+remove
+
+[function odstran_vortexe] //arg - id vortexe
+finduid(<args>).remove //odstranit vortexe
+tag.remove(<args>) //odstranit tag
+var(kolik_vortexu,#-1)
+
+[itemdef i_tvurce_vortexu]
+Name=Tvori vortexy okolo levelgate
+id=i_memory
+TYPE=T_eq_SCRIPT 
+
+on=@create
+attr=attr_decay
+timer=0
+
+on=@timer
+//src.sysMessage(pozice brany <tag(tagate)> je <finduid(<tag(tagate)>).p_x>,<finduid(<tag(tagate)>).p_y>)
+var(kolik_vortexu,4)
+vytvor_vortexe(<eval <finduid(<tag(tagate)>).p_x>+1> <eval <finduid(<tag(tagate)>).p_y>+1>)
+vytvor_vortexe(<eval <finduid(<tag(tagate)>).p_x>-1> <eval <finduid(<tag(tagate)>).p_y>+1>)
+vytvor_vortexe(<eval <finduid(<tag(tagate)>).p_x>+1> <eval <finduid(<tag(tagate)>).p_y>-1>)
+vytvor_vortexe(<eval <finduid(<tag(tagate)>).p_x>-1> <eval <finduid(<tag(tagate)>).p_y>-1>)
+
+[itemdef i_prave_prosel_levelgatou]
+Name=Na chvilku ingoruje stani na level gate
+id=i_memory
+type=t_eq_script
+
+on=@create
+attr=attr_decay
+timer=60 //nebo kolik dotycnej chce
+
+on=@equip
+cont.tag(pred_chvili_prosel,1)
+
+on=@timer
+cont.tag.remove(pred_chvili_prosel)
+remove
+
+[function level_gate_efekt] //Timova stara efektni funkce z jeho skriptu, lehce predelana 
+src.vytvor_efekt_pro_inferno(n,n,n)
+src.vytvor_efekt_pro_inferno(s,s,s)
+src.vytvor_efekt_pro_inferno(w,w,w)
+src.vytvor_efekt_pro_inferno(e,e,e)
+src.vytvor_efekt_pro_inferno(nw,nw,nw)
+src.vytvor_efekt_pro_inferno(sw,sw,sw)
+src.vytvor_efekt_pro_inferno(ne,ne,ne)
+src.vytvor_efekt_pro_inferno(se,se,se)
+src.vytvor_efekt_pro_inferno(n,n,0)
+src.vytvor_efekt_pro_inferno(s,s,0)
+src.vytvor_efekt_pro_inferno(w,w,0)
+src.vytvor_efekt_pro_inferno(e,e,0)
+src.vytvor_efekt_pro_inferno(nw,nw,0)
+src.vytvor_efekt_pro_inferno(sw,sw,0)
+src.vytvor_efekt_pro_inferno(ne,ne,0)
+src.vytvor_efekt_pro_inferno(se,se,0)
+src.vytvor_efekt_pro_inferno(n,0,0)
+src.vytvor_efekt_pro_inferno(s,0,0)
+src.vytvor_efekt_pro_inferno(w,0,0)
+src.vytvor_efekt_pro_inferno(e,0,0)
+src.vytvor_efekt_pro_inferno(nw,0,0)
+src.vytvor_efekt_pro_inferno(sw,0,0)
+src.vytvor_efekt_pro_inferno(ne,0,0)
+src.vytvor_efekt_pro_inferno(se,0,0)
+
+[function vytvor_efekt_pro_inferno] //args - kam to ten ohen hodi (4)
+src.newitem(i_fire_column) 
+lastnew.attr=attr_static|attr_decay 
+lastnew.timer=10
+lastnew.p=<src.p> 
+lastnew.move(<argv(0)>) 
+lastnew.move(<argv(1)>) 
+lastnew.move(<argv(2)>) 
+
+[SPEECH spk_prechod]
+        
+
+ON=*Dobry*
+ON=*den*
+ON=*zdravim* 
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+
+if src.tag(zabilmnicha)
+  Say("Jak se opovazujes vstoupit na svate misto s krvi na rukou !")
+endif
+
+if !(src.tag(zabilmnicha))
+  Say("Tve hledani je u konce. Zde je klic k tvemu vykoupeni.")
+endif
+
+ON=*klic*
+ON=*vykoupeni*
+
+if (<src.tag(zabilmnicha)>)
+  Say("Nikdy ti klic do svatyne nevydam ! Odejdi z techto mist a hledej vykoupeni.")
+endif
+
+if !(<src.tag(zabilmnicha)>)
+  Say Zde je klic ke svatyni. 
+  if (<serv.time> > <tag.time>)
+    newitem=i_klic_prechod
+    act.bounce
+    tag.time=<serv.time>+5*60*60
+  endif
+endif
+
+
+[ITEMDEF i_door_predchod]
+ID=i_gate_iron
+
+DESCRIPTION=brana zamcena na klic
+CATEGORY=questy
+SUBSECTION=prechod
+
+
+ON=@Create
+TYPE=t_normal
+
+
+ON=@userClick
+if (<src.resTest 1 i_klic_prechod>)
+  src.consume=i_klic_prechod
+  type=t_door
+  src.sysMessage("<src.sex(Odemkl,Odemkla)> jsi branu.")
+else
+  src.sysMessage("Je zamceno.")
+endif
+
+[itemdef i_port_prechod]
+ID=i_moongate_blue
+TYPE=t_normal
+
+CATEGORY=questy
+SUBSECTION=prechod
+DESCRIPTION=port do questu
+
+
+
+ON=@STEP
+if (<serv.time> > <tag.time>)
+  tag.time=<serv.time>+12*60*60
+  src.go(<MOREP>)
+  finduid(tag(brana)).type=t_door_locked
+else
+  src.sysMessage("Citis podivne chveni ... magie ?")
+endif
+
+[itemdef i_port_prechod_2]
+ID=i_moongate_blue
+TYPE=t_normal
+
+CATEGORY=questy
+SUBSECTION=prechod
+DESCRIPTION=port do svatyne
+
+
+
+
+ON=@STEP
+if ((src.tag(level)<15)||(<src.tag(presel)>))
+	src.sysMessage("Svatyne te neprijala.")
+//	src.tag.remove(zabilmnicha)
+	src.go 1142,3897
+	return 1
+endif
+
+if (<src.qtag(q041_paserak)> == 9)
+	src.go <MOREP>
+	return 1
+else
+	src.sysMessage Svatyne te neprijala.
+	src.go 1142,3897
+	return 1
+endif
+//if (src.tag(zabilmnicha))
+//  if (src.tag(realm)==2) || (src.tag(realm)==-1)
+//	  src.sysMessage Svatyne te neprijala.
+//	  src.tag.remove(zabilmnicha)
+//	  src.go 1142,3897
+//	  return 1
+//  else	
+//    src.tag.remove(zabilmnicha)
+//  endif
+//else
+//  if (src.tag(realm)==1) || (src.tag(realm)==-2)
+//	  src.sysMessage Svatyne te neprijala.
+//   src.tag.remove(zabilmnicha)
+//	  src.go 1142,3897
+// 	  return 1
+//  endif	
+//endif
+//src.go <MOREP>
+
+[ITEMDEF i_klic_prechod]
+ID=0100f
+
+
+CATEGORY=questy
+SUBSECTION=prechod
+DESCRIPTION=klic k brane
+
+ON=@Create
+COLOR=0481
+
+ON=@userCLICK
+src.sysMessage("Zvlastni klic ... copak asi otevira")
+[eof]

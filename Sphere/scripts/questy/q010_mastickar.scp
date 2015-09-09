@@ -1,0 +1,209 @@
+//ITEMS//
+[ITEMDEF i_q010_mastickar_kolektor]
+ID=i_bag
+NAME=Vacek na zaludek Medveda Zabijaka
+TYPE=t_collector
+WEIGHT=5
+
+ON=@CREATE
+COLOR=034
+ATTR=010|04
+tag.contentsinfo="Ve vacku je"
+tag.contentstype="zaludek medveda zabijaka"
+tag.contentsamount=0
+tag.maxcontents=1
+tag.target_remove=0
+tag.target_desc="Kteremu medvedovi zabijakovi vezmes zaludek? "
+tag.target_id="Body of Medved Zabijak"
+tag.absolute_success=100
+tag.value_to_check=100
+tag.contentscount=0
+
+ON=@CollectorCheck
+//SPEECH//
+
+[speech spk_q010_mastickar]
+on = *ukol*
+on = *prace*
+on = *zdravim*
+on = *ahoj*
+
+f_qSpeech(f_q010_mastickar)
+
+[function f_q010_mastickar]
+f_q010_checkOldTags
+if (<src.flags>&statf_dead)
+ return 0
+else
+  dialog(d_q010_mastickar)
+endif
+
+[function f_q010_checkOldTags]
+if (<src.tag(q010_mastickar)>)
+  src.qtag(q010_mastickar,1)
+  src.tag.remove(q010_mastickar)
+endif
+if (0<src.tag(splnen_kvest_010)> ==1)
+  src.qtag(q010_mastickar,2)
+  src.tag.remove(splnen_kvest_010)
+endif
+
+[dialog d_q010_mastickar]
+argo.questDialog_create(03008,"Mastickar Gregoriel")
+
+argo.dialog_newPage("Pozdrav")
+
+if (<eval src.qtag(q010_mastickar)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+  argo.questDialog_baseButt(2,21,"Mastickarstvi?")
+endif
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Neco malo bych ti mohl nabidnout...")
+  argo.questDialog_HTMLGUMP
+  argo.setText(argo.newTextLine,"*Nakoupit*")
+  argo.questDialog_addResponse(0,1,1,"Nakoupit",1) // short text & exit button & new button
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Hmm?")
+  argo.questDialog_HTMLGUMP
+  
+  if (<eval src.qtag(q010_mastickar)> == 1)
+    
+    if (<src.f_collector_isFull(i_q010_mastickar_kolektor)>)
+      argo.setText(argo.newTextLine,"Mam pro tebe ten zaludek medveda zabijaka... tady to mas.")
+      argo.questDialog_addResponse(0,1,1,"Ukol_NovyRecept_giveCollector") // short text & exit button & new button
+    endif
+    argo.setText(argo.newTextLine,"Ne zatim se mi to nepodarilo sehnat.")
+    argo.questDialog_addResponse(0,1,1,"Ukol_NovyRecept_notFoundYet") // short text & exit button & new button
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Mastickar Gregoriel vypada mile a pratelsky, na tvari mu stale hraje usmev a v obliceji privetivy vyraz. Take jeho hlas je vesely a radostny. ")
+  argo.questDialog_HTMLGUMP
+  
+argo.dialog_page("Pozdrav")
+  if (<eval src.qtag(q010_mastickar)> == 0)
+    argo.setText(<argo.newTextLine>,"Zdravim te.")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q010_mastickar)> == 1)
+    argo.setText(<argo.newTextLine>,"Zdravim te priteli, jsem rad ze te vidim. Tak co jak jsi byl uspesny? Nasels medveda? No na co cekas, mluv! Jsem nedockavy!")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q010_mastickar)> == 2)
+    argo.setText(<argo.newTextLine>,"Zdravicko! Recept funguje primo skvele, ted jeste musim vymyslet, jak rozsirit moznosti jeho vyroby. Promin, ale ted se ti nemuzu venovat. Mej se a nekdy se zase zastav.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"*Rozloucit se*")
+    argo.questDialog_addResponse(0,1,1,"Goodbye",1) // short text & exit button & new button & emote color
+  endif
+  argo.f_q026_hcnPoison_HealersDialog_Request
+  argo.f_q000_shouldBePromoted_Request
+
+argo.dialog_page("Hledam praci")
+  if (<eval src.qtag(q010_mastickar)> == 0)
+    argo.setText(argo.newTextLine,"Tak to u me asi nepochodis, nikoho nepotrebuji, vystacim si sam a nevim kdo schani pracanta.")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q010_mastickar)> == 1)
+    argo.setText(argo.newTextLine,"Uz odemne mas praci. Dodelej ji a uvidim, jestli pro tebe jeste neco najdu")
+    argo.questDialog_HTMLGUMP
+  elseif (<eval src.qtag(q010_mastickar)> == 2)
+    argo.setText(argo.newTextLine,"Ted me nenapada, jak bys mi mohl pomoci.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+
+if (<eval src.qtag(q010_mastickar)> == 0)
+  argo.dialog_page("Kdo jsi?") // kdo jsi
+    argo.setText(argo.newTextLine,"Aaaaa vitej! Jmenuju se Gregoriel a zivim se vyrobou vsemoznych patlanin <def_questDialog_colorTextEmote>*Smeje se*<def_questDialog_colorTextNormal>, jsem mastickar ! Co te ke mne privadi? Nahoda nebo osud, hehehe?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Take te zdravim, jmenuji se <?src.name?> a jen prochazim kolem.")
+    argo.questDialog_addResponse(0,0,1,"JenProchazim") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>To jiste osud me k vam privedl, no reknete, jiste hledate nekoho jako jsem ja. Nepletu se?")
+    argo.questDialog_addResponse(1,0,1,"ToJeOsud_HledateNekohoJakoJa") // long text & link to page & new page
+
+  argo.dialog_page("Mastickarstvi?")
+    argo.setText(argo.newTextLine,"Ohoo... ty se zajimas o mastickarstvi? Hm? No to me tesi, opravdu, hehehe. Hmno, ja beru svoji profesi jako vedu. Vis, hodne lidi se na me kouka skrz prsty, neveri sile prirody, ale kdyz je pak boli zada tak to joo, to jim je starej Greg dobrej..")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ja mam mastickarstvi rad...")
+    argo.questDialog_addResponse(0,0,1,"HracRadMastickarstvi") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"No, preci jenom mam radeji lektvary.")
+    argo.questDialog_addResponse(0,0,1,"HracRadLektvary") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"Nesnasim ty hnusne kase co vyrabite...")
+    argo.questDialog_addResponse(0,1,1,"UrazkaMasti") // short text & exit button & new button
+
+  argo.dialog_page("JenProchazim")
+    argo.setText(argo.newTextLine,"Ahaa... no pojd si alespon trochu popovidat...")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("ToJeOsud_HledateNekohoJakoJa")
+    argo.setText(argo.newTextLine,"Hehehe, osud!!! Ty opravdu veris na osud <def_questDialog_colorTextEmote>*Privetive se usmal*<def_questDialog_colorTextNormal>. No co, osud asi chtel, abychom si chvili popovidali! <def_questDialog_colorTextEmote>*Zarechtal se*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("HracRadMastickarstvi")  
+    argo.setText(argo.newTextLine,"Skutecne? No to je prekvapeni! To by te urcite zajimalo, ze jsem prisel na novy recept. Je uplne uzasny, ale jeste mu neco k dokonalosti chybi.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"A o co jde?")
+    argo.questDialog_addResponse(0,0,1,"Ukol_NovyRecept") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"Me takove veci nezajimaji, omlouvam se.")
+    argo.questDialog_addResponse(0,1,0,"UrazkaMasti") // short text & exit button & existing button
+
+  argo.dialog_page("HracRadLektvary")  
+    argo.setText(argo.newTextLine,"No ano. Nekteri lide davaji prednost okamzitemu ucinku, bohuzel nevidi jake poskozeni nese dlouhodobe uzivani lektvaru. Ale nejsem tu od toho abych si hral na spasitele...")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("Ukol_NovyRecept")  
+    argo.setText(argo.newTextLine,"Jde o mast, ktera zrychluje leceni vaznych zraneni vic nez kterakoli jina. Chybi mi vsak jeste jedna prisada, abych ji mohl naplno vyzkouset, nechtel bys mi ji zkusit sehnat? Dobre bych se ti odmenil.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Jiste! Oc jde? Povezte mi co vite a pokusim se tu prisadu sehnat...")
+    argo.questDialog_addResponse(0,0,1,"Ukol_NovyRecept_2") // short text & link to page & new page
+    argo.setText(argo.newTextLine,"Ne... na to opravdu nemam cas...")
+    argo.questDialog_addResponse(0,1,0,"UrazkaMasti") // short text & exit button & existing button
+
+  argo.dialog_page("Ukol_NovyRecept_2")  
+    argo.setText(argo.newTextLine,"Jde o jisty druh rostliny, ktera vsak sveho ucinku dosahne az po spaseni a straveni v tele vzacneho druhu medveda - Medveda zabijaka. Bude to nebezpecne, ale dobre se ti odmenim. Zkusis ho najit?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Ano pokusim se o to.")
+    argo.questDialog_addResponse(0,1,1,"Ukol_NovyRecept_accept") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Ne, rozmyslel jsem si to.")
+    argo.questDialog_addResponse(0,1,0,"UrazkaMasti") // short text & exit button & existing button
+elseif (<eval src.qtag(q010_mastickar)> == 1)
+elseif (<eval src.qtag(q010_mastickar)> == 2)
+endif
+argo.f_q026_hcnPoison_HealersDialog_Answer(<uid>)
+argo.f_q000_shouldBePromoted_Answer
+
+[dialog d_q010_mastickar button]
+on=@AnyButton
+if (<argn> == argo.dialog_linkButton("UrazkaMasti"))
+  say("Dobre dobre... vis... hm ted mam neco neodkladneho na praci. Zastav se jindy.")
+elseif (<argn> == argo.dialog_linkButton("Ukol_NovyRecept_accept"))
+  say("Skvele, vezmi si tento vacek, az medveda zabijes, okamzite do nej vloz jeho zaludek, jinak ztrati hodnotu!")
+  src.qtag(q010_mastickar,1,9)
+  src.newitem(i_q010_mastickar_kolektor)
+  src.act.bounce
+elseif (<argn> == argo.dialog_linkButton("Nakoupit"))
+  say("Zbozi na prodej, vseho dostatek, nejlepsi ceny jen u me.")
+  buy
+elseif (<argn> == argo.dialog_linkButton("Ukol_NovyRecept_notFoundYet"))
+  say("Tak prosim pospes, jsem nedockavy, chci vyzkouset svuj recept")
+elseif (<argn> == argo.dialog_linkButton("Ukol_NovyRecept_giveCollector"))
+  if (<src.f_collector_isFull(i_q010_mastickar_kolektor)>)
+    say("Vyborne! Dekuji ti mnohokrat. Ted konecne mohu svuj recept poradne vyzkouset.")
+    src.consume(i_q010_mastickar_kolektor)
+    src.qtag(q010_mastickar,2,9)
+    src.addexp(150)
+    src.givegold(1500)
+    f_quest_complete(9)  // splnenie questu "Mastickar Gregoriel"
+  else
+    say("Jeste nemas to co jsem po tobe chtel, musis se vic snazit")
+  endif
+elseif (<argn> == argo.dialog_linkButton("Goodbye"))
+  say("Tobe take hodne stesi priteli...")
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+argo.f_q026_hcnPoison_HealersDialog_Button(<argn>)

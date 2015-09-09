@@ -1,0 +1,589 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+ 
+          // zde se nastavují parametry rud a skillù pro tìžbu
+
+// FILE LAST UPDATED: Saturday, June 3, 2000
+//
+//VERSION=0.54
+
+[DEFNAMEs COLOR_ORE]
+color_o_copper		099a //option: 060c //zmeneno by tim viz gm forum
+color_o_iron		0763 //option: 0961
+color_o_bronze          06d6
+color_o_gold		0995 //0995 //030 
+color_o_golden		0995
+color_o_silver          0990 
+color_o_shadow          0770
+color_o_verite          097f
+color_o_valorite        0985 
+color_o_obsidian        0989
+color_o_adamantinum     0999
+color_o_mithril         098b
+color_o_pisek           0481
+
+// zde se nastavují parametry rud a skillù pro tìžbu
+
+//************** Ores ***************        // upravené váhy, množství, ceny, skilly - Noe
+
+[ITEMDEF i_cm_check]
+id=2
+
+//***** default distributions of ores/resources ******
+
+[ITEMDEF i_ore_copper]
+ID=i_ore_iron
+NAME=Copper Ore
+//SKILLMAKE=MINING 0.0
+//TDATA1=i_ingot_copper
+VALUE=5
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Copper Ore
+
+ON=@Create
+COLOR=color_o_copper
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ore_pisek]
+ID=i_ore_iron
+DEFNAME=i_ore_pisek
+NAME=Kremicity pisek
+TYPE=t_ingot
+//SKILLMAKE=MINING 51.0
+//TDATA1=i_ingot_pisek
+WEIGHT=1.0
+VALUE=20
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Kremicity pisek
+
+ON=@Create
+COLOR=color_o_pisek
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF 019b7]
+// DEFNAME2=METAL_ORE_1
+DEFNAME=i_ore_iron
+NAME=Iron Ore
+TYPE=t_ingot
+//SKILLMAKE=MINING 50.0
+//TDATA1=i_ingot_iron
+WEIGHT=1.0
+VALUE=25
+DUPELIST=019b8,019b9,019ba
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Iron Ore
+
+ON=@Create
+COLOR=color_o_iron
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ore_gold]
+ID=i_ore_iron
+NAME=Gold Ore
+//SKILLMAKE=MINING 60.0
+//TDATA1=i_ingot_gold
+VALUE=30
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Gold Ore
+
+ON=@Create
+COLOR=color_o_gold
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ore_silver]
+ID=i_ore_iron
+NAME=Silver Ore
+//SKILLMAKE=MINING 55.0
+//TDATA1=i_ingot_silver
+VALUE=30
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Silver Ore
+
+ON=@Create
+COLOR=color_o_silver
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ore_shadow]
+ID=i_ore_iron
+NAME=Shadow Ore
+//SKILLMAKE=MINING 99.9
+//TDATA1=i_ingot_shadow
+VALUE=400
+WEIGHT=.5
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Shadows Ore
+
+ON=@Create
+COLOR=color_o_shadow
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ore_verite]
+ID=i_ore_iron
+NAME=Verite Ore
+//SKILLMAKE=MINING 70.0
+//TDATA1=i_ingot_verite
+VALUE=70
+WEIGHT=1.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Verite Ore
+
+ON=@Create
+COLOR=color_o_verite
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ore_mithril] 
+ID=i_ore_iron
+NAME=Mithril Ore
+//SKILLMAKE=MINING 110.0
+//TDATA1=i_ingot_mithril
+VALUE=500
+WEIGHT=.5
+
+ON=@Create
+COLOR=color_o_mithril
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ore_valorite]
+ID=i_ore_iron
+NAME=Valorite Ore
+//SKILLMAKE=MINING 80.0
+//TDATA1=i_ingot_valorite
+VALUE=80
+WEIGHT=1.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Mithril Ore
+
+ON=@Create
+COLOR=color_o_valorite
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ore_obsidian]
+ID=i_ore_iron
+NAME=Obsidian Ore
+//SKILLMAKE=mining 90.0
+//TDATA1=i_ingot_obsidian
+WEIGHT=.5
+VALUE=200
+
+ON=@Create
+COLOR=09BD
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Obsidian Ore
+
+[ITEMDEF i_ore_adamantinum]
+ID=i_ore_iron
+NAME=Adamantium Ore
+//SKILLMAKE=MINING 99.0
+//TDATA1=i_ingot_adamantinum
+WEIGHT=.5
+VALUE=300
+
+ON=@Create
+COLOR=026
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Adamantium Ore
+
+//************** Ingots *************** // upravené skilly  Noe
+
+[ITEMDEF 01bf2]
+//DEFNAME2=INGOTS
+//DEFNAME2=IRON_INGOT
+DEFNAME=i_ingot_iron
+TYPE=T_INGOT
+RESOURCES=i_ore_iron
+WEIGHT=.5
+SKILLMAKE=blacksmithing 20.0
+DUPELIST=01bf0,01bf1,01bef,01bf3,01bf4
+value=12
+can_replicate=1
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Iron Ingot
+
+[ITEMDEF i_ingot_pisek]
+DEFNAME=i_ingot_pisek
+ID=i_gold
+TYPE=T_INGOT
+NAME=Sklovina
+RESOURCES=i_ore_pisek
+WEIGHT=.5
+SKILLMAKE=blacksmithing 51.0
+value=12
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Sklovina
+
+ON=@Create
+COLOR=color_o_pisek
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF 01be6]
+DEFNAME=i_ingot_copper
+TYPE=T_INGOT
+RESOURCES=i_ore_copper
+WEIGHT=.5
+SKILLMAKE=blacksmithing 0.1
+DUPELIST=01be4,01be5,01be3,01be7,01be8
+value=10
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Copper Ingot
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF 01bec]
+DEFNAME=i_ingot_gold
+TYPE=T_INGOT
+SKILLMAKE=blacksmithing 40.0
+RESOURCES=i_ore_gold
+WEIGHT=.5
+DUPELIST=01bea,01beb,01be9,01bed,01bee
+value=60
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Gold Ingot
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF 01bf5]
+DEFNAME=i_ingot_silver
+TYPE=T_INGOT
+SKILLMAKE=blacksmithing 45.0
+RESOURCES=i_ore_silver
+WEIGHT=.5
+DUPELIST=01bf6,01bf7,01bf8,01bf9,01bfa
+value=30
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Silver Ingot
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF 04541]
+DEFNAME=i_ingot_shadow
+NAME=Shadow Ingot
+ID=i_ingot_iron
+SKILLMAKE=blacksmithing 80.0
+RESOURCES=i_ore_shadow
+WEIGHT=.5
+value=900
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Shadow Ingot
+
+ON=@Create
+COLOR=color_o_shadow
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF 04543]
+DEFNAME=i_ingot_verite
+NAME=Verite Ingot
+ID=i_ingot_iron
+RESOURCES=i_ore_verite
+SKILLMAKE=blacksmithing 65.0
+WEIGHT=.5
+value=120
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Verite Ingot
+
+ON=@Create
+COLOR=color_o_verite
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF 04545]
+DEFNAME=i_ingot_mithril
+ID=i_ingot_iron
+NAME=Mithril Ingot
+RESOURCES=i_ore_mithril
+WEIGHT=.5
+SKILLMAKE=blacksmithing 90.0
+value=1000
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Mithril Ingot
+
+ON=@Create
+COLOR=color_o_mithril
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF 0454a]
+DEFNAME=i_ingot_valorite
+NAME=Valorite Ingot
+ID=i_ingot_iron
+RESOURCES=i_ore_valorite
+WEIGHT=.5
+SKILLMAKE=blacksmithing 70.0
+value=250
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Valorite Ingot
+
+ON=@Create
+COLOR=color_o_valorite
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ingot_obsidian]
+DEFNAME=i_ingot_obsidian
+NAME=Obsidian Ingot
+ID=i_ingot_iron
+RESOURCES=i_ore_obsidian
+WEIGHT=.5
+SKILLMAKE=blacksmithing 80.0
+value=450
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Obsidian Ingot
+
+ON=@Create
+COLOR=color_o_obsidian
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+[ITEMDEF i_ingot_adamantinum]
+DEFNAME=i_ingot_adamantinum
+NAME=Adamantium Ingot
+ID=i_ingot_iron
+RESOURCES=i_ore_adamantinum
+WEIGHT=.5
+SKILLMAKE=blacksmithing 85.0
+value=750
+can_replicate=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Adamantinum Ingot
+
+ON=@Create
+COLOR=color_o_adamantinum
+
+on=@userdclick
+return"<blacksmithing_dclick>"
+
+
+[ITEMDEF i_log_lager]
+ID=i_log
+NAME=lagr log%s
+value=10
+
+on=@create
+attr=attr_move_never
+color=0
+
+on=@dropon_ground
+remove
+
+[defnames wood_colors]
+color_spruce	0
+color_chestnut	05e5
+color_oak	05f2
+color_teak	01c4
+color_mahagon	237
+color_eben	0774
+color_elven	07d6
+
+[ITEMDEF i_log_copper]
+ID=i_log
+NAME=spruce log%s
+value=10
+
+on=@create
+color=color_spruce
+
+[ITEMDEF i_log_iron]
+ID=i_log
+NAME=chestnut log%s
+value=12
+
+on=@create
+color=color_chestnut
+
+[ITEMDEF i_log_verite]
+ID=i_log
+NAME=oak log%s
+value=140
+
+on=@create
+color=color_oak
+
+[ITEMDEF i_log_valorite]
+ID=i_log
+NAME=teak log%s
+value=400
+
+on=@create
+color=color_teak
+
+[ITEMDEF i_log_obsidian]
+ID=i_log
+NAME=mahagon log%s
+value=700
+
+on=@create
+color=color_mahagon
+
+[ITEMDEF i_log_adamantinum]
+ID=i_log
+NAME=eben log%s
+value=1100
+
+on=@create
+color=color_eben
+
+[ITEMDEF i_log_mithril]
+ID=i_log
+NAME=elven log%s
+value=1400
+
+on=@create
+color=color_elven
+
+[ITEMDEF i_board_copper]
+ID=i_board
+NAME=spruce log%s
+value=10
+resources=i_log_copper
+
+on=@create
+color=color_spruce
+
+[ITEMDEF i_board_iron]
+ID=i_board
+NAME=chestnut log%s
+value=12
+resources=i_log_iron
+
+on=@create
+color=color_chestnut
+
+[ITEMDEF i_board_verite]
+ID=i_board
+NAME=oak log%s
+value=140
+resources=i_log_verite
+
+on=@create
+color=color_oak
+
+[ITEMDEF i_board_valorite]
+ID=i_board
+NAME=teak log%s
+value=400
+resources=i_log_valorite
+
+on=@create
+color=color_teak
+
+[ITEMDEF i_board_obsidian]
+ID=i_board
+NAME=mahagon log%s
+value=700
+resources=i_log_obsidian
+
+on=@create
+color=color_mahagon
+
+[ITEMDEF i_board_adamantinum]
+ID=i_board
+NAME=eben log%s
+value=110
+resources=i_log_adamantinum
+
+on=@create
+color=color_eben
+
+[ITEMDEF i_board_mithril]
+ID=i_board
+NAME=elven log%s
+value=140
+resources=i_log_mithril
+
+on=@create
+color=color_elven
+
+
+[EOF]

@@ -1,0 +1,100 @@
+//////////
+//Shaman Qworet
+/////
+[CHARDEF c_q023_ShamanQworet]
+NAME = Shaman Qworet
+ID = C_MAN
+TSPEECH = spk_q023_ShamanQworet
+TEVENTS = e_character
+
+CATEGORY = Moria Questy
+SUBSECTION = q023 - Shaman Qworet
+DESCRIPTION = Shaman Qworet
+
+ON = @Create
+NAME = Shaman Qworet
+NPC = brain_vendor
+STR = 100
+DEX = 100
+INT = 100
+TITLE = Shaman
+
+ItemNewbie = random_male_hair
+	Color = colors_hair
+
+Tag(hypnotizable, 0)
+Tag(noanimate, 1)
+Tag.experience = 0 
+
+ON = @UserDClick
+	if (src.targ.distance > 3)
+		src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+	else
+		f_q023_ShamanQworet
+	endif
+
+ON = @NPCRestock
+	ItemNewbie = i_hat_wizards
+		Color = 020
+	ItemNewbie = i_robe
+		Color = 020
+	ItemNewbie = i_studded_gloves
+		Color = 030
+	ItemNewbie = i_studded_gorget
+		Color = 030
+	ItemNewbie = i_shoes_plain
+		Color = 030
+
+/////
+
+//////////
+//Carodej Unas
+/////
+[CHARDEF c_q023_CarodejUnas]
+NAME = Carodej Unas
+ID = C_MAN
+TSPEECH = spk_q023_CarodejUnas
+TEVENTS = e_character
+
+CATEGORY = Moria Questy
+SUBSECTION = q023 - Carodej Unas
+DESCRIPTION = Carodej Unas
+
+ON = @Create
+NAME = Carodej Unas
+NPC = brain_vendor
+STR = 100
+DEX = 100
+INT = 100
+TITLE = Carodej
+COLOR = Colors_skin
+
+ItemNewbie = i_hair_long
+	Color = 1
+
+Tag(hypnotizable, 0)
+Tag(noanimate, 1)
+Tag.experience = 0 
+
+ON = @UserDClick
+	if (src.targ.distance > 3)
+		src.sysMessage("Na takovou vzdalenost s tebou jednat nebude")
+	else
+		f_q023_CarodejUnas
+	endif
+
+ON = @NPCRestock
+	ItemNewbie = i_robe
+		Color = 1000
+	ItemNewbie = i_cape
+		Color = 666
+	ItemNewbie = i_shoes_plain
+		Color = 666
+	ItemNewbie = i_staff_black
+		Color = 678
+	ItemNewbie = i_necklace_gold
+	ItemNEwbie = i_hair_short
+		Color = 1000
+	ItemNewbie = i_beard_short
+		Color = 1000
+	

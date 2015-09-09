@@ -1,0 +1,610 @@
+[function f_gq002_checkOldTags]
+if ( (src.tag(gq002) == 1) && (<src.rescount i_gq002_radlice0> >= 1) )
+  src.qtag(gq002,3)
+elseif (src.tag(gq002) == 1)
+  src.qtag(gq002,1)
+elseif (src.tag(gq002) == 2)
+  src.qtag(gq002,3)  
+  src.qtag(gq002_kovar,1)
+elseif (src.tag(gq002) == 3)
+  src.qtag(gq002,3)  
+  src.qtag(gq002_kovar,2)
+elseif (src.tag(gq002) == 4)
+  src.qtag(gq002,3)
+  src.qtag(gq002_kovar,3)
+elseif (src.tag(gq002) == 5)
+  src.qtag(gq002,4)
+elseif (src.tag(gq002) == 6)
+  src.qtag(gq002,5)
+elseif (src.tag(gq002) == 7)
+  src.qtag(gq002,6)
+endif
+src.tag.remove(gq002)
+if (src.tag(gq002a))
+  src.tag.remove(gq002a)
+  src.qtag(gq002,2)
+endif
+
+
+
+////////////////////////////////////////////////
+//BOREK START
+////////////////////////////////////////////////
+
+
+[dialog d_gq002_borek]
+argo.questDialog_create(03118,"<name>")
+
+arg(tagValue,<eval src.qtag(gq002)>)
+
+argo.dialog_newPage("Pozdrav")
+
+if (<arg(tagValue)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+elseif (<arg(tagValue)> == 1)
+  argo.questDialog_basebutt(1,19,"Potrebuji pomoc")
+endif
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  if (<arg(tagValue)> == 6) //quest finished
+    argo.setText(argo.newTextLine,"Bud <src.sex("zdrav, priteli","zdrava, pritelkyne")>. Rad te znovu vidim.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(tagValue)> == 5) // have repaired it
+    argo.setText(argo.newTextLine,"Tak co pluh? Zdarila se ti oprava? Ceka mne spousta prace.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(tagValue)> >= 1) && (<arg(tagValue)> <= 4) // quest under process
+    argo.setText(argo.newTextLine,"Tak co moje radlice? Uz jsi ji <src.sex(spravil,spravila)>?")
+    argo.questDialog_HTMLGUMP
+  else // quest is not even started yet
+    argo.setText(argo.newTextLine,"Vitej...")
+    argo.questDialog_HTMLGUMP
+  endif
+  argo.f_q000_shouldBePromoted_Request
+
+if (<arg(tagValue)> == 0)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(argo.newTextLine,"Jmenuju se Borek a jsem zemedelec. Mam tady male policko a snazim se nejak uzivit. Nekdy je to ale tezke... sakra tezke.")
+    argo.questDialog_HTMLGUMP
+elseif (<arg(tagValue)> == 1)
+  argo.dialog_page("Potrebuji pomoc")
+    argo.setText(argo.newTextLine,"Co odemne potrebujes?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Kde jsi rikal, ze sidli ten kovar?")
+    argo.questDialog_addResponse(0,0,1,"gq002_askSmithsLocation") // short text & page button & new button
+    argo.setText(argo.newTextLine,"Jak vymontuji tu radlici ?")
+    argo.questDialog_addResponse(0,0,1,"gq002_askForManipulation") // short text & page button & new button
+endif
+
+argo.dialog_page("Mohu pomoci?")
+  if (<arg(tagValue)> == 0)
+    argo.setText(argo.newTextLine,"Ani ne. Moje policko je male, stacim na nej sam. I kdyz... Snad bys mi preci jen <?src.sex(mohl,mohla)?> pomoci. Podivej se na muj pluh...<BR>Byl skoro novy, a ted je k nepotrebe. Praskla radlice. Potreboval bych ji zanest ke kovari, aby mi ji spravil. Ma svoji dilnu jizne od Hurky, ale je to prilis daleko a ja tu nemohu svuj pozemek nechat jen tak bez dozoru.<BR>Ty vypadas, ze se svetem toulas jen tak nazdarbuh a casu mas dost. Mozna bys mi <?src.sex(mohl,mohla)?> pomoci, co rikas?")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Dobre, rad to pro tebe udelam.")
+    argo.questDialog_addResponse(0,1,1,"gq002_assignQuest") // short text & exit button & new button
+    argo.setText(argo.newTextLine,"Ne ne, tohle po mne nechtej!")
+    argo.questDialog_addResponse(0,0,1,"gq002_assignQuestReject") // short text & page button & new button
+  elseif (<arg(tagValue)> == 2) || (<arg(tagValue)> == 3)
+    argo.setText(argo.newTextLine,"Jo. Prines mi zpet tu opravenou radlici.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(tagValue)> == 4) || (<arg(tagValue)> == 5)
+    argo.setText(argo.newTextLine,"Ano. Namontuj prosim tu opravenou radlici na pluh.")
+    argo.questDialog_HTMLGUMP
+    if (<arg(tagValue)> == 5)
+      argo.setText(argo.newTextLine,"Uz jsem <?src.sex(spravil,spravila)?> ten pluh.")
+      argo.questDialog_addResponse(0,1,1,"gq002_repaired") // short text & exit button & new button
+    endif
+  else
+    argo.setText(argo.newTextLine,"Nevim... Nic me nenapada ne.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Nemam co bych ti nabidl. Vse co sklidim ihned prodavam na trhu.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"Ja ti praci bohuzel nenabidnu. Jsem rad, ze uzivim sam sebe...")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Copak pro me mas?")
+  argo.questDialog_HTMLGUMP
+  if (<arg(tagValue)> == 4)
+    argo.setText(argo.newTextLine,"Uz jsem <src.sex(nechal,nechala)> spravit tu radlici.")
+    argo.questDialog_addResponse(0,0,1,"gq002_haveRepairedPart") // short text & page button & new button
+    argo.setText(argo.newTextLine,"Vlastne nic...")
+    argo.questDialog_addResponse(0,0,1,"gq002_blankResponse") // short text & page button & new button
+  endif
+
+argo.dialog_page("Prohlednout")
+  argo.setText(argo.newTextLine,"Borek je mensiho vzrustu, podsadity, svalnaty. Tvar strhanou vecnou praci a ruce plne mozolu. V jeho ocich vsak presto nachazis jiskricku hravosti a veseli ze zivota.")
+  argo.questDialog_HTMLGUMP
+
+if (<arg(tagValue)> == 0)
+  argo.dialog_page("gq002_assignQuestReject")
+    argo.setText(argo.newTextLine,"Dobra, cizince, ale tvou vstricnost si budu pamatovat...")
+    argo.questDialog_HTMLGUMP
+elseif (<arg(tagValue)> == 1)
+  argo.dialog_page("gq002_askSmithsLocation")
+    argo.setText(argo.newTextLine,"Ma svou dilnu jizne od Hurky. Je to trochu samotar, ale sve remeslo ovlada skvele! Jinemu bych sve naradi nesveril.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("gq002_askForManipulation")
+    argo.setText(argo.newTextLine,"Pluh lezi tady kousek na poli. Je tam na strane mala pojistka. Staci ji vytahnout, a pak uz s trochou usili radlici vytahnes.")
+    argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Aha! Diky, ted uz to snad pujde...")
+    argo.questDialog_addResponse(0,1,1,"gq002_Manipulation") // short text & exit button & new button
+elseif (<arg(tagValue)> == 4)
+  argo.dialog_page("gq002_haveRepairedPart")
+    argo.setText(argo.newTextLine,"Tak ji prosim te namontuj zpet na pluh.")
+    argo.questDialog_HTMLGUMP
+
+  argo.dialog_page("gq002_blankResponse")
+    argo.setText(argo.newTextLine,"Hmmm...")
+    argo.questDialog_HTMLGUMP
+endif
+argo.f_q000_shouldBePromoted_Answer
+
+[dialog d_gq002_borek button]
+on=@anyButton
+if (<argn> == argo.dialog_linkButton("gq002_assignQuest"))
+  if (<src.rescount i_gq002_radlice0> == 1)
+    say("Mam jen jeden pluh na opravu.")
+  elseif (<src.rescount i_gq002_radlice1> == 1)
+    say("Mam jen jeden pluh na opravu.")
+  elseif (<eval src.qtag(gq002)> ==0)
+    src.qtag(gq002,1,0)
+    say("Diky moc, vymontuj prosim radlici z pluhu.")
+  elseif (<eval src.qtag(gq002)> >0)
+    say("Uz jsem ti prece rikal, ze mas vymontovat radlici z pluhu.")
+  endif
+elseif (<argn> == argo.dialog_linkButton("gq002_Manipulation"))
+  if (<src.rescount i_gq002_radlice0> == 1) || (<src.rescount i_gq002_radlice1> == 1)
+    src.sysMessage("Sice uz jsi radlici <src.sex("vymontoval","vymontovala")>, ale ted alespon vis, ze jsi to <src.sex("udelal","udelala")> spravne.")
+  elseif (<eval src.qtag(gq002)> ==1)
+    src.qtag(gq002,2,0)
+    say("A neboj se za to trosku zabrat. Vic uz to stejne rozbit nejde.")
+  endif
+elseif (<argn> == argo.dialog_linkButton("gq002_repaired"))
+  if (<eval src.qtag(gq002)>==5)
+    say("Dekuji. Tady mas odmenu.")
+    src.qtag(gq002,6,0)
+    src.givegold(500) 
+    src.addexp(50+<eval(<src.tag(level)>*10)>)
+    f_quest_complete(0)  //splnenie questu "Zemedelec Borek" - v questMenu ma index 0
+  else
+    say("Jeste ti neco chybi udelat.")
+  endif
+endif
+if (argo.f_q000_shouldBePromoted_Button(<argn>))
+  return
+endif
+
+//////////////////////////////////////////////////////
+//KOVAR GORUG
+//////////////////////////////////////////////////////
+
+
+
+[dialog d_gq002_kovar]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky	
+gumppic 40 215 03022 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 1 0  // Kdo jsi?     
+text 200 332 1152 1   // 
+button 325 330 0988 0988 0 2 0  // Mohu pomoci? 
+text 350 332 1152 2    //
+button 490 330 0988 0988 0 3 0  // Obchodovat
+text 520 332 1152 3   //
+button 160 360 0988 0988 0 4 0  // Hledam praci  
+text 190 362 1152 4   //
+button 325 360 0988 0988 0 5 0  // Nesu ti...
+text 365 362 1152 5   //
+button 490 360 0988 0988 0 6 0  // Prohlednout
+text 520 362 1152 6   //
+
+
+page 1
+if (0<src.qtag(gq002_kovar)> == 0)
+  argo.HTMLGUMP(170,230,440,100,7,0,36)
+elseif (0<src.qtag(gq002_kovar)> < 3)
+  argo.HTMLGUMP(170,230,440,100,16,0,36)
+else
+  argo.HTMLGUMP(179,230,440,100,17,0,36)
+endif
+if (src.qtag(q022)==2)
+  argo.button(25,395,0fa5,0fa7,0,10,0)
+  argo.text(60,395,152,30)
+endif
+
+
+page 2
+if (0<src.qtag(gq002_kovar)> == 0)
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,1) 	// Donest kladivo  
+  argo.text(60,395,152,13)
+elseif (0<src.qtag(gq002_kovar)> < 3)
+  argo.HTMLGUMP(170,230,440,100,18,0,36)
+  argo.button(25,395,0fa5,0fa7,0,9,0)	// Kde spi trolove ?
+  argo.text(60,395,152,26)
+else
+  argo.HTMLGUMP(170,230,440,100,19,0,36)
+endif
+
+page 3
+if (0<src.qtag(gq002_kovar)> < 3)
+  argo.HTMLGUMP(170,230,440,100,9,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,20,0,36)
+endif
+
+page 4		// Hledam praci
+if (0<src.qtag(gq002_kovar)> < 3)
+  argo.HTMLGUMP(170,230,440,100,10,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,21,0,36)
+endif
+
+
+page 5		// Nesu ti
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+arg(buttonY,395)
+if (<src.rescount i_gq002_kladivo> == 1)
+  argo.button(25,<buttonY>,0fa5,0fa7,0,7,0)  // Mam pro kovare jeho kladivo
+  argo.text(60,<buttonY>+3,152,25)
+  arg(buttonY,#+20)
+endif
+if ( (0<src.qtag(gq002)>==3)&&(<src.rescount i_gq002_radlice0> == 1) )
+  argo.button(25,<buttonY>,0fa5,0fa7,0,8,0)  // Mam radlici od Borka a nabizim ji kovari
+  argo.text(60,<buttonY>+3,152,14)
+  arg(buttonY,#+20)
+endif
+
+page 6		// Prohlednout
+if (0<src.qtag(gq002_kovar)> < 3)
+  argo.HTMLGUMP(170,230,440,100,12,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,22,0,36)
+endif
+
+
+page 7		// Kladivo pro kovare
+argo.HTMLGUMP(170,230,440,100,28,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,2)	// Predat kladivo kovari
+argo.text(60,398,142,24)
+
+page 8		// Radlice pro Borka
+if (0<src.qtag(gq002_kovar)> <3)
+  argo.HTMLGUMP(170,230,440,100,15,0,36)
+else
+  argo.HTMLGUMP(170,230,440,100,23,0,36)
+  argo.button(25,395,0fa5,0fa7,1,0,3)	// Predat radlici na opravu
+  argo.text(60,398,142,24)
+endif
+
+page 9		// Kde spi trollove?
+argo.HTMLGUMP(170,230,440,100,27,0,36)
+
+// Transport q022
+page 10
+argo.HTMLGUMP(170,230,440,100,31,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,4)
+argo.text(60,398,142,32)
+
+[dialog d_gq002_kovar text]
+Kovar Gorug
+Kdo jsi?				//1
+Mohu pomoci?				//2
+Obchodovat?				//3
+Hledam praci				//4
+Nesu ti...				//5
+Prohlednout				//6
+HA! <?src.sex(Prisel,Prisla)?> jsi prave vcas. Jmenuji se Gorug a jsem kovar. Nebudes verit, co se mi stalo. Ta parta mistnich trollu je den ode dne drzejsi. Vadi jim, ze stale boucham kladivem do kovadliny. Pry chteji ve dne spat a prohlasuji, ze pracovat se ma v noci. Takova drzost! Vytrhal bych jim vsem hlavy a vystavil je na branach mesta! Jiste, ze jsem je s tim poslal do haje, ale oni se sem v noci prikradli a sebrali mi kladivo. Kladivo! MNE! MOJE KLADIVO! Grrrrrrrr! Kdybych si mel cim ukovat mec, pekne bych je prohnal! Uz s nimi nebudu mit zadne slitovani! Ghrrr!<br>Potrebuji nekoho, kdo by jim ukazal, zac je toho loket!	// 7
+Jiste, muzes! Potrebuji, abys mi <?src.sex(donesl,donesla)?> zpet me kladivo. Co rikas? Ti proklati trollove spi pres den tady kousek na sever. Je to v lese na jedne mytine, tam by jsi se s nimi <?src.sex(mel,mela)?> snadno vyporadat. A hlavne najdi moje kladivo!		// 8
+Nechci obchodovat! Potrebuji svoje kladivo! Jak ma kovar pracovat bez kladiva?				//9
+U me ji nenajdes. Sam nemam bez sveho kladiva co na praci!						//10
+Copak pro me mas?			//11
+Svalnaty, podmraceny, s sibalskyma ocima. To je kovar Gorug. Kdyz se rozcili, nejlepsi je klidit se mu z cesty. A ted je velice rozzureny. Neustale mumla cosi o svem kladivu. 			//12
+Dobre, donesu ti tve kladivo.		//13
+Zemedelci Borkovi praskla radlice u pluhu, mohl bys mu ji opravit?					//14
+A to do toho mam mlatit pestma? Nebo taky muzu pouzit tvoji hlavu! Bez naradi to opravit nejde ty, <?src.sex(chytraku,chytra)?>! Grrr...	//15
+Tak co? Mas to kladivo?!		//16
+Bud zdrav! Jsem rad, ze te zase vidim. Jeste jednou dekuji za to kladivo...				//17
+Slibil jsi mi, ze se postaras o navraceni meho kladiva! Vic mi pomoci nemuzes.				//18
+Nenapada me nic, s cim by jsi mi <?src.sex(mohl,mohla)?> pomoci.								//19
+Momentalne mam nejake zakazky. Zkus si prijit pozdeji.							//20
+Bohuzel, ja te nezamestnam. Vsechno zvladam sam, a kdyz potrebuji nejakou drobnost, rad mi vypomuze nejaky mistni nadenik.			//21
+Svalnaty, podmraceny s sibalskyma ocima. To je kovar Gorug. Kdyz se rozcili, nejlepsi je klidit se mu z cesty. Vypada, ze ma spoustu prace.	//22
+Ale jiste! Beze vseho. A opravim ti ji zdarma, ze jsi mi <?src.sex(pomohl,pomohla)?>. Stejne bych ti nerad neco dluzil... Dej ho sem.					//23
+*predat prasklou radlici kovari*	//24
+Nesu ti tvoje kladivo !			//25
+Kde jsi rikal, ze spi ti trollove ?	//26
+Poslouchas kolenem? Vsichni jste natvrdli jak stado vepru. Tady kus na sever je v lese mytina. A pospes si, nebo reknu nekomu jinemu!		//27
+Vyborne! Takze jsi ho <?src.sex(nasel,nasla)?>! Konecne se mohu zase dat do prace...					//28
+*predat kladivo kovari*		//29
+//Transport q022
+Navin me posila pro zelezne ingoty. Potrebuje tak sto padesat kusu.	//30
+Navin? Hmm, naposledy jsme se pekne chytli... No, uz me to preslo. Tady to je...	//31
+*prevzit ingoty*	//32
+
+
+
+[dialog d_gq002_kovar button]
+ON=1
+src.qtag(gq002_kovar,1,16)
+src.sysmessage("Prijmas ukol od kovare.")
+say("Skvele!")
+
+ON=2
+if (<src.rescount i_gq002_kladivo> == 1)
+  SAY("Ohoooo. Ses pasak. Diky!")
+  src.consume(i_gq002_kladivo)
+  src.qtag(gq002_kovar,3,16)
+  src.addexp(150+<eval(<src.tag(level)>*10)>)
+  f_quest_complete(16)  //splnenie questu "Kovar Gorug"
+else
+  SAY("Kde mas moje kladivo? Ty jsi na nej <?src.sex(zapomnel,zapomnela)?>?!")
+endif
+
+ON=3
+if (<src.rescount i_gq002_radlice0> == 1)
+  SAY("Hmmm, parkrat do toho bouchnu, tadyhle... a tady... Hotovo!")
+  src.consume(i_gq002_radlice0)
+  src.giveitem(i_gq002_radlice1)
+  src.qtag(gq002,4,0)
+else
+  SAY("He? Nechapu, co po mne chces! Kde mas tu radlici?")
+endif
+
+ON=4
+src.giveitem(i_q022_ingoty)
+src.qtag(q022,3,21)
+
+
+
+
+//////////////////////////////////////////////////////
+//Speech Borek
+//////////////////////////////////////////////////////
+
+
+[speech spk_gq002_borek]
+on = *ahoj*
+on = *radlice*
+on = *pluh*
+on = *ukol*
+on = *prace*
+on = *den*
+
+f_qSpeech(f_gq002_Borek_DClick)
+
+//////////////////////////////////////////////////////
+//ON DCLICK+SPEECH Borek Function
+//////////////////////////////////////////////////////
+
+[function f_gq002_Borek_DClick]
+f_gq002_checkOldTags
+if (<src.flags>&statf_dead)
+  return 1
+elseif ( (<src.tag.realm>==2) || (0<src.qtag(mq002)> > 0) )
+  say("Vyhni se mi obloukem, sluho Temneho Pana!")
+  return 1
+endif
+dialog(d_gq002_borek)
+
+
+//////////////////////////////////////////////////////
+//Speech Kovar
+//////////////////////////////////////////////////////
+
+[speech spk_gq002_kovar]
+on = *ahoj*
+on = *radlice*
+on = *pluh*
+on = *kladivo*
+on = *ukol*
+on = *prace*
+
+f_qSpeech(f_gq002_Kovar_DClick)
+
+
+//////////////////////////////////////////////////////
+//ON DCLICK+SPEECH Kovar Function
+//////////////////////////////////////////////////////
+
+[function f_gq002_Kovar_DClick]
+f_gq002_checkOldTags
+if (<src.flags>&statf_dead)
+  return 1
+elseif (<src.tag.realm>==2)
+  say("Vyhni se mi obloukem, sluho Temneho Pana!")
+  return 1
+endif
+DIALOG(d_gq002_kovar)
+return 1
+
+
+
+
+//////////////////////////////////////////////////////
+//Questovni predmety - pluh
+//////////////////////////////////////////////////////
+
+
+[ITEMDEF i_gq002_pluh]
+ID=01501
+NAME=pluh
+TYPE=t_normal
+
+CATEGORY=Moria Questy
+SUBSECTION=gq002
+DESCRIPTION=Pluh
+
+on=@create 
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage("Stary znacne posramoceny pluh")
+
+on=@userdclick
+f_gq002_checkOldTags
+if (<src.flags>&statf_dead)
+  return 1
+elseif (<src.targ.distance> > 1)
+  src.sysmessage("Z takove dalky to nepujde.")
+  return 1
+endif
+if (<src.rescount i_gq002_radlice0> >= 1)
+  src.sysmessage("Radlici musis nejdriv opravit, nez ji budes moci namontovat zpatky.") 
+elseif (<src.rescount i_gq002_radlice1> >= 1)&&(0<src.qtag(gq002)>==4)
+  src.sysmessage("<src.sex(Namontoval,Namontovala)> jsi opravenou radlici zpet do pluhu.")
+  src.consume(i_gq002_radlice1)
+  src.qtag(gq002,5,0)
+elseif (0<src.qtag(gq002)> == 1)
+  src.sysmessage("Nevis, jak tu radlici vymontovat.") 
+elseif (0<src.qtag(gq002)> == 2)
+  src.sysmessage("<src.sex(Vymontoval,Vymontovala)> jsi z pluhu prasklou radlici.")
+  src.giveitem(i_gq002_radlice0)
+  src.qtag(gq002,3,0)
+elseif (0<src.qtag(gq002)> > 4)
+  src.sysmessage("<src.sex(Udelal,Udelala)> jsi vse, co se dalo. Vic toho tady asi nezmuzes.")
+else
+  src.sysmessage("Tady nic nezmuzes, to je prace pro zkuseneho remeslnika.")
+endif
+return 1
+
+
+//////////////////////////////////////////////////////
+//Questovni predmety - Praskla radlice
+//////////////////////////////////////////////////////
+
+[ITEMDEF i_gq002_radlice0]
+ID=01500
+NAME=Praskla radlice
+TYPE=t_normal
+
+ON=@Create
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage("Stara, v pulce praskla, zelezna radlice")
+
+ON=@userDCLICK
+src.sysmessage("S timhle nic nesvedes.")
+return 1
+
+[ITEMDEF i_gq002_radlice1]
+ID=01500
+NAME=Opravena radlice
+TYPE=t_normal
+
+ON=@Create
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage("Opravena zelezna radlice")
+
+ON=@userDCLICK
+src.sysmessage("S timhle nic nesvedes.")
+return 1
+
+
+
+//////////////////////////////////////////////////////
+//Questovni itemy - Bedna s lupem
+//////////////////////////////////////////////////////
+
+
+[ITEMDEF i_gq002_bedna]
+ID=0e3c
+NAME=bedna s lupem
+TYPE=t_normal
+
+CATEGORY=Moria Questy
+SUBSECTION=gq002
+DESCRIPTION=Bedna s lupem
+
+on=@create 
+attr=attr_move_never
+
+ON=@userCLICK
+src.sysmessage("Bedna se zmeti naloupenych veci")
+
+on=@userdclick 
+f_gq002_checkOldTags
+if (<src.flags>&statf_dead)
+  return 1
+elseif (src.isgm)
+  target("Zamer spawn strazce bedny.")
+  return 1
+elseif (<src.targ.distance> >1)
+  src.sysmessage("Z takove dalky to nepujde.")
+  return 1
+endif
+if (link.more2)
+  src.sysmessage("Trollove te nenechaji jen tak vlezt do te bedny.")
+elseif (0<src.qtag(gq002_kovar)> > 1)
+  src.sysmessage("Uz tu nic zajimaveho neni.")
+elseif (0<src.qtag(gq002_kovar)>==1)
+  src.sysmessage("Po chvili prehrabovani v bedne jsi neco <src.sex(nasel,nasla)>.")
+  src.giveitem(i_gq002_kladivo)
+  src.givegold(500)
+  src.giveitem(random_FOOD,{5 10})
+  src.giveitem(random_FOOD,{5 10})
+  src.giveitem(RANDOM_REAGENT,{5 20})
+  src.giveitem(RANDOM_REAGENT,{5 20})
+  src.giveitem(RANDOM_REAGENT,{5 20})
+  src.giveitem(RANDOM_REAGENT,{5 20})
+  src.qtag(gq002_kovar,2,16)
+else
+  src.sysmessage("Nic zajimaveho tu nevidis.")
+endif
+return 1
+
+ON=@TargOn_Char
+src.sysmessage("Musis oznacit spawn.")
+target
+return 1
+
+ON=@TargOn_Ground
+src.sysmessage("Musis oznacit spawn.")
+target
+return 1
+
+ON=@TargOn_Item
+if (src.targ.type==t_spawn_char)
+  link=<src.targ>
+else
+  src.sysmessage("Musis oznacit spawn.")
+  target
+endif
+return 1
+
+//////////////////////////////////////////////////////
+//Questovni itemy - Kladivo
+//////////////////////////////////////////////////////
+
+[ITEMDEF i_gq002_kladivo]
+ID=0fb4
+NAME=kovarske kladivo
+TYPE=t_normal
+
+ON=@Create
+attr=attr_move_never
+
+
+ON=@userCLICK
+src.sysmessage("Trpaslici kovarske kladivo")
+ON=@userDCLICK
+src.sysmessage("Na to nemas vlohy.")
+return 1
+
+[eof]

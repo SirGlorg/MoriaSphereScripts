@@ -1,0 +1,1280 @@
+//////////////////////////////////////////////////
+//   V  E  L  M  I  S  T  R     Q  U  E  S  T   //
+//         & redesigned by GM Yavanna           //
+//         & tested by Marek C                  //
+//////////////////////////////////////////////////
+//
+// Old tags:
+//  tag.bylina == 1 ~ 
+//
+// Quest triggers:
+//  & hrac je lvl 12 nebo vice
+//  & hrac je uz mistr
+//  & hrac doposud nesplnil vm quest ani jej nezacal plnit
+// Quest tag line:
+//  q000_velmistr == 0 ~ quest nebyl zapocat
+//  q000_velmistr == 1 ~ matka Elqira ztratila dve dcery kdesi na vychode Ledovych plani
+//  q000_velmistr == 2 ~ <vetvena moznost> nasel jsi ElViru, ktera je vsak jak uhranuta a nekomunikuje.
+//  q000_velmistr == 3 ~ <vetvena moznost> nasel jsi zatim jen ElMiru, sestru ElViry. Prosi te o pomoc s nalezenim ElViry. Varuje te pred tajemnym muzem.
+//  q000_velmistr == 4 ~ <vetvena moznost>nasel jsi ElViru, za kterou te ElMira poslala. ElVira je jak uhranuta a nekomunikuje.
+//  q000_velmistr == 5 ~ sdelil jsi Elmire, jak je na tom Elvira. Ta te znovu prosi o pomoc a sdeluje ti, ze ElVire pomuze snad jen vzacna bylyna, ktera roste na ostrove titanu. Dala ti jeji podrobny popis.
+//  q000_velmistr == 5 ~ <sysMessage> zahledl jsi kvetinu, o ktere mluvila elMira 
+//  q000_velmistr == 6 ~ Utrhl jsi vzacnou bylinu na ostrove titanu. Je cas vratit se za Elvirou a pomoct ji.
+//  q000_velmistr == 7 ~ Dal jsi ElVire hledanou bylinu a ta se probrala z mrakot. 
+//  q000_velmistr == 8 ~ ElVira ti cela stastna prozradila cely pribeh o tajemnem muzi, zijicim v jeskyni na Severni spousti. Tento muz s prohnilou dusi zije ze strachu lidi v jeho okoli. Pro podporu sve hruzne tiranii vyvrazdil vsechny, kdo znali jeho prave jmeno. Elvira ho odposlechla a ted jsou obe sestry v nebezpeci. Jmeno muze je Rinald. Pouzij toto jmeno pro oslabeni jeho moci a vysvobod ElMiru ze zajeti.
+//  q000_velmistr == 9 ~ Premohl jsi Rinalda, tyrana ze Severni spouste. Obe dcery jsou ted v bezpeci, jen Elmira je porad zavrena v kleci.
+//  q000_velmistr == 10 ~ Vysvobodil jsi ElMiru ze zajeti
+//  q000_velmistr == 11 ~ Oznamil jsi Matce Elviry a Elmiry, ze jsi divky zachranil. Matka Elqira ti je neskonale vdecna za tvou statecnost. Zpravy o tvych cinech v Severni spousti se rychle roznesly svetem.
+//  q000_velmistr == 12 ~ <nepovinny> Dozvedel jsi se, ze tve skutky na Slunecnim ostrove neunikly ani <gondor/mordor>skemu zmocnenci, ktery te ocekava.
+//  q000_velmistr == 13 + tag.rank == 3 ~ Zmocnenec <Gondor/Mordor>u te prohlasil VELMISTREM.
+
+[defnames q000_constants]
+def_q000_minLevel           12
+
+[function f_q000_checkOldTags]
+if (<eval src.tag(skillrank)> > 2) && (<eval src.qtag(q000_velmistr)> == 0) //allready VM, but hasn't done the quest -> give the quest freely
+  src.qtag(q000_velmistr,13)
+endif
+//src.tag.remove(bylina)
+
+////////////////////////////////////
+//        E  L  Q  I  R  A        //
+//             matka              //
+////////////////////////////////////
+
+[SPEECH spk_q000_Elqira]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+f_qSpeech(f_q000_ElqiraDClick)
+
+[function f_q000_ElqiraDClick]
+f_q000_checkOldTags
+if (<src.flags>&statf_dead)
+  return 0
+endif
+if (<f_npcIsUpset>)  // mother is upset, wait untill she cools down.
+  f_npcUpset_randReaction
+else
+  dialog(d_q000_Elqira)
+endif
+
+[dialog d_q000_Elqira]
+argo.questDialog_create(03000,"<name>") //face ~ 03000-03164
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+
+argo.dialog_newPage("Pozdrav")
+
+if (<eval src.qtag(q000_velmistr)> == 0)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+else
+  argo.questDialog_baseButt(1,50,"Drby...")
+endif
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  if (<arg(q000_velmistr)> == 0)
+    argo.setText(argo.newTextLine,"Bud <src.sex("zdrav","zdrava")>.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q000_velmistr)> > 10)
+    argo.setText(argo.newTextLine,"Rada te znovu vidim! Takove prekvapeni! Kdybych jen tusila, ze prijdes, tak bych neco navarila! <def_questDialog_colorTextEmote>*Zena se pustila do svizneho ometani polic.*<def_questDialog_colorTextNormal> Takova vzacna navsteva a ja tu mam zrovna takovy neporadek!")
+    argo.questDialog_HTMLGUMP
+  else
+    argo.setText(argo.newTextLine,"Rada te znovu vidim! <src.sex("Nasel","Nasla")> jsi me dcery?")
+    argo.questDialog_HTMLGUMP
+  endif
+
+if (<arg(q000_velmistr)> == 0)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(argo.newTextLine,"Jmenuji se <name>.")
+    argo.questDialog_HTMLGUMP
+else
+  argo.dialog_page("Drby...")
+    argo.setText(argo.newTextLine,"A co ja bych ti povidala. S lidma je to porad stejne, temhle vadi tohle, tamtem zase onohle. Porad se mezi sebou certi, ale kdyz na to prijde, tak jsou najednou jak bratri!")
+    argo.questDialog_HTMLGUMP
+endif
+
+argo.dialog_page("Mohu pomoci?")
+  if (src.f_q000_playerIsReady)
+    argo.setText(argo.newTextLine,"Ah, mne neni pomoci... <def_questDialog_colorTextEmote>*Starena skryla tvar ve svych dlanich a rozplakala se*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+    if (<src.profession> == class_priest) || (<src.profession> == class_shaman)
+      argo.setText(argo.newTextLine,"*Vlozit zeniny ruce do svych*")
+      argo.questDialog_addResponse(0,0,1,"q000_rightChoice",1)
+      argo.setText(argo.newTextLine,"Jen se nebojte. Mam nejake zkusenosti, treba vam mohu pomoci!")
+      argo.questDialog_addResponse(0,1,1,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Prece mi tu nebudes brecet babo! Co ti je?")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+    elseif (<src.tag(realm)> == 1) // gondor
+      argo.setText(argo.newTextLine,"*Vlozit zeniny ruce do svych*")
+      argo.questDialog_addResponse(0,1,1,"q000_wrongChoice",1)
+      argo.setText(argo.newTextLine,"Jen se nebojte. Mam nejake zkusenosti, treba vam mohu pomoci!")
+      argo.questDialog_addResponse(0,0,1,"q000_rightChoice")
+      argo.setText(argo.newTextLine,"Prece mi tu nebudes brecet babo! Co ti je?")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+    else // mordor or outcast player
+      argo.setText(argo.newTextLine,"*Vlozit zeniny ruce do svych*")
+      argo.questDialog_addResponse(0,1,1,"q000_wrongChoice",1)
+      argo.setText(argo.newTextLine,"Jen se nebojte. Mam nejake zkusenosti, treba vam mohu pomoci!")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Prece mi tu nebudes brecet babo! Co ti je?")
+      argo.questDialog_addResponse(0,0,1,"q000_rightChoice")
+    endif
+  elseif (<arg(q000_velmistr)> > 10)
+    argo.setText(argo.newTextLine,"Dekuji, ale to nejcennejsi jsi mi uz <src.sex("zachranil","zachranila")>.")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q000_velmistr)> > 0)
+    argo.setText(argo.newTextLine,"<src.sex("Nasel","Nasla")> jsi uz moje dcery? <def_questDialog_colorTextEmote>*Elqira na tebe uprene pohledla s nahlou nadeji namahave vytepanou do jeji tvare vekem zmozenymi svaly.*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+    if (<arg(q000_velmistr)> == 10) // doughters are safe
+      argo.setText(argo.newTextLine,"Vase dcery jsou uz v bezpeci.")
+      argo.questDialog_addResponse(0,0,1,"q000_doughtersROK")
+    endif
+  else
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Elqira si te peclive prohledla*<def_questDialog_colorTextNormal> Ne, ty mi nepomuzes.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Nemam nic na prodej.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"U me zadnou praci nenajdes.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co pro me mas?")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  if (src.f_q000_playerIsReady)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis velmi starou zenu s hrbetem prohnutym tezkou praci v dome a udy ztuhlymi zimou. Jeji chuze je pomala a oci propadle. Zrejme ji neco velmi tizi.*")
+  elseif (<arg(q000_velmistr)> > 9)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis velmi starou zenu s hrbetem prohnutym tezkou praci v dome a udy ztuhlymi zimou. Jeji elan je k nepoznani. Poskakuje od jedne police ke druhe, nepostoji na jednom miste a jeji vrascity oblicej na tebe vrha hned nekolik usmevu nepravidelne razenych nad sebou.*")
+  elseif (<arg(q000_velmistr)> > 0)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis velmi starou zenu s hrbetem prohnutym tezkou praci v dome a udy ztuhlymi zimou. Sotva se drzi na nohou, ale v jejich ocich je videt zmena. Kapka nadeje, kterou ji tvuj slib pomoci prinesl, ozivila jeji stare krivky a prinesla trochu svetla do jejich temnych vyhlidek na zbytek stari o samote.*")
+  else
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis velmi starou zenu s hrbetem prohnutym tezkou praci v dome a udy ztuhlymi zimou.*")
+  endif
+  argo.questDialog_HTMLGUMP
+
+
+if (src.f_q000_playerIsReady)
+  argo.dialog_page("q000_rightChoice")
+    if (<src.profession> == class_priest)
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Zena na tebe z prvu rozpacite pohledla. Teplo z tvych dlani ji zacalo pomalu uklidnovat. Tve rty se zvolna rozpohybovaly. Konecky prstu se rozzarily svetelnymi pulzy blede modre barvy a zena pocitila slabe brneni v pazich, jak v jejim tele rostlo napeti. Krev se vlila do tvare ustarane matky a vysusila jeji vlhke lice. Pak jsi sve ruce opet <src.sex("stahl","stahla")>. Starena na tebe jeste chvili prekvapene zirala.*<def_questDialog_colorTextNormal> Ah... Omlouvam se... Za svou hloupost, me chovani, ja... Muzes mi prosim pomoci?!")
+    elseif (<src.tag(realm)> == 1) // gondor
+      argo.setText(argo.newTextLine,"Ty? <def_questDialog_colorTextEmote>*Zena, zda se, poprve poradne prozkoumala, s kym mluvi.*<def_questDialog_colorTextNormal> Mozna, ze stoji za to nekomu se sverit...")
+    else // mordor or outcast player
+      argo.setText(argo.newTextLine,"Silna slova ! <def_questDialog_colorTextEmote>*Zena si hrubymi prsty utrela slzy.*<def_questDialog_colorTextNormal> Ja potrebuji nekoho, kdo se neboji jednat primo. Me trapeni nevyresi ti mistni povaleci, co pro me maji jen slova utechy! Dam ti vse, co mam, pokud mi pomuzes!")
+    endif
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Prosim, jen mluv.")
+      argo.questDialog_addResponse(0,0,1,"q000_questAssignment")
+
+  argo.dialog_page("q000_questAssignment")
+    argo.setText(argo.newTextLine,"Mam dve dcery, Elmiru a Elviru. Cely svuj zivot jsem jim obetovala. Ucila jsem je rozpoznat kdejaky ker, kazdou bylinu, kazde zvire i kamen v lese. Dnes si to uz jen vycitam! Probudila jsem ve svych dcerach prilis velkou zvedavost. Valka zene pres nas les mnoho tulaku. Od jednoho takoveho se ma mladsi dcera, Elmira, doslechla o zemi daleko na vychode Ledovych plani. Holka je to mlada a blazniva, podlehla slovum o krasne a bohate prirode, o skalach posteych ledovymi polstari, o stromech bujicich v celorocni pokryvce snehu a o bytostech, jednech tvrdych jako kamen a studenych jak led, druhych jemnych jako vitr a divokych jako blesk.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Poslouchat dal*")
+      argo.questDialog_addResponse(0,0,1,"q000_questAssignment_2",1)
+
+  argo.dialog_page("q000_questAssignment_2")
+    argo.setText(argo.newTextLine,"Tak se pro to misto nadchla, ze nemluvila o nicem jinem a netrvalo dlouho a plamen sveho nadseni rozdmychala i ve starsi Elvire. Marne jsem jim domlouvala, at zustanou doma a nepletou si hlavu dalekym svetem. Pred dobrym rokem si sbalily veci a odesly. Jeste par tydnu prichazely zvesti od pocestnych a obchodnicich cestujicich putujicich na jih. Pred par mesici vsak veskere zpravy od nich utichly. Neni jim to podobne. Uz od mala o sobe davaly vedet, kdykoliv se treba jen o hodinu opozdily. Muselo se jim neco stat! Nikdo me tu neposloucha! <def_questDialog_colorTextEmote>*Elqira se znovu bourlive rozplakala*<def_questDialog_colorTextNormal> Najdi prosim te me dcery!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na Ostrovy narku.")
+      argo.questDialog_addResponse(0,1,1,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na Slunecni ostrov.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Temneho hvozdu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na Ostrov Zatemnele mysli.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Haradske pouste.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Obrich lesu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se k rhunskemu jezeru.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na Ledove plane.")
+      argo.questDialog_addResponse(0,0,1,"q000_questAssignment_3")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na Ostrov Titanu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Lorienu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na Ostrov Divu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Rhunske pouste.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice2")
+    
+  argo.dialog_page("q000_questAssignment_3")
+    argo.setText(argo.newTextLine,"<src.splitRealm("Iluvatar","Melkor")> ti bud ku pomoci! Nedovedes si predstavit, co pro me tva pomoc znamena!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Zeptat se na popis dcer a odejit.*")
+      argo.questDialog_addResponse(0,1,1,"q000_questAssignment",1)
+  
+elseif (<arg(q000_velmistr)> == 10) // doughters are safe
+  argo.dialog_page("q000_doughtersROK")
+    argo.setText(argo.newTextLine,"Ah zaplat <src.splitRealm("Iluvatar","Melkor")>! Ty jsi to skutecne <src.sex("dokazal","dokazala")>! Moje holcicky! <def_questDialog_colorTextEmote>*Elqira opet usedave place*<def_questDialog_colorTextNormal> Na svete neni daru, ktery by mohl splatit muj dluh tobe! Slibuji ti, ze vsem povim jak <src.splitRealm("<src.sex("uslechtily a statecny","uslechtila a statecna")>","<src.sex("silny a nebojacny","silna a nebojacna")>")> jsi! Ja mam takovou radost, tu mas, vezmi si alespon neco maleho. Je to to nejmensi, co ti mohu za tvou pomoc nabidnout.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Prevzit dar od Elqiry a odejit*")
+      argo.questDialog_addResponse(0,1,1,"q000_questSolved",1)
+endif
+
+// other quests:
+
+
+[DIALOG d_q000_Elqira button]
+on=@AnyButton
+// no action exits:
+if (<argn> == 0)
+  return
+elseif (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+
+// q000 quest buttons:
+if (src.f_q000_playerIsReady) //
+  if (<argn> == argo.dialog_linkButton("q000_questAssignment")) //
+    src.qtag(q000_velmistr,1,38)
+    say("... Nemuzes si je splest!")
+    return
+  endif
+  if (<argn> == argo.dialog_linkButton("q000_wrongChoice"))
+    say("Nechci se ted s tebou bavit.. Jdi pryc.")
+    f_npcUpset(60) // 60s of upset emotes
+    return
+  endif
+  if (<argn> == argo.dialog_linkButton("q000_wrongChoice2"))
+    say("Ty me vubec neposlouchas! Jdi pryc!")
+    f_npcUpset(150) // 60s of upset emotes
+    return
+  endif
+elseif (<src.qtag(q000_velmistr)> == 10) // doughters are safe
+  if (<argn> == argo.dialog_linkButton("q000_questSolved")) //
+    src.qtag(q000_velmistr,11,38)
+    src.giveitem(i_mi_bag)
+    src.givegold(2500)
+    return
+  endif
+  return
+endif
+
+// gms:
+// other quests:
+
+
+//called upon player - tells, whether the player is ready to start the VM quest
+// returns: 0 if NOT ready
+//          1 if READY
+[function f_q000_playerIsReady]
+if (<eval qtag(q000_velmistr)> == 0) && (<tag(level)> >= <def_q000_minLevel>) && (<eval tag(skillrank)> == 2)
+  return 1
+else
+  return 0
+endif
+
+////////////////////////////////////
+//        E  L  M  I  R  A        //
+//          mladsi dcera          //
+////////////////////////////////////
+
+[SPEECH spk_q000_elmira]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+f_qSpeech(f_q000_ElmiraDClick)
+
+[function f_q000_ElmiraDClick]
+f_q000_checkOldTags
+if (<src.flags>&statf_dead)
+  return 0
+endif
+if (<f_npcIsUpset>)  // Elmira is upset, wait untill she cools down.
+  f_npcUpset_randReaction
+else
+  dialog(d_q000_Elmira)
+endif
+
+
+[dialog d_q000_Elmira]
+argo.questDialog_create(03000,"<name>") //face ~ 03000-03164
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+
+argo.dialog_newPage("Pozdrav")
+
+if (<arg(q000_velmistr)> < 3)
+  argo.questDialog_baseButt(1) // Kdo jsi?
+endif
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  if (<arg(q000_velmistr)> < 3)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Zena se vyplasene rozhlizi.*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+  elseif (<arg(q000_velmistr)> == 3) || (<arg(q000_velmistr)> == 4)
+    argo.setText(argo.newTextLine,"Rada te znovu vidim! Nasel jsi mou sestru?")
+    argo.questDialog_HTMLGUMP
+      if (<arg(q000_velmistr)> == 4)
+        argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><src.sex("Nasel","Nasla")> jsem ji. Je v lese a sotva se drzi na nohou.")
+        argo.questDialog_addResponse(1,0,1,"q000_foundElvira")
+      endif
+      argo.setText(argo.newTextLine,"Ne, je mi lito...")
+      argo.questDialog_addResponse(0,1,1,"q000_notFoundElvira")
+  elseif (<arg(q000_velmistr)> < 10)
+    argo.setText(argo.newTextLine,"Ah to jsi ty! Podarilo se ti nalezt koren Este pro mou sestru!?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ne, bohuzel jeste ne")
+      argo.questDialog_addResponse(0,0,1,"q000_NotFoundHerb")
+      if (<arg(q000_velmistr)> == 6)
+        argo.setText(argo.newTextLine,"Ano, mam ho!")
+        argo.questDialog_addResponse(0,0,1,"q000_FoundHerb")
+      elseif (<arg(q000_velmistr)> == 7) || (<arg(q000_velmistr)> == 8)
+        argo.setText(argo.newTextLine,"Ne jen to, uz jsem ho dal tve sestre a je v poradku! Ted jsi na rade ty.")
+        argo.questDialog_addResponse(0,0,1,"q000_promiseRescue")
+      elseif (<arg(q000_velmistr)> == 9)
+        argo.setText(argo.newTextLine,"Kdyby jen to! Rinald, muz co te veznil, je mrtev!")
+        argo.questDialog_addResponse(0,0,1,"q000_killedRinald")
+      endif
+  else
+    argo.setText(argo.newTextLine,"Rada te znovu vidim!")
+    argo.questDialog_HTMLGUMP
+  endif
+  
+if (<arg(q000_velmistr)> < 3)
+  argo.dialog_page("Kdo jsi?")
+    argo.setText(argo.newTextLine,"<name>, dcera Elqiry. Nemuzu s tebou mluvit!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Odejit.*")
+      argo.questDialog_exitResponse(0,1) // short text, emote text
+      if  (<arg(q000_velmistr)> > 0)
+        argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse><name>? Tva matka me pozadala, abych tebe a tvou sestru <src.sex("nasel","nasla")>! Ma o vas strach a divi se, ze jste ji dlouho nedaly vedet, co s vami je.")
+        argo.questDialog_addResponse(1,0,1,"q000_motherSentMe")
+      endif
+endif
+
+argo.dialog_page("Mohu pomoci?")
+  if (<arg(q000_velmistr)> < 3)
+    argo.setText(argo.newTextLine,"Promin, ale ty mi nepomuzes! Odejdi! <def_questDialog_colorTextEmote>*<name> se rozrusene rozhlizi kolem.*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Odejit.*")
+      argo.questDialog_exitResponse(0,1)
+  elseif (<arg(q000_velmistr)> < 8)
+    argo.setText(argo.newTextLine,"Vzdyt vis, co mas delat! Rychle odejdi, nez te tu uvidi!")
+    argo.questDialog_HTMLGUMP
+      argo.questDialog_exitResponse // default noEffect exit -> *Odejit*
+    if (<arg(q000_velmistr)> == 6) // have the root of Este
+      argo.setText(argo.newTextLine,"<src.sex("Nasel","Nasla")> jsem koren Este!")
+      argo.questDialog_addResponse(0,0,0,"q000_FoundHerb")
+    endif
+  else
+    argo.setText(argo.newTextLine,"Dekuji ti, ale uz jsi pro me <src.sex("udelal","udelala")> vsechno, co jsi <src.sex("mohl","mohla")>.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Obchodovat")
+  if (<arg(q000_velmistr)> < 10)
+    argo.setText(argo.newTextLine,"Se mnou?")
+  else
+    argo.setText(argo.newTextLine,"Ach ja nic nemam. <def_questDialog_colorTextEmote>*<name> se usmala*<def_questDialog_colorTextNormal>")
+  endif
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+  if (<arg(q000_velmistr)> < 10)
+    argo.setText(argo.newTextLine,"!?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Chapes a odchazis...*")
+      argo.questDialog_exitResponse(0,1)
+  else
+    argo.setText(argo.newTextLine,"U me zadnou praci nenajdes.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Nesu ti")
+  if (<arg(q000_velmistr)> < 3)
+    argo.setText(argo.newTextLine,"Jdi pryc! <def_questDialog_colorTextEmote>*<name> ma zrejme velky strach.*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Odejit.*")
+      argo.questDialog_exitResponse(0,1)
+  else
+    argo.setText(argo.newTextLine,"Co pro me mas?")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Prohlednout")
+  if (<arg(q000_velmistr)> < 3)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis divku zavrenou v kleci. Saty ma potrhane a cela se trese zimou.*<def_questDialog_colorTextNormal>")
+  elseif (<arg(q000_velmistr)> < 10)
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis <name> zavrenou v kleci. Saty ma potrhane a cela se trese zimou. Tva pritomnost ji, zda se, trochu uklidnuje.*<def_questDialog_colorTextNormal>")
+  else
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis <name>. Diky tobe je ted volna a muze se tesit z krajiny, kterou sem se svou sestrou prisla obdivovat. Vdecne na tebe vrha hrejivy pohled, kdykoliv ji oslovis.*<def_questDialog_colorTextNormal>")
+  endif
+  argo.questDialog_HTMLGUMP
+
+// custom pages:
+if (<arg(q000_velmistr)> < 3)
+  if (<arg(q000_velmistr)> > 0)
+    argo.dialog_page("q000_motherSentMe")
+      argo.setText(argo.newTextLine,"Tys <src.sex("mluvil","mluvila")> s mou matkou! Prosim te, pomoz mi! Nejaky muz me tu uveznil a stiha mou sestru! Mne neni pomoci, ale ji muzes zachranit! Videla jsem ji prchnout pred timto strasnym muzem primo do snehove boure. Nemohla utect daleko a ja vim, ze by me tu nikdy jen tak nenechala! Dej si pozor a vyhni se tomu muzi, ma obrovskou silu! Gondor ani Mordor tu nema zadnou moc, tady vladne on!")
+      argo.questDialog_HTMLGUMP
+      if (<arg(q000_velmistr)> == 1) // talked just to the mother
+        argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Dobra, pokusim se najit tvou sestru, ale v teto nehostinne krajine to nebude snadne. <src.splitRealm("Zatim se tu opatruj!","Ne ze mi tu zatim chcipnes!")>")
+        argo.questDialog_addResponse(1,1,1,"q000_goFindElvira")
+      else // tag == 2
+        argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Ja jsem uz tvou sestrou <src.sex("nasel","nasla")>. Je v lese a sotva se drzi na nohou. Kdykoliv se ji pokusim oslovit, tak jen nepritomne vykrikuje nesmyslna hesla. <src.splitRealm("Mam o ni strach.","Ta to ma spocitane, moc bych ji <src.sex("nedaval","nedavala")> byt tebou.")>")
+        argo.questDialog_addResponse(1,0,1,"q000_foundElvira")
+      endif
+      argo.setText(argo.newTextLine,"<src.splitRealm("Promin, ale ted nemohu...","Hah! Na to ti cvrka pes ty blazniva!")>")
+      argo.questDialog_addResponse(0,1,1,"q000_refuse")
+  endif
+endif
+
+if (<arg(q000_velmistr)> == 2) || (<arg(q000_velmistr)> == 4) // has seen Elvira
+  argo.dialog_page("q000_foundElvira")
+    argo.setText(argo.newTextLine,"Ach ne! Co je ji? Mluv!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Popsat Elmire stav jeji sestry.*")
+      argo.questDialog_addResponse(0,0,1,"q000_describeElvira",1)
+
+  argo.dialog_page("q000_describeElvira")
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*<name> zkrivila svuj mrazem potrhany oblicej, jeji spodni celist nekolikrat spadla pri Elmirine pokusu udrzet telo pohromade. Nakonec se ji nohy podlomily. Svalila se ve svem vezeni na promrzlou skalu a s hlavou v kolenou zacla hlasite narikat*")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Dat Elmire cas*")
+      if (<src.tag(realm)> == 1) // gondor
+        argo.questDialog_addResponse(0,0,1,"q000_receiveInstructions_g",1)
+      else
+        argo.questDialog_addResponse(0,1,1,"q000_refuseHelp",1)
+      endif
+      argo.setText(argo.newTextLine,"Vzpamatuj se zenska! Vzdyt te jeste nekdo uslysi!")
+      if (<src.tag(realm)> == 1) // gondor
+        argo.questDialog_addResponse(0,1,1,"q000_refuseHelp")
+      else
+        argo.questDialog_addResponse(0,0,1,"q000_receiveInstructions_m")
+      endif
+
+  if (<src.tag(realm)> == 1)
+    argo.dialog_page("q000_receiveInstructions_g")
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Elmira se pomalu sklidnila a jeji ruce se zatly v pest. Zdvihla k tobe sve oci. Dlouze se zahledela a nasledne odpoutala od zeme i cele sve podvyzivene telo.*<def_questDialog_colorTextNormal> Vim, jak sve sestre muzu pomoct...")
+      argo.questDialog_HTMLGUMP
+  else
+    argo.dialog_page("q000_receiveInstructions_m")
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Elmiru tva vyzva zcela sokovala. Nejprve se jeji doprazdna uprene oci pocaly zastavovat na prekazkach, ktere ji ocelova komora kladla do cesty, pote je zdvihla k tobe. Zatla ruce v pest, dlouze se zahledela a nasledne odpoutala od zeme i cele sve podvyzivene telo.*<def_questDialog_colorTextNormal> Vim, jak sve sestre muzu pomoct...")
+      argo.questDialog_HTMLGUMP
+  endif
+        argo.setText(argo.newTextLine,"*Pokynout elmire, at pokracuje.*")
+        argo.questDialog_addResponse(0,0,1,"q000_receiveInstructions",1)
+
+  argo.dialog_page("q000_receiveInstructions")
+    argo.setText(argo.newTextLine,"Znam jeji chorobu. Mnoho lidi, ktere jsme na sve ceste sem potkali trpelo podobnymi stavy. Nekteri z nich vypraveli o byline, korenu Valar Este, jako jedinem moznem leku. V dobach, kdy Este spolu s manzelem Irmem sidlili na ostrove Lorellinskeho jezera, jim byl posety cely Lorien. Jeho kvety vsak uvadly spolu s odchodem Valar. Posledni vyhonky teto vzacne byliny zmizely ze stredozeme pred stovkami let. Podle povesti nekolik malo semen zasadila Este na ostrovech, kolem kterych proplouvali na sve ceste do Valinoru. Dnes jsou tyto ostrovy obyvany Titany. Jedina nadeje me sestry je v techto nekolika malo sazenicich! Prosim, pomoz ji! Mela bych te ale varovat. Titani jsou prilis silni i na tebe. Premluv k ceste jine, silnejsi bojovniky, ale vydej se tam s nimi a nikomu nesdeluj pravy smysl tve cesty. Ta bylina leci mnohe nemoci a clovek, kteremu bys sveril jeji doruceni by se s ni nejspis nevratil.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na Ostrovy narku.")
+      argo.questDialog_addResponse(0,1,1,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na Slunecni ostrov.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Temneho hvozdu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na ostrov Zatemnele mysli.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Haradske pouste.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Obrich lesu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se k rhunskemu jezeru.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na ostrovy Titanu.")
+      argo.questDialog_addResponse(0,0,1,"q000_receiveInstructions_2")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Lorienu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se na ostrov Divu.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+      argo.setText(argo.newTextLine,"Dobra! Vydam se do Rhunske pouste.")
+      argo.questDialog_addResponse(0,1,0,"q000_wrongChoice")
+
+  argo.dialog_page("q000_receiveInstructions_2")
+    argo.setText(argo.newTextLine,"Vyborne! <def_questDialog_colorTextEmote>*Elmira na tebe hledi s nadeji*")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Ziskat popis rostliny a vydat se na ostrovy Titanu*")
+      argo.questDialog_addResponse(0,1,1,"q000_goForHerb",1)
+endif
+
+if (<arg(q000_velmistr)> > 4) && (<arg(q000_velmistr)> < 10) // has been instructed about the herb but did not rescued Elmira yet
+  argo.dialog_page("q000_NotFoundHerb ")
+    argo.setText(argo.newTextLine,"Tak spechej!")
+    argo.questDialog_HTMLGUMP
+      argo.questDialog_exitResponse // default noEffect exit -> *Odejit*
+
+  if (<arg(q000_velmistr)> == 6)
+    argo.dialog_page("q000_FoundHerb")
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Elmire zvhlhly koutky oci radosti*<def_questDialog_colorTextNormal> Prosim spechej za Elvirou a koren ji dej! Ta rostlina je velmi mocna, zabere-li, poznas to rychle.")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Dobre, jdu za ni.")
+        argo.questDialog_exitResponse(0,0) // just an exit (button 0); short text, normal text
+  elseif (<arg(q000_velmistr)> == 7) || (<arg(q000_velmistr)> == 8)
+    argo.dialog_page("q000_promiseRescue")
+      argo.setText(argo.newTextLine,"Sestra je v poradku! Ja, ja .. Ja nevim co rict! Dekuji ti z celeho sveho srdce! Prosim, bud opatrny, ten muz je velmi nebezpecny.")
+      argo.questDialog_HTMLGUMP
+        argo.questDialog_exitResponse // default noEffect exit -> *Odejit*
+  elseif (<arg(q000_velmistr)> == 9)
+    argo.dialog_page("q000_killedRinald")
+      argo.setText(argo.newTextLine,"Vyborne! Jak se ale dostanu z te klece ?")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"Rinald mel u sebe klic.")
+        argo.questDialog_addResponse(0,0,1,"q000_IHaveAKey")
+        argo.setText(argo.newTextLine,"Tak to netusim.")
+        argo.questDialog_addResponse(0,0,1,"q000_HowToOpen")
+
+    argo.dialog_page("q000_IHaveAKey")
+      argo.setText(argo.newTextLine,"Tak na co jeste cekas !")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"*Jit vyzkouset klic*")
+        argo.questDialog_exitResponse(0,1) // short text, emote
+    argo.dialog_page("q000_HowToOpen")
+      argo.setText(argo.newTextLine,"Tak neco zkus!")
+      argo.questDialog_HTMLGUMP
+        argo.setText(argo.newTextLine,"*Jit neco zkusit*")
+        argo.questDialog_exitResponse(0,1) // short text, emote
+  endif
+endif
+
+// other quests:
+
+
+[DIALOG d_q000_Elmira button]
+on=@AnyButton
+// no action exits:
+if (<argn> == 0)
+  return
+elseif (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+
+// q000 quest buttons:
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+if (<arg(q000_velmistr)> == 1)
+  if (<argn> == argo.dialog_linkButton("q000_goFindElvira"))
+    src.qtag(q000_velmistr,3,38)
+    return
+  endif
+elseif (<arg(q000_velmistr)> == 2) || (<arg(q000_velmistr)> == 3)
+  if (<argn> == argo.dialog_linkButton("q000_refuse"))
+    say("Jdi pryc!")
+    f_npcUpset(60) // 60s of crying npc - small RP mistake
+    return
+  endif
+endif
+if (<arg(q000_velmistr)> == 2) || (<arg(q000_velmistr)> == 4)
+  if (<argn> == argo.dialog_linkButton("q000_goForHerb"))
+    say("Pospes si!")
+    src.qtag(q000_velmistr,5,38) // go find the herb onto the Islands of Titans
+    src.addExp(50)
+    return
+  elseif (<argn> == argo.dialog_linkButton("q000_refuseHelp"))
+    say("Ty mi nepomuzes!")
+    f_npcUpset(60) // 60s of crying npc - small RP mistake
+    return
+  elseif (<argn> == argo.dialog_linkButton("q000_wrongChoice"))
+    say("Ty me vubec neposlouchas!)
+    f_npcUpset(120) // 120s of crying npc - epic player failure while reading instructions
+    return
+  endif
+endif
+if (<arg(q000_velmistr)> == 3) || (<arg(q000_velmistr)> == 4)
+  if (<argn> == argo.dialog_linkButton("q000_notFoundElvira"))
+    say("Musis jit! Prosim, najdi ji!")
+    return
+  endif
+endif
+    
+// other quests:
+
+
+////////////////////////////////////
+//        E  L  V  I  R  A        //
+//           dcera 1              //
+////////////////////////////////////
+
+
+[SPEECH spk_q000_elvira]
+ON=*dobry*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+f_qSpeech(f_q000_Elvira)
+
+[function f_q000_ElviraDClick]
+if (<eval src.qtag(q000_velmistr)> == 6) // we have the root of Este
+  if (<src.isDead>)
+    return 0
+  endif
+  src.sysMessage("Podarilo se ti podat Elvire koren Este a vypada to, ze zabira!")
+  src.qtag(q000_velmistr,7,38)
+  src.addExp(50)
+  say("Aaaaah...")
+  emote("zacala prudce dychat.")
+  return
+endif
+f_q000_Elvira
+
+[function f_q000_Elvira]
+f_q000_checkOldTags
+if (<src.isDead>)
+  return 0
+endif
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+if (<arg(q000_velmistr)> < 7) // did not heal Elvira
+  dorand 20
+    say("Aaaa ji aa ooa.")
+    say("Oo oOoo Ooo.")
+    say("Iia ai aia yaah.")
+    say("Gaaaah ah...")
+    say("Ajikido olaja pakauu!")
+    say("Rijaaaaa hi!")
+    say("Agika kajaka hajitaa.")
+    say("Bala ka burburak!")
+    say("Big bada bum!")
+    emote("je jako uhranuta.")
+    emote("si skube vlasy.")
+    emote("je jako uhranuta.")
+    emote("nepritomne zira.")
+    emote("nekomunikuje.")
+    emote("je jako uhranuta.")
+    emote("te ignoruje.")
+    emote("nekomunikuje.")
+    emote("je naprosto mimo sebe.")
+    emote("nekomunikuje.")
+    emote("je jako uhranuta.")
+  enddo
+  if (<arg(q000_velmistr)>)
+    src.sysMessage("Tohle musi byt Elvira. Je strasne podobna sve matce")
+    if (<arg(q000_velmistr)> == 1) || (<arg(q000_velmistr)> == 3)
+      src.classMessage("Zda se, ze Elvira je tezce nemocna ci naprosto silena.")
+      if (<arg(q000_velmistr)> == 1)// talked just to the mother
+        src.qtag(q000_velmistr,2,38)
+      else // talked to the mother and Elmira
+        src.qtag(q000_velmistr,4,38)
+      endif
+      src.addExp(50)
+    endif
+  endif
+  return 0
+else
+dialog(d_q000_Elvira)
+
+
+[dialog d_q000_Elvira]
+argo.questDialog_create(03000,"<name>") //face ~ 03000-03164
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+
+argo.dialog_newPage("Pozdrav")
+argo.questDialog_baseButt(2) // Mohu pomoci?
+argo.questDialog_baseButt(3) // Obchodovat
+argo.questDialog_baseButt(4) // Hledam praci
+argo.questDialog_baseButt(5) // Nesu ti
+argo.questDialog_baseButt(6) // Prohlednout
+
+argo.dialog_page("Pozdrav")
+  if (<arg(q000_velmistr)> == 7) // can not be less than 7
+    argo.setText(argo.newTextLine,"Zdravim te <src.sex("priteli","pritelkyne")> a dekuji ti za lek. Kdo jsi?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Me jmeno je <src.name> a posila me tva matka, abych <src.sex("nasel","nasla")> tebe a tvou sestru. Povez mi, co se stalo?")
+      argo.saveTextLine("q000_tellTheStory")
+      argo.questDialog_addResponse(1,0,1,"q000_tellTheStory")
+  else
+    argo.setText(argo.newTextLine,"Vitam te zpatky!")
+    argo.questDialog_HTMLGUMP
+  endif
+argo.dialog_page("Mohu pomoci?")
+  if (<arg(q000_velmistr)> == 7) // can not be less than 7
+    argo.setText(argo.newTextLine,"Prozrad mi co se se mnou stalo? A kdo jsi, <src.sex("Zachranil","Zachranila")> jsi me a ja ani nevim, komu za to vdecim.")
+    argo.questDialog_HTMLGUMP
+      argo.questDialog_addSameResponse(1,0,"q000_tellTheStory")
+  else
+    argo.setText(argo.newTextLine,"Nevim, co bys pro me <src.sex("mohl","mohla")> udelat.")
+    argo.questDialog_HTMLGUMP
+  endif
+
+argo.dialog_page("Obchodovat")
+  argo.setText(argo.newTextLine,"Nemam nic na prodej.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Hledam praci")
+  argo.setText(argo.newTextLine,"U me zadnou praci nenajdes.")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Nesu ti")
+  argo.setText(argo.newTextLine,"Co pro me mas?")
+  argo.questDialog_HTMLGUMP
+
+argo.dialog_page("Prohlednout")
+  if (<arg(q000_velmistr)> == 7) //first look
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis Elviru, sestru Elmiry a dceru Elqiry. Po podani leciveho korene je jeste trochu dezorientovana, ale do tvari se ji pomalu vraci zdrava barva. Tmave vlasy a ostre lice napadne pripominaji, i pres znacny vekovy rozdil, jeji matku.*")
+  elseif (<arg(q000_velmistr)> ==8) // not yet saved Elmira
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis Elviru, sestru Elmiry a dceru Elqiry. Barva jeji kuze je uz zdrava a jeji projev je opet plny zivota. Na cele ji vsak ve vlnach svrastele kuze ctes starost o jeji sestru. Tmave vlasy a ostre lice napadne pripominaji, i pres znacny vekovy rozdil, jeji matku.*")
+  else
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Vidis Elviru, sestru Elmiry a dceru Elqiry. Tmave vlasy a ostre lice napadne pripominaji, i pres znacny vekovy rozdil, jeji matku. <src.sex("Podal","Podala")> jsi ji koren Este, ktery ji vylecil na tele. Zachranila jsi jeji sestru z uvezneni krutym Rinaldem a uzdravila tak jeji dusi. Ted pred tebou stoji silna, spokojena zena, ktera se opet obdivuje prirode. Obdiv, pro ktery kdysi malem polozila se svou sestrou zivot.")
+  endif
+  argo.questDialog_HTMLGUMP
+
+
+if (<arg(q000_velmistr)> == 7)
+  argo.dialog_page("q000_tellTheStory")
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Elvira chvili patrala v pameti a pak zacala vypravet*<def_questDialog_colorTextNormal> Kdyz jsme se sestrou prisly do Ledovych plani, byly jsme nadsene. Vse se zdalo byt jeste krasnejsi, nez jsme si kdy predstavovaly, jen obcasna karavana plna pomatenych lidi vrhala slaby stin na nasi mysl. Prisuzovaly jsme to vzdy nehostinnym podminkam ledovych plani a dale si toho nevsimaly. Krmily jsme zver, hledaly nove rostliny a po lovcich prochazejicich timto krajem jsme domu posilay zpravy matce... <def_questDialog_colorTextEmote>*Elvira, stale jeste v soku z prodelane nemoci, zastenala a na chvili se odmlcela.*")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Prosim pokracuj.")
+      argo.questDialog_addResponse(0,0,1,"q000_tellTheStory_2")
+
+  argo.dialog_page("q000_tellTheStory_2")
+    argo.setText(argo.newTextLine,"Jak jsme cestovaly dal na vychod, krajina houstla a potkavaly jsme stale mene a mene lidi. Nakonec jsme byly cele dva tydny odkazany samy na sebe v nehostinne krajine. Po prvnim tydnu zacalo slabe snezit a po dalsich dvou dnech jsme pochodovaly v silne bouri. Dostaly jsme se az ke skale a nasly v ni utociste. Behem neceleho tydne se boure uklidnila natolik, ze jsme se odvazily ven. Tehdy jsme zjistily, ze tu nejsme samy. V planine nekolik kilometru na jih jsme nasly rozvaliny, vyhasle kempy a obcas i stopy lidi. <def_questDialog_colorTextEmote>*Elvira opet lehce zastenala*<def_questDialog_colorTextNormal> Nikdo tu nepostal, vsichni se hned presouvali jinam. Zacalo nam to byt podezrele. Jeste par dni jsme bloudily krajinou, nez se nebe znovu zatahlo a byly jsme nuceny se opet schovat do skal...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"*Nechat Elviru mluvit dal.*")
+      argo.questDialog_addResponse(0,0,1,"q000_tellTheStory_3",1)
+
+  argo.dialog_page("q000_tellTheStory_3")
+    argo.setText(argo.newTextLine,"Elmira sla shanet drevo a ja sla do jeskyne pripravit zajice, ktereho jsme ulovily. A tam jsem ho uvidela. <def_questDialog_colorTextEmote>*Elvira se vydesene zahledela do prazdna*<def_questDialog_colorTextNormal> Muz zjizveny a krivy. Pri chuzi jako by plul vzduchem a zeme se dotykal jen par prstu nad ni. Zprvu me nespatril a hovoril sam k sobe. Bodal do sebe jehlici napustenou v ruznych latkach a neustale se pri tom oslovoval jmenem Rinald. Pak prestal a dosel ke svym psum, bestiim hladem dohnanym k silenstvi. Nabidl jim svou ruku a bavil se vzteklemu vrceni tech zrud, jak se ji snazily rozervat! Na jeho pazi vsak nebyl jediny krvavy sram! Mocna sila musi chranit toho muze pred kazdym, kdo nezna jeho jmeno...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jak jsi ale prisla ke svemu zraneni?")
+      argo.questDialog_addResponse(0,0,1,"q000_tellTheStory_4 ")
+
+  argo.dialog_page("q000_tellTheStory_4")
+    argo.setText(argo.newTextLine,"Kdyz jsem se snazila vyplizit, napadl me jeden z jeho psu. Rinald to okamzite zpozoroval a zacal vyslovovat slozita hesla. Zbytek si uz vybavuji jen velmi mlhave. Obrovsky zar v zadech, stekot psu a dunivy zvuk bortici se hory. Vybehla jsem z jeskyne a spechala zacinajici bouri nejrychlejsi cestou od Rinaldovy skryse. Zvedajici se vitr rychle halil me stopy zavejemi a spolu se silnym snezenim omezoval rozhled na nekolik malo metru. Tak se mi se stestim podarilo utect. Pak jsem ztratila vedomi. Moje dalsi vzpominkou jsi ty, jak se nademnou sklanis s korenem myticke byliny v rukou! Jsem ti zavazana svym zivotem a dluzim ti vice, nez kdy budu schopna splatit. Presto te musim poprosit o dalsi vec! Mas zbytky lecive byliny, znas jmeno neznameho muze a jsi bojem <src.sex("ostrileny","ostrilena")>. Vyuzij prosim svych znalosti a vysvobod moji sestru!")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Muzes mi vysvetlit, jak jsi se dostala pres tu rokli?")
+      argo.questDialog_addResponse(0,0,1,"q000_ravine")
+      argo.setText(argo.newTextLine,"Chapu. Uvidim, co mohu delat.")
+      argo.questDialog_addResponse(0,1,1,"q000_goKillRinald")
+
+  argo.dialog_page("q000_ravine")
+    argo.setText(argo.newTextLine,"O jake rokli mluvis?")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Ale nic, uvidim, co pro tebe muzu udelat.")
+      argo.questDialog_addResponse(0,1,0,"q000_goKillRinald")
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Kousek na sever od tebe je obrovska rokle, kterou jsem <src.sex("musel","musela")> obihat pul dne pres mosty na zapade.")
+      argo.questDialog_addResponse(1,0,1,"q000_ravine_2")
+
+  argo.dialog_page("q000_ravine_2")
+    argo.setText(argo.newTextLine,"Nemam tuseni, asi jsem musela v tom poblouzneni vylezt nahoru.")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Steny te rokle jsou sto metru vysoke...")
+      argo.questDialog_addResponse(0,0,1,"q000_ravine_3")
+
+  argo.dialog_page("q000_ravine_3")
+    argo.setText(argo.newTextLine,"Oh...")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Jen oh?")
+      argo.questDialog_addResponse(0,0,1,"q000_ravine_4")
+      argo.setText(argo.newTextLine,"<def_questDialog_colorTextResponse>Take jsou pokryte ledem a v rokli je pri bouri dost silny vitr, ktery velmi ponicil i peclive pripevnene mosty.")
+      argo.saveTextLine("q000_ravine_5")
+      argo.questDialog_addResponse(1,0,1,"q000_ravine_5")
+
+  argo.dialog_page("q000_ravine_4")
+    argo.setText(argo.newTextLine,"Ou... <def_questDialog_colorTextEmote>*Elvira, zda se, upenlive premysli*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+      argo.questDialog_addSameResponse(1,0,"q000_ravine_5")
+
+  argo.dialog_page("q000_ravine_5")
+    argo.setText(argo.newTextLine,"<def_questDialog_colorTextEmote>*Ted uz na tebe Elvira jen spokojene hledi bez jedine reakce.*<def_questDialog_colorTextNormal>")
+    argo.questDialog_HTMLGUMP
+      argo.setText(argo.newTextLine,"Eh... No dobra! Uvidim, co se pro tvou sestru da udelat.")
+      argo.questDialog_addResponse(0,1,0,"q000_goKillRinald")
+endif
+// other quests:
+
+[dialog d_q000_Elvira button]
+on=@AnyButton
+// no action exits:
+if (<argn> == 0)
+  return
+elseif (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+
+// q000 quest buttons:
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+if (<arg(q000_velmistr)> == 7) // 
+  if (<argn> == argo.dialog_linkButton("q000_goKillRinald")) //
+    say("Dekuji ti <src.sex("hrdino","hrdinko")>!")
+    src.qtag(q000_velmistr,8,38)
+  endif
+  return
+endif
+// other quests:
+
+
+
+////////////////////////////////////
+//        R  I  N  A  L  D        //
+////////////////////////////////////
+[SPEECH spk_q000_rinald]
+ON=*dobry*
+ON=*dobre*
+ON=*den*
+ON=*zdravim*
+ON=*hi*
+ON=*hello*
+ON=*Rinald*
+f_q000_checkOldTags
+
+[function f_q000_RinaldDClick]
+arg(spawn,<memoryfindtype(MEMORY_ISPAWNED).link>)
+if (src.isGM)
+  arg(spawn).dialog(d_guarditAdv)
+elseif (<src.isDead>)
+  return
+endif
+if (<memoryfindtype(MEMORY_ISPAWNED).link.f_guarditAdv_CheckSpawns>)
+  src.redMessage("Nemuzes s nim mluvit, dokud te obtezuji ty bestie kolem!")
+else
+  dialog(d_q000_rinald)
+endif
+
+[dialog d_q000_rinald]
+argo.questDialog_create(03000,"<name>") //face ~ 03000-03164
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+
+argo.dialog_newPage("Pozdrav")
+
+argo.dialog_page("Pozdrav")
+  argo.setText(argo.newTextLine,"Co tu delas ?! Co mi chces ty <src.sex("chudaku","ubozacko")>!")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Vim, ze drzis v zajeti Elmiru, pust ji!")
+    argo.questDialog_addResponse(0,0,1,"q000_releaseElmira")
+
+argo.dialog_page("q000_releaseElmira")
+  argo.setText(argo.newTextLine,"Ty spino! Okamzite mi zmiz z oci, mas stesti ze na tebe nemam cas! <def_questDialog_colorTextEmote>*Muz vzal do rukou nuz a parkrat jim teatralne prejel po sve pazi, na ktere nezustal jediny sram. Rinald se na tebe podival a hlasite se zacal smat.*<def_questDialog_colorTextNormal> Vidis, s cim si tu zahravas? Bez meho jmena jsi proti mne <src.sex("bezmocny","bezmocna")>. A me jmeno nikdo nezna!")
+  argo.questDialog_HTMLGUMP
+    argo.setText(argo.newTextLine,"Bilbo!")
+    argo.questDialog_addResponse(0,1,1,"q000_wrongName")
+    argo.setText(argo.newTextLine,"Frodo!")
+    argo.questDialog_addResponse(0,1,0,"q000_wrongName")
+    argo.setText(argo.newTextLine,"Melkor!")
+    argo.questDialog_addResponse(0,1,0,"q000_wrongName")
+    if (<arg(q000_velmistr)> == 8) // know his name
+      argo.setText(argo.newTextLine,"Rinald!")
+      argo.questDialog_addResponse(0,1,1,"q000_tellHisName")
+    endif
+    argo.setText(argo.newTextLine,"Illuvatar!")
+    argo.questDialog_addResponse(0,1,0,"q000_wrongName")
+    argo.setText(argo.newTextLine,"Dante!")
+    argo.questDialog_addResponse(0,1,0,"q000_wrongName")
+    argo.setText(argo.newTextLine,"Karel!")
+    argo.questDialog_addResponse(0,1,0,"q000_wrongName")
+    argo.setText(argo.newTextLine,"Rudolf!")
+    argo.questDialog_addResponse(0,1,0,"q000_wrongName")
+    argo.setText(argo.newTextLine,"Martin!")
+    argo.questDialog_addResponse(0,1,0,"q000_wrongName")
+
+// other quests:
+
+[dialog d_q000_rinald button]
+on=@AnyButton
+// no action exits:
+if (<argn> == 0)
+  return
+elseif (f_qReach) || (f_qIsDead) // the player is too far from the NPC or even dead!
+  return
+endif
+
+// q000 quest buttons:
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+if (<argn> == argo.dialog_linkButton("q000_wrongName"))
+  SAY("HA! Vypadni!")
+  src.f_q000_dungeonPort
+  return
+elseif (<arg(q000_velmistr)> == 8)
+  if (<argn> == argo.dialog_linkButton("q000_tellHisName")) // convert NPC int a killing daemon
+    name=Rinald
+    SAY("<src.sex("Ubozaku","Ubozacko")>! To, ze znas me jmeno, nic nedokazuje! Zemres bidnou smrti!")
+    delayFunction(3,f_q000_rinaldTransfer)
+    return
+  endif
+endif
+
+[function f_q000_rinaldTransfer]
+sfx(snd_SPELL_lightning)
+body=c_daemon_mage1
+KARMA=-10000
+color=0445
+INVUL 0
+//try memoryfind.<src.uid>.remove
+f_dragon_fire(35) // give them smaller damage
+
+
+////////////////////////////////////
+//      Z  M  O  C  N  E  C       //
+//                                //
+////////////////////////////////////
+[function f_q000_canBePromotedVM]
+if (<eval qtag(q000_velmistr)> == 11) || (<eval qtag(q000_velmistr)> == 12) // nosim suroviny
+  return 1
+else
+  return 0
+endif
+
+[function f_q000_zmocnenec_Request]
+//if (<src.f_q000_canBePromotedVM>) //duplicit check
+  setText(newTextLine,"Zdravim te! Nejsi ty <src.sex("ten, kdo pomohl","ta, ktera pomohla")> Elqire zachranit jeji dcery?!")
+  questDialog_HTMLGUMP
+    setText(newTextLine,"Ano to jsem ja.")
+    questDialog_addResponse(0,0,1,"q000_getVM")
+//endif
+
+[function f_q000_zmocnenec_Answer]
+if (<src.f_q000_canBePromotedVM>)
+  dialog_page("q000_getVM")
+    setText(newTextLine,"Pak tedy poklekni! Nebot jsi tu <src.sex("ocekavan","ocekavana")>! Z moci mi sverene <src.splitRealm("Gondorskym","Mordorskym")> panovnikem ti udeluji vyssi spolecensky status! Budiz tva nova hodnost znama vsemu lidu <src.splitRealm("Gondorskemu","Mordorskemu")> a ty ji nos s uctou a zodpovednosti jak k sobe, tak k ostatnim, kteri ji obdrzeli predtebou a po tobe! Nyni opet povstan, Velmistre!")
+    questDialog_HTMLGUMP
+      setText(newTextLine,"*Povstat a prevzit novy titul*")
+      questDialog_addResponse(0,1,1,"q000_getVM",1)
+endif
+
+[function f_q000_zmocnenec_Button] //argv(0) == button number (<argn>)
+if (<src.f_q000_canBePromotedVM>)
+  if (<argv(0)> == dialog_linkButton("q000_getVM"))
+    src.qtag(q000_velmistr,13,38)
+    src.tag(skillrank,3) // DONE ! ! ! ! ! !
+    src.setPlayer //updates it's status
+    if (isqueststone)
+      finduid(<return_nth(1,<questMenu_questStone>)>).tag.quest_velmistr=<finduid(<return_nth(1,<questMenu_questStone>)>).tag.quest_velmistr>+1
+    endif
+    return 1
+  endif
+endif
+return 0
+
+///////////////////////////////////
+//      V M   A  L  E  R  T      //
+//           G U M P S           //
+///////////////////////////////////
+
+[function f_q000_shouldBePromoted_Request]
+if (<src.f_q000_canBePromotedVM>) //duplicit check
+    setText(newTextLine,"<def_questDialog_colorTextResponse>Omlouvam se za svou troufalost, ale zda se mi, ze na me koukas trochu rospacite. Stalo se neco? Nejsi prvni, kdo se tu na mee takhle diva.")
+    questDialog_addResponse(1,0,1,"q000_getVMDir")
+endif
+
+[function f_q000_shouldBePromoted_Answer]
+if (<src.f_q000_canBePromotedVM>)
+  dialog_page("q000_getVMDir")
+    setText(newTextLine,"Omlouvam se, ja jen, ze je tu ted slyset spousta zvesti o <src.sex("jistem muzi, ktery cestoval","jiste zene, ktera cestovala")> pres pul sveta aby <src.sex("pomohl","pomohla")> dceram Elqiry. Ty se strasne podobas popisu te osoby, je mi to hloupe.")
+    questDialog_HTMLGUMP
+      setText(newTextLine,"No to je tedy hloupost...")
+      questDialog_addResponse(0,0,1,"q000_plainPage")
+      setText(newTextLine,"Nemusis se citit hloupe, jsem to opravdu ja.")
+      questDialog_addResponse(0,0,1,"q000_getVMDir_2")
+
+  dialog_page("q000_plainPage")
+    setText(newTextLine,"Ja vim...")
+    questDialog_HTMLGUMP
+
+  dialog_page("q000_getVMDir_2")
+    setText(newTextLine,"To jsi opravdu ty! Neuveritelna nahoda, ze jsi <src.splitRealm("zavital","zavitala")> zrovna sem. Jeden by rekl, ze pobezis rovnou za nasim zmocnencem...")
+    questDialog_HTMLGUMP
+      setText(newTextLine,"Za zmocnencem? Proc?")
+      questDialog_addResponse(0,0,1,"q000_getVMDir_3")
+
+  dialog_page("q000_getVMDir_3")
+    setText(newTextLine,"Ty to nevis? Shani te Zmocnenec <src.splitRealm("Gondoru","Mordoru")>. Vsichni o tom mluvi. <src.sex("Mel","Mela")> by jsi za nim dojit. Urcite se doslechl o tvych zasluhach.")
+    questDialog_HTMLGUMP
+      setText(newTextLine,"*Podekovat a jit za Zmocnencem*")
+      saveTextLine("q000_go4VM")
+      questDialog_addResponse(0,1,1,"q000_go4VM",1)
+      setText(newTextLine,"Kde najdu Zmocnence <src.splitRealm("Gondoru","Mordoru")>?")
+      questDialog_addResponse(0,0,1,"q000_whereIsHe")
+
+  dialog_page("q000_whereIsHe")
+    setText(newTextLine,"Zmocnence najdes <src.splitRealm("v Minas Thirith","ve Rhunu")>. Tam uz se doptas.")
+    questDialog_HTMLGUMP
+      questDialog_addSameResponse(0,1,"q000_go4VM",1)
+endif
+
+[function f_q000_shouldBePromoted_Button] //argv(0) == button number (<argn>)
+if (<src.f_q000_canBePromotedVM>)
+  if (<argv(0)> == dialog_linkButton("q000_go4VM"))
+    src.sysMessage("Mozna by ses <src.sex("mel","mela")> jit za tim Zmocnencem podivat.")
+    src.qtag(q000_velmistr,12,38)
+    return 1
+  endif
+endif
+return 0
+
+
+////////////////////////////////////////////////////////////////////////////
+// POZN:
+//    VarGate VSTUPU DO Rinaldovy jeskyne musi mit:
+//         1. funkci f_q000_vg_CaveEntrance_test oznacenou jako funkci umoznujici zamezit vstupu
+//         2. funkci f_q000_vg_CaveEntrance, ktera naopak vstupu nezamezuje !
+//         3. tag(q000_rinaldSpawnUID) - rucne pridat
+//
+//    VarGate VYCHODU Z Rinaldovy jeskyne musi mit:
+//         1. funkci f_q000_vg_CaveExit_test oznacenou jako funkci umoznujici zamezit vstupu
+//         2. funkci f_q000_vg_CaveExit, ktera naopak vstupu nezamezuje !
+
+
+
+//////////////////////////////////////////////////////
+[function f_q000_vg_CaveEntrance_test] // can deny entrence - returns 0 IF OK
+arg(q000_velmistr,<qtag(q000_velmistr)>)
+if !(<var(lastVarGate).tag(q000_rinaldSpawnUID)>)
+  redMessage("CHYBA! Pis page s textem: vstupni gate VM nema spravny tag q000_rinaldSpawnUID!")
+  return 1
+elseif (<tag(skillrank)> < 2) || (<arg(q000_velmistr)> < 8) || (<tag(level)> < <def_q000_minLevel>)
+  sysMessage("Vystrasena zena v kleci pred vstupem do temne jeskyne? Ne, tam nejdes.")
+  return 1 // may NOT enter
+elseif (<arg(q000_velmistr)> > 8) //Player killed Rinald already
+  sysMessage("Tady uz jsi <sex("udelal vse, co jsi mohl","udelala vse, co jsi mohla")>.")
+  return 1 // may NOT enter
+endif
+return 0 // go for it !
+
+[function f_q000_vg_CaveEntrance]
+newEquip(i_q000_delayer)
+events=+e_q000_dungeon
+arg(spawn,<findUID(<var(lastVarGate).tag(q000_rinaldSpawnUID)>)>)
+if (<charExists(<arg(spawn).tag(lastSpawned)>)>)
+  if (<strcmpi("<arg(spawn).tag(lastSpawned).name>","Rinald")> == 0) // Rinald is converted into daemon-> respawn npc
+    arg(spawn).tag(lastSpawned).remove
+    arg(spawn).timer=1
+  endif
+endif
+
+[function f_q000_vg_CaveExit_test]
+if !(<var(lastVarGate).tag(q000_rinaldSpawnUID)>)
+  redMessage("CHYBA! Pis page s textem: vystupni portal nema spravny tag q000_rinaldSpawnUID!")
+  return 1
+endif
+arg(spawn,<findUID(<var(lastVarGate).tag(q000_rinaldSpawnUID)>)>)
+if (<eval arg(spawn).more2>) // Rinald is alive
+  redMessage("Ted to preci neotocis!")
+  return 1
+endif
+return 0 // get out!
+
+[function f_q000_vg_CaveExit]
+if (<qtag(q000_velmistr)> == 8) // know his name and Rinald is dead
+  classMessage("Pred odchodem jsi z Rinaldova tela jeste <sex("sebral","sebrala")> klic.")
+  qtag(q000_velmistr,9,38)
+  addExp(1000)
+else
+  sysMessage("Nejsi moc <sex("moudry","moudra")> z toho, co se tady stalo...")
+endif
+consume(i_q000_delayer)
+
+[function f_q000_dungeonPort]
+arg(delayer,<findID(i_q000_delayer)>)
+if (<arg(delayer)>)
+  arg(delayer).timer=1
+  arg(delayer).more1=0
+endif
+
+[ITEMDEF i_q000_delayer]
+NAME=Delay mistr
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+
+ON=@Create
+attr=attr_invis|attr_decay
+more1=60 // ~ 3600s, this is the amount of time they have for finishing the dungeon. - (more1 = 1) is 60s limit
+morep=<eval src.p_x+1>,<eval src.p_y+1>,<src.p_z>,<src.mapplane>
+
+ON=@Equip
+timer=1
+cont.sysMessage("Musis spechat! Hrozi ti tu velike nebezpeci.")
+
+ON=@Timer
+// Take the effect we would like.
+if (<eval cont.region.tag(q000_dungeon)> == 0)
+  remove
+endif
+if (<more1>)
+  if (<more1> > 4)
+    cont.sysMessage("Zbyva <eval more1> minut.") // put countdown above my head.
+  elseif (<more1> > 1)
+    cont.redMessage("Zbyvaji <eval more1> minuty.")
+  else
+    cont.redMessage("Zbyva ti posledni minuta.")
+  endif
+  more1=<more1>-1
+  timer=60
+  return 1
+else
+  cont.go(<moreP>) // zde se nastavi misto kam ho to hodi pokud vcas nestihne splnit quest
+  cont.events=-e_q000_dungeon
+  if (<cont.isDead>)
+    cont.sysMessage("Tohle se ti nepovedlo...")
+  elseif (<cont.qtag(q000_velmistr)> < 8) // don't know his name
+    cont.sysMessage("<cont.sex("Byl jsi vyhnan","Byla jsi vyhnana")> z jeskyne neznamym muzem!")
+  else
+    cont.sysMessage("Rinald te vyhnal z jeskyne!")
+  endif
+endif
+remove
+return 1
+
+[events e_q000_dungeon]
+on=@DeathCorpse
+argo.p=<findID(i_q000_delayer).moreP>
+src.f_q000_dungeonPort // ports player out of the VM dungeon
+events=-e_q000_dungeon
+
+[itemdef i_q000_cageDoor]
+id=i_door_metal_bar
+name=Dvere od klece
+type=t_normal
+
+CATEGORY=Moria
+SUBSECTION=velmistrovsky quest
+DESCRIPTION=Dvere do klece
+
+on=@UserDClick
+if (src.isGM)
+  target("Zamer spawn Elmiry")
+else
+  arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+  if (<arg(q000_velmistr)> == 9) // odemykas dvere
+    src.classMessage("<src.sex("Odemkl","Odemkla")> jsi vrata klece pomoci klice nalezeneho u Rinalda")
+    link.tag(lastSpawned).say("Dekuji ti <src.sex("muj hrdino","ma hrdinko")>!")
+    src.addExp(50)
+    src.qtag(q000_velmistr,10,38)
+  elseif (<arg(q000_velmistr)> < 9)
+    src.sysMessage("Nevis, jak bys <src.sex("mohl","mohla")> tyto pevne mrize otevrit.")
+  else
+    dorand 10
+      src.sysMessage("Dvere jsou jiz otevrene.")
+      src.sysMessage("Rinalduv klic do dveri kdysi krasne zapadl a ty jsi <src.sex("vysvobodil","vysvobodila")> Elmiru.")
+      src.sysMessage("Tyto dvere velmi dobre poznavas. Vse uzitecne uz jsi s nimi <src.sex("provedl. Odemkl","provedla. Odemkla")> jsi je!")
+      src.sysMessage("Odemcene dvere do klece.")
+      src.sysMessage("Stare rezave dvere klece, ktere Rinald pouzival k vezneni Elmiry.")
+      src.sysMessage("Tady uz moc neudelas.")
+      src.sysMessage("Nemuzes s temi dvermi udelat nic vic.")
+      src.sysMessage("Jednou dvere, porad dvere.")
+      src.sysMessage("Takoveto pevne dvere donuti k zamysleni nad zpusobem obzivy kazdeho zlodeje.")
+      src.sysMessage("Pevne dvere jsou zaklad kazdeho zalare.")
+    enddo
+  endif
+endif
+return 1
+
+on=@TargOn_Item
+if (<src.targ.type> == t_spawn_char)
+  link=<src.targ>
+  src.sysMessage("Podarilo se ti zacilit spawn")
+else
+  target("Toto neni spawn")
+endif
+return 1
+
+on=@TargOn_Char
+target("Toto neni spawn")
+return 1
+
+///////////////////////////////////////
+
+[ITEMDEF i_q000_rootOfEste]
+ID=0c85
+NAME=Kvetina
+
+CATEGORY=Moria
+SUBSECTION=velmistrovsky quest
+DESCRIPTION=vzacna bylina
+
+ON=@Create
+attr=010
+
+ON=@Timer
+return 1
+
+ON=@userDCLICK
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+if (src.isGM)
+  dialog(d_guarditAdv)
+  return 1
+elseif (src.isDead)
+  return 0 // can not touch
+elseif (<arg(q000_velmistr)> == 5) // can pick up the root
+  if (f_guarditAdv_CheckSpawns) // there is a guard alive
+    src.redMessage("Kvetinu stale nekdo hlida. Na jeji sebrani potrebujes klid!")
+  else
+    src.classMessage("Podarilo se ti vytrhnout koren Este!")
+    src.qtag(q000_velmistr,6,38)
+    src.addExp(100)
+  endif
+  return 1
+elseif (<arg(q000_velmistr)> > 5)
+  dorand 8
+    src.sysMessage("Tady si uz nic nevezmes.")
+    src.sysMessage("Kvetina je jiz zcela otrhana.")
+    src.sysMessage("Posledni zbytky korenu jsi jiz <src.sex("oskubal","oskubala")>.")
+    src.sysMessage("Necht posledni vselek uhniva v pokoji.")
+    src.sysMessage("Este by byla jiste rada, ze jeji koren pomohl dobre veci.")
+    src.sysMessage("Prohrabovat se tu dale je naprosto zbytecne.")
+    src.sysMessage("Zbytky teto legendarni byliny jsou diky tobe odsouzeny k vecnemu zaniku")
+    src.sysMessage("Dalsim stouranim se v hline tu jen ztracis cas.")
+  enddo
+  return 1
+endif
+return 0
+
+
+ON=@userCLICK
+arg(q000_velmistr,<eval src.qtag(q000_velmistr)>)
+if (<arg(q000_velmistr)> == 5)
+  src.sysMessage("V teto byline poznavas koren Este, pro ktery te poslala Elmira")
+  message("Koren Este")
+  return 1
+elseif (<arg(q000_velmistr)> > 5)
+  message("Otrhane zbytky korenu Este")
+  return 1
+endif
+
+
+[ITEMDEF i_bylina]
+ID=0c85
+NAME=Vzacna bylina.
+
+CATEGORY=Moria
+SUBSECTION=velmistrovsky quest
+DESCRIPTION=vzacna bylina
+
+ON=@Create
+attr=attr_move_always
+
+ON=@userDCLICK
+src.sysMessage("Toto je velmi vzacna bylina! Co chces vic?")
+
+ON=@userCLICK
+src.sysMessage("Toto je vzacna bylina.")
+
+
+[itemdef i_q000_rootOfEste_Alarm]
+id=i_rune_alchem_2
+name=Dlazdice upozornujici na quest velmistra
+
+on=@Create
+attr=090
+
+on=@Step
+if !(src.isGM) && (src.isPlayer)
+  if (<eval src.qtag(q000_velmistr)> == 5)
+    if (<eval var(q000_lastAlarm)> < <serv.time>)
+      var(q000_lastAlarm,<eval <serv.time>+50>)
+      src.sysMessage("<src.sex("Zahledl","Zahledla")> jsi bylinu, pro kterou te Elmira poslala!")
+    endif
+  endif
+endif
+
+
+////////////////////////////////////////////////////////////////////////////

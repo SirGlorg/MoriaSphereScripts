@@ -1,0 +1,193 @@
+[itemdef i_past]
+id=02c72
+name=past
+type=t_trap_custom
+CATEGORY=pasti
+SUBSECTION=past
+DESCRIPTION=normalni past
+
+
+[typedef t_trap_custom]
+on=@step
+if (isdefined(src.tag(past)))
+  if !(strcmpi(<src.tag(past)>,<p>))
+    return 1
+  endif
+endif
+src.tag(past,<p>)
+
+if (tag(bomba))
+ var(bomba_src,<tag(bomba)>)
+ src.exploze
+ remove
+elseif (f_poisoning_weapon_checkPoisoningValues)
+  src.f_poison_doPoison(<tag(jed_sila)>,<tag(jed_rychlost)>,<tag(jed_typ)>)
+  src.damage_noresponse(<eval {1 25}>,dam_physical)
+  tag.remove.jed_typ
+elseif (tag(natazeno))
+  src.damage_noresponse(<eval {1 50}>,dam_physical)
+  src.events=-e_peacemade
+  tag.remove(natazeno)
+endif
+
+
+on=@userdclick
+target("Co chces vlozit do pasti?")
+return 1
+
+on=@targon_item
+if (tag(mytimer)><serv.time)
+  src.sysmessage("Nebud <src.sex(zbrkly,zbrkla)> !")
+  src.damage_noresponse(<eval {0 50}>,dam_physical)
+endif
+tag(mytimer,<serv.time>+600)
+if (argo.type==t_potion_bomba)
+  tag(bomba,<argo>)
+  argo.p=<p>
+  argo.attr_invis=1
+  src.sysmessage("<src.sex("Nastrazil","Nastrazila")> jsi explozi")
+elseif (argo.more1==s_poison)
+  if !(argo.tag(jed_typ))
+    argo.tag(jed_typ,poison)
+  endif 
+  tag(jed_typ,)
+  tag(jed_sila,<nastaveni_poison_<argo.id>>)
+  tag(jed_rychlost,<nastaveni_poison_<argo.tag(jed_typ)>>)
+  argo.remove
+  src.sysmessage("<src.sex(Otravil,Otravila)> jsi past.")
+elseif (argo.type==t_trap_custom)
+  tag(natazeno,1)
+  src.sysmessage("<src.sex(Natahl,Natahla)> jsi past.")
+endif
+return 1
+
+on=@dropon_item
+say(act <act>)
+say(argo <argo>)
+
+///////////////////////////////////////////////
+//////////// Trap na monstra  /////////////////
+///////////////////////////////////////////////
+
+[itemdef i_trap_monstrdmg_add]
+name=Zamerovac
+id=i_memory
+type =t_eq_script
+
+ON=@create
+    attr=010
+
+ON=@timer
+    remove
+
+ON=@equip
+    target(Zamer monstrum,ktere chces pridat)
+    
+ON=@targon_char
+tag(past).tag(monstrum_<eval <tag(cislo)>>,<src.targ.baseid>)
+
+[typedef t_trap_monstrdmg]
+on=@step
+if (src.isgm)||(<src.flags>&statf_dead)
+  return 1
+elseif (src.isplayer)
+  src.damage_noresponse(<eval more2>,dam_physical)
+else  
+  arg(i,1)
+  while (<tag(pocetmonster)> >= <arg(i)>)
+    if (<tag(monstrum_<eval <arg(i)>>)>==<src.baseid>)
+      src.damage_noresponse(<eval more2>,dam_physical)
+      return 1
+    endif  
+    arg(i,#+1)
+  endwhile
+endif  
+
+on=@UserDClick
+if (src.isGM)
+  dialog(d_trap_monstrdmg)
+  return 1
+endif
+
+[dialog d_trap_monstrdmg]
+arg(textcolor,52)
+argo.SetLocation=285,50
+
+argo.tag(sirka,486)
+argo.tag(vyska,<eval 115+(<eval <tag(pocetmonster)>+1>*<d_def_radek_vyska>)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,133)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,133)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,100,30,288,30)
+argo.dialog_pozadi(<argo.tag(nexty)>,<tag(pocetmonster)>,100,30,288,30)
+argo.dialog_zpruhledni
+
+
+argo.texta(170,14,42,"Nastaveni pasti") 
+argo.texta(<argo.dialog_textpos(1,0)>,<d_def_writecolor>,"Pocet druhu monster:")
+argo.texta(<argo.dialog_textpos(2,0)>,<d_def_writecolor>,"Damage")
+argo.settext(1002,"<eval <MORE2>>")
+argo.textentry(<argo.dialog_textpos(2,2)>,128,<d_def_radek_vyska>,textcolor,2,1002)
+argo.settext(1001,"<?eval tag(pocetmonster)?>")
+argo.textentry(<argo.dialog_textpos(1,2)>,128,<d_def_radek_vyska>,textcolor,1,1001)
+
+argo.texta(<argo.dialog_textpos(3,0)>,<d_def_readcolor>,"monstrum c.:")
+argo.texta(<argo.dialog_textpos(3,1)>,<d_def_readcolor>,"Ad")
+argo.texta(<argo.dialog_textpos(3,2)>,<d_def_readcolor>,"baseID monstra:")
+argo.texta(<argo.dialog_textpos(3,3)>,<d_def_readcolor>,"Del")
+
+arg(pctRadku,1)
+argo.dialog_textpos(3,0)
+while (<arg(pctRadku)> < <eval <tag(pocetmonster)>+1>)
+  argo.texta(lastxpos,lastypos+(<arg(pctRadku)>*d_def_radek_vyska),<d_def_writecolor>,"monstrum <eval arg(pctRadku)>:")
+  argo.settext(<eval <arg(pctRadku)>>+100,"<tag(monstrum_<eval <arg(pctRadku)> >)>")
+  argo.textentry(lastxpos+135,lastypos+(<arg(pctRadku)>*d_def_radek_vyska),280,<d_def_radek_vyska>,<d_def_readcolor>,<eval <arg(pctRadku)>>+100,<eval <arg(pctRadku)>>+100)
+  argo.button(lastxpos+98,lastypos+(<arg(pctRadku)>*d_def_radek_vyska),0fa5,0fa7,1,0,<eval <arg(pctRadku)>+10>)	//nastav novej spawn
+  argo.button(lastxpos+422,lastypos+(<arg(pctRadku)>*d_def_radek_vyska),0fb1,0fb3,1,0,<eval <arg(pctRadku)>+2000>)	//delete spawn
+  arg(pctRadku,#+1)
+endwhile
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_trap_monstrdmg button]
+ON=1
+tag(pocetmonster,<eval argtxt(1)>)
+MORE2=<eval <argtxt(2)>>
+arg(i,1)
+
+while (<i+1> < <eval <tag(pocetmonster)>+1>)
+  tag(monstrum_<eval <i>>,<argtxt(<eval <i>+100>)>)
+  arg(i,#+1)
+endwhile
+
+  
+ON=@anybutton
+if (<argn> >= 2000)
+  src.sysMessage("remove")
+  arg(i,<argn>-2000)
+  tag.remove(monstrum_<eval <arg(i)>>)
+  while (<i+1> < <eval <tag(pocetmonster)>+1>)
+    tag(monstrum_<eval <arg(i)> >,<tag(monstrum_<eval <arg(i)>+1 >)>)
+    arg(i,#+1)
+  endwhile
+  tag.remove(monstrum_<eval <tag(pocetmonster)> >)
+  tag(pocetmonster,#-1)
+  dialog(d_trap_monstrdmg)
+endif
+
+if (<argn>>=10)&&(<argn><1000)
+  f_trap_monstrdmg_add(<uid>,<eval <argn>-10>)
+endif
+
+[Function f_trap_monstrdmg_add]
+src.newitemsafe(i_trap_monstrdmg_add)
+lastnew.timer=60
+lastnew.tag(cislo,<eval <argv(1)>>)
+lastnew.tag(past,<argv(0)>)
+lastnew.equip
+return 1
+
+[eof]

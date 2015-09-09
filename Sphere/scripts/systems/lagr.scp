@@ -1,0 +1,276 @@
+
+
+////////////////////////////////// system lagru //////////////////////////////////
+//tag.trestanec: kolikrat byl clovek trestan
+//tag.lagr:kolik musi mit propoustecich zlataku aby byl propusten 
+//	(nastaveno bud rucne nebo podle tag.trestanec), vymazano po odchodu
+
+[defnames lagrinfo]
+//afk lagry
+afk_trest_1		2500
+afk_lumber_1		50
+afk_trest_2 		6000
+afk_lumber_2 		50
+afk_trest_3		12000
+afk_lumber_3		50
+afk_trest_4		18000
+afk_lumber_4		50
+afk_trest_5		25000
+afk_lumber_5		50
+afk_trest_6		75000
+afk_lumber_6		50
+afk_trest_7		150000
+afk_lumber_7		50
+afk_trestu		7
+
+trest_1		1000
+lumber_1	200
+trest_2 	3000
+lumber_2 	100
+trest_3		10000
+lumber_3	50
+trest_4		20000
+lumber_4	30
+trest_5		40000
+lumber_5	20
+trest_6		80000
+lumber_6	10
+trest_7		100000
+lumber_7	5
+trestu		7
+
+
+[typedef t_lagr_gold]
+//jen aby s to lisilo od ostatnich zlataku, jinak se to da udelat do seku, cimz je to v prdeli ... 
+
+[ITEMDEF i_gold_lagr]
+ID=i_gold
+type=t_lagr_gold
+NAME=Propousteci zlataky
+WEIGHT=1.0
+
+ON=@Create
+attr=attr_newbie
+attr=attr_move_never
+COLOR=0021
+
+[function lagrprevest]//prevedeni starych tagu na nove
+if (<tag(lagr)>)
+ if (<tag(lagr)>><account.tag(lagr)>)
+  account.tag(lagr,<tag(lagr)>)
+  tag.remove(lagr)
+ else
+  tag.remove(lagr)
+ endif
+endif
+if !(<account.tag(lagr)>) && !(<account.tag(afkLagr)>)
+ account.tag(lagr,0)
+ account.tag(afklagr,0)
+ tag(lagrlogu,0)
+ tag(lagrskill,0)
+endif
+
+[function lagrodvolat]
+if (src==uid)&&(isgm)
+  sysmessage("Tenhle prikaz se pouziva jako .x lagrodvolat")
+  return 0
+endif
+if(isdefined(account.tag(vlagru)))
+ lagrpustit
+endif
+src.accmsg("Odvolal jeden stupen lagru na <uid> <name>")
+account.tag(lagr,<eval <account.tag(lagr)>-1>)
+if(<account.tag(lagr)> <=0)
+ account.tag.remove(lagr)
+endif
+tag(nachytanafk,<eval <tag(nachytanafk)>-1>)
+tag(numberAFKsInMonth,<eval <tag(numberAFKsInMonth)>-1>) 
+if(<tag(nachytanafk)> <=0)
+ tag.remove(nachytanafk)
+endif
+if(<tag(numberAFKsInMonth)> <=0)
+ tag.remove(numberAFKsInMonth)
+ tag.remove(firstsuccesslesscontrol)
+endif
+
+[function lagrpustit]
+consume i_hatchet
+consume i_armor_female_skirt
+consume(10000, i_log_lager)
+account.tag.remove(vlagru)
+kills=<tag(lagrkills)>
+name=<tag(lagrname)>
+lumberjacking=<tag(lumberpits)>
+tag(trestanec,"")
+tag(lagrlogu,"")
+tag(lagrskill,"")
+tag(lagrkills,"")
+tag(lagrname,"")
+tag(lumberpits,"")
+tag(lastlagrlogscount,"")
+while(findlayer(21).findid(i_gold_lagr)) //odstranit vsechny ! 
+ findlayer(21).findid(i_gold_lagr).remove
+endwhile
+forgive
+sysmessage Jsi propusten
+gohome
+
+[function removeLagrGold]
+while(findlayer(21).findid(i_gold_lagr)) //odstranit vsechny ! 
+ findlayer(21).findid(i_gold_lagr).remove
+endwhile
+
+[function lagr]
+if (src==uid)&&(isgm)
+  sysmessage("Tenhle prikaz se pouziva jako .x lagr")
+  return 0
+endif
+lagrprevest
+forgive
+if !(tag(trestanec))
+  if (findID(i_teleport_delay))
+    consume(i_teleport_delay)
+  endif
+  account.tag(vlagru,1)
+  tag(lagrname,<name>)
+  tag(lagrkills,<kills>)
+  tag(trestanec,1)
+  kills=0
+  karma=0
+  name=Trestanec <name>
+  if (strcmpi("<region.name>","tutorial"))	// ak nieje v tutorialy
+    if (findid(t_eq_horse))
+      dismount
+      f_shrink(<lastnewchar>,<uid>)
+    endif
+    findlayer(21).contents(inventobank)
+    safe(findlayer(31).inventobank)
+    eqlayers(inventobank)
+  else	// je v tutorialy
+    findlayer(21).remove	//zmaz inventar, no zmaze vsetko vratane krystalu a runy, krystal sa mu vrati, runa po vojdeni do normal sveta takze snad ok
+    eqlayers(remove) //smazeme samozrejme i to, co ma na sobe... v lagru zadny brneni netolerovat
+    newitem(i_potion_nightsight).bounce //aby sa mu vytvoril bagl ak nevie sam ako na to:)
+  endif
+  newequip=tmp_lagrpacket
+endif
+
+account.tag(lagr,<account.tag(lagr)>+1)
+arg(kamtrestanec_x,<eval {356 505}>)
+arg(kamtrestanec_y,<eval {1177 1270}>)
+p=<arg(kamtrestanec_x)>,<arg(kamtrestanec_y)>,0,1
+//p=420,1213,0,1
+update
+tag(lumberpits,<lumberjacking>)
+if (<account.tag(lagr)><8)
+ lumberjacking=<lumber_<account.tag(lagr)>>
+ tag(lagrlogu,<eval (<trest_<account.tag(lagr)>>)>)
+ delayedmessage(Musis ziskat <eval <tag(lagrlogu)>/100> propoustecich zlataku.)// Propousteci logy ziskas u me vymenou za obycejne drevo kdyz me oslovis "vymena". Pokud nemas svetlo oslov me "svetlo", pokud nemas sekeru oslov me "sekera". Az budes mit propousteci zlataky oslov me "propustit". Pokud mas hlad oslov me "jidlo").
+else
+ if (tag(lagrlogu)==<trest_3>)&&(tag(lagrskill)==<lumber_3>)
+  tag(lagrlogu,0)
+  tag(lagrskill,0)
+ endif
+ if (tag(lagrlogu))&&(tag(lagrskill))
+  lumberjacking=<tag(lagrskill)>
+  delayedmessage(Musis ziskat <eval <tag.lagrlogu>/100> propoustecich zlataku.)// Propousteci logy ziskas u me vymenou za obycejne drevo kdyz me oslovis "vymena". Pokud nemas svetlo oslov me "svetlo", pokud nemas sekeru oslov me "sekera". Az budes mit propousteci zlataky oslov me "propustit". Pokud mas hlad oslov me "jidlo".
+ else
+  lumberjacking=0
+  delayedmessage(Kontatuj GM pres page jsi recidivista dostanes zvlastni trest.)
+ endif
+endif
+
+
+[function inventobank]
+if !(<attr>&0b0d4)
+ cont=<topobj.findlayer.29.uid>
+ updatex
+endif
+
+[template tmp_lagrpacket]
+item=i_hatchet
+item=i_armor_female_skirt
+
+[function lagrmenu]
+lagrprevest
+dialog(d_lagr_menu)
+
+[dialog d_lagr_menu]
+50,50
+argo.tag(sirka,400)
+argo.tag(vyska,148)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+23+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29,120,160)
+argo.dialog_zpruhledni
+
+textentry(338,35,200,19,2301,101,0)
+textentry(338,54,200,19,2301,102,1)
+textentry(338,73,200,19,2301,103,2)
+textentry(338,92,200,19,2301,104,3)
+argo.texta(<argo.dialog_textpos(0,0)>,2301,Lagr - <name>)
+argo.button(13,35,4005,4007,1,0,2)
+argo.texta(50,35,2301,Zavrit)
+argo.button(13,54,4005,4007,1,0,3)
+argo.texta(50,54,2301,Zavrit za AFK)
+argo.button(13,73,4005,4007,1,0,4)
+argo.texta(50,73,2301,Propustit)
+argo.texta(173,35,2301,Pocet prohresku)
+argo.texta(173,54,2301,Pocet prohresku AFK)
+argo.texta(173,73,2301,Pocet logu)
+argo.texta(173,92,2301,Skill Lumberjacking)
+
+button(13,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,10,0fb1,0fb3,1,0,0)//cancel)
+
+[dialog d_lagr_menu text]
+<?eval account.tag(lagr)?>
+<?eval account.tag(afklagr)?>
+<?eval tag(lagrlogu)?>
+<?lumberjacking?>
+
+[dialog d_lagr_menu button]
+on=1
+account.tag(lagr,<argtxt(101)>)
+account.tag(afklagr,<argtxt(102)>)
+if (<tag(trestanec)>)
+  tag(lagrlogu,<argtxt(103)>)
+  tag(lagrskill,<argtxt(104)>)
+  lumberjacking=<argtxt(104)>
+endif
+lagrmenu
+
+on=2
+account.tag(lagr,<argtxt(101)>)
+lagr
+
+on=3
+AFKlagr
+
+on=4
+account.tag(lagr,<argtxt(101)>)
+lagrpustit
+
+[events e_lagr_nodmg]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (act.isplayer)
+ var(ubrano,0)
+ return 1
+endif
+on=@beforedoeffect
+if (act.isplayer)
+ if (uid==<act>)
+ else
+  var(spellpower,0)
+  return 1
+ endif
+endif
+
+on=@beforeGetSwing
+on=@aftergetswing
+on=@beforegeteffect
+
+[EoF]

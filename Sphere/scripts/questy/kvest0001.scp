@@ -1,0 +1,878 @@
+/////////////////////////////////////////////
+//
+//     **   Mordorské Kvesty  **
+//
+//
+//
+//   Kvest Mordor-001 Baradsky Kapitan
+//
+//   Kvest Mordor-002 Reyla a Akhbar
+//
+//   Kvest Mordor-003 Lek pro Liguka     
+//
+//   Kvest Mordor-004 xxxxxxxxxxxxxx
+//
+//   Kvest Mordor-005 xxxxxxxxxxxxxx
+//
+//   Kvest Mordor-006 xxxxxxxxxxxxxx
+//
+//   Kvest Mordor-007 xxxxxxxxxxxxxx
+//
+//   Kvest Mordor-008 xxxxxxxxxxxxxx
+//
+//   Kvest Mordor-009 xxxxxxxxxxxxxx
+//
+//   Kvest Mordor-010 xxxxxxxxxxxxxx
+//
+//
+/////////////////////////////////////////////
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Mordor-001 Baradsky Kapitan                                //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+[itemdef I_hrnec_z_roztokem_muznosti_kvest0001]
+
+//   Vlastni Crodejnice
+
+ID=i_cauldron
+WEIGHT=1
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-001 Baradsky Kapitan
+DESCRIPTION=Hrnec z Roztokem Muznosti
+
+
+ON=@userDClick
+         if (<safe.src.TAG.zadostmordorskehokapitana01>)||(<src.RESTEST 1 i_BOTTLE_EMPTY>)
+			src.sound=0240
+			src.consume=i_BOTTLE_EMPTY //  znici jednu prazdnou lahev u hrace
+			src.newItem=i_bottle_rostok_muznosti //  utvori u u hrace novou lahev
+			lastnew.bounce    //  da novou do batohu ?  nebo na zem :o)
+                        src.message="Nenapadne sis  ulil do flasky  podivuhodny rostok"
+			return 1              
+                  elseif (<safe.src.TAG.zadostmordorskehokapitana01>)
+                             src.message="Nemas u sebe prazdnou lahev"
+			     return 1
+                         else
+                               src.message="Vhrnci se pred chvili neco dovarilo.. Co  to te ted nezajima" 
+ 		endif
+
+
+[itemdef i_bottle_rostok_muznosti]
+Name="magickej lektvar"
+id=i_bottle_YELLOW
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-001 Baradsky Kapitan
+DESCRIPTION=Lektvar z Roztokem Muznosti
+WEIGHT=1
+
+ON=@Create
+	COLOR=022
+
+ON=@userDClick
+         if (<safe.src.TAG.zadostmordorskehokapitana01>)
+         src.message "tohle by si vypit urcite nechtel.. "
+		return 1
+           else
+		src.vit=<src.vit>+10
+                src.str=<src.str>+10
+                src.int=<src.int>-30
+                src.sound=30
+		src.sound=31
+                src.message "Citis ze do tela prichazi prival sili, ale tez si zacinas uvedomovat ze stracis soudnej rozum.. "
+                src.say "Ja baych ****  az bych **** "
+      		src.newItem=i_bottle_empty
+		lastnew.bounce
+		src.consume=i_bottle_rostok_muznosti
+	endif
+
+
+[itemdef I_okrasna_lebka_kvest001] // past
+
+ID=i_bone_skull
+WEIGHT=1
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-001 Baradsky Kapitan
+DESCRIPTION=lebka pasticka carodejky
+
+ON=@EQUIP
+src.sound=snd_SPELL_EXPLOSION
+src.damage_noresponse(<eval {100 500}>,dam_god)
+src.message="Tento predmet byl past!"
+
+ON=@userDClick
+src.sound=snd_SPELL_EXPLOSION
+src.damage_noresponse(<eval {100 500}>,dam_god)
+src.message="Tento predmet byl past!"
+
+////////////////////
+////////////////////
+
+[SPEECH spk_vypravec_straze_mordor_0001]
+
+ON=*ahoj*
+ON=*hi*
+say "Ja nemam cas na zabavu. Pokud zde namas co pohledavat nebo nemas povoleni ke vstupu tak odejdi "
+
+
+ON=*sell*
+ON=*sell*
+ON=*buy*
+say "Jsem straz ne obchodnik !!. Pokud zde namas co pohledavat nebo nemas povoleni ke vstupu tak odejdi "
+
+ON=*uplatek*
+ON=*uplatky*
+say *stisil hlas* Kolik bys za pruchod zaplatil?  "10"  "50" "100" tisic ? 
+src.TAG.mordorpokusuplatek=1
+
+ON=*10*
+if (<safe.src.TAG.mordorpokusuplatek1>)
+say Ja to myslel vazne!!    Chlapy na neeeeeeej 
+src.TAG.vyvrhel=1
+
+
+elseif (<safe.src.TAG.mordorpokusuplatek>)
+say Tak a ted bud zvisis cenu.. nebo te necham zavrit!!! 
+src.TAG.mordorpokusuplatek1=1
+endif
+
+
+ON=*50*
+if (<safe.src.TAG.mordorpokusuplatek>)&&(<src.RESTEST 50000 i_gold>)
+say oki beru..  Ale nikomu o tom ani muk  jinak si te najdu a podriznu krk. 
+src.go 3686 2738
+   elseif (<safe.src.TAG.mordorpokusuplatek>)
+     say oki beru..  Ale nikomu o tom ani muk  jinak si te najdu a zabiju.ALe prvni si prines penize. 
+       else
+          say No nechapu co tim 50 myslis. 
+endif
+
+ON=*100*
+if (<safe.src.TAG.mordorpokusuplatek>)&&(<src.RESTEST 100000 i_gold>)
+say oki beru..  Ale nikomu o tom ani muk. ohlo by nas to oba stat krk 
+src.go 3686 2738
+   elseif (<safe.src.TAG.mordorpokusuplatek>)
+     say oki beru..  Ale nikomu o tom ani muk  jinak si te najdu a zabiju.ALe prvni si prines penize. 
+       else
+          say No nechapu co tim 50 myslis. 
+endif
+
+
+ON=*pustit*
+ON=*projit*
+ON=*stoupit*
+ON=*vejit*
+ON=*mam*povoleni*
+ON=*mam*propustku*
+ON=*chci*vstoupit*
+if (<src.RESTEST 1 i_propustka_bila_vez_jednorazova>)
+src.consume=i_propustka_bila_vez_jednorazova
+src.newequip=1 i_medajlon_propusteni
+say Do citadeli muzes vstoupit, propustka ti vsak byla odebrana a misto ni si vezmi tento medailon pro ten ti povoluje jit tam kam ty potrebujes.
+src.go 3686 2738
+
+elseif (<src.RESTEST 1 i_propustka_bila_vez_stala>)
+say zdravim <src.name> .  Muzete  jit dal..
+src.go 3686 2738
+
+elseif (<src.RESTEST 1 i_medajlon_propusteni>)
+src.consume=1 i_medajlon_propusteni
+
+else
+say Bez radne vystaveneho povoleni se dovnitr nedostanes. A to ti muze vystavit jen kapitan straze.
+endif
+
+ON=*chci*odejit*
+ON=*odejit*
+ON=*odchazim*
+say Marghul stebou..
+src.go 3686 2743
+
+ON=*povoleni*
+ON=*kde*?*
+say Marghul stebou..
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                       Kvest Mordor-002 Reyla a Akhbar                            //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+[itemdef i_kvest0001_zadani]
+ID=i_scroll_blank
+NAME=Zadani ukolu
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+WEIGHT=10.0
+
+
+ON=@Create
+attr=attr_newbie
+COLOR=009a
+
+on=@userDClick
+if (!more2)
+  message("Tento svitek zhruba vystihuje problem Akhbara..  hlidej si jej hrdino  mozna se ti bude hodit ")
+  more2=1
+else
+  message("nic vic uz snad vedet nepotrebujes.. ")
+  more2=0
+endif
+
+
+[itemdef i_Akhbaruv_retizek_01]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+ 
+
+[itemdef i_Akhbaruv_retizek_02]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+
+
+[itemdef i_Akhbaruv_retizek_03]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+[itemdef i_Akhbaruv_retizek_04]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+
+[itemdef i_Akhbaruv_retizek_05]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+
+[itemdef i_Akhbaruv_retizek_06]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+
+[itemdef i_Akhbaruv_retizek_07]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+
+
+[itemdef i_Akhbaruv_retizek_08]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+
+[itemdef i_Akhbaruv_retizek_09]
+ID=i_necklace_gold_beads
+NAME=Naramek craftet by Akbhaar Shakis
+
+type=t_jewelry
+RESOURCES=i_ingot_gold
+WEIGHT=.1
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Akbhaaruv Naramek 
+
+on=@userDClick
+message("zrejme jeden z Akbhaarovych ukradenych retizku")
+
+
+
+[SCROLL SCROLL_kvest_Harghalaghuv_dopis]
+Urghalaghu, bratre!
+Mam pro tebe dve novinky, jednu spatnou a jednu dobrou... Spatna, ti nasi mladi nevychovanci okradli stareho Akbhaara Shakise, kdyz jel z trhu... Bojim se, ze kdyz na to kapucini prijdou, tak mame velky problem...
+Ale dobra je, ze tim lupem muzes zkusit srovnat ten dluh co mame k ... *tady je to necitelne* ... Snad ho to uspokoji. Posilam ti  tedy korist, snad bude u vas v Bagrongu ve vetsim bezpeci nez se ti ji podari prodat... Take snad brzy zbudujeme hradby z kulu.
+Harghalagh
+
+
+[itemdef i_kvest_Harghalaghuv_dopis]
+ID=i_scroll_blank
+NAME=Harghalaghuv dopis
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+WEIGHT=10.0
+
+
+ON=@Create
+attr=attr_newbie
+COLOR=009a
+
+
+on=@userDClick
+if (!more2)
+  message("Tento svitek si nasel u Harghalagha ")
+¨ more2=1
+else
+  src.scroll(SCROLL_kvest_Harghalaghuv_dopis)
+  more2=0
+endif
+
+
+[SCROLL SCROLL_kvest_Urghalaghuv_denik]
+.... muj mily denicku... dnes se mi konecne podarilo srovnat nas dlouholety spor s nasgardskymi zlobry (oh, diky bratre). Osobne sem predal velkemu Barghlinovi nase dary... byl nadmiru spokojen.. jen nevim, k cemu mu ty saty budou...
+
+[itemdef i_kvest_Urghalaghuv_denik]
+ID=i_scroll_blank
+NAME=Harghalaghuv dopis
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+WEIGHT=10.0
+
+
+ON=@Create
+attr=attr_newbie
+COLOR=009a
+
+
+on=@userDClick
+if (!more2)
+  message("Tento svitek z kuze byval kdysi Urghalaghuv osobni denik ")
+¨ more2=1
+else
+  src.scroll(SCROLL_kvest_Urghalaghuv_denik)
+  more2=0
+endif
+
+[itemdef i_kvest_Reyliny_saty]
+ID=i_dress_full
+NAME=Reyliny saty
+RESOURCES=12 i_cloth
+WEIGHT=3.0
+type=T_CLOTHING
+DYE=1
+ARMOR=5
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-002 Reyla a Akhbar
+DESCRIPTION=Reyliny saty
+DUPELIST=01f00
+SKILLMAKE=TAILORING 33.6, t_sewing_kit
+RESOURCES2=12 i_cloth,1 i_thread
+
+ON=@Create
+COLOR=0028
+
+
+///////////////////
+///////////////////
+
+
+[SPEECH spk_poskok_bratrstva]
+
+//  Poskok Bratrstva
+
+ON=*uschoval*
+if (<safe.src.TAG.kvest0001dokoncen>)
+say ANO Barlug ma uschovane saty co ty prinest, Musim je jeste vyprat nez je predat Akhbarovy  
+else 
+say "Burlug nevi co odpovedet" 
+endif
+
+
+
+ON=*Hlad*
+ON=chci jidlo
+	if (<src.RESTEST 50 i_gold>)
+		src.newItem={ i_HAM 1 i_fruit_apple 1 i_bread_loaf 1 i_bacon_slice 1 i_RIBS_COOKED 1 i_SAUSAGES 1}
+		lastnew.bounce	
+		src.consume=50 i_gold
+		src.message "Diky za dysko.."
+		sound 0F7
+	else
+		say= "Potrebuji  penize na suroviny.. "
+	endif
+
+
+ON=*hi*
+ON=*dobry*
+ON=*ahoj*
+ON=*ukol*
+ON=*reyla*
+ON=*Akhbar*
+ON=*saty*
+ON=*dopis*
+
+
+if (<safe.src.TAG.kvest0001dokoncen>)
+say Barlug te zdravit ma pritel...   A jeste  jdnou dik za pomoc Reyle a Akhbar. Barlug ma na tebe dotaz zda ty mu pomoci. Pomuzes Barlugovy ? 
+
+
+elseIF (<src.RESTEST 1 i_kvest_Reyliny_saty>)&&(<i_Akhbaruv_retizek_01>)&&(<i_Akhbaruv_retizek_02>)&&(<i_Akhbaruv_retizek_03>)&&(<i_Akhbaruv_retizek_04>)&&(<i_Akhbaruv_retizek_05>)&&(<i_Akhbaruv_retizek_06>)&&(<i_Akhbaruv_retizek_07>)&&(<i_Akhbaruv_retizek_08>)&&(<i_Akhbaruv_retizek_09>)
+say Burlug se radovat,Tys zvladl prinest vse prinyst bez me pomoci,Reyla a Akhbar mit radost 
+src.addexp(400)
+src.consume=i_kvest_Reyliny_saty
+src.TAG.kvest0001dokoncen=1
+else 
+
+elseIF (<i_Akhbaruv_retizek_01>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_01
+else 
+
+elseIF (<i_Akhbaruv_retizek_02>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_02
+else 
+
+elseIF (<i_Akhbaruv_retizek_03>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_03
+else 
+
+elseIF (<i_Akhbaruv_retizek_04>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_04
+else 
+
+elseIF (<i_Akhbaruv_retizek_05>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_05
+else 
+
+elseIF (<i_Akhbaruv_retizek_06>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_06
+else 
+
+elseIF (<i_Akhbaruv_retizek_07>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_07
+else 
+
+elseIF (<i_Akhbaruv_retizek_08>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_08
+else 
+
+elseIF (<i_Akhbaruv_retizek_09>)
+say Burlug se radovat,Tys prinest retizek straceny dobry pan Akhbar  
+src.addexp(10)
+src.consume=i_Akhbaruv_retizek_09
+else 
+elseIF (<src.RESTEST 1 i_kvest_Reyliny_saty>)
+say Burlug se radovat, protoze Akhbar a Reyla se radovat z navraceni cervena sat. Ja vezmu k sobe a saty vyprat oni byt spina.
+src.addexp(200)
+src.TAG.kvest0001dokoncen=1
+src.consume=i_kvest_Reyliny_saty
+else 
+
+elseIF (<src.RESTEST 1 i_kvest_Urghalaghuv_denik>)
+say Burlug nedoporucovat boj ze zlobry,ale ty tam muset a mozna bojovat. Nasgardsky prusmyk lezi daleko na jiho a vychod  uprostred velka skala 
+else 
+
+elseIF (<src.RESTEST 1 i_kvest_Harghalaghuv_dopis>)
+say Burlug si spominat ze jmenovana tabor Bagrong je po piskove ceste smer jih od Cerna Vez Barad-Dur 
+else 
+say "Bulug zdravi i tebe..   co ty potrebovat ?" 
+src.TAG.selatko=1
+endif
+
+
+ON=*suport*
+     DORAND 3
+         say "Burlug hlidat Toto uzemí Bratrstva !!  AT se deje cokoliv..  "
+         say "Burlug dobre hlidat.. ale o suportu nebyt ani rec!! "
+         say "Burlug hlidat Bratrstvo..  a  a obcas dat ukoly..  Ale o Suportu zde nebyt rec  "
+           enddo
+
+ON=*jiste*
+ON=*ano*
+ON=*pomohu*
+ON=*samozrejme*
+ON=*jiste*
+if (<safe.src.TAG.kvest0001dokoncen>)
+say Barlug ma bratra co slouzit v cerna vez V Barad Dur.Jeho chytit zla nemoc bolest zad. Reyla mi udelat lek pro nej  ale ja nevim jak mu jej odnest. "Donesl"  bys mu jej ?  
+else 
+say "Burlug nevi co odpovedet" 
+endif
+     
+ON=*donesl*
+ON=*donesu*
+if (<safe.src.TAG.kvest0001dokoncen>)
+say Burluguv bratr se jmenovat se jmenvat Liguk.  Mozna ze ty mit problem ze strazemi co branit vejit k Cerna vez, ale ja verit ze ty si poradit. Tady mas lektvar .   
+else
+say "Bulug nevi co ty chtit donest" 
+endif
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-003 Lek pro Liguka                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[itemdef I_lek_pro_Liguka]
+NAME=Dzber elixiru prirodni zkusenosti a moudrosti
+ID=i_flask1_orange
+CATEGORY=Kvesty
+SUBSECTION=Kvest Mordor-003 Lek pro Liguka
+DESCRIPTION=lek pro Liguka
+
+ON=@CREATE
+
+ON=@userDClick
+  src.racemessage("Nahle si uvedomujes zes nechtic "vypil" celou lahev leku pro Liguka")
+src.racemessage(Nejsi vyvolen k poziti elixiru poznani.)
+endif
+src.go 3003,506,20
+return 1
+
+//////////////////////
+//////////////////////
+
+
+[SPEECH spk_poskok_barad_kasarny]
+
+// Liguk   bratr Burluga poskok  v kasarnach  v  Barad Dur
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-004 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-005 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-006 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-007 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-008 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-009 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                      Kvest Mordor-010 xxxxxxxxxxxxxx                             //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+//
+//            Typy  itemu
+//
+/////////////////////////////////
+[typedef T_nastrazna_past_001]
+//   nastraha 
+
+ON=@step
+	if (<more>==0)
+		effect=3,i_fx_explode	     // exploze
+		sound=snd_SPELL_EXPLOSION
+		src.damage_noresponse(<eval {5 20}>,dam_god)  // zraneni od pasti
+		more=1
+		timer=30	// reset za 30 seconds.
+	else
+		say "Click"
+	endif
+	return 0	// dovoli  projit
+
+ON=@timer
+	more=0
+	return 1	// don't allow decay
+
+ON=@userDClick
+	if (<src.skillcheck tinkering 300>) // jestli ma hrac tinkerink  na  vic  jak X hodnote
+		more=1
+		timer=60
+		message "past zajistena"
+	else
+		message "Past se ti nepodarilo zneskodnit"
+		if (rand(2))                             jestli ze je u pasti blizko    pak vybuch :o)))))
+			TRIGGER=@step
+		else
+			message "Past staci zajistit jen jednou. Ted uz muzes jit dal"
+		endif
+	endif
+	return 1			
+
+//////////////////////////
+
+[typedef T_nastrazna_past_002]
+//   nastraha 
+
+ON=@step
+	if (<more>==0)
+		effect=3,i_fx_explode	     // exploze
+		sound=snd_SPELL_EXPLOSION
+		src.damage_noresponse(<eval {20 45}>,dam_god)  // zraneni od pasti
+		more=1
+		timer=30	// reset za 30 seconds.
+	else
+		say "Click"
+	endif
+	return 0	// dovoli  projit
+
+ON=@timer
+	more=0
+	return 1	// don't allow decay
+
+ON=@userDClick
+	if (<src.skillcheck tinkering 500>) // jestli ma hrac tinkerink  na  vic  jak X hodnote
+		more=1
+		timer=60
+		message "past zajistena"
+	else
+		message "Past se ti nepodarilo zneskodnit"
+		if (rand(2))                             jestli ze je u pasti blizko    pak vybuch :o)))))
+			TRIGGER=@step
+		else
+			message "Past staci zajistit jen jednou. Ted uz muzes jit dal"
+		endif
+	endif
+	return 1			
+
+
+
+////////////////////////////////////////////////////////////////////////////
+
+[typedef T_nastrazna_past_003]
+//   nastraha 
+
+ON=@step
+	if (<more>==0)
+		effect=3,i_fx_explode	     // exploze
+		sound=snd_SPELL_EXPLOSION
+		src.damage_noresponse(<eval {40 90}>,dam_god)  // zraneni od pasti
+		more=1
+		timer=30	// reset za 30 seconds.
+	else
+		say "Click"
+	endif
+	return 0	// dovoli  projit
+
+ON=@timer
+	more=0
+	return 1	// don't allow decay
+
+ON=@userDClick
+	if (<src.skillcheck tinkering 800>) // jestli ma hrac tinkerink  na  vic  jak X hodnote
+		more=1
+		timer=60
+		message "past zajistena"
+	else
+		message "Past se ti nepodarilo zneskodnit"
+		if (rand(2))                             jestli ze je u pasti blizko    pak vybuch :o)))))
+			TRIGGER=@step
+		else
+			message "Past staci zajistit jen jednou. Ted uz muzes jit dal"
+		endif
+	endif
+	return 1			
+
+
+
+
+
+///////////////////////////////////////////////////
+
+
+
+/////////////////
+
+[typedef T_truhlicka_s_pasti]
+// Trapped chest.
+
+ON=@userDClick
+	if (<src.tinkering> >= 300) // 300 really means 30.0 
+		src.message "You disarm the trap and open the chest."
+		type=t_container
+		return 0
+	else
+		src.message "You fail to disarm the trap."
+		if (rand(2))
+			src.message "The trap does not go off. Lucky."
+			type=t_container
+			return 0
+		else
+			effect=3,i_fx_explode
+			sound=snd_SPELL_EXPLOSION
+			src.damage_noresponse(<eval {20 35}>,dam_god)
+			type=t_container
+			return 0
+		endif
+	endif
+
+
+//////////////////////////
+
+
+[eof]

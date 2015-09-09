@@ -1,0 +1,2842 @@
+//****************************************************************************
+//SPHERE by : Menasoft ©1997-2002
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Sunday, June 16, 2002
+//
+// Donated by Catalan_Mistral
+
+//VERSION=0.99u
+
+//========================================================================================
+//	Travel Dialog (donated by Catalan_Mistral)
+//========================================================================================
+[FUNCTION gomap] 
+src.dialog d_playertravel
+
+[DIALOG d_playertravel] 
+SetLocation=0,0 // This makes the gump start in the top left corner of the screen
+page 0
+resizepic 0 0 3600 640 480 
+gumppic 1 1 5500 
+gumppic 60 50 5528 
+gumppic 2 2 5536 
+button 555 5 5513 5514 1 0 0
+
+text 450 360 90 4
+button 450 385 2360 2360 0 1 0	// Stredozeme
+text 470 380 80 5
+//button 450 405 2360 2360 0 4 0	// Vychodo zeme
+//text 470 400 80 6
+//button 450 425 2360 2360 0 5 0	// Jihozeme
+//text 470 420 80 7
+
+page 1
+text 450 50 90 0 
+button 450 75 2360 2360 0 1 0	// Mesta
+text 470 70 80 1
+button 450 95 2360 2360 0 2 0	// Dungeony
+text 470 90 80 2
+button 450 115 2360 2360 0 3 0	// Doly
+text 470 110 80 3
+
+// Towns
+button 203 210 2360 2360 1 0 1 // Tharbad 
+text 213 205 90 8
+button 255 230 2360 2360 1 0 2 // Lorien 
+text 250 235 0c4 9
+button 245 155 2360 2360 1 0 3 // Roklinka 
+text 255 150 0c4 10
+button 362 375 2360 2360 1 0 4 // Harad 
+text 372 370 026 11
+button 355 245 2360 2360 1 0 5	// Rhun
+text 365 240 026 12
+button 240 350 2360 2360 1 0 6	// Dol Amroth
+text 215 335 0c4 13
+button 345 345 2360 2360 1 0 7	// Nurn
+text 355 333 026 14
+button 315 315 2360 2360 1 0 8	// Minas Morgul
+text 327 315 026 15
+button 325 305 2360 2360 1 0 9	// Barad-Dur
+text 335 300 026 16
+button 265 385 2360 2360 1 0 10	// Umbar
+text 260 392 90 17
+button 240 280 2360 2360 1 0 11 // Edoras
+text 230 265 0c4 18
+button 280 316 2360 2360 1 0 12 // Minas Tirith
+text 245 300 0c4 19
+button 308 140 2360 2360 1 0 13	// Dol + kralostvi pod horou
+text 275 122 0c4 20
+button 177 150 2360 2360 1 0 14	// Fornost
+text 160 135 0c4 21
+button 120 165 2360 2360 1 0 15	// Sede Pristavy
+text 90 145 0c4 22
+
+page 2
+text 450 50 90 0
+button 450 75 2360 2360 0 1 0	// MESTA
+text 470 70 80 1
+button 450 95 2360 2360 0 2 0	// Dungeony
+text 470 90 80 2
+button 450 115 2360 2360 0 3 0	// Doly
+text 470 110 80 3
+
+// Dungeons
+button 250 135 2360 2360 1 0 16	// Covetous
+text 260 130 80 23
+button 367 93 2360 2360 1 0 17	// Deceit
+text 377 88 80 24
+button 160 150 2360 2360 1 0 18	// Despise
+text 170 145 80 25
+button 150 295 2360 2360 1 0 19 // Destard
+text 160 290 80 26
+button 275 375 2360 2360 1 0 20	// Hrobky Cernych Nomerojcu
+text 285 370 80 27
+button 405 400 2360 2360 1 0 21	// Hythloth
+text 375 380 80 28
+button 215 50 2360 2360 1 0 22	// Ice
+text 225 45 80 29
+button 100 190 2360 2360 1 0 23	// Shame
+text 110 185 80 30
+button 215 70 2360 2360 1 0 24	// Wrong
+text 225 65 80 31
+
+page 3
+text 450 50 90 0
+button 450 75 2360 2360 0 1 0	// Mesta
+text 470 70 80 1
+button 450 95 2360 2360 0 2 0	// Dungeony
+text 470 90 80 2
+button 450 115 2360 2360 0 3 0	// Doly
+text 470 110 80 3
+
+//Graveyards
+button 178 210 2360 2360 1 0 25	// Britain GY
+text 188 205 70 32
+button 225 155 2360 2360 1 0 26	// Cove GY
+text 235 150 70 33
+button 162 395 2360 2360 1 0 27	// Harad GY
+text 172 390 70 34
+button 395 165 2360 2360 1 0 28	// Moonglow GY
+text 365 143 70 35
+button 335 165 2360 2360 1 0 29	// Nujel'm GY
+text 315 172 70 36
+button 280 125 2360 2360 1 0 30	// Vesper GY
+text 290 120 70 37
+button 80 130 2360 2360 1 0 31	// Yew GY
+text 90 125 70 38
+
+page 4
+// Lost Lands
+text 450 50 90 39
+text 450 70 70 40
+button 450 95 2360 2360 1 0 32	// Delucia
+text 470 90 80 41
+button 450 115 2360 2360 1 0 33	// Papua
+text 470 110 80 42
+text 450 130 70 43
+button 450 155 2360 2360 1 0 34	// Fire Dungeon
+text 470 150 80 44
+button 450 175 2360 2360 1 0 35	// Ice Dungeon
+text 470 170 80 45
+
+page 5
+// Ilshenar
+text 450 50 90 46
+text 450 70 70 47
+button 450 95 2360 2360 1 0 36	// Ancient Citadel
+text 470 90 80 48
+button 450 115 2360 2360 1 0 37	// Bat-Lem Reg
+text 470 110 80 49
+button 450 135 2360 2360 1 0 38	// Gargoyle City
+text 470 130 80 50
+button 450 155 2360 2360 1 0 39	// Lake Shire
+text 470 150 80 51
+button 450 175 2360 2360 1 0 40	// Mistas
+text 470 170 80 52
+text 450 190 70 53
+button 450 215 2360 2360 1 0 41	// Ankh Dungeon
+text 470 210 80 54
+button 450 235 2360 2360 1 0 42	// Blood Dungeon
+text 470 230 80 55
+button 450 255 2360 2360 1 0 43	// Fire Dungeon
+text 470 250 80 56
+button 450 275 2360 2360 1 0 44	// Exodus Dungeon
+text 470 270 80 57
+button 450 295 2360 2360 1 0 45	// Sorcerer's Dungeon
+text 470 290 80 58
+button 450 315 2360 2360 1 0 46	// Spectre Dungeon
+text 470 310 80 59
+button 450 335 2360 2360 1 0 47	// Wisp Dungeon
+text 470 330 80 60
+
+[DIALOG d_playertravel TEXT]
+VYBER KATEGORII
+Mesta
+Dungeony
+Doly
+REALMY
+Trammel
+Lost Lands
+Ilshenar
+// Mesta
+Tharbad 
+Lorien 
+Roklinka
+Harad 
+Rhun
+Dol Amroth
+Nurn 
+Minas Morgul
+Barad-Dur 
+Umbar 
+Edoras 
+Minas Tirith 
+Dol + kralostvi pod horou
+Fornost 
+Sede Pristavy 
+// Dungeons
+Covetous 
+Deceit 
+Despise 
+Destard 
+Hrobky Cernych Nomerojcu
+Hythloth 
+Ice
+Shame 
+Wrong 
+// GraveYards
+Britain GY
+Cove GY
+Harad GY
+Moonglow GY
+Nujel'm GY
+Vesper GY
+Yew GY
+// Lost Lands
+LOST LANDS TRAVEL MENU
+TOWNS
+Delucia 
+Papua 
+DUNGEONS
+Fire Dungeon
+Ice Dungeon
+// Ilshenar
+ILSHENAR TRAVEL MENU
+TOWNS
+Ancient Citdel
+Bat-Lem Reg
+Gargoyle City
+Lake Shire
+Mistas
+DUNGEONS
+Ankh Dungeon
+Blood Dungeon
+Exodus Dungeon
+Rock Dungeon
+Sorcerer's Dungeon
+Spectre Dungeon
+Wisp Dungeon
+
+[DIALOG d_playertravel BUTTON]
+ONBUTTON=0 
+SRC.SYSMESSAGE="Cancelled!!"
+RETURN 0 
+
+// TOWNS
+ONBUTTON=1      //Tharbad 
+SRC.GO 1588,1940
+ONBUTTON=2	// Lorien
+SRC.go Lorien
+ONBUTTON=3      //Roklinka 
+SRC.go 2262,1251
+ONBUTTON=4      //Harad 
+SRC.go Harad
+ONBUTTON=5	// Rhun
+SRC.GO Rhun
+ONBUTTON=6	// Dol Amroth
+SRC.go Dol Amroth
+ONBUTTON=7	// Nurn
+SRC.go Nurn
+ONBUTTON=8	// Minas Morgul
+SRC.go Minas Morgul
+ONBUTTON=9	// Barad-Dur
+SRC.go Barad-Dur
+ONBUTTON=10	// Umbar
+SRC.go umbar
+ONBUTTON=11	// Edoras
+SRC.go Edoras
+ONBUTTON=12	// Minas Tirith
+SRC.go Minas Tirith
+ONBUTTON=13	// Dol + kralostvi pod horou
+SRC.go Erebor
+ONBUTTON=14	// Fornost
+SRC.go Fornost
+ONBUTTON=15	// Sede Pristavy
+SRC.go Sede Pristavy 
+
+// DUNGEONS
+ONBUTTON=16	// Covetous
+SRC.go Covetous Entrance
+ONBUTTON=17	// Deceit
+SRC.go Deceit Entrance
+ONBUTTON=18	// Despise
+SRC.go Despise Entrance
+ONBUTTON=19	// Destard
+SRC.go Destard Entrance
+ONBUTTON=20	// Hrobky Cernych Nomerojcu
+SRC.go 2699,3638,-46
+ONBUTTON=21	// Hythloth
+SRC.go Hythloth Entrance
+ONBUTTON=22	// Ice
+SRC.go 1999,81,5
+ONBUTTON=23	// Shame
+SRC.go Shame Entrance
+ONBUTTON=24	// Wrong
+SRC.go 2044,236,13
+
+// GraveYards
+ONBUTTON=25	// Britain GY
+SRC.go Britain Graveyard
+ONBUTTON=26	// Cove GY
+SRC.go Cove Graveyard
+ONBUTTON=27	// Jhelom GY
+SRC.go Jhelom Cemetary
+ONBUTTON=28	// Moonglow GY
+SRC.go Moonglow Cemetary
+ONBUTTON=29	// Nujel'm GY
+SRC.go Nujel'm Cemetary
+ONBUTTON=30	// Vesper GY
+SRC.go Vesper Cemetary
+ONBUTTON=31	// Yew GY
+SRC.go Yew Graveyard
+
+// Lost Lands
+ONBUTTON=32	// Delucia 
+SRC.go 5271,3994,37 
+ONBUTTON=33	// Papua 
+SRC.go 5729,3209,-1 
+ONBUTTON=34	// Fire Dungeon
+SRC.go 5758,2908,16
+ONBUTTON=35	// Ice Dungeon
+SRC.go 5208,2322,32
+
+// Ilshenar
+ONBUTTON=36	// Ancient Citdel
+SRC.go 1521,598,-15,2
+ONBUTTON=37	// Bat-Lem Reg
+SRC.go 1239,974,-34,2
+ONBUTTON=38	// Gargoyle City
+SRC.go 929,641,-80,2
+ONBUTTON=39	// Lake Shire
+SRC.go 1201,1132,-25,2
+ONBUTTON=40	// Mistas
+SRC.go 819,1074,-30,2
+ONBUTTON=41	// Ankh Dungeon
+SRC.go 576,1146,-100,2
+ONBUTTON=42	// Blood Dungeon
+SRC.go 1747,1227,-1,2
+ONBUTTON=43	// Exodus Dungeon
+SRC.go 851,778,-80,2
+ONBUTTON=44	// Rock Dungeon
+SRC.go 1787,572,68,2
+ONBUTTON=45	// Sorcerer's Dungeon
+SRC.go 547,463,-55,2
+ONBUTTON=46	// Spectre Dungeon
+SRC.go 1363,1034,-8,2
+ONBUTTON=47	// Wisp Dungeon
+SRC.go 652,1304,-59,2
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+
+[FUNCTION commands]
+SRC.DIALOG d_commandref
+
+[DIALOG d_commandview]
+SetLocation=50,80
+resizepic 0 0 5054 640 450 
+resizepic 10 10 3000 620 430 
+gumppictiled 10 10 620 430 2624
+checkertrans 10 10 620 430
+gumppictiled 10 50 620 5 5058
+
+page 1
+button 10 10 5603 5603 1 0 1
+text 40 25 956 0
+text 40 55 955 1
+text 40 70 955 2
+text 40 85 955 3
+text 40 100 955 4
+text 40 115 955 5
+text 40 130 955 6
+text 40 145 955 7
+text 40 160 955 8
+text 40 175 955 9
+text 40 190 955 10
+text 40 205 955 11
+text 40 220 955 12
+text 40 235 955 13
+text 40 250 955 14
+text 40 265 955 15
+text 40 280 955 16
+text 40 295 955 17
+text 40 310 955 18
+text 40 325 955 19
+text 40 340 955 20
+text 40 355 955 21
+text 40 370 955 22
+text 40 385 955 23
+text 40 400 955 24
+text 40 415 955 25
+text 40 430 955 26
+text 40 445 955 27
+
+[DIALOG d_commandview TEXT]
+<?SAFE.VAR.COMMANDVIEW1?>
+<?SAFE.VAR.COMMANDVIEW2?>
+<?SAFE.VAR.COMMANDVIEW3?>
+<?SAFE.VAR.COMMANDVIEW4?>
+<?SAFE.VAR.COMMANDVIEW5?>
+<?SAFE.VAR.COMMANDVIEW6?>
+<?SAFE.VAR.COMMANDVIEW7?>
+<?SAFE.VAR.COMMANDVIEW8?>
+<?SAFE.VAR.COMMANDVIEW9?>
+<?SAFE.VAR.COMMANDVIEW10?>
+<?SAFE.VAR.COMMANDVIEW11?>
+<?SAFE.VAR.COMMANDVIEW12?>
+<?SAFE.VAR.COMMANDVIEW13?>
+<?SAFE.VAR.COMMANDVIEW14?>
+<?SAFE.VAR.COMMANDVIEW15?>
+<?SAFE.VAR.COMMANDVIEW16?>
+<?SAFE.VAR.COMMANDVIEW17?>
+<?SAFE.VAR.COMMANDVIEW18?>
+<?SAFE.VAR.COMMANDVIEW19?>
+<?SAFE.VAR.COMMANDVIEW20?>
+<?SAFE.VAR.COMMANDVIEW21?>
+<?SAFE.VAR.COMMANDVIEW22?>
+<?SAFE.VAR.COMMANDVIEW23?>
+<?SAFE.VAR.COMMANDVIEW24?>
+<?SAFE.VAR.COMMANDVIEW25?>
+<?SAFE.VAR.COMMANDVIEW26?>
+<?SAFE.VAR.COMMANDVIEW27?>
+<?SAFE.VAR.COMMANDVIEW28?>
+
+[DIALOG d_commandview BUTTON]
+ONBUTTON=0
+	SRC.TAG.CONSOLE_TAG=""
+
+ONBUTTON=1
+IF (<VAR.PAGE> == 1)
+	SRC.DIALOG=d_commandref
+ELSE
+	SRC.DIALOG=d_commandref2
+ENDIF
+
+[DIALOG d_COMMANDREF]
+SetLocation=50,80
+resizepic 0 0 5054 640 450 
+resizepic 10 10 3000 620 430 
+gumppictiled 10 10 620 430 2624
+checkertrans 10 10 620 430
+gumppictiled 130 10 5 430 5058
+gumppictiled 260 10 5 430 5058
+gumppictiled 390 10 5 430 5058
+button 600 418 0fae 0fb0 1 0 75			// Back to Admin Menu
+text   522 419 2301    86			// "Admin Menu"
+
+
+page 1
+button 600 10 4005 4007 1 0 1
+text 40 10 956 0
+text 40 25 955 13
+button 15 25 5601 5601 1 0 2
+text 40 40 955 14
+button 15 40 5601 5601 1 0 3
+text 40 55 955 15
+button 15 55 5601 5601 1 0 4
+text 40 70 955 16
+button 15 70 5601 5601 1 0 5
+text 40 85 955 17
+button 15 85 5601 5601 1 0 6
+text 40 100 955 18
+button 15 100 5601 5601 1 0 7
+text 40 115 955 19
+button 15 115 5601 5601 1 0 8
+text 40 130 955 20
+button 15 130 5601 5601 1 0 9
+text 40 145 955 21
+button 15 145 5601 5601 1 0 10
+text 40 160 955 22
+button 15 160 5601 5601 1 0 11
+
+text 40 180 956 1
+text 40 215 955 23
+button 15 215 5601 5601 1 0 12
+text 40 230 955 24
+button 15 230 5601 5601 1 0 13
+text 40 245 955 25
+button 15 245 5601 5601 1 0 14
+text 40 260 955 26
+button 15 260 5601 5601 1 0 15
+text 40 275 955 27
+button 15 275 5601 5601 1 0 16
+
+text 40 295 956 2
+text 40 315 955 28
+button 15 315 5601 5601 1 0 17
+text 40 330 955 29
+button 15 330 5601 5601 1 0 18
+text 40 345 955 30
+button 15 345 5601 5601 1 0 19
+text 40 360 955 31
+button 15 360 5601 5601 1 0 20
+text 40 375 955 32
+button 15 375 5601 5601 1 0 21
+text 40 390 955 33
+button 15 390 5601 5601 1 0 22
+text 40 405 955 34
+button 15 405 5601 5601 1 0 23
+
+text 170 10 956 3
+text 170 25 955 35
+button 145 25 5601 5601 1 0 24
+text 170 40 955 36
+button 145 40 5601 5601 1 0 25
+text 170 55 955 37
+button 145 55 5601 5601 1 0 26
+text 170 70 955 38
+button 145 70 5601 5601 1 0 27
+text 170 85 955 39
+button 145 85 5601 5601 1 0 28
+text 170 100 955 40
+button 145 100 5601 5601 1 0 29
+
+text 170 120 956 4
+text 170 140 955 41
+button 145 140 5601 5601 1 0 30
+text 170 155 955 42
+button 145 155 5601 5601 1 0 31
+text 170 170 955 43
+button 145 170 5601 5601 1 0 32	
+text 170 185 955 44
+button 145 185 5601 5601 1 0 33
+text 170 200 955 45
+button 145 200 5601 5601 1 0 34
+text 170 215 955 46
+button 145 215 5601 5601 1 0 35
+text 170 230 955 47
+button 145 230 5601 5601 1 0 36
+text 170 245 955 48
+button 145 245 5601 5601 1 0 37
+
+text 170 265 956 5
+text 170 285 955 49
+button 145 285 5601 5601 1 0 38
+text 170 300 955 50
+button 145 300 5601 5601 1 0 39
+text 170 315 955 51
+button 145 315 5601 5601 1 0 40
+text 170 330 955 52
+button 145 330 5601 5601 1 0 41
+text 170 345 955 53
+button 145 345 5601 5601 1 0 42
+text 170 360 955 54
+button 145 360 5601 5601 1 0 43
+
+text 300 10 956 6
+text 300 25 955 55
+button 275 25 5601 5601 1 0 44
+text 300 40 955 56
+button 275 40 5601 5601 1 0 45
+text 300 55 955 57
+button 275 55 5601 5601 1 0 46
+text 300 70 955 58
+button 275 70 5601 5601 1 0 47
+text 300 85 955 59
+button 275 85 5601 5601 1 0 48
+text 300 100 955 60
+button 275 100 5601 5601 1 0 49
+text 300 115 955 61
+button 275 115 5601 5601 1 0 50
+text 300 130 955 62
+button 275 130 5601 5601 1 0 51
+text 300 145 955 63
+button 275 145 5601 5601 1 0 52
+text 300 160 955 64
+button 275 160 5601 5601 1 0 53
+text 300 175 955 65
+button 275 175 5601 5601 1 0 54
+text 300 190 955 66
+button 275 190 5601 5601 1 0 55
+
+text 300 210 956 7
+text 300 230 955 67
+button 275 230 5601 5601 1 0 56
+text 300 245 955 68
+button 275 245 5601 5601 1 0 57
+text 300 260 955 69
+button 275 260 5601 5601 1 0 58
+text 300 275 955 70
+button 275 275 5601 5601 1 0 59
+
+text 430 10 956 8
+text 430 25 955 71
+button 405 25 5601 5601 1 0 60
+text 430 40 955 72
+button 405 40 5601 5601 1 0 61
+text 430 55 955 73
+button 405 55 5601 5601 1 0 62
+text 430 70 955 74
+button 405 70 5601 5601 1 0 63
+text 430 85 955 75
+button 405 85 5601 5601 1 0 64
+text 430 100 955 76
+button 405 100 5601 5601 1 0 65
+
+text 430 120 956 9
+text 430 140 955 77
+button 405 140 5601 5601 1 0 66
+
+text 430 160 956 10
+text 430 180 955 78
+button 405 180 5601 5601 1 0 67
+text 430 195 955 79
+button 405 195 5601 5601 1 0 68
+
+text 430 215 956 11
+text 430 235 955 80
+button 405 235 5601 5601 1 0 69
+text 430 250 955 81
+button 405 250 5601 5601 1 0 70
+text 430 265 955 82
+button 405 265 5601 5601 1 0 71
+
+text 430 285 956 12
+text 430 305 955 83
+button 405 305 5601 5601 1 0 72
+text 430 320 955 84
+button 405 320 5601 5601 1 0 73
+text 430 335 955 85
+button 405 335 5601 5601 1 0 74
+
+
+[DIALOG d_COMMANDREF TEXT]
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
+L
+M
+AccountMgr
+Add
+Addnpc
+Admin
+AFK
+Allclients
+Allmove
+Allshow
+Anim
+Attack
+Bank
+Bankself
+BlockIP
+Bounce
+Bow
+Cast
+Charlist
+Clients
+Coldchance
+Consume
+Control
+Count
+Debug
+Detail
+Disconnect
+Drawmap
+Dry
+Dupe
+Edit
+Effect
+Emote
+Equip
+EquipHalo
+Export
+Extract
+Everbtarg
+Face
+Fix
+Fixweight
+Flip
+Followed
+Forgive
+GM
+GMPage
+Go
+GoChar
+GoCharID
+GoCli
+GoItemID
+GoPlace
+GoSock
+GoTarg
+GoType
+GoUID
+Hear
+Hearall
+Help
+Hungry
+Import
+Info
+Information
+INPDLG
+Invis
+Invul
+Jail
+Kick
+Kill
+Light
+Link
+Listen
+Message
+Move
+Music
+Admin Menu
+
+[DIALOG d_COMMANDREF BUTTON]
+ONBUTTON=0
+	SRC.TAG.CONSOLE_TAG=""
+
+ONBUTTON=1 // Next Page
+SRC.DIALOG=d_COMMANDREF2 // Seperated into two dialogs to reduce lag
+
+ONBUTTON=2
+COMMANDHELP(accountmgr)
+
+ONBUTTON=3
+COMMANDHELP(add)
+
+ONBUTTON=4
+COMMANDHELP(addnpc)
+
+ONBUTTON=5
+COMMANDHELP(admin)
+
+ONBUTTON=6
+COMMANDHELP(AFK)
+
+ONBUTTON=7
+COMMANDHELP(allclients)
+
+ONBUTTON=8
+COMMANDHELP(allmove)
+
+ONBUTTON=9
+COMMANDHELP(allshow)
+
+ONBUTTON=10
+COMMANDHELP(anim)
+
+ONBUTTON=11
+COMMANDHELP(attack)
+
+ONBUTTON=12
+COMMANDHELP(bank)
+
+ONBUTTON=13
+COMMANDHELP(bankself)
+
+ONBUTTON=14
+COMMANDHELP(blockip)
+
+ONBUTTON=15
+COMMANDHELP(bounce)
+
+ONBUTTON=16
+COMMANDHELP(bow)
+
+ONBUTTON=17
+COMMANDHELP(cast)
+
+ONBUTTON=18
+COMMANDHELP(charlist)
+
+ONBUTTON=19
+COMMANDHELP(clients)
+
+ONBUTTON=20
+COMMANDHELP(coldchance)
+
+ONBUTTON=21
+COMMANDHELP(consume)
+
+ONBUTTON=22
+COMMANDHELP(control)
+
+ONBUTTON=23
+COMMANDHELP(count)
+
+ONBUTTON=24
+COMMANDHELP(debug)
+
+ONBUTTON=25
+COMMANDHELP(detail)
+
+ONBUTTON=26
+COMMANDHELP(disconnect)
+
+ONBUTTON=27
+COMMANDHELP(drawmap)
+
+ONBUTTON=28
+COMMANDHELP(dry)
+
+ONBUTTON=29
+COMMANDHELP(dupe)
+
+ONBUTTON=30
+COMMANDHELP(edit)
+
+ONBUTTON=31
+COMMANDHELP(effect)
+
+ONBUTTON=32
+COMMANDHELP(emote)
+
+ONBUTTON=33
+COMMANDHELP(equip)
+
+ONBUTTON=34
+COMMANDHELP(equiphalo)
+
+ONBUTTON=35
+COMMANDHELP(export)
+
+ONBUTTON=36
+COMMANDHELP(extract)
+
+ONBUTTON=37
+COMMANDHELP(everbtarg)
+
+ONBUTTON=38
+COMMANDHELP(face)
+
+ONBUTTON=39
+COMMANDHELP(fix)
+
+ONBUTTON=40
+COMMANDHELP(fixweight)
+
+ONBUTTON=41
+COMMANDHELP(flip)
+
+ONBUTTON=42
+COMMANDHELP(followed)
+
+ONBUTTON=43
+COMMANDHELP(forgive)
+
+ONBUTTON=44
+COMMANDHELP(gm)
+
+ONBUTTON=45
+COMMANDHELP(gmpage)
+
+ONBUTTON=46
+COMMANDHELP(go)
+
+ONBUTTON=47
+COMMANDHELP(gochar)
+
+ONBUTTON=48
+COMMANDHELP(gocharid)
+
+ONBUTTON=49
+COMMANDHELP(gocli)
+
+ONBUTTON=50
+COMMANDHELP(goitemid)
+
+ONBUTTON=51
+COMMANDHELP(goplace)
+
+ONBUTTON=52
+COMMANDHELP(gosock)
+
+ONBUTTON=53
+COMMANDHELP(gotarg)
+
+ONBUTTON=54
+COMMANDHELP(gotype)
+
+ONBUTTON=55
+COMMANDHELP(gouid)
+
+ONBUTTON=56
+COMMANDHELP(hear)
+
+ONBUTTON=57
+COMMANDHELP(hearall)
+
+ONBUTTON=58
+COMMANDHELP(help)
+
+ONBUTTON=59
+COMMANDHELP(hungry)
+
+ONBUTTON=60
+COMMANDHELP(import)
+
+ONBUTTON=61
+COMMANDHELP(info)
+
+ONBUTTON=62
+COMMANDHELP(information)
+
+ONBUTTON=63
+COMMANDHELP(inpdlg)
+
+ONBUTTON=64
+COMMANDHELP(invis)
+
+ONBUTTON=65
+COMMANDHELP(invul)
+
+ONBUTTON=66
+COMMANDHELP(jail)
+
+ONBUTTON=67
+COMMANDHELP(kick)
+
+ONBUTTON=68
+COMMANDHELP(kill)
+
+ONBUTTON=69
+COMMANDHELP(light)
+
+ONBUTTON=70
+COMMANDHELP(link)
+
+ONBUTTON=71
+COMMANDHELP(listen)
+
+ONBUTTON=72
+COMMANDHELP(message)
+
+ONBUTTON=73
+COMMANDHELP(move)
+
+ONBUTTON=74
+COMMANDHELP(music)
+
+ONBUTTON=75
+	src.admin
+
+[DIALOG d_COMMANDREF2]
+SetLocation=50,80
+resizepic 0 0 5054 640 450 
+resizepic 10 10 3000 620 430 
+gumppictiled 10 10 620 430 2624
+checkertrans 10 10 620 430
+gumppictiled 130 10 5 430 5058
+gumppictiled 260 10 5 430 5058
+gumppictiled 390 10 5 430 5058
+button 600 418 0fae 0fb0 1 0 75			// Back to Admin Menu
+text   522 419 2301    80			// "Admin Menu"
+
+
+page 1
+button 600 10 0fae 0fb0 1 0 1
+text 40 10 956 0
+text 40 30 955 13
+button 15 30 5601 5601 1 0 2
+text 40 45 955 14
+button 15 45 5601 5601 1 0 3
+text 40 60 955 15
+button 15 60 5601 5601 1 0 4
+text 40 75 955 16
+button 15 75 5601 5601 1 0 5
+text 40 90 955 17
+button 15 90 5601 5601 1 0 6
+text 40 105 955 18
+button 15 105 5601 5601 1 0 7
+text 40 120 955 19
+button 15 120 5601 5601 1 0 8
+text 40 135 955 20
+button 15 135 5601 5601 1 0 9
+text 40 150 955 21
+button 15 150 5601 5601 1 0 10
+
+text 40 170 956 1
+
+text 40 190 956 2
+text 40 205 955 22
+button 15 205 5601 5601 1 0 11
+text 40 220 955 23
+button 15 220 5601 5601 1 0 12
+text 40 235 955 24
+button 15 235 5601 5601 1 0 13
+text 40 250 955 25
+button 15 250 5601 5601 1 0 14
+text 40 265 955 26
+button 15 265 5601 5601 1 0 15
+text 40 280 955 27
+button 15 280 5601 5601 1 0 16
+text 40 295 955 28
+button 15 295 5601 5601 1 0 17
+text 40 310 955 29
+button 15 310 5601 5601 1 0 18
+
+text 170 10 956 3
+
+text 170 30 956 4
+text 170 50 955 30
+button 145 50 5601 5601 1 0 19
+text 170 65 955 31
+button 145 65 5601 5601 1 0 20
+text 170 80 955 32
+button 145 80 5601 5601 1 0 21
+text 170 95 955 33
+button 145 95 5601 5601 1 0 22
+text 170 110 955 34
+button 145 110 5601 5601 1 0 23
+text 170 125 955 35
+button 145 125 5601 5601 1 0 24
+text 170 140 955 36
+button 145 140 5601 5601 1 0 25
+text 170 155 955 37
+button 145 155 5601 5601 1 0 26
+text 170 170 955 38
+button 145 170 5601 5601 1 0 27
+text 170 185 955 39
+button 145 185 5601 5601 1 0 28
+
+text 170 205 956 5
+text 170 225 955 40
+button 145 225 5601 5601 1 0 29
+text 170 240 955 41
+button 145 240 5601 5601 1 0 30
+text 170 255 955 42
+button 145 255 5601 5601 1 0 31
+text 170 270 955 43
+button 145 270 5601 5601 1 0 32
+text 170 285 955 44
+button 145 285 5601 5601 1 0 33
+text 170 300 955 45
+button 145 300 5601 5601 1 0 34
+text 170 315 955 46
+button 145 315 5601 5601 1 0 35
+text 170 330 955 47
+button 145 330 5601 5601 1 0 36
+text 170 345 955 48
+button 145 345 5601 5601 1 0 37
+text 170 360 955 49
+button 145 360 5601 5601 1 0 38
+text 170 375 955 50
+button 145 375 5601 5601 1 0 39
+
+text 300 10 956 5
+text 300 30 955 51
+button 270 30 5601 5601 1 0 41
+text 300 45 955 52
+button 270 45 5601 5601 1 0 42
+text 300 60 955 53
+button 270 60 5601 5601 1 0 43
+text 300 75 955 54
+button 270 75 5601 5601 1 0 44
+text 300 90 955 55
+button 270 90 5601 5601 1 0 45
+text 300 105 955 56
+button 270 105 5601 5601 1 0 46
+text 300 120 955 57
+button 270 120 5601 5601 1 0 47
+text 300 135 955 58
+button 270 135 5601 5601 1 0 48
+text 300 150 955 59
+button 270 150 5601 5601 1 0 49
+text 300 165 955 60
+button 270 165 5601 5601 1 0 50
+
+text 300 185 956 6
+text 300 205 955 61
+button 270 205 5601 5601 1 0 51
+text 300 220 955 62
+button 270 220 5601 5601 1 0 52
+text 300 235 955 63
+button 270 235 5601 5601 1 0 53
+text 300 250 955 64
+button 270 250 5601 5601 1 0 54
+text 300 265 955 65
+button 270 265 5601 5601 1 0 55
+text 300 280 955 66
+button 270 280 5601 5601 1 0 56
+text 300 295 955 67
+button 270 295 5601 5601 1 0 57
+text 300 310 955 68
+button 270 310 5601 5601 1 0 58
+
+text 430 10 956 7
+text 430 30 955 69
+button 400 30 5601 5601 1 0 60
+text 430 45 955 70
+button 400 45 5601 5601 1 0 61
+text 430 60 955 71
+button 400 60 5601 5601 1 0 62
+text 430 75 955 72
+button 400 75 5601 5601 1 0 63
+text 430 90 955 73
+button 400 90 5601 5601 1 0 64
+text 430 105 955 74
+button 400 105 5601 5601 1 0 65
+
+text 430 125 956 8
+text 430 145 955 75
+button 400 145 5601 5601 1 0 66
+
+text 430 165 956 9
+text 430 185 955 76
+button 400 185 5601 5601 1 0 67
+text 430 200 955 77
+button 400 200 5601 5601 1 0 68
+text 430 215 955 78
+button 400 215 5601 5601 1 0 69
+
+text 430 235 956 10
+text 430 255 955 79
+button 400 255 5601 5601 1 0 70
+
+text 430 275 956 11
+
+text 430 295 956 12
+
+[DIALOG d_COMMANDREF2 TEXT]
+N
+O
+P
+Q
+R
+S
+T
+U
+V
+W
+X
+Y
+Z
+NewDupe
+NewItem
+NewNPC
+NightSight
+Nudge
+NudgeDown
+NudgeUp
+Nuke
+NukeChar
+Page
+Pardon
+Password
+PrivHide
+PrivShow
+PrivSet
+Poly
+Props
+Rain
+RainChance
+Remove
+Repair
+Resend
+Respawn
+Resurrect
+Restock
+Resync
+Run
+Salute
+Save
+Say
+SayU
+SayUA
+Set
+SFX
+Show
+Shrink
+Shutdown
+Sleep
+Snow
+Sound
+SpellEffect
+Static
+Stone
+Suicide
+Summon
+SummonCage
+SummonTo
+Sysmessage
+TagList
+Target
+TargetG
+Tele
+Tile
+Try
+TryP
+Tweak
+UnBlockIP
+Underwear
+UnEquip
+Update
+UseItem
+Use
+Version
+Walk
+Weblink
+Where
+X
+Admin Menu
+
+[DIALOG d_COMMANDREF2 BUTTON]
+ONBUTTON=0
+	SRC.TAG.CONSOLE_TAG=""
+
+ONBUTTON=1
+SRC.DIALOG=d_COMMANDREF
+
+ONBUTTON=2
+COMMANDHELP(newdupe)
+
+ONBUTTON=3
+COMMANDHELP(newitem)
+
+ONBUTTON=4
+COMMANDHELP(newnpc)
+
+ONBUTTON=5
+COMMANDHELP(nightsight)
+
+ONBUTTON=6
+COMMANDHELP(nudge)
+
+ONBUTTON=7
+COMMANDHELP(nudgedown)
+
+ONBUTTON=8
+COMMANDHELP(nudgeup)
+
+ONBUTTON=9
+COMMANDHELP(nuke)
+
+ONBUTTON=10
+COMMANDHELP(nukechar)
+
+ONBUTTON=11
+COMMANDHELP(page)
+
+ONBUTTON=12
+COMMANDHELP(pardon)
+
+ONBUTTON=13
+COMMANDHELP(password)
+
+ONBUTTON=14
+COMMANDHELP(privhide)
+
+ONBUTTON=15
+COMMANDHELP(privshow)
+
+ONBUTTON=16
+COMMANDHELP(privset)
+
+ONBUTTON=17
+COMMANDHELP(poly)
+
+ONBUTTON=18
+COMMANDHELP(props)
+
+ONBUTTON=19
+COMMANDHELP(rain)
+
+ONBUTTON=20
+COMMANDHELP(rainchance)
+
+ONBUTTON=21
+COMMANDHELP(remove)
+
+ONBUTTON=22
+COMMANDHELP(repair)
+
+ONBUTTON=23
+COMMANDHELP(resend)
+
+ONBUTTON=24
+COMMANDHELP(respawn)
+
+ONBUTTON=25
+COMMANDHELP(resurrect)
+
+ONBUTTON=26
+COMMANDHELP(restock)
+
+ONBUTTON=27
+COMMANDHELP(resync)
+
+ONBUTTON=28
+COMMANDHELP(run)
+
+ONBUTTON=29
+COMMANDHELP(salute)
+
+ONBUTTON=30
+COMMANDHELP(save)
+
+ONBUTTON=31
+COMMANDHELP(say)
+
+ONBUTTON=32
+COMMANDHELP(sayu)
+
+ONBUTTON=33
+COMMANDHELP(sayua)
+
+ONBUTTON=34
+COMMANDHELP(set)
+
+ONBUTTON=35
+COMMANDHELP(sfx)
+
+ONBUTTON=36
+COMMANDHELP(show)
+
+ONBUTTON=37
+COMMANDHELP(shrink)
+
+ONBUTTON=38
+COMMANDHELP(shutdown)
+
+ONBUTTON=39
+COMMANDHELP(sleep)
+
+ONBUTTON=40
+COMMANDHELP(snow)
+
+ONBUTTON=42
+COMMANDHELP(sound)
+
+ONBUTTON=43
+COMMANDHELP(spelleffect)
+
+ONBUTTON=44
+COMMANDHELP(static)
+
+ONBUTTON=45
+COMMANDHELP(stone)
+
+ONBUTTON=46
+COMMANDHELP(suicide)
+
+ONBUTTON=47
+COMMANDHELP(summon)
+
+ONBUTTON=48
+COMMANDHELP(summoncage)
+
+ONBUTTON=49
+COMMANDHELP(summonto)
+
+ONBUTTON=50
+COMMANDHELP(sysmessage)
+
+ONBUTTON=51
+COMMANDHELP(taglist)
+
+ONBUTTON=52
+COMMANDHELP(target)
+
+ONBUTTON=53
+COMMANDHELP(targetg)
+
+ONBUTTON=54
+COMMANDHELP(tele)
+
+ONBUTTON=55
+COMMANDHELP(tile)
+
+ONBUTTON=56
+COMMANDHELP(try)
+
+ONBUTTON=57
+COMMANDHELP(tryp)
+
+ONBUTTON=58
+COMMANDHELP(tweak)
+
+ONBUTTON=60
+COMMANDHELP(unblockip)
+
+ONBUTTON=61
+COMMANDHELP(underwear)
+
+ONBUTTON=62
+COMMANDHELP(unequip)
+
+ONBUTTON=63
+COMMANDHELP(update)
+
+ONBUTTON=64
+COMMANDHELP(useitem)
+
+ONBUTTON=65
+COMMANDHELP(use)
+
+ONBUTTON=66
+COMMANDHELP(version)
+
+ONBUTTON=67
+COMMANDHELP(walk)
+
+ONBUTTON=68
+COMMANDHELP(weblink)
+
+ONBUTTON=69
+COMMANDHELP(where)
+
+ONBUTTON=70
+COMMANDHELP(x)
+
+ONBUTTON=75
+	src.ADMIN
+
+[FUNCTION commandhelp]
+VAR.COMMANDVIEW1=
+VAR.COMMANDVIEW2=
+VAR.COMMANDVIEW3=
+VAR.COMMANDVIEW4=
+VAR.COMMANDVIEW5=
+VAR.COMMANDVIEW6=
+VAR.COMMANDVIEW7=
+VAR.COMMANDVIEW8=
+VAR.COMMANDVIEW9=
+VAR.COMMANDVIEW10=
+VAR.COMMANDVIEW11=
+VAR.COMMANDVIEW12=
+VAR.COMMANDVIEW13=
+VAR.COMMANDVIEW14=
+VAR.COMMANDVIEW15=
+VAR.COMMANDVIEW16=
+VAR.COMMANDVIEW17=
+VAR.COMMANDVIEW18=
+VAR.COMMANDVIEW19=
+VAR.COMMANDVIEW20=
+VAR.COMMANDVIEW21=
+VAR.COMMANDVIEW22=
+VAR.COMMANDVIEW23=
+VAR.COMMANDVIEW24=
+VAR.COMMANDVIEW25=
+VAR.COMMANDVIEW26=
+VAR.COMMANDVIEW27=
+VAR.COMMANDVIEW28=
+IF (STRMATCH("<?ARGS?>","accountmgr"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="AccountMgr"
+	VAR.COMMANDVIEW2="Format: SERV.AccountMgr.[see below]"
+	VAR.COMMANDVIEW3="Example: SERV.AccountMgr.ADD(Name,Password)"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command allows you to manipulate accounts from inside the game."
+	VAR.COMMANDVIEW6="The following arguments are available:"
+	VAR.COMMANDVIEW8="SERV.AccountMgr.UPDATE"
+	VAR.COMMANDVIEW9="Will update sphereaccu.scp with any changes from sphereacct.scp"
+	VAR.COMMANDVIEW11="SERV.AccountMgr.ADD(name,password)"
+	VAR.COMMANDVIEW12="Adds an account."
+	VAR.COMMANDVIEW14="SERV.FindAccount(name).DELETE"
+	VAR.COMMANDVIEW15="Will permanently delete the specified account."
+	VAR.COMMANDVIEW17="SERV.FindAccount(name).EXPORT [filename]"
+	VAR.COMMANDVIEW18="Will export the specified account to [filename]."
+	VAR.COMMANDVIEW20="SERV.FindAccount(name).SHOW [variable]"
+	VAR.COMMANDVIEW21="Will show the contents of [variable] on the specified account."
+	VAR.COMMANDVIEW23="SERV.FindAccount(name).[variable] [arguments]"
+	VAR.COMMANDVIEW24="Will set the contents of [variable] on the specified account."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","add"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="ADD"
+	VAR.COMMANDVIEW2="Format: ADD [string]"
+	VAR.COMMANDVIEW3="Example: ADD i_axe_war"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will add an item to the world. If the command is typed"
+	VAR.COMMANDVIEW6="without any arguments, a gump will come up allowing you to choose"
+	VAR.COMMANDVIEW7="from different items and characters, as well as travel locations."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","addnpc"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="ADDNPC"
+	VAR.COMMANDVIEW2="Format: ADDNPC [string]"
+	VAR.COMMANDVIEW3="Example: ADDNPC c_h_warrior"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will add an NPC to the world. The NPC will be temporary,"
+	VAR.COMMANDVIEW6="and will not respawn when it dies unless its flags are set to statf_respawn."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","admin"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="ADMIN"
+	VAR.COMMANDVIEW2="Format: ADMIN [boolean]"
+	VAR.COMMANDVIEW3="Example: ADMIN 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will bring up a dialog that allows you to view the clients"
+	VAR.COMMANDVIEW6="that are connected to the server and manipulate them in various ways."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","AFK"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="AFK"
+	VAR.COMMANDVIEW2="Format: AFK [boolean]"
+	VAR.COMMANDVIEW3="Example: AFK 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command puts a player into AFK mode, during which he has [afk] after his"
+	VAR.COMMANDVIEW6="name and says 'z' occasionally. Moving or taking any action will cancel AFK"
+	VAR.COMMANDVIEW7="mode."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","ALLCLIENTS"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="ALLCLIENTS"
+	VAR.COMMANDVIEW2="Format: SERV.ALLCLIENTS [command] [args]"
+	VAR.COMMANDVIEW3="Example: SERV.ALLCLIENTS gocli 0"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will perform the specified command on all connected clients."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","ALLMOVE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="ALLMOVE"
+	VAR.COMMANDVIEW2="Format: ALLMOVE [boolean]"
+	VAR.COMMANDVIEW3="Example: ALLMOVE 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, a character can move any item that isn't a part of the"
+	VAR.COMMANDVIEW6="static0.mul, regardless of the item's attributes."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","ALLSHOW"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="ALLSHOW"
+	VAR.COMMANDVIEW2="Format: ALLSHOW [boolean]"
+	VAR.COMMANDVIEW3="Example: ALLSHOW 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, a character can see all items and characters, regardless"
+	VAR.COMMANDVIEW6="of whether they're on a different mapplane or if they're invisible."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","ANIM"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="ANIM"
+	VAR.COMMANDVIEW2="Format: ANIM [integer]"
+	VAR.COMMANDVIEW3="Example: ANIM 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will force your character to perform the specified animation."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","ATTACK"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="ATTACK"
+	VAR.COMMANDVIEW2="Format: ATTACK"
+	VAR.COMMANDVIEW3="Example: ATTACK"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command can be used to force NPCs to attack people, when properly"
+	VAR.COMMANDVIEW6="used from scripts."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","BANK"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="BANK"
+	VAR.COMMANDVIEW2="Format: BANK [hexadecimal]"
+	VAR.COMMANDVIEW3="Example: BANK 01a"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will open a targetted player's bank box. Valid arguments are"
+	VAR.COMMANDVIEW6="01a, 01b, and 0. 01a and 01b are the layers where a vendor's items for sale"
+	VAR.COMMANDVIEW7="are stored."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","BANKSELF"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="BANKSELF"
+	VAR.COMMANDVIEW2="Format: BANKSELF"
+	VAR.COMMANDVIEW3="Example: BANKSELF"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will open up your own bank box."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","BLOCKIP"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="BLOCKIP"
+	VAR.COMMANDVIEW2="Format: SERV.BLOCKIP [integer].[integer].[integer].[integer]"
+	VAR.COMMANDVIEW3="Example: SERV.BLOCKIP 127.0.0.1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will add an IP to the list of blocked IPs in the sphere.ini"
+	VAR.COMMANDVIEW6="SPHERE does not currently allow you to use wildcards in blocked IPs."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","BOUNCE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="BOUNCE"
+	VAR.COMMANDVIEW2="Format: BOUNCE"
+	VAR.COMMANDVIEW3="Example: BOUNCE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will bounce an item to a player's backpack. Intended for use in"
+	VAR.COMMANDVIEW6="scripts."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","BOW"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="BOW"
+	VAR.COMMANDVIEW2="Format: BOW"
+	VAR.COMMANDVIEW3="Example: BOW"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will perform the bow animation."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","CAST"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="CAST"
+	VAR.COMMANDVIEW2="Format: CAST [integer]"
+	VAR.COMMANDVIEW3="Example: CAST 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command casts the specified spell number. Players must have a spellbook"
+	VAR.COMMANDVIEW6="with the spell in it to cast the spell, as well as normal reagent requirements."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","CHARLIST"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="CHARLIST"
+	VAR.COMMANDVIEW2="Format: CHARLIST"
+	VAR.COMMANDVIEW3="Example: CHARLIST"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will bring up a list of the the characters on the current account, allowing you"
+	VAR.COMMANDVIEW6="to log in as any of them."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","CLIENTS"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="CLIENTS"
+	VAR.COMMANDVIEW2="Format: CLIENTS"
+	VAR.COMMANDVIEW3="Example: CLIENTS"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will give a listing of the currently connected clients, showing their socket,"
+	VAR.COMMANDVIEW6="account name, IP address, character name, and coordinates."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","COLDCHANCE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="COLDCHANCE"
+	VAR.COMMANDVIEW2="Format: SECTOR.COLDCHANCE [integer]"
+	VAR.COMMANDVIEW3="Example: SECTOR.COLDCHANCE 50"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Sets the chance (out of 100%) for snow in a 64X64 tile area. The setting is"
+	VAR.COMMANDVIEW6="saved in your worldfile, and can be removed by typing 'SECTOR.COLDCHANCE='"
+	VAR.COMMANDVIEW7="in a sector where the coldchance has been previously set."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","CONSUME"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="CONSUME"
+	VAR.COMMANDVIEW2="Format: CONSUME [integer] [string]"
+	VAR.COMMANDVIEW3="Example: CONSUME 1 i_torch"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will consume the specified amount of the specifed item, if the"
+	VAR.COMMANDVIEW6="player has enough to be consumed."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","CONTROL"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="CONTROL"
+	VAR.COMMANDVIEW2="Format: CONTROL"
+	VAR.COMMANDVIEW3="Example: CONTROL"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command allows you to take control of the body of a chosen PC/NPC. Be"
+	VAR.COMMANDVIEW6="aware that the targetted character will be transferred into your body. Any"
+	VAR.COMMANDVIEW7="newbie items in your pack are carried with you into your new body. All of"
+	VAR.COMMANDVIEW8="a character's tags, flags, and events are lost when it is in controlled."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","COUNT"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="COUNT"
+	VAR.COMMANDVIEW2="Format: COUNT"
+	VAR.COMMANDVIEW3="Example: COUNT"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will return the amount of items in a specified character. Best"
+	VAR.COMMANDVIEW6="used from within scripts, ie CONT.COUNT."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","DEBUG"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="DEBUG"
+	VAR.COMMANDVIEW2="Format: DEBUG [boolean]"
+	VAR.COMMANDVIEW3="Example: DEBUG 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, all items will look like worldgems, and all creatures will"
+	VAR.COMMANDVIEW6="look like white humans. All objects will appear to be at your Z level. When"
+	VAR.COMMANDVIEW7="typed without an argument, debug mode will be toggled on or off."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","DETAIL"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="DETAIL"
+	VAR.COMMANDVIEW2="Format: DETAIL [boolean]"
+	VAR.COMMANDVIEW3="Example: DETAIL 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Need more information on this command."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","DISCONNECT"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="DISCONNECT"
+	VAR.COMMANDVIEW2="Format: DISCONNECT"
+	VAR.COMMANDVIEW3="Example: DISCONNECT or X.DISCONNECT"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will disconnect a client without blocking their account."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","DRAWMAP"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="DRAWMAP"
+	VAR.COMMANDVIEW2="Format: DRAWMAP"
+	VAR.COMMANDVIEW3="Example: DRAWMAP"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Attempts to use the cartography skill."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","DRY"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="DRY"
+	VAR.COMMANDVIEW2="Format: SECTOR.DRY"
+	VAR.COMMANDVIEW3="Example: SECTOR.DRY"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will turn off all weather effects in a 64X64 area. This is"
+	VAR.COMMANDVIEW6="saved in the worldfile."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","DUPE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="DUPE"
+	VAR.COMMANDVIEW2="Format: DUPE [integer]"
+	VAR.COMMANDVIEW3="Example: DUPE 50"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will create as many exact duplicates of an item as you"
+	VAR.COMMANDVIEW6="specify as an argument. These duplicates will be created in the exact"
+	VAR.COMMANDVIEW7="same place as the original. If entered without an argument, a single dupe"
+	VAR.COMMANDVIEW8="will be created. Arguments over 199 may crash the server."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","EDIT"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="EDIT"
+	VAR.COMMANDVIEW2="Format: EDIT"
+	VAR.COMMANDVIEW3="Example: EDIT or X.EDIT"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will allow you to edit whatever items a player has equipped,"
+	VAR.COMMANDVIEW6="including those on invisible layers."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","EFFECT"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="EFFECT"
+	VAR.COMMANDVIEW2="Format: EFFECT [type],[id],[speed],[frames],[explosion]"
+	VAR.COMMANDVIEW3="Example: EFFECT 3,03728,2,15,0"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command is used to play an animation. TYPE has three settings. If set"
+	VAR.COMMANDVIEW6="to 1, it will play a lightning bolt animation. If set to 2, it will be a"
+	VAR.COMMANDVIEW7="flying animation that moves from one character to another. If set to 3, it"
+	VAR.COMMANDVIEW8="will be an animation that stays centered on the player as he moves around."
+	VAR.COMMANDVIEW9="ID is the item ID to use for the animation. Speed is the speed that a flying"
+	VAR.COMMANDVIEW10="animation will move from one player to another. Frames is the total amount"
+	VAR.COMMANDVIEW11="of frames to play. If frames is set higher than the actual frames in the"
+	VAR.COMMANDVIEW12="animation, it will loop."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","EMOTE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="EMOTE"
+	VAR.COMMANDVIEW2="Format: EMOTE [string]"
+	VAR.COMMANDVIEW3="Example: EMOTE bow deeply"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will emote the phrase entered as an argument. The player emoting"
+	VAR.COMMANDVIEW6="will see the example phrase as '*You bow deeply*' while others will see it as"
+	VAR.COMMANDVIEW7="'*You see [name] bow deeply*' Use quotes around the text."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","EQUIP"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="EQUIP"
+	VAR.COMMANDVIEW2="Format: EQUIP"
+	VAR.COMMANDVIEW3="Example: EQUIP"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will force a character to equip an item. A character's normal restrictions will"
+	VAR.COMMANDVIEW6="apply, and can prevent the item from being equipped."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","EQUIPHALO"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="EQUIPHALO"
+	VAR.COMMANDVIEW2="Format: EQUIPHALO"
+	VAR.COMMANDVIEW3="Example: EQUIPHALO"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will make your character glow. Must be removed with the EDIT command."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","EXPORT"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="EXPORT"
+	VAR.COMMANDVIEW2="Format: SERV.EXPORT [filename],[boolean],[integer]"
+	VAR.COMMANDVIEW3="Example: SERV.EXPORT newfile.scp,1,5"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Exports part of the world to [filename]. [boolean] determines whether or not"
+	VAR.COMMANDVIEW6="characters are exported, and [integer] is the amount of tiles away from your"
+	VAR.COMMANDVIEW7="character you want the export to extend to. Thanks to Dodger for the info."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","EXTRACT")) // Needs updating
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="EXTRACT"
+	VAR.COMMANDVIEW2="Format: EXTRACT [filename] [arguments]"
+	VAR.COMMANDVIEW3="Example: EXTRACT multi.txt 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command allows you to extract the targetted area."
+	VAR.COMMANDVIEW6="Filename can have any extension. If an item ID follows the filename,"
+	VAR.COMMANDVIEW7="it will extract only that item from the area."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","EVERBTARG"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="EVERBTARG"
+	VAR.COMMANDVIEW2="Format: EVERBTARG [string]"
+	VAR.COMMANDVIEW3="Example: EVERBTARG message"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Wihout any arguments, this command will allow you to enter a command to perform"
+	VAR.COMMANDVIEW6="on your target. If you use a command as an argument, it will allow you to enter"
+	VAR.COMMANDVIEW7="arguments for that command."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","FACE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="FACE"
+	VAR.COMMANDVIEW2="Format: FACE"
+	VAR.COMMANDVIEW3="Example: FACE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will force a character to turn to the direction SRC is in."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","FIX"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="FIX"
+	VAR.COMMANDVIEW2="Format: FIX"
+	VAR.COMMANDVIEW3="Example: FIX"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will set a character's Z level to ground height, as well as updating"
+	VAR.COMMANDVIEW6="the screen like the resend command. Should be disabled for players in the"
+	VAR.COMMANDVIEW7="sphere.ini, since players can use it to take advantage of house looting bugs."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","FIXWEIGHT"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="FIXWEIGHT"
+	VAR.COMMANDVIEW2="Format: FIXWEIGHT"
+	VAR.COMMANDVIEW3="Example: FIXWEIGHT"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Recalculates a character's weight."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","FLIP"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="FLIP"
+	VAR.COMMANDVIEW2="Format: FLIP"
+	VAR.COMMANDVIEW3="Example: FLIP or X.FLIP"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will 'flip' an item, cycling its ID to the next one in the series, as defined"
+	VAR.COMMANDVIEW6="by the item's DUPELIST setting. If used on a character, it will change that"
+	VAR.COMMANDVIEW7="character's direction."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SrcFollow"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="SrcFollow"
+	VAR.COMMANDVIEW2="Format: X.SrcFollow"
+	VAR.COMMANDVIEW3="Example: X.SrcFollow"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will set you up to follow another character around. Every second or so, you"
+	VAR.COMMANDVIEW6="will be teleported to their location. Turn it off by going into warmode for"
+	VAR.COMMANDVIEW7="a second or two."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","FORGIVE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="FORGIVE"
+	VAR.COMMANDVIEW2="Format: FORGIVE"
+	VAR.COMMANDVIEW3="Example: FORGIVE or XFORGIVE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will unjail a player."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GM"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GM"
+	VAR.COMMANDVIEW2="Format: GM [boolean]"
+	VAR.COMMANDVIEW3="Example: GM 0"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned off, a GM will be treated like a normal player, although GM"
+	VAR.COMMANDVIEW6="commands will function as normal for the most part."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GMPAGE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GMPAGE"
+	VAR.COMMANDVIEW2="Format: GMPAGE"
+	VAR.COMMANDVIEW3="Example: GMPAGE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will prompt the player to enter a message, which will then be placed into the page"
+	VAR.COMMANDVIEW6="queue."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GO"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GO"
+	VAR.COMMANDVIEW2="Format: GO [x],[y],[z],[mapplane] or GO [placename]"
+	VAR.COMMANDVIEW3="Example: GO 1,1,0,1 or X.GO 1,1,0,1 or GO britain"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the selected coordinates or placename, as defined in"
+	VAR.COMMANDVIEW6="spheremap.scp"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOCHAR"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOCHAR"
+	VAR.COMMANDVIEW2="Format: GOCHAR [integer]"
+	VAR.COMMANDVIEW3="Example: GOCHAR 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the selected character number."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOCHARID"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOCHARID"
+	VAR.COMMANDVIEW2="Format: GOCHARID [string]"
+	VAR.COMMANDVIEW3="Example: GOCHAR c_man"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the first instance of the specified chardef. Using it again"
+	VAR.COMMANDVIEW6="will take you to the next instance, and so on."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOCLI"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOCLI"
+	VAR.COMMANDVIEW2="Format: GOCLI [integer]"
+	VAR.COMMANDVIEW3="Example: GOCLI 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the specified client. Client numbers can be seen with the"
+	VAR.COMMANDVIEW6="CLIENTS command."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOITEMID"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOITEMID"
+	VAR.COMMANDVIEW2="Format: GOITEMID [string]"
+	VAR.COMMANDVIEW3="Example: GOITEMID i_sword_long"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the first instance of the specified itemdef. Using it again"
+	VAR.COMMANDVIEW6="will take you to the next instance, and so on."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOPLACE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOPLACE"
+	VAR.COMMANDVIEW2="See GO"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOSOCK"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOSOCK"
+	VAR.COMMANDVIEW2="Format: GOSOCK [hexadecimal]"
+	VAR.COMMANDVIEW3="Example: GOSOCK 012c"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the specified socket. Sockets can be found with the CLIENTS"
+	VAR.COMMANDVIEW6="command."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOTARG"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOTARG"
+	VAR.COMMANDVIEW2="Format: GOTARG"
+	VAR.COMMANDVIEW3="Example: GOTARG"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the location of TARG."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOTYPE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOTYPE"
+	VAR.COMMANDVIEW2="Format: GOTYPE [string]"
+	VAR.COMMANDVIEW3="Example: GOTYPE t_weapon_sword"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the first instance of the specified type."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","GOUID"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="GOUID"
+	VAR.COMMANDVIEW2="Format: GOUID [hexadecimal]"
+	VAR.COMMANDVIEW3="Example: GOUID 06df"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will teleport you to the specified UID."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","HEAR"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="HEAR"
+	VAR.COMMANDVIEW2="See SYSMESSAGE"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","HEARALL"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="HEARALL"
+	VAR.COMMANDVIEW2="Format: HEARALL [boolean]"
+	VAR.COMMANDVIEW3="Example: HEARALL 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, you will hear everything said on the server by anybody with a"
+	VAR.COMMANDVIEW6="lower plevel. This includes NPCs."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","HELP"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="HELP"
+	VAR.COMMANDVIEW2="Format: HELP [string]"
+	VAR.COMMANDVIEW3="Example: HELP bark"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Opens the SPHERE help system, or gives relevant information on the specified"
+	VAR.COMMANDVIEW6="string if followed by arguments. Can be prefixed for help on other objects,"
+     VAR.COMMANDVIEW7="example: .serv.help [object]"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","HUNGRY"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="HUNGRY"
+	VAR.COMMANDVIEW2="Format: HUNGRY"
+	VAR.COMMANDVIEW3="Example: HUNGRY"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Displays your current hunger level."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","IMPORT"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="IMPORT"
+	VAR.COMMANDVIEW2="Format: SERV.IMPORT [filename] [boolean] [integer]"
+	VAR.COMMANDVIEW3="Example: SERV.IMPORT newfile.scp,1,5"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Unextracts files created with the EXTRACT command."
+	VAR.COMMANDVIEW6="See EXTRACT for more info."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","INFO"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="INFO"
+	VAR.COMMANDVIEW2="Format: INFO"
+	VAR.COMMANDVIEW3="Example: INFO"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When targetted on an item or character, will bring up a gump allowing you to"
+	VAR.COMMANDVIEW6="edit many of the selected item's properties. When targetted on static items or"
+	VAR.COMMANDVIEW7="terrain, will display info on that tile."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","INFORMATION"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="INFORMATION"
+	VAR.COMMANDVIEW2="Format: INFORMATION"
+	VAR.COMMANDVIEW3="Example: INFORMATION"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Gives a variety of stats on the server, including name, age (in days), clients"
+	VAR.COMMANDVIEW6="amount of items, amount of NPCs, memory in use, admin's e-mail, shard's website,"
+	VAR.COMMANDVIEW7="the shard's language, and the shard's timezone (TZ)."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","INPDLG"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="INPDLG"
+	VAR.COMMANDVIEW2="Format: INPDLG"
+	VAR.COMMANDVIEW3="Example: TRYP 3 INPDLG=NAME 30"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Displays a dialog that you can input text or numbers to change"
+	VAR.COMMANDVIEW6="the requested parameter.  In the example above:"
+	VAR.COMMANDVIEW7="TRYP means TRY Plevel, 3 is the minimum Plevel required to perform the action"
+	VAR.COMMANDVIEW8="INPDLG=NAME is the parameter you want to modify, and 30 is the total allowed"
+	VAR.COMMANDVIEW9="length of characters that you can input"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","INVIS"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="INVIS"
+	VAR.COMMANDVIEW2="Format: INVIS [boolean]"
+	VAR.COMMANDVIEW3="Example: INVIS 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will turn the character invisible until turned off."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","INVUL"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="INVUL"
+	VAR.COMMANDVIEW2="Format: INVUL [boolean]"
+	VAR.COMMANDVIEW3="Example: INVUL 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, the player is invulnerable. If he is below GM plevels, he can"
+	VAR.COMMANDVIEW5="neither take nor deal damage."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","JAIL"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="JAIL"
+	VAR.COMMANDVIEW2="Format: JAIL [integer]"
+	VAR.COMMANDVIEW3="Example: JAIL 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will place a player in the selected jail cell. If no arguments are entered,"
+	VAR.COMMANDVIEW5="the default cell is 1. Valid cell numbers are 1-10. When one character on an"
+	VAR.COMMANDVIEW6="account is jailed, every other one is as well."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","KICK"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="KICK"
+	VAR.COMMANDVIEW2="Format: KICK"
+	VAR.COMMANDVIEW3="Example: KICK"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This will disconnect the selected player, and block his account."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","KILL"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="KILL"
+	VAR.COMMANDVIEW2="Format: KILL"
+	VAR.COMMANDVIEW3="Example: KILL"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Kills the selected player with a bolt of lightning."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","LIGHT"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="LIGHT"
+	VAR.COMMANDVIEW2="Format: SECTOR.LIGHT [integer]"
+	VAR.COMMANDVIEW3="Example: SECTOR.LIGHT 30"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Sets the light level in a 64X64 tile area. Valid ranges are 0-30, with 0"
+	VAR.COMMANDVIEW6="being the brightest and 30 the darkest. This is saved in the worldfile."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","LINK"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="LINK"
+	VAR.COMMANDVIEW2="Format: LINK"
+	VAR.COMMANDVIEW3="Example: LINK"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This sets the LINK variables of two targetted items to each others' UIDs."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","LISTEN"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="LISTEN"
+	VAR.COMMANDVIEW2="See HEARALL"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","MESSAGE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="MESSAGE"
+	VAR.COMMANDVIEW2="Format: MESSAGE [string]"
+	VAR.COMMANDVIEW3="Example: MESSAGE Hello"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Displays the entered text above a character's head. Only he can see it."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","MOVE"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="MOVE"
+	VAR.COMMANDVIEW2="Format: MOVE [x],[y] or MOVE [direction],[distance]"
+	VAR.COMMANDVIEW3="Example: MOVE 5,5 or MOVE NE,5"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Moves you along the x and y axes, or in the direction indicated."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","MUSIC"))
+	VAR.PAGE=1
+	VAR.COMMANDVIEW1="MUSIC"
+	VAR.COMMANDVIEW2="Format: MUSIC [integer]"
+	VAR.COMMANDVIEW3="Example: MUSIC 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Will play the selected midi file. Valid arguments are 1-48."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NEWDUPE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NEWDUPE"
+	VAR.COMMANDVIEW2="Format: NEWDUPE [hexadecimal]"
+	VAR.COMMANDVIEW3="Example: NEWDUPE 040001f88"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Creates an exact duplicate of the specified UID, and places it at your feet."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NEWITEM"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NEWITEM"
+	VAR.COMMANDVIEW2="Format: NEWITEM [string]"
+	VAR.COMMANDVIEW3="Example: NEWITEM i_torch"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Creates a new instance of the specified item, which can then be referred to with"
+	VAR.COMMANDVIEW6="LASTNEW."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NEWNPC"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NEWNPC"
+	VAR.COMMANDVIEW2="Format: NEWNPC [string]"
+	VAR.COMMANDVIEW3="Example: NEWNPC c_h_warrior"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Creates a new character, which can then be referred to with LASTNEWCHAR."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NIGHTSIGHT"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NIGHTSIGHT"
+	VAR.COMMANDVIEW2="Format: NIGHTSIGHT [boolean]"
+	VAR.COMMANDVIEW3="Example: NIGHTSIGHT 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, the nightsight flag on the player will be turned on permanently."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NUDGE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NUDGE"
+	VAR.COMMANDVIEW2="Format: NUDGE [x],[y],[z]"
+	VAR.COMMANDVIEW3="Example: NUDGE 1,2,3"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Adds the specified x, y, and z values to an object's P. Negative values can be"
+	VAR.COMMANDVIEW6="used as arguments."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NUDGEDOWN"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NUDGEDOWN"
+	VAR.COMMANDVIEW2="Format: NUDGEDOWN [integer]"
+	VAR.COMMANDVIEW3="Example: NUDGEDOWN 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Slides an object down the specified number of Z levels."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NUDGEUP"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NUDGEUP"
+	VAR.COMMANDVIEW2="Format: NUDGEUP [integer]"
+	VAR.COMMANDVIEW3="Example: NUDGEUP 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Slides an object up the specified number of Z levels."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NUKE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NUKE"
+	VAR.COMMANDVIEW2="Format: NUKE [command]"
+	VAR.COMMANDVIEW3="Example: NUKE nudgeup 2"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Performs the selected command on all items in an area you select. If an argument"
+	VAR.COMMANDVIEW6="is omitted, it will remove all the items."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","NUKECHAR"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="NUKECHAR"
+	VAR.COMMANDVIEW2="Format: NUKECHAR [command]"
+	VAR.COMMANDVIEW3="Example: NUKECHAR go 1,1,0,1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Performs the selected command on all characters in an area you select. If an"
+	VAR.COMMANDVIEW6="argument is omitted, it will remove all the characters."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","PAGE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="PAGE"
+	VAR.COMMANDVIEW2="Format: PAGE [string]"
+	VAR.COMMANDVIEW3="Example: PAGE D"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Brings up the page queue if entered without an argument, or you can perform the"
+	VAR.COMMANDVIEW6="following commands if you currently have a page selected:"
+	VAR.COMMANDVIEW7="D -- Deletes the current page"
+	VAR.COMMANDVIEW8="L -- Brings up the page queue"
+	VAR.COMMANDVIEW9="O -- Go to the point the player was at when he paged"
+	VAR.COMMANDVIEW10="Q -- Return the page to the queue"
+	VAR.COMMANDVIEW11="? -- Display information about the current page"
+	VAR.COMMANDVIEW12="K -- Kick the player that paged"
+	VAR.COMMANDVIEW13="BAN -- Ban the player that paged"
+	VAR.COMMANDVIEW14="JAIL -- Jail the player that paged"
+	VAR.COMMANDVIEW15="OFF -- Turn off page messages"
+	VAR.COMMANDVIEW16="ON -- Turn on page messages"
+	VAR.COMMANDVIEW17="WIPE -- Clears the entire pague queue"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","PARDON"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="PARDON"
+	VAR.COMMANDVIEW2="See FORGIVE"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","PASSWORD"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="PASSWORD"
+	VAR.COMMANDVIEW2="Format: PASSWORD [string]"
+	VAR.COMMANDVIEW3="Example: PASSWORD mypassword"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Sets your account password to [string]."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","PRIVHIDE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="PRIVHIDE"
+	VAR.COMMANDVIEW2="Format: PRIVHIDE [boolean]"
+	VAR.COMMANDVIEW3="Example: PRIVHIDE 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, has the same effect as PRIVSHOW being turned off."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","PRIVSHOW"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="PRIVSHOW"
+	VAR.COMMANDVIEW2="Format: PRIVSHOW [boolean]"
+	VAR.COMMANDVIEW3="Example: PRIVSHOW 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, your name will have your title in front of it, according"
+	VAR.COMMANDVIEW6="to your plevel."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","PRIVSET"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="PRIVSET"
+	VAR.COMMANDVIEW2="Format: PRIVSET [integer]"
+	VAR.COMMANDVIEW3="Example: PRIVSET 7"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Sets the selected player's plevel and gives them an appropriately colored"
+	VAR.COMMANDVIEW6="GM robe. The following plevels are available:"
+	VAR.COMMANDVIEW7="0 -- Guest"
+	VAR.COMMANDVIEW8="1 -- Player/NPC"
+	VAR.COMMANDVIEW9="2 -- Counselor"
+	VAR.COMMANDVIEW10="3 -- Seer"
+	VAR.COMMANDVIEW11="4 -- GM"
+	VAR.COMMANDVIEW12="5 -- Dev"
+	VAR.COMMANDVIEW13="6 -- Admin"
+	VAR.COMMANDVIEW14="7 -- Owner"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","POLY"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="POLY"
+	VAR.COMMANDVIEW2="Format: POLY [string]"
+	VAR.COMMANDVIEW3="Example: POLY c_dragon_red"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Polymorphs a character into the selected character for a limited amount of time,"
+	VAR.COMMANDVIEW6="changing the stats of your character into standard stats for that character."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","PROPS"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="PROPS"
+	VAR.COMMANDVIEW2="See INFO"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","RAIN"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="RAIN"
+	VAR.COMMANDVIEW2="Format: SECTOR.RAIN"
+	VAR.COMMANDVIEW3="Example: SECTOR.RAIN"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This will make it rain in a 64X64 tile area. This is saved in the worldfile."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","RAINCHANCE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="RAINCHANCE"
+	VAR.COMMANDVIEW2="Format: SECTOR.RAINCHANCE [integer]"
+	VAR.COMMANDVIEW3="Example: SECTOR.RAINCHANCE 60"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Sets the chance that it will rain (out of 100%) in a 64x64 tile area. This is"
+	VAR.COMMANDVIEW6="saved in the worldfile."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","REMOVE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="REMOVE"
+	VAR.COMMANDVIEW2="Format: REMOVE [integer]"
+	VAR.COMMANDVIEW3="Example: REMOVE 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Permanently removes an NPC or item, when used without any arguments. When used"
+	VAR.COMMANDVIEW6="on a player with an argument of 1, removes that player and blocks his account."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","REPAIR"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="REPAIR"
+	VAR.COMMANDVIEW2="Format: REPAIR"
+	VAR.COMMANDVIEW3="Example: REPAIR"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Attempts to repair an item."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","RESEND"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="RESEND"
+	VAR.COMMANDVIEW2="Format: RESEND"
+	VAR.COMMANDVIEW3="Example: RESEND"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Sends all the items and characters in an area to the client over again, fixing"
+	VAR.COMMANDVIEW6="any graphical glitches."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","RESPAWN"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="RESPAWN"
+	VAR.COMMANDVIEW2="Format: SECTOR.RESPAWN or SERV.RESPAWN"
+	VAR.COMMANDVIEW3="Example: SECTOR.RESPAWN"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces all the spawnpoints in a 64x64 tile area to immediately spawn their next"
+	VAR.COMMANDVIEW6="character, if used as SECTOR.RESPAWN, or forces the same to happen across the"
+	VAR.COMMANDVIEW7="entire server if used as SERV.RESPAWN."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","RESURRECT"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="RESURRECT"
+	VAR.COMMANDVIEW2="Format: RESURRECT"
+	VAR.COMMANDVIEW3="Example: RESURRECT or XRESURRECT"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="This command will resurrect a dead player. If used while the player is standing on"
+	VAR.COMMANDVIEW6="his corpse, all his items he had will be immediately returned to him."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","RESTOCK"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="RESTOCK"
+	VAR.COMMANDVIEW2="Format: SECTOR.RESTOCK or SERV.RESTOCK"
+	VAR.COMMANDVIEW3="Example: SECTOR.RESTOCK"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces all vendors in a 64x64 tile area or across the server to immediately refresh"
+	VAR.COMMANDVIEW6="their stock of items."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","RESYNC"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="RESYNC"
+	VAR.COMMANDVIEW2="See RESEND"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","RUN"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="RUN"
+	VAR.COMMANDVIEW2="Format: RUN [string]"
+	VAR.COMMANDVIEW3="Example: RUN N or XRUN N"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces an NPC to run in the direction specified (N,S,E,W,NE,NW,SW,SE). Does not work"
+	VAR.COMMANDVIEW6="on players."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SALUTE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SALUTE"
+	VAR.COMMANDVIEW2="Format: SALUTE"
+	VAR.COMMANDVIEW3="Example: SALUTE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Performs the salute animation."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SAVE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SAVE"
+	VAR.COMMANDVIEW2="Format: SAVE"
+	VAR.COMMANDVIEW3="Example: SAVE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Performs an immediate worldsave, or finishes the current one if the server is doing a"
+	VAR.COMMANDVIEW6="background save."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SAY"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SAY"
+	VAR.COMMANDVIEW2="Format: SAY [string]"
+	VAR.COMMANDVIEW3="Example: SAY Hello!"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces a character or item to say the specified text."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SAYU"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SAYU"
+	VAR.COMMANDVIEW2="Format: SAYU [string]"
+	VAR.COMMANDVIEW3="Example: SAYU Hello"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces a character or item to say the specified text in unicode."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SAYUA"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SAYUA"
+	VAR.COMMANDVIEW2="Format: SAYUA [color],[integer],[integer],[language],[string]"
+	VAR.COMMANDVIEW3="Example: SAYUA 025,0,0,eng,Hi!"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces a character or item to say specified text in colored unicode, in the specified"
+	VAR.COMMANDVIEW6="language."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SET"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SET"
+	VAR.COMMANDVIEW2="Format: SET [string] [integer]"
+	VAR.COMMANDVIEW3="Example: SET str 1000"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Sets a variable on a selected character. Commands can be specified instead of variables"
+	VAR.COMMANDVIEW6="to force a player to perform the specified command."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SFX"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SFX"
+	VAR.COMMANDVIEW2="Format: SFX [integer]"
+	VAR.COMMANDVIEW3="Example: SFX 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Plays the selected sound number."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SHOW"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SHOW"
+	VAR.COMMANDVIEW2="Format: SHOW [string]"
+	VAR.COMMANDVIEW3="Example: SHOW str or XSHOW str"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Displays the value of the specified variable."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SHRINK"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SHRINK"
+	VAR.COMMANDVIEW2="Format: SHRINK"
+	VAR.COMMANDVIEW3="Example: SHRINK"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Shrinks an NPC into an item, which can be doubleclicked to restore the NPC to full size."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SHUTDOWN"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SHUTDOWN"
+	VAR.COMMANDVIEW2="Format: SERV.SHUTDOWN [integer]"
+	VAR.COMMANDVIEW3="Example: SERV.SHUTDOWN 5"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces the server to shut down in the specified amount of minutes."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SLEEP"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SLEP"
+	VAR.COMMANDVIEW2="Format: SLEEP"
+	VAR.COMMANDVIEW3="Example: SLEEP"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Puts a character into sleep mode, during which his body lays there looking dead and he"
+	VAR.COMMANDVIEW6="stands hidden at its feet. Attempting to move or perform any action will leave sleep"
+	VAR.COMMANDVIEW7="mode. Can possibly used to take advantage of bugs, should be disabled for players."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SNOW"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SNOW"
+	VAR.COMMANDVIEW2="Format: SECTOR.SNOW"
+	VAR.COMMANDVIEW3="Example: SECTOR.SNOW"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Makes it snow in a 64x64 tile area. The setting is saved in the worldfile."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SOUND"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SOUND"
+	VAR.COMMANDVIEW2="See SFX"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SPEAK"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SPEAK"
+	VAR.COMMANDVIEW2="See SAY"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SPEAKU"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SPEAKU"
+	VAR.COMMANDVIEW2="See SAYU"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SPELLEFFECT"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SPELLEFFECT"
+	VAR.COMMANDVIEW2="Format: SPELLEFFECT [integer1] [integer2]"
+	VAR.COMMANDVIEW3="Example: SPELLEFFECT 1,100.0"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Affects the player with the effects of the selected spell, at the selected"
+	VAR.COMMANDVIEW6="skill level. Defnames cannot be used for the spell."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","STATIC"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="STATIC"
+	VAR.COMMANDVIEW2="Format: STATIC [string]"
+	VAR.COMMANDVIEW3="Example: STATIC i_torch_lit"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Creates the chosen item, similar to the ADD command, but adds statf_move_never"
+	VAR.COMMANDVIEW6="to its flags."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","whip"))
+	SRC.DIALOG=d_cookie_3
+ELSEIF (STRMATCH("<ARGS>","STONE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="STONE"
+	VAR.COMMANDVIEW2="Format: STONE [boolean]"
+	VAR.COMMANDVIEW3="Example: STONE 1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="When turned on, a character is turned to stone. He cannot move, speak, or perform"
+	VAR.COMMANDVIEW6="any actions. His skin and all equipped items appear stone gray."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SUICIDE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SUICIDE"
+	VAR.COMMANDVIEW2="Format: SUICIDE"
+	VAR.COMMANDVIEW3="Example: SUICIDE or XSUICIDE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Causes a player or NPC to die."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SUMMON"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SUMMON"
+	VAR.COMMANDVIEW2="Format: SUMMON [string]"
+	VAR.COMMANDVIEW3="Example: SUMMON c_dragon_red"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Summons the selected character as if the summon spell had been cast. They will not"
+	VAR.COMMANDVIEW6="have any items, and will not leave a corpse when they die."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SUMMONCAGE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SUMMONCAGE"
+	VAR.COMMANDVIEW2="Format: SUMMONCAGE"
+	VAR.COMMANDVIEW3="Example: SUMMONCAGE or XSUMMONCAGE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Summons a character to you in a cage."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SUMMONTO"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SUMMONTO"
+	VAR.COMMANDVIEW2="Format: SUMMONTO"
+	VAR.COMMANDVIEW3="Example: SUMMONTO or XSUMMONTO"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Summons a selected character to you."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SYNC"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SYNC"
+	VAR.COMMANDVIEW2="See RESYNC"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","SYSMESSAGE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="SYSMESSAGE"
+	VAR.COMMANDVIEW2="Format: SYSMESSAGE [string]"
+	VAR.COMMANDVIEW3="Example: SYSMESSAGE Hello"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Displays a system message to a player."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","TAGLIST"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="TAGLIST"
+	VAR.COMMANDVIEW2="Format: TAGLIST"
+	VAR.COMMANDVIEW3="Example: TAGLIST"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Displays a list of every tag set on a player."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","TARGET"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="TARGET"
+	VAR.COMMANDVIEW2="Format: TARGET [string]"
+	VAR.COMMANDVIEW3="Example: TARGET Choose your target:"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Brings up a targetting cursor and displays [string] as a system message."
+	VAR.COMMANDVIEW6="Used with the @TARGON triggers. Prefixing the command with anything will"
+	VAR.COMMANDVIEW7="break it."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","TARGETG"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="TARGETG"
+	VAR.COMMANDVIEW2="Format: TARGETG"
+	VAR.COMMANDVIEW3="Example: TARGETG"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Similar to TARGET, but intended for use with the @TARGON_GROUND trigger."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","TELE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="TELE"
+	VAR.COMMANDVIEW2="Format: TELE"
+	VAR.COMMANDVIEW3="Example: TELE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Casts the teleport spell."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","TILE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="TILE"
+	VAR.COMMANDVIEW2="Format: TILE [integer] [string]"
+	VAR.COMMANDVIEW3="Example: TILE 5 i_torch_lit"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Tiles the item entered as [string] at a Z level of [integer]."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","TRYP"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="TRYP"
+	VAR.COMMANDVIEW2="Format: TRYP [integer] [string]"
+	VAR.COMMANDVIEW3="Example: TRYP 2 BOW"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Tests the plevel of a player, and performs [string] if it's at least [integer]."
+	VAR.COMMANDVIEW6="TRYP or TRY must be used in scripts whenever you need to use a second variable"
+	VAR.COMMANDVIEW7="to the left of the = sign."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","TRY"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="TRY"
+	VAR.COMMANDVIEW2="Format: TRY [string]"
+	VAR.COMMANDVIEW3="Example: TRY SALUTE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Performs the command entered as [string]."
+	VAR.COMMANDVIEW6="TRYP or TRY must be used in scripts whenever you need to use a second variable"
+	VAR.COMMANDVIEW7="to the left of the = sign."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","TWEAK"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="TWEAK"
+	VAR.COMMANDVIEW2="See INFO"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","UNBLOCKIP"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="UNBLOCKIP"
+	VAR.COMMANDVIEW2="Format: UNBLOCKIP [integer],[integer],[integer],[integer]"
+	VAR.COMMANDVIEW3="Example: UNBLOCKIP 127.0.0.1"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Removes the specified IP address from the BLOCK list."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","UNDERWEAR"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="UNDERWEAR"
+	VAR.COMMANDVIEW2="Format: UNDERWEAR"
+	VAR.COMMANDVIEW3="Example: UNDERWEAR or XUNDERWEAR"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Toggles the display of underwear on a character model."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","UNEQUIP"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="UNEQUIP"
+	VAR.COMMANDVIEW2="Format: UNEQUIP"
+	VAR.COMMANDVIEW3="Example: UNEQUIP or XUNEQUIP"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Unequips the selected item. Intended for script use."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","UPDATE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="UPDATE"
+	VAR.COMMANDVIEW2="Format: UPDATE"
+	VAR.COMMANDVIEW3="Example: UPDATE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Updates a character or item, its information to be sent to all the"
+	VAR.COMMANDVIEW6="clients that can see it."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","USEITEM"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="USEITEM"
+	VAR.COMMANDVIEW2="Format: USEITEM [hexadecimal]"
+	VAR.COMMANDVIEW3="Example: USEITEM 040001b8d"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces a player to DCLICK an object. Can be used without arguments."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","USE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="USE"
+	VAR.COMMANDVIEW2="See USEITEM"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","WALK"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="WALK"
+	VAR.COMMANDVIEW2="Format: X.WALK [string]"
+	VAR.COMMANDVIEW3="Example: X.WALK N"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces an NPC to walk in the specified direction (N,S,E,W,NW,NE,SE,SW)."
+	VAR.COMMANDVIEW6="Will not work on players."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","WEBLINK"))
+	VAR.PAGE=2
+	VAR.SLASH="/"
+	VAR.COMMANDVIEW1="WEBLINK"
+	VAR.COMMANDVIEW2="Format: WEBLINK [string]"
+	VAR.COMMANDVIEW3="Example: WEBLINK www.sphereserver.net"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Opens up a client's web browser and points it at the specified address."
+	VAR.COMMANDVIEW6="Can use X.WEBLINK www.sphereserver.net to force another player to view"
+	VAR.COMMANDVIEW7="the web link"
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","WHERE"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="WHERE"
+	VAR.COMMANDVIEW2="Format: WHERE"
+	VAR.COMMANDVIEW3="Example: WHERE"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Displays your current coordinates."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSEIF (STRMATCH("<ARGS>","X"))
+	VAR.PAGE=2
+	VAR.COMMANDVIEW1="X"
+	VAR.COMMANDVIEW2="Format: X.[string]"
+	VAR.COMMANDVIEW3="Example: X.SAY Hi!"
+	VAR.COMMANDVIEW4="Description:"
+	VAR.COMMANDVIEW5="Forces another object to perform the command entered as [string]. Same as SET."
+	SRC.DIALOG=d_commandview
+	RETURN 1
+ELSE
+	SRC.DIALOG=d_commandref
+ENDIF
+
+
+
+
+[EOF]

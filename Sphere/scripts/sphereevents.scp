@@ -1,0 +1,3258 @@
+[events e_onDeath_negateSpawn]
+on=@death
+arg(spwn,<uid.memoryfindtype(MEMORY_ISPAWNED).link>)
+arg(firstnumb,<StrGetTok("<spwn.moreP>",0,",")>)
+arg(secondnumb,<StrGetTok("<spwn.moreP>",1,",")>)
+arg(rndnumb,<eval {<firstnumb> <secondnumb>}>)
+spwn.timer=<rndnumb>*60
+
+[events e_mithril]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (act.npc) && (<eval act.tag(resist_magic)> < 999)
+ act.damage_noresponse(<eval  <tag.uc>/{<nastaveni_efekt_mithril>}>,dam_magic)
+endif
+return 0
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[events e_murdoc_general_pvp]
+on=@Death
+src.findlayer(25).remove //maze kone
+src.newitem i_murdoc_pvp_delay
+src.act.equip
+
+
+[ITEMDEF i_murdoc_pvp_delay]
+NAME=Delay Pvp
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+WEIGHT=
+LAYER=layer_special
+
+ON=@Create
+ATTR=attr_invis|attr_decay
+MORE1=5 // zde se nastavuje jakou dobu maji na splneni povysujiciho questu
+
+ON=@Equip
+TIMER=1
+
+ON=@Timer
+if ( <cont> )
+  if ( <more1> )
+    cont.sysMessage("<EVAL(<more1>)>") // put countdown above my head.
+    more1=<more1>-1
+    TIMER=1
+    return 1
+  else
+    cont.spelleffect(59,1000)
+    cont.go <cont.tag(murdoc)>
+    cont.tag.remove(murdoc)
+    cont.events -e_murdoc_general_pvp
+    cont.consume i_robe
+    cont.findlayer(21).contents2(f_smazat_murdoc_pvp)
+  endif
+endif
+remove
+return 1
+
+[function f_smazat_murdoc_pvp]
+if (type == t_container)||(baseid == i_robe)||(type == t_allpotions)||(type == t_bandage)||(baseid == i_cape)||(type == t_jewelry)||(type == t_bandage_blood)||(type == t_water_wash)||(type == t_bottle_empty)||(type == t_speedpotions)||(type == t_potion_bomba)
+ remove
+endif
+
+
+[events e_emotedmg]
+on=@aftergetswing
+say("-<var(ubrano)>: flags <hval var(damage_flags)>")
+return 0
+on=@spelleffect
+on=@beforegeteffect
+on=@aftergetswing
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@created
+
+[function emotedmg]
+if (argvcount)
+  if (args)
+    arg(zapnout,1)
+  endif
+  arg(zapnout,0)
+elseif (isevent(e_emotedmg))
+  arg(zapnout,0)
+else
+  arg(zapnout,1)
+endif
+if (zapnout)
+  src.sysMessage("Emoting damage ON")
+  events +e_emotedmg
+else
+  src.sysMessage("Emoting damage OFF")
+  events -e_emotedmg
+endif
+
+[events e_emoteact]
+on=@SkillAbort
+emote(aborted <myaction>:<act.name>)
+on=@SkillFail
+emote(failed <myaction>:<act.name>)
+on=@SkillSelect
+emote(selected <myaction>:<act.name>)
+on=@SkillStart
+emote(started <myaction>:<act.name>)
+on=@SkillStroke
+emote(stroked <myaction>:<act.name>)
+on=@SkillSuccess
+emote(succeeded <myaction>:<act.name>)
+
+[function emoteact]
+if (argvcount)
+  if (args)
+    arg(zapnout,1)
+  endif
+  arg(zapnout,0) 
+elseif (isevent(e_emoteact))
+  arg(zapnout,0)
+else
+  arg(zapnout,1)
+endif
+if (zapnout)
+  src.sysMessage("Emoting action ON")
+  events +e_emoteact
+else
+  src.sysMessage("Emoting action OFF")
+  events -e_emoteact
+endif
+
+
+[EVENTS e_TEST_All]
+on=@UserContextMenu
+smsg "@UserContextMenu\n"
+return 0
+
+on=@Create      // Newly created (not in the world yet)
+smsg "@Create\n"
+return 0  
+on=@Death      //+I just got killed.
+smsg "@Death\n"
+return 0
+
+on=@DeathCorpse      //+I just got killed.
+smsg "char @DeathCorpse\n"
+return 0
+
+on=@Destroy      // Permanently gone.
+smsg "@Destroy\n"
+return 0
+
+//on=@EnvironChange  // my environment changed somehow (light,weather,season,region)
+//smsg "@EnvironChange\n"
+
+on=@GetHit      // I just got hit.
+smsg "@GetHit hp:<argn1> flag:<hval argn2>\n"
+return 0
+
+on=@Hit        // I just hit someone. (TARG)
+smsg "@Hit\n"
+return 0
+
+on=@HitMiss      // I just missed.
+smsg "@HitMiss\n <serv.time>"
+return 0
+
+on=@HitTry      // I am trying to hit someone. starting swing.
+smsg "@HitTry\n <serv.time>"
+return 0
+
+on=@itemDAMAGE    // I have damaged item in some way
+smsg "@itemDAMAGE <act.name>\n"
+return 0
+
+on=@itemDestroy    
+smsg "@itemDestroy\n"
+return 0
+
+on=@itemDROPON_CHAR    // I have been dropped on this char
+smsg "@itemDROPON_CHAR\n"
+
+on=@itemDROPON_GROUND  // I dropped an item on the ground
+smsg "@itemDROPON_GROUND\n"
+
+//on=@itemDROPON_ITEM    // I have been dropped on this item
+//smsg "@itemDROPON_ITEM act=<act>(<act.name>) argo=<argo>(<argo.name>)\n"
+
+on=@itemdropon_obj
+smsg "@itemdropon_obj act=<act> (<act.name>) argo=<argo> (<argo.name>)\n"
+smsg "<argn>:::<argn1>:::<argn2>:::<argn3>"
+  
+on=@itemEQUIP    // I have equipped an item
+if (act.type!=t_src_changer)
+  smsg "@itemEQUIP <act.name>\n"
+endif
+return 0
+
+on=@itemPICKUP_GROUND
+smsg "@itemPICKUP_GROUND <act.name>\n"
+return 0
+
+on=@itemPICKUP_PACK  // picked up from inside some container.
+smsg "@itemPICKUP_PACK act=<act>(<act.name>)\n"
+return 0
+
+on=@itemPICKUP_CHAR  // picked up from inside some container.
+smsg "@itemPICKUP_CHAR act=<act>(<act.name>)\n"
+return 0
+
+on=@itemSPELLEffect    // cast some spell on the item.
+smsg "@itemSPELLEffect <act.name>\n"
+return 0
+
+on=@itemSTACKON    // stacked item on another item
+smsg "@itemSTACKON act=<act> (<act.name>) argo=<argo> (<argo.name>)\n"
+smsg "<argn>:::<argn1>:::<argn2>:::<argn3>"
+
+//on=@itemSTEP      // stepped on an item
+//smsg "@itemSTEP <act.name>\n"
+
+on=@itemTARGON_CHAR
+smsg "@itemTARGON_CHAR <act.name>\n"
+return 0
+
+on=@itemTARGON_GROUND
+smsg "@itemTARGON_GROUND <act.name> <src.targp>\n"
+return 0
+
+on=@itemTARGON_ITEM  // I am being combined with an item
+smsg "@itemTARGON_ITEM <act.name>\n"
+return 0
+
+//on=@itemTimer
+//smsg "@itemTimer\n"
+//return 0
+
+on=@itemUNEQUIP    // i have unequipped (or try to unequip) an item
+if (act.type!=t_src_changer)
+  smsg "@itemUNEQUIP <act.name>\n"
+endif
+return 0
+
+on=@itemUserClick    // I clicked on an item
+smsg "@itemUserClick <act.name>\n"
+return 0
+
+on=@itemUserDClick    // I clicked on an item
+smsg "@itemUserDClick <act.name>\n"
+return 0
+
+on=@itemUserToolTip    // Did tool tips on an item
+smsg "@itemUserToolTip <act.name>\n"
+return 0
+
+on=@LogIn      // Client logs in
+smsg "@LogIn\n"
+return 0
+
+on=@LogOut      // Client logs out (21)
+smsg "@LogOut\n"
+return 0
+
+on=@NPCAcceptItem    // (NPC only) i've been given an item i like (according to DESIRES)
+smsg "@NPCAcceptItem\n"
+return 0
+
+on=@NPCHearGreeting    // (NPC only) i have been spoken to for the first time. (no memory of previous hearing)
+smsg "@NPCHearGreeting\n"
+return 0
+
+on=@NPCHearNeed      // (NPC only) i heard someone mention something i need. (11)
+smsg "@NPCHearNeed\n"
+return 0
+
+on=@NPCHearUnknown    //+(NPC only) I heard something i don't understand.
+smsg "@NPCHearUnknown\n"
+return 0
+
+on=@NPCRefuseItem    // (NPC only) i've been given an item i don't want.
+smsg "@NPCRefuseItem\n"
+return 0
+
+on=@NPCRestock
+smsg "@NPCRestock\n"
+return 0
+
+//on=@NPCSeeAction
+//smsg "@NPCSeeAction\n"
+
+on=@NPCSeeNewPlayer    //+(NPC only) i see u for the first time. (in 20 minutes) (check memory time)
+smsg "@NPCSeeNewPlayer\n"
+return 0
+
+on=@NPCSeeWantItem    // (NPC only) i see something good.
+smsg "@NPCSeeWantItem\n"
+return 0
+
+on=@PersonalSpace  //+i just got stepped on.
+smsg "@PersonalSpace\n"
+return 0
+
+on=@ReceiveItem    // I was just handed an item (Not yet checked if i want it)
+smsg "@ReceiveItem\n"
+return 0
+
+on=@SkillAbort
+smsg "@SkillAbort <action>\n"
+return 0
+
+on=@SkillFail
+smsg "@SkillFail <action>\n"
+return 0
+
+on=@SkillMakeItem
+smsg "@SkillMakeItem <action>\n"
+return 0
+
+on=@SkillSelect
+smsg "@SkillSelect <action>\n"
+return 0
+
+on=@SkillStart
+smsg "@SkillStart <action> "
+return 0
+
+on=@SkillStroke
+smsg "@SkillStroke\n <action>"
+return 0
+
+on=@SkillSuccess
+smsg "@SkillSuccess <action> <act.name>\n"
+return 0
+
+on=@SpellCast    //+Char is casting a spell.
+smsg "@SpellCast\n"
+return 0
+
+on=@SpellEffect    //+A spell just hit me.
+smsg "@SpellEffect <argn>\n"
+return 0
+
+//on=@Step
+//smsg "@Step\n"
+//return 0
+
+on=@UserButton
+smsg "@UserButton <argn>\n"
+return 0
+
+on=@UserClick
+smsg "@UserClick\n"
+return 0
+
+on=@UserDClick
+smsg "@UserDClick\n"
+return 0
+
+on=@UserToolTip      // someone did tool tips on me.
+smsg "@UserToolTip\n"
+return 0
+
+on=@afterswing
+smsg "@Afterswing"
+return 0
+
+on=@aftergetswing
+smsg "@Aftergetswing hp:<var(ubrano)>"
+return 0
+
+on=@beforedoeffect
+smsg "@Beforedoeffect act:<act.name> numb:<?spellnumber?> pow:<?spellpower?>"
+return 0
+
+//deprecated on=@aftergetspelldamage
+//  smsg "@Aftergetspelldamage ubrano:<?ubrano?>"
+//  return 0
+
+on=@beforegeteffect
+smsg "@Beforegeteffect: numb:<?spellnumber?> pow:<?spellpower?>"
+return 0
+
+on=@beforegetswing
+smsg "@BeforeGetSwing"
+return 0
+
+on=@Created
+smsg "Created"
+
+on=@DrinkingPotion
+smsg "@DrinkingPotion"
+return 0
+
+on=@aftergetswing
+smsg "@AfterGetSwing"
+return 0
+
+//on=@afterswing
+//on=@beforedoeffect
+//deprecated on=@aftergetspelldamage
+//on=@beforegeteffect
+
+
+///////////////////////////////////////
+//    L E E C H   M O N I T O R S    //
+///////////////////////////////////////
+
+
+///////////////
+//  H I T S  //
+///////////////
+[function monLeechHP]
+if (isEvent(e_monitorHitsLeech))
+  events=-e_monitorHitsLeech
+  findID(i_memory_monitorHitsLeech).remove
+  src.sysMessage("Emoting hits leech OFF")
+else
+  newEquip(i_memory_monitorHitsLeech)
+  if (isevent(e_hitsleech))
+    events=-e_hitsleech
+    events=+e_monitorHitsLeech
+    events=+e_hitsleech
+  else
+    src.sysMessage("Chybi body v abilite vysavani zivotu!")
+    return
+  endif
+  src.sysMessage("Emoting hits leech ON")
+endif
+
+[itemdef i_memory_monitorHitsLeech]
+id=i_memory
+type=t_eq_script
+name=monitorHitsLeech memory
+
+[events e_monitorHitsLeech]
+on=@aftergetswing
+on=@spelleffect
+on=@beforegeteffect
+on=@beforedoeffect
+on=@DrinkingPotion
+
+on=@afterswing
+arg(memory,<findID(i_memory_monitorHitsLeech)>)
+if (<eval findUID(<arg(memory)>).tag(dmgValuesCount)> > 0)
+  dialogclose(d_monitorHitsLeech_dialog,0) //dialog, simulace tlacitka CLOSE
+  dialogclose(d_monitorHitsLeech_dialog2,0) //dialog, simulace tlacitka CLOSE
+endif
+
+findUID(<arg(memory)>).f_customLink_add(<var(ubrano)>,dmgValue)
+arg(vysat,<eval (var(ubrano)*hitsleech_sum*nastaveni_ability_leechpower)/100000>)
+findUID(<arg(memory)>).f_customLink_add(<arg(vysat)>,leechMax)
+if (<arg(vysat)> > <eval nastaveni_hitsleech_max>)
+  arg(vysat,<eval nastaveni_hitsleech_max>)
+endif
+findUID(<arg(memory)>).f_customLink_add(<arg(vysat)>,leechReduced)
+
+if (<eval findUID(<arg(memory)>).tag(dmgValuesCount)> > 15) // maximum rows
+  findUID(<arg(memory)>).f_customLink_remove(dmgValue,0) // remove the first value
+  findUID(<arg(memory)>).f_customLink_remove(leechMax,0) // remove the first value
+  findUID(<arg(memory)>).f_customLink_remove(leechReduced,0) // remove the first value
+endif
+if (<eval findUID(<arg(memory)>).tag(dialogType)>) // duplicit dialogs handles the "dialog is already open" messages
+  dialog(d_monitorHitsLeech_dialog2)
+  findUID(<arg(memory)>).tag(dialogType,0)
+else
+  dialog(d_monitorHitsLeech_dialog)
+  findUID(<arg(memory)>).tag(dialogType,1)
+endif
+return 0
+
+on=@beforegetswing
+
+[dialog d_monitorHitsLeech_dialog]
+f_dialog_leechMonitor("HITS LEECH",<argo>,i_memory_monitorHitsLeech)
+
+[dialog d_monitorHitsLeech_dialog button]
+on=@AnyButton
+f_dialog_leechMonitor_button(<argn>,d_monitorHitsLeech_dialog,i_memory_monitorHitsLeech)
+
+[dialog d_monitorHitsLeech_dialog2]
+f_dialog_leechMonitor("HITS LEECH",<argo>,i_memory_monitorHitsLeech)
+
+[dialog d_monitorHitsLeech_dialog2 button]
+on=@AnyButton
+f_dialog_leechMonitor_button(<argn>,d_monitorHitsLeech_dialog,i_memory_monitorHitsLeech)
+
+[dialog d_monitorHitsLeech_dialog_help]
+argo.setText(1," H I T S   L E E C H   M O N I T O R <br><br> Nejnovejsi zaznam utoku se vypisuje vzdy nakonec seznamu.<br> dmg je hodnota udeleneho dmg hracem.<br> vysato - je hodnota, ktera byla skutecne vysata hracem - nebere v potaz fakt, ze hrac nemuze nasat tak vysokou hodnotu. Jde o potencialni mnozstvi vysatych hp z dane rany.<br> MelSat - je hodnota absolutni sily sani predtim, nez na ni jsou aplikovana omezeni nastaveni.")
+argo.f_dialog_HelpCreator("HELP - ManaLeech Monitor")
+
+
+/////////////////////
+//  S T A M I N A  //
+//////////////////////
+[function monLeechSP]
+if (isEvent(e_monitorStamLeech))
+  events=-e_monitorStamLeech
+  findID(i_memory_monitorStamLeech).remove
+  src.sysMessage("Emoting stamina leech OFF")
+else
+  newEquip(i_memory_monitorStamLeech)
+  if (isevent(e_Stamleech))
+    events=-e_Stamleech
+    events=+e_monitorStamLeech
+    events=+e_Stamleech
+  else
+    src.sysMessage("Chybi body v abilite vysavani staminy")
+    return
+  endif
+  src.sysMessage("Emoting stamina leech ON")
+endif
+
+[itemdef i_memory_monitorStamLeech]
+id=i_memory
+type=t_eq_script
+name=monitorStamLeech memory
+
+[events e_monitorStamLeech]
+on=@aftergetswing
+on=@spelleffect
+on=@beforegeteffect
+on=@beforedoeffect
+on=@DrinkingPotion
+
+on=@afterswing
+arg(memory,<findID(i_memory_monitorStamLeech)>)
+if (<eval findUID(<arg(memory)>).tag(dmgValuesCount)> > 0)
+  dialogclose(d_monitorStamLeech_dialog,0) //dialog, simulace tlacitka CLOSE
+  dialogclose(d_monitorStamLeech_dialog2,0) //dialog, simulace tlacitka CLOSE
+endif
+
+findUID(<arg(memory)>).f_customLink_add(<var(ubrano)>,dmgValue)
+arg(vysat,<eval (var(ubrano)*stamleech_sum*nastaveni_ability_leechpower)/100000>)
+findUID(<arg(memory)>).f_customLink_add(<arg(vysat)>,leechMax)
+if (arg(vysat))
+  if (arg(vysat)>var(swingedchar).stamina)
+    arg(vysat,<var(swingedchar).stamina>)
+  endif
+  if (arg(vysat) > <eval nastaveni_stamleech_max>)
+    arg(vysat,<eval nastaveni_stamleech_max>)
+  endif
+endif
+findUID(<arg(memory)>).f_customLink_add(<arg(vysat)>,leechReduced)
+
+if (<eval findUID(<arg(memory)>).tag(dmgValuesCount)> > 15) // maximum rows
+  findUID(<arg(memory)>).f_customLink_remove(dmgValue,0) // remove the first value
+  findUID(<arg(memory)>).f_customLink_remove(leechMax,0) // remove the first value
+  findUID(<arg(memory)>).f_customLink_remove(leechReduced,0) // remove the first value
+endif
+if (<eval findUID(<arg(memory)>).tag(dialogType)>) // duplicit dialogs handles the "dialog is already open" messages
+  dialog(d_monitorStamLeech_dialog2)
+  findUID(<arg(memory)>).tag(dialogType,0)
+else
+  dialog(d_monitorStamLeech_dialog)
+  findUID(<arg(memory)>).tag(dialogType,1)
+endif
+return 0
+
+on=@beforegetswing
+
+[dialog d_monitorStamLeech_dialog]
+f_dialog_leechMonitor("STAM LEECH",<argo>,i_memory_monitorStamLeech)
+
+[dialog d_monitorStamLeech_dialog button]
+on=@AnyButton
+f_dialog_leechMonitor_button(<argn>,d_monitorStamLeech_dialog,i_memory_monitorStamLeech)
+
+[dialog d_monitorStamLeech_dialog2]
+f_dialog_leechMonitor("STAM LEECH",<argo>,i_memory_monitorStamLeech)
+
+[dialog d_monitorStamLeech_dialog2 button]
+on=@AnyButton
+f_dialog_leechMonitor_button(<argn>,d_monitorStamLeech_dialog,i_memory_monitorStamLeech)
+
+[dialog d_monitorStamLeech_dialog_help]
+argo.setText(1," S T A M I N A   L E E C H   M O N I T O R <br><br> Nejnovejsi zaznam utoku se vypisuje vzdy nakonec seznamu.<br> dmg je hodnota udeleneho dmg hracem.<br> vysato - je hodnota, ktera byla skutecne vysata hracem - nebere v potaz fakt, ze hrac nemuze nasat tak vysokou hodnotu. Jde o potencialni mnozstvi vysate staminy z dane rany. Hodnota bere v uvahu vysi staminy NPC a redukuje se, pokud uz neni co sat.<br> MelSat - je hodnota absolutni sily sani z daneho dmg.")
+argo.f_dialog_HelpCreator("HELP - ManaLeech Monitor")
+
+
+
+///////////////
+//  M A N A  //
+///////////////
+[function monLeechMP]
+if (isEvent(e_monitorManaLeech))
+  events=-e_monitorManaLeech
+  findID(i_memory_monitorManaLeech).remove
+  src.sysMessage("Emoting mana leech OFF")
+else
+  newEquip(i_memory_monitorManaLeech)
+  if (isevent(e_manaleech))
+    events=-e_manaleech
+    events=+e_monitorManaLeech
+    events=+e_manaleech
+  else
+    src.sysMessage("Chybi body v abilite vysavani many.")
+    return
+  endif
+  src.sysMessage("Emoting mana leech ON")
+endif
+
+[itemdef i_memory_monitorManaLeech]
+id=i_memory
+type=t_eq_script
+name=monitorManaLeech memory
+
+[events e_monitorManaLeech]
+on=@aftergetswing
+on=@spelleffect
+on=@beforegeteffect
+on=@beforedoeffect
+on=@DrinkingPotion
+
+on=@afterswing
+arg(memory,<findID(i_memory_monitorManaLeech)>)
+if (<eval findUID(<arg(memory)>).tag(dmgValuesCount)> > 0)
+  dialogclose(d_monitorManaLeech_dialog,0) //dialog, simulace tlacitka CLOSE
+  dialogclose(d_monitorManaLeech_dialog2,0) //dialog, simulace tlacitka CLOSE
+endif
+
+findUID(<arg(memory)>).f_customLink_add(<var(ubrano)>,dmgValue)
+arg(vysat,<eval (var(ubrano)*manaleech_sum*nastaveni_ability_leechpower)/100000>)
+findUID(<arg(memory)>).f_customLink_add(<arg(vysat)>,leechMax)
+arg(vysatReduced,0)
+if (var(swingedchar).npc)
+  if (var(swingedchar).magery)
+    if (var(swingedchar).mana)
+      if (arg(vysat))
+        if (arg(vysat)>var(swingedchar).mana)
+          arg(vysat,<var(swingedchar).mana>)
+        endif
+        if (arg(vysat)> <eval nastaveni_manaleech_max>)
+          arg(vysat,<eval nastaveni_manaleech_max>)
+        endif
+        arg(vysatReduced,<arg(vysat)>)
+      endif
+    endif
+  endif
+endif
+findUID(<arg(memory)>).f_customLink_add(<arg(vysatReduced)>,leechReduced)
+
+if (<eval findUID(<arg(memory)>).tag(dmgValuesCount)> > 15) // maximum rows
+  findUID(<arg(memory)>).f_customLink_remove(dmgValue,0) // remove the first value
+  findUID(<arg(memory)>).f_customLink_remove(leechMax,0) // remove the first value
+  findUID(<arg(memory)>).f_customLink_remove(leechReduced,0) // remove the first value
+endif
+if (<eval findUID(<arg(memory)>).tag(dialogType)>) // duplicit dialogs handles the "dialog is already open" messages
+  dialog(d_monitorManaLeech_dialog2)
+  findUID(<arg(memory)>).tag(dialogType,0)
+else
+  dialog(d_monitorManaLeech_dialog)
+  findUID(<arg(memory)>).tag(dialogType,1)
+endif
+return 0
+
+on=@beforegetswing
+
+[dialog d_monitorManaLeech_dialog]
+f_dialog_leechMonitor("MANA LEECH",<argo>,i_memory_monitorManaLeech)
+
+[dialog d_monitorManaLeech_dialog button]
+on=@AnyButton
+f_dialog_leechMonitor_button(<argn>,d_monitorManaLeech_dialog,i_memory_monitorManaLeech)
+
+[dialog d_monitorManaLeech_dialog2]
+f_dialog_leechMonitor("MANA LEECH",<argo>,i_memory_monitorManaLeech)
+
+[dialog d_monitorManaLeech_dialog2 button]
+on=@AnyButton
+f_dialog_leechMonitor_button(<argn>,d_monitorManaLeech_dialog,i_memory_monitorManaLeech)
+
+[dialog d_monitorManaLeech_dialog_help]
+argo.setText(1," M A N A   L E E C H   M O N I T O R <br><br> Nejnovejsi zaznam utoku se vypisuje vzdy nakonec seznamu.<br> dmg je hodnota udeleneho dmg hracem.<br> vysato - je hodnota, ktera byla skutecne vysata hracem - nebere v potaz fakt, ze hrac nemuze nasat tak vysokou hodnotu. Jde o potencialni mnozstvi vysate many z dane rany. Hodnota bere v uvahu vysi many NPC a redukuje se, pokud uz neni co sat. Dale je nulova, pokud z daneho npc manu sat nelze (nema nastaveny skill magery nebo nema manu)<br> MelSat - je hodnota absolutni sily sani z daneho dmg.")
+argo.f_dialog_HelpCreator("HELP - ManaLeech Monitor")
+
+
+////////////////////////////////////////////
+//  L E E CH  M O N I T O R  D I A L O G  //
+////////////////////////////////////////////
+[function f_dialog_leechMonitor] //argv(0) - dialog name, argv(1) - <argo>, argv(2) - leech memoryItem ID
+arg(memory,<findID(<argv(2)>)>)
+//findUID(<arg(memory)>).tag(lastDialog,<argv(1)>)
+
+arg(textcolor,52)
+argv(1).SetLocation(800+<eval findUID(<arg(memory)>).tag(moveX)>,10+<eval findUID(<arg(memory)>).tag(moveY)>)
+
+arg(rows,<eval findUID(<arg(memory)>).tag(dmgValuesCount)>)
+
+argv(1).tag(sirka,<d_def_baseMenu_sirka>+(3*<d_def_skvira>)+50+50+50)
+argv(1).tag(vyska,<d_def_baseMenu_vyska>+<d_def_skvira>+((<arg(rows)>+1)*<d_def_radek_vyska>))
+
+argv(1).dialog_prvni
+argv(1).dialog_pozadi(<argv(1).tag(nexty)>,1)
+argv(1).dialog_pozadi(<argv(1).tag(nexty)>,1,50,50,50)
+argv(1).dialog_pozadi(<argv(1).tag(nexty)>,<arg(rows)>,50,50,50)
+argv(1).dialog_zpruhledni
+
+argv(1).setText(argv(1).newTextLine,"<argv(0)>")
+argv(1).text(<argv(1).dialog_textpos(0,0)>,42,<argv(1).lastTextLine>)
+
+
+argv(1).text(20,20,32,)  // nazev gumpu
+
+// menu
+argv(1).setText(argv(1).newTextLine,"dmg")
+argv(1).text(<argv(1).dialog_textpos(1,0)>,d_def_writecolor,<argv(1).lastTextLine>)  // nazev gumpu
+arg(row1,<lastxpos>)
+argv(1).setText(argv(1).newTextLine,"vysato")
+argv(1).text(<argv(1).dialog_textpos(1,1)>,d_def_writecolor,<argv(1).lastTextLine>)  // nazev gumpu
+arg(row2,<lastxpos>)
+argv(1).setText(argv(1).newTextLine,"melSat")
+argv(1).text(<argv(1).dialog_textpos(1,2)>,d_def_writecolor,<argv(1).lastTextLine>)  // nazev gumpu
+arg(row3,<lastxpos>)
+
+arg(i,0)
+argv(1).dialog_textpos(2,0)
+while (<arg(i)> < <eval findUID(<arg(memory)>).tag(dmgValuesCount)>)
+  arg(dmg,<eval findUID(<arg(memory)>).tag(dmgValue[<eval arg(i)>])>)
+  argv(1).setText(argv(1).newTextLine,"<arg(dmg)>")
+  argv(1).text(<arg(row1)>,<eval <lastypos>+(<arg(i)>*<d_def_radek_vyska>)>,d_def_writecolor,<argv(1).lastTextLine>)  // nazev gumpu
+
+  arg(dmg,<eval findUID(<arg(memory)>).tag(leechReduced[<eval arg(i)>])>)
+  argv(1).setText(argv(1).newTextLine,"<arg(dmg)>")
+  argv(1).text(<arg(row2)>,<eval <lastypos>+(<arg(i)>*<d_def_radek_vyska>)>,d_def_writecolor,<argv(1).lastTextLine>)  // nazev gumpu
+
+  arg(dmg,<eval findUID(<arg(memory)>).tag(leechMax[<eval arg(i)>])>)
+  argv(1).setText(argv(1).newTextLine,"<arg(dmg)>")
+  argv(1).text(<arg(row3)>,<eval <lastypos>+(<arg(i)>*<d_def_radek_vyska>)>,d_def_writecolor,<argv(1).lastTextLine>)  // nazev gumpu
+
+  arg(i,#+1)
+endwhile
+argv(1).button(<argv(1).dialog_but_ld>,<d_def_button_left1>,<d_def_button_left2>,1,0,1) // move left
+argv(1).button(<lastxbuttpos>+40,<lastybuttpos>,<d_def_button_up1>,<d_def_button_up2>,1,0,3) // move up
+argv(1).button(<argv(1).dialog_but_rd>,<d_def_button_right1>,<d_def_button_right2>,1,0,2) // move right
+argv(1).button(<lastxbuttpos>-40,<lastybuttpos>,<d_def_button_down1>,<d_def_button_down2>,1,0,4) // move down
+argv(1).button(<argv(1).dialog_but_ru>,<d_def_button_dialog1>,<d_def_button_dialog2>,1,0,5) // help
+
+[function f_dialog_leechMonitor_button] //argv(0) - <argn>, argv(1) - dialogName, argv(2) - leech memoryItem ID
+if (<argv(0)> == 0)
+  return 1
+endif
+arg(memory,<findID(<argv(2)>)>)
+if (<argv(0)> == 1) // left
+  findUID(<arg(memory)>).tag(moveX,<eval findUID(<arg(memory)>).tag(moveX)-20>)
+elseif (<argv(0)> == 2) // right
+  findUID(<arg(memory)>).tag(moveX,<eval findUID(<arg(memory)>).tag(moveX)+20>)
+elseif (<argv(0)> == 3) // up
+  findUID(<arg(memory)>).tag(moveY,<eval findUID(<arg(memory)>).tag(moveY)-20>)
+elseif (<argv(0)> == 4) // down
+  findUID(<arg(memory)>).tag(moveY,<eval findUID(<arg(memory)>).tag(moveY)+20>)
+elseif (<argv(0)> == 5) // help
+  dialog(<argv(1)>_help)
+endif
+if (<eval findUID(<arg(memory)>).tag(dialogType)>)
+  dialog(<argv(1)>)
+else
+  dialog(<argv(1)>2)
+endif
+
+
+[function stopscriptedskills]
+if (findid(i_medit_timer))
+  findid(i_medit_timer).morex=0//preruseni meditace
+  findid(i_medit_timer).timer=0
+elseif (findid(i_taming))
+  findid(i_taming).morex=1//preruseni tamingu
+  findid(i_taming).timer=0
+elseif (findid(i_provo_timer))
+  findid(i_provo_timer).morex=0//provo fail
+  findid(i_provo_timer).timer=0
+elseif (findid(i_discordance_timer))
+  findid(i_discordance_timer).morex=0//discord fail
+  findid(i_discordance_timer).timer=0
+elseif (findid(i_potion_poison_timer))
+  findid(i_potion_poison_timer).morex=0//poisoning fail
+  findid(i_potion_poison_timer).timer=0
+elseif (findid(i_hiding_timer))
+  findid(i_hiding_timer).more1=0//hiding fail
+  findid(i_hiding_timer).timer=0
+endif
+if(findid(i_peacemaking_timer))
+  findid(i_peacemaking_timer).morex=0//preruseni peacemakingu
+  findid(i_peacemaking_timer).timer=0
+endif
+if (findid(i_customspell_timer))
+  mana=<eval (<mana>-<eval (<a_manause[<findid(i_customspell_timer).tag(kouzlo)>]>)/2>)>
+  consume(<a_scrollitem[<findid(i_customspell_timer).tag(kouzlo)>]>)
+  findid(i_customspell_timer).remove  
+  f_fizzleefect
+endif
+if (findid(i_vyrobce_svitku)) //pro specialni vyrobni funkci
+  findid(i_vyrobce_svitku).remove
+  findid(i_vyrobni_timer).remove //zrusi soucasnou vyrobu
+  redmessage("Vyroba predcasne prerusena.")
+endif
+
+[function stopmagery]
+if (ischar)
+  if (<findid(i_customspell_timer)>)
+    mana=<eval (<mana>-<eval (<a_manause[<findid(i_customspell_timer).tag(kouzlo)>]>)/2>)>
+    consume(<a_scrollitem[<findid(i_customspell_timer).tag(kouzlo)>]>)
+    findid(i_customspell_timer).remove
+    f_fizzleefect
+  endif
+  if (action==skill_magery)
+    skill=-1
+    f_fizzleefect
+  endif
+  if (profession==class_mystik)
+    tag.remove(firststroke)
+  endif
+endif
+
+[EVENTS e_runarcher]
+on=@SkillStroke
+if (act)
+else
+ return 1
+endif
+if (action==skill_macefighting)
+  if (findlayer(2).type==t_weapon_bow_run)
+    if (act.srccombatLOS)
+      if (act.isplayer)
+        if (act.distance<nastaveni_global_Runbowrangepvp+<eval tag(rangearrowdst)>)
+        else
+          return 0
+        endif
+      elseif (act.npc)
+        if (act.distance<nastaveni_global_runbowrangepvm+<eval tag(rangearrowdst)>)
+        else
+          return 0
+        endif
+      else
+        return 0
+      endif
+      if (<eval tag(firststroke)>)
+        if (tag(combat_storepos))
+        else 
+         tag(combat_storepos,<p>)
+         p=<act.p>
+        endif
+      else
+        if (findtype(<findlayer(2).typedef.tdata3>))
+          findtype(<findlayer(2).typedef.tdata3>).consume(1)
+          //consume 1 <findlayer(2).typedef.tdata3>
+        else
+          sysMessage("Nemas zadne strelivo.")
+          flags=<flags>&~020
+          return 1
+        endif
+        act.effect(0,<findlayer(2).typedef.tdata4>,10,1)
+        tag(rb_storepos,<p>)
+        p=<act.p>
+      endif
+    endif
+  endif
+endif
+return 0
+
+on=@hittry
+if (tag(combat_storepos))
+  p=<tag(combat_storepos)>
+  tag.remove(combat_storepos)
+endif 
+return 0
+
+on=@skillfail
+tag.remove(combat_storepos)
+
+on=@DrinkingPotion
+on=@afterswing
+if (action==skill_macefighting)
+  if (findlayer(2).type==t_weapon_bow_run)
+    if (tag(rb_storepos))
+     p=<tag(rb_storepos)>
+     tag.remove(rb_storepos)//mam dojem, ze tohle prave dela picoviny
+    endif
+    if ({0 4})//padani sipu
+      newitemsafe(<findtype(<findlayer(2).typedef.tdata3>).baseid>)
+      lastnew.p = <var(swingedchar).p>
+      lastnew.timer=300
+      lastnew.attr_decay=1
+    endif
+  endif
+endif
+return 0
+
+on=@HitMiss
+if (action==skill_macefighting)
+ if (findlayer(2).type==t_weapon_bow_run)
+  if (tag(rb_storepos))
+   p=<tag(rb_storepos)>
+   tag.remove(rb_storepos)//mam dojem, ze tohle prave dela picoviny
+  endif
+  if ({0 4})//padani sipu
+   newitemsafe(<findtype(<findlayer(2).typedef.tdata3>).baseid>)
+   lastnew.p=<act.p>
+   lastnew.timer=300
+   lastnew.attr_decay=1
+  endif
+ endif
+endif
+return 0
+
+on=@aftergetswing
+on=@beforedoeffect
+//deprecated on=@aftergetspelldamage
+on=@beforegeteffect
+on=@beforegetswing
+
+[itemdef i_combat_main]
+id=i_memory
+layer=77
+type=t_src_changer
+name=temporary combatmain
+
+on=@equip
+cont.combat_main
+remove 
+return 1
+
+[EVENTS e_noclick]
+on=@itemuserclick
+//src.accmsg(<p> clicked on <act.name>:<act.cont.name>:<act.topobj.name>:<act.p>)
+return 1
+
+on=@itemuserdclick
+//src.accmsg(<p> doubleclicked on <act.name>:<act.cont.name>:<act.topobj.name>:<act.p>)
+return 1
+
+on=@skillstart
+noclick_release
+return 1
+
+on=@step
+//move <dir_inttochar(<dir_revert(<dir>)>)>
+noclick_release
+return 1
+
+on=@spellcast
+noclick_release
+return 1
+
+on=@created
+on=@aftergetswing
+on=@beforegeteffect
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegetswing
+
+[function noclick_release]
+events=-e_noclick
+if (profession==prof_undeclared)||(tag(prevest))
+  go 4764,1362,10
+elseif (region.flags==06d9f)
+elseif (tag(level)<3) // && !(strlen(<tag(presel)>)) //prestup osetren na lvl 15
+  go tutorial
+  home=5412,2555,13,35 //tutorial
+elseif (f_check_tag_realm) // tag realm is not damaged (some are)
+  if !(<src.tag(realm)>)
+    go tutorial
+    home=5412,2555,13,35 //tutorial
+  endif
+endif
+if (eval(clientver)<308)||(strcmpi("<clientver>","3.0.8a")==0)
+  tag(clienttype,"old")
+else
+  tag(clienttype,"new")
+endif
+loginmount//to sem teda vazne zvedavej
+f_fixleech//opravi poradi bojovych eventu
+var(nastaveni_guardian_uid).p=<P>
+var(nastaveni_guardian_uid).removefromview
+
+[function f_shieldDodge_afterGetSwing]
+if (<var(dodged)>!=1) && (tag(ra_vykryti))
+  if (<tag(ra_vykryti)> > {1 99}) && !(src.isplayer) && (src.isfighting_melee)
+    if (findlayer(2))
+      if (findlayer(2).type==t_shield)  //podminka jenom na shield je spolehlivejsi. Ostatni byly zbytecne - kazdy shield ma 2 dispID (otoceni na 2 strany) - pak nereaguje
+        if ((<findlayer(2).typedef.tdata1>)==1)
+          var(ubrano,<eval (var(ubrano)*85)/100>)
+          classmessage("<sex Vykryl Vykryla> jsi uder stitem.")
+        elseif ((findlayer(2).typedef.tdata1)==2)
+          var(ubrano,<eval (var(ubrano)*80)/100>)
+          classmessage("<sex Vykryl Vykryla> jsi uder stitem.")
+        elseif ((findlayer(2).typedef.tdata1)==5)
+          var(ubrano,<eval (var(ubrano)*75)/100>)
+          classmessage("<sex Vykryl Vykryla> jsi uder stitem.")
+        elseif ((findlayer(2).typedef.tdata1)==6)
+          var(ubrano,<eval (var(ubrano)*70)/100>)
+          classmessage("<sex Vykryl Vykryla> jsi uder stitem.")
+        elseif ((findlayer(2).typedef.tdata1)==7)
+          var(ubrano,<eval (var(ubrano)*65)/100>)
+          classmessage("<sex Vykryl Vykryla> jsi uder stitem.")
+        elseif ((findlayer(2).typedef.tdata1)==8)
+          var(ubrano,<eval (var(ubrano)*60)/100>)
+          classmessage("<sex Vykryl Vykryla> jsi uder stitem.")
+        elseif ((findlayer(2).typedef.tdata1)==9)
+          var(ubrano,<eval (var(ubrano)*50)/100>)
+          classmessage("<sex Vykryl Vykryla> jsi uder stitem.")
+        endif
+      endif
+    endif
+  endif
+endif
+
+[events e_gethit]
+on=@gethit
+var(ubrano,<argn>)
+var(damage_flags,<hval(argn2)>)
+damage_final(<src>)
+return 1
+on=@beforegeteffect
+on=@created
+on=@aftergetswing
+on=@beforedoeffect
+on=@beforegetswing
+on=@DrinkingPotion
+on=@afterswing
+on=@stopguarding
+
+[events e_spelleffect]
+on=@spelleffect
+temporary_null
+if (<argn>==6)&&(flag_nightsight==1)
+ return 1
+endif
+dospellcustom(<argn>,<src.calcspelleffect(<argn>)>,<src>)
+return 1
+
+[function showitemname_new]
+return 0
+
+[function showitemname_]
+return 1
+
+[function showitemname_old]
+if (act.amount==1)||(act.type==t_corpse)
+  act.message("<act.name>")
+else
+  act.message("<act.amount> <act.name>")
+endif
+events=-e_allplayers
+act.trigger(userclick)
+events=+e_allplayers
+return 1
+
+[EVENTS e_allplayers]
+on=@spelleffect
+if(<argn>==41)//dispel zoznam dispelnutelnych kuziel v magie_custom.scp
+  arg(i,0)
+  while (<arg(i)> < <dispel_spells_amount>)
+    if (<findid(<dispel_spells[<arg(i)>]>)>)
+      findid(<dispel_spells[<arg(i)>]>).remove
+    endif
+    arg(i,#+1)
+  endwhile
+  return 1
+endif
+
+if (<nastaveni_poison_use_custom_poison>==1)
+  if(<argn>==20)&&(<src.isplayer>)//kuzlo poison, len od hraca
+    spell_poison_custom(<src>)
+    return 1
+  endif
+endif
+
+on=@step
+tag(stepcount,<eval <tag(stepcount)>+1>)
+if (tag(stepcount)>20)
+  arg(timesum,<eval serv.time-tag(firststeptime)>)
+  if (arg(timesum)<17)
+    arg(speed,<eval (tag(stepcount)*1000)/arg(timesum)>)
+    accmsg("podezrela rychlost: <arg(speed)> cas:<arg(timesum)>")
+  endif
+  tag(stepcount,0)
+  tag(firststeptime,<serv.time>)
+endif
+
+on=@itemuserclick
+//accmsg(userclick <act.name>)
+return <?showitemname_<src.tag(clienttype)>?>
+
+on=@itemuserdclick
+if (isevent(e_makestring))
+ abortmaking
+endif
+return <flag_freeze>
+
+on=@SkillMakeItem
+argo.tag(craftedby,<uid>)
+accmsg(made item uid=<argo> (<argo.name>))
+argo.trigger(dropon_obj)
+return 0
+
+on=@aftergetswing
+if(<tag(hypno_mystik)>)
+ return 0
+endif
+
+on=@beforegeteffect
+if (var(spellnumber) == 59) //resurekce
+  arg(statstimer,<findid(i_checkstats_timer)>)
+  if (arg(statstimer))
+    if (arg(statstimer).timer>295) && !(<hval region.tag(cFlags)>&<region_cf_instantRes>)  //tj uplynulo mene nez 5 sekund od smrti
+      sysMessage("Na oziveni jeste nejsi <sex(pripraven,pripravena)>.")
+      var(spellpower,0)
+      return 1
+    endif
+  endif
+endif
+if(<tag(hypno_mystik)>)
+ return 0
+endif
+if (src.npc)
+ if (<eval tag(ra_speldodge)*nastaveni_ability_pvMdodge> > {0 999})
+  var(spellpower, 0)
+  classmessage("Kouzlo pohlceno.")
+  return 1
+ endif
+endif
+return 0
+
+on=@hittry
+hungryhurts
+if(nolightfizz(1))//ty se poserou/imo lol - Dinivan :)) 
+//say(co vracim: <nolightfizz>)
+ if (tag(combat_storepos))
+  p=<tag(combat_storepos)>
+  tag.remove(combat_storepos)
+ endif 
+ action=-1
+endif
+
+
+on=@itemunequip
+if (act.type==t_spell)
+  temporary_null
+  return 0
+endif
+
+on=@itemequip  
+if(act.type==t_container)
+ accmsg("equipped uid=<?act?> (<?act.amount?> <?act.name?> with <?act.rescount?> items) on self at <?p?> (<?act.region.name?>)")
+else
+ accmsg("equipped uid=<?act?> (<?act.amount?> <?act.name?>) on self at <?p?> (<?act.region.name?>)")
+endif
+
+on=@itemPICKUP_PACK
+if (act.cont.isevent(t_lockeditem))//proti vykradani zamcenych truhel
+  if (act.cont.f_lockeditem)
+    if(act.type==t_container)
+      accmsg("ZLODEJ !!! picked up uid=<?act?> (<?act.amount?> <?act.name?> with <?act.rescount?> items) from container uid=<?act.cont.uid?> (<?act.cont.name?>) topobj=<?act.topobj.uid?> (<?act.topobj.name?>)")
+    else
+      accmsg("ZLODEJ !!! picked up uid=<?act?> (<?act.amount?> <?act.name?>) from container uid=<?act.cont.uid?> (<?act.cont.name?>) topobj=<?act.topobj.uid?> (<?act.topobj.name?>)")
+    endif
+    return 1
+  endif
+// return <act.cont.f_lockeditem>
+endif
+if (action==skill_bowcraft)
+  RETURN 1
+Elseif (act.type==t_musical)
+  if (provocation)
+    sysMessage("Dovednost provokace se pouziva prikazem .provo")
+  endif
+endif
+if(act.type==t_container)
+  accmsg("picked up uid=<?act?> (<?act.amount?> <?act.name?> with <?act.rescount?> items) from container uid=<?act.cont.uid?> (<?act.cont.name?>) topobj=<?act.topobj.uid?> (<?act.topobj.name?>)")
+else
+  accmsg("picked up uid=<?act?> (<?act.amount?> <?act.name?>) from container uid=<?act.cont.uid?> (<?act.cont.name?>) topobj=<?act.topobj.uid?> (<?act.topobj.name?>)")
+endif
+return 0
+
+on=@ItemPickup_Ground //proti injection a podobnym
+if ((act.attr_movenever)||(act.attr_static))&&(ISGM==0)
+  RETURN 1 
+endif
+if(act.type==t_container)
+  accmsg("picked up uid=<?act?> (<?act.amount?> <?act.name?> with <?act.rescount?> items) from ground at <?act.p?> (<?act.region.name?>)")
+else
+  accmsg("picked up uid=<?act?> (<?act.amount?> <?act.name?>) from ground at <?act.p?> (<?act.region.name?>)")
+endif
+return 0
+
+on=@itemdropon_ground
+if (itemExists(<act>))
+  if (act.type==t_container)
+    accmsg("dropped uid=<?act?> (<?act.amount?> <?act.name?> with <?act.rescount?> items) on ground at <?act.p?> (<?act.region.name?>)")
+  else
+    accmsg("dropped uid=<?act?> (<?act.amount?> <?act.name?>) on ground at <?act.p?> (<?act.region.name?>)")
+  endif
+else
+  accmsg("WARNING: lost object while dropping on ground")
+endif
+
+
+on=@itemdropon_obj
+if (itemExists(<act>))
+  if (act.type==t_container)
+    accmsg("dropped uid=<?act?> (<?act.amount?> <?act.name?> with <?act.rescount?> items) on obj uid=<?argo?> (<?argo.name?>) topobj=<?argo.topobj?> (<?argo.topobj.name?>)")
+  else
+    accmsg("dropped uid=<?act?> (<?act.amount?> <?act.name?>) on obj uid=<?argo?> (<?argo.name?>) topobj=<?argo.topobj?> (<?argo.topobj.name?>)")
+  endif
+else
+  accmsg("WARNING: lost object while dropping on obj uid=<?argo?> (<?argo.name?>) topobj=<?argo.topobj?> (<?argo.topobj.name?>)")
+endif
+
+
+on=@itemSTACKON
+//argo - vec z ruky
+//act - vec stojici
+//std:  tagy z ruky mizej, tzn v act zustavaj
+if (argo.type==t_reagent)//color regu
+ argo.color=0
+endif
+if (argo.type==t_feather) //stackovani peri
+ argo.more2=00
+endif
+if (argo.baseid!=act.baseid)
+  return 0
+endif
+arg(zrusit,0)
+if !(argo.tag(craftedby))
+  return 0 //doufam
+elseif (argo.tag(craftedby)&craftexp_gotexp)
+  arg(zrusit,1)
+endif
+if !(act.tag(craftedby))
+  arg(zrusit,1)
+elseif (act.tag(craftedby)&craftexp_gotexp)
+  arg(zrusit,1)
+endif
+if (arg(zrusit))
+  if (argo.tag(craftedby))
+    argo.tag(craftedby,<eval argo.tag(craftedby)|craftexp_gotexp>)
+  endif
+  if (act.tag(craftedby))
+    act.tag(craftedby,<eval act.tag(craftedby)|craftexp_gotexp>)
+  endif
+endif
+
+on=@skillstart
+stopscriptedskills
+//if(nolightfizz(1))//ty se poserou/imo lol - Dinivan :)) 
+// //say(co vracim: <nolightfizz>)
+// if(action==skill_magery)
+//  //osetri si to @spellcast (kdyby kouzlil svetlo)
+// else
+//  action=-1
+// endif
+//endif
+safe(findid(i_customspell_timer).remove)
+return 0
+
+on=@skillsuccess
+if (ishungrymsg)
+  skill -1
+  return 1
+endif
+return 0
+
+on=@gethit
+stopscriptedskills
+return 0
+
+on=@Logout
+if (<tag(hypno_mystik)>)
+  hypnoswap_back
+endif
+
+if !(isGM)
+  logoutdismount//sesednuti po logoutu
+endif
+
+if (<flag_poisoned>==1) //je otraven
+  flag_poisoned=0 //odstranit flag - proti tomu bugu (maj jen flag ale neskytaj)
+                  //ty co skytaj budou skytat i po nalogovani jen uz nebudou zeleny
+endif
+
+if (<tag(gethealedby)>) //nekdo ho lecil
+  tag(gethealedby).tag.remove(awaitsexpforhealing) //odstranit klerikovi
+  tag.remove(gethealedby) //odstranit umirajicimu
+endif
+if (<tag(awaitsexpforhealing)>) //klerik
+  tag.remove(awaitsexpforhealing)
+endif
+
+if (<flags>&statf_dead)
+  tag(logoutdead,1)
+endif
+
+//navrat na lod
+if (<region.flags> & region_flag_ship)
+  tag.LOGOFFSHIP=<region.UID>
+endif
+
+tag(lastlogoutedAt,<serv.time>)
+if (src.isgm)&&(src.tag(securelogin)==1)
+  src.go(100,100)
+endif
+vyvrhel_prevest //docasne 
+makestring_abort
+events=+e_noclick
+tag(clienttype,"")
+//consume(1000 i_rune_incognito)
+accmsg("Logouted.")
+
+if ((<eval(<src.tag(ra_selfres_hp)>)>>10) || (<eval(<src.tag(ra_selfres_mana)>)>>10) || (<eval(<src.tag(ra_selfres_stamina)>)>>10) || (<eval(<src.tag(ra_lifepact_hp)>)>>10) || (<eval(<src.tag(ra_lifepact_mana)>)>>10) || (<eval(<src.tag(ra_lifepact_stamina)>)>>10))
+  src.zakladabilities
+endif
+
+if (account.plevel < 4)
+  if (region.tag(housenumber))//flags == 01192)
+    newitem(i_logout_timer)
+    act.equip
+  else
+    if !(strcmpi("<region.name>","tutorial"))
+      if !(strlen(<tag(login_p)>))
+        tag(login_p,<p>)
+      endif
+    endif
+    if (region.tag(kick))
+      if (strlen(<tag(myLogoutMover)>))//pokud existuje prvni logoutmover, tak pryc s nim
+        tag(myLogoutMover).remove
+      endif
+      newitem(i_logout_mover)
+      act.p=<p>
+      act.tag(my_uid,<uid>)
+      act.timer=20
+      tag(myLogoutMover,<act>)
+    else
+      f_do_logout
+    endif
+  endif
+  if !(strcmpi("<region.name>","start room"))  // aby neportovalo do tutuorialu ked nema nastavene staty
+    if (tag(level)<1)
+      tag.remove(class)
+    endif
+  endif
+endif
+arg(guildStone,<findID(i_memory_guild)>)
+if (strlen(<arg(guildStone)>))
+  guildMsg("--*<name> se <sex(odpojil,odpojila)>*--")
+endif
+
+if (<tag(pact_by)>) //pact je aktivní
+  f_cancelpact_by
+elseif (<tag(pact_to)>)
+  f_cancelpact_to
+endif
+
+RETURN 0
+
+
+on=@environchange
+//if (findid(i_travelstone_delay))
+ //if (<region> != <safe.findid(i_travelstone_delay).tag(ts_region)>) //odesel nekam pryc
+  //sysMessage("Prilis jsi se <sex(vzdalil,vzdalila)> od dostavniku.")
+  //tag.remove(st_custpointdist)
+  //consume(1000 i_travelstone_delay)
+  //return 0
+ //endif
+//endif
+////stroj casu 
+if (region.flag_underground)
+else
+  if (<eval(<var(lightlevel)>)>)
+    if (sector.light==<var(lightlevel)>)
+    else
+      sector.light=<var(lightlevel)>
+    endif
+  endif
+endif
+
+
+on=@Login
+src.redmessage_me
+if(src==094dfd)||(src==0F0BEF) //Dinivan a Eufegenie dostanou logy :)
+ src.afklog
+else
+ src.message_me
+endif
+
+arg(testIP,1)
+if (strlen(<account.tag.loginThroughBlockIP>))  // povoleny account uz se lognul na nejake IP v danem segmentu
+  if (<strcmpi("<account.tag.loginThroughBlockIP>","<account.lastip>")>)  // projde, pokud se zmenila IP od prvniho loginu -> blocknout
+    redMessage("<sex(Porusil,Porusila)> jsi podminky odblokovani a <sex(prihlasil,prihlasila)> ses z jine IP adresy!")
+    account.tag(loginThroughBlock,-1)
+    disconnect
+    arg(testIP,0)
+  endif
+endif
+if (<arg(testIP)>)
+  arg(ipA,<StrGetTok("<account.lastip>",0,".")>)
+  arg(ipB,<StrGetTok("<account.lastip>",1,".")>)
+  arg(ipC,<StrGetTok("<account.lastip>",2,".")>)
+  arg(ipD,<StrGetTok("<account.lastip>",3,".")>)
+  arg(i,0)
+  while (<arg(i)> < <d_blocked_ips>)
+    arg(blocked_Low_ipA,<StrGetTok("<d_blocked_low_ip[<eval arg(i)>]>",0,".")>)
+    arg(blocked_Hi_ipA,<StrGetTok("<d_blocked_hi_ip[<eval arg(i)>]>",0,".")>)
+    if (<arg(ipA)> >= <arg(blocked_Low_ipA)>) && (<arg(ipA)> <= <arg(blocked_Hi_ipA)>)
+      arg(blocked_Low_ipB,<StrGetTok("<d_blocked_low_ip[<eval arg(i)>]>",1,".")>)
+      arg(blocked_Hi_ipB,<StrGetTok("<d_blocked_hi_ip[<eval arg(i)>]>",1,".")>)
+      if (<arg(ipB)> >= <arg(blocked_Low_ipB)>) && (<arg(ipB)> <= <arg(blocked_Hi_ipB)>)
+        arg(blocked_Low_ipC,<StrGetTok("<d_blocked_low_ip[<eval arg(i)>]>",2,".")>)
+        arg(blocked_Hi_ipC,<StrGetTok("<d_blocked_hi_ip[<eval arg(i)>]>",2,".")>)
+        if (<arg(ipC)> >= <arg(blocked_Low_ipC)>) && (<arg(ipC)> <= <arg(blocked_Hi_ipC)>)
+          arg(blocked_Low_ipD,<StrGetTok("<d_blocked_low_ip[<eval arg(i)>]>",3,".")>)
+          arg(blocked_Hi_ipD,<StrGetTok("<d_blocked_hi_ip[<eval arg(i)>]>",3,".")>)
+          if (<arg(ipD)> >= <arg(blocked_Low_ipD)>) && (<arg(ipD)> <= <arg(blocked_Hi_ipD)>)
+            if (<eval account.tag.loginThroughBlock> == 1)  // account je povoleny
+              if (strlen(<account.tag.loginThroughBlockIP>))  // povoleny account uz se lognul na nejake IP v danem segmentu
+                redMessage("Tento ucet ma vyjimku v segmentu blokovanych IP adres.")
+              else  //povoleny account se poprve loguje na ip v blokovanem segmentu -> ulozit
+                account.tag(loginThroughBlockIP,<account.lastip>)
+                redMessage("Tento ucet ma vyjimku v segmentu blokovanych IP adres.")
+              endif
+            else
+              redMessage("Pripojujes se v segmentu blokovanych IP adres!")
+              redMessage("Vyjimky udeluje admin shardu na osobni zadost a jen proverenym hracum.")
+              disconnect
+            endif
+          endif
+        endif
+      endif
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+if (account.plevel < 3)  //test followscriptu
+  testfollow
+else
+  if (<src.allshow>==1)  // ak ma zapnute allshow tak ho vypne
+    src.allshow=0
+  endif
+endif
+
+if (tag(login_p))//aby neprekazeli ve mestech
+  p=<tag(login_p)>
+  if (strcmpi("<region.name>","Lagr")) //neni v lagru (tam se nepremistuje)
+    newitem(i_resyncer)
+    act.equip
+  else
+    tag.remove(login_p)
+  endif
+endif
+
+//prvni nalogovany nastavi regiony
+if(<serv.statclients>==1)
+ if(var(wassave))
+  if(<wassave>==1) //to by po reloadu nemìlo bejt! 
+   var(wassave,0)
+  endif  
+ endif
+ //finduid(<var(nastaveni_guardian_uid)>).nastaveni_uplatni_regions
+endif
+////
+
+if (src.account.tag(vlagru))&&!(src.tag(trestanec))
+  src.tag(lagrjail,1)
+  src.go jail
+endif
+if !(src.account.tag(vlagru))&&(src.tag(lagrjail))
+  src.tag.remove(lagrjail)
+  src.gohome
+endif
+
+if (uid==017857e)
+  kermel.delayedmessage("Cas: <servertime> vykonavatelka nalogovana z <account.lastip>")
+endif
+
+//navrat na lod
+
+arg(ship,<finduid(tag(logoffship))>)
+if (arg(ship))
+  if (itemExists(<arg(ship)>))
+    if (arg(ship).type == t_ship)
+      go <arg(ship).p>
+      fix
+    endif
+  endif
+endif
+tag.remove(logoffship)
+
+//vykopne ho z dungu atp
+
+if (tag(lastlogoutedAt) < (<serv.time>-35000))&&(region.tag(realm) == 3)
+ if (<region.flags> & region_flag_ship)
+ else
+  gohome
+ endif
+endif
+
+if !(findid(i_a_mobility_potion))
+tag(resist_para,"")
+endif
+
+if (tag(logoutdead))
+ tag.remove(logoutdead)
+elseif (<flags>&statf_dead)
+ accmsg("podezreni na predavani expu")
+endif
+if (strlen(<tag(class)>))
+  if !(isevent(e_<tag(class)>))
+    class=<tag(class)>
+  endif
+endif
+
+tag(stepcount,0)
+tag(firststeptime,<serv.time>)
+fixweight
+accmsg("Logged in.")
+arg(guildStone,<findID(i_memory_guild)>)
+if (strlen(<arg(guildStone)>))
+  guildMsg("--*<name> se <sex(pripojil,pripojila)>*--")
+endif
+
+if (safe i_crystal_<tag.class>)
+  if !(findid(i_crystal_<tag.class>))
+    giveitem(i_crystal_<tag.class>)
+  endif
+endif
+
+//pri logine spocita armorCount - armor na kudly // mozno sa neskor vyuzije aj na nieco ine
+src.armorCountLogIn
+
+events=+e_noclick
+temporary_null
+return 0
+
+
+
+on=@death
+//nazgul quest
+arg(killedBy,<finduid(tag(lastmurderbyf))>)
+if (playerExists(<arg(killedBy)>))
+  if (killedBy.isplayer)
+    if (killedBy.findid(i_nazgul_quest))
+      if ((<tag.level> >= 30) && (tag.realm==1) && (profession!=class_craft))
+        killedBy.findid(i_nazgul_quest).tag(killed,#+1)
+      endif
+    endif
+  endif
+endif
+
+paralyze_remove(100) //in case the player was killed while having stronger paralysis type
+flag_immobile=0 //proti ovinovacum
+if (<tag(gethealedby)>) //nekdo ho lecil
+  tag(gethealedby).tag.remove(awaitsexpforhealing) //odstranit klerikovi/samanovi
+  tag.remove(gethealedby) //odstranit umirajicimu
+endif
+if (<tag(awaitsexpforhealing)>) //klerik
+  tag.remove(awaitsexpforhealing)
+endif
+//opatrne odstranit aby to nebuglo skill...
+if (<findid(i_stealthbonus)>)
+  findid(i_stealthbonus).remove
+endif
+if (<eval account.tag(vlagru)>==1) //chcipnul v lagru - proverit !
+  kermel.delayedmessage("Cas: <servertime> podezrely <uid> <name>(<account.name>) chcipnul v tabore - proverit bugovani")
+endif
+if (<strlen(<tag(lastmurderbyf)>)>)
+  if (playerExists(<tag(lastmurderbyf)>)) && (<tag(lastmurderbyf)> != <uid>)
+    if (<tag(level)> > <tag(lastmurderbyf).tag(level)>)
+      if (isevent(e_arena))
+        accmsg("<name> (<account.name>, <tag(level)>) byl v arene podezrele zabit hracem <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>)")
+        if (<tag(lastmurderbyf).tag(hypno_mystik)>)
+          logmsg("<serverTime> '<tag(lastmurderbyf).account.name>' commands <tag(lastmurderbyf).uid> (<tag(lastmurderbyf).name>): hrac <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>) v hypnoze podozrivo zabil hraca <name> (<account.name>, <tag(level)>)")
+        endif
+      else
+        accmsg("<name> (<account.name>, <tag(level)>) byl podezrele zabit hracem <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>)")        
+        if (<tag(lastmurderbyf).tag(hypno_mystik)>)
+          logmsg("<serverTime> '<tag(lastmurderbyf).account.name>' commands <tag(lastmurderbyf).uid> (<tag(lastmurderbyf).name>): hrac <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>) v hypnoze podozrivo zabil hraca <name> (<account.name>, <tag(level)>)")
+        endif
+      endif
+    else
+      if (isevent(e_arena))
+        accmsg("<name> (<account.name>, <tag(level)>) byl v arene zabit hracem <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>)")
+        if (<tag(lastmurderbyf).tag(hypno_mystik)>)
+          logmsg("<serverTime> '<tag(lastmurderbyf).account.name>' commands <tag(lastmurderbyf).uid> (<tag(lastmurderbyf).name>): hrac <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>) v hypnoze zabil hraca <name> (<account.name>, <tag(level)>) v arene.")
+        endif
+      else
+        accmsg("<name> (<account.name>, <tag(level)>) byl zabit hracem <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>)")
+        if (<tag(lastmurderbyf).tag(hypno_mystik)>)
+          logmsg("<serverTime> '<tag(lastmurderbyf).account.name>' commands <tag(lastmurderbyf).uid> (<tag(lastmurderbyf).name>): hrac <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>) v hypnoze zabil hraca <name> (<account.name>, <tag(level)>)")
+        endif
+      endif
+    endif
+  elseif (<findUID(<tag(lastmurderbyf)>).issumon>)
+    arg(killedByPlr,<tag(lastmurderbyf).memoryfindtype(memory_ipet).link>)
+    if (<arg(killedByPlr)> != <uid>)
+      if (<tag(level)> > <arg(killedByPlr).tag(level)>)
+        if (isevent(e_arena))
+          accmsg("<name> (<account.name>, <tag(level)>) byl v arene podezrele zabit hracem <arg(killedByPlr).name> (<arg(killedByPlr).account.name>, <arg(killedByPlr).tag(level)>) pomoci summona.")
+          if (<tag(lastmurderbyf).tag(hypno_mystik)>)
+            logmsg("<serverTime> '<tag(lastmurderbyf).account.name>' commands <tag(lastmurderbyf).uid> (<tag(lastmurderbyf).name>): hrac <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>) v hypnoze podozrivo zabil hraca <name> (<account.name>, <tag(level)>) v arene pomoci summona.")
+          endif
+        else
+          accmsg("<name> (<account.name>, <tag(level)>) byl podezrele zabit hracem <arg(killedByPlr).name> (<arg(killedByPlr).account.name>, <arg(killedByPlr).tag(level)>) pomoci summona.")
+          if (<tag(lastmurderbyf).tag(hypno_mystik)>)
+            logmsg("<serverTime> '<tag(lastmurderbyf).account.name>' commands <tag(lastmurderbyf).uid> (<tag(lastmurderbyf).name>): hrac <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>) v hypnoze podozrivo abil hraca <name> (<account.name>, <tag(level)>) pomoci summona.")
+          endif
+        endif
+      else
+        if (isevent(e_arena))
+          accmsg("<name> (<account.name>, <tag(level)>) byl v arene zabit hracem <arg(killedByPlr).name> (<arg(killedByPlr).account.name>, <arg(killedByPlr).tag(level)>) pomoci summona.")
+          if (<tag(lastmurderbyf).tag(hypno_mystik)>)
+            logmsg("<serverTime> '<tag(lastmurderbyf).account.name>' commands <tag(lastmurderbyf).uid> (<tag(lastmurderbyf).name>): hrac <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>) v hypnoze zabil hraca <name> (<account.name>, <tag(level)>) v arene pomoci summona.")
+          endif
+        else
+          accmsg("<name> (<account.name>, <tag(level)>) byl zabit hracem <arg(killedByPlr).name> (<arg(killedByPlr).account.name>, <arg(killedByPlr).tag(level)>) pomoci summona.")
+          if (<tag(lastmurderbyf).tag(hypno_mystik)>)
+            logmsg("<serverTime> '<tag(lastmurderbyf).account.name>' commands <tag(lastmurderbyf).uid> (<tag(lastmurderbyf).name>): hrac <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name>, <tag(lastmurderbyf).tag(level)>) v hypnoze zabil hraca <name> (<account.name>, <tag(level)>) pomoci summona.")
+          endif
+        endif
+      endif
+    endif
+  endif
+endif
+
+if !(<tag(hypno_mystik)>) //mystikovi v monstru to nedelame
+  consume(1000 t_custom_dispellable)
+  if (act)
+    if (act.isplayer) //hrace zabil hrac
+      tag(lastmurderby,"<act>,<act.name>")     
+    endif
+  endif
+  eqlayers(trigger(@userdeath))
+  findlayer(21).contents2(trigger(@userdeath))
+  if (tag(nextress)<serv.time)
+    tag(nextress,<eval serv.time+{300 1200}>)
+  endif
+  vyvrhel_prevest //docasne 
+  f_srovnatlevel
+  newitemsafe(i_checkstats_timer)
+  lastnew.attr=attr_invis
+  lastnew.p=<p>
+  lastnew.timer=1
+  lastnew.link=<uid>
+  findid(i_spec_ability_counter).remove
+  return 0
+else
+  tag(po_zasahu,5)
+  hypnoswap_back
+  return 1 //neumre ! 
+endif
+
+
+on=@spellcast
+stopscriptedskills
+//src.sysMessage(a1:<?argn1?> a2:<?argn2?> ac1:<?actarg1?> ac2:<?actarg2?> act:<?act?>, this:<?this?>)
+hungryhurts
+if(nolightfizz(1))&&(<argn1>!=6) //neni svetlo a nekouzli zrovna svetlo
+ action=-1 //fizz i s efektem
+endif
+
+if(argn==7)
+  //reactiv aj na inych (hracov)
+	if ( (profession==class_priest) || (profession==class_shaman) )
+	  if !(act.isplayer)
+      redmessage("Toto kouzlo smis kouzlit jen na hrace.")
+      action=-1
+    endif	
+  else //reactiv jen na sebe
+  	if (act!=<uid>)
+   		redmessage("Toto kouzlo smis kouzlit jen na sebe.")
+   		action=-1
+   	endif
+  endif
+endif
+
+if (argn==17)//bless NE na itemy
+  if (safe.act.isItem)
+    src.redMessage("Nesmis kouzlit na predmet.")
+    action=-1
+    return 1
+  endif
+endif
+
+if (argn==22)//teleport ne na itemy ni na chary, co nejsou player
+  if (<hval src.region.tag(cFlags)>&<region_cf_denyTeleport>) && !(isGM)
+    src.redMessage("Tva kouzla jsou rusena antimagickym polem.")
+    action=-1
+    return 1
+  elseif ((safe.act.isItem) && !(isGM))
+    src.redMessage("Nelze se premistovat na predmety.")
+    action=-1
+    return 1
+  elseif ((safe.act.npc) && !(isGM))
+    src.redMessage("Nelze se premistovat na NPC.")
+    action=-1
+    return 1
+  endif
+endif
+
+if (argn==27)//curse NE na itemy
+  if (safe.act.isItem)
+    src.redMessage("Nesmis kouzlit na predmet.")
+    action=-1
+    return 1
+    //if (act.topobj != src)
+    //  src.redMessage("Predmet musis mit u sebe.")
+    //  action=-1
+    //  return 1
+    //endif
+  endif
+endif
+
+if(act)//field ne na sebe
+  if (act==<uid>)
+  elseif (act.isItem)
+    if (act.type!=t_rune)
+      reveal
+    endif
+  elseif (act.isgm)
+  else
+    reveal
+  endif
+  if (argn==24)||(argn==28)||(argn==39)||(argn==47)||(argn==50)
+    if (act.topobj==<uid>)
+      accmsg(Buguje s kouzlením kouzla cislo <argn> na predmet <act>, ktery je v <act.topobj>)
+      sysmessage("Jsem hnusny buger...") 
+      // damage 50 // Damage jsem zrusil, oni to lidi casto delaji omylem. Irmo
+      return 1
+    endif
+  endif
+endif
+
+//sumoni vyžadujou hùl
+if (src.profession==class_mag)||(src.profession==class_necro)
+  if (<argn>==<spell_Blade_Spirits>)
+    if (!src.hasStaff(oak))
+      src.sysMessage("Na toto kouzlo nejspis budes potrebovat lepsi hul.")
+      return 1
+    endif
+  endif
+  if (<argn>==<spell_Energy_Vortex>)
+    if (!src.hasStaff(teak))
+      src.sysMessage("Na toto kouzlo nejspis budes potrebovat lepsi hul.")
+      return 1
+    endif
+  endif
+  if (<argn>==<spell_Summon_Elem_Water>)
+    if (!src.hasStaff(teak))
+      src.sysMessage("Na toto kouzlo nejspis budes potrebovat lepsi hul.")
+      return 1
+    endif
+  endif
+  if (<argn>==<spell_Summon_Elem_Earth>)
+    if (!src.hasStaff(teak))
+      src.sysMessage("Na toto kouzlo nejspis budes potrebovat lepsi hul.")
+      return 1
+    endif
+  endif
+  if (<argn>==<spell_Summon_Elem_Fire>)
+    if (!src.hasStaff(teak))
+      src.sysMessage("Na toto kouzlo nejspis budes potrebovat lepsi hul.")
+      return 1
+    endif
+  endif
+  if (<argn>==<spell_Summon_Elem_Air>)
+    if (!src.hasStaff(teak))
+      src.sysMessage("Na toto kouzlo nejspis budes potrebovat lepsi hul.")
+      return 1
+    endif
+  endif
+  if (<argn>==<spell_Summon_Daemon>)
+    if (!src.hasStaff(mahagon))
+      src.sysMessage("Na toto kouzlo nejspis budes potrebovat lepsi hul.")
+      return 1
+    endif
+  endif
+endif
+
+if (safe (<src.findid(i_a_mana_shield)>))
+  if (((<argn>==5)||(<argn>==12))&&(act==this)) //sipka or harm kouzleny na sebe
+  else
+    src.findid(i_a_mana_shield).remove
+    if (<src.mana> > <eval <src.int>/2>)
+      src.mana=<eval (<src.mana>-<eval <src.int>/2>)>
+    else
+      src.mana=0
+    endif
+  endif
+endif
+
+if (isevil(<argn1>))
+  if (zbran_char)
+    if (tag(weaponuid).type==t_weapon_mace_staff)
+      tag(weaponuid).damage(<nastaveni_global_magicIdam>)
+    endif
+  endif
+endif
+
+if (argn1==53) //mana vampire
+  if (!act.magery)   
+    return 1
+  endif
+endif
+
+if (mapplane>0) 
+ if (argn==02d)
+  return 1
+ endif
+endif
+
+if !(isgm)
+  if (argn==32)||(argn==52) //recall/gate
+    if (<hval src.region.tag(cFlags)>&<region_cf_denyRecall_out>)  //is recall out of this region allowed ?
+      src.redMessage("Tva kouzla jsou rusena antimagickym polem.")
+      lastnew.remove
+      src.action= -1
+      return 1
+    endif
+    if (itemExists(<act>))
+      if (act.type==t_rune)
+        if (tag(realm)) //nejsem podvodnik?
+          act.more1=0ffff
+          newitemsafe(i_gold) //pomocny predmet ktery zjistuje region
+          lastnew.p=<act.morep>
+          if (<hval lastnew.region.tag(cFlags)>&<region_cf_denyRecall_in>)  //is recall to that region allowed ?
+            src.sysMessage("Tva kouzla jsou rusena antimagickym polem.")
+            lastnew.remove
+            src.action= -1
+            return 1
+          endif
+          //napred zkontrolujeme tag battlefield - nezavisle na realmu
+          if (strlen(<lastnew.region.tag(bf)>)!=0)
+            if (<eval lastnew.region.tag(bf)> < 0) //port na mordorske uzemi
+              arg(realm_name,"Mordor")
+            else
+              arg(realm_name,"Gondor")
+            endif
+            arg(conquer_area,<abs(<lastnew.region.tag(bf)>)>)  
+            //sysMessage(port na uzemi <realm_name> cislo <conquer_area>)
+            if (<var(palantir_<realm_name>_<conquer_area>).tag(owners_realm)>!=<tag(realm)>)
+              redmessage("Toto uzemi bys napred <sex(musel,musela)> dobyt.")
+              lastnew.remove
+              src.action= -1
+              return 1
+            endif
+            //zkontrolovat zda tam nekdo nevyhlasil valku (pak tam nesmi skakat)
+            if (!strcmpi(<var(war_declarator_1).tag(war_declared_on)>,"<realm_name>_<conquer_area>")) 
+              if (<eval <var(war_declarator_1).tag(war_begins_day)>> == <getDay>)  //neprisel uz den valky?
+                arg(checkHour, <eval <getHour>+1>)
+                arg(declHour, <eval <var(war_declarator_1).tag(war_begins_hour)>>)
+                arg(declDay, <eval <var(war_declarator_1).tag(war_begins_day)>>) 
+                if (<checkHour> == 24)
+                  arg(checkHour,0)
+                endif             
+                if ((<declHour> <= <checkHour>) || ((<declHour> == 0) && (<checkHour> == 23)) || ((<declHour> == 23) && (<checkHour> >= 0))) //hodinu pred valkou uz neportovat   
+                  redmessage("Na uzemi, na kterem brzy Gondor zacne (nebo uz zacal) valku, se nelze premistovat.")
+                  lastnew.remove
+                  src.action= -1
+                  return 1
+                endif
+              endif
+            endif
+            if (!strcmpi(<var(war_declarator_2).tag(war_declared_on)>,"<realm_name>_<conquer_area>"))
+              if (<eval <var(war_declarator_2).tag(war_begins_day)>> == <getDay>)  //neprisel uz den valky?
+                arg(checkHour, <eval <getHour>+1>)
+                arg(declHour, <eval <var(war_declarator_2).tag(war_begins_hour)>>)
+                arg(declDay, <eval <var(war_declarator_2).tag(war_begins_day)>>) 
+                if (<checkHour> == 24)
+                  arg(checkHour,0)
+                endif             
+                if ((<declHour> <= <checkHour>) || ((<declHour> == 0) && (<checkHour> == 23)) || ((<declHour> == 23) && (<checkHour> >= 0))) //hodinu pred valkou uz neportovat   
+                  redmessage("Na uzemi, na kterem brzy Mordor zacne (nebo uz zacal) valku, se nelze premistovat.")
+                  lastnew.remove
+                  src.action= -1
+                  return 1
+                endif
+              endif            
+            endif
+          else //nemame tag(bf), pokracujeme podle klasickeho scenare          
+            if (strlen(<lastnew.region.tag(realm)>))
+              if (tag(realm)<0)
+                redmessage("Spociva na tobe hnev Valar. Jako vyvrhel tohoto sveta nedokazes pouzivat cestovni magii.")
+                lastnew.remove
+                src.action= -1
+                return 1
+              endif
+              if (lastnew.region.tag(realm)!=<tag(realm)>)
+                redmessage("Nejsi <sex(opravnen,opravnena)> vstoupit do tohoto uzemi.")
+                lastnew.remove
+                src.action= -1
+                return 1
+              endif            
+            endif
+          endif
+          lastnew.remove //odebrani pomocneho predmetu
+        endif
+      endif
+    endif
+  endif
+  if (argn==59)  //spell_Resurrection
+    if (act.baseID==i_corpse)
+      if (strlen(<act.link>))  //jde o telo a ma link
+        if (act.link.isPlayer)  //link je duch
+          if (act.link.distancefrom(<act>) > 4)
+            sysMessage("Duch je prilis daleko.")
+            src.action= -1
+            return 1
+          endif
+        endif
+      endif
+    endif
+  endif
+endif
+if (argn==52) // gate
+  //nejsem v dobyvacim uzemi?
+  if (strlen(<src.region.tag(bf)>)!=0)
+    if (<eval src.region.tag(bf)> < 0) //stojim na mordorskem uzemi
+      arg(realm_name,"Mordor")
+    else
+      arg(realm_name,"Gondor")
+    endif
+    arg(conquer_area,<abs(<src.region.tag(bf)>)>)
+    //zkontrolovat zda tam nekdo nevyhlasil valku (pak odtud nesmi gate)
+    if (!strcmpi(<var(war_declarator_1).tag(war_declared_on)>,"<realm_name>_<conquer_area>")) 
+      kermel.sysMessage(checkujeme war1: day: <var(war_declarator_1).tag(war_begins_day)> hour: )
+      if (<eval <var(war_declarator_1).tag(war_begins_day)>> <= <getDay>)  //neprisel uz den valky?
+        arg(checkHour, <eval <getHour>+1>)
+        arg(declHour, <eval <var(war_declarator_1).tag(war_begins_hour)>>)
+        arg(declDay, <eval <var(war_declarator_1).tag(war_begins_day)>>) 
+        if (<checkHour> == 24)
+          arg(checkHour,0)
+        endif             
+        if ((<declHour> <= <checkHour>) || ((<declHour> == 0) && (<checkHour> == 23)) || ((<declHour> == 23) && (<checkHour> >= 0))) //hodinu pred valkou uz neportovat 
+          redmessage("Z uzemi, kteremu Gondor vyhlasil valku, nelze otvirat cestovni brany.")
+          src.action= -1
+          return 1
+        endif
+      endif
+    endif
+    if (!strcmpi(<var(war_declarator_2).tag(war_declared_on)>,"<realm_name>_<conquer_area>"))
+      kermel.sysMessage(checkujeme war2: day: <var(war_declarator_2).tag(war_begins_day)> hour: )            
+      if (<eval <var(war_declarator_1).tag(war_begins_day)>> == <getDay>)  //neprisel uz den valky?
+        arg(checkHour, <eval <getHour>+1>)
+        arg(declHour, <eval <var(war_declarator_2).tag(war_begins_hour)>>)
+        arg(declDay, <eval <var(war_declarator_2).tag(war_begins_day)>>) 
+        if (<checkHour> == 24)
+          arg(checkHour,0)
+        endif        
+        kermel.sysMessage(chh: <checkHour> dh: <declHour>)     
+        if ((<declHour> <= <checkHour>) || ((<declHour> == 0) && (<checkHour> == 23)) || ((<declHour> == 23) && (<checkHour> >= 0))) //hodinu pred valkou uz neportovat 
+          redmessage("Z uzemi, kteremu Mordor vyhlasil valku, nelze otvirat cestovni brany.")
+          src.action= -1
+          return 1
+        endif
+      endif
+    endif
+  endif
+  if (flag_immobile==0)
+    tag(standcast,1)
+    flag_immobile=1
+    //newequip(i_delay_gate)  // co to je
+    newitemsafe(i_delayed_function)
+    lastnew.tag(function,standcastdelay)
+    tag(standcasttimer,<lastnew>)
+    lastnew.timerd=<nastaveni_spelltime_s_gate_travel>-10  // sesilateli dame 1s k dobru kvuli poodbehnuti a vbihani do vytvareny gaty - dochazelo ke zpozdeni zamrznuti
+    lastnew.equip
+  else
+    if (tag(standcasttimer))
+      if (<eval finduid(<tag(standcasttimer)>).timerd> < <nastaveni_spelltime_s_gate_travel>)
+        arg(sctimer,<nastaveni_spelltime_s_gate_travel>+10) // penalizace za predcasny ruseni koncentrace
+      else
+        arg(sctimer,<nastaveni_spelltime_s_gate_travel>-10) // sesilateli dame 1s k dobru kvuli poodbehnuti a vbihani do vytvareny gaty - dochazelo ke zpozdeni zamrznuti
+      endif
+      finduid(<tag(standcasttimer)>).timerd=<arg(sctimer)>
+    endif
+  endif
+endif
+return <act.f_spellchecklos>
+
+ //tyhle prazdny triggery tu musej bejt jinak to hazi erory
+on=@DrinkingPotion
+on=@afterswing
+on=@miningact
+on=@beforedoeffect
+on=@beforegetswing
+
+
+[events e_splend]
+on=@spellcast
+src.sysMessage("konec")
+return 0
+
+[function item_in_corpse]
+events=+t_item_in_corpse
+tag(iic_owner,<src>)
+updatex
+
+[typedef t_item_in_corpse]
+on=@pickup_pack
+if (topobj.isItem)
+  if (topobj.link)//hracske telo
+    if (topobj.timer><nastaveni_body_looting_timer>) //timer hracskeho tela je 900(15 minut)
+      src.sysMessage("Z tohoto tela jeste nemuzes nic brat.")
+      return 1
+    endif
+    if (<src.findid(i_looter_immobilizer)>)
+      src.findid(i_looter_immobilizer).timerd=<src.findid(i_looter_immobilizer).timerd>+5 //0.5sekundy
+      if (src.flag_immobile==0)
+        src.findid(i_looter_immobilizer).remove
+      endif
+    else  
+      src.newequip(i_looter_immobilizer)
+      lastnew.timerd=5
+    endif
+    if (src!=tag(iic_owner))
+      //nejsem vlastnik tela
+      if (src.isevent(e_nbdung))
+       src.sysMessage("V tutorialu nemuzes obirat cizi mrtvoly.")
+       return 1
+      endif 
+      if (src.tag(skillrank)<3)&&(src.findid(i_checkstats_timer))
+        //po smrti nejakou dobu nesmim lootovat...
+        src.sysMessage("Jeste nemuzes obirat cizi mrtvoly.")
+        return 1
+      endif
+    endif
+    if (src.tag(nextloot)<serv.time)
+      if (src!=tag(iic_owner))//kdyz nejsem majitel
+        if (tag(iic_owner).ismurderer==0)
+          src.criminal
+        endif
+      endif
+      events -t_item_in_corpse
+      tag.remove(iic_owner)
+      src.tag(nextloot,<eval serv.time+8>)
+      return 0
+    else
+      src.tag(nextloot,<eval serv.time+8>)
+      src.sysMessage("Ne tak rychle!")
+      return 1
+    endif
+  endif
+endif
+tag(iic_owner,"")
+events -t_item_in_corpse
+
+on=@pickup_ground
+if (src!=tag(iic_owner))
+  //nejsem vlastnik tela
+  if (src.tag(skillrank)<3)&&(src.findid(i_checkstats_timer))
+    //po smrti nejakou dobu nesmim lootovat...
+    src.sysMessage("Jeste nemuzes obirat cizi mrtvoly.")
+    return 1
+  endif
+endif
+if (src.tag(nextloot)<serv.time)
+  if (src!=tag(iic_owner))//kdyz nejsem majitel
+    if (tag(iic_owner).ismurderer==0)
+      src.criminal
+    endif
+  endif
+  events -t_item_in_corpse
+  tag.remove(iic_owner)
+  src.tag(nextloot,<eval serv.time+8>)
+  return 0
+else
+  src.tag(nextloot,<eval serv.time+8>)
+  src.sysMessage("Ne tak rychle!")
+  return 1
+endif
+
+on=@userclick
+if (topobj.link)
+  if ((<src>!=<tag(iic_owner)>)&&(<playerExists(<topobj.link>)>))
+    src.sysMessage("Sebrani teto veci je kriminalni cin.")
+  endif
+endif
+
+[itemdef i_looter_immobilizer]
+id=i_memory
+name=Looter immobilizer
+type=t_eq_script
+layer=30
+
+on=@equip
+topobj.flag_immobile=1
+
+on=@timer
+topobj.flag_immobile=0
+remove
+return 0
+
+[typedef t_src_changer]
+
+[function showname_new]
+return 0
+
+[function showname_]
+return 1
+
+[function showname_old]
+if(isnazgul)
+ messagecol(03c2,NAZGUL)
+endif
+if (tag(hypno_mystik))
+ messagecol(<getnamehue>,"<name>") //bez guildy, takovej Kostlivec[Vyvoleny] je docela dobrej
+elseif (tag(myNameVarColor))
+ messagecol(<tag(myNameVarColor)>,"<name>")
+else
+ messagecol(<getnamehue>,"<name><qval(abbrevstatus," [<findid(i_memory_guild).link.tag(abbrev)>]","")>") //
+endif
+return 1
+
+[events e_tryHit]
+on=@getHit
+say "get hit <src>,<act>"
+
+on=@Hit
+say "hit <src>,<act>"
+
+on=@HitTry
+say "hit try <src>,<act>"
+
+on=@spelleffect
+say "spelleffect <src>,<act>"
+
+on=@spellcast
+say "spellcast <src>,<act>"
+
+[EVENTS e_character]
+on=@UserClick
+if (src.isgm)
+ arg(statstring," ")
+ if (flag_hidden)
+  arg(statstring,<statstring>[hidden])
+  arg(dispit,1)
+ endif
+ if (flag_invisible)
+  arg(statstring,<statstring>[invis])
+  arg(dispit,1)
+ endif
+ if (flag_insubstantial)
+  arg(statstring,<statstring>[insubst])
+  arg(dispit,1)
+ endif
+ if (flag_freeze)
+  arg(statstring,<statstring>[frozen])
+  arg(dispit,1)
+ endif
+ if (flag_immobile)
+  arg(statstring,<statstring>[immobile])
+  arg(dispit,1)
+ endif
+ if (flag_invul)
+  arg(statstring,<statstring>[invul])
+  arg(dispit,1)
+ endif
+ if (flag_squelch)
+  arg(statstring,<statstring>[squelched])
+  arg(dispit,1)
+ endif
+ if (arg(dispit))
+  message("<arg(statstring)>")
+ endif
+ Message("(<myaction>)")
+endif
+return <?showname_<src.tag(clienttype)>?>
+
+on=@itemequip
+if (act.tag(unidentified)==1)
+ redmessage("Toto musis nejdrive identifikovat.")
+ act.bounce
+ return 1
+endif
+
+on=@hittry
+tag(combatTarget,<act>)
+speedtimer
+tag.remove(firststroke)
+//if (tag(combat_storepos))
+// p=<tag(combat_storepos)>
+// tag(combat_storepos,"")
+//endif 
+return 0
+
+on=@hit
+tag(combatTarget,<act>)
+if (zbran_char)
+  tag(weaponuid).damage(<nastaveni_global_physIdam>)
+endif
+newitemsafe(i_combat_main)
+safe equip(<lastnew>)
+return 1
+
+on=@getHit
+tag(combatSource,<src>)
+
+on=@death
+tag(lastmurderbyf,<act>)
+arg(monstdeathact,<act>)
+if (flag_conjured)
+  return 0
+endif
+newitem i_pouch
+arg(baguid,<act>)
+sector.allchars(f_countfight)
+while (memoryfindtype(0209c))
+  if !(charExists(<memoryfindtype(0209c).link>))  //whe have memory of the character, that does not exist anymore
+    memoryfindtype(0209c).remove
+  elseif !(memoryfindtype(0209c).link.f_countfight)
+    memoryfindtype(0209c).remove
+  endif
+endwhile
+if !(act.rescount)
+  act.remove
+  act=<arg(monstdeathac)>
+  return 0
+endif
+arg(losefame,0)
+if (npc)||(<tag(hypno_mystik)>)
+  arg(losefame,<eval (tag(experience)*sqrt_int(<act.rescount>))/1000>)
+else
+  arg(losefame,<f_ztratitfame>)
+  if (arg(losefame)>tag(experience))
+    arg(losefame,<tag(experience)>)
+  endif
+endif
+if (act.rescount)
+  arg(addfame,<eval arg(losefame)/act.rescount>)
+  while (act.findcont(0))
+    act=<act.findcont(0).uid>
+    if (region.tag(realm) < 3)&&(arg(addfame) >100)&&((isplayer==0)||(tag(hypno_mystik)))//expstrop vcetne hypnotizovanejch
+      arg(addfame,100)
+    endif
+    if (profession==class_craft)//za krafty zadny expy
+      arg(addfame,0)
+    endif
+    if (<act.link.tag(awaitsexpforhealing)>) //ma dostat expy za leceni - klerik a shaman, nedostane je za vlastni zabiti
+      act.link.sysMessage("Zkusenosti ziskas za leceni.")
+      act.link.tag.remove(gotexpforhealingnow) //kdyby to mel z minula tak odstranit
+    elseif ((<strlen(<act.link.tag(pact_to)>)>)&&(<act.link.isInCity>!=1)&&(<strcmpi(<act.link.tag(pact_type)>,"blood")>==0))//pri bloodpacte nedostava normalne expy ale od toho s kym ma bloodpact
+      act.link.sysMessage("Zkusenosti ziskas od nositele paktu.")
+    else 
+      if(<act.link.tag(gotexpforhealingnow)>)//dostal za leceni a ucastnil se boje
+        act.link.tag.remove(gotexpforhealingnow)//jen odstranit tuhle indikaci a vic nic
+        act.link.sysMessage("Zkusenosti za leceni jsi jiz <act.link.sex(ziskal,ziskala)>.")
+      else //vubec nic
+        act.link.addexp(<arg(addfame)>) //pridat expy
+      endif
+    endif
+    if (<act.link.tag(pact_by)>) //pact je aktivní
+      if (<act.link.rescount(i_pact)> == 1) // JEN PRO SICHR
+        if(<act.link.tag(pact_by).isInCity> != 1)
+          if (<strcmpi(<act.link.tag(pact_type)>,"blood")>==0) //len pri pakte krvy dostava expy
+            if (!isplayer)
+              act.link.tag(pact_by).sysMessage("Ziskavas zkusenosti za aplikovany pakt na <act.link.name>.")
+              act.link.tag(pact_by).addexp(<arg(addfame)>)
+            else
+              logmsg("<serverTime>: <act.link.name>(<act.link.uid>) zabil shamana ktory mu dal Pakt krve (<act.link.tag(pact_by).name> (<act.link.tag(pact_by).uid>))")
+              act.link.f_cancelpact_by //neviem preco ale trigger death nezareaguje dobre ak je zabity hracom od ktoreho dostal BP v evente e_bloodpact takze ho zrusim tu (aspon u mna na sphere)
+            endif
+          endif
+        endif
+      endif   
+    endif
+    if (<act.link.tag(gethealedby)>) //nekdo ho lecil
+      if (<act.link.tag(gethealedby).tag(awaitsexpforhealing)>) //ma ten link jeste tenhle tag? nebo uz expy dostal?
+        if (act.link.tag(gethealedby).isinvis) //neviditelnej dostane hovno !
+          act.link.tag(gethealedby).sysMessage("Kdo se schovava, nezaslouzi zkusenosti.")
+        else
+          act.link.tag(gethealedby).sysMessage("Ziskavas zkusenosti za leceni <act.link.name>.")
+          act.link.tag(gethealedby).addexp(<arg(addfame)>)
+        endif
+        act.link.tag(gethealedby).tag.remove(awaitsexpforhealing) //klerikovi odstranime
+        act.link.tag(gethealedby).tag(gotexpforhealingnow,1) //dat kleirkovi indikace ze jiz expy dostal
+        act.link.tag.remove(gethealedby) //lecenemu odstranime
+      else
+        act.link.sysMessage("Ten, kdo te lecil, za to ted nedostane zkusenosti.")
+        act.link.tag.remove(gethealedby) //klerik nic nedostane, jen odstranime tag
+      endif
+    endif
+    act.type=t_eq_memory_obj
+    equip(<act>)
+    act=<arg(baguid)>
+  endwhile
+endif
+act.remove
+addexp(-<arg(losefame)>)
+act=<arg(monstdeathac)>
+if (charExists(<act>))
+  if (safe finduid(<act>).isPlayer)
+    var(trigkillact,<uid>)
+    act.trigger(@userkill) 
+  elseif (npcExists(<act>))
+    var(trigkillact,<uid>) 
+    act.trigger(@npckill)
+  endif
+endif
+return 0
+
+
+ON=@DeathCorpse
+if (safe argo)
+  argo.contents2(item_in_corpse)
+  //Oznacit mrtvolu nazvem podle defnamu !
+  if(!src.isplayer) //nedelat nic kdyz je to player
+    argo.tag(living,<src.obody>)
+    argo.tag(myFood,<src.food>)
+    if (src.tag(deathtag))
+      argo.tag(deathtag,<src.tag(deathtag)>)
+    endif
+    argo.name=Body of <src.typedef.name>
+  endif
+endif
+if !(<flags>&statf_conjured) //neni to summon
+  if (safe argo)
+    argo.more2=<eval tag(lastmurderbyf)>
+    argo.tag(brain,<npc>) //pro kontrolu pri ozivovani rangerem
+  endif
+  //osetreni bugu s duchem vzniknuvsim pri smrti monstra
+  if (<npc>) //nasledujici provadet jen tehdy kdyz umrelo neco co neni hrac (ma to brain)
+//  if (finduid(argo.more2).findid(i_qf_sign)) && (argo.tag(living)==finduid(argo.more2).findid(i_qf_sign).tag(hunted))
+//     finduid(argo.more2).findid(i_qf_sign).tag(qfcount,#+1)
+//  endif
+    if (<npc>==1) //umrelo zvire 
+      if (<finduid(<argo.more2>).isplayer>) //vrahem je hrac, nedelej nic (nema mozek, ty ify dole pak hazej errory)
+     //nic
+      else
+        if(<finduid(<argo.more2>).npc>==1) //zabilo ho zvire
+          if(finduid(<argo.more2>).ispet)||(<finduid(<argo.more2>).tag(guardhire)>)||(isjezditko) //je to neco ochoceneho - mohl ho zabit cviceny zostrich, zejo)
+            //nebo je to guard (to jsou taky animalove...)
+            //nedelej nic !! 
+          else //zvire nebylo ochocene - jedna se bud o bug nebo utocilo nejaky zvire - vem ho cert ! 
+            finduid(<argo.more2>).remove //odstrani toho pripadneho ducha (nebo utocici zvire - jak jsem rekl, vem ho cert !)  
+          endif
+        endif
+      endif
+    endif
+  endif
+endif
+
+on=@spellCast
+tag(combatTarget,<act>)
+accMsg("hrac(<name>,<uid>,<p>,<region.name>) kouzli kouzlo (<spellDescription[<argn>]>) na objekt (<act.name>,<act>)")
+
+on=@spellEffect
+tag(combatSource,<src>)
+
+[function stdname]
+src.sysMessage("Defname: <typedef.name>")
+
+[function f_countfight]
+if (<uid>==<src>)
+  return 0
+endif
+if !(ischar)
+  return 0
+endif
+if (flag_conjured)||(distance>30)
+  return 0
+endif
+if (srccanseelos)
+  if (src.memoryfind(<uid>))//zna me, jsem u nej zapsanej...
+    arg(storeact,<act>)
+    act=<src.memoryfind(<uid>).uid>
+    if (<act.color>&0209c)
+      if (findID(i_qf_sign)) // hrac ma aktivovany quest - lovecka vyveska
+        arg(sign,<findID(i_qf_sign)>)
+        if !(src.isResurrectedNPC) // resurrected NPC won't count
+          if (<src.obody>==<sign.tag(hunted)>)//jen quest
+            sign.tag(qfcount,#+1)
+            sysMessage("<sex(Zabil,Zabila)> jsi obludu, na kterou je vyhlaseny lov.")
+          endif
+          if (<src.obody>==<sign.tag(hunteda)>)//jen quest
+            sign.tag(qfcount,#+1)
+            sysMessage("<sex(Zabil,Zabila)> jsi obludu, na kterou je vyhlaseny lov.")
+          endif
+          if (<src.obody>==<sign.tag(huntedb)>)//jen quest
+            sign.tag(qfcount,#+1)
+            sysMessage("<sex(Zabil,Zabila)> jsi obludu, na kterou je vyhlaseny lov.")
+          endif
+        endif
+      endif
+      if (isplayer)
+        if (src.isplayer)
+          if(isnazgul)
+            if(<src.tag(realm)>!=2)&&(<src.tag(skillrank)>==3)&&(strcmpi(<src.profession>,class_craft)) //aby ziskal kill nesmi zabijet mordory a navic jen VMka a ne krafty
+              arg(prsten,<findlayer(8)>)
+              arg(i,0)
+              var(zabil_ho,0)
+              while(<arg(i)> < 3) //pozice 0-2
+                if(!<var(zabil_ho)>)
+                  if(strlen(<arg(prsten).tag(killed_<arg(i)>)>))
+                    if(!strcmpi(<arg(prsten).tag(killed_<arg(i)>)>,<src>))          
+                      var(zabil_ho,1) //uz driv nez pred sedmi killy
+                    endif
+                  else //jeste nic neulozeno, ulozime si ho
+                    arg(prsten).tag(killed_<arg(i)>,<src>)
+                    var(zabil_ho,2) //ulozen do prazdneho mista
+                  endif
+                endif
+                arg(i,#+1)
+              endwhile
+              if(<var(zabil_ho)>==2)
+                //kermel.sysMessage(bylo jeste volno)
+                tag(playerkillstotal,<eval tag.playerkillstotal>+1)
+              else
+                if(<var(zabil_ho)>)==0) //zabil nejdrive pred sedmi killy a v poli je plno
+                  //kermel.sysMessage(posouvame pole a neco dostanem)
+                  arg(j,0)
+                  while(<arg(j)> < 1) //pozice 0-0 posunout o jedno nahoru (0. vyhodit - mozno ho uz zabit znova) |Pozn Yavanna: while cyklus tu je z historickych duvodu, kdy byl ukladan vetsi pocet hracu nez posledni 3. Pro pripad ze by se to znovu menilo tu ten cyklus ponechavam pripraven
+                    arg(k,<eval (<arg(j)>+1)>)
+                    arg(prsten).tag(killed_<arg(j)>,<arg(prsten).tag(killed_<arg(k)>)>)
+                    arg(j,#+1)
+                  endwhile
+                  arg(prsten).tag(killed_2,<src>) //nova 2. pozice
+                  tag(playerkillstotal,<eval tag.playerkillstotal>+1)
+                else
+                  //kermel.sysMessage(jeste nic)
+                  //var=1 - jeste za nej nic nedostane
+                endif 
+              endif
+              var(zabil_ho,"")
+            endif
+          else
+            tag(playerkillstotal,<eval tag.playerkillstotal>+1)
+          endif     
+        else
+          tag(monsterkillstotal,<eval tag.monsterkillstotal>+1)
+        endif
+      endif
+    endif
+    if (<act.color>&0209c)
+      act.type=t_eq_script
+      act.cont=<src.act>
+      return 1
+    endif
+    act=<arg(storeact)>
+    //elseif (expmandatory)
+    // newitemsafe(i_memory)
+    // lastnew.type=t_eq_script
+    // lastnew.link=<uid>
+    // lastnew.cont=<src.act>  
+    // return 1
+  endif
+endif
+return 0
+
+[function expmandatory]//pro postavu splnujici tyto podminky...
+if (src.npc)
+  if (profession==class_priest)||(profession==class_shaman)
+    return 1
+  endif
+endif
+return 0
+
+[EVENTS e_necro]
+on=@itemequip
+if !(f_player_canEquip_necro(<act>))
+  redmessage("Toto nemuzes jako nekromant pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@spellcast
+if ((argn==59) && !(f_canseelos(<act>)) )
+  sysMessage("Nevidis na cil.")
+  return 1
+endif
+if !(class_cancast(necro))
+  redmessage("Toto kouzlo nemuzes pouzivat.")
+  return 1
+endif
+if (argn==40)
+  ARG(summonid,<hval <actarg2>|08e000000>)
+  if (ARG(summonid)==c_satan_necro)
+    mana=<mana> +- 84
+    tag(moremana,79)
+    consume=2 i_reag_dragon_blood
+    consume=2 i_reag_daemon_bone
+  elseif (ARG(summonid)==c_vampire_great_necro)
+    mana=<mana> +- 34
+    tag(moremana,30)
+    consume=1 i_reag_executioners_cap
+    consume=2 i_reag_dragon_blood
+  elseif (ARG(summonid)==c_liche_lord_necro)
+    mana=<mana> +- 24
+    tag(moremana,21)
+    consume=2 i_reag_blood_vial
+  elseif (ARG(summonid)==c_elem_death_necro)
+    mana=<mana> +- 19
+    tag(moremana,17)
+    consume=2 i_reag_bone
+  elseif (ARG(summonid)==c_vampire_necro)
+    Mana=<Mana> +- 16
+    tag(moremana,15)
+  elseif (ARG(summonid)==c_mummy_necro)
+    mana=<mana> +- 14
+    tag(moremana,13)
+  elseif (ARG(summonid)==c_liche_necro)
+    mana=<mana> +- 9
+    tag(moremana,8)
+  endif
+  return 0
+endif
+tag(castAct,<act>)
+return 0
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+
+on=@itemuserdclick
+if (act.type==t_scroll)
+  tag(scrollcast,1)
+endif
+return 0
+
+[EVENTS e_mag]
+on=@itemequip
+if !(f_player_canEquip_mag(<act>))
+  redmessage("Toto nemuzes jako mag pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@spellcast
+if ((argn==59) && !(f_canseelos(<act>)) )
+  sysMessage("Nevidis na cil.")
+  return 1
+endif
+if !(class_cancast(mag))
+  redmessage("Toto kouzlo nemuzes pouzivat.")
+  return 1
+endif
+tag(castAct,<act>)
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+
+on=@itemuserdclick
+if (act.type==t_scroll)
+tag(scrollcast,1)
+endif
+return 0
+
+[EVENTS e_priest]
+on=@itemequip
+if !(f_player_canEquip_priest(<act>))
+  redmessage("Toto nemuzes jako knez pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@spellcast
+if ((argn==59) && !(f_canseelos(<act>)) )
+  sysMessage("Nevidis na cil.")
+  return 1
+endif
+if !(class_cancast(priest))
+  redmessage("Toto kouzlo nemuzes pouzivat.")
+  return 1
+endif
+tag(castAct,<act>)
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+on=@beforegeteffect
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+f_shieldDodge_afterGetSwing
+
+on=@beforedoeffect
+
+[EVENTS e_ranger]
+on=@itemequip
+if !(f_player_canEquip_ranger(<act>))
+  redmessage("Toto nemuzes jako hranicar pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@spellcast
+if !(class_cancast(ranger))
+  redmessage("Toto kouzlo nemuzes pouzivat.")
+  return 1
+endif
+tag(castAct,<act>)
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+
+
+on=@DrinkingPotion
+on=@afterswing
+if (specability)
+  if (tag(atskill)==31)
+    classmessage("Skvely zasah!")
+    var(ubrano,<eval (var(ubrano)*nastaveni_ability_berssniper)/1000>)
+    if (tag(knockback))
+     act.knockbackhim
+    endif
+  endif
+endif
+if (tag(ammoid))
+ arg(arrowUID,<findid(<tag(ammoid)>)>)
+else
+ return 0
+endif
+if (finduid(<arg(arrowUID)>).typedef.tdata4)
+  if (action==skill_archery)||(action==skill_macefighting)
+    if (act)
+      if (charExists(<act>))
+        if (var(ubrano)) //trefil sem ho
+          if (finduid(<arg(arrowUID)>).f_poisoning_weapon_checkPoisoningValues) //arrow has all necessarry poisoning values set
+            if (act.npc)
+              arg(dmg,<eval (<finduid(<arg(arrowUID)>).tag(jed_sila)>*<nastaveni_poison_pvm_coefficient>)/100>)
+            else
+              arg(dmg,<finduid(<arg(arrowUID)>).tag(jed_sila)>)
+            endif
+            arg(poisonType,<finduid(<arg(arrowUID)>).tag(jed_typ)>)
+            if (strcmp(<arg(poisonType)>,poison_c) == 0)
+              arg(poisonType,poison_absoluteDmg) // there is no way at the moment to appli poison_c damage upon weapons -
+            endif
+            act.f_poison_doPoison(<arg(dmg)>,<nastaveni_poison_<arg(poisonType)>>,<arg(poisonType)>,1) //strength, speed, type, suppressed poison effect
+          endif
+        endif
+      endif
+    endif
+  endif
+endif
+return 0
+
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+f_shieldDodge_afterGetSwing
+
+on=@beforedoeffect
+
+[EVENTS e_craft]
+on=@itemequip
+if !(f_player_canEquip_craft(<act>))
+  redmessage("Toto nemuzes jako remeslnik pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@spellcast
+if !(class_cancast(craft))
+  redmessage("Toto kouzlo nemuzes pouzivat.")
+  return 1
+endif
+tag(castAct,<act>)
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+
+on=@DrinkingPotion
+on=@afterswing
+if (tag(ammoid))
+  arg(arrowUID,<findid(<tag(ammoid)>)>)
+else
+  return 0
+endif
+if (finduid(<arg(arrowUID)>).typedef.tdata4)
+  if (action==skill_archery)
+    if (act)
+      if (var(ubrano)) //trefil sem ho
+        if (finduid(<arg(arrowUID)>).f_poisoning_weapon_checkPoisoningValues) // arrow has all necessary poisoning values set
+          if (act.npc)
+            arg(dmg,<eval (<finduid(<arg(arrowUID)>).tag(jed_sila)>*<nastaveni_poison_pvm_coefficient>)/100>)
+          else
+            arg(dmg,<finduid(<arg(arrowUID)>).tag(jed_sila)>)
+          endif
+          arg(poisonType,<finduid(<arg(arrowUID)>).tag(jed_typ)>)
+          if (strcmp(<arg(poisonType)>,poison_c) == 0)
+            arg(poisonType,poison_absoluteDmg) // there is no way at the moment to appli poison_c damage upon weapons -
+          endif
+          act.f_poison_doPoison(<arg(dmg)>,<nastaveni_poison_<arg(poisonType)>>,<arg(poisonType)>,1) //strength, speed, type, suppressed poison effect
+        endif
+      endif
+    endif
+  endif
+endif
+return 0
+
+on=@beforegetswing
+
+on=@aftergetswing
+f_shieldDodge_afterGetSwing
+
+on=@beforedoeffect
+on=@beforegeteffect
+
+[EVENTS e_war]
+on=@itemequip
+if !(f_player_canEquip_craft(<act>))
+  redmessage("Toto nemuzes jako valecnik pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@spellcast
+if !(class_cancast(war))
+  redmessage("Toto kouzlo nemuzes pouzivat.")
+  return 1
+endif
+tag(castAct,<act>)
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+
+on=@DrinkingPotion
+on=@afterswing
+if (specability)
+  if (tag(atskill)!=31)
+    classmessage("Kriticky zasah!")
+    var(ubrano,<eval (var(ubrano)*nastaveni_ability_berssniper)/1000>)
+  endif
+endif
+if (act.npc)&&(tag(level)>29)&&(var(is_physical))
+  if (tag(ra_doubleswing))
+    if (<tag(ra_doubleswing)> > 0)
+      if (chance(<eval 100+(<tag(ra_doubleswing)>*5)>,3))
+      //if (chance(<eval(tag(ra_doubleswing)*nastaveni_doubleswing_chance)>,4))
+         if (findlayer(1))
+           if (findlayer(1).typedef.dispid==I_sword_long)
+             if (<stamina> >= <nastaveni_doubleswing_stam>)
+               reduceStamina(<nastaveni_doubleswing_stam>)
+               sound(512)
+               sound(566,5)
+               classmessage("Dvojity zasah!")
+               var(ubrano,<eval (var(ubrano)*nastaveni_doubleswing)/1000>)
+             endif
+          endif
+        elseif (findlayer(2))
+          if (findlayer(2).typedef.dispid==I_axe_battle_large)||(findlayer(2).typedef.dispid==I_axe_double)||(findlayer(2).typedef.dispid==I_axe_two_hand)
+             if (<stamina> >= <nastaveni_doubleswing_stam>)
+               reduceStamina(<nastaveni_doubleswing_stam>)
+                sound(512)
+               sound(566,5)
+               classmessage("Dvojity zasah!")
+               var(ubrano,<eval (var(ubrano)*nastaveni_doubleswing)/1000>)
+             endif
+          endif
+         endif 
+       endif
+     endif
+  endif
+endif
+return 0
+  
+on=@beforegetswing
+
+on=@aftergetswing
+f_shieldDodge_afterGetSwing
+
+on=@beforegeteffect
+on=@beforedoeffect
+
+[EVENTS e_thief]
+on=@DrinkingPotion
+on=@afterswing
+if (action==Skill_fencing)||(tag(isstabbing))
+	arg(probo,0)
+  if (tag(isstabbing))
+    skill -1
+    stopscriptedskills
+    if (act.isplayer)
+      var(ubrano,<eval (var(ubrano)*nastaveni_thief_backstabP_bonus)/1000>)
+    else
+      var(ubrano,<eval (var(ubrano)*nastaveni_thief_backstabM_bonus)/1000>)
+    endif
+    reveal
+    arg(probo,1)
+  elseif (f_thief_CanCauseBleeding(<var(swingedchar)>)) // arg1 == bleeding target
+    f_thief_doBleed(<var(swingedchar)>) // arg1 == bleeding target
+  endif
+  if (act.npc)&&(tag(level)>29)
+    if (tag(ra_doubleswing))
+      if (<tag(ra_doubleswing)> > 0)
+        if (findlayer(2)) //empty layer would cause warning
+          if (findlayer(2).typedef.dispid==I_war_fork)
+            if (chance(<eval 100+(<tag(ra_doubleswing)>*5)>,3))
+              if (<stamina> >= <nastaveni_doubleswing_stam>)
+                reduceStamina(<nastaveni_doubleswing_stam>)
+                sound(512)
+                sound(566,5)
+                classmessage("Dvojity zasah!")
+                var(ubrano,<eval (var(ubrano)*nastaveni_doubleswing)/1000>)
+              endif
+            endif
+          endif
+        endif
+      endif
+    endif
+  endif
+  if (<arg(probo)> == 0)
+    if (act.npc)
+    	if (tag(ra_utok_do_zad))
+  	  	if (<tag(ra_utok_do_zad)> > 0)
+  		  	if (<dir> == <act.dir>)
+  		  		arg(distance,<distancefrom(<act>)>)
+  			  	if ((<arg(distance)> == 1)||(<arg(distance)> == 2))
+  				  	arg(body,<tag(ra_utok_do_zad)>)
+  					  arg(bonus,0)
+    					classmessage("Uder do zad!")
+    					if (<arg(body)> <= 10)
+  	  					arg(bonus,<eval <arg(body)>*10>)
+  		  			elseif (<arg(body)> > 10)
+  			  			arg(bonus,<eval 100+<eval <eval <arg(body)>-10>*4>>)
+  				  	endif
+  					  var(ubrano,<eval <var(ubrano)>+<eval <eval <var(ubrano)>*<arg(bonus)>>/1000>>)
+    					if (tag(podriznuti))
+    						if (<tag(podriznuti)> == 1)
+  	  						if (tag(ra_podriznuti))
+  		  						if (<tag(ra_podriznuti)> > 0)
+  			  						arg(body,<tag(ra_podriznuti)>)
+  				  					classmessage("Podriznuti!")
+  					  				arg(bonus,0)
+  							  		if (<arg(body)> <= 10)
+  						          arg(bonus,<eval <arg(body)>*4>)
+  					          elseif (<arg(body)> > 10)
+  						          arg(bonus,<eval 40+<arg(body)>>)
+    					        endif
+    					        var(ubrano,<eval <var(ubrano)>+<eval <eval <var(ubrano)>*<arg(bonus)>>/100>>)
+  		  						endif
+  			  				endif
+  				  		endif
+  					  endif
+    				endif
+    			endif
+  	  	endif
+    	endif
+    endif
+    if (act.npc)
+      if (findlayer(2))
+        if (findlayer(2).type==t_shield)
+        	if (tag(zmrazeni))
+        		if (<tag(zmrazeni)> == 1)
+        			if (f_thief_getfreezebyshield(<eval <act.tag(experience)>/10>))
+        				arg(uderstitem_delay,<eval <tag(uderstitem_next)>-<eval 200-<eval <tag(ra_uderstitem)>*5>>>)
+        				if (<arg(uderstitem_delay)> > <serv.time>)
+    						  act.paralyze(20)
+    						  classmessage("Uder stitem!")
+    						else
+    							sysmessage("Prilis dlouho si cekal a rana ti nevysla")
+    						endif
+    				  endif
+    				endif
+    			endif
+    		endif
+    	endif
+    endif
+  endif
+  if (tag(podriznuti))
+  	if (<tag(podriznuti)> == 1)
+  		tag(podriznuti,0)
+  	endif
+  endif
+  if (tag(zmrazeni))
+    if (<tag(zmrazeni)> == 1)
+    	tag(zmrazeni,0)
+    endif
+  endif
+endif
+
+on=@itemequip
+if !(f_player_canEquip_thief(<act>))
+  redmessage("Toto nemuzes jako zlodej pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@spellcast
+if !(class_cancast(thief))
+  redmessage("Toto kouzlo nemuzes pouzivat.")
+  return 1
+endif
+tag(castAct,<act>)
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+
+on=@beforegetswing
+
+on=@aftergetswing
+f_shieldDodge_afterGetSwing
+
+on=@beforegeteffect
+on=@beforedoeffect
+//deprecated on=@aftergetspelldamage
+
+[function f_thief_getfreezebyshield]
+arg(exp,<argv(0)>)
+if (findlayer(2))
+  if (findlayer(2).type==t_shield)
+    if ((<findlayer(2).typedef.tdata1>)==1)
+      if (<arg(exp)> < 51)
+      	return 1
+      endif
+    elseif ((findlayer(2).typedef.tdata1)==2)
+      if (<arg(exp)> < 101)
+      	return 1
+      endif    
+    elseif ((findlayer(2).typedef.tdata1)==5)
+      if (<arg(exp)> < 151)
+      	return 1
+      endif    
+    elseif ((findlayer(2).typedef.tdata1)==6)
+      if (<arg(exp)> < 251)
+      	return 1
+      endif   
+    elseif ((findlayer(2).typedef.tdata1)==7)
+      if (<arg(exp)> < 401)
+      	return 1
+      endif    
+    elseif ((findlayer(2).typedef.tdata1)==8)
+      if (<arg(exp)> < 601)
+      	return 1
+      endif    
+    elseif ((findlayer(2).typedef.tdata1)==9)
+      if (<arg(exp)> < 901)
+      	return 1
+      endif    
+    endif
+  endif
+endif
+return 0
+
+[function f_thief_CanCauseBleeding]
+if (specability)&&(argv(0).resist_bleed < 1000)
+  return 1
+else
+  return 0
+endif
+
+[function f_thief_doBleed]
+//argv(0) == bleeding target
+//argv(1) == <optional> bleedPower
+//argv(2) == <optional> fixed damage -> the damage won't increase using multiple hits.
+classmessage("Tvuj cil krvaci.")
+arg(bleeditem,<f_bleed_getMemory(<argv(0)>)>)
+if (<eval argv(1)>)
+  arg(bleedpower,<argv(1)>)
+else
+  arg(bleedpower,<eval (var(ubrano)*nastaveni_weapbleed_<tag(weaponuid).def.dispid>)/1000>)
+endif
+if (<eval argv(2)>) //custom damage
+  arg(bleeditem).more2=<argv(2)>
+else // computed damage (cumulate bleed)
+  arg(bleeditem).more2=<eval ((arg(bleedpower)*nastaveni_ability_ripper)/1000)+arg(bleeditem).more2>
+endif
+arg(bleeditem).link=<uid>
+arg(bleeditem).more1h={10 20}//opakovani krvaceni maximalne
+arg(bleeditem).more1l=<arg(bleeditem).more1h>//aktualnich opakovani
+
+[function f_bleed_getMemory]
+argv(0).redmessage("Krvacis!")
+arg(bleeditem,<argv(0).findid(i_krvaceni)>)
+if (arg(bleeditem))
+  if (<arg(bleeditem).timer> < 0)
+    arg(bleeditem).timer=1
+  endif
+else
+  argv(0).newitemsafe(i_krvaceni)
+  argv(0).equip(<lastnew>)
+  lastnew.timer=1
+  arg(bleeditem,<lastnew>)
+endif
+return<arg(bleeditem)>
+
+[EVENTS e_shaman]
+on=@itemequip
+if !(f_player_canEquip_shaman(<act>))
+  redmessage("Toto nemuzes jako saman pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@spellcast
+if !(class_cancast(shaman))
+  redmessage("Toto kouzlo nemuzes pouzivat.")
+  return 1
+endif
+tag(castAct,<act>)
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+f_shieldDodge_afterGetSwing
+
+on=@beforedoeffect
+on=@beforegeteffect
+
+[EVENTS e_mystik]
+on=@itemequip
+if !(f_player_canEquip_mystik(<act>))
+  redmessage("Toto nemuzes jako mystik pouzivat.")
+  act.bounce
+  return 1
+endif
+
+on=@HitMiss 
+if (tag(mystik_storepos))
+  p=<tag(mystik_storepos)>
+  tag.remove(mystik_storepos)
+endif
+mana=<eval (mana*nastaveni_mystik_manaloss)/1000)>
+tag.remove(speedset)
+tag(hitspeed,0)
+sound 0fc
+return 1
+
+on=@hittry
+if (tag(mystik_storepos))
+  p=<tag(mystik_storepos)>
+  tag.remove(mystik_storepos)
+endif
+
+on=@skillfail
+tag.remove(mystik_storepos)
+//tag.remove(castAct)
+
+on=@spellcast
+if !(class_cancast(mystik))
+  if (class_cancast(mystikself))
+    if !(act==uid)
+      redmessage("Toto kouzlo muzes pouzit jen na sebe.")
+      return 1
+    endif
+  else
+   redmessage("Toto kouzlo nemuzes pouzivat.")
+   return 1
+  endif
+endif
+tag.remove(speedset)
+tag(hitspeed,0)
+tag(castAct,<act>)
+
+
+on=@skillSuccess
+if (<action> == Skill_Magery)
+  if (<hval tag(castAct)>)
+    act=<tag(castAct)>
+    tag.remove(castAct)
+  endif
+endif
+
+on=@itemuserdclick
+if (act.type==t_scroll)
+ tag(scrollcast,1)
+endif
+return 0
+
+on=@death
+if (<rescount i_buffSteal>)
+  consume(1 i_buffSteal)
+endif
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+on=@beforedoeffect
+on=@DrinkingPotion
+on=@afterswing
+
+[EVENTS e_Undeclared]
+
+[EVENTS e_Carnivores]
+// weak carnivores.
+
+[EVENTS e_Carnivores2]
+// normal carnivores.
+
+[EVENTS e_Carnivores3]
+// strong carnivores.
+
+[EVENTS e_Terathan]
+
+[EVENTS e_Ophidian]
+
+[EVENTS e_Horses]
+
+[EVENTS e_stado]
+on=@EnvironChange //pro tvorbu stada... deprecated
+if (!<restest i_spawned>)
+ var(envchstoreact,<act.uid>)
+ newitem i_spawned
+ act.cont=<UID>
+ act.timer=0
+ act=<var.envchstoreact>
+endif
+
+
+[EVENTS e_Notoriety]
+
+[EVENTS e_Ostards]
+
+[function logout_player_move]
+tag(login_p,"<args>")
+arg(myx,<eval {1 192}>)
+arg(myy,<eval {3904 4095}>)
+p=<arg(myx)>,<arg(myy)>,0,50
+ 
+
+
+[ITEMDEF i_logout_mover]
+id=i_memory
+type=t_eq_script
+name=logout mover
+
+on=@create
+attr_invis=1
+attr_movenever=1
+
+ON=@Timer
+if (finduid(<tag(my_uid)>).account.privflags & priv_Connected) //connected 
+ finduid(<tag(my_uid)>).tag.remove(login_p)
+else
+ finduid(<tag(my_uid)>).logout_player_move(<p>)
+endif
+finduid(<tag(my_uid)>).tag.remove(myLogoutMover)
+remove
+RETURN 1
+
+
+
+[ITEMDEF i_logout_timer]
+id=i_memory
+type=t_eq_script
+name=logout
+
+ON=@Equip
+timer(10)
+
+ON=@Timer
+topobj.f_do_logout
+remove
+RETURN 1
+
+[FUNCTION f_do_logout]
+//efekt pri zmizeni, ostatni poznaj ze se odlogoval
+effect(2, i_fx_sparkle, 0, 16, 0)
+//zasle packet vsem blizkym klientum o zmizeni tohoto objektu
+updatex
+
+
+[events e_nohorse]
+on=@step
+if (<src.findlayer.layer_horse>)&&(!src.isgm)
+ src.dismount
+ src.sysMessage("Tve zvire odmita jit dal.")
+endif
+
+//on=@userdclick
+//if (<src.findlayer.layer_horse>)&&(!src.isgm)&&(src.z>19)
+// src.dismount
+// src.sysMessage("Tve zvire odmita jit dal.")
+//endif
+
+
+[events e_nohorsehigh]
+on=@step
+if (<src.findlayer.layer_horse>)&&(src.z>19)
+ if (<src.findlayer(layer_horse).dispid>==i_mt_ostard_desert)
+ elseif (<src.findlayer(layer_horse).dispid>==i_mt_ostard_forest)
+ elseif (<src.findlayer(layer_horse).dispid>==i_mt_ostard_zostrich)
+ elseif (<src.isgm>)
+ else
+  src.dismount
+  src.sysMessage("Tve zvire odmita jit dal.")
+ endif
+endif
+
+[events e_testevent]
+on=@step
+src.sectorinfo
+
+[events e_nbCave]
+on=@spellCast
+if (strcmpi(<src.region.name>,"Jamy smrti"))  //nejsme v jamach, mazem event
+  events=-e_nbCave
+  return 1
+endif
+if !(act.isplayer)  // povolime pvp
+  if (<src.tag(leve)> > 12)
+    src.redMessage("Pouzivat svou moc v takove dire je pod tvou uroven...")
+  endif
+endif
+
+on=@DrinkingPotion
+on=@afterswing
+if (strcmpi(<src.region.name>,"Jamy smrti"))  //nejsme v jamach, mazem event
+  events=-e_nbCave
+  return 1
+endif
+if !(act.isplayer) // povolime pvp
+  if (<src.tag(level)> > 12)
+    src.redMessage("Pouzivat svou silu v takove dire je pod tvou uroven...")
+    var(ubrano,0)
+  endif
+endif
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[EOF]

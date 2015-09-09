@@ -1,0 +1,272 @@
+[ITEMDEF i_q1_lavovyjester_kolektor]
+ID=i_bottle_empty
+NAME=Lahvicka na krev lavoveho jestera
+TYPE=t_collector
+WEIGHT=1
+
+ON=@CREATE
+COLOR=96
+ATTR=010|04
+tag.contentsinfo="V lahvicce je"
+tag.contentstype="davek jesteri krve"
+tag.contentsamount=0
+tag.maxcontents=1
+tag.target_remove=1
+tag.target_desc="S ktereho lavoveho zostricha odeberes davku krve?? "
+tag.target_id="Body of Lavovy Jester"
+tag.absolute_success=200
+tag.value_to_check=200
+tag.contentscount=0
+
+ON=@CollectorCheck
+
+[ITEMDEF i_q1_lavovyjester_ohraniceni]
+ID=i_floor_marble
+NAME=ohraniceni
+
+
+ON=@Create
+COLOR=0985
+ATTR=080
+
+ON=@Step
+if !(<src.isGM>)
+  if (src.isPlayer || src.isPet)
+    src.sysmessage("<src.sex(Priblizil,Priblizila)> jsi se moc blizko ke kraji. Citis nesnesitelny zar!")
+    src.damage_noresponse(<eval {5 10}>,dam_fire|dam_magic)
+  endif
+endif
+
+[dialog d_q1_lavovyjester_1]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky 
+gumppic 40 215 03036 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+
+page 1
+HTMLGUMP(170,230,440,100,1,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //   odejde, nic s tagem neprovede   
+text 60 395 152 2
+button 25 415 0fa5 0fa7 0 2 0  //         poptat se co se stalo
+text 60 415 152 3
+
+
+page 2
+HTMLGUMP(170,230,440,100,4,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //      odejit, nic s tagem
+text 60 395 152 5
+button 25 415 0fa5 0fa7 0 3 0  //         zeptat se jestli muzu pomoct?
+text 60 415 152 6
+button 25 435 0fa5 0fa7 1 0 2  //        odseknout - tag NEUSPELS!! 
+text 60 435 152 10
+
+page 3
+HTMLGUMP(170,230,440,100,7,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //     rozloucit se, nic s tagem 
+text 60 395 152 8
+button 25 415 0fa5 0fa7 0 4 0  //         zeptat se jaka legenda
+text 60 415 152 9
+
+page 4
+HTMLGUMP(170,230,440,100,11,0,36)
+button 25 395 0fa5 0fa7 0 5 0  //     rozloucit se, nic s tagem 
+text 60 395 152 12
+button 25 415 0fa5 0fa7 0 6 0  //         zeptat se jaka legenda
+text 60 415 152 13
+
+page 5
+HTMLGUMP(170,230,440,100,14,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //     rozloucit se, nic s tagem 
+text 60 395 152 15
+
+page 6
+HTMLGUMP(170,230,440,100,16,0,36)
+button 25 395 0fa5 0fa7 1 0 3  //     ano chci to zkusit
+text 60 395 152 17
+button 25 415 0fa5 0fa7 1 0 1  //         nene dekuji to urcite nezvladnu
+text 60 415 152 18
+
+
+[dialog d_q1_lavovyjester_1 text]
+Lecitel Ceren
+Co...? Kdo...? Co chces? Jdi odsud pryc! Nechci nikoho videt !!! //1//
+* Odejit *
+Co se stalo?
+Zemrela ma zena! Ma jedina laska... muj zivot pozbyl smyslu... //4//
+Aha...tak ja radeji pujdu.
+To je mi lito, opravdu. Muzu vam nejak pomoci?//6//
+Ne to nemuzes...ale dekuji ti...me uz nikdo nepomuze, snad jen legenda *Nevesele se pousmal*.
+Hm...tak tedy nashledanou.//8//
+Coze? Jaka legenda? Snad by se jeste dalo neco delat?//9//
+No tak se s tim prosim smir! Zivot jde preci dal!//10//
+Ale... to neni podstatne. Existuje jen jeden zpusob jak vratit zpet co jiz neni zive *Zajika se* a to pomoci krve jestera zrozeneho s lavy...ale je to jen legenda.//11//
+Aha...tak to bude opravdu nejaka povidacka. Kdybych ti mohl nejak pomoci...
+Ale co kdyz na tom bude neco pravdy? Kde se podle legendy ma jester nachazet?//13//
+Nene ja se s tim vyrovnam sam. Odejdi prosim!//14//
+* Odejit *//15//
+No...pry nekde v hloubi zemne, na ohnovem ostrove s podivnym jmenem Arda Nare...nevim, mozna na tom je neco pravdy...kdyby se ti povedlo prinest alespon jednu davku krve jestera zrozeneho s lavy byl bych ti az do smrti vdecny, mohl bych ozivit mou milovanou. Musel bys pouzit zvlastni lahvicku nebot krev jestera ma byt neskutecne horka. Chces se o to pokusit? Mam ti dat lahvicku?//16//
+Ano, chtel bych to zkusit. Moc rad bych ti pomohl.//17//
+Nene dekuji, promin ale ne.//18//
+
+[dialog d_q1_lavovyjester_1 button]
+on=1
+say("A uz zamnou prosim nechod. Nechte me vsichni na pokoji.")
+
+ON=2
+say("Tahni odsud! Uz se mi nechod na oci! Nikdy!")
+src.tag.q1_neuspel=1
+
+ON=3
+if (<src.tag.q1__lavovyjester> ==0)
+  say("Tady mas tu lahvicku, je strasne vzacna, nerozbij ji!")
+  src.tag.q1_lavovyjester=1
+  src.redmessage(Prijmas ukol)
+  src.giveitem(i_q1_lavovyjester_kolektor)
+else
+  src.redmessage(Tak a je neco spatne, pis page)
+endif
+
+//////////
+
+[dialog d_q1_lavovyjester_2]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky 
+gumppic 40 215 03036 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+
+page 1
+HTMLGUMP(170,230,440,100,1,0,36)
+button 25 395 0fa5 0fa7 0 2 0  //   nevim kde hledat 
+text 60 395 152 2
+button 25 415 0fa5 0fa7 1 0 1  //   uz me to nebavi
+text 60 415 152 3
+button 25 435 0fa5 0fa7 1 0 2  //   uz to mam!!!
+text 60 435 152 4
+
+page 2
+HTMLGUMP(170,230,440,100,5,0,36)
+button 25 395 0fa5 0fa7 1 0 3  //   nevim kde hledat 
+text 60 395 152 6
+button 25 415 0fa5 0fa7 1 0 1  //   uz me to nebavi
+text 60 415 152 7
+
+
+
+
+
+[dialog d_q1_lavovyjester_2 text]
+Lecitel Ceren
+Zdravicka. Tak honem povidej, nasel jsi to misto? Nasel jsi Arda Nare a lavoveho jestera??? //1//
+Ne...snazim se sec mohu ale nevim kde hledat//2//
+Ne a uz me to nebavi...nepomuzu ti.//3//
+Ano! Nasel jsem ho a prinesl jsem ti jeho krev!//4//
+No...hledej tam kde je nebezpeci a hlavne tam kde je strasne horko, snad jedine tam muzes najit pruchod na Ardu Nare...
+Dobra, dekuji.
+Ne ja uz nechci hledat. 
+
+
+
+[dialog d_q1_lavovyjester_2 button]
+ON=1
+SAY=Tak odsud tahni! Uz se mi nechod na oci!Rozumis? Nikdy!
+src.tag.q1_neuspel=1
+src.tag.remove(q1_lavovyjester)
+src.consume i_q1_lavovyjester_kolektor
+
+ON=2
+if <src.restest i_q1_lavovyjester_kolektor> && (<src.findid(i_q1_lavovyjester_kolektor).tag.contentscount>==1) 
+src.tag.q1_lavovyjester=2
+SRC.SYSMESSAGE Skvele, splnil jsi co jsi slibil. Zaslouzis si odmenu.
+SAY Dekuji ti mnohokrat!Na vzdy jsem tvym dluznikem!!! Prosim vezmi si alespon toto...
+src.addexp(2000)
+SRC.CONSUME i_q1_lavovyjester_kolektor
+src.giveitem=i_mi_bag
+f_quest_complete(5)  // splnenie questu "Lecitel Ceren"
+return 1
+ELSE
+SRC.sysmessage Vzdyt jeste nemas krev jestera!
+Return 1
+ENDIF
+endif
+
+ON=3
+SAY=Bud sbohem! Doufam ze se brzy vratis..
+
+/////////
+
+[dialog d_q1_lavovyjester_3]
+5,5
+page 0
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182 // podklad pod ksichtiky 
+gumppic 40 215 03036 // ksichtik   3000-3164
+text 220 210 52 0     // Jmeno a titul pozdraveneho
+
+page 1
+HTMLGUMP(170,230,440,100,1,0,36)
+button 25 395 0fa5 0fa7 0 2 0  //   jak se dari zene
+text 60 395 152 2
+button 25 415 0fa5 0fa7 0 3 0  //   nepotrebujes jeste neco?
+text 60 415 152 3
+
+page 2
+HTMLGUMP(170,230,440,100,4,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //   rozloucit se
+text 60 395 152 5
+
+page 3
+HTMLGUMP(170,230,440,100,6,0,36)
+button 25 395 0fa5 0fa7 1 0 1  //   rozloucit se
+text 60 395 152 7
+
+
+
+
+
+
+
+[dialog d_q1_lavovyjester_3 text]
+Lecitel Ceren
+Zdravim te priteli! Jsem rad ze te zase vidim. Opravdu jsem ti moc vdecny...ma zena je zase ziva je to jen tvoje zasluha!
+To jsem rad...a jak se ji dari?//2//
+Rad jsem ti pomohl, muzu pro tebe jeste neco udelat?//3//
+Vyborne, dokonce... planujeme dite!!! Dovedes si to predstavit! Jsem ted dokonale stastny. Nekdy se urcite zase zastav
+* Rozloucit se a odejit*//5//
+Ne dekuji. Jsem ted absolutne stastny. Dokonce se zenou planujeme dite... urcite se zase nekdy zastav.
+* Rozloucit se a odejit *
+
+
+
+
+[dialog d_q1_lavovyjester_3 button]
+ON=1
+SAY=Bud sbohem, kdykoli te zase rad uvidim!
+
+
+
+
+[SPEECH spk_q1_lavovyjester_lecitel]
+ON=*Ahoj*
+ON=*Zdravim*
+ON=*Dobry den*
+    IF (<src.tag.q1_neuspel> ==1)
+     SAY= To jsi ty! Tahni odsud nebo se neznam!
+      return 1
+       ELSEIF (<src.tag.q1_lavovyjester> ==0)
+        DIALOG(d_q1_lavovyjester_1)
+         ELSEIF (<src.tag.q1_lavovyjester> ==1)
+          DIALOG(d_q1_lavovyjester_2)
+           ELSEIF (<src.tag.q1_lavovyjester> ==2)
+            DIALOG(d_q1_lavovyjester_3)
+         return 1
+           endif
+      
+ 
+
+
+
+

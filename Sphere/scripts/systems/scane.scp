@@ -1,0 +1,873 @@
+////////////////////////////////////////////
+///////// Scane utility ////////////////////
+////////////////////////////////////////////
+
+/////////////EMOTE pad /////////////////////
+
+[ITEMDEF i_emote_pad]
+ID=0aec
+type=0
+NAME=Emote pad
+
+ON=@Create
+tag(emoteText,Zde napiste text ktery bude npc vyslovovat.)
+tag(interval,100)
+color=055
+attr=090
+
+ON=@UserClick
+if(src.isGm)
+  arg(npc,<finduid(link.tag(lastspawned))>)
+  message("NPC <npc.name>")
+  arg(time,<eval(<npc.tag(nextTime)>-<serv.time>)>/10)
+  message("Timer <time>")
+  message("Text '<tag(emoteText)>'")
+endif
+
+ON=@Step
+if(src.isGm)
+  src.sysmessage(<tag(emoteText)>)
+  return 1
+endif
+if(link.isItem)
+  if(src.isPlayer)
+    arg(npc,<finduid(link.tag(lastspawned))>)
+    if(npc.isChar)
+      if(npc.tag(nextTime) < <serv.time>)
+        npc.tag(nextTime,<serv.time>+tag(interval))
+        npc.say(<tag(emoteText)>)
+      endif                                                     
+    endif
+  endif
+endif
+
+//////////////// Sound Pad ///////////////////
+
+[ITEMDEF i_sound_pad]
+ID=0aec
+type=0
+NAME=Sound pad
+
+ON=@Create
+color=066
+attr=090
+tag(nextTime,0)
+
+ON=@UserDClick
+if(src.isGM)
+  dialog(d_soundpad)
+  return 1
+endif
+
+ON=@Step
+if(src.isPlayer)
+  if(tag(nextTime) < <serv.time>)
+    sound(<tag(sfx)>)
+    tag(nextTime,<serv.time>+100)
+  endif
+endif
+
+[dialog d_soundpad]
+arg(textcolor,52)
+argo.SetLocation=285,250
+
+argo.tag(sirka,200)
+argo.tag(vyska,108)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,50)
+argo.dialog_pozadi(<argo.tag(nexty)>,2,50)
+
+argo.dialog_zpruhledni
+
+argo.button(<argo.dialog_but_ru>,d_def_button_dialog1,d_def_button_dialog2,1,0,2)		//help
+
+argo.texta(<argo.dialog_textpos(0,0)>,42,"Sound Pad")
+
+argo.texta(<argo.dialog_textpos(1,0)>,42,"Sound")
+argo.setText(2,<tag(sfx)>)
+argo.textEntryA(<argo.dialog_textpos(1,1)>,150,20,152,1,2)
+
+argo.button(<argo.dialog_textpos(2,0)>,0fb7,0fb9,1,0,1)//ok
+argo.button(<argo.dialog_textpos(2,1)>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_soundpad button]
+on=0
+src.sysMessage("<src.sex(Stornoval,Stornovala)> jsi volbu. Nastaveni zustava nezmeneno.")
+
+on=1
+src.sysMessage("Nastavujes nove hodnoty dlazdice.")
+if(<argTxt(1)> > 0)
+  tag(sfx,<argTxt(1)>)
+endif
+
+on=2 // help
+dialog(d_soundpad)
+dialog(d_soundpad_help)
+
+[dialog d_soundpad_help]
+argo.setText(1," Vytvari zvuk ktery lze nastavit kdyz na dlazdici slapne hrac.")
+argo.f_dialog_HelpCreator("HELP - Sound Pad")
+
+//////////////// Events ////////////////////
+
+[events e_scaneblockpaperdol]
+ON=@UserDclick
+return 1
+
+[events e_zabitivdome]
+ON=@Death
+src.sysmessage("Byl si zabit v dome hracem <tag(lastmurderbyf).name> na pozici <src.p>!")
+logmsg("<serverTime> <src.name> (<src.account.name> <src.p>) byl zabit v DOMOVNI ZONE hracem <tag(lastmurderbyf).name> (<tag(lastmurderbyf).account.name> <tag(lastmurderbyf).p>) v <src.region.name>")
+
+
+
+////////////////////////////////////////////
+///////////// Scane INVIS //////////////////
+////////////////////////////////////////////
+
+[function wsay]
+messagecol(0ac5,<args>)
+
+[function scanesilvestr]
+newitem(i_scaneinvis_timer)
+equip(<lastnew>)
+
+[function scanewhitesilvestr]
+newitem(i_scanewhiteinvis_timer)
+equip(<lastnew>)
+
+[function sinvis]
+src.newitem(i_scaneinvis_timer)
+src.equip(<lastnew>)
+src.invis
+
+[function sinvis_npc]
+if (<src.flag_insubstantial>)
+  src.invisx
+
+  src.newnpc(c_scane_npc)
+  lastnewchar.dir = <src.dir>
+  lastnewchar.p = <src.p>
+  lastnewchar.move 2,2
+  lastnewchar.FLAGS = (<lastnewchar.flags>|statf_invul|statf_freeze)
+  tag(scanenpc_1,<lastnewchar>)
+
+  src.newnpc(c_scane_npc)
+  lastnewchar.dir = <src.dir>
+  lastnewchar.p = <src.p>
+  lastnewchar.move 2,-2
+  lastnewchar.FLAGS = (<lastnewchar.flags>|statf_invul|statf_freeze)
+  tag(scanenpc_2,<lastnewchar>)
+
+  src.newnpc(c_scane_npc)
+  lastnewchar.dir = <src.dir>
+  lastnewchar.p = <src.p>
+  lastnewchar.move -2,2
+  lastnewchar.FLAGS = (<lastnewchar.flags>|statf_invul|statf_freeze)
+  tag(scanenpc_3,<lastnewchar>)
+
+  src.newnpc(c_scane_npc)
+  lastnewchar.dir = <src.dir>
+  lastnewchar.p = <src.p>
+  lastnewchar.move -2,-2
+  lastnewchar.FLAGS = (<lastnewchar.flags>|statf_invul|statf_freeze)
+  tag(scanenpc_4,<lastnewchar>)
+else
+  src.invisx
+  tag(scanenpc_1).remove
+  tag(scanenpc_2).remove
+  tag(scanenpc_3).remove
+  tag(scanenpc_4).remove
+endif
+
+[chardef c_scane_npc]
+id=c_man
+name=Scane
+
+TEVENTS=e_character
+
+on=@create
+f_copyitemplayer(scylla)
+NPC=brain_human
+COLOR=color_clovek
+STR=1000
+DEX=1000
+INT=1000
+Title=scane
+
+tag(noanimate,1)
+
+ITEM=i_npc_mount
+tag.mount=i_mt_horse_gray
+tag.mountcolor=0ac5
+
+[function f_copyitemplayer]
+if(<finduid(<args>).isplayer>)
+  arg(player,<finduid(<args>)>)
+  arg(i,1)
+  while(<i><25)
+    if(<player.findlayer(<i>).isItem>)
+      newitem = <player.findlayer(<i>).baseid>
+      lastnew.color =  <player.findlayer(<i>).color>
+      equip <lastnew>
+      newitem = <player.findlayer(<i>).baseid>
+      lastnew.color =  <player.findlayer(<i>).color>
+      equip <lastnew>
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+[itemdef i_scaneinvis_timer]
+ID=i_memory
+NAME=Scane invis
+TYPE=T_EQ_SCRIPT
+
+ON=@EQUIP
+timer=1
+more1=8
+
+ON=@CREATE
+ATTR=010|04
+
+ON=@Timer
+if(<more1> > 1)
+  more1 = <more1>-1
+  cont.newitem i_scaneexplode
+  lastnew.p = <cont.p>
+  lastnew.move <more1>,<more1>
+  cont.newitem i_scaneexplode
+  lastnew.p = <cont.p>
+  lastnew.move -<more1>,<more1>
+  cont.newitem i_scaneexplode
+  lastnew.p = <cont.p>
+  lastnew.move <more1>,-<more1>
+  cont.newitem i_scaneexplode
+  lastnew.p = <cont.p>
+  lastnew.move -<more1>,-<more1>
+  timer=1
+  cont.sound 519
+else
+  arg(i,-6)
+  while(i<=6)
+    if(<i>!=0)
+      cont.newitem i_scaneexplode
+      lastnew.p = <cont.p>
+      lastnew.move 0,<i>
+    endif
+    arg(i,#+1)
+  endwhile
+  arg(i,-6)
+  while(i<=6)
+    if(<i>!=0)
+      cont.newitem i_scaneexplode
+      lastnew.p = <cont.p>
+      lastnew.move <i>,0
+    endif
+    arg(i,#+1)
+  endwhile
+  remove
+endif
+return 1
+
+[itemdef i_scaneexplode]
+id=i_fx_explode
+name=You death
+
+on=@create
+timer=1
+more1=0
+
+on=@timer
+more1=<more1>+1
+color=<?color_scane_<eval(<more1>)>?>
+if(<more1> == 8)
+ remove
+endif
+timer 2
+return 1
+
+[itemdef i_scanewhiteinvis_timer]
+ID=i_memory
+NAME=Scane invis
+TYPE=T_EQ_SCRIPT
+
+ON=@EQUIP
+timer=1
+more1=8
+
+ON=@CREATE
+ATTR=010|04
+
+ON=@Timer
+if(<more1> > 1)
+  more1 = <more1>-1
+  cont.newitem i_scanewhiteexplode
+  lastnew.p = <cont.p>
+  lastnew.move <more1>,<more1>
+  cont.newitem i_scanewhiteexplode
+  lastnew.p = <cont.p>
+  lastnew.move -<more1>,<more1>
+  cont.newitem i_scanewhiteexplode
+  lastnew.p = <cont.p>
+  lastnew.move <more1>,-<more1>
+  cont.newitem i_scanewhiteexplode
+  lastnew.p = <cont.p>
+  lastnew.move -<more1>,-<more1>
+  timer=1
+  cont.sound 519
+else
+  arg(i,-6)
+  while(i<=6)
+    if(<i>!=0)
+      cont.newitem i_scanewhiteexplode
+      lastnew.p = <cont.p>
+      lastnew.move 0,<i>
+    endif
+    arg(i,#+1)
+  endwhile
+  arg(i,-6)
+  while(i<=6)
+    if(<i>!=0)
+      cont.newitem i_scanewhiteexplode
+      lastnew.p = <cont.p>
+      lastnew.move <i>,0
+    endif
+    arg(i,#+1)
+  endwhile
+  remove
+endif
+return 1
+
+[itemdef i_scanewhiteexplode]
+id=i_fx_explode
+name=You death
+
+on=@create
+timer=1
+more1=0
+color=0ac5
+
+on=@timer
+more1=<more1>+1
+color=0ac5
+if(<more1> == 8)
+ remove
+endif
+timer 2
+return 1
+
+/////////////////////////////////////////////
+///////// MOUNT EFFEKT   ////////////////////
+/////////////////////////////////////////////
+
+
+[function scanenextmount]
+if(!<strlen(<tag(scanemount)>)>)
+  tag(scanemount,1)
+  tag(scanemountcolor,1)
+endif
+if(<findlayer(25)>)
+  if(<tag(scanemount)> > <?scane_count?>)
+    tag(scanemount,1)  
+  endif
+  if(<tag(scanemountcolor)> > <?color_count?>)
+    tag(scanemountcolor,1)  
+  endif
+  findlayer(25).dispid = <?scane_mount_<eval(<tag(scanemount)>)>?>
+  findlayer(25).updatex
+  findlayer(25).color=<?color_scane_<eval(<tag(scanemountcolor)>)>?>
+  tag(scanemount,#+1)
+  tag(scanemountcolor,#+1)
+  return 0
+endif
+
+[function scanecolormount]
+if(!<strlen(<tag(scanemountcolor)>)>)
+  tag(scanemountcolor,1)  
+endif
+if(<findlayer(25)>)
+  if(<tag(scanemountcolor)> > <?color_count?>)
+    tag(scanemountcolor,1)  
+  endif
+  findlayer(25).color=<?color_scane_<eval(<tag(scanemountcolor)>)>?>
+  tag(scanemountcolor,#+1)
+endif
+
+[defnames mountscane]
+scane_count 7
+scane_mount_1 i_mt_unicorn
+scane_mount_2 i_mt_giant_beetle
+scane_mount_3 i_mt_skeletal_mount
+scane_mount_4 i_mt_swamp_dragon
+scane_mount_5 i_mt_swamp_dragon_armored
+scane_mount_6 i_mt_llama
+scane_mount_7 i_mt_ridgeback_savage
+
+[defnames colorscane]
+color_count 8
+color_scane_1 00985
+color_scane_2 0098e
+color_scane_3 0097f
+color_scane_4 00986
+color_scane_5 00999
+color_scane_6 00997
+color_scane_7 0098b
+color_scane_8 0098
+
+/////////////////////////////////////////////
+///////// EXPERIMMENTALNI FUNKCE! ///////////
+/////////////////////////////////////////////
+
+[itemdef i_stepon_floor]
+id=053b
+name=stepon
+
+ON=@Create
+timer=20
+attr=080
+
+ON=@Timer
+remove
+return 1
+
+[events e_scane_stepon]
+on=@STEP
+scanestepon
+
+[function scanestepon]
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+lastnew.move NW
+
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+lastnew.move W
+
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+lastnew.move E
+
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+lastnew.move N
+
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+lastnew.move NE
+
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+lastnew.move S
+
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+lastnew.move SE
+
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+lastnew.move SW
+
+src.newitem = i_stepon_floor
+lastnew.p = <src.p>
+
+[function countitems]
+var(countsector,0)
+sector.allitems(f_count)
+return <countsector>
+
+[function countchars]
+var(countsector,0)
+sector.allchars(f_count)
+return <countsector>
+
+[function f_count]
+var(countsector,#+1)
+
+
+////////////////////////////////////////
+///////// DIALOG HRACSKE FUNKCE/////////
+////////////////////////////////////////
+
+[function hracskefunkce]
+dialog d_playertitle
+
+[dialog d_playertitle]
+argo.SetLocation=20,30
+argo.tag(sirka,700)
+argo.tag(vyska,420)
+
+argo.dialog_prvni
+arg(i,0)
+while(i<18)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,180,180,130) 
+  arg(i,#+1)
+endwhile
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Hracske funkce")
+argo.textA(<argo.dialog_textpos(1,0)>,50,"General Gondoru:")
+argo.textA(<argo.dialog_textpos(1,1)>,<d_def_writecolor>,<finduid(<var(general_gondoru)>).name>)
+
+argo.textA(<argo.dialog_textpos(3,0)>,152,"Starostove:")
+
+argo.textA(<argo.dialog_textpos(4,0)>,<d_def_readcolor>,"Minas Tirith")
+argo.textA(<argo.dialog_textpos(4,1)>,<d_def_writecolor>,<finduid(finduid(#0400C82A6).more1).name>)
+argo.textA(<argo.dialog_textpos(5,0)>,<d_def_readcolor>,"Edoras")
+argo.textA(<argo.dialog_textpos(5,1)>,<d_def_writecolor>,<finduid(finduid(#04001219A).more1).name>)
+argo.textA(<argo.dialog_textpos(6,0)>,<d_def_readcolor>,"Hobitin")
+argo.textA(<argo.dialog_textpos(6,1)>,<d_def_writecolor>,<finduid(finduid(#0400CF636).more1).name>)
+argo.textA(<argo.dialog_textpos(7,0)>,<d_def_readcolor>,"Fornost")
+argo.textA(<argo.dialog_textpos(7,1)>,<d_def_writecolor>,<finduid(finduid(#0400C9132).more1).name>)
+argo.textA(<argo.dialog_textpos(8,0)>,<d_def_readcolor>,"Sede pristavy")
+argo.textA(<argo.dialog_textpos(8,1)>,<d_def_writecolor>,<finduid(finduid(#0400CBCE1).more1).name>)
+argo.textA(<argo.dialog_textpos(9,0)>,<d_def_readcolor>,"Osamela hora")
+argo.textA(<argo.dialog_textpos(9,1)>,<d_def_writecolor>,<finduid(finduid(#0400CEF98).more1).name>)
+argo.textA(<argo.dialog_textpos(10,0)>,<d_def_readcolor>,"Erebor")
+argo.textA(<argo.dialog_textpos(10,1)>,<d_def_writecolor>,<finduid(finduid(#040125510).more1).name>)
+argo.textA(<argo.dialog_textpos(11,0)>,<d_def_readcolor>,"Kralostvi lestnich elfu")
+argo.textA(<argo.dialog_textpos(11,1)>,<d_def_writecolor>,<finduid(finduid(#0401272F3).more1).name>)
+
+argo.textA(<argo.dialog_textpos(13,0)>,152,"Kapitanove:")
+argo.textA(<argo.dialog_textpos(14,0)>,<d_def_readcolor>,"Osgiliath zapadni breh")
+argo.textA(<argo.dialog_textpos(14,1)>,<finduid(#04007A05E).link.getNameHue>,<finduid(#04007A05E).link.name>)
+argo.textA(<argo.dialog_textpos(15,0)>,<d_def_readcolor>,"Osgiliath vychodni breh")
+argo.textA(<argo.dialog_textpos(15,1)>,<finduid(#0402572C3).link.getNameHue>,<finduid(#0402572C3).link.name>)
+argo.textA(<argo.dialog_textpos(16,0)>,<d_def_readcolor>,"Minas Morgul")
+argo.textA(<argo.dialog_textpos(16,1)>,<finduid(#0400A0FC0).link.getNameHue>,<finduid(#0400A0FC0).link.name>)
+argo.textA(<argo.dialog_textpos(17,0)>,<d_def_readcolor>,"Vychodni Marka")
+argo.textA(<argo.dialog_textpos(17,1)>,<finduid(#04006A4C5).link.getNameHue>,<finduid(#04006A4C5).link.name>)
+
+argo.textA(<argo.dialog_textpos(1,2)>,50,"Prvni nazgul:")
+argo.textA(<argo.dialog_textpos(1,3)>,<d_def_writecolor>,<finduid(#0400D0DAC).link.topobj.name>)
+
+argo.textA(<argo.dialog_textpos(3,2)>,152,"Nazgulove:")
+
+argo.textA(<argo.dialog_textpos(4,2)>,<d_def_readcolor>,"Barad-Dur")
+argo.textA(<argo.dialog_textpos(4,3)>,<d_def_writecolor>,<finduid(#040027F8D).link.topobj.name>)
+argo.textA(<argo.dialog_textpos(5,2)>,<d_def_readcolor>,"Harad")
+argo.textA(<argo.dialog_textpos(5,3)>,<d_def_writecolor>,<finduid(#04002E6A0).link.topobj.name>)
+argo.textA(<argo.dialog_textpos(6,2)>,<d_def_readcolor>,"Rhun")
+argo.textA(<argo.dialog_textpos(6,3)>,<d_def_writecolor>,<finduid(#040200BEA).link.topobj.name>)
+argo.textA(<argo.dialog_textpos(7,2)>,<d_def_readcolor>,"Umbar")
+argo.textA(<argo.dialog_textpos(7,3)>,<d_def_writecolor>,<finduid(#0402A52AC).link.topobj.name>)
+argo.textA(<argo.dialog_textpos(8,2)>,<d_def_readcolor>,"Nurn")
+argo.textA(<argo.dialog_textpos(8,3)>,<d_def_writecolor>,<finduid(#0402CDBB5).link.topobj.name>)
+
+//////////////////////////////////////
+///////// SYSTEM MINIQUEST////////////
+//////////////////////////////////////
+
+[chardef c_miniquest_akaratha]
+id=c_woman
+name=Akaratha
+
+TEVENTS=e_character
+TEVENTS=e_miniq_kun
+TSPEECH=spk_miniquest
+
+CATEGORY=Moria Questy
+SUBSECTION=Miniquest
+DESCRIPTION=Akaratha
+
+on=@UserDclick
+src.f_start_miniquest
+
+on=@create
+NPC=brain_human
+COLOR=colors_skin
+STR=200
+DEX=200
+INT=1000
+Title=carodejka
+
+tag(noanimate,1)
+
+ITEMNEWBIE=i_cape
+color=00a82
+ITEMNEWBIE=i_robe
+color=00a82
+ITEMNEWBIE=i_hair_long
+COLOR=070c
+ITEMNEWBIE=i_staff_gnarled_mithril
+
+ITEM=i_npc_mount
+tag.mount=i_mt_horse_brown_dk
+tag.mountcolor=0729
+
+[EVENTS e_miniq_kun]
+on=@Death //kun smazat
+findlayer(25).remove
+
+[speech spk_miniquest]
+on = *zdravim*
+on = *ahoj*
+say Zdravim fesaku!
+
+[function f_lov_kill]
+if(qtag(miniq)==<finduid(<argv>).baseid>)
+  qtag(miniq_totalexp,<qtag(miniq_totalexp)>+<finduid(<argv>).tag(experience)>)
+  qtag(miniq_kill,<qtag(miniq_kill)>+1)
+  if(<qtag(miniq_kill)> == <eval(<qtag(miniq_maxkill)>)-1>)
+    miniquest
+  elseif (<qtag(miniq_kill)> == <qtag(miniq_maxkill)>)
+    sfx(513)
+    miniquest
+  endif
+endif
+
+[function f_miniquest_start]
+src.newnpc(<?monster_kill_<eval({1 3})>_id?>)
+qtag(miniq,<lastnewchar.baseid>)
+qtag(miniq_name,<lastnewchar.name>)
+
+arg(min,4800/<lastnewchar.tag(experience)>-3)
+if(<min> < 1)
+  arg(min,1)
+endif
+arg(max,<min>+5)
+
+qtag(miniq_maxkill,<eval({<min> <max>})>)
+qtag(miniq_kill,0)
+lastnewchar.remove
+
+[function f_miniquest_complete]
+if(<qtag(miniq)>)
+  if(<qtag(miniq_kill)> == <qtag(miniq_maxkill)>)
+    arg(win,<eval({1 8})>)
+    src.newitem(<?miniq_<win>_id?>)
+    arg(amount,<?miniq_<win>_const?>)
+    lastnew.amount(<eval(<amount>)>)
+    lastnew.bounce
+  endif
+endif
+
+[function miniquest]
+if(<qtag(miniq)>)
+  dialog d_miniquest
+else
+ src.sysMessage(<src.sex(Nezacal,Nezacala)> si zadny miniquest.)
+endif
+
+[dialog d_miniquest]
+argo.setText(0,"Miniquest")
+argo.f_qDialogInstructions(03053)
+
+if (<src.qtag(miniq_kill)> < <eval(<src.qtag(miniq_maxkill)>-1)>)
+ arg(pocet,<src.qtag(miniq_maxkill)>-<src.qtag(miniq_kill)>)
+ argo.setText(1,"Zabi jeste <eval(<pocet>)>x <src.qtag(miniq_name)>.")
+elseif (<src.qtag(miniq_kill)> < <src.qtag(miniq_maxkill)>)
+ argo.setText(1,"Zbyva ti zabit posledni <qtag(miniq_name)>.")
+elseif (<src.qtag(miniq_kill)> > <eval(<src.qtag(miniq_maxkill)>-1)>)
+  argo.setText(1,"Zajdi si k Akarathba pro odmenu.")
+endif
+argo.HTMLGUMP(160,80,242,100,1,0,36)
+
+[defnames mosterkills]
+monster_all 3
+
+monster_kill_1_id c_titan
+monster_kill_2_id c_drapac
+monster_kill_3_id c_bug
+
+
+[defnames chancewin]
+miniq_all 8
+
+//// ID - id predmetu
+//// CONST - Konstanta množstvi (èim )
+
+
+/// MNOŽSTEVNÍ PØEDMÌTY
+miniq_1_id i_gold
+miniq_1_const {500 800}
+
+miniq_2_id i_log_copper
+miniq_2_const 20
+
+miniq_3_id i_cloth
+miniq_3_const {200 300}
+
+miniq_4_id i_spellbook
+miniq_4_const {1 2}
+
+miniq_5_id i_pet_llama
+miniq_5_const {1 2}
+
+miniq_6_id i_fish_cut_cooked
+miniq_6_const {100 200}
+
+miniq_7_id i_scrroll_recall
+miniq_7_const {20 30}
+
+miniq_8_id i_bottle_empty
+miniq_8_const {20 30}
+
+/////////////////////////////////////////////
+////////////////// TOULEC ///////////////////
+/////////////////////////////////////////////
+
+[itemdef i_toulec]
+ID=i_toolkit_empty
+NAME=Toulec
+TYPE=0
+WEIGHT=5
+RESOURCES=50 i_hides_cut, 5 i_wire_iron, 15 i_gem_citrine, 50 i_thread
+SKILLMAKE=TINKERING 50.0, BOWCRAFT 40.0, TAILORING 50.0
+
+ON=@Create
+scyllaglob.tag(toulec_create,<scyllaglob.tag(toulec_create)>+1)
+tag(max_arrows,5000)
+
+ON=@UserClick
+if(<tag(arrows)>)
+  message("<tag(arrows)> <tag(name_arrows)>")
+else
+  message("Toulec je prazdny.")
+endif
+return 1
+
+ON=@UserDclick
+if(<src>==<topobj>)
+  dialog d_toulec_arrows
+endif
+return 1
+
+
+[dialog d_toulec_arrows]
+argo.SetLocation=20,30
+argo.tag(sirka,300)
+argo.tag(vyska,130)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,120) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,120) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,120) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,120) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,120,80) 
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Toulec")
+argo.textA(<argo.dialog_textpos(1,0)>,1000,"Typ sipu:")
+argo.textA(<argo.dialog_textpos(1,1)>,152,<tag(name_arrows)>)
+argo.textA(<argo.dialog_textpos(2,0)>,1000,"Pocet sipu:")
+argo.textA(<argo.dialog_textpos(2,1)>,152,<eval(<tag(arrows)>)>)
+argo.textA(<argo.dialog_textpos(3,0)>,1000,"Pridat sipy:")
+argo.button(<argo.dialog_textpos(3,1)>,0fa5,0fa7,1,0,1)
+argo.textA(<argo.dialog_textpos(4,0)>,1000,"Vyndat sipy:")
+argo.setText(130,200)
+argo.textEntryA(<argo.dialog_textpos(4,1)>,150,20,152,103,130)
+argo.button(<argo.dialog_textpos(4,2)>,0fa5,0fa7,1,0,2)
+
+
+[dialog d_toulec_arrows BUTTON]
+on=0
+src.sysmessage Closed
+
+on=@anybutton
+if (<argn>==1)
+  src.newitem(i_toulec_target)
+  lastnew.equip
+  lastnew.link = <uid>
+endif
+if (<argn>==2)
+  if(!<tag(arrows)>)
+    src.redmessage("V toulci nejsou zadne sipy.")
+    return 1
+  endif
+  if(<argTxt(103)> > 0)
+    arrows_out(<argTxt(103)>)
+  else
+    src.redmessage(Hodnota musi byt cislo nebo cisli musi byt vetsi nez 0.)
+    return 1
+  endif  
+endif
+
+[function arrows_out]
+arg(out,<args>)
+if(<tag(arrows)>)
+  src.newitem(<tag(type_arrows)>)
+  if(<tag(arrow_jed_sila)> > 0)
+    lastnew.color = <color>
+    lastnew.tag(jed_name,<tag(arrow_jed_name)>)
+    lastnew.tag(jed_sila,<tag(arrow_jed_sila)>)
+    lastnew.tag(jed_typ,<tag(arrow_jed_typ)>)
+    lastnew.tag(jed_rychlost,<tag(arrow_jed_rychlost)>)
+  endif
+  if(<tag(arrows)> > <out>)
+    lastnew.amount(<out>)
+    lastnew.bounce
+    tag(arrows,<tag(arrows)>-<out>)
+    src.sysmessage("Vyndal si <out> sipu.") 
+  else
+    arg(out,<tag(arrows)>)
+    lastnew.amount(<out>)
+    lastnew.bounce
+    tag.remove(type_arrows)
+    tag.remove(arrows)
+    tag.remove(name_arrows)
+    src.sysmessage("Vyndal si <out> sipu. V toulci uz nejsou dalsi sipy.") 
+    color=0
+  endif 
+endif
+
+
+[itemdef i_toulec_target]
+id=i_memory
+name=toulec target
+type=t_eq_script
+
+on=@equip
+target("Zamer sipy ktere chces pridat do toulce.")
+
+on=@userdclick
+target("Zamer sipy ktere chces pridat do toulce.")
+
+ON=@TARGON_ITEM
+if(<src.targ.typedef.id>==01BFB)||(<src.targ.typedef.id>==0F3F)||(<src.targ.typedef.id>==038D8)
+  if(<src.targ.topobj>==<src.topobj>)
+    if(<link.tag(arrows)>)
+      if(<link.tag(type_arrows)>==<src.targ.baseid>)
+        arg(zbyva,<link.tag(max_arrows)>-<link.tag(arrows)>)
+        if(<src.targ.amount> <= <zbyva>)
+          link.tag(arrows,<link.tag(arrows)>+<src.targ.amount>)
+          src.targ.remove
+          dclick
+        else
+          src.targ.amount = <src.targ.amount>-<zbyva>
+          link.tag(arrows,<link.tag(max_arrows)>)
+        endif
+      else
+        src.sysmessage("Uz tam mas jiny druch sipu.")
+      endif
+    else
+      if(<src.targ.tag(jed_sila)> > 0)
+        link.tag(arrow_jed_sila,<src.targ.tag(jed_sila)>)
+        link.tag(arrow_jed_name,<src.targ.tag(jed_name)>)
+        link.tag(arrow_jed_rychlost,<src.targ.tag(jed_rychlost)>)
+        link.tag(arrow_jed_typ,<src.targ.tag(jed_typ)>)
+      endif 
+      link.tag(type_arrows,<src.targ.baseid>)
+      link.tag(name_arrows,<src.targ.name>)
+      link.color = <src.targ.color>
+      if(<src.targ.amount> <= <link.tag(max_arrows)>)
+        link.tag(arrows,<src.targ.amount>)
+        src.targ.remove
+        dclick
+      else
+        link.tag(arrows,<link.tag(max_arrows)>)
+        src.targ.amount = <src.targ.amount>-<link.tag(max_arrows)>
+      endif    
+    endif
+  else
+    src.sysmessage("Sipy musis mit jen u sebe.")
+  endif
+else
+  src.sysmessage("Do toulce muzes dat jen sipy.")
+endif
+remove
+return 1

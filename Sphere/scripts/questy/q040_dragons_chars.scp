@@ -1,0 +1,826 @@
+[chardef c_q040_doorman]
+id=c_man
+name=Drakobijec
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+//TEVENTS=e_npc_leaper
+TSPEECH=spk_q040_dragons_doorman
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=Doorman
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+tag(drakobijec,1)
+
+STR=10000
+DEX=300
+INT=100
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={95.0 100.0}
+TACTICS={105.0 110.0}
+MACEFIGHTING={100.0 110.0}
+RESIST={105.0 110.0}
+
+tag(noanimate,1)
+
+maxhits=20500
+maxstam={700 750}
+maxmana=0
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_critic_chance=1000         //100% chance
+tag.npc_critic_dmg=100,125         //dmg in between
+
+tag.npc_port_timer=5
+tag(npc_port_distance,9)
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_hair_long
+ITEMNEWBIE=i_platemail_leggings
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_chest
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_arms
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_gloves
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_gorget
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_helm
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_halberd
+Color=09ce
+NAME=Drakobijcova zbran
+ITEMNEWBIE=i_cape
+Color=09ce
+itemnewbie=i_boots_calf
+Color=09ce
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_doorman
+ENDIF
+
+////////////////////////////////////////////////////////
+
+
+[chardef c_q040_vartian]
+id=c_man
+name=Vartian
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_sniper              //Pøidá dmg k útoku po ránì def= 50
+TSPEECH=spk_q040_dragons_vartian
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=vartian
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=10000
+DEX=500
+INT=1000
+
+ANATOMY={100.0 110.0}
+ARCHERY={100.0 105.0}
+HEALING={100.0 105.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={105.0 110.0}
+TACTICS={105.0 110.0}
+MACEFIGHTING={100.0 110.0}
+RESIST={105.0 110.0}
+
+tag(noanimate,1)
+
+tag(drakobijec,1)
+
+maxhits=10500
+maxstam={500 550}
+maxmana=0
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_sniper_dmg=90              //o 90 HP
+tag.npc_sniper_chance=1000         //30% Defaultne 100%
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_hair_long
+ITEMNEWBIE=i_ringmail_leggings
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_ringmail_tunic
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_ringmail_sleeves
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_ringmail_gloves
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_obsidian_ringmail_gorget
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_cape
+Color=09ce
+itemnewbie=i_boots_calf
+Color=09ce
+
+ITEMNEWBIE=i_bow
+Color=09ce
+NAME=Drakobijcova zbran
+ITEMNEWBIE=i_arrow,{50 75}
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_vartian
+ENDIF
+
+////////////////////////////////////////////////////////
+
+[chardef c_q040_kovar]
+id=c_man
+name=Kovar
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+//TEVENTS=e_npc_leaper
+TSPEECH=spk_q040_dragons_kovar
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=kovar
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+tag(name,Kovar)
+tag(obrazok,03093)
+tag(typ,1)
+
+STR=10000
+DEX=600
+INT=100
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={95.0 100.0}
+TACTICS={95.0 100.0}
+MACEFIGHTING={90.0 100.0}
+RESIST={95.0 100.0}
+
+tag(noanimate,1)
+
+tag(drakobijec,1)
+
+maxhits=15000
+maxstam={600 650}
+maxmana=0
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_critic_chance=1000         //100% chance
+tag.npc_critic_dmg=100,125         //dmg in between
+
+tag.npc_port_timer=5
+tag(npc_port_distance,9)
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_hair_receding
+ITEMNEWBIE=i_beard_short
+ITEMNEWBIE=i_apron_full
+COLOR=0675
+ITEMNEWBIE=i_hammer_smith
+NAME=Zazracne kladivko
+COLOR=0980
+ITEMNEWBIE=i_platemail_leggings
+Color=09ce
+ITEMNEWBIE=i_sandals
+COLOR=09ce
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_kovar
+ENDIF
+
+////////////////////////////////////////////////////////
+
+[chardef c_q040_dratenik]
+id=c_man
+name=Dratenik
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+//TEVENTS=e_npc_leaper
+TSPEECH=spk_q040_dragons_kovar
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=dratenik
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+tag(name,Dratenik)
+tag(obrazok,03077)
+tag(typ,2)
+
+STR=10000
+DEX=500
+INT=100
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+SPIRITSPEAK={55.0 78.0}
+WRESTLING={95.0 100.0}
+TACTICS={95.0 100.0}
+MACEFIGHTING={90.0 100.0}
+RESIST={95.0 100.0}
+
+tag(noanimate,1)
+
+tag(drakobijec,1)
+
+maxhits=10000
+maxstam={500 550}
+maxmana=0
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_critic_chance=1000         //100% chance
+tag.npc_critic_dmg=100,125         //dmg in between
+
+tag.npc_port_timer=5
+tag(npc_port_distance,9)
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=random_male_hair
+//ITEMNEWBIE=i_cape
+//COLOR=09ce
+ITEMNEWBIE=i_studded_gloves
+COLOR=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_dagger
+NAME=Zazracna kudla
+COLOR=0980
+ITEMNEWBIE=i_torch
+NAME=Pochoden
+COLOR=0980
+//ITEMNEWBIE=i_studded_tunic
+//COLOR=09ce
+//NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_studded_leggings
+COLOR=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_sandals
+COLOR=09ce
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_kovar
+ENDIF
+
+////////////////////////////////////////////////////////
+
+[chardef c_q040_predstaveny]
+id=c_man
+name=Predstaveny
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_curse               //vsechny viditelne zrani o dmg
+TSPEECH=spk_q040_dragons_predstaveny
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=predstaveny
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=10000
+DEX=300
+INT=400
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+WRESTLING={105.0 110.0}
+TACTICS={105.0 110.0}
+MACEFIGHTING={100.0 110.0}
+RESIST={105.0 110.0}
+magery=120.0
+ei=75.0
+SpiritSpeak=105.0
+
+tag(noanimate,1)
+
+tag(drakobijec,1)
+
+maxhits=20500
+maxstam={300 350}
+maxmana=1000
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_curse_chance=1000         // 100% chance to trigger this event
+tag.npc_curse_delay=5,7           // delay between another possible strike
+tag.npc_curse_dmg=80,85           // dmg 
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_hair_ponytail
+COLOR=colors_gray
+ITEMNEWBIE=i_studded_leggings
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_studded_tunic
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_studded_sleeves
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_studded_gloves
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_studded_gorget
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_staff_gnarled
+Color=09ce
+NAME=Drakobijcova zbran
+ITEMNEWBIE=i_cape
+Color=09ce
+itemnewbie=i_boots_calf
+Color=09ce
+
+ITEMNEWBIE=i_spellbook
+NAME=Velka kniha Drakobijcu
+addspell s_lightning
+addspell s_fireball
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_predstaveny
+ENDIF
+
+////////////////////////////////////////////////////////
+
+[chardef c_q040_alchymista]
+id=c_man
+name=Alchymista
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_curse               //vsechny viditelne zrani o dmg
+TSPEECH=spk_q040_dragons_alchymista
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=Alchymista
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=10000
+DEX=500
+INT=300
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+WRESTLING={105.0 110.0}
+TACTICS={105.0 110.0}
+MACEFIGHTING={100.0 110.0}
+RESIST={105.0 110.0}
+magery=120.0
+ei=75.0
+SpiritSpeak=105.0
+
+tag(noanimate,1)
+
+tag(drakobijec,1)
+
+maxhits=10000
+maxstam={500 550}
+maxmana=1000
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_curse_chance=1000          // 100% chance to trigger this event
+tag.npc_curse_delay=5,7            // delay between another possible strike
+tag.npc_curse_dmg=50,55            // dmg 
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_shirt_fancy
+//COLOR=0675
+ITEMNEWBIE=i_sandals
+Color=09ce
+//ITEMNEWBIE=i_cape
+//Color=09ce
+ITEMNEWBIE=i_ringmail_gloves
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_studded_leggings
+Color=09ce
+NAME=Drakobijcova zbroj
+
+ITEMNEWBIE=i_spellbook
+NAME=Velka kniha lektvaru
+addspell s_lightning
+addspell s_fireball
+addspell=s_magic_reflection
+//addspell=s_paralyze
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_alchymista
+ENDIF
+
+////////////////////////////////////////////////////////
+
+
+[chardef c_q040_ortlion]
+id=c_man
+name=Ortlion
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+TSPEECH=spk_q040_dragons_ortlion
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=Ortlion
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=10000
+DEX=500
+INT=300
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+WRESTLING={105.0 110.0}
+TACTICS={105.0 110.0}
+MACEFIGHTING={100.0 110.0}
+RESIST={105.0 110.0}
+//magery=120.0
+//ei=75.0
+//SpiritSpeak=105.0
+
+tag(noanimate,1)
+
+tag(drakobijec,1)
+
+maxhits=10000
+maxstam={500 550}
+maxmana=0
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_critic_chance=1000         //100% chance
+tag.npc_critic_dmg=180,185         //dmg in between
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_mem_name_info         // systemova vec, nemazat
+ITEMNEWBIE=i_platemail_leggings
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_chest
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_arms
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_gloves
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_helm
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_gorget
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_halberd
+Color=09ce
+NAME=Drakobijcova zbran
+ITEMNEWBIE=i_cape
+Color=09ce
+itemnewbie=i_boots_calf
+Color=09ce
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_ortlion
+ENDIF
+
+////////////////////////////////////////////////////////
+
+
+[chardef c_q040_Rakchin]
+id=c_man
+name=Rakchin
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_critic              //sance na kritik melee
+TSPEECH=spk_q040_dragons_Rakchin
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=Rakchin
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=10000
+DEX=500
+INT=300
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+WRESTLING={105.0 110.0}
+TACTICS={105.0 110.0}
+MACEFIGHTING={100.0 110.0}
+RESIST={105.0 110.0}
+//magery=120.0
+//ei=75.0
+//SpiritSpeak=105.0
+
+tag(noanimate,1)
+
+tag(drakobijec,1)
+
+maxhits=10000
+maxstam={500 550}
+maxmana=0
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_critic_chance=1000         //100% chance
+tag.npc_critic_dmg=100,125         //dmg in between
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_platemail_leggings
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_chest
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_arms
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_gloves
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_helm
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_platemail_gorget
+Color=09ce
+NAME=Drakobijcova zbroj
+ITEMNEWBIE=i_sword_viking
+Color=09ce
+NAME=Drakobijcova zbran
+ITEMNEWBIE=i_cape
+Color=09ce
+itemnewbie=i_boots_calf
+Color=09ce
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_Rakchin
+ENDIF
+
+
+////////////////////////////////////////////////////////
+
+
+[chardef c_q040_blazen]
+id=c_man
+name=Blazen
+
+TEVENTS=e_item_refuser
+TEVENTS=e_character
+TEVENTS=e_npc_curse               //vsechny viditelne zrani o dmg
+TSPEECH=spk_q040_dragons_blazen
+
+CATEGORY=Moria Questy
+SUBSECTION=q040_dragons
+DESCRIPTION=Blazen
+
+on=@create
+NPC=brain_vendor
+COLOR=color_clovek
+
+STR=10000
+DEX=500
+INT=300
+
+ANATOMY={95.0 100.0}
+FORENSICS={35.0 58.0}
+HEALING={55.0 78.0}
+WRESTLING={105.0 110.0}
+TACTICS={105.0 110.0}
+MACEFIGHTING={100.0 110.0}
+RESIST={105.0 110.0}
+magery=120.0
+ei=75.0
+SpiritSpeak=105.0
+
+tag(noanimate,1)
+
+tag(drakobijec,1)
+
+maxhits=10000
+maxstam={500 550}
+maxmana=1000
+
+tag(resist_poison,1000)
+tag.resist_para=<eval {990 1000}>
+tag(resist_summon,1000)
+tag(resist_bleed,900)
+
+tag(resist_sharp,850)
+tag(resist_slash,850)        //sekery
+tag(resist_pierce,650)
+tag(resist_blunt,850)
+
+tag(resist_fire,900)
+tag(resist_elect,900)
+tag(resist_cold,900)
+
+tag.npc_curse_chance=1000          // 100% chance to trigger this event
+tag.npc_curse_delay=5,7            // delay between another possible strike
+tag.npc_curse_dmg=50,55            // dmg 
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_hair_2_pigtails
+ITEMNEWBIE=i_robe
+//Color=09ce
+ITEMNEWBIE=i_cape
+Color=09ce
+itemnewbie=i_boots_calf
+Color=09ce
+
+ON=@userDClick
+if (SRC.TARG.DISTANCE > 3)
+  SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude."
+  return 1
+else
+  f_q040_dragons_blazen
+ENDIF

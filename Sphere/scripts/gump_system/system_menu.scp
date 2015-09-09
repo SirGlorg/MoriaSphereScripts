@@ -1,0 +1,1134 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Moria scripty 
+//type=sphere 99z8
+//utvoril vypravejda
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//prvni jsou funkce zabezpecujci spravne otvirani dialogu :o)
+//
+////jmena funkci:               vysvetleni:
+//
+//f_zobrazminipanel		Na tuto funkci otkazovat eventem on dclick na sebe zobrazi malej panel vlevo nahore 
+//f_vyvolej_infopanel		vyvola prehled vsech moznych i nemoznych hracovych vlastnosti //zobrazi dialog dle povolani
+//f_osobni_nastaveni		zde se da nastavit jak se maji  panely chovat nechovat
+//f_warmenu			minipanel obsahujci zakladni spousteci prvky pro boj: Ability, piti lahvi  //zobrazi dialog dle povolani
+//f_questmenu			Zde by mel byt prehled o splnenych kvestech,(system dopracuji standartizuji pozdeji)			
+//f_vlastnosti			pro spravne zobrazeni stranky castici(u  klerdu knihy viry, u Druida knihy jine)   
+//f_vlastnosti_kouzel		pro spravne zobrazeni stranky informativni vuci strance casticí
+//f_jakevlasnosti		pomocna funkce slouzi k dosazeni promenych do infopanelu  			
+//
+//f_dejvsechny_vlastnosti	JEN TESTOVACI !!!!  da ti vsechny vlastnosti
+//
+/////jmena dialogu:		vysvetleni:
+//
+//d_minipanel
+//d_minipanel_smal
+//d_warmenu
+//d_warmenu_pozicer
+//d_osobni_nastaveni
+//d_questmenu			(zatim neni)
+//d_inforegy
+//d_hlavni_info_priest		(silne rozdelanej :o))
+//d_hlavni_info_mag		(zatim neni)
+//d_hlavni_info_war		(zatim neni)
+//d_hlavni_info_necro		(zatim neni)
+//d_hlavni_info_ranger		(zatim neni)
+//d_hlavni_info_shaman		(zatim neni)
+//d_hlavni_info_mystic		(zatim neni)
+//d_hlavni_info_craft		(zatim neni)
+//d_hlavni_info_Druid		(zatim neni)
+//d_schopnostipanel_priest_smal	zmensenej panel kouzel
+//
+/////jmena tagu:(hodnota) ST=staly  DO=docastny	          VYUZITI:
+//
+//tag.stranka (cislo) ST			pro strankovani v (kouzlech viry, Misticke vlastnosti,Druuidi ....)otevre se vzdy pozadovana  stranka. nutne pri propojeni s infy pro kouzla, sekundarne  otevre se vzdy naposledy nastivena stranka.(dodelat ze vpripade ze hrac tag jeste nema  tak jej dostane jinak se kniha neotevre. !!)
+//tag.vlastnosti (32bitova bitmaska) ST		vysvetleni v .\scripts\gump_system\vysvetleni_bitmasek_hracu\tag_vlastnosti.txt
+//tag.statusvira (cislo) ST			kolik ma klerda k dispozici aktualne Viry
+//tag.maxstatusvira(cislo) ST			maximalni velikost viry (<tag.level> + tag.   ) 
+//tag.moudrost (cislo) ST			Hodnota moudrosti (dat klerdum reset? ) ovlivnuje moznosti postupu na visi level knezstvi. Nekterym kouzlum urcuje silu kouzla. Limituje mnozstvi veci co se da naucit. cizi jazyky a td.
+//tag.otevreno_z_minipanelu			docasnej tag aby quest dialog poznal kam se ma vracet..    smazava se po zavreni
+//
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[FUNCTION f_zobrazminipanel]
+if (<src.tag.vlastnosti>&040000000)
+return 0
+elseif (<src.tag.vlastnosti>&080000000)//nesahat :o) zabranuje otevreni vicero minigump nabidek :o)
+dialog(d_minipanel)
+else
+dialog(d_minipanel_smal)
+endif
+return 0
+
+
+
+
+[FUNCTION f_vyvolej_infopanel]//zakladni funkce vyvolavajci infopanel
+if (src.profession==class_priest)
+dialog(d_hlavni_info_priest)
+endif
+
+
+
+
+[FUNCTION f_osobni_nastaveni]
+dialog(d_osobni_nastaveni)
+
+
+
+
+[FUNCTION f_warmenu]
+if (<src.tag.vlastnosti>&010000000)//jestli ma hrac v nastaveni povolino  zobrazovat minipanel :o)
+f_zobrazminipanel
+return 0
+else
+f_zobrazminipanel
+dialog(d_warmenu)
+endif
+
+
+
+
+[FUNCTION f_questmenu]
+src.tag.otevreno_z_minipanelu=1
+src.say("Budu koukat na questy.")
+src.dialog(d_questy)
+
+
+
+
+
+[FUNCTION f_dej_p]
+dialog(d_schopnostipanel_priest_info3)
+
+
+
+[FUNCTION f_vlastnosti_kouzel]
+if (src.profession==class_priest)&&(src.tag.stranka==4)
+dialog(d_schopnostipanel_priest_info4)
+endif
+if (src.profession==class_priest)&&(src.tag.stranka==3)
+dialog(d_schopnostipanel_priest_info3)
+endif
+if (src.profession==class_priest)&&(src.tag.stranka==2)
+dialog(d_schopnostipanel_priest_info2)
+endif
+if (src.profession==class_priest)&&(src.tag.stranka==1)
+dialog(d_schopnostipanel_priest_info)
+return 1
+endif
+
+//if (<src.tag.stranka> > 1)
+//dialog(d_schopnostipanel_priest_info)
+//endif
+
+
+
+
+[FUNCTION f_vlastnosti]
+if (src.profession==class_priest)&&(src.tag.stranka==4)
+dialog(d_schopnostipanel_priest4)
+endif
+if (src.profession==class_priest)&&(src.tag.stranka==3)
+dialog(d_schopnostipanel_priest3)
+endif
+if (src.profession==class_priest)&&(src.tag.stranka==2)
+dialog(d_schopnostipanel_priest2)
+endif
+if (src.profession==class_priest)&&(src.tag.stranka==1)
+dialog(d_schopnostipanel_priest)
+endif
+//if (<src.tag.stranka> > 1)
+//dialog(d_schopnostipanel_priest)
+//endif
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+[function f_jakeskily_priest]
+var.co_umi_priest="alchemye: <?src.alchemy?>%<br>Anatomie: <?src.anatomy?>%<br>zoologie: <?src.animallore?>%<br>identifikace: <?src.itemID?>%<br>zbrojirstvi: <?src.ArmsLore?>%<br>vykrejvani stitem: <?src.Parrying?>%<br>zebrani: <?src.Begging?>%<br>usmirovani: <?src.Peacemaking?>%<br>kempovani: <?src.Camping?>%<br>mapy: <?src.Cartography?>%<br>vareni: <?src.Cooking?>%<br>detekce skryteho: <?src.DetectingHidden?>%<br>lakani: <?src.Enticement?>%<br>ev.inteligence: <?src.EI?>%<br>uzdravovani: <?src.healing?>%<br>rybarstvi: <?src.Fishing?>%<br>ohledavani: <?src.Forensics?>%<br>skryvani: <?src.Hiding?>%<br>psani: <?src.Inscription?>%<br>Magery: <?src.Magery?>%<br>rezisty: <?src.Resist?>%<br>taktika: <?src.Tactics?>%<br>hudebnictvi: <?src.Musicianship?>%<br>Okultni vedy: <?src.SpiritSpeak?>%<br>ochutnavani: <?src.TasteID?>%<br>"
+[function f_jakeskily_priest2]
+var.co_umi_priest2="drevorubectvi: <?src.Lumberjacking?>%<br>hornictvi: <?src.Mining?>%<br>meditace: <?src.Meditation?>%<br>uzdravovani: <?src.healing?>%<br>" //drtici uder: <?src.Crushing?><br>
+[function f_jakeskily_obchodnictvi]
+//if (<src.tag.hotovequesty_3>&020000)
+var.co_umi_obchodnictvi="<h2> Obchodnictvi:</h2> <br>zkusenosti: <?f_procenta_obchodnictvi?> %<br>celkovy zisk <?tag.obch_celkemzisk?> gp<br>Naklady: <?tag.obch_investoval?> gp<br> "
+return <?var.co_umi_obchodnictvi?>
+
+
+
+
+
+[function f_jakevlasnosti]
+//            ***               rozumi jazyku (mluveni)                   ***
+if (<src.tag.vlastnosti>&01)
+ var.co_umi_1="Zapadstinou"
+ endif
+if (<src.tag.vlastnosti>&02)
+ var.co_umi_2="Sildarstinou"
+ endif
+if (<src.tag.vlastnosti>&04)
+ var.co_umi_3="Quenejstinou"
+ endif
+if (<src.tag.vlastnosti>&08)
+ var.co_umi_4="Trpaslictinou"
+ endif
+if (<src.tag.vlastnosti>&010)
+ var.co_umi_5="Cernou reci"
+ endif
+if (<src.tag.vlastnosti>&020)
+ var.co_umi_6="Haradstinou"
+ endif
+if (<src.tag.vlastnosti>&040)
+ var.co_umi_7="neznamou reci"
+ endif
+if (<src.tag.vlastnosti>&080)
+ var.co_umi_8="neznamou_2"
+ endif
+//           ***                   (umi cist jazykem)                ***
+if (<src.tag.vlastnosti>&0100)
+ var.co_umi_9="Zapadstinu"
+ endif
+if (<src.tag.vlastnosti>&0200)
+ var.co_umi_10="Sildarstinu"
+ endif
+if (<src.tag.vlastnosti>&0400)
+ var.co_umi_11="Trpaslici runy"
+ endif
+if (<src.tag.vlastnosti>&0800)
+ var.co_umi_12="Druidi runy"
+ endif
+if (<src.tag.vlastnosti>&01000)
+ var.co_umi_13="Cernou reci"
+ endif
+if (<src.tag.vlastnosti>&02000)
+ var.co_umi_14="Haradstinou"
+ endif
+if (<src.tag.vlastnosti>&04000)
+ var.co_umi_15="Mrtve pismo"
+ endif
+//if (<src.tag.vlastnosti>&08000)
+// var.co_umi_16="Neznamy_jazyk2"
+// endif
+//dalsi vlastnosti
+if (<src.tag.vlastnosti>&010000)
+ var.co_umi_17="Odvraceni nemrtvich"
+ endif
+var.co_umi_mluvit="<var.co_umi_1><br><var.co_umi_2><br><var.co_umi_3><br><var.co_umi_5><br><var.co_umi_6><br><var.co_umi_7><br><var.co_umi_8><br>"
+var.co_umi_cist="<var.co_umi_9><br><var.co_umi_10><br><var.co_umi_11><br><var.co_umi_12><br><var.co_umi_13><br><var.co_umi_14><br><var.co_umi_15><br><br>" //<var.co_umi_16
+
+
+
+
+[FUNCTION f_dej_vse]
+// da jen tobe   z bezpecnosti tam nechavam ono src :o)
+src.tag.hotovequesty1=0
+src.tag.hotovequesty2=0
+src.tag.hotovequesty3=0
+src.tag.hotovequesty4=0
+src.tag.hotovequesty5=0
+src.tag.vlastnosti=0
+src.tag.vlastnosti2=0
+src.tag.hotovequesty = <src.tag.hotovequesty>|40000000 //
+src.tag.vlastnosti = <src.tag.vlastnosti>|01//zapadsitinu
+src.tag.vlastnosti = <src.tag.vlastnosti>|02//sildarstinou
+src.tag.vlastnosti = <src.tag.vlastnosti>|04//Quenejstinou
+src.tag.vlastnosti = <src.tag.vlastnosti>|08//Trpaslictinou
+src.tag.vlastnosti = <src.tag.vlastnosti>|010//Cernou reci
+src.tag.vlastnosti = <src.tag.vlastnosti>|020//Haradstinou
+src.tag.vlastnosti = <src.tag.vlastnosti>|040//neznamy jazyk1 rezervovano
+src.tag.vlastnosti = <src.tag.vlastnosti>|080//neznamy jazyk2 rezervovano
+//nauci cist 
+src.tag.vlastnosti = <src.tag.vlastnosti>|0100//zapadstinu
+src.tag.vlastnosti = <src.tag.vlastnosti>|0200//Elfstinu
+src.tag.vlastnosti = <src.tag.vlastnosti>|0400//Trpaslici runy
+src.tag.vlastnosti = <src.tag.vlastnosti>|0800//Druidi runy
+src.tag.vlastnosti = <src.tag.vlastnosti>|01000//cernou rec
+src.tag.vlastnosti = <src.tag.vlastnosti>|02000//Haradstinu
+src.tag.vlastnosti = <src.tag.vlastnosti>|04000//reserve
+src.tag.vlastnosti = <src.tag.vlastnosti>|08000//reserve
+//dalsi vlastnosti
+src.tag.vlastnosti = <src.tag.vlastnosti>|010000//odvraceni nemrtvich
+src.tag.vlastnosti = <src.tag.vlastnosti>|020000//prikladani rukou
+src.tag.vlastnosti = <src.tag.vlastnosti>|040000//zakladni Stahovani kuze
+src.tag.vlastnosti = <src.tag.vlastnosti>|080000//pokrocile stahovani kuze
+src.tag.vlastnosti = <src.tag.vlastnosti>|0100000//mistrovske stahovani z kuze
+src.tag.vlastnosti = <src.tag.vlastnosti>|0200000//
+src.tag.vlastnosti = <src.tag.vlastnosti>|0400000
+src.tag.vlastnosti = <src.tag.vlastnosti>|0800000
+src.tag.vlastnosti = <src.tag.vlastnosti>|01000000
+src.tag.vlastnosti = <src.tag.vlastnosti>|02000000
+src.tag.vlastnosti = <src.tag.vlastnosti>|04000000
+src.tag.vlastnosti = <src.tag.vlastnosti>|08000000
+//src.tag.vlastnosti = <src.tag.vlastnosti>|010000000// vyuzito pro menu
+//src.tag.vlastnosti = <src.tag.vlastnosti>|020000000//vyuzito pro menu
+//src.tag.vlastnosti = <src.tag.vlastnosti>|040000000//vyuzito pro menu
+//src.tag.vlastnosti = <src.tag.vlastnosti>|080000000//hrac ma rozbalenej minipanel dialog(d_minipanel) pro overeni v jakem stavu se nachazi minipanel
+src.tag.warpanel_pozice_x_y=25,250
+src.tag.statusvira=25
+src.tag.maxstatusvira=35
+src.tag.stranka=1
+dialog(d_schopnostipanel_priest_info)
+f_zobrazminipanel
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[FUNCTION f_nedodelano]
+src.say("Na toto tlacitko zatim neni navazana vhodna funkce.")
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_minipanel]
+0,0
+nomove 0
+noclose 0
+page 0
+resizepic 0 27 5054 665 25// hlavni podklad
+button 5 27 5540 5537 1 0 1
+button 30 27 2445 2445 1 0 2//Hlavni informace
+text 55 27 152 0
+button 140 27 2445 2445 1 0 3//speciality pro povolani
+text 155 27 152 1
+button 245 27 2443 2443 1 0 4//Questy
+text 255 27 152 2
+button 305 27 2443 2443 1 0 5//atlas map pro questy
+text 310 27 152 3
+button 367 27 2440 2440 1 0 6//moria enciklopedia
+text 400 27 152 4
+button 530 27 2445 2445 1 0 7//osobni nastaveni
+text 555 27 152 5
+button 632 27 4011 4013 1 0 8//chat
+
+[dialog d_minipanel text]
+Informace
+War panel
+Questy
+Atlas
+Moria Encyklopedia
+Nastaveni
+
+[dialog d_minipanel button]
+on=0
+dialog(d_minipanel)
+
+on=1
+src.tag.vlastnosti = <src.tag.vlastnosti>&~080000000//odmazne hraci info ze ma rozbalenej minipanel
+dialog(d_minipanel_smal)
+
+on=2
+f_vyvolej_infopanel
+
+on=3
+f_warmenu
+
+on=4
+f_questmenu
+
+on=5
+f_nedodelano
+dialog(d_minipanel)
+
+on=6
+f_mapmenu
+
+on=7
+f_osobni_nastaveni
+
+on=8
+//vyvola panel na zpravy :o)
+zprava
+f_zobrazminipanel
+
+
+
+[dialog d_minipanel_smal]
+0,0
+//nomove 0
+noclose 0
+page 0
+resizepic 0 27 5054 30 25// hlavni podklad
+button 5 27 5537 5540 1 0 1
+
+
+[dialog d_minipanel_smal text]
+
+[dialog d_minipanel_smal button]
+on=0
+
+on=1
+src.tag.vlastnosti = <src.tag.vlastnosti>|080000000
+dialog(d_minipanel)
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_schopnostipanel_priest_smal]
+argo.setlocation <?src.tag.schopnostipanel_pozice_x_y?>
+noclose 0
+page 0
+gumppic 35 0 01e// hlavni podklad
+button 75 5 037 037 1 0 1
+
+[dialog d_schopnostipanel_priest_smal text]
+
+[dialog d_schopnostipanel_priest_smal button]
+on=0
+
+on=1
+f_vlastnosti
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_warmenu]
+argo.setlocation <src.tag(warpanel_pozice_x_y)>
+nomove=0
+//noclose=0
+page=0
+resizepic 0 0 9250 250 75// hl
+//pod tohle se mohou dat jakekoliv rychlospoustece casem se to hodi do grafiky :o)
+button 12 13 2440 2440 1 0 2//Enlightment
+text 35 15 152 0
+//button 12 13 2445 2445 1 0 2//abilita1 Enlightment
+//text 35 15 152 0
+//button 122 13 2445 2445 1 0 2//
+//text 145 15 152 0
+button 45 40 2445 2445 1 0 3//kouzla viry
+text 68 40 152 1
+button 155 45 03250 03250 1 0 4//lahev heal
+button 175 45 03259 03259 1 0 4//lahev vitalita
+button 195 45 0325b 0325b 1 0 4//lahev sily
+button 215 45 03262 03262 1 0 4//lahev volneho pohybu
+//
+button 0 47 05c 05c 1 0 1//nastaveni pozice
+gumppic 47 47 05d 
+gumppic 97 47 05d
+gumppic 227 47 05e
+
+[dialog d_warmenu text]
+Rychle leceni
+Kouzla viry
+
+[dialog d_warmenu button]
+on=0
+//f_zobrazminipanel
+
+on=1
+dialog(d_warmenu_pozicer)
+
+on=2
+f_warmenu
+//say="cil kouzla"
+f_nedodelano
+
+
+on=3
+f_warmenu
+f_vlastnosti
+
+//piti lahvi
+on=4 //heal
+f_nedodelano
+f_warmenu
+
+
+
+[dialog d_warmenu_pozicer]
+argo.setlocation <src.tag(warpanel_pozice_x_y)>
+nomove=0
+//noclose=0
+page=0
+resizepic 0 0 9250 250 75// podklad
+text 15 47 1152 0
+resizepic 105 42 2620 80 30//podkladinputu
+textentry 115 47 50 52 152 0 1
+button 185 47 4024 4025 1 0 1//potvrzeni posunu
+button 215 47 4021 4022 1 0 2//storno
+
+
+
+
+[dialog d_warmenu_pozicer text]
+Vlastni pozice:
+<?src.tag.warpanel_pozice_x_y?>
+
+[dialog d_warmenu_pozicer button]
+on=0
+f_warmenu
+
+on=1
+src.tag.warpanel_pozice_x_y=<argtxt(0)>
+dialog(d_warmenu_pozicer)
+
+ON=2
+f_warmenu
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_osobni_nastaveni]
+20,20
+page=0
+gumppic 13 15 03240//hlavni podklad
+//gumppic 330 25 0352f
+
+page=1
+button 189 110 12866 12866 1 0 12//chatovani
+button 296 113 12867 12867 1 0 13//Acount
+button 34 196 12868 12868 1 0 1// 640/640
+button 31 222 12869 12869 1 0 2// 640/800
+button 32 246 12870 12870 1 0 3// 800/800
+button 34 270 12871 12871 1 0 4// 800/1024
+//vlastni pozice
+textentry 190 330 70 25 152 0 0
+textentry 190 365 70 25 152 1 1
+//button 294 340 0344a 0344b 1 0 5//potvrzeni
+if (<src.tag.vlastnosti>&010000000)
+argo.button 38 392 034ed 034ee 1 0 6//zobrazuj warmenu
+else
+argo.button 38 392 034ef 034ee 1 0 7
+endif
+if (<src.tag.vlastnosti>&040000000)
+argo.button 38 422 034ed 034ee 1 0 8//zobrazuj minipanel
+else
+argo.button 38 422 034ef 034ee 1 0 9
+endif
+if (<src.tag.vlastnosti>&020000000)
+argo.button 38 453 034ed 034ee 1 0 10//zobrazuj enciklopedii
+else
+argo.button 38 453 034ef 034ee 1 0 11
+endif
+
+
+
+
+
+
+[dialog d_osobni_nastaveni text]
+<?src.tag.warpanel_pozice_x_y?>
+<?src.tag.schopnostipanel_pozice_x_y?>
+
+
+
+[dialog d_osobni_nastaveni button]
+on=0
+src.tag.warpanel_pozice_x_y=<argtxt(0)>
+src.tag.schopnostipanel_pozice_x_y=<argtxt(1)>
+f_zobrazminipanel
+
+on=1
+src.tag.warpanel_pozice_x_y=25,250
+src.tag.schopnostipanel_pozice_x_y=25,250
+f_osobni_nastaveni
+on=2
+src.tag.warpanel_pozice_x_y=25,250
+src.tag.schopnostipanel_pozice_x_y=25,250
+f_osobni_nastaveni
+
+on=3
+src.tag.warpanel_pozice_x_y=545,520
+src.tag.schopnostipanel_pozice_x_y=25,250
+f_osobni_nastaveni
+
+on=4
+src.tag.warpanel_pozice_x_y=0,600
+src.tag.schopnostipanel_pozice_x_y=750,5
+f_osobni_nastaveni
+
+on=5
+src.tag.warpanel_pozice_x_y=<argtxt(0)>
+src.tag.schopnostipanel_pozice_x_y=<argtxt(1)>
+f_osobni_nastaveni
+
+on=6//warmenu nechce
+src.tag.vlastnosti = <src.tag.vlastnosti>&~010000000
+f_osobni_nastaveni
+
+on=7//chce videt warmenu
+src.tag.vlastnosti = <src.tag.vlastnosti>|010000000
+f_osobni_nastaveni
+
+on=8//minipanel nechce
+src.tag.vlastnosti = <src.tag.vlastnosti>&~040000000
+f_osobni_nastaveni
+
+on=9//chce videt minipanel
+src.tag.vlastnosti = <src.tag.vlastnosti>|040000000
+f_osobni_nastaveni
+
+on=10//enciklopedii nechce
+src.tag.vlastnosti = <src.tag.vlastnosti>&~020000000
+f_osobni_nastaveni
+
+on=11//chce videt enciklopedii
+src.tag.vlastnosti = <src.tag.vlastnosti>|020000000
+f_osobni_nastaveni
+
+on=12
+DIALOG=d_osobni_nastaveni_chat
+
+
+on=13
+DIALOG=d_osobni_nastaveni_acount
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+[dialog d_osobni_nastaveni_chat]
+20,20
+page=0
+gumppic 13 15 03240
+//resizepic 0 0 9250 640 530// hl
+
+page=1//chat
+gumppic 13 15 0323f // OBRAZEK podklad
+button 28 111 12865 12865 1 0 1//zobrazeni
+button 296 113 12867 12867 1 0 2//Acount
+HTMLGUMP(30,143,470,57,2,0,1)//Pravidla na chatu
+//
+button 150 209 2443 2443 1 0 15
+text 160 211 1000 3
+button 150 231 2443 2443 1 0 16
+text 160 234 1000 5
+button 150 253 2443 2443 1 0 17
+text 160 256 1000 7
+button 150 275 2443 2443 1 0 18
+text 160 278 1000 9
+//
+//mute list
+button 50 310 03439 0343a 1 0 5
+text 57 312 1000 11
+button 50 340 03439 0343a 1 0 6
+text 57 342 1000 12
+button 50 370 03439 0343a 1 0 7
+text 57 372 1000 13
+button 50 400 03439 0343a 1 0 8
+text 57 402 1000 14
+button 50 430 03439 0343a 1 0 9
+text 57 432 1000 15
+
+button 277 310 03439 0343a 1 0 10
+text 287 312 1000 16
+button 277 340 03439 0343a 1 0 11
+text 287 342 1000 17
+button 277 370 03439 0343a 1 0 12
+text 287 372 1000 18
+button 277 400 03439 0343a 1 0 13
+text 287 402 1000 19
+button 277 430 03439 0343a 1 0 14
+text 287 432 1000 20
+text 350 149 36 21
+
+
+
+
+[dialog d_osobni_nastaveni_chat text]
+<?src.tag.warpanel_pozice_x_y?>
+<?src.tag.schopnostipanel_pozice_x_y?>
+//page 2
+<BASEFONT SIZE="+5" COLOR="#B6A93A"><h2>Pravidla pro herni Chat:</h2>  Chat slouzi ke snadnemu dorozumivani hracu. Muze dobre poslouzit jak v pripade upozorneni ostatnich hracu na nepritele v nejake lokaci, tak i k lukrativni obchodni nabidce. Mejte vsak napameti ze z RP hlediska by vase postava neco takoveho vedet nemela. Inu dobry RP hrac si chat proste vypne. <br><br> Je zakazano spamovani servru opakujcimi se zpravamy popripade nedodrzovani primerenych pauz mezi jednotlivimy zpravamy. Pro chat jakozto samozrejme pro celou hru plati zakaz uzivani vulgarizmu. </BASEFONT>
+<?qval(<eval TAG(chaton)>&chflag_good,On,Off)?>
+MORDOR Realm
+<?qval(<eval TAG(chaton)>&chflag_evil,On,Off)?>
+slyset vse
+<?qval(<eval TAG(chaton)>&chflag_all,On,Off)?>
+GMChat
+<?qval(<eval TAG(chaton)>&chflag_gm,On,Off)?>
+Umlcovaci List: (Uved jmeno postavy kterou nechces slyset.)
+<?TAG.MUTED1?>
+<?TAG.MUTED2?>
+<?TAG.MUTED3?>
+<?TAG.MUTED4?>
+<?TAG.MUTED5?>
+<?TAG.MUTED6?>
+<?TAG.MUTED7?>
+<?TAG.MUTED8?>
+<?TAG.MUTED9?>
+<?TAG.MUTED10?>
+<?TAG.MUTEDTEXT?>
+//napis zpravu..
+
+
+[dialog d_osobni_nastaveni_chat button]
+on=0
+src.tag.warpanel_pozice_x_y=<argtxt(0)>
+src.tag.schopnostipanel_pozice_x_y=<argtxt(1)>
+f_zobrazminipanel
+
+on=1
+f_osobni_nastaveni
+
+on=2
+DIALOG=(d_osobni_nastaveni_acount)
+
+ONBUTTON=5
+INPDLG TAG.MUTED1 20
+RETURN 1
+
+ONBUTTON=6
+INPDLG TAG.MUTED2 20
+RETURN 1
+
+ONBUTTON=7
+INPDLG TAG.MUTED3 20
+RETURN 1
+
+ONBUTTON=8
+INPDLG TAG.MUTED4 20
+RETURN 1
+
+ONBUTTON=9
+INPDLG TAG.MUTED5 20
+RETURN 1
+
+ONBUTTON=10
+INPDLG TAG.MUTED6 20
+RETURN 1
+
+ONBUTTON=11
+INPDLG TAG.MUTED7 20
+RETURN 1
+
+ONBUTTON=12
+INPDLG TAG.MUTED8 20
+RETURN 1
+
+ONBUTTON=13
+INPDLG TAG.MUTED9 20
+RETURN 1
+
+ONBUTTON=14
+INPDLG TAG.MUTED10 20
+RETURN 1
+
+ONBUTTON=15
+IF (<eval TAG(chaton)>&chflag_good)
+  TAG(chaton,<eval TAG(chaton)&~chflag_good>)
+else
+  TAG(chaton,<eval TAG(chaton)|chflag_good>)
+ENDIF
+DIALOG=d_osobni_nastaveni_chat
+
+ONBUTTON=16
+IF (<eval TAG(chaton)>&chflag_evil)
+  TAG(chaton,<eval TAG(chaton)&~chflag_evil>)
+else
+  TAG(chaton,<eval TAG(chaton)|chflag_evil>)
+ENDIF
+DIALOG=d_osobni_nastaveni_chat
+
+ONBUTTON=17
+IF (<eval TAG(chaton)>&chflag_all)
+  TAG(chaton,<eval TAG(chaton)&~chflag_all>)
+else
+  TAG(chaton,<eval TAG(chaton)|chflag_all>)
+ENDIF
+DIALOG=d_osobni_nastaveni_chat
+
+ONBUTTON=18
+IF (<eval TAG(chaton)>&chflag_gm)
+  TAG(chaton,<eval TAG(chaton)&~chflag_gm>)
+else
+  TAG(chaton,<eval TAG(chaton)|chflag_gm>)
+ENDIF
+DIALOG=d_osobni_nastaveni_chat
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_osobni_nastaveni_acount]
+20,20
+page=0
+gumppic 13 15 0323e // OBRAZEK podklad
+button 189 110 12866 12866 1 0 2//chatovani
+button 28 111 12865 12865 1 0 1//zobrazeni
+
+page=1
+button 189 110 12866 12866 1 0 2//chatovani
+button 296 113 12867 12867 1 0 3//Acount
+
+//vlastni pozice
+textentry 200 365 170 25 152 0 2
+textentry 200 405 170 25 152 1 1
+button 455 380 0344a 0344b 1 0 5//potvrzeni
+if (<src.tag.vlastnosti>&010000000)
+
+
+
+
+
+
+
+[dialog d_osobni_nastaveni_acount text]
+<?src.tag.warpanel_pozice_x_y?>
+***
+aaa
+
+
+[dialog d_osobni_nastaveni_acount button]
+on=0
+f_zobrazminipanel
+
+on=1
+f_osobni_nastaveni
+
+
+on=2
+DIALOG=d_osobni_nastaveni_chat
+
+
+on=3
+DIALOG=d_osobni_nastaveni_acount
+
+
+on=5
+if (<argtxt(1)> ==***)
+say("Nebylo zadano spravne heslo, zmeneno.")
+//src.account.password=<argtxt(1)>
+DIALOG=d_osobni_nastaveni_acount
+return 1
+endif
+
+
+say("Heslo zmeneno.")
+//src.account.password=<argtxt(1)>
+//DIALOG=d_osobni_nastaveni_acount
+//endif
+//DIALOG=d_osobni_nastaveni_acount
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[dialog d_inforegy]
+0,0
+resizepic 0 0 9380 450 490//regy 
+text 40 30 0 26
+////
+tilepic 20 70 3962
+tilepic 25 75 3962
+htmlgump 70 70 170 20 0 0 0 0
+					tilepic 220 70 3967
+					tilepic 225 75 3967
+					htmlgump 270 70 170 20 13 0 0 0
+tilepic 20 100 3963
+tilepic 25 105 3963
+htmlgump 70 110 170 20 1 0 0 0
+					tilepic 220 100 3968
+					tilepic 225 105 3968
+					htmlgump 270 110 170 20 14 0 0 0
+tilepic 20 130 3972
+tilepic 25 135 3972
+htmlgump 70 140 170 20 2 0 0 0
+					tilepic 220 130 3969
+					tilepic 225 135 3969
+					htmlgump 270 140 170 20 15 0 0 0
+tilepic 20 160 3973
+tilepic 25 165 3973
+htmlgump 70 170 170 20 3 0 0 0
+					tilepic 220 160 3970
+					tilepic 225 165 3970
+					htmlgump 270 170 170 20 16 0 0 0
+tilepic 20 190 3974
+tilepic 25 195 3974
+htmlgump 70 200 170 20 4 0 0 0
+					tilepic 220 190 3971
+					tilepic 225 195 3971
+					htmlgump 270 200 170 20 17 0 0 0
+tilepic 20 220 3976
+tilepic 25 225 3976
+htmlgump 70 230 170 20 5 0 0 0
+					tilepic 220 220 3975
+					tilepic 225 225 3975
+					htmlgump 270 230 170 20 18 0 0 0
+tilepic 20 250 3980
+tilepic 25 255 3980
+htmlgump 70 260 170 20 6 0 0 0
+					tilepic 220 250 3977
+					tilepic 225 255 3977
+					htmlgump 270 260 170 20 19 0 0 0
+tilepic 20 280 3981
+tilepic 25 285 3981
+htmlgump 70 290 170 20 7 0 0 0
+					tilepic 220 280 3978
+					tilepic 225 285 3978
+					htmlgump 270 290 170 20 20 0 0 0
+tilepic 20 310 3960
+tilepic 25 315 3960
+htmlgump 70 320 170 20 8 0 0 0
+					tilepic 220 310 3979
+					tilepic 225 315 3979
+					htmlgump 270 320 170 20 21 0 0 0
+tilepic 20 340 3961
+tilepic 25 345 3961
+htmlgump 70 350 170 20 9 0 0 0
+					tilepic 220 340 3982
+					tilepic 225 345 3982
+					htmlgump 270 350 170 20 22 0 0 0
+tilepic 20 370 3964
+tilepic 25 375 3964
+htmlgump 70 380 170 20 10 0 0 0
+					tilepic 220 370 3983
+					tilepic 225 375 3983
+					htmlgump 270 380 170 20 23 0 0 0
+tilepic 20 400 3965
+tilepic 25 405 3965
+htmlgump 70 410 170 20 11 0 0 0
+					tilepic 220 400 3984
+					tilepic 225 405 3984
+					htmlgump 270 410 170 20 24 0 0 0
+tilepic 20 430 3966
+tilepic 25 435 3966
+htmlgump 70 440 170 20 12 0 0 0
+					tilepic 220 430 3985
+					tilepic 225 435 3985
+					htmlgump 270 440 170 20 25 0 0 0
+
+
+
+
+
+
+[dialog d_inforegy text]
+<?rescount i_reag_black_pearl?>  Black pearl
+<?rescount i_reag_blood_moss?>  Blood moss
+<?rescount i_reag_garlic?>  Garlic
+<?rescount i_reag_ginseng?>  Ginseng
+<?rescount i_reag_mandrake_root?>  Mandrake root
+<?rescount i_reag_nightshade?>  Nightshade
+<?rescount i_reag_sulfur_ash?>  Sulfur ash
+<?rescount i_reag_spider_silk?>  Spider silk
+<?rescount i_reag_batwing?>  Batwing
+<?rescount i_reag_blackmoor?>  Blackmoor
+<?rescount i_reag_blood_spawn?>  Blood spawn 
+<?rescount i_reag_blood_vial?>  Blood vial
+<?rescount i_reag_bone?>  Bone
+<?rescount i_reag_brimstone?>  Brimstone
+<?rescount i_reag_daemon_bone?>  Daemon bone
+<?rescount i_reag_fertile_dirt?>  Fertile dirt
+<?rescount i_reag_dragon_blood?>  Dragon blood
+<?rescount i_reag_executioners_cap?> Executioners cap
+<?rescount i_reag_eye_of_newt?>  Eye of newt
+<?rescount i_reag_obsidian?>  Obsidian
+<?rescount i_reag_pig_iron?>  Pig iron
+<?rescount i_reag_pumice?>  Pumice
+<?rescount i_reag_serpent_scale?>  Serpent scale
+<?rescount i_reag_volcanic_ash?>  Volcanic ash
+<?rescount i_reag_dead_wood?>  Dead wood
+<?rescount i_reag_worm_heart?>  Worm heart
+Regy ktere mam prave u sebe..
+
+[dialog d_inforegy button]
+
+on=0
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[dialog d_hlavni_info_priest]
+0,0
+//argo.setlocation <src.tag(priestbook_pozice_x_y)>
+//argo.setlocation(<src.tag(priestbook_pozice_X)>,<src.tag(priestbook_pozice_y)>)
+//nomove 0
+//noclose 0
+//nodispose 0
+page=0
+f_jakevlasnosti
+f_jakeskily_priest
+f_jakeskily_priest2
+//resizepic 20 20 9250 800 560// hlavni podklad
+gumppic 20 20 03176
+text 75 40 1153 0     //jmeno
+text 125 40 1152 1     //name
+text 75 60 1153 2     //rasa
+text 115 60 1152 3     //rasa hodnota
+text 75 80 1153 5     //povolani
+text(140,80,1152,29)  //
+//resizepic 40 100 9250 290 275//podklad u statu
+//
+resizepic 160 115 2620 80 30 
+text 75 120 1153 8     //sila
+text 170 120 1152 9     //sila value
+//
+resizepic 160 145 2620 80 30 
+text 75 150 1153 10     //hbitost
+text 170 150 1152 11     //hbitost value
+//
+resizepic 160 175 2620 80 30 
+text 75 180 1153 12     //vytrvalost
+text 170 180 1152 13     //vit value
+//
+resizepic 160 205 2620 80 30 
+text 75 210 1153 14     //odolnost
+text 170 210 1152 15     //hits value
+//
+resizepic 160 235 2620 80 30 
+text 75 240 1153 16     //inteligence
+text 170 240 1152 17     //int value
+//
+resizepic 160 265 2620 80 30 
+text 75 270 1153 18     //moudrost
+text 170 270 1152 19     //moudrost value
+//
+resizepic 160 295 2620 120 30 
+text 75 300 1153 20     //mana
+text 170 300 7 21     //mana value
+text 215 300 1152 22     //mana value
+text 230 300 8 23     //mana value
+//
+resizepic 160 325 2620 120 30 
+text 75 330 1153 25     //vira
+text 170 330 7 26     //status value
+text 215 330 1152 27     //lomitko
+text 230 330 8 28     //maxvira value
+
+text 80 400 8 32	//novy level
+
+
+
+
+
+button(425,503,5583,5584,0,1,0)//jak si vede
+button(495,503,5557,5558,1,0,4)//regy
+button(565,503,5563,5564,0,3,0)//priest
+
+page 1
+resizepic 272 50 024a4 255 380//pergamen
+HTMLGUMP(300,90,200,310,30,0,1)//obsahpergamenu
+
+page 2// regy
+resizepic 340 50 9380 450 450//regy 
+
+page 3
+resizepic 540 50 9380 250 450//pergamen
+
+
+
+
+[dialog d_hlavni_info_priest text]
+Jmeno: 
+<?name?>
+Rasa:
+<?tag(race)?>
+bla bla
+Povolani://5
+obcan: 
+<?tag(nation)?>
+Sila
+<?str?>
+Hbitost//10
+<?dex?>
+Vytrvalost
+<?vit?>
+Odolnost
+<?hits?>
+Inteligence
+<?int?>
+Moudrost
+<?src.tag(moudrost)?>
+Mana://20
+<?mana?>
+/
+<?maxmana?>
+xhxhx
+Vira://25
+<?tag.statusvira?>
+/
+<?tag.maxstatusvira?>
+<?Src.Sex "PRIEST (Knez)","PRIESTESS  (Knezka)"?> //29
+<BASEFONT SIZE="+5" COLOR="#010131"><?Src.Sex "Knez","Knezka"?> Level: <?tag(level)?><br>Mas <?src.tag(experience)?> <U> zkusenosti: </U> z <?eval (<safe.tag.level>+1)*nextlevel?> potrebnych na novy level <br><br><br><h1>Dovednosti:</h1><br><br> <h2>Obecne:</h2><br><?var.(co_umi_priest)?><?var.(co_umi_priest2)?> <?f_jakeskily_obchodnictvi?> <br><br> <h2>Hovorit jazyky:</h2><br><?var.(co_umi_mluvit)?>   <h2>Cist jazyky:</h2><br><?var.(co_umi_cist)?><br></BASEFONT>
+<?Src.Sex "MAG (Kouzelnik)","PRIESTESS  (Kouzelnice)"?>
+Novy level//32
+x
+x
+x
+x
+//regy
+
+
+
+
+[dialog d_hlavni_info_priest button]
+on=0
+//dialogclose(d_inforegy)
+f_zobrazminipanel
+//f_warmenu
+
+on=1
+dialog(d_hlavni_info)
+
+on=2
+dialog(d_hlavni_info)
+
+on=3
+dialog(d_hlavni_info)
+
+on=4
+//dialogclose(d_hlavni_info_priest)
+//dialogclose(d_inforegy)
+dialog(d_hlavni_info_priest)
+dialog(d_inforegy)
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

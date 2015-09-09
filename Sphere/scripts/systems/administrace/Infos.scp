@@ -1,0 +1,785 @@
+[function dialog_textpos]//obj, (sloupec), bez odsazeni
+If (argvcount==1)
+  var(lastxpos,<eval(<d_def_skvira>+<d_def_okraj>)>)
+else
+  var(lastxpos,<eval(<tag(sloupec_x[argv(1)])>)>)
+endif
+if !(argv(2))
+  var(lastxpos,#+<d_def_odsazeni>)
+endif
+var(lastypos,<tag(obj_y[argv(0)])>)
+return <var(lastxpos)>,<var(lastypos)>
+
+[function dialog_buttonpos]//obj, (sloupec), bez odsazeni
+If (argvcount==1)
+  var(lastxbuttpos,<eval(<d_def_skvira>+<d_def_okraj>)>)
+else
+  var(lastxbuttpos,<eval (<tag(sloupec_x[argv(1)])>)>)
+endif
+if !(argv(2))
+  var(lastxbuttpos,#+<d_def_odsazeni>)
+endif
+var(lastybuttpos,<tag(obj_y[argv(0)])>-3)
+return <var(lastxbuttpos)>,<var(lastybuttpos)>
+
+[function dialog_prvni]
+tag(icount,0)
+tag(rowcount,100)
+tag(nexty,<d_def_okraj>+<d_def_skvira>)
+resizepic(0,0,9250,<tag(sirka)>,<tag(vyska)>)
+
+[function dialog_pozadi]//y,vyska(radky)(,sirka1,sirka2,sirka3...)
+tag(obj_y[tag(icount)],<argv(0)>)
+tag(icount,#+1)
+tag(nexty,<argv(0)>+<eval((<d_def_radek_vyska>*<argv(1)>)+<d_def_skvira>)>)
+tag(sloupec_x[0],<eval(<d_def_okraj>+<d_def_skvira>)>)//nulty sloupec
+arg(index,1)
+if (argvcount==2)//je to radek
+ gumppictiled(<d_def_okraj>+<d_def_skvira>,<argv(0)>,<tag(sirka)>-(2*(<d_def_okraj>+<d_def_skvira>)),<argv(1)>*<d_def_radek_vyska>,2624)
+ return 0
+endif//vice sloupcu
+while (index<(argvcount-1)) 
+ tag(sirkasloupce[index-1],<eval argv(index+1)>) //treti argument a dale (sirka 1 atd...)
+ tag(sloupec_x[index],<eval(<d_def_skvira>+<tag(sloupec_x[index-1])>+<tag(sirkasloupce[index-1])>)>)
+ arg(index,#+1)		//(((<tag(sirka)>-(2*(<d_def_okraj>+<d_def_skvira>)))*<argv(index+1)>)/1000)
+endif
+arg(index,0)
+while (index<(argvcount-2))
+ //src.smsg zacatek sloupce <index>:<tag(sloupec_x[index])>
+ if !(safe sloupec_noback[index])
+  gumppictiled(<tag(sloupec_x[index])>,<argv(0)>,<tag(sirkasloupce[index])>,<eval argv(1)>*<d_def_radek_vyska>,2624)
+ endif
+ arg(index,#+1)
+endif
+if !(safe sloupec_noback[index])
+ gumppictiled(<tag(sloupec_x[index])>,<argv(0)>,((<tag(sirka)>-<tag(sloupec_x[index])>)-(<d_def_okraj>+<d_def_skvira>)),<eval argv(1)>*<d_def_radek_vyska>,2624)
+endif
+
+[function dialog_zvyrazni]
+gumppictiled(<tag(sloupec_x[0])>,<args>,(<tag(sirka)>-((2*<d_def_okraj>)+<d_def_odsazeni>)),2,2624)
+gumppictiled(<tag(sloupec_x[0])>,<args>+<d_def_radek_vyska>-2,(<tag(sirka)>-((2*<d_def_okraj>)+<d_def_odsazeni>)),2,2624)
+
+[function dialog_zpruhledni]
+checkertrans(<d_def_okraj>,<d_def_okraj>,(<tag(sirka)>-(2*<d_def_okraj>)),(<tag(nexty)>-<d_def_okraj>)))
+
+[defnames dialogy]
+d_def_button_ok1      0fb7
+d_def_button_ok2      0fb9
+d_def_button_cancel1  0fb1
+d_def_button_cancel2  0fb3
+d_def_button_dialog1  0fab
+d_def_button_dialog2  0fad
+d_def_button_checkr1  0fa5
+d_def_button_checkr2  0fa7
+d_def_button_checkl1  0fae
+d_def_button_checkl2  0fb0
+d_def_button_select1  0fb4
+d_def_button_select2  0fb6
+d_def_button_left1    026b6
+d_def_button_left2    026b7
+d_def_button_right1   026b0
+d_def_button_right2   026b1
+d_def_button_up1      026ad
+d_def_button_up2      026ae
+d_def_button_down1    026b3
+d_def_button_down2    026b4
+
+d_def_radek_vyska     19
+d_def_skvira          3
+d_def_okraj           10
+d_def_odsazeni        5
+d_def_button_sirka    30
+d_def_button_vyska    22
+d_def_baseMenu_sirka  26
+d_def_baseMenu_vyska  73
+
+d_def_writecolor	2300
+d_def_readcolor		2303
+d_def_NAcolor		2305
+
+d_def_refer_sirka	800
+d_def_refer_vyska	480
+
+d_def_admin_sirka	800
+d_def_admin_vyska	480
+
+d_def_accounts_sirka	800
+d_def_accounts_vyska	480
+
+d_def_accinfo_sirka	800
+d_def_accinfo_vyska	480
+
+d_def_charinfo_sirka	800
+d_def_charinfo_vyska	480
+
+d_def_charinfo_sirka	800
+d_def_iteminfo_vyska	480
+
+d_def_flagsinfo_sirka	800
+d_def_flagsinfo_vyska	480
+
+d_def_caninfo_sirka	640
+d_def_caninfo_vyska	480
+
+d_def_skills_sirka	640
+d_def_skills_vyska	480
+
+d_def_Pages_sirka	800
+d_def_Pages_vyska	480
+
+//flags:
+iflag_rename	00001//name: 2 - <argv(6)>
+iflag_notext	00002
+iflag_button	00004//command: 3 - <argv(7)>
+iflag_bitmask	00008//bit to operate: 1 <argv(5)>, name of bitmask to change: <argv(4)>
+iflag_nowrite	00010//read only
+iflag_npc	00020
+iflag_pc	00040
+iflag_adminrea	00080//vidi jen admin
+iflag_adminwr	00100//jen admin muze prepisovat(ostatni cist)
+iflag_text	00200//navratova
+iflag_check	00800
+iflag_string	01000//pro kontrolu
+
+//047e
+[function blank]
+[function f_inforow_apply]
+//<argv(0)>	index
+//<argv(1)>	argcheck
+//<argv(2)>	argtxt
+
+//<argv(3)>	flag
+//<argv(4)>	property
+//<argv(5)>	command 
+//<argv(6)>	flag bit
+
+//serv.smsg("aplly:index:<argv(0)> argcheck:<argv(1)> argtxt:<argv(2)> flag:<argv(3)> property:<argv(4)> com103mand:<argv(5)> bit:<argv(6)>\n")
+
+arg(iflags,<eval argv(3)>)
+IF (<iflags>&iflag_text)
+ arg(nvalue,<argv(2)>)
+elseif (<iflags>&iflag_check)
+ arg(nvalue,<argv(1)>) 
+else
+ return 0
+endif
+
+arg(ovalue,<?safe finduid(tag(from)).<argv(4)>?>)
+if (<iflags>&iflag_bitmask)
+ arg(ovalue,<hval <ovalue>&<argv(6)>>) 
+endif
+
+if (<iflags>&iflag_string)
+  if (strcmpi("<safe ovalue>","<safe nvalue>"))
+    finduid(<tag(from)>).try <argv(4)>(<nvalue>)
+  endif
+elseif (<iflags>&iflag_check)//iflag_bitmask
+  if ((ovalue)&&(!nvalue))
+    if (<iflags>&iflag_bitmask)
+      finduid(<tag(from)>).try <argv(4)>(<hval (finduid(tag(from)).<argv(4)>)&~<argv(6)>>)
+    else
+      finduid(<tag(from)>).try <argv(4)>(0))
+    endif
+  elseif ((!ovalue)&&(nvalue))
+    if (<iflags>&iflag_bitmask)
+      finduid(<tag(from)>).try <argv(4)>(<hval (finduid(tag(from)).<argv(4)>)|<argv(6)>>)
+    else
+      finduid(<tag(from)>).try <argv(4)>(1)
+    endif
+  endif
+else
+  if (<safe nvalue>!=<safe ovalue>)
+    finduid(<tag(from)>).try <argv(4)>(<nvalue>)
+  endif
+endif
+
+[function debugtry)
+accmsg(<args>)
+<args>
+
+//src.smsg zmenilo se: <argv(4)>
+
+
+
+[function f_inforow_button]
+//<argv(0)>	index
+
+//<argv(1)>	flag
+//<argv(2)>	property
+//<argv(3)>	command 
+//<argv(4)>	flag bit
+arg(command,<argv(3)>)
+arg(property,<argv(2)>)
+finduid(<tag(from)>).try <arg(command)>(<?safe finduid(<tag(from)>).<arg(property)>?>)
+
+[function f_inforow]
+//<argv(0)>	y
+//<argv(1)>	x1
+//<argv(2)>	x2
+//<argv(3)>	x3
+
+//<argv(4)>	flags
+//<argv(5)>	propertyname/bitmask to change
+//<argv(6)>	[second name]
+//<argv(7)>	[command at button]
+//<argv(8)>	[flag bit]
+
+//logmsg(<argv(5)>)
+arg(iflags,<eval argv(4)>)
+tag(rowcount,#+1)
+arg(x1,<argv(1)>+<d_def_odsazeni>)
+arg(x2,<argv(2)>)
+arg(x3,<argv(3)>)
+
+arg(mytextId,<eval 100+(<tag(rowcount)>*2)>)
+arg(return_flag,<hval <iflags>&iflag_string>)
+arg(return_prop,"<argv(5)>")
+
+IF (<iflags>&iflag_rename)
+  arg(popis,<argv(6)>)
+else
+  arg(popis,<argv(5)>) 
+endif
+
+arg(textcolor,<d_def_writecolor>)
+If (<iflags>&iflag_adminrea)&&(!src.isadmin)
+  arg(textcolor,<d_def_NAcolor>)
+  SetText(mytextId,No Priv)
+  text(<x3>+<d_def_odsazeni>,<argv(0)>,textcolor,mytextid)
+else
+  arg(hodnota,<argv(5)>)
+  if (strlen(<tag(from)>))
+    arg(hodnota,<?safe finduid(tag(from)).<arg(hodnota)>?>)
+  else
+    arg(hodnota,0)
+  endif
+  if (<iflags>&iflag_bitmask)
+    arg(return_flag,#+iflag_bitmask)
+    arg(hodnota,<eval <hodnota>&<argv(8)>>)
+  endif
+  IF ((<iflags>&iflag_npc) && !(npcExists(<tag(from)>))) || ((<iflags>&iflag_pc) && !(playerExists(<tag(from)>))) && !(<iflags>&iflag_notext)
+    SetText(mytextId,N/A)
+    arg(textcolor,<d_def_NAcolor>)
+    text(<x3>+<d_def_odsazeni>,<argv(0)>,textcolor,mytextid)
+  else
+    If (<iflags>&iflag_check)
+      if (<iflags>&iflag_nowrite)||((<iflags>&iflag_adminwr)&&(!src.isadmin))
+        arg(textcolor,<d_def_readcolor>)
+        gumppic(<x3>,<argv(0)>,qval(hodnota,211,210))
+      else
+        arg(textcolor,<d_def_writecolor>)
+        checkbox(<x3>,<argv(0)>,210,211,<hodnota>,tag(rowcount))
+        arg(return_flag,#+iflag_check)
+      endif
+    elseif !(<iflags>&iflag_notext)
+      SetText(mytextId,"<?safe hodnota?>")
+      if (<iflags>&iflag_nowrite)||((<iflags>&iflag_adminwr)&&(!src.isadmin))
+        arg(textcolor,<d_def_readcolor>)
+        text(<x3>+<d_def_odsazeni>,<argv(0)>,textcolor,mytextid)
+      else
+        arg(textcolor,<d_def_writecolor>)
+        textentry(<x3>+<d_def_odsazeni>,<argv(0)>,200,<d_def_radek_vyska>,textcolor,tag(rowcount),mytextid)
+        arg(return_flag,#+iflag_text)
+      endif
+    endif
+    IF (<iflags>&iflag_button)
+      arg(return_flag,#+iflag_button)
+      button(<x2>,<argv(0)>,4005,4007,1,0,tag(rowcount))
+    endif
+  endif
+endif
+texta(<x1>,<argv(0)>,textcolor,<popis>)
+
+//serv.smsg(for return: "<tag(rowcount)>:<hval return_flag>:<return_prop>:<argv(7)>:<argv(8)>")
+tag(row_ret[tag(rowcount)],"<hval return_flag>","<return_prop>","<argv(7)>","<argv(8)>")
+//serv.smsg(for return tag: "<tag(row_ret[tag(rowcount)])>"\n)
+
+//flag, property name, command, flag bit to change
+
+[typedef t_allspawns]
+on=@userclick
+spawnname_<src.tag(clienttype)>
+
+[function spawnname_old]
+message("<amount> <findres(chardef,more).defname> (<findres(chardef,more).name>)")
+message("Min:<morex> Max:<morey> Homedist:<morez>")
+message("Timer: <timer>")
+
+[function spawnname_new]
+return 0
+
+[function spawnname_]
+return 1
+
+[typedef t_allresources]
+on=@userclick
+resourcename_<src.tag(clienttype)>
+
+[function resourcename_old]
+message("<finduid(more1).defname>")
+message("Timer: <timer>")
+
+[function resourcename_new]
+return 0
+
+[function resourcename_]
+return 0
+
+[FUNCTION spawn]
+IF !(strcmpi(<ARGs>,?))
+	SYSMESSAGE Opens up the spawn creation dialog.
+	SYSMESSAGE Format: spawn ARGUMENT
+	SYSMESSAGE Where ARGUMENT can be 1 or 2.  1 will recreate the last spawn point set up.
+	SYSMESSAGE 2 will clear spawn settings.
+	RETURN 1
+ELSEIF (ARGs==1)
+	f_spawninit
+	RETURN 1	
+ELSEIF (ARGs==2)||(strlen(<tag(spawdl_data)>)==0)
+        tag(spawdl_data,"1,c_man,1,10,1")
+	MESSAGE="Spawn settings cleared."
+	RETURN 1
+ENDIF
+DIALOG(d_spawner,<tag(spawdl_data)>)
+RETURN 1
+
+[DIALOG d_spawner]
+100,100
+argo.tag(sirka,400)
+argo.tag(vyska,<eval 23+(5*d_def_radek_vyska)+(2*d_def_skvira)+(2*d_def_okraj)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,5,75)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,0481,Amount)
+argo.texta(lastxpos,lastypos+d_def_radek_vyska,0481,BASEID)
+argo.texta(lastxpos,lastypos+(2*d_def_radek_vyska),0481,Mintime)
+argo.texta(lastxpos,lastypos+(3*d_def_radek_vyska),0481,Maxtime)
+argo.texta(lastxpos,lastypos+(4*d_def_radek_vyska),0481,Homedist)
+
+argo.settext(101,"<argv(0)>")
+argo.settext(102,"<argv(1)>")
+argo.settext(103,"<argv(2)>")
+argo.settext(104,"<argv(3)>")
+argo.settext(105,"<argv(4)>")
+
+argo.textentry(<argo.dialog_textpos(0,1)>,200,d_def_radek_vyska,0481,			1,101)
+argo.textentry(lastxpos,lastypos+d_def_radek_vyska,200,d_def_radek_vyska,0481,		2,102)
+argo.textentry(lastxpos,lastypos+(2*d_def_radek_vyska),200,d_def_radek_vyska,0481,	3,103)
+argo.textentry(lastxpos,lastypos+(3*d_def_radek_vyska),200,d_def_radek_vyska,0481,	4,104)
+argo.textentry(lastxpos,lastypos+(4*d_def_radek_vyska),200,d_def_radek_vyska,0481,	5,105)
+
+argo.button(<d_def_okraj>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+argo.button(<d_def_okraj>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)//cancel
+
+[DIALOG d_spawner BUTTON]
+ON=0
+SYSMESSAGE Spawning Cancelled
+RETURN 0
+ON=1
+safe(arg(monsterid,<findres(chardef,argtxt(2)).defname>))
+if (arg(monsterid))
+  tag(spawdl_data,"<eval argtxt(1)>,<arg(monsterid)>,<eval argtxt(3)>,<eval argtxt(4)>,<eval argtxt(5)>,")
+  f_spawninit(<tag(spawdl_data)>)
+else
+  tag(spawdl_data,"<eval argtxt(1)>,<argtxt(2)>,<eval argtxt(3)>,<eval argtxt(4)>,<eval argtxt(5)>,")
+  src.Redmessage("Bad monster ID")
+  DIALOG(d_spawner,<tag(spawdl_data)>)
+endif
+RETURN 0
+
+[function f_spawninit]
+NEWITEMsafe(01ea7)
+lastnew.P=<P>
+lastnew.TYPE=34
+lastnew.AMOUNT=<argv(0)>
+lastnew.MORE=<argv(1)>
+lastnew.MOREX=<argv(2)>
+lastnew.MOREY=<argv(3)>
+lastnew.MOREZ=<argv(4)>
+lastnew.ATTR=0b0
+lastnew.timer=1
+var(spawnuid,<lastnew>)
+var(spawnuid).spawnfull
+newitemsafe(i_badspawncheck)
+lastnew.cont=<src>
+lastnew.link=<var(spawnuid)>
+lastnew.timer=2
+
+[itemdef i_badspawncheck]
+id=i_memory
+type=t_eq_script
+name=badspawncheck
+
+on=@timer
+if (link.more1==0)||(link.timer<0)||link.more2==0)
+  link.remove
+  if (cont.isGM)
+    cont.sysMessage("Spatny spawn - smazan")
+  endif
+elseif (cont.isGM)
+    cont.sysMessage("Spawn nastaven a inicializovan v poradku")
+  endif
+endif
+remove
+return 1
+
+[FUNCTION removeall]
+VAR(P,<P>)
+P=1,1,0
+NUKE f_removeall <ARGS>
+SELF
+P=6143,4095,0
+SELF
+P=1,1,0
+NUKECHAR f_removeall_char <ARGS>
+SELF
+P=6143,4095,0
+SELF
+P=<VAR.P>
+
+[FUNCTION f_removeall]
+IF (<BASEID> == <ARGS>)
+	REMOVE
+ENDIF
+
+[FUNCTION f_removeall_char]
+IF (0<FINDID.<ARGS>.UID>)
+	TRY FINDID.<ARGS>.REMOVE
+ENDIF
+
+[FUNCTION charremove]
+VAR(P,<P>)
+P=1,1,0
+NUKECHAR f_charremove <ARGS>
+SELF
+P=6143,4095,0
+SELF
+P=<VAR.P>
+
+[FUNCTION f_charremove]
+IF (<BASEID> == <ARGS>)
+	FLAGS=04000000
+	SUICIDE
+ENDIF
+
+[FUNCTION nukeid]
+NUKE f_nukeid <ARGS>
+
+[FUNCTION f_nukeid]
+IF (<BASEID> == <ARGS>)
+	REMOVE
+	UPDATE
+ENDIF
+
+[FUNCTION nukezup]
+IF (<ARGN> == 4804820)
+	SYSMESSAGE Invalid argument.
+	RETURN 1
+ENDIF
+NUKE f_nukezup <ARGN>
+
+[FUNCTION f_nukezup]
+IF (<Z>>=<ARGN>)
+	REMOVE
+ENDIF
+
+[FUNCTION nukezdown]
+IF (<ARGN> == 4804820)
+	SYSMESSAGE Invalid argument.
+	RETURN 1
+ENDIF
+NUKE f_nukezdown <ARGN>
+
+[FUNCTION f_nukezdown]
+IF (<Z><=<ARGN>)
+	REMOVE
+ENDIF
+
+[FUNCTION nukez]
+IF (<ARGN> == 4804820)
+	SYSMESSAGE Invalid argument.
+	RETURN 1
+ENDIF
+NUKE f_nukez <ARGN>
+
+[FUNCTION f_nukez]
+IF (<Z> == <ARGN>)
+	REMOVE
+ENDIF
+
+[typeDEF t_GM_tool]
+ON=@Create
+ATTR=ATTR_Newbie
+MORE2=0
+
+ON=@UNEQUIP 
+src.flag_nightsight=0
+SRC.UPDATE 
+
+ON=@Equip
+src.flag_nightsight=1
+SRC.UPDATE 
+If <SRC.account.plevel> > 1
+Return 0
+Else
+SRC.SysMessage Tohle neni pro tebe
+bounce
+remove
+Return 1
+EndIf
+
+ON=@userDClick
+if (<more2>==1)
+ Target Co chces presunout?
+elseif (<more2>==3)
+ Target koho?
+elseif (<more2>==4)
+ src.spawn 
+ more2=0
+elseif (<more2>==5)
+ src.guardit 
+ more2=0
+else
+ if (<src.account.plevel> > 3)
+  menu m_gm_tool
+ else
+  menu m_cons_tool
+ endif
+endif
+return 1
+
+ON=@TargOn_Char
+If (<More2>==1)
+ link=<src.targ.uid>
+ More2=2
+ targetG Kam s nim?
+ElseIf (<More2>==2)
+ link.p=<SRC.TARGP>
+ link.update
+ link=
+ More2=0
+ElseIf (<More2>==3)
+ src.targ.zakladabilities
+ src.targ.zakladstats
+ More2=0
+endif
+Return 1
+
+On=@TargOn_Item
+If (<More2>==1)
+ link=<src.targ.uid>
+ More2=2
+ targetG Kam s tim? 
+ Return 1
+ElseIf (<More2>==2)
+ link.p=<SRC.TARGP>
+ link.update
+ link=
+ More2=0
+endif
+
+On=@TargOn_Ground
+If (<More2>==2)
+ link.p=<SRC.TARGP>
+ link.update
+ link=
+ More2=0
+ Return 1
+endif
+
+[MENU m_gm_tool]
+GM menu
+ON=0 Presunout char/item
+ More2=1
+ dclick
+ return 1
+ON=0 Stats a ability na zaklad. (prikaz .zakladabilities, .zakladstats)
+ More2=3
+ dclick
+ return 1
+ON=0 Vytvorit spawn (podobne jako axis, prikaz .spawn)
+ More2=4
+ dclick
+ return 1
+ON=0 Nastavit strazici spawn pro dvere/kontejner/telepad (prikaz .guardit)
+ More2=5
+ dclick
+return 1
+
+[MENU m_cons_tool]
+Menu Kanclere
+ON=0 Presunout char/item
+More2=1
+dclick
+return 1
+ON=0 Stats a ability na zaklad. (prikaz .zakladabilities, .zakladstats)
+More2=3
+dclick
+return 1
+
+[itemdef i_gm_staff]
+id=i_staff_gnarled
+name Gm staff
+dam=100
+
+on=@create
+hitpoints=0ffff
+type=t_gm_tool
+
+[typedef t_move_tool]
+ ON=@Equip
+ If <SRC.account.plevel> > 1
+  src.flag_nightsight=1
+  SRC.UPDATE
+  Return 0
+ Else
+  SRC.SysMessage Tohle neni pro tebe
+  bounce
+  remove
+  Return 1
+ EndIf
+ 
+ ON=@userDClick
+ target(Co chces presunout?)
+ more1=10 //indikator zamereni, po zamereni se zmeni
+ return 1
+ 
+ ON=@TargOn_Char
+ if(more1==10) //zamerujeme
+  link=<src.targ>
+  more1=20
+  targetg(Kam s nim?)
+  return 1
+ endif
+ if(more1==20) //umistujeme
+  link.p=<src.targp>
+  link.update
+  link=
+  more1=0
+  return 1
+ endif
+ 
+ ON=@TargOn_Ground
+ if(more1==10) //zamerujeme
+  target(Napred nekoho zamer ne?)
+  return 1
+ endif
+ if(more1==20) //umistit
+  link.p=<src.targp>
+  link.update
+  link=
+  more1=0
+  return 1
+ endif
+ 
+ ON=@TargOn_item
+ if(more1==10) //zamerujeme
+  link=<src.targ>
+  more1=20
+  targetg(Kam s tim?)
+  return 1
+ endif
+ if(more1==20) //umistit
+  link.p=<src.targp>
+  link.update
+  link=
+  more1=0
+  return 1
+ endif
+
+//left upper dialog coordinates
+[function dialog_lu]
+arg(x,<eval dialog_xl>)
+arg(y,<eval dialog_yu>)
+var(lastxbuttpos,<arg(x)>)
+var(lastybuttpos,<arg(y)>)
+return <arg(x)>,<arg(y)>
+
+//right upper dialog coordinates 
+[function dialog_ru]
+arg(x,<eval dialog_xr>)
+arg(y,<eval dialog_yu>)
+var(lastxbuttpos,<arg(x)>)
+var(lastybuttpos,<arg(y)>)
+return <arg(x)>,<arg(y)>
+
+//left down dialog coordinates
+[function dialog_ld]
+arg(x,<eval dialog_xl>)
+arg(y,<eval dialog_yd>)
+var(lastxbuttpos,<arg(x)>)
+var(lastybuttpos,<arg(y)>)
+return <arg(x)>,<arg(y)>
+
+//right down dialog coordinates
+[function dialog_rd]
+arg(x,<eval dialog_xr>)
+arg(y,<eval dialog_yd>)
+var(lastxbuttpos,<arg(x)>)
+var(lastybuttpos,<arg(y)>)
+return <arg(x)>,<arg(y)>
+
+//the x-coordinate aligned to the right
+[function dialog_xr]
+arg(x,<eval(<tag(sirka)>-(<d_def_skvira>+<d_def_okraj>+<d_def_button_sirka>))>)
+return <arg(x)>
+
+[function dialog_xl]
+arg(x,<eval(<d_def_skvira>+<d_def_okraj>)>)
+return <arg(x)>
+
+//the y-coordinate aligned to the top
+[function dialog_yu]
+arg(y,<eval(d_def_okraj+d_def_skvira)>)
+return <arg(y)>
+
+//the y-coordinate aligned to the bottom
+[function dialog_yd]
+arg(y,<eval(<tag(vyska)>-(<d_def_skvira>+<d_def_okraj>+<d_def_radek_vyska>))>)
+return <arg(y)>
+
+
+//the button y-coordinate aligned to the top
+[function dialog_but_yu]
+arg(y,<eval(d_def_okraj+d_def_skvira-3)>)
+return <arg(y)>
+
+//the button y-coordinate aligned to the bottom
+[function dialog_but_yd]
+arg(y,<eval(<tag(vyska)>-(<d_def_okraj>+<d_def_button_vyska>+3))>)
+return <arg(y)>
+
+//the button left upper coordinates
+[function dialog_but_lu]
+arg(x,<eval dialog_xl>)
+arg(y,<eval dialog_but_yu>)
+var(lastxbuttpos,<arg(x)>)
+var(lastybuttpos,<arg(y)>)
+return <arg(x)>,<arg(y)>
+
+//the button left down coordinates
+[function dialog_but_ld]
+arg(x,<eval dialog_xl>)
+arg(y,<eval dialog_but_yd>)
+var(lastxbuttpos,<arg(x)>)
+var(lastybuttpos,<arg(y)>)
+return <arg(x)>,<arg(y)>
+
+//the button right upper coordinates
+[function dialog_but_ru]
+arg(x,<eval dialog_xr>)
+arg(y,<eval dialog_but_yu>)
+var(lastxbuttpos,<arg(x)>)
+var(lastybuttpos,<arg(y)>)
+return <arg(x)>,<arg(y)>
+
+//the button right down coordinates
+[function dialog_but_rd]
+arg(x,<eval dialog_xr>)
+arg(y,<eval dialog_but_yd>)
+var(lastxbuttpos,<arg(x)>)
+var(lastybuttpos,<arg(y)>)
+return <arg(x)>,<arg(y)>
+
+[EOF]

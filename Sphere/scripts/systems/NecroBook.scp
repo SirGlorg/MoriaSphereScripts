@@ -1,0 +1,531 @@
+/////////////////////////////////////////////////////////////////////////
+// Necro Book, using internal spell defs (written for 55i) // where is the internal bone armor? :)
+//
+// Created by Belgar of 'A Virtual Paradise'. A free, player run, shard
+// This file is free for use on other free shards
+// Edited and remade by Tartaros
+// Added: skillmenu for summon undead, function-use for the spells
+//
+//
+// Please do not repost this script without my permission
+// If you modify this file, please leave this header intact
+/////////////////////////////////////////////////////////////////////////
+[ITEMDEF i_spellbook_necro]
+ID=i_spellbook
+name=necro spellbook
+value=300
+
+ON=@Create
+morem=1
+morex=0ff
+addspell=s_summon_creature
+color=038d
+
+on=@userdclick
+return <f_necrobook>
+
+[function f_necrobook]
+if (morex)&&(src.profession==class_necro)&&(morem)
+DIALOG d_nec
+return 1
+else
+return 0
+
+[dialog d_nec]
+40,63
+gumppic 77 53 2220
+page 1
+button 127 61 2205 2205 1 1 7
+button 398 61 2206 2206 0 2
+
+button 173 100 2299 2299 1 1 1//firebolt
+resizepic 165 90 83 60 60
+tilepic 170 100 14068
+gumppic 140 170 2101
+gumppic 155 170 2101
+gumppic 170 170 2101
+gumppic 185 170 2101
+gumppic 200 170 2101
+gumppic 215 170 2101
+gumppic 230 170 2101
+text 145 190 967 <qval(<isbit(<morex>,4)>,4,0)>
+
+button 330 100 2299 2299 1 1 2//animate
+resizepic 325 90 83 60 60
+tilepic 328 99 4414
+tilepic 332 105 3789
+gumppic 300 170 2101
+gumppic 315 170 2101
+gumppic 330 170 2101
+gumppic 345 170 2101
+gumppic 360 170 2101
+gumppic 375 170 2101
+gumppic 390 170 2101
+text 300 190 967 <qval(<eval <isbit(<morex>,1)>+<isbit(<more2>,26)>>==2,6,0)>
+
+page 2
+button 127 61 2205 2205 0 1
+button 398 61 2206 2206 0 3
+
+button 174 98 2299 2299 1 1 3//darkness
+resizepic 165 90 83 60 60
+tilepic 157 98 14031
+tilepic 171 106 7960
+gumppic 140 170 2101
+gumppic 155 170 2101
+gumppic 170 170 2101
+gumppic 185 170 2101
+gumppic 200 170 2101
+gumppic 215 170 2101
+gumppic 230 170 2101
+text 145 190 967 <qval(isbit(<morex>,5),5,0)>
+
+button 330 100 2299 2299 1 1 4//summon
+resizepic 325 90 83 60 60
+tilepic 335 99 8428
+gumppic 300 170 2101
+gumppic 315 170 2101
+gumppic 330 170 2101
+gumppic 345 170 2101
+gumppic 360 170 2101
+gumppic 375 170 2101
+gumppic 390 170 2101
+text 300 190 967 <qval(isbit(<morex>,7),1,0)>
+
+page 3
+button 127 61 2205 2205 0 2
+button 398 61 2206 2206 0 4 
+
+button 172 100 2299 2299 1 1 5//bone armor
+resizepic 165 90 83 60 60
+tilepic 173 99 5204
+gumppic 140 170 2101
+gumppic 155 170 2101
+gumppic 170 170 2101
+gumppic 185 170 2101
+gumppic 200 170 2101
+gumppic 215 170 2101
+gumppic 230 170 2101
+text 145 190 967 <qval(isbit(<morex>,2),3,0)>
+
+button 330 100 2299 2299 1 1 6//light
+resizepic 325 90 83 60 60
+tilepic 332 106 2594
+gumppic 300 170 2101
+gumppic 315 170 2101
+gumppic 330 170 2101
+gumppic 345 170 2101
+gumppic 360 170 2101
+gumppic 375 170 2101
+gumppic 390 170 2101
+text 300 190 967 <qval(isbit(<morex>,3),2,0)>
+
+page 4
+button 127 61 2205 2205 0 3
+button 398 61 2206 2206 1 1 7
+
+
+button 172 100 2299 2299 1 1 8
+resizepic 165 90 83 60 60
+tilepic 180 101 9007
+gumppic 140 170 2101
+gumppic 155 170 2101
+gumppic 170 170 2101
+gumppic 185 170 2101
+gumppic 200 170 2101
+gumppic 215 170 2101
+gumppic 230 170 2101
+text 145 190 967 <qval(isbit(<morex>,6),7,0)>
+
+
+[dialog d_nec text]
+Neni v knize
+Summon Undead//1
+Light//2
+Bone Armor//3
+Firebolt//4
+Darkness//5
+Animate Dead//6
+Frost bolt //7
+
+[dialog d_nec button]
+onbutton=1
+src.necrobolt
+onbutton=2
+src.necroanimate
+onbutton=3
+src.necroDarkness
+onbutton=4
+src.necrosummon
+onbutton=5
+src.necroarmor
+onbutton=6
+src.necrolight
+onbutton=7
+morem=
+dclick
+morem=1
+onbutton=8
+src.f_frostbolt
+
+//necrolight
+
+
+[FUNCTION frostbolt]
+if (<src.profession>==class_necro)||(<src.profession>==class_shaman)
+ stopmagery
+ arg(spellbook,<findtype(t_spellbook)>)
+ if (findid(i_customscroll_frostbolt))
+  findid(i_customscroll_frostbolt).dclick
+  return 1
+ endif
+ if (isbit(<arg(spellbook).morex>,6))
+  f_frostbolt
+  return 1
+ endif
+else
+ classmessage(Nesmis pouzivat toto kouzlo.)
+ return 0
+endif 
+
+
+[FUNCTION f_frostbolt]
+if(<tag(manashield)>)
+  findid(i_a_mana_shield).remove
+  if(<mana> > <eval <int>/2>)
+    mana=<eval (<mana>-<eval <int>/2>)>
+  else
+    mana=0
+  endif 
+endif
+spellcast(101)
+
+[FUNCTION necrobolt]
+ safe.cast(s_fire_bolt)
+
+[FUNCTION necroanimate]
+ safe.cast(s_animate_dead)
+
+[FUNCTION necroDarkness]
+ safe.cast(s_Hallucination)
+
+[FUNCTION necrosummon]
+ safe.cast(s_summon_creature)
+ 
+[FUNCTION magerycheck]
+if (<magery><<args>)&&(spellcheck==0)
+sysmessage It`s beyond your ability
+var(spellcheck,1)
+endif
+
+[FUNCTION necroarmor]
+if (checknecro) 
+ if !(isbit(<findtype(t_spellbook).morex>,2))
+  sysmessage The spell is not in your spellbook
+  return 1
+ endif
+ var(spellcheck,0)
+ src.magerycheck(400)
+ src.f_manacheck(10)
+ if (<eval <var.spellcheck>> > 0)
+  return 1
+ else
+  src.mana=<eval <src.mana> - 10>
+  src.newitemsafe(i_bone_armor_timer)
+  lastnew.equip
+  return 1
+ endif
+endif
+
+[FUNCTION necrolight]
+safe.cast(s_light)
+
+[FUNCTION checknecro]
+if (<src.profession>!=class_necro)
+classmessage(Nesmis pouzivat toto kouzlo.)
+return 0
+else
+return 1
+
+[FUNCTION f_manacheck]
+IF (<src.mana><<args>)
+ VAR(SPELLCHECK,<eval <VAR.SPELLCHECK>+1>)
+endif
+if (SPELLCHECK==1)
+ SRC.SYSMESSAGE You lack sufficient mana for this spell.
+ RETURN 1
+endif
+
+[itemdef i_bone_armor_timer]
+NAME=bone armor timer
+ID=i_memory 
+TYPE=T_EQ_SCRIPT
+
+on=@equip
+//src.anim 17
+//src.say("In Sanct Corp")
+timer 1
+ 
+on=@timer
+if (<cont.action>!=-1)
+ cont.f_fizzleeffect
+ remove
+ return 1
+elseif (<cont.magery><{300 700})
+ cont.f_fizzleeffect
+ remove
+ return 1
+else
+src.spelleffect(15,1000)
+arg(trvani,{180 320})
+cont.sound snd_SPELL_bone_armor
+cont.EFFECT=3,i_fx_sparkle_2,1,16,0
+if (src.findlayer(19))
+ if (<src.findlayer(19).id>==i_necro_arms)
+  src.findlayer(19).remove
+  cont.newitem i_necro_arms
+  cont.act.timer=<arg(trvani)>
+  cont.act.cont=<cont.uid>
+  cont.act.equip
+ endif
+else
+ cont.newitem i_necro_arms
+ cont.act.timer=<arg(trvani)>
+ cont.act.cont=<cont.uid>
+ cont.act.equip
+endif
+if (src.findlayer(13))
+ if (<src.findlayer(13).id>==i_necro_chest)
+  src.findlayer(13).remove
+  cont.newitem i_necro_chest
+  cont.act.timer=<arg(trvani)>
+  cont.act.cont=<cont.uid>
+  cont.act.equip
+ endif
+else
+ cont.newitem i_necro_chest
+ cont.act.timer=<arg(trvani)>
+ cont.act.cont=<cont.uid>
+ cont.act.equip
+endif
+if (src.findlayer(7))
+ if (<src.findlayer(7).id>==i_necro_gloves)
+  src.findlayer(7).remove
+  cont.newitem i_necro_gloves
+  cont.act.timer=<arg(trvani)>
+  cont.act.cont=<cont.uid>
+  cont.act.equip
+ endif
+else
+ cont.newitem i_necro_gloves
+ cont.act.timer=<arg(trvani)>
+ cont.act.cont=<cont.uid>
+ cont.act.equip
+endif
+if (src.findlayer(6))
+ if (<src.findlayer(6).id>==i_necro_helmet)
+  src.findlayer(6).remove
+  cont.newitem i_necro_helmet
+  cont.act.timer=<arg(trvani)>
+  cont.act.cont=<cont.uid>
+  cont.act.equip
+ endif
+else
+ cont.newitem i_necro_helmet
+ cont.act.timer=<arg(trvani)>
+ cont.act.cont=<cont.uid>
+ cont.act.equip
+endif
+if (src.findlayer(4))
+ if (<src.findlayer(4).id>==i_necro_leggings)
+  src.findlayer(4).remove
+  cont.newitem i_necro_leggings
+  cont.act.timer=<arg(trvani)>
+  cont.act.cont=<cont.uid>
+  cont.act.equip
+ endif
+else
+ cont.newitem i_necro_leggings
+ cont.act.timer=<arg(trvani)>
+ cont.act.cont=<cont.uid>
+ cont.act.equip
+endif
+remove
+return 1
+
+[itemdef i_necro_arms]
+id=i_bone_arms
+name = necro arms
+ARMOR=3
+on=@create
+typedef.tdata3=armortype_bone
+color= 0455
+hitpoints=50
+
+[itemdef i_necro_chest]
+id=i_bone_chest
+name=necro chest
+ARMOR=3
+on=@create
+typedef.tdata3=armortype_bone
+color= 0455
+hitpoints=50
+
+[itemdef i_necro_gloves]
+id=i_bone_gloves
+name=necro gloves
+ARMOR=3
+on=@create
+typedef.tdata3=armortype_bone
+hitpoints=50
+color= 0455
+
+[itemdef i_necro_helmet]
+id=i_bone_helmet
+name=necro helmet
+ARMOR=3
+on=@create
+typedef.tdata3=armortype_bone
+color= 0455
+hitpoints=50
+
+[itemdef i_necro_leggings]
+id=i_bone_leggings
+name=necro leggins
+ARMOR=3
+on=@create
+typedef.tdata3=armortype_bone
+color= 0455
+hitpoints=50
+
+[itemdef i_scroll_summon_undead]//unused in game
+id=014ed
+name=Scroll of Summon Undead
+type=t_scroll
+
+on=@create
+color=0774
+morex=65
+morey=25.0
+ATTR_MAGIC=1
+
+[itemdef i_scroll_animate_dead]
+id=i_scroll_magic_arrow
+name=Scroll of Animate Dead
+type=t_scroll
+RESOURCES=i_scroll_blank
+SKILLMAKE=INSCRIPTION 80.0,MAGERY 90.0
+//50/2 mana
+on=@create
+color=0774
+morex=66
+morey=25.0
+ATTR_MAGIC=1
+
+[itemdef i_scroll_bone_armor]
+id=i_scroll_night_sight
+name=Scroll of Bone Armor
+type=t_scroll
+RESOURCES=i_scroll_blank
+SKILLMAKE=INSCRIPTION 30.0,MAGERY 30.0
+//10/2 mana
+
+on=@create
+color=0774
+ATTR_MAGIC=1
+morex=67
+
+on=@userdclick
+if (topobj.uid!=src.UID)
+src.sysmessage Magic items must be on your person to activate.
+return 1
+endif
+if (src.profession!=class_necro)
+src.classmessage(Nesmis pouzivat toto kouzlo.)
+return 0
+endif
+var.spellcheck=0
+src.f_manacheck(5)
+if (spellcheck)
+ return 1
+else
+ src.consume i_scroll_bone_armor
+ src.newitemsafe(i_bone_armor_timer)
+ src.mana=<eval src.mana-5>
+ lastnew.equip
+ return 1
+endif
+
+[itemdef i_scroll_light]
+id=i_scroll_weaken
+name=Scroll of Light
+type=t_scroll
+RESOURCES=i_scroll_blank
+SKILLMAKE=INSCRIPTION 20.0,MAGERY 20.0
+
+on=@create
+color=0774
+morex=68
+morey=25.0
+ATTR_MAGIC=1
+
+[itemdef i_scroll_firebolt]
+id=i_scroll_agility
+name=Scroll of Fire Bolt
+type=t_scroll
+RESOURCES=i_scroll_blank
+SKILLMAKE=INSCRIPTION 60.0, MAGERY 60.0
+
+on=@create
+color=0774
+morex=69
+morey=25.0
+ATTR_MAGIC=1
+
+[itemdef i_scroll_hallucination]
+id=i_scroll_cunning
+name=Scroll of Darkness
+type=t_scroll
+RESOURCES=i_scroll_blank
+SKILLMAKE=INSCRIPTION 30.0,MAGERY 30.0
+
+on=@create
+color=0774
+morex=70
+morey=25.0
+ATTR_MAGIC=1
+
+
+[TEMPLATE tm_reagbag]
+CATEGORY=Item Templates
+SUBSECTION=Miscellaneous
+DESCRIPTION=Bag of Reagents
+CONTAINER=i_bag
+ITEM=i_reag_batwing,500
+ITEM=i_reag_blackmoor,500
+ITEM=i_reag_blood_moss,500
+ITEM=i_reag_blood_spawn,500
+ITEM=i_reag_blood_vial,500
+ITEM=i_reag_bone,500
+ITEM=i_reag_brimstone,500
+ITEM=i_reag_daemon_bone,500
+ITEM=i_reag_fertile_dirt,500
+ITEM=i_reag_dragon_blood,500
+ITEM=i_reag_executioners_cap,500
+ITEM=i_reag_garlic,500
+ITEM=i_reag_ginseng,500
+ITEM=i_reag_mandrake_root,500
+ITEM=i_reag_eye_of_newt,500
+ITEM=i_reag_nightshade,500
+ITEM=i_reag_obsidian,500
+ITEM=i_reag_pig_iron,500
+ITEM=i_reag_pumice,500
+ITEM=i_reag_sulfur_ash,500
+ITEM=i_reag_spider_silk,500
+ITEM=i_reag_serpent_scale,500
+ITEM=i_reag_volcanic_ash,500
+ITEM=i_reag_dead_wood,500
+ITEM=i_reag_worm_heart,500
+ITEM=i_reag_black_pearl,500
+
+[eof]

@@ -1,0 +1,254 @@
+[function sms]//arg,kolik
+tag(redmessagescount,<argv(0)>)
+tag(messagescount,<argv(0)>)
+arg(i,1)
+while(i <= <eval <argv(0)>>) 
+ //sysmessage(zprava <i>, celkem <argv(0)>)
+ tag(redmessage_<i>,Pokusna rms cislo <i>)
+ tag(message_<i>,Pokusna ms cislo <i>)
+ arg(i,#+1)
+endwhile
+
+[function rms]
+dialog(d_login_redmessages,0)
+return 1
+
+[function clearms]//arg0 - 1 - red/ 0 - normal
+arg(u,0)
+while(u < <tag(<qval(<argv(0)>,red,)>messagescount)>)
+ tag.remove(<qval(<argv(0)>,red,)>message_<u>)
+ arg(u,#+1)
+endwhile
+tag.remove(<qval(<argv(0)>,red,)>messagescount)
+sysmessage(<qval(<argv(0)>,"Dulezite ","Normalni ")>zpravy vycisteny)
+
+[function ms]
+dialog(d_login_messages,0)
+return 1
+
+[function sms_section]//y,index,text
+//text slozime (kdyz jsou carky tak to nebere)
+arg(text,<argv(2)>)
+arg(i,3)
+while(i < argvcount) 
+ arg(text,<arg(text)>-<argv(i)>)
+ arg(i,#+1)
+endwhile
+texta(<tag(sloupec_x[1])>+<d_def_odsazeni>,argv(0),955,<arg(text)>)
+button(<tag(sloupec_x[0])>,argv(0),4005,4007,1,0,argv(1))
+return <eval argv(0)+d_def_radek_vyska>
+
+[defnames d_login_message_defs]
+d_max_zprav	25
+
+[dialog d_login_redmessages]
+30,30
+argo.tag(zprav,<src.tag(redmessagescount)>)
+if(argo.tag(zprav) == 0)
+ src.sysmessage(Zadne zpravy k zobrazeni)
+ return 1
+endif
+argo.tag(sirka,<src.zjisti_sirku(1,<argo.tag(zprav)>)>)
+argo.tag(vyska,<eval ((1+<d_max_zprav>)*<d_def_radek_vyska>)+(2*d_def_okraj)+(2*d_def_skvira)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.dialog_pozadi(<argo.tag(nexty)>,<d_max_zprav>,29)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,colors_red,Nove dulezite zpravy: <src.tag(redmessagescount)>)
+arg(ypos,<argo.tag(obj_y[1])>)
+argo.tag(firsti,<eval argv(0)>)
+arg(i,<argo.tag(firsti)>+1)
+if (<i>-1)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval (<argo.tag(firsti)>+<d_max_zprav>)>)
+
+while(i <= imax) && (i <= <argo.tag(zprav)>)
+ arg(ypos,<argo.sms_section(<ypos>,<i>+10000,<src.tag(redmessage_<i>)>)>)
+ arg(i,#+1)
+endwhile
+if (<argo.tag(zprav)> > i)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(vyska)>-(<d_def_okraj>+<d_def_button_vyska>),0fc,0fd,1,0,2) // next
+endif
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_login_redmessages button]
+on=0 //cancel
+
+on=1 //prev
+dialog(d_login_redmessages,(<argo.tag(firsti)>-<d_max_zprav>))
+
+on=2 //next
+dialog(d_login_redmessages,(<argo.tag(firsti)>+<d_max_zprav>))
+
+on=@anybutton //smazat zpravu
+if(<argn> > 10000)
+ arg(jecko,<argn>-10000)
+ src.tag.remove(redmessage_<jecko>)
+ //posunout ostatni na jeji misto
+ while(jecko < <src.tag(redmessagescount)>)
+  arg(icko,<eval <jecko>+1>)
+  src.tag(redmessage_<jecko>,<src.tag(redmessage_<icko>)>)
+  arg(jecko,#+1)
+ endwhile
+ src.tag(redmessagescount,<eval (<src.tag(redmessagescount)>-1)>)
+ //jeste tu posledni
+ src.tag.remove(redmessage_<jecko>)
+ if(<src.tag(redmessagescount)>==0)
+  src.tag.remove(redmessagescount)
+ else
+  if(src.tag(redmessagescount) > <argo.tag(firsti)>)
+   src.dialog(d_login_redmessages,<argo.tag(firsti)>)
+  else //posuneme o stranu zpet
+   src.dialog(d_login_redmessages,<argo.tag(firsti)>-<d_max_zprav>)
+  endif
+ endif
+endif
+
+[dialog d_login_messages]
+20,20
+argo.tag(zprav,<src.tag(messagescount)>)
+arg(zjistena_sirka,<src.zjisti_sirku(0,<argo.tag(zprav)>)>)
+if(argo.tag(zprav) == 0)
+ src.sysmessage(Zadne zpravy k zobrazeni)
+ return 1
+endif											 	
+argo.tag(sirka,<eval (<zjistena_sirka>+<d_def_okraj>+<d_def_skvira>+2*29)>)
+argo.tag(vyska,<eval ((2+<d_max_zprav>)*<d_def_radek_vyska>)+(2*d_def_okraj)+(2*d_def_skvira)>)
+
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.checkertrans(<d_def_okraj>,<d_def_okraj>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),(<d_def_radek_vyska>+<d_def_okraj>))
+argo.texta(<argo.dialog_textpos(0,0)>,colors_blue,Nove zpravy: <src.tag(messagescount)>)
+if(src.isgm) //gms only - cudlik na AFK trest					
+  			       //smaz, text, trest, milost
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,35,<zjistena_sirka>-87,40) 
+ argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[1])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),(2*<d_def_radek_vyska>+<d_def_okraj>))
+										//treti sloupec - cudlik na trest 
+ argo.texta(<argo.dialog_textpos(1,0)>,955,"Smaz")
+ argo.texta(<argo.dialog_textpos(1,1)>,955,"Text zpravy") 
+ argo.texta(<argo.dialog_textpos(1,2)>,955,"Trest")
+ argo.texta(<argo.dialog_textpos(1,3)>,955,"Milost")
+ //cudlik smaz, TEXT, cudliky potrestat a zrusit trest
+ argo.dialog_pozadi(<argo.tag(nexty)>,<d_max_zprav>,29,<eval (<zjistena_sirka>-90-<d_def_okraj>)>,41)
+ argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[2])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),<d_max_zprav>*<d_def_radek_vyska>) 
+else  
+ argo.dialog_pozadi(<argo.tag(nexty)>,1,<strlen("Smaz")>*10)
+ argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[1])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),(2*<d_def_radek_vyska>+<d_def_okraj>))
+ argo.texta(<argo.dialog_textpos(1,0)>,0481,"Smaz")
+ argo.texta(<argo.dialog_textpos(1,1)>,0481,"Text zpravy") 
+
+ argo.dialog_pozadi(<argo.tag(nexty)>,<d_max_zprav>,29)
+ argo.checkertrans(<d_def_okraj>,<argo.tag(obj_y[2])>,(<argo.tag(sirka)>-(2*<d_def_okraj>)),<d_max_zprav>*<d_def_radek_vyska>) 
+endif
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+
+
+arg(ypos,<argo.tag(obj_y[2])>)
+argo.tag(firsti,<eval argv(0)>)
+arg(i,<argo.tag(firsti)>+1)
+if (<i>-1)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[2])>+1,0fa,0fb,1,0,1) // prev
+endif
+arg(imax,<eval (<argo.tag(firsti)>+<d_max_zprav>)>)
+
+while(i <= imax) && (i <= <argo.tag(zprav)>)
+ arg(ypos,<argo.sms_section(<ypos>,<i>+10000,<src.tag(message_<i>)>)>)
+ arg(i,#+1)
+endwhile
+if (<argo.tag(zprav)> > i)
+ argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(vyska)>-(<d_def_okraj>+<d_def_button_vyska>),0fc,0fd,1,0,2) // next
+endif
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_login_messages button]
+on=0 //cancel
+
+on=1 //prev
+dialog(d_login_messages,(<argo.tag(firsti)>-<d_max_zprav>))
+
+on=2 //next
+dialog(d_login_messages,(<argo.tag(firsti)>+<d_max_zprav>))
+
+on=@anybutton //smazat zpravu
+if(<argn> > 1000000) //milost
+ arg(jecko,<argn>-1010000) 
+ var(macroersUID,<parseUID(<src.tag(message_<jecko>)>)>) 
+ src.potvrdit(nullAFKTrest,"Opravdu chces anulovat jeden trest hraci <macroersUID> <macroersUID.name>?")
+else
+ if(<argn> > 100000) //trest
+  arg(jecko,<argn>-110000) 
+  var(macroersUID,<parseUID(<src.tag(message_<jecko>)>)>)
+  var(macroersAction,<parseAction(<src.tag(message_<jecko>)>)>) 
+  var(macroersSkill,<parseSkill(<macroersAction>)>)
+  src.input("O kolik snizit skill <macroersSkill> hraci <macroersUID.name>?. (Nyni ma <macroersUID.<macroersSkill>>):",dropSkill,"10.0") 
+ else
+  if(<argn> > 10000)
+   arg(jecko,<argn>-10000)
+   src.tag.remove(message_<jecko>)
+   //posunout ostatni na jeji misto
+   while(jecko < <src.tag(messagescount)>)
+    arg(icko,<eval <jecko>+1>)
+    src.tag(message_<jecko>,<src.tag(message_<icko>)>)
+    arg(jecko,#+1)
+   endwhile
+   src.tag(messagescount,<eval (<src.tag(messagescount)>-1)>)
+   //jeste tu posledni
+   src.tag.remove(message_<jecko>)
+   if(<src.tag(messagescount)>==0)
+    src.tag.remove(messagescount)
+   else
+    if(src.tag(messagescount) > <argo.tag(firsti)>)
+     src.dialog(d_login_messages,<argo.tag(firsti)>)
+    else //posuneme o stranu zpet
+     src.dialog(d_login_messages,<argo.tag(firsti)>-<d_max_zprav>)
+    endif
+   endif
+  endif
+ endif
+endif
+
+[function zjisti_sirku] //argv0 - 0(red), 1(normal), argv1 - pocet zprav
+//arg(sirka,i)
+arg(icicko,1)
+if(<argv(1)> > 1)
+ while(icicko < <argv(1)>)
+  arg(jececko,<eval (<arg(icicko)>+1)>)
+  if(<argv(0)>) //redmessages
+   if(<strlen(<src.tag(redmessage_<icicko>)>)> > <strlen(<src.tag(redmessage_<jececko>)>)>)
+    arg(vysl,<strlen(<src.tag(redmessage_<icicko>)>)>)
+    arg(ms,<icicko>)
+   else
+    arg(vysl,<strlen(<src.tag(redmessage_<jececko>)>)>)
+    arg(ms,<jececko>)
+   endif  
+  else //normalmessages
+   if(<strlen(<src.tag(message_<icicko>)>)> > <strlen(<src.tag(message_<jececko>)>)>)
+    arg(vysl,<strlen(<src.tag(message_<icicko>)>)>)
+    arg(ms,<icicko>)
+   else
+    arg(vysl,<strlen(<src.tag(message_<jececko>)>)>)
+    arg(ms,<jececko>)
+   endif 
+  endif
+  arg(icicko,#+1)
+ endwhile
+else
+ if(<argv(0)>)
+  arg(vysl,<strlen(<src.tag(redmessage_1)>)>)
+  arg(ms,1)
+ else
+  arg(vysl,<strlen(<src.tag(message_1)>)>)
+  arg(ms,1)
+ endif
+endif
+//if(<argv(0)>)
+// src.sysmessage(nejdelsi:<arg(vysl)> ms:<src.tag(message_<arg(ms)>)>)
+//else
+// src.sysmessage(nejdelsi:<arg(vysl)> ms:<src.tag(redmessage_<arg(ms)>)>)
+// src.sysmessage(vratit: <eval (7*<vysl>+d_def_okraj+d_def_skvira)>)
+//endif
+return <eval (9*<vysl>)>

@@ -1,0 +1,238 @@
+[SPEECH Cardolanske_pohrebiste_mag]
+
+ON=*zdravim*
+ON=*dobry vecer*
+ON=*dobry den*
+  DORAND 2
+    SAY("Dobry, dobry. I kdyz jak pro koho. Uz od rana mam chut na rybu.")
+    SAY("Jo jo, hlavne mi nelezte do teleporteru!")
+  ENDDO
+
+ON=*gate*
+ON=*teleport*
+ON=*teleporter*
+  SAY("Vcera se pretizil a zacal horet. Delam na tom od rana a uz to mam temer opravene. Jenze mi chybi modry krystal.")
+  SAY("Ne abyste do nej lezli, zanasi! Taky by vas to mohlo hodit primo do skaly, a to byste nejspis nechteli.")
+
+ON=*drahokam*
+ON=*kristal*
+ON=*sutr*
+ON=*krystal*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  IF (<src.restest 1 i_Cardolanske_pohrebiste_krystal12 >)
+    SAY("Proc me furt rusis? Coze? Ty mas krystal? Slava, konecne muzu ten stary kram opravit!")
+    src.consume(i_Cardolanske_pohrebiste_krystal12,500)
+    tag(gate).MoreP=<tag(gate).tag(p1)>
+    tag(gate).TIMER=10   
+    tag(gate).More2=1
+    tag(gate).Color=0099E
+    SOUND=snd_SPELL_telekinesis
+  ELSE
+    SAY("Potrebuju krystal, je z kristalu a ma kristalovou barvu.") 
+  ENDIF
+endif
+
+ON=*rybicka*
+ON=*rybka*
+ON=*ryba*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  IF (<SRC.RESTEST 1 i_Cardolanske_pohrebiste_rybazfontany >)
+    SAY("Dekuji ti mnohokrat, tady mas svoje penize.") 
+    SAY("Mindo, tady mas hlavicku, na.")
+    src.consume(i_Cardolanske_pohrebiste_rybazfontany,500)
+    SRC.NEWITEM=i_Cardolanske_pohrebiste_klic12
+    SRC.ACT.P=<tag(kocka).P>
+    SRC.ACT.P_Z=<SRC.ACT.P_Z>+3  
+    SRC.ACT.MORE2=<tag(kocka).tag(dvere)>
+    SOUND=snd_ANIMALS_CAT1 
+    tag(kocka).SAY("Mnau, aaauuuuuu")
+    SRC.NEWITEM=i_gold
+    SRC.ACT.AMOUNT=1000
+    SRC.ACT.BOUNCE
+  ELSE
+    SAY("Nemas rybicku? Ani malinkou? Zaplatim ti, kdyz mi nejakou doneses.")
+  ENDIF
+endif
+
+ON=*jak to jde?*
+  SAY("Jsem rad, ze se ptas. Ujde to.")
+
+ON=*deda*
+ON=*predek*
+  SAY("Uz si na nej skoro nepamatuju, ale braval me s sebou na ryby.")
+
+ON=*co tu delate?*
+ON=*co tu delas?*
+   SAY("Ctu ruzne knihy, co tu mam po dedovi, obcas za nim zajdu a popovidame si, kdyz je cas.")
+   SAY("Chtel jsem se podivat za dedou, ale ten zatraceny teleporter zase zanasi.")
+
+ON=*jidlo*
+   DORAND 2
+     SAY("Jestli mate dobrou rybu, tak se nebudu zlobit.")
+     SAY("Obcas mi sem farmarka donese darkovy kos plny dobrot.")
+   ENDDO
+
+ON=*farmarka*
+   SAY("Je to dobra zena, obcas mi sem prinese neco na zub.")
+
+ON=*menhir*
+   SAY("Z toho mam opravdu radost, lidi mi na nej nosi jidlo a ja jim dam par zlataku z dedeckova pokladu.")
+
+ON=*poklad*
+   SAY("Deda nashromazdil velke bohatstvi, myslim, ze nemusim mit strach, ze bych nekdy stradal.")
+
+ON=*knihy*
+ON=*co ctes?*
+ON=*co ctete?*
+  SAY("Zrovna mam rozecteny zajimavy trojdilny svazek Nekrokomunikonu.")
+  
+ON=*Nekrokomunikon*
+  SAY("Velmi dobre cteni pred spanim.")
+
+ON=*kocka*
+ON=*Minda*
+  SAY("To je moje kocicka, ma rada rybicky.")
+
+ON=*dedku*
+  SAY("Ja ti dam dedku!")
+  SRC.kill
+
+ON=*zlodeji*
+ON=*pica*
+ON=*pico*
+ON=*lamo*
+ON=*hajzle*
+ON=*svine*
+ON=*kretene*
+ON=*debile*   
+ON=*zmetku*
+ON=*vole*
+ON=*tupce*
+ON=*sklerotiku*
+ON=*blbe*
+ON=*blbce*
+  say("<src.sex(Zadny,Zadna)> me urazet nebude!")
+  src.kill
+
+ON=*karty*
+  SAY("Karty mi tu zustaly po tete Milene, jsou na nich hezke obrazky.")
+  SAY("Deda rikal, ze se z nich da cist budoucnost.")
+
+ON=*particku*
+ON=*zahrajeme si?*
+ON=*zahrajete si?*
+ON=*zahrajes si?*
+
+if (<distance> > 3)
+ src.SYSMESSAGE("Na takovou vzdalenost s tebou jednat nebude")
+else
+  IF (<SRC.RESTEST 1000 i_gold >)
+    SAY("Ale proc ne? Dnes mi v horoskopu vyslo, ze budu mit stesti ve hre.")
+    DORAND 3
+      tag(docasnej,"1")
+      tag(docasnej,"2")
+      tag(docasnej,"3")
+    ENDDO
+    IF ((<tag(docasnej)>==1)||(<tag(docasnej)>==2))
+      src.sysmessage("<src.sex(Prohral,Prohrala)> jsi.")
+      src.consume(i_gold,1000)     
+    ELSE
+      src.sysmessage("<src.sex(Vyhral,Vyhrala)> jsi.")
+      SRC.NEWITEM=i_gold
+      SRC.ACT.AMOUNT=1000
+      SRC.ACT.BOUNCE
+    ENDIF 
+    tag(docasnej,"")
+  ELSE
+    SAY("A o co bychom hrali, kdyz nemas penize?")
+  ENDIF
+endif
+  
+ON=*budoucnost*
+  SAY("Tu z karet nelustim, ja ji ctu z hvezd.")
+
+ON=*hvezdy*
+  SAY("Neco mi rika, ze dnes prohrajes par minci v kartach.")
+
+
+
+[SPEECH Cardolanske_pohrebiste_farmarka]
+
+ON=*cau kote*
+  SAY("Ahoj, brouku.")
+
+ON=*ahoj kote*
+  SAY("Cau, brouku.")
+
+ON=*kote*
+  SAY("Ano, brouku?")
+
+ON=*Dobry den*
+ON=*ahoj*
+ON=*cau*
+  IF (<src.body>==c_man)
+    SAY("Dobry den, hrdino, neposila mi te sem samotna Epona?")
+    EMOTE("smeje se")
+  ELSE
+    SAY("Dobry den.") 
+  ENDIF
+
+ON=*bohyne*
+ON=*urody*
+ON=*uroda*
+ON=*obet*
+ON=*jidlo*
+  SAY("Chodim jednou tydne obetovat Epone kosik plny plodu z nasi zahrady.")
+  
+ON=*Epona*
+  SAY("Epona je bohyne... ehm... urody.")
+  EMOTE("cervena se")
+
+ON=*oltar*
+ON=*podstavec*
+ON=*obetiste*
+  SAY("Je kousek odtud, kdyz pujdes po ceste ja jih, tak narazis na lesik s potuckem.")
+  SAY("U pramene potom najdes oltar, a kdyz bude mit Epona dobrou naladu, odmeni se ti.")
+  SAY("Mozna, ze naleznes i vchod do stareho pohrebiste.")
+
+ON=*plody*
+ON=*kosik*
+  SAY("Kdybys ji <src.sex(chtel,chtela)> taky obetovat, tak ti muzu kosik s jidlem pripravit, kdyz me hezky poprosis.")
+
+ON=*chci obetovat*
+ON=*chci ji obetovat*
+ON=*pujdu obetovat*
+ON=*pujdu ji obetovat*
+ON=*priprav mi kosik*
+ON=*prosimte kosik*
+ON=*prosim kosik*
+ON=*priprav kosik*
+ON=*priprav mi kosik*
+ON=*hezky prosim*
+ON=*pekne prosim*
+ON=*prosim pekne*
+ON=*prosim hezky*
+  IF (<SRC.RESTEST 1000 i_gold >)
+    SAY("Kdyz tak hezky prosis...")
+    EMOTE("smeje se")
+    SRC.sysmessage("j") // ?  
+    SRC.NEWITEM=i_Cardolanske_pohrebiste_kos_s_ovocem
+    SRC.ACT.tag(podstavec,<tag(podstavec)>)
+    SRC.ACT.BOUNCE
+    src.sysmessage("Vymenou za 1000 zlatych jsi <src.sex(dostal,dostala)> kosik plny jidla.")
+    src.consume(i_gold,1000)     
+  ELSE
+    SAY("A mas penize? Prece necekas, ze ti dam ovoce zadarmo?")
+  ENDIF
+
+ON=*pohrebiste*
+  SAY("Povida se, ze si ho dal postavit nejaky kral za davnych dob, a ze ceka kazdy rok na zimni slunovrat.")
+
+ON=*slunovrat*
+  SAY("Taky se rika, ze pri zapadu slunce v den zimniho slunovratu si slunecni paprsek najde cestu primo do vstupni chodby a celou ji prozari, jak se paprsky odrazi od zlatych stitu jeho osobni straze.")

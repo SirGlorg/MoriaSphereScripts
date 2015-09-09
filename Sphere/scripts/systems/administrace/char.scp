@@ -1,0 +1,345 @@
+[function charinfo]
+DIALOG d_CHARPROP1
+
+[defnames charinfo]	
+			//flags				,propertyname/bitmask to change	,[second name],[command at button],[flag bit]
+charinfo_1_rows		46
+charinfo_1_row[0]	iflag_rename|iflag_button|iflag_nowrite|iflag_string	,Account.name			,Account,		accinfo
+charinfo_1_row[1]	iflag_string						,Name,				,
+charinfo_1_row[2]	iflag_string						,Title,				,
+charinfo_1_row[3]	iflag_nowrite						,UID,				,
+charinfo_1_row[4]	0							,Body,				,
+charinfo_1_row[5]	0							,Obody,				,
+charinfo_1_row[6]	0							,Color,				,
+charinfo_1_row[7]	0							,Oskin,				,
+charinfo_1_row[8]	0							,Fame,				,
+charinfo_1_row[9]	0							,Karma,				,
+charinfo_1_row[10]	iflag_pc						,Kills,				,
+charinfo_1_row[11]	0							,Str,				,
+charinfo_1_row[12]	0							,Dex,				,
+charinfo_1_row[13]	0							,Int,				,
+charinfo_1_row[14]	0							,Hits,				,
+charinfo_1_row[15]	0							,maxHits,			,
+charinfo_1_row[16]	0							,Stam,				,
+charinfo_1_row[17]	0							,maxStam,			,
+charinfo_1_row[18]	0							,Mana,				,
+charinfo_1_row[19]	0							,maxMana,			,
+charinfo_1_row[20]	iflag_nowrite|iflag_button				,SkillTotal,			,			dialog d_allskills
+charinfo_1_row[21]	iflag_string|iflag_button				,Home,                   	,			npchome
+charinfo_1_row[22]	iflag_npc						,Homedist               	
+charinfo_1_row[23]	iflag_string						,P,				,
+charinfo_1_row[24]	iflag_rename|iflag_nowrite				,REGION.NAME,			Region,
+charinfo_1_row[25]	0							,Food,				,
+charinfo_1_row[26]	iflag_rename|iflag_nowrite				,typedef.MaxFood,		Maxfood,
+charinfo_1_row[27]	iflag_rename|iflag_nowrite				,typedef.Armor,			Base armor,
+charinfo_1_row[28]	iflag_rename|iflag_nowrite				,AC,				Equip AC,
+charinfo_1_row[29]	iflag_rename|iflag_pc|iflag_nowrite			,TAG.UC,			UC hrace
+charinfo_1_row[30]	iflag_rename|iflag_npc|iflag_nowrite			,typedef.dam,			NPC zakladni UC,
+//charinfo_1_row[31]	iflag_rename|iflag_npc					,tag.additdam,			NPC skutecne UC,
+charinfo_1_row[31]	0							,Action,			,
+charinfo_1_row[32]	iflag_rename|iflag_nowrite|iflag_button			,typedef.Can			,typedef CAN flags,	dialog d_canflags
+charinfo_1_row[33]	iflag_nowrite|iflag_button				,Flags,				,			dialog d_flags
+charinfo_1_row[34]	iflag_nowrite						,Events,			,
+charinfo_1_row[35]	iflag_rename|iflag_nowrite				,typedef.TEvents,		Tevents
+charinfo_1_row[36]	0							,Brain,				,
+charinfo_1_row[37]	iflag_nowrite						,Speech,			,
+charinfo_1_row[38]	iflag_rename|iflag_nowrite				,typedef.TSpeech,		Tspeech
+charinfo_1_row[39]	iflag_pc						,Profession,			,	
+charinfo_1_row[40]	iflag_rename|iflag_pc|iflag_nowrite			,tag.Race,			Race
+charinfo_1_row[41]	iflag_rename|iflag_pc					,tag.Level,			Level
+charinfo_1_row[42]	iflag_rename						,tag.Experience,		Experience
+charinfo_1_row[43]	iflag_rename|iflag_string				,tag.komentar,			Komentar
+charinfo_1_row[44]	iflag_rename|iflag_pc|iflag_nowrite			,Guildmem.name,			Guilda
+charinfo_1_row[45]	iflag_rename|iflag_pc|iflag_nowrite			,prislusnost_realmu,		Vyvrhel
+
+charinfocom_1_rows	20
+charinfocom_1_row[0]	iflag_button|iflag_rename|iflag_notext			,blank	,Edit,Edit()
+charinfocom_1_row[1]	iflag_button|iflag_rename|iflag_notext			,blank	,Remove,Remove
+charinfocom_1_row[2]	iflag_button|iflag_rename|iflag_notext			,blank	,Taglist,tag(dump)
+charinfocom_1_row[3]	iflag_button|iflag_rename|iflag_notext			,blank	,Kill,kill
+charinfocom_1_row[4]	iflag_button|iflag_rename|iflag_notext			,blank	,Disconnect,Disconnect
+charinfocom_1_row[5]	iflag_button|iflag_rename|iflag_notext|iflag_npc	,blank	,Shrink&Bounce,shboun
+charinfocom_1_row[6]	iflag_button|iflag_rename|iflag_notext			,blank	,Bank,findlayer(29).open
+charinfocom_1_row[7]	iflag_button|iflag_rename|iflag_notext			,blank	,Privolej,summonto
+charinfocom_1_row[8]	iflag_button|iflag_rename|iflag_notext			,blank	,Privolej nonmob,summoncage
+charinfocom_1_row[9]	iflag_button|iflag_rename|iflag_notext			,blank	,Vrat z nonmob,SummonDismiss
+charinfocom_1_row[10]	iflag_button|iflag_rename|iflag_notext			,blank	,Jdi na pozici,srccome
+charinfocom_1_row[11]	iflag_button|iflag_rename|iflag_notext			,blank	,Dvojklik,Dclick
+charinfocom_1_row[12]	iflag_button|iflag_rename|iflag_notext			,blank	,Follow,Follow
+charinfocom_1_row[13]	iflag_button|iflag_rename|iflag_notext			,blank	,Resurrect,Resurrect
+charinfocom_1_row[14]	iflag_button|iflag_rename|iflag_notext|iflag_pc		,blank	,Jail menu,Jail
+charinfocom_1_row[15]	iflag_button|iflag_rename|iflag_notext|iflag_pc		,blank	,Lagr menu,lagrmenu
+charinfocom_1_row[16]	iflag_button|iflag_rename|iflag_notext|iflag_pc		,blank	,Mute,mutemenu
+charinfocom_1_row[17]	iflag_button|iflag_rename|iflag_notext|iflag_pc		,blank	,Vyvrhel,vyvrhel
+charinfocom_1_row[18]	iflag_button|iflag_rename|iflag_notext|iflag_pc		,blank	,RP Rank,rprank
+charinfocom_1_row[19]	iflag_button|iflag_rename|iflag_notext|iflag_pc		,blank	,Uniforma,dialog(d_uniform_realm)
+
+[DIALOG d_CHARPROP1]
+0,0
+argo.tag(sirka,<d_def_charinfo_sirka>)
+argo.tag(vyska,<d_def_charinfo_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+23+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,29,110,130,29,140,130,29)
+
+argo.dialog_zpruhledni
+
+argo.tag(from,<uid>)
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,CHARACTER INFO)
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (index<charinfocom_1_rows)
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[1])>,<argo.tag(sloupec_x[0])>,<argo.tag(sloupec_x[1])>,<charinfocom_1_row[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+arg(index,0)
+arg(ipage,0)
+while (index<charinfo_1_rows)//argo.tag(radku)
+ if !(index%argo.tag(radku))
+  if (index==(2*argo.tag(radku)*arg(ipage)))//na zacatku stranky
+   arg(ipage,#+1)
+   argo.page(<ipage>)
+   arg(ypos,<argo.tag(obj_y[1])>)
+   if (index)
+    argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(obj_y[1])>+1,0fa,0fb,0,<ipage>-1) // prev
+   endif
+   if (charinfo_1_rows>(index+(2*argo.tag(radku))))
+    argo.button(<argo.tag(sirka)>-(<d_def_okraj>+<d_def_skvira>+16),<argo.tag(nexty)>-24,0fc,0fd,0,<ipage>+1) // next
+   endif
+   arg(popisx,2)
+   arg(buttx,3)
+   arg(valuex,4)                 
+  else
+   arg(ypos,<argo.tag(obj_y[1])>)
+   arg(popisx,5)
+   arg(buttx,6)
+   arg(valuex,7)
+  endif
+ endif
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[popisx])>,<argo.tag(sloupec_x[buttx])>,<argo.tag(sloupec_x[valuex])>,<charinfo_1_row[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+argo.page(0)
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+
+[DIALOG d_CHARPROP1 BUTTON]
+on=1
+arg(index,100)
+while (index<=argo.tag(rowcount))
+ argo.f_inforow_apply(<index>,"<eval argchk(index)>","<safe argtxt(index)>",<argo.tag(row_ret[index])>)
+ arg(index,#+1)
+endwhile
+
+on=@anybutton
+if (argn>=100)
+ argo.f_inforow_button(<argn>,<argo.tag(row_ret[argn])>)
+endif
+
+
+[function skillsset]
+dialog d_allskills
+
+[function skills]
+dialog d_allskills
+
+[dialog d_allskills]
+0,0
+argo.tag(sirka,<d_def_skills_sirka>)
+argo.tag(vyska,<d_def_skills_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+23+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,130,70,130,70,130)
+
+argo.dialog_zpruhledni
+
+argo.tag(from,<uid>)
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,SKILLS INFO - <argo.tag(from).name>)
+
+arg(ypos,<argo.tag(obj_y[1])>)
+arg(index,0)
+while (index<argo.tag(radku))
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[0])>,0,<argo.tag(sloupec_x[1])>,0,<findres(skill,index).name>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+arg(ypos,<argo.tag(obj_y[1])>)
+
+while (index<(2*argo.tag(radku)))
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[2])>,0,<argo.tag(sloupec_x[3])>,0,<findres(skill,index).name>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+//
+arg(ypos,<argo.tag(obj_y[1])>)
+while (index<50)
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[4])>,0,<argo.tag(sloupec_x[5])>,0,<findres(skill,index).name>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_allskills button]
+on=1
+arg(index,100)
+while (index<=argo.tag(rowcount))
+ argo.f_inforow_apply(<index>,"<eval argchk(index)>","<safe argtxt(index)>",<argo.tag(row_ret[index])>)
+ arg(index,#+1)
+endwhile
+
+
+[function flagsinfo]
+dialog d_flags
+
+[dialog d_flags]
+0,0
+argo.tag(sirka,<d_def_flagsinfo_sirka>)
+argo.tag(vyska,<d_def_flagsinfo_vyska>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+argo.tag(radku,<eval((<argo.tag(vyska)>-(<argo.tag(nexty)>+23+<d_def_okraj>+<d_def_skvira>))/<d_def_radek_vyska>)>)
+
+arg(index,0)
+IF (safe ischar)
+//34-65
+ arg(flaginforow[0],iflag_check|iflag_rename	,<Enumprop(55,1)>,<strmid(<Enumprop(55,1)>,5,0ff)> - I have a listening item on me.)
+ arg(flaginforow[1],iflag_check|iflag_rename	,<Enumprop(56,1)>,<strmid(<Enumprop(56,1)>,5,0ff)> - This creature is conjured and will expire)
+ arg(flaginforow[2],iflag_check|iflag_rename	,<Enumprop(57,1)>,<strmid(<Enumprop(57,1)>,5,0ff)> - The guards will attack me.)
+ arg(imax,32)
+ arg(index,3)
+ while (index<imax)
+  arg(flaginforow[index],iflag_check|iflag_rename	,<Enumprop(index+55,1)>,<strmid(<Enumprop(index+55,1)>,5,0ff)> - <Enumprop(index+55,4)>)
+  arg(index,#+1)   
+ endwhile
+ argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,25,330,25) 
+ELSEif (safe isitem)
+//4-19
+ arg(index,0)
+ arg(imax,16)
+ while (index<imax)
+  arg(flaginforow[index],"iflag_check|iflag_rename	,<Enumprop(index+4,1)>,<strmid(<Enumprop(index+4,1)>,5,0ff)> - <Enumprop(index+4,4)>")
+  arg(index,#+1)   
+ endwhile
+ argo.dialog_pozadi(<argo.tag(nexty)>,<argo.tag(radku)>,25) 
+else
+ return 0
+ENDIF
+
+argo.dialog_zpruhledni
+
+argo.tag(from,<uid>)
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,FLAGS INFO - flags)
+button(300,<argo.tag(obj_y[0])>,4005,4007,1,0,2)//cancel
+argo.texta(330,<argo.tag(obj_y[0])>,2301,tweak obj)
+
+if (argo.tag(radku)>imax)
+ argo.tag(radku,<imax>)
+endif
+
+arg(index,0)
+arg(ypos,<argo.tag(obj_y[1])>)
+while (index<argo.tag(radku))
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[1])>,0,<argo.tag(sloupec_x[0])>,<flaginforow[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+arg(ypos,<argo.tag(obj_y[1])>)
+while (index<imax)
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[3])>,0,<argo.tag(sloupec_x[2])>,<flaginforow[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//cancel
+
+[dialog d_flags button]
+on=1
+arg(index,100)
+while (index<=argo.tag(rowcount))
+ argo.f_inforow_apply(<index>,"<eval argchk(index)>","<safe argtxt(index)>",<argo.tag(row_ret[index])>)
+ arg(index,#+1)
+endwhile
+
+on=2
+tweak
+
+[function caninfo]
+dialog d_canflags
+
+[dialog d_canflags]
+0,0
+argo.tag(from,<uid>)
+IF (safe argo.tag(from).ischar)||safe argo.tag(from).isitem)
+argo.tag(from,<typedef.uid>)
+endif
+
+IF (safe argo.tag(from).ischardef)
+//7-20
+ arg(index,0)
+ arg(imax,14)
+ while (index<imax)
+  arg(flaginforow[index],"iflag_check|iflag_rename	,<argo.tag(from).Enumprop(index+7,1)>,<strmid(<argo.tag(from).Enumprop(index+7,1)>,4,0ff)> - <argo.tag(from).Enumprop(index+7,4)>")
+  arg(index,#+1)   
+ endwhile
+ELSEif (safe argo.tag(from).isitemdef)
+//2-14
+ arg(index,0)
+ arg(imax,12)
+ while (index<imax)
+  arg(flaginforow[index],"iflag_check|iflag_rename	,<argo.tag(from).Enumprop(index+2,1)>,<strmid(<argo.tag(from).Enumprop(index+2,1)>,4,0ff)> - <argo.tag(from).Enumprop(index+2,4)>")
+  arg(index,#+1)   
+ endwhile
+else
+ src.accmsg(d_canflags - wrong object)
+ break
+ENDIF
+ 
+
+argo.tag(sirka,<d_def_caninfo_sirka>)
+argo.tag(vyska,((<imax>+2)*<d_def_radek_vyska>)+<d_def_okraj>+23)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1)
+
+argo.dialog_pozadi(<argo.tag(nexty)>,<imax>,30)
+
+argo.dialog_zpruhledni
+
+argo.texta(<argo.dialog_textpos(0,0)>,2301,CAN INFO - flags bitmask:<argo.tag(from).CAN> - Zmeny zde provedene plati pro celou tridu a neukladaji se)
+
+arg(index,0)
+arg(ypos,<argo.tag(obj_y[1])>)
+while (index<imax)
+ argo.f_inforow(<ypos>,<argo.tag(sloupec_x[1])>,0,<argo.tag(sloupec_x[0])>,<flaginforow[index]>)
+ arg(ypos,#+<d_def_radek_vyska>) 
+ arg(index,#+1) 
+endwhile
+
+button(<d_def_okraj>	,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)//ok
+button((<argo.tag(sirka)>-<d_def_okraj>)-33,<argo.tag(obj_y[0])>,0fb1,0fb3,1,0,0)//canc
+
+[dialog d_canflags button]
+on=1
+arg(index,100)
+while (index<=argo.tag(rowcount))
+ argo.f_inforow_apply(<index>,"<eval argchk(index)>","<safe argtxt(index)>",<argo.tag(row_ret[index])>)
+ arg(index,#+1)
+endwhile
+[eof]

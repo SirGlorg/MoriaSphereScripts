@@ -1,0 +1,185 @@
+/////////////////////////////////////////
+//                                     //
+//                Odula                //
+//                                     //
+//  unikatni prisera pro Torech Ungol  //
+//                                     //
+/////////////////////////////////////////
+
+[chardef c_odula]
+
+name=Odula
+category=Dungy
+subsection=Torech Ungol
+description=Odula
+id=c_spider_elder
+sound=snd_monster_gispidr1
+icon=i_pet_spider_giant
+anim=078c7f
+can=mt_walk|mt_run
+attack=120
+armor=300
+moverate=1
+resources=400 i_reag_spider_silk, 180 i_ribs_raw
+foodtype=
+bloodcolor=colors_green
+
+tevents=e_character
+tevents=e_monster
+TEVENTS=e_summoneater                          //smaze summona, co zasahne
+tevents=e_npc_roundattack
+tevents=e_npc_detect
+tevents=e_npc_massleap
+tevents=e_backstub
+tevents=e_berserk_potvora
+tevents=e_npc_regeneration
+
+on=@create
+color=1
+npc=brain_monster
+fame=5000
+karma=-10000
+
+str=2000
+dex=2000
+int=500
+
+maxhits=30000
+maxstam=1000
+maxmana=2000
+
+tag.experience=<eval {1800.0 2000.0}>
+
+tag.roundattack_damage=60,70    //dmg od - do
+tag.roundattack_time=15,20      //prodleva od - do v sek
+tag.roundattack_chance=400      //40.0%
+
+// mystik
+tag(hypnotizable,0)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+// other resists
+tag(resist_poison,1000)
+tag(resist_para,1000)
+tag(resist_summon,800)
+tag(resist_bleed,700)
+// weap resists
+tag(resist_sharp,500)
+tag(resist_slash,500)
+tag(resist_pierce,200)
+tag(resist_blunt,300)
+// magic resists
+tag(resist_fire,200)
+tag(resist_elect,500)
+tag(resist_cold,500)
+// typ monstra
+tag(monstertype,spider)
+// weap flags
+tag.weapflag=dam_piercing|dam_physical
+
+wrestling=250.0
+resist=300.0
+tactics=250.0
+POISONING={300.0 400.0}
+peacemaking=100.0
+provocation=100.0
+spiritspeak=150.0
+itemnewbie=i_monster_create
+
+on=@npcrestock
+item=loot_spider
+item=i_gold
+
+
+//////////////
+//          //
+//  Hejkal  //
+//          //
+//////////////
+
+[chardef c_hejkal_universal]
+
+name=Hejkal
+category=Monsters
+subsection=Zla potulna NPC
+description=Hejkal
+id=c_man
+icon=i_pet_man
+can=mt_walk|mt_run|mt_equip|mt_usehands
+attack=0
+armor=20
+moverate=3
+resources=400 i_reag_spider_silk, 180 i_ribs_raw
+foodtype=
+bloodcolor=0
+
+tevents=e_character
+tevents=e_monster
+tevents=e_humanoid
+tevents=e_npc_warcry
+tevents=e_parakrik
+
+on=@create
+color=0759
+npc=brain_monster
+fame=30
+karma=-2000 // cervena, ale jeste neutoci
+
+str=100
+dex=500
+int=50
+
+maxhits=500
+maxstam=1000
+maxmana=80
+
+itemnewbie=i_mask_bear
+  color=0908
+itemnewbie=i_tunic
+  color=05a3
+itemnewbie=i_pants_long
+  color=0908
+
+tag.experience=<eval {25.0 35.0}>
+// mystik
+tag(hypnotizable,1)
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoCanBe>
+tag.hypnotizable=<tag.hypnotizable>|<flag_hypnoLoot>
+tag.hypnotizable=<tag.hypnotizable>|<flag_Buff[4]>//dmg
+tag.hypnotizable=<tag.hypnotizable>|<flag_BuffPower[6]>
+// other resists
+tag(resist_poison,700)
+tag(resist_para,200)
+tag(resist_summon,100)
+tag(resist_bleed,150)
+// weap resists
+tag(resist_sharp,100)
+tag(resist_slash,100)
+tag(resist_pierce,100)
+tag(resist_blunt,100)
+// magic resists
+tag(resist_fire,100)
+tag(resist_elect,80)
+tag(resist_cold,200)
+// typ monstra
+tag(monstertype,XXXXX)
+// weap flags
+tag.weapflag=dam_physical
+
+hiding=150.0
+stealth=800.0
+wrestling=0.0
+resist=60.0
+tactics=0.0
+peacemaking=100.0
+provocation=80.0
+spiritspeak=60.0
+itemnewbie=i_monster_create
+
+on=@npcrestock
+item=i_gold
+
+
+// sector.allchars(warcryEffect)

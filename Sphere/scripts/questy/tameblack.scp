@@ -1,0 +1,104 @@
+///// elemental, davajici tag +item pro npc Alenora, bude mezi ostatnima elmama na ledovym ostrove
+
+
+[CHARDEF crunch_elm_black]
+NAME=Ice Elemental 
+ID=c_elem_earth_m
+SOUND=snd_ELEMENTL_ERTHEL1 
+ICON=i_pet_elem_earth 
+attack=120 
+ARMOR=20 
+CAN=MT_WALK|mt_run 
+RESOURCES=8 t_magic 
+//=r_caves,r_mountains 
+TEVENTS=e_monster 
+TEVENTS=e_character 
+
+ON=@Create 
+COLOR=color_ice 
+STR=650 
+DEX=100 
+INT=275 
+tag.experience=<eval {38.0 42.0}> 
+WRESTLING={90.0 100.0} 
+
+NPC=brain_monster 
+
+FAME=1 
+
+karma=-3000 
+ITEMnewbie=i_monster_create 
+
+ON=@NPCRestock 
+ITEM=loot_elem 
+item=i_gold 
+
+on=@death 
+if (act.profession==class_ranger) && (act.taming>810) 
+act.tag(jandoruv_black, 1) 
+endif 
+
+
+////////// Alenor, npc ranger, bude stat u ohradky s respawnem blacka
+
+[CHARDEF c_crunch_alenor] 
+NAME=Alenor, Potulny ranger 
+ID=c_man 
+dam=60 
+ARMOR=80 
+CAN=MT_WALK|mt_run
+TSPEECH=crunch_alenor 
+
+TEVENTS=e_character 
+
+CATEGORY=Kvesty 
+SUBSECTION=respawn_blacka
+DESCRIPTION=ranger_Alenor
+
+
+ON=@Create 
+attr_invul=1
+STR=600 
+DEX=200 
+INT=100 
+NPC=brain_vendor 
+
+WRESTLING=120.0 
+fencing=100.0 
+tactics=100.0 
+
+tag.experience=0
+tag(noanimate,1)
+
+COLOR=colors_skin 
+ITEMNEWBIE=i_crossbow 
+ITEMNEWBIE=i_surcoat 
+COLOR=029c 
+ITEMNEWBIE=i_sandals 
+COLOR=01b6 
+ITEMNEWBIE=i_pants_long 
+COLOR=08f 
+ON=@NPCRestock 
+
+ON=@npcseenewplayer 
+DORAND 3 
+  SAY("Hej, priteli! chces videt, co se mi podarilo chytit? mrkni do ohradky...")
+  SAY("Pekny mustang, ze? V cele stredozemi se najde jen par takovych!")
+  SAY("Nekoukej kde co lita, radsi zirej do moji ohradky!")
+ENDDO
+
+[SPEECH crunch_alenor] 
+ON=*hi*
+ON=*dobry den*
+ON=*ahoj* 
+IF (<safe.SRC.TAG.jandoruv_black>) && (act.taming>950)
+SAY("Hmm, prinesl jsi tu spravnou prisadu... Pustim te tedy k tomu cernemu dablovi, uvidime, jestli te strpi v ohrade! Budes-li chtit jit ven, rekni jen 'pustit'...")
+src.go 810,3545,10
+src.tag.remove(jandoruv_black)
+else
+SAY("Pokud jsi ranger, schopny zkrotit cerneho mustanga, pustim te k nemu. Avsak musis mi prinest vsechny prisady, ktere najdes na sneznem ostrove.")
+endIF
+
+ON=*pustit*
+src.go(817,3538,10)
+[EOF]

@@ -1,0 +1,107 @@
+///////////////////////////////////////////////
+//           P v P   R E G I O N             //
+//                                           //
+//             by GM Yavanna                 //
+//                                           //
+//  - Po smrti hrace portuje na predem       //
+//    definovane souradnice                  //
+//  - pouzivano z REGIONTYPE r_PvP_PortZone  //
+///////////////////////////////////////////////
+
+[function f_PvP_PortZoneExit]
+events=-e_PvP_PortZone
+
+[function f_PvP_PortZoneEnter]
+events=+e_PvP_PortZone
+
+[itemdef i_PvP_PortZonePorter]
+ID=i_memory
+TYPE=t_eq_script
+name=PvP PortZone Porter
+
+on=@Create
+attr=attr_invis|attr_move_never
+timer=3
+
+on=@Timer
+arg(defaultPortP,"5280, 3472, 35,55")
+cont.go(<cont.tag(PvP_deathP)>)
+cont.tag.remove(PvP_deathP)
+topobj.spelleffect(s_resurrection,1000)
+arg(myJezdik,<finduid(<cont.tag(lastjezdik)>)>)
+if (arg(myJezdik).distance > 20)
+  cont.sysmessage("Tve zvire je prilis daleko.")
+  arg(portJezdik,0)
+elseif (myJezdik.ismypet)
+  arg(portJezdik,1)
+endif
+if (strlen(<topobj.region.tag(PortMeTo)>))		//GM has set the specific location to port players to.
+  topobj.go(<topobj.region.tag(PortMeTo)>)
+  if (<arg(portJezdik)>)
+    myJezdik.go(<topobj.region.tag(PortMeTo)>)
+  endif
+else
+  topobj.go(<arg(defaultPortP)>)		//default porting place
+  if (<arg(portJezdik)>)
+    myJezdik.go(<arg(defaultPortP)>)
+  endif
+endif
+topobj.paralyze_remove
+topobj.stone=0
+if (<arg(portJezdik)>)
+  finduid(<cont.tag(lastjezdik)>).dclick
+endif
+remove
+return 1
+
+[events e_PvP_PortZone]
+on=@Death
+tag(PvP_deathP,<p>)
+newequip(i_PvP_PortZonePorter)
+
+
+///////////////////////////////////////////////////////////////
+//   E Q U I P M E N T   R E M O V A L   F U N C T I O N S   //
+///////////////////////////////////////////////////////////////
+
+[function vg_pvp_denyMagic] //varGate function to stop player who wear magic item
+if f_pvp_denyIflMagic_searchCycle
+  sysMessage("S magickymi predmety nesmis vstoupit!")
+  return 1
+endif
+return 0
+findlayer(21).contents2(f_pvp_removeAllMagic_rm)
+
+[function f_pvp_denyIflMagic_searchCycle]
+if (<safe rescount>)
+  arg(count,<rescount>)
+  while (arg(count))
+    arg(count,<eval <arg(count)>-1>)
+    if (<safe findcont(<arg(count)>).rescount>)
+      if !(<eval findcont(<arg(count)>).layer> == 29) //bank box
+        if (findcont(<arg(count)>).f_pvp_denyIflMagic_searchCycle) //found magic item - stop searching
+          return 1
+        endif
+      endif
+    endif
+    if (findcont(<arg(count)>).f_pvp_denyIflMagic_chk) // stop search, this item is magic
+      return 1
+    endif
+  endwhile
+endif
+return 0
+
+[function f_pvp_denyIflMagic_chk]
+if (strlen(<tag(imi_skill_present)>) || strlen(<tag(imi_other_present)>)) //all magic items shall not pass !
+  if !(strlen(<tag(craftedby)>))  //crafted items are allowed
+    if (type != t_eq_horse) //horses can be magical
+      topobj.sysMessage("Nesmis projit s predmetem <uid.name>!")
+      return 1
+    endif
+  endif
+endif
+return 0
+
+
+
+[eof]

@@ -1,0 +1,2198 @@
+[defnames boosty_menu]
+boosty_menu_column  29
+boosty_menu[0]  i_a_clumsy,08C0
+boosty_menu[1]  i_a_feeblemind,08C2
+boosty_menu[2]  i_a_weaken,08C7
+boosty_menu[3]  i_a_agility,08C8
+boosty_menu[4]  i_a_cunning,08C9
+boosty_menu[5]  i_a_strength,08CF
+boosty_menu[6]  i_a_bless,08D0
+boosty_menu[7]  i_a_curse,08DA
+boosty_menu[8]  i_rune_night_sight,08C5
+boosty_menu[9]  i_rune_reactive_armor,08C6
+boosty_menu[10]  i_rune_protection,08CE
+boosty_menu[11]  i_rune_poison,08D3
+boosty_menu[12]  i_rune_archprotection,08D9
+boosty_menu[13]  i_rune_magic_reflection,08E3
+boosty_menu[14]  i_rune_paralyze,08E5
+boosty_menu[15]  i_rune_invisibility,08EB
+boosty_menu[16]  i_bloodritual,05108    //timer-inf.
+boosty_menu[17]  i_woodooeffect,05001
+boosty_menu[18]  i_stealthbonus,0500E    //timer-inf.
+boosty_menu[19]  i_a_mana_shield,05422
+boosty_menu[20]  i_a_nightsight_potion,08C5
+boosty_menu[21]  i_a_agility_potion,08C8
+boosty_menu[22]  i_a_cunning_potion,08C9
+boosty_menu[23]  i_a_strength_potion,08CF
+boosty_menu[24]  i_a_stoneskin_potion,08CE
+boosty_menu[25]  i_a_mobility_potion,08E5
+boosty_menu[26]  i_a_energy_potion,08C3
+boosty_menu[27]  i_a_shield_potion,05422
+boosty_menu[28]  i_a_dragon_resist_potion,08EA
+
+[function boosty]
+//say(<f_boostyCas(<src.tag.boostyxy>)>)
+
+if (<src.tag.boosty_x>)
+  src.tag.remove(boosty_x)
+endif  //stary tag - ak ho hrac ma tak sa zmaze
+if (<src.tag.boosty_y>)
+  src.tag.remove.(boosty_y)
+endif  //stary tag - ak ho hrac ma tak sa zmaze
+if !(strlen(<src.tag(boostyxy)>))
+  tag(boostyxy,20,20,0,1)	//x, y, isOn, time
+endif
+
+if !(<f_boostyCas(<src.tag.boostyxy>)>)
+  src.tag(boostyxy,20,20,1,1)
+endif
+
+if !(src.tag(boostyxy))
+  src.tag(boostyxy,20,20,1,1)
+elseif (<f_boostyOn(<src.tag.boostyxy>)>)
+  src.tag(boostyxy,<f_boostyxyX(<src.tag.boostyxy>)>,<f_boostyxyY(<src.tag.boostyxy>)>,0,<f_boostyCas(<src.tag.boostyxy>)>)
+  src.dialogclose(d_boosty,0)
+  src.dialogclose(d_boosty_zoznam,0)
+  src.dialogclose(d_boostyxy,0)
+  src.dialogclose(d_boosty_equip,0)
+  return 1
+endif
+
+arg(cas,<fixnumber((<serv.time>/10)-<f_boostyCas(<src.tag.boostyxy>)>)>)
+//say(<cas>)
+//say(<f_boostyCas(<src.tag.boostyxy>)>)
+
+if (<cas><6)&&(!src.isgm)
+  src.redmessage("Jeste nemuzes pouzit prikaz.")
+else
+  src.dialog(d_boosty)
+endif
+return 1
+
+[function f_boosty_name]
+return <argv(0)>
+
+[function f_boosty_picture]
+return <argv(1)>
+
+[function f_boostyxyX]
+return <argv(0)>
+
+[function f_boostyxyY]
+return <argv(1)>
+
+[function f_boostyOn]
+return <argv(2)>
+
+[function f_boostyCas]
+return <argv(3)>
+
+////[function f_boostyrefresh]
+////return <argv(4)>
+
+////////////DIALOG BOOSTY/////////////////////////
+[dialog d_boosty]
+arg(column,0)
+arg(used,0)
+
+arg(boosty_x,<f_boostyxyX(<src.tag.boostyxy>)>)
+arg(boosty_y,<f_boostyxyY(<src.tag.boostyxy>)>)
+
+src.tag(boostyxy,<boosty_x>,<boosty_y>,1,<serv.time>/10)
+
+while (<column> < <boosty_menu_column>)
+  if (src.findid(<f_boosty_name(<boosty_menu[<column>]>)>))
+    if ((<column>==15)&&(!src.flag_invisible))
+      src.findid(i_rune_invisibility).remove  //po odinvisnuti ten item na hracovi zostava - toto ho zmaze
+      arg(used,#-1)
+    endif
+    if ((<column>==14)&&(!src.flag_freeze))
+      //src.findid(i_rune_paralyze).remove  //uz by nemelo byt potreba
+      arg(used,#-1)
+    endif    
+    arg(used,#+1)
+  endif
+  arg(column,#+1)
+endwhile
+
+/////  energyshield, defstance, pact(2x), voodooshield, roundattack(next), catchfield(next), longrange(next), stance - vigilance(theif)
+arg(used2,0)
+if (src.findid(i_energyshield))  //05100
+  arg(used2,#+1)
+endif
+if (src.isevent(e_defstance) || src.isevent(e_vigilance))
+  arg(used2,#+1)
+endif
+if (src.tag(pact_to))
+  arg(used2,#+1)
+endif
+if (src.tag(pact_by))
+  arg(used2,#+1)
+endif
+if (src.findid(i_voodooshield))
+  arg(used2,#+1)
+endif
+if (src.tag(nextroundattack)>serv.time)
+  arg(used2,#+1)
+endif
+if (src.findid(i_soul_remover))
+  arg(used2,#+1)
+endif
+if (src.findid(i_memory_catchField))
+  arg(used2,#+1)
+endif
+if (src.findid(i_delayer_longrange))
+  arg(used2,#+1)
+endif
+if (<src.poisonManager.f_pm_isImmune>==1)
+  arg(used2,#+1)
+endif
+/////
+
+argo.setlocation=5,5
+argo.page(0)
+arg(gump_x,<fixnumber((<used2>+<used>)*55)>)
+
+argo.resizepic(<boosty_x>,<boosty_y>,3000,gump_x+40,80)
+
+arg(column,0)
+arg(poloha_x,5)  
+while (<column> < <boosty_menu_column>)
+  if (src.findid(<f_boosty_name(<boosty_menu[<column>]>)>))
+    if (<column><20)||(<column>>28)  //medzi 20 a 27 sa dava obrazok potionu
+      argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,<f_boosty_picture(<boosty_menu[<column>]>)>)
+    else
+      //03269 - potion obrazok
+      argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,<f_boosty_picture(<boosty_menu[<column>]>)>)
+      argo.gumppic(<boosty_x>+<poloha_x>+30,<boosty_y>+15,03269)
+    endif
+    if ((<column>==18)||(<column>==16))  //hiding a bloodritual
+      argo.settext(<column>,"inf.")
+    elseif (<column>==11)    //poison time=more2*i_rune_poitson.timer
+      argo.settext(<column>,<eval(<src.findid(<f_boosty_name(<boosty_menu[<column>]>)>).morey>)>/10)>)
+    else
+      argo.settext(<column>,<src.findid(<f_boosty_name(<boosty_menu[<column>]>)>).timer>)
+    endif
+    argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,152,<column>)
+    arg(poloha_x,#+55)
+  endif
+    arg(column,#+1)
+endwhile
+
+if (<var(var_poisonManager).f_pm_isImmune>==1) //cure immunity
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,08CA)
+  argo.gumppic(<boosty_x>+<poloha_x>+30,<boosty_y>+15,03269)
+  argo.settext(99,"<eval (var(var_poisonManager).f_pm_immunityRemaining/10)>")
+  argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,152,99)
+  arg(poloha_x,#+55)
+endif
+
+/////  energyshield, defstance, pact(2x), voodooshield
+if (src.findid(i_energyshield))  //energyfield
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,05100)
+  argo.settext(100,<src.tag(energyofshield)>)
+  argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+30,200,100)
+  if (<src.findid(i_energyshield).timer><30)
+    argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,152,105)
+  else
+    argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,32,105)
+  endif  arg(poloha_x,#+55)
+endif
+
+if (src.isevent(e_defstance) || src.isevent(e_vigilance))  //defstance
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,05202)
+  arg(poloha_x,#+55)
+endif
+
+if (src.tag(pact_to))  //pact - shaman
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,05308)
+  if(tag(pact_to).findid(i_pact))
+    argo.settext(103,<src.tag(pact_to).findid(i_pact).timer>)
+    argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,152,103)
+  endif
+  arg(poloha_x,#+55)
+endif
+
+if (src.tag(pact_by))  //pact - tomu komu shaman dal
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,05101)
+  if(src.findid(i_pact))
+    argo.settext(103,<src.findid(i_pact).timer>)
+    argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,152,103)
+  endif
+  arg(poloha_x,#+55)
+endif
+
+if (src.findid(i_voodooshield))  //voodooshield
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,05100)
+  argo.settext(104,<src.tag(voodooshield)>)
+  argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+30,200,104)
+  argo.settext(105,<src.findid(i_voodooshield).timer>)
+  if (<src.findid(i_voodooshield).timer><30)
+    argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,152,105)
+  else
+    argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,32,105)
+  endif
+  arg(poloha_x,#+55)
+endif
+
+if(src.tag(nextroundattack)>serv.time)  //next roundattack
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,0520C)
+  arg(round_desatin,<eval(src.tag(nextroundattack)-serv.time)>)
+  argo.settext(106,<eval(<round_desatin>/10)>)
+  argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,32,106)  
+  arg(poloha_x,#+55)
+endif
+
+if (src.findid(i_soul_remover))  //lifepact
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,0500D)
+  argo.settext(107,<src.findid(i_soul_remover).timer>)
+  argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,152,107)
+  arg(poloha_x,#+55)
+endif
+
+if (src.findid(i_memory_catchField))  //catchfield
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,05212)
+  arg(catchfield_desatin,<eval(src.tag(catchField_nextds)-serv.time)>)
+  argo.settext(108,<eval(<catchfield_desatin>/10)>)
+  argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,32,108)
+  arg(poloha_x,#+55)
+endif
+
+if (src.findid(i_delayer_longrange))  //longrange
+  argo.gumppic(<boosty_x>+<poloha_x>,<boosty_y>+5,05209)
+  argo.settext(107,<src.findid(i_delayer_longrange).timer>)
+  argo.text(<boosty_x>+<poloha_x>+10,<boosty_y>+60,32,107)
+  arg(poloha_x,#+55)
+endif
+
+/////
+
+
+//////////jedlo
+argo.settext(666,"_")
+if (<src.food>><src.def.maxfood>)
+  src.food=<src.def.maxfood>
+endif
+arg(hlad,<src.food>)
+arg(jedlo,0)
+while (<jedlo><=<hlad>)
+  if (<jedlo><=5)
+    arg(farba,130+<jedlo>)//136)
+  elseif ((<jedlo>>5)&&(<jedlo><=10))
+    arg(farba,145+<jedlo>)//147)
+  else
+    arg(farba,160+<jedlo>)//171)
+  endif
+  if (<jedlo>>0)
+    argo.text(<boosty_x>+<poloha_x>,<boosty_y>+56-<jedlo>*4,<farba>,666)
+  endif
+  arg(jedlo,#+1)
+endwhile
+//////////
+
+argo.button(<boosty_x>+<poloha_x>+15,<boosty_y>+6,03217,03218,1,0,1)
+argo.button(<boosty_x>+<poloha_x>+15,<boosty_y>+26,03217,03218,1,0,2)
+argo.button(<boosty_x>+<poloha_x>+15,<boosty_y>+46,03217,03218,1,0,3)
+
+
+/////spec ability
+if src.findid(<i_spec_ability_counter>)
+  argo.gumppic(<boosty_x>+<poloha_x>+18,<boosty_y>+63,0939)
+else
+  argo.gumppic(<boosty_x>+<poloha_x>+18,<boosty_y>+63,0938)
+  //argo.button(<boosty_x>+<poloha_x>,<boosty_y>+50,03217,03218,1,0,3)
+endif
+/////
+
+[dialog d_boosty button]
+on=0
+src.tag(boostyxy,<f_boostyxyX(<src.tag.boostyxy>)>,<f_boostyxyY(<src.tag.boostyxy>)>,0,<f_boostyCas(<src.tag.boostyxy>)>)
+
+on=1
+dialog(d_boostyxy)
+
+on=2
+dialog(d_boosty_zoznam)
+
+on=3
+dialog(d_boosty_equip)
+
+//on=4
+////say(<f_boostyrefresh(<src.tag.boostyxy>)>)
+//if (src.findid(i_boosty_timer))
+//  src.findid(i_boosty_timer).remove
+//  src.sysmessage("Automaticke obnovovanie vypnute")
+//else
+//  src.newitem(i_boosty_timer).equip
+//  src.sysmessage("Automaticke obnovovanie zapnute")
+//endif
+
+////////////DIALOG X Y////////////////////////////
+[dialog d_boostyxy]
+//textentry <x> <y> <gump width> <height> <color> <index> <text id>
+//<fixNumber(<argv(0)>)>
+//src.tag(test,111,222,333)
+//src.tag.test = <src.tag.test>,444
+
+arg(boosty_x,<f_boostyxyX(<src.tag.boostyxy>)>)
+arg(boosty_y,<f_boostyxyY(<src.tag.boostyxy>)>)
+
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(<boosty_x>-10,<boosty_y>-10,3000,165,65)
+
+argo.textA(<boosty_x>,<boosty_y>,152,"X=")
+argo.gumppic(<boosty_x>+20,<boosty_y>,098B)
+
+argo.textA(<boosty_x>,<boosty_y>+25,152,"Y=")
+argo.gumppic(<boosty_x>+20,<boosty_y>+25,098B)
+
+argo.textentry(<boosty_x>+28,<boosty_y>,40,30,152,2,2)
+argo.textentry(<boosty_x>+28,<boosty_y>+25,40,30,152,3,3)
+
+argo.button(<boosty_x>+90,<boosty_y>,0850,0851,1,0,1)
+argo.button(<boosty_x>+90,<boosty_y>+25,0847,0848,1,0,0)
+
+[dialog d_boostyxy button]
+on=0
+src.tag(boostyxy,<f_boostyxyX(<src.tag.boostyxy>)>,<f_boostyxyY(<src.tag.boostyxy>)>,0,<f_boostyCas(<src.tag.boostyxy>)>)
+
+on=1
+arg(boostyx,<fixnumber(<argtxt(2)>)>)
+arg(boostyy,<fixnumber(<argtxt(3)>)>)
+
+if ((<boostyx><1)||(<boostyx>>900))
+  arg(boostyx,20)
+endif
+if ((boostyy<1)||(boostyy>700))
+  arg(boostyy,20)
+endif
+
+src.tag(boostyxy,<boostyx>,<boostyy>,0,<f_boostyCas(<src.tag.boostyxy>)>)
+
+////////////DIALOG ZOZNAM///////////////////////
+[dialog d_boosty_zoznam]
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,20,3000,700,600)
+
+arg(column,0)
+arg(row,0)
+arg(pocet,0)
+arg(poloha_x,10)  
+
+argo.settext(0,"Clumsy")
+argo.settext(1,"Feeblemind")
+argo.settext(2,"Weaken")
+argo.settext(3,"Agility")
+argo.settext(4,"Cunning")
+argo.settext(5,"Strength")
+argo.settext(6,"Bless")
+argo.settext(7,"Curse")
+argo.settext(8,"Night Sight")
+argo.settext(9,"Reactive Ar.")
+argo.settext(10,"Protection")
+argo.settext(11,"Poison")
+argo.settext(12,"Arch Protect.")
+argo.settext(13,"Magic Reflec.")
+argo.settext(14,"Paralyze")
+argo.settext(15,"Invisibility")
+argo.settext(16,"Bloodritual")
+argo.settext(17,"Voodoo")
+argo.settext(18,"Hidden")
+argo.settext(19,"Mana Shield")
+argo.settext(20,"Nightsight")
+argo.settext(21,"Agility")
+argo.settext(22,"Cunning")
+argo.settext(23,"Strength")
+argo.settext(24,"Stoneskin")
+argo.settext(25,"Mobility")
+argo.settext(26,"Energy")
+argo.settext(27,"Spell Shield")
+argo.settext(28,"Cure")
+argo.settext(29,"Dragon Protection")
+  
+while (<pocet> < <boosty_menu_column>)
+  if ((<row>==7)||(<row>==15)||(<row>==23))
+    arg(poloha_x,#+150)
+    arg(row,0)
+  endif
+
+  arg(rrow,<fixnumber(<row>*55)>)
+  if (<pocet><20)
+    argo.gumppic(25+<poloha_x>,35+<rrow>,<f_boosty_picture(<boosty_menu[<pocet>]>)>)  
+  else
+    argo.gumppic(25+<poloha_x>,35+<rrow>,<f_boosty_picture(<boosty_menu[<pocet>]>)>)
+    argo.gumppic(55+<poloha_x>,45+<rrow>,03269)
+  endif
+
+  argo.text(70+<poloha_x>,45+<rrow>,152,<pocet>)
+  
+  arg(row,#+1)
+  arg(pocet,#+1)
+endwhile
+
+argo.gumppic(35,420,05202)
+argo.settext(200,"Defstance")
+argo.text(80,430,152,200)
+
+argo.gumppic(185,420,05100)
+argo.settext(201,"Energyshield")
+argo.text(230,430,152,201)
+
+argo.gumppic(335,420,05308)
+argo.settext(202,"Pact[shaman]")
+argo.text(380,430,152,202)
+
+argo.gumppic(485,420,05101)
+argo.settext(203,"Pact")
+argo.text(530,430,152,203)
+
+argo.gumppic(35,485,0939)
+argo.gumppic(55,485,0938)
+argo.settext(204,"- Spec. ability ON/OFF")
+argo.text(75,480,152,204)
+
+argo.settext(666,"_")
+arg(j,0)
+while (<j><=15)
+  if (<j><=5)
+    arg(farba,130+<j>)//136)
+  elseif ((<j>>5)&&(<j><=10))
+    arg(farba,145+<j>)//147)
+  else
+    arg(farba,160+<j>)//171)
+  endif
+  if (<j>>0)
+    argo.text(300,500-<j>*4,<farba>,666)
+  endif
+  arg(j,#+1)
+endwhile
+argo.settext(205,"- Food")
+argo.text(315,480,152,205)
+
+argo.gumppic(35,520,0520c)
+argo.settext(206,"Roundattack")
+argo.text(80,530,152,206)
+
+argo.gumppic(185,520,05100)
+argo.settext(207,"Voodooshield")
+argo.text(230,530,152,207)
+
+argo.gumppic(335,520,0500D)
+argo.settext(208,"Lifepact")
+argo.text(380,530,152,208)
+
+argo.gumppic(485,520,05212)
+argo.settext(209,"Catchfield")
+argo.text(530,530,152,209)
+
+argo.gumppic(35,570,05209)
+argo.settext(210,"Longrange")
+argo.text(80,580,152,210)
+
+[dialog d_boosty_zoznam button]
+on=0
+src.tag(boostyxy,<f_boostyxyX(<src.tag.boostyxy>)>,<f_boostyxyY(<src.tag.boostyxy>)>,0,<f_boostyCas(<src.tag.boostyxy>)>)
+
+[dialog d_boosty_equip]
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,20,3000,150,23+(15*<d_def_radek_vyska>))
+
+argo.textA(43,20,152,"EQUIP 0-15")
+
+arg(row,0)
+arg(i,0)
+while (<i><=15)
+  if (<src.equiptag(equip<eval arg(i)>)>)
+    argo.textA(25,(<arg(row)>*<d_def_radek_vyska>)+40,42,"<?eval arg(i)?>")
+    if (src.equiptag(equip<eval arg(i)>).ischar)
+    	//ak to bude kvoli tej distance lagovat tak to zmenit na realm (v podstate sa to robi hlavne preto aby tam nebolo vidiet meno masky)
+      if (src.distancefrom(src.equiptag(equip<eval arg(i)>)) < 18)
+        argo.textA(50,(<arg(row)>*<d_def_radek_vyska>)+40,42,"<?src.equiptag(equip<eval arg(i)>).name?>")
+      else
+        argo.textA(50,(<arg(row)>*<d_def_radek_vyska>)+40,42,"Cil je daleko")
+      endif
+    else  
+      argo.textA(50,(<arg(row)>*<d_def_radek_vyska>)+40,42,"<?src.equiptag(equip<eval arg(i)>).name?>")
+    endif
+    arg(row,#+1)
+  endif
+  arg(i,#+1)
+endwhile
+
+[dialog d_boosty_equip text]
+[dialog d_boosty_equip button]
+
+on=0
+src.tag(boostyxy,<f_boostyxyX(<src.tag.boostyxy>)>,<f_boostyxyY(<src.tag.boostyxy>)>,0,<f_boostyCas(<src.tag.boostyxy>)>)
+
+/////////////boosty timer - item//////////////////
+
+//[itemdef i_boosty_timer]
+//id=i_memory
+//name=boosty timer
+//type=t_eq_script
+
+//on=@equip
+//timer=5
+
+//on=@timer
+//timer=3
+//src.boosty
+//return 1
+
+
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+///// INVIS FUNKCIE
+[function invis_new]
+src.invis
+sfx(snd_spell_gate_travel)
+src.newitem=02eea
+src.act.color=1593
+src.act.attr=attr_static|attr_decay|attr_move_never
+src.act.timer=3
+src.act.p=<src.p>
+
+[function f_invis_new]
+arg(predmet,<argv(0)>)
+arg(farba,<argv(1)>)
+arg(cas,<argv(2)>)
+arg(poloha1,<argv(3)>)
+arg(poloha2,<argv(4)>)
+
+src.newitem=<predmet>
+src.act.color=<farba>
+src.act.attr=attr_static|attr_decay|attr_move_never
+src.act.timer=<cas>
+src.act.p=<src.p>
+src.act.move <poloha1>
+src.act.move <poloha2>
+
+[function invis_new2]
+src.invis
+sfx snd_spell_flamestrike
+f_invis_new(02ec1,098f,2,n,w)
+f_invis_new(02ec1,098f,2,s,w)
+f_invis_new(02ec1,098f,2,n,e)
+f_invis_new(02ec1,098f,2,s,e)
+f_invis_new(02ee0,098a,3,s,n)
+
+//////////////////////////////////////////////////
+/////T_SIGN_NEW - gumpova tabulka s textom ktory je v name
+[typedef t_sign_new]
+ON=@userdclick
+src.tag(sign_new,<uid>)
+dialog(d_sign_new)
+return 1
+
+[dialog d_sign_new]
+argo.setlocation=5,5
+argo.page(0)
+
+argo.resizepic(20,20,9270,160,110)
+//argo.settext(0,<src.tag(sign_new).name>)
+argo.HTMLGUMP(32,27,142,90,0,0,0)
+
+[dialog d_sign_new text]
+<basefont color="#ffffff"><?src.tag(sign_new).name?>
+<?src.tag.remove(sign_new)?>
+
+[dialog d_sign_new button]
+ON=0
+if (src.tag(sign_new))
+  src.tag.remove(sign_new)
+endif
+
+//////////////////////////////////////////////////
+
+//////////////////////////////////////////////////
+///// pasca - Revenge
+[itemdef i_gate_pasca]
+name=Pasca
+id=i_moongate_blue
+type=t_normal
+
+on=@create
+attr=090
+color=098c
+//morep=jail
+
+on=@step
+if(src.isgm)
+  src.sysmessage("Som gata a posielam zloduchov tam kam patria, ale GMka tam nepatria")
+else
+  src.giveitem(i_dukaz).bounce
+  lastnew.morep=<src.p>  //odkial ho to portlo
+  src.jail
+  src.tag(JAIL_RELEASEPOINT,<src.home>)  //inak by ho to portlo na to miesto kde ho to za-jail-o-va-lo (znova na tu gatu)
+//  src.p=<morep>  //jail
+//  src.resync
+endif
+return 1
+
+[itemdef i_dukaz]
+name=Zlodej bugerska at pise page
+id=i_deed
+//type=t_normal
+
+on=@create
+attr=014
+color=098c
+
+//on=@userdclick
+//return 1
+
+//////////////////////////////////////////////////
+///// kocky
+[itemdef i_kocky_loot]
+name=Kocky Loot
+id=i_dice_cup
+type=t_normal
+
+on=@userdclick
+//sayua(021,0,0,1,"test")
+dorand 8
+src.emote("rolls MAGIC ITEM")
+src.emote("rolls WEAPON")
+src.emote("rolls CHEST")
+src.emote("rolls LEGS")
+src.emote("rolls HELM")
+src.emote("rolls ARMS")
+src.emote("rolls GLOVES")
+src.emote("rolls GORGET")
+enddo
+//magicky item, hrud , zbran, nohy, helma, lokty a rukavice, krk
+return(1)
+
+//////////////////////////////////////////////////
+/////  DLAZDICA CO SI PAMATA KTO CEZ NU PRESIEL
+[itemdef i_dlazdica_mena]
+id=0aec
+name=Pamatam si kto namna vkrocil
+type=t_normal
+
+on=@create
+color=098e
+attr=090
+tag(pom,00)
+tag(playerAmount,0)
+
+on=@step
+if (src.isplayer)
+  arg(i,0)
+  while (arg(i)<<tag.playerAmount>)
+    if (<src.uid>==<tag.player_<i>>)
+      tag(time_<i>,<getDay>.<getMonth>.<getYear> <getHour>:<getMinute>:<getSecond>)
+      return(1)
+    endif
+    arg(i,#+1)
+  endwhile
+endif
+
+tag(time_<tag(playerAmount)>,<getDay>.<getMonth>.<getYear> <getHour>:<getMinute>:<getSecond>)
+tag(player_<tag(playerAmount)>,<src.uid>)
+tag(playerAmount,<tag(playerAmount)>+1)
+
+on=@userdclick
+if (src.isgm)
+  tag(pom,00)
+  dialog(d_dlazdica_mena,00)
+endif
+return(1)
+
+[dialog d_dlazdica_mena]
+arg(strana,<argv(0)>)
+
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,20,3000,400,545)
+
+argo.settext(3000,"Player")
+argo.text(25,20,152,3000)
+argo.settext(3001,"Account")
+argo.text(140,20,152,3001)
+argo.settext(3002,"Time")
+argo.text(270,20,152,3002)
+
+arg(i,<strana>)
+arg(j,0)
+while (arg(i)<<strana>+20)
+  argo.settext(i,<tag(player_<i>).name>)
+  argo.text(25,45+25*j,152,i)
+  argo.settext(1000+i,<tag(player_<i>).account.name>)
+  argo.text(140,45+25*j,152,1000+i)
+  argo.settext(2000+i,<tag(time_<i>)>)
+  argo.text(270,45+25*j,152,2000+i)
+  arg(i,#+1)
+  arg(j,#+1)
+endwhile
+
+argo.settext(3003,"Total players: ")
+argo.text(25,45+25*20,152,3003)
+
+argo.settext(3004,<tag(playerAmount)>)
+argo.text(125,45+25*20,152,3004)
+
+arg(rozdiel,<tag(pom)>-<tag(playerAmount)>)
+arg(rozdiel,#+20)
+
+if ((<tag(playerAmount)>>20)&&(<rozdiel><0))
+  argo.button(385,540,4005,4007,1,0,1)
+endif
+
+if (<tag(pom)-20>>0)
+  argo.button(345,540,4014,4015,1,0,2)
+endif
+
+[dialog d_dlazdica_mena text]
+[dialog d_dlazdica_mena button]
+on=0
+tag(pom,00)
+
+on=1
+tag(pom,<tag(pom)>+20)
+dialog(d_dlazdica_mena,<tag(pom)>)
+//say(<tag.pom>)
+
+on=2
+tag(pom,<tag(pom)>-20)
+dialog(d_dlazdica_mena,<tag(pom)>)
+//say(<tag.pom>)
+
+//////////////////////////////////////////////////
+////// DIALOG HUNGRY
+//[dialog d_hungry]
+//argo.setlocation=5,5
+//argo.page(0)
+
+//argo.resizepic(20,20,3000,15,75)
+//argo.settext(0,"_")
+//if (<src.food>><src.def.maxfood>)
+//  src.food=<src.def.maxfood>
+//endif
+
+//arg(hlad,<src.food>)
+//arg(jedlo,0)
+//while (<jedlo><=<hlad>)
+//  if (<jedlo><=5)
+//    arg(farba,136)
+//  elseif ((<jedlo>>5)&&(<jedlo><=10))
+//    arg(farba,147)
+//  else
+//    arg(farba,171)
+//  endif
+//  if (<jedlo>>0)
+//    argo.text(22,74-<jedlo>*4,<farba>,0)
+//  endif
+//  arg(jedlo,#+1)
+//endwhile
+
+//////////////////////////////////////////////////
+///// nehasnuca lucerna
+[itemdef i_lantern_forever]
+id=i_lantern_lit
+name=Vecna Lucerna
+type=t_normal
+
+on=@create
+attr=010
+color=098e
+
+on=@userdclick
+return(1)
+
+[itemdef i_candles_forever]
+id=i_candleabra2_lit
+name=Vecne Svetlo
+type=t_normal
+
+on=@create
+attr=010
+color=098a
+
+on=@userdclick
+return(1)
+
+//////////////////////////////////////////////////
+///// VETESNICI DIALOGS
+[DIALOG d_magic_item_exchanger]
+arg(realm, <argv(0)>)  // 0 - G, 1 - M
+
+if !(tag(price))
+  tag(price,5000)
+endif
+
+argo.setlocation=5,5
+
+argo.page(0)
+argo.resizepic(20,200,2620,640,350)
+argo.gumppic(30,210,03182)
+if (realm==0)
+  argo.gumppic(40,215,03025)
+else
+  argo.gumppic(40,215,03024)
+endif
+
+if (realm==0)
+  argo.settext(0,"Vetesnik")
+else
+  argo.settext(0,"Vyberci")
+endif
+argo.text(220,210,52,0)
+
+argo.button(160,330,0988,0988,0,2,0)
+argo.settext(1,"Kdo jsi?")
+argo.text(210,332,1152,1)
+
+argo.button(325,330,0988,0988,0,3,0)
+argo.settext(2,"Prohlednout")
+argo.text(375,332,1152,2)
+
+argo.button(160,355,0988,0988,0,4,0)
+argo.settext(3,"Identifikovat")
+argo.text(210,357,175,3)
+
+argo.button(325,355,0988,0988,0,5,0)
+argo.settext(4,"Vymenit")
+argo.text(375,357,175,4)
+
+argo.page(1)
+if (realm==0)
+  argo.settext(11,"Bud zdrav hrdino.")
+else
+  argo.settext(11,"Nazdar. Co chces?")
+endif
+argo.HTMLGUMP(170,230,440,100,11,0,36)
+
+argo.page(2)
+if (realm==0)
+  argo.settext(22,"Me jmeno neni dulezite, ale rikaji mi vetesnik. Byl jsem poveren sberem magickych predmetu pro vyzkumne ucely. Bohuzel v tuto chvili mam nedostatek financnich prostredku a proto ti navrhnu jiny zpusob. Ty mi das pet predmetu libovolne kvality a ja ti daruji jeden novy neidentifikovany.")
+else
+  argo.settext(22,"Co te po jmenu! Me jmeno neni dulezite, rikej mi vyberci. Dej mi pet magickych predmetu libovolne kvality, ty mas narok na jeden novy ode mne.")
+endif
+argo.HTMLGUMP(170,230,440,100,22,0,36)
+
+argo.page(3)
+if (realm==0)
+  argo.settext(33,"Vidis vysokeho muze s bradkou.")
+else
+  argo.settext(33,"Vidis vyskou krasnou zenu.")
+endif
+argo.HTMLGUMP(170,230,440,100,33,0,36)
+
+argo.page(4)
+argo.settext(44,"Moji dalsi schopnosti je rozpoznani magickych vlastnosti neznameho predmetu. Mas li predmet, o nemz nevis jake ma vlastnosti, mohu ti ho identifikovat. Za tuto sluzbu si vsak vezmu <?tag.price?> zlatych")
+argo.HTMLGUMP(170,230,440,100,44,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,1)
+argo.settext(45,"Identifikovat")
+argo.text(60,395,152,45)
+argo.button(25,415,0fa5,0fa7,1,0,0)
+argo.settext(46,"Nemam zajem")
+argo.text(60,415,152,46)
+
+argo.page(5)
+argo.settext(55,"Zvaz dobre, co u sebe mas! Prejes si teda vymenit 5 tvych identifikovanych magickych predmetu za 1 novy neidentifikovany?")
+argo.HTMLGUMP(170,230,440,100,55,0,36)
+argo.button(25,395,0fa5,0fa7,1,0,2)
+argo.settext(56,"Ano")
+argo.text(60,395,152,56)
+argo.button(25,415,0fa5,0fa7,1,0,0)
+argo.settext(57,"Ne")
+argo.text(60,415,152,57)
+
+[DIALOG d_magic_item_exchanger text]
+
+[DIALOG d_magic_item_exchanger button]
+ON=0
+
+ON=1
+src.identification_i_mi_magic(<UID>,<tag.price>)
+say("Tak co chces identifikovat?")
+
+ON=2
+say(Dobra, podivame se, co pro mne mas.)
+if(hasfivemagicals) 
+  src.giveitem(i_mi_bag)
+  say(Dekuji ti, zajimave predmety. Snad o ne nekdo bude mit zajem.)
+  say(A zde je neco pro tebe, snad ti to bude k uzitku)
+else
+  say(Nemas dost predmetu k vymene)  
+endif
+
+//////////////////////////////////////////////////
+///// naslapky pamatujuce si mena ver.2
+[itemdef i_kontrolor_dlazdic]
+id=01f2a
+name=Kontrolor dlazdic
+type=t_normal
+
+on=@create
+attr=090
+color=099c
+more1=1
+
+on=@userdclick
+more2=0
+dialog(d_kontrolor_dlazdic,<more2>)
+return(1)
+
+[itemdef i_dlazdica_mena2]
+id=0aec
+name=Pamatam si kto namna vkrocil
+type=t_normal
+
+on=@create
+color=099c
+attr=090
+
+on=@step
+if (finduid(tag(kontrolor)))  // existuje kontrolor?
+  if (tag(kontrolor))  //je linknuty na nejakeho kontrolora? - viz item vyssie
+    if ((src.isplayer)&&!(src.isgm))
+      arg(i,0)
+      arg(pocet,<eval(<tag(kontrolor).more1>)>)  //more1 - pocet hracov
+      while (arg(i))<<pocet>)
+        if (<src.uid>==<tag(kontrolor).tag.player_<i>>)
+          tag(kontrolor).tag(time_<i>,<getDay>.<getMonth>.<getYear> <getHour>:<getMinute>:<getSecond>)
+          morep=<uid.p>  //suradnice dlazdice
+          tag(kontrolor).tag(dlazdica_<i>,<morex> <morey> <morez> <morem>)  //suradnice dlazdice do tagu
+          return(1)
+        endif
+        arg(i,#+1)
+      endwhile
+      
+      tag(kontrolor).tag(time_<eval(<tag(kontrolor).more1>)>,<getDay>.<getMonth>.<getYear> <getHour>:<getMinute>:<getSecond>)
+      tag(kontrolor).tag(player_<eval(<tag(kontrolor).more1>)>,<src.uid>)
+      morep=<uid.p>  //suradnice dlazdice
+      tag(kontrolor).tag(dlazdica_<eval(<tag(kontrolor).more1>)>,<morex> <morey> <morez> <morem>)  //suradnice dlazdice do tagu
+      tag(kontrolor).more1=<eval(<eval(<tag(kontrolor).more1>)>+1)>
+    endif
+  endif
+else
+  if (src.isgm)
+    src.redmessage("Neexistuej kontrolor k dlazdici (i_kontrolor_dlazdic) -> mazem dlazdicu")
+  endif
+  remove
+endif
+return(1)
+
+on=@userdclick
+if (src.isgm)
+  target("Zameraj kontrolora.")
+endif
+return(1)
+
+on=@TargOn_Item
+if (<src.targ.baseid>==i_kontrolor_dlazdic)
+  tag(kontrolor,<src.targ>)
+else
+  src.redmessage("Toto nieje kontrolor! (i_kontrolor_dlazdic)")
+endif
+return(1)
+
+[dialog d_kontrolor_dlazdic]
+//say(<more1>)
+arg(od,<argv(0)>)
+
+argo.setlocation=5,5
+argo.page(0)
+argo.resizepic(20,20,3000,550,545)
+
+argo.settext(3000,"Hrac")
+argo.text(25,20,152,3000)
+argo.settext(3001,"Ucet")
+argo.text(140,20,152,3001)
+argo.settext(3002,"Cas")
+argo.text(270,20,152,3002)
+argo.settext(3003,"Dlazdica")
+argo.text(440,20,152,3003)
+argo.settext(3004,"Spolu hracov: ")
+argo.text(25,545,152,3004)
+argo.settext(3005,<eval(more1)>-1)
+argo.text(125,45+25*20,152,3005)
+
+arg(i,<od>)
+arg(j,0)
+while (arg(i)<=<od>+20)
+  argo.settext(i,<tag(player_<i>).name>)
+  argo.text(25,20+25*j,152,i)
+  argo.settext(1000+i,<tag(player_<i>).account.name>)
+  argo.text(140,20+25*j,152,1000+i)
+  argo.settext(2000+i,<tag(time_<i>)>)
+  argo.text(270,20+25*j,152,2000+i)
+  argo.settext(2500+i,<tag(dlazdica_<i>)>)
+  argo.text(440,20+25*j,152,2500+i)
+  arg(i,#+1)
+  arg(j,#+1)
+  endif
+endwhile
+
+if (<more1>>20)
+  if (<eval(more2+20)><<eval(more1))>))
+    argo.button(385,540,4005,4007,1,0,1)
+  endif
+endif
+
+if (<more2>>0)
+    argo.button(345,540,4014,4015,1,0,2)
+endif
+
+[dialog d_kontrolor_dlazdic text]
+[dialog d_kontrolor_dlazdic button]
+on=0
+more2=0
+
+on=1
+more2=<more2>+20
+dialog(d_kontrolor_dlazdic,<more2>)
+
+on=2
+more2=<more2>-20
+dialog(d_kontrolor_dlazdic,<more2>)
+
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+/////pasca na zlodeja - zapise kazdeho kto to otvoril a kedy
+[ITEMDEF i_bag_thiefcatcher]
+id=i_bag
+TYPE=T_CONTAINER
+TDATA2=03D
+FLIP=1
+DYE=1
+WEIGHT=2.0
+
+on=@create
+tag(playerAmount,0)
+
+on=@userclick
+if (src.isplayer)
+  arg(i,0)
+  while (arg(i)<<tag.playerAmount>)
+    if (<src.uid>==<tag.player_<i>>)
+      tag(time_<i>,<getDay>.<getMonth>.<getYear> <getHour>:<getMinute>:<getSecond>)
+      arg(je_tam,1)
+    endif
+    arg(i,#+1)
+  endwhile
+  if !(arg(je_tam))
+    tag(time_<tag(playerAmount)>,<getDay>.<getMonth>.<getYear> <getHour>:<getMinute>:<getSecond>)
+    tag(player_<tag(playerAmount)>,<src.uid>)
+    tag(playerAmount,<tag(playerAmount)>+1)
+  endif
+endif
+return"<allcontainersClick>"
+
+
+///// Dlazdica co hadze dispell bomby
+[itemdef i_tile_explosion]
+id=0aec
+name=Hadzem bomby
+type=t_normal
+
+on=@create
+color=0993
+attr=090
+tag(nextUse,30)
+tag(bomba1,1)
+tag(bomba2,1)
+tag(bomba3,1)
+
+on=@userdclick
+if (src.isgm)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+on=@step
+if !(src.isgm)
+  if ((<serv.time> - <tag(lastThrow)>) > <tag(nextUse)>*10)
+    if (tag(pos1))
+      src.newitemsafe(<tile_explosion_<tag(bomba1)>>)
+      lastnew.p=<tag(pos1)>
+      lastnew.attr=attr_static|attr_decay|attr_move_never 
+      lastnew.trigger(userdclick)
+      lastnew.tag.remove(owner)
+      lastnew.timer=3
+    endif
+    
+    if (tag(pos2))
+      src.newitemsafe(<tile_explosion_<tag(bomba2)>>)
+      lastnew.p=<tag(pos2)>
+      lastnew.attr=attr_static|attr_decay|attr_move_never 
+      lastnew.trigger(userdclick)
+      lastnew.tag.remove(owner)
+      lastnew.timer=3
+    endif
+    
+    if (tag(pos3))
+      src.newitemsafe(<tile_explosion_<tag(bomba3)>>)
+      lastnew.p=<tag(pos3)>
+      lastnew.attr=attr_static|attr_decay|attr_move_never 
+      lastnew.trigger(userdclick)
+      lastnew.tag.remove(owner)
+      lastnew.timer=3
+    endif
+    tag(lastThrow,<serv.time>)
+  endif
+endif
+
+[dialog d_tile_explosion]
+argo.SetLocation=15,5
+
+argo.tag(sirka,480)
+argo.tag(vyska,125)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,280)
+argo.dialog_pozadi(<argo.tag(nexty)>,3,280)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,280)
+
+
+argo.dialog_zpruhledni
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Tile ExplosionDispell")
+
+argo.textA(<argo.dialog_textpos(1,0)>,<d_def_readcolor>,"<?tag(pos1)?>")
+argo.button(<lastxpos>+240,<lastypos>-2,0fa5,0fa7,1,0,1)
+argo.button(<lastxpos>+205,<lastypos>-2,0fb1,0fb3,1,0,2)
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,"<?tag(pos2)?>")
+argo.button(<lastxpos>+240,<lastypos>-2,0fa5,0fa7,1,0,3)
+argo.button(<lastxpos>+205,<lastypos>-2,0fb1,0fb3,1,0,4)
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,"<?tag(pos3)?>")
+argo.button(<lastxpos>+240,<lastypos>-2,0fa5,0fa7,1,0,5)
+argo.button(<lastxpos>+205,<lastypos>-2,0fb1,0fb3,1,0,6)
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>+3)
+argo.textA(<argo.dialog_textpos(2,0)>,42,"Next use:")
+argo.settext(100,<tag(nextUse)>)
+argo.textentry(<lastxpos>+75,<lastypos>,50,30,152,100,100)
+argo.textA(<lastxpos>+125,<lastypos>,42,"sec.")
+argo.button(<lastxpos>+240,<lastypos>-2,0fa5,0fa7,1,0,7)
+
+argo.dialog_textpos(0,1)
+arg(lastypos,<lastypos>-3*<d_def_radek_vyska>+1)
+argo.button(<lastxpos>,<lastypos>,03217,03218,1,0,8)
+argo.textA(<lastxpos>+20,<lastypos>,152,"<?tile_explosion_<tag(bomba1)>?>")
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.button(<lastxpos>,<lastypos>,03217,03218,1,0,9)
+argo.textA(<lastxpos>+20,<lastypos>,152,"<?tile_explosion_<tag(bomba2)>?>")
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.button(<lastxpos>,<lastypos>,03217,03218,1,0,10)
+argo.textA(<lastxpos>+20,<lastypos>,152,"<?tile_explosion_<tag(bomba3)>?>")
+
+
+
+[dialog d_tile_explosion button]
+on=0
+
+on=@anybutton
+if (argn==1)
+  tag(pos1,<src.p>)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==2)
+  tag.remove(pos1)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==3)
+  tag(pos2,<src.p>)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==4)
+  tag.remove(pos2)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==5)
+  tag(pos3,<src.p>)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==6)
+  tag.remove(pos3)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==7)
+  tag(nextUse,<fixnumber(<argtxt(100)>)>)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==8)
+  if (<tag(bomba1)>>=5)
+    tag(bomba1,0)
+  endif
+  tag(bomba1,#+1>)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==9)
+  if (<tag(bomba2)>>=5)
+    tag(bomba2,0)
+  endif
+  tag(bomba2,#+1>)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+if (argn==10)
+  if (<tag(bomba3)>>=5)
+    tag(bomba3,0)
+  endif
+  tag(bomba3,#+1>)
+  dialog(d_tile_explosion)
+  return(1)
+endif
+
+[defnames tile_explosions]
+tile_explosion_1  i_potion_ExplosionLess
+tile_explosion_2  i_potion_Explosion
+tile_explosion_3  i_potion_ExplosionGreat
+tile_explosion_4  i_potion_Lava
+tile_explosion_5  i_potion_ExplosionDispell
+
+
+
+
+
+
+// prevoznik do lorienu namiesto mostu
+
+[CHARDEF c_prevoznik_lorien]
+
+NAME=Prevoznik
+ID=c_man
+
+attack=60
+ARMOR=80
+moverate=4
+CAN=MT_WALK|mt_run
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Prevoznik do lorienu
+
+ON=@Create
+STR=600
+DEX=200
+INT=100
+maxhits=1000
+maxstam=1000
+maxmana=0
+
+speech=spk_go_lorien
+NPC=brain_human
+WRESTLING=120.0
+fencing=100.0
+tactics=100.0
+
+
+ON=@NPCRestock
+ItemNewbie = i_robe
+Color = 777
+ItemNewbie = i_cape
+Color = 777
+ItemNewbie = i_shoes_plain
+Color = 777
+ItemNEwbie = i_hair_short
+Color = 777
+ItemNewbie = i_beard_short
+Color = 777
+
+on=@spelleffect
+
+[SPEECH spk_go_lorien]
+ON=*Dobry*
+ON=*den*
+ON=*zdravim* 
+ON=*hi*
+ON=*ahoj*
+ON=*buy*
+Say "Za maly poplatek te muzu PREVIZT do lorienu nebo z lorienu"
+
+ON=*previzt*
+ON=*prevoz*
+
+if (src.pay({10 30}))
+  SRC.NEWITEM i_delay_lorien
+  if (!strcmp(<src.region.name>,"Lorien"))
+    SRC.ACT.MOREP=2460,1943
+  else
+    SRC.ACT.MOREP=2468,1925
+  endif
+  SRC.ACT.EQUIP
+else 
+  Say "Zadarmo te tam ale nesvezu !"
+endif
+
+[ITEMDEF i_delay_lorien]
+ID=i_memory
+Name=Teleport Delay Timer lorien
+TYPE=T_EQ_SCRIPT
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+MORE1=5
+  
+ON=@EQUIP
+TIMER=1
+
+on=@unequip
+if (link.isitem)
+ link.link=-1
+endif
+
+ON=@Timer
+if (more1)
+ cont.sysmessage cas do nalodeni:<eval <more1>>
+ more1=<eval <more1>-1>
+ TIMER=1
+ return 1
+else
+  cont.GO <MOREP>
+ remove
+ return 1
+endif
+
+///// Dlazdica co zmrazuje
+[itemdef i_ledova_dlazdice]
+id=0aec
+name=Ledova Dlazdica
+type=t_normal
+
+on=@create
+color=0480
+attr=090
+tag(nextUse,90)
+tag(freezeFor,60)
+tag(allowed,1)
+
+on=@userdclick
+if (src.isgm)
+  dialog(d_ledova_dlazdice)
+  return(1)
+endif
+
+on=@step
+if (tag(allowed))
+  if !(src.isgm)&&(src.isplayer)
+    if !(src.findid(i_ledova_dlazdice_zmrazovac))
+      src.newequip(i_ledova_dlazdice_zmrazovac)
+      lastnew.tag(timer,<tag(freezeFor)>)
+      lastnew.timerd=5
+      lastnew.more1=<tag(nextUse)>
+      lastnew.more2=0
+      lastnew.tag(frozen,1)
+      tag(lastUse,<serv.time>)
+    endif
+  endif
+endif
+
+[dialog d_ledova_dlazdice]
+argo.SetLocation=15,5
+
+argo.tag(sirka,305)
+argo.tag(vyska,100)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,280)
+argo.dialog_pozadi(<argo.tag(nexty)>,3,280)
+
+argo.dialog_zpruhledni
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Ledova Dlazdice")
+
+argo.textA(<argo.dialog_textpos(1,0)>,<d_def_readcolor>,"Zapnute:")
+argo.button(<lastxpos>+240,<lastypos>,03217,03218,1,0,1)
+argo.textA(<lastxpos>+130,<lastypos>,152,"<?tag(allowed)?>")
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,"Znovu (po odmrznuti): ")
+argo.settext(100,<tag(nextUse)>)
+argo.textentry(<lastxpos>+130,<lastypos>,50,30,152,100,100)
+argo.textA(<lastxpos>+160,<lastypos>,42,"sekund")
+argo.button(<lastxpos>+240,<lastypos>-2,0fa5,0fa7,1,0,2)
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,"Zmrazit na:")
+argo.settext(110,<tag(freezeFor)>)
+argo.textentry(<lastxpos>+130,<lastypos>,50,30,152,110,110)
+argo.textA(<lastxpos>+160,<lastypos>,42,"sekund")
+argo.button(<lastxpos>+240,<lastypos>-2,0fa5,0fa7,1,0,3)
+
+[dialog d_ledova_dlazdice button]
+on=0
+
+on=@anybutton
+if (argn==1)
+  if (<tag(allowed)>==1)
+    tag.allowed=0
+  else
+    tag.allowed=1
+  endif
+  dialog(d_ledova_dlazdice)
+  return(1)
+endif
+
+if (argn==2)
+  tag.nextUse=<fixnumber(<argtxt(100)>)>
+  if (<tag.nextUse> < 5)
+    src.redmessage("Musi byt aspon 5 sekund")
+    tag.nextUse=5
+  endif
+  dialog(d_ledova_dlazdice)
+  return(1)
+endif
+
+if (argn==3)
+  tag.freezeFor=<fixnumber(<argtxt(110)>)>
+  dialog(d_ledova_dlazdice)
+  return(1)
+endif
+
+[itemdef i_ledova_dlazdice_zmrazovac]
+ID=i_memory
+Name=zmrazovac
+TYPE=T_EQ_SCRIPT
+
+on=@create
+attr=attr_invis|attr_decay
+tag(zmraz_old_color,<src.color>)
+           
+on=@equip
+
+on=@timer
+if (<more2>==0)
+  cont.events=+e_zmrznutej
+  cont.color=0480
+  cont.paralyze(<tag(timer)*10>,1)
+  cont.sysmessage("<?cont.sex(Umrzl,Umrzla)?> jsi")
+  timer=<tag(timer)>
+  more2=1
+  return 1
+endif
+if (<tag(frozen)>==1)
+  cont.color=<tag(zmraz_old_color)>
+  cont.events=-e_zmrznutej
+  cont.sysmessage("<?cont.sex(Rozmrznul,Rozmrzla)?> jsi")
+  cont.paralyze_remove
+  tag.frozen=0
+  timer=<more1>
+else
+  remove
+endif
+return 1
+
+
+[events e_zmrznutej]
+on=@spellcast
+sysMessage("Jses <?sex(zmrzlej,zmrzla)?>, nemuzes kouzlit!")
+return(1)
+
+on=@death
+findid(i_ledova_dlazdice_zmrazovac).timer=1
+
+
+on=@spelleffect
+//say(<argn>)
+// 18 - fireball, 43 - explosion, 51 - kvf, 69 - necrobolt
+if (argn==18)
+  arg(chance,20)
+else
+  if ((argn==51)||(argn==69))
+    arg(chance,60)
+    else
+    if (argn==43)
+      arg(chance,90)
+      else
+        arg(chance,-1)
+    endif
+  endif
+endif
+
+//say(<arg(chance)>)
+if (chance(<arg(chance)>,2))
+  findid(i_ledova_dlazdice_zmrazovac).timerd=1
+  paralyze_remove
+  sysmessage("<?src.name?> te <?src.sex(rozmrazil,rozmrazila)?>")
+endif
+
+//MRTVOLA
+[typedef t_mrtvola]
+on=@userdclick
+if (src.isgm)
+  dialog(d_mrtvola)
+  return(1)
+ else
+  return(1)
+endif
+on=@spelleffect
+if (argn==59)
+  sfx(snd_spell_lightning)
+  src.newitem=i_mrtvola_brana
+  arg(mrtvola,<lastnew>)
+  mrtvola.color=<?tag.color?>
+  mrtvola.attr=attr_static|attr_decay
+  mrtvola.timer=<?tag.timer?>
+  mrtvola.p=<p>
+  mrtvola.fix
+  mrtvola.say(<?tag.text?>)
+  mrtvola.morep=<?tag.where?>
+  remove
+endif
+
+[dialog d_mrtvola]
+argo.SetLocation=15,5
+
+argo.tag(sirka,405)
+argo.tag(vyska,120)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,380)
+argo.dialog_pozadi(<argo.tag(nexty)>,4,380)
+
+argo.dialog_zpruhledni
+argo.textA(<argo.dialog_textpos(0,0)>,42,"Ozivitelna mrtvola")
+
+argo.textA(<argo.dialog_textpos(1,0)>,<d_def_readcolor>,"Gata:")
+argo.button(<lastxpos>+340,<lastypos>,03217,03218,1,0,1)
+argo.textA(<lastxpos>+35,<lastypos>,152,"<?tag(where)?>")
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,"Text: ")
+argo.settext(100,<tag(text)>)
+argo.textentry(<lastxpos>+35,<lastypos>,300,30,152,100,100)
+argo.button(<lastxpos>+340,<lastypos>-2,0fa5,0fa7,1,0,2)
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,"Farba gaty: ")
+argo.settext(110,<tag(color)>)
+argo.textentry(<lastxpos>+75,<lastypos>,200,30,152,110,110)
+argo.button(<lastxpos>+340,<lastypos>-2,0fa5,0fa7,1,0,3)
+
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+argo.textA(<lastxpos>,<lastypos>,<d_def_readcolor>,"Cas gaty: ")
+argo.settext(120,<tag(timer)>)
+argo.textentry(<lastxpos>+75,<lastypos>,200,30,152,120,120)
+argo.button(<lastxpos>+340,<lastypos>-2,0fa5,0fa7,1,0,4)
+
+[dialog d_mrtvola button]
+on=0
+
+on=@anybutton
+if (argn==1)
+  tag.where=<src.p>
+  dialog(d_mrtvola)
+  return(1)
+endif
+
+if (argn==2)
+  tag.text="<argtxt(100)>"
+  dialog(d_mrtvola)
+  return(1)
+endif
+
+if (argn==3)
+  tag.color=<argtxt(110)>
+  dialog(d_mrtvola)
+  return(1)
+endif
+
+if (argn==4)
+  tag.timer=<fixNumber(<argtxt(120)>)>
+  dialog(d_mrtvola)
+  return(1)
+endif
+
+[itemdef i_mrtvola_brana]
+name=Brana
+id=i_moongate_blue
+type=t_script
+
+on=@create
+
+on=@step
+src.go(<morep>)
+
+[function get_spawn]  //vstup UID npc | vystup UID spawnu
+if (<finduid(args(0)).memoryfindtype(memory_ispawned).link.baseid>==i_worldgem_bit)
+  return <finduid(args(0)).memoryfindtype(memory_ispawned).link>
+else
+  return(0)
+endif
+
+
+////////////////////// STONED NPCs
+[events e_stone_boss]
+on=@userdclick
+if (src.isgm)
+  if !(<tag(num_slaves)>)
+    tag(num_slaves,0)
+//    tag(type,0)
+  endif
+  dialog(d_stone_boss)
+else
+  return(1)
+endif
+
+on=@gethit
+arg(akt,0)
+while (<akt> < <tag(num_slaves)>)
+  if (<finduid(<tag(slave_<akt>)>)>)  //ak je
+    if (<finduid(<tag(slave_<akt>).tag(boss)>)>)  // ak ma bossa - nieje to nieco ine
+      if (<tag(slave_<akt>_alive)>==1)  //ak je zivi
+        if (<hits> < <tag(slave_<akt>_hits)>) 
+          arg(slave,<finduid(<tag(slave_<akt>)>)>)
+          slave.stone=0
+          slave.flag_invul=0
+          slave.tag(npc_id,<akt>)
+          //invul=1
+          hits=<hits>+<var(ubrano)>
+        endif
+      endif
+    endif
+  endif
+  arg(akt,#+1)
+endwhile
+
+[events e_stone_slave]
+on=@death
+finduid(<tag(boss)>).flag_invul=0
+finduid(<tag(boss)>).tag(slave_<tag(npc_id)>_alive,0)
+
+[dialog d_stone_boss]
+argo.SetLocation=15,5
+
+argo.tag(sirka,550)
+argo.tag(vyska,60+<d_def_radek_vyska>*<tag(num_slaves)>)
+argo.dialog_prvni
+argo.dialog_pozadi(<argo.tag(nexty)>,1,160,160,160)
+argo.dialog_pozadi(<argo.tag(nexty)>,<tag(num_slaves)>,160,160,160)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,160,160,160)
+
+argo.dialog_zpruhledni
+//if (<tag(type)>==0)
+  argo.textA(<argo.dialog_textpos(0,0)>,42,"Stone Boss - NPC")
+//else
+//  argo.textA(<argo.dialog_textpos(0,0)>,42,"Stone Boss - SPAWN - nefunguje este")
+//endif
+//argo.button(<lastxpos>+200,<lastypos>,03217,03218,1,0,1)
+
+arg(akt,0)
+
+while (<akt> < <tag(num_slaves)>)
+
+if (<finduid(<tag(slave_<akt>)>)>)  //ak je
+  if (<finduid(<tag(slave_<akt>).tag(boss)>)>)  // ak ma bossa - nieje to nieco ine
+    if (<tag(slave_<akt>_alive)>==1)  //ak je zivi
+
+      //argo.textA(<argo.dialog_textpos(1,0)>,<d_def_readcolor>)  //meno
+      
+      argo.dialog_textpos(1,0)
+      argo.settext(200+<akt>,<tag(slave_<akt>).name>)
+      argo.text(<lastxpos>,<lastypos>,<d_def_readcolor>,200+<akt>)
+      
+      argo.dialog_textpos(1,1)
+      argo.settext(300+<akt>,<tag(slave_<akt>)>)
+      argo.text(<lastxpos>,<lastypos>,<d_def_readcolor>,300+<akt>)
+      
+      argo.dialog_textpos(1,2)
+      argo.settext(400+<akt>,<tag(slave_<akt>_hits)>)
+      argo.textentry(<lastxpos>,<lastypos>,200,30,152,400+<akt>,400+<akt>)  //hp
+      argo.button(<lastxpos>+125,<lastypos>,0fa5,0fa7,1,0,400+<akt>)  //ZMENA HP
+      
+      argo.dialog_textpos(1,3)
+      if (<akt>==<tag(num_slaves)>-1)  // mazat sa bude dat len posledny pridany
+        argo.button(<lastxpos>,<lastypos>,0fb1,0fb2,1,0,500+<akt>)  //MAZANIE
+      endif
+      
+    endif
+  endif
+else
+  argo.dialog_textpos(1,1)
+  argo.settext(300+<akt>,"Umrel")
+  argo.text(<lastxpos>,<lastypos>,<d_def_readcolor>,300+<akt>)
+  
+  argo.dialog_textpos(1,3)
+  if (<akt>==<tag(num_slaves)>-1)  // mazat sa bude dat len posledny pridany
+    argo.button(<lastxpos>,<lastypos>,0fb1,0fb2,1,0,500+<akt>)  //MAZANIE
+  endif
+endif
+arg(lastypos,<lastypos>+<d_def_radek_vyska>)
+arg(akt,#+1)
+endwhile
+
+argo.textA(<argo.dialog_textpos(2,0)>,<d_def_readcolor>,"Pridat")
+argo.button(<lastxpos>+50,<lastypos>,0fa5,0fa7,1,0,2)  //PRIDANIE
+
+
+[dialog d_stone_boss button]
+on=0
+
+on=@anybutton
+if (argn==1)
+//  if (<tag(type)>==0)
+//    tag(type,1)
+//  else
+//    tag(type,0)
+//  endif
+  dialog(d_stone_boss)
+endif
+
+if (argn==2)
+  src.newequip(i_target_stone_boss_pridat)
+//  lastnew.tag(type,<tag(type)>)
+  lastnew.tag(boss,<uid>)
+  lastnew.tag(num_slaves,<tag(num_slaves)>)
+  return(1)
+endif
+
+if (argn > 499)
+//  say(<argn>)
+  arg(npc_id,<fixnumber(<argn>-500)>)
+  arg(slave,<finduid(<tag(slave_<npc_id>)>)>)
+  // odstranenie/uvolnenie guarda
+  if (<tag(slave_<npc_id>_alive)>)
+    slave.stone=0
+    slave.flag_invul=0
+    slave.tag.remove(boss)
+    slave.events(-e_stone_slave)
+  endif
+
+  // odstranenie guarda z bossa
+  tag.remove(slave_<npc_id>)
+  tag.remove(slave_<npc_id>_alive)
+  tag.remove(slave_<npc_id>_hits)
+  tag(num_slaves,#-1)
+//  tag(last_removed,<npc_id>)
+  dialog(d_stone_boss)
+  return(1)
+endif
+
+[itemdef i_target_stone_boss_pridat]
+id=i_memory
+type=t_eq_script
+name=i_target_stone_boss_pridat
+
+on=@timer
+remove
+return(0)
+
+on=@equip
+target("Zameraj")
+timer=10
+
+on=@targon_char
+if !(src.targ.isplayer)
+//if (<tag(type)>==0)
+    arg(boss,<finduid(<tag(boss)>)>)
+    arg(slave,<src.targ>)
+
+    arg(akt,0)  //kontrola ci uz neni
+    while (<akt> < <boss.tag(num_slaves)>)
+      if (<slave> == <boss.tag(slave_<akt>)>)
+        src.sysmessage("Ten uz je")
+        return(1)
+      endif
+      arg(akt,#+1)
+    endwhile
+
+    if (<src.targ> != <boss>)
+      slave.stone=1
+      slave.flag_invul=1
+      slave.tag(boss,<boss>)
+      slave.events(+e_stone_slave)
+      boss.tag(slave_<tag(num_slaves)>,<slave.uid>)
+      boss.tag(slave_<tag(num_slaves)>_alive,1)
+      boss.tag(slave_<tag(num_slaves)>_hits,<boss.maxhits>/(<boss.tag(num_slaves)>+1))
+      boss.tag(num_slaves,#+1)
+      boss.dialog(d_stone_boss)
+    else
+      src.sysmessage("Bossa ne")
+    endif
+//else
+//  src.sysmessage("Zameravaj NPC")
+//endif
+endif
+return(1)
+
+on=@targon_item
+//if (<tag(type)>==1)
+//  
+//else
+//  src.sysmessage("Zameravaj SPAWN")
+//endif
+src.sysmessage("Zameravaj NPC")
+finduid(<tag(boss)>).dialog(d_stone_boss)
+return(1)
+
+on=@targon_ground
+finduid(<tag(boss)>).dialog(d_stone_boss)
+return(1)
+
+[function removedelayedmessages]
+arg(i,0)
+while (<i> < 10000)
+  tag.remove(message_<i>)
+  arg(i,#+1)
+endwhile
+tag.remove(messagescount)
+
+[function removevd]
+var(countvd,0)
+sector.allitems(f_countvd)
+src.sysmessage("Smazat <?var(countvd)?>x vain dclicker")
+arg(i,0)
+while (i < var(countvd))
+  sector.allitems(f_removevd)  
+  arg(i,#+1)
+endwhile
+var(countvd,"")
+
+[function f_countvd]
+if (id==i_dclickME)
+  var(countvd,#+1)
+endif
+
+[function f_removevd]
+if (id==i_dclickME)
+  remove
+endif
+
+[function removealarm]
+var(countvd,0)//necham tam countvd nebudem davat zbytocne dalsi var
+sector.allitems(f_countalarm)
+src.sysmessage("Smazat <?var(countvd)?>x alarm")
+arg(i,0)
+while (i < var(countvd))
+  sector.allitems(f_removealarm)  
+  arg(i,#+1)
+endwhile
+var(countvd,"")
+
+[function f_countalarm]
+if (id==i_alarm)
+  var(countvd,#+1)
+endif
+
+[function f_removealarm]
+if (id==i_alarm)
+  remove
+endif
+
+[function removecontrolnpc] // TO YAVANNA -> ja viem ze by som mohol na to vsetko mohol spravit nejaku univerzalnu funkciu, a mozno raz spravim :P
+var(countvd,0)//necham tam countvd nebudem davat zbytocne dalsi var
+sector.allitems(f_countcontrolnpc)
+src.sysmessage("Smazat <?var(countvd)?>x i_controlnpc")
+arg(i,0)
+while (i < var(countvd))
+  sector.allitems(f_removecontrolnpc)  
+  arg(i,#+1)
+endwhile
+var(countvd,"")
+
+[function f_countcontrolnpc]
+if (id==i_controlnpc)
+  var(countvd,#+1)
+endif
+
+[function f_removecontrolnpc]
+if (id==i_controlnpc)
+  remove
+endif
+
+[function removechattimer] // TO YAVANNA -> ja viem ze by som mohol na to vsetko mohol spravit nejaku univerzalnu funkciu, a mozno raz spravim :P
+var(countvd,0)//necham tam countvd nebudem davat zbytocne dalsi var
+sector.allitems(f_countchattimer)
+src.sysmessage("Smazat <?var(countvd)?>x i_chat_timer")
+arg(i,0)
+while (i < var(countvd))
+  sector.allitems(f_removechattimer)  
+  arg(i,#+1)
+endwhile
+var(countvd,"")
+
+[function f_countchattimer]
+if (id==i_chat_timer)
+  var(countvd,#+1)
+endif
+
+[function f_removechattimer]
+if (id==i_chat_timer)
+  remove
+endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//len skuska
+[events e_gmsteptest]
+on=@step
+if (region.tag(kick))
+elseif (region.flags==01192)
+elseif (region.flags==00812)
+else
+  newitemsafe(i_gmsteptest)
+//  lastnew.tag(realm,<tag(realm)>)
+  lastnew.tag(uid,<uid>)
+  lastnew.p=<p>
+endif
+
+
+[itemdef i_gmsteptest]
+id=0aec
+name=gmstep
+
+CATEGORY=testy
+SUBSECTION=Heck
+DESCRIPTION=Dlazdice na test followscriptu
+
+ON=@create
+attr=090
+timerd=15
+
+on=@step
+if (<src.isgm> || !<src.isplayer>)
+  return 1
+endif
+arg(stepper,<finduid(<tag.uid>)>)
+//if (<arg(stepper).tag.realm>==<tag.realm>)
+//  return 1
+//endif
+if (<arg(stepper)>==<src>)
+  return 1
+else //if (<src> != <arg(stepper)>)
+  if ( (<arg(stepper).p_x>==<src.p_x>) && (<arg(stepper).uid.p_y>==<src.p_y>) )
+    arg(st, <arg(stepper).maxstam>-7)
+    if (<arg(stepper).stam> < <arg(st)>)
+      arg(stepper).accmsg("player <?arg(stepper).name?>(<?arg(stepper)?>) possible gmstep (stam:<?arg(stepper).stam?> throught:<?src.name?>(<?src?>))")
+      //arg(stepper).f_gmsteptest_goback
+    endif
+  endif
+endif
+
+
+[function f_gmsteptest_goback]
+vzadsafe
+fix
+update
+
+[function contentmove]//argv(0) = pocet
+arg(moveCount, 100)
+if (argv(0)) 
+  arg(moveCount,<argv(0)>)
+endif
+src.tag(contentmovecount,<arg(moveCount)>)
+newitemsafe(i_contentmove_target)
+lastnew.tag(target,1)//to
+equip(lastnew)
+
+[function f_contentmove]
+if (<src.tag(contentmovecount)>>0)
+  cont=<src.tag.contentmoveto>
+  src.tag(contentmovecount,#-1)
+endif
+
+[itemdef i_contentmove_target]
+id=i_memory
+type=t_eq_script
+name=i_contentmove_target
+
+on=@timer
+remove
+return(0)
+
+on=@equip
+if (<tag(target)>==1)
+  target("Zameraj kontainer do ktoreho")
+else
+  target("Zameraj kontainer z ktoreho")
+endif
+timer=10
+return 1
+
+on=@targon_char
+return 1
+
+on=@targon_item
+if (<src.targ.type>=01 || <src.targ.type>=t_container)
+  if (<tag(target)>==1)  
+    src.tag(contentmoveto,<src.targ>)
+    src.newitemsafe(i_contentmove_target)
+    lastnew.tag(target,2) //from
+    src.equip(lastnew)
+  else
+    src.tag(contentmovefrom,<src.targ>)
+    src.targ.contents(f_contentmove)
+    src.tag.remove(contentmovefrom)
+    src.tag.remove(contentmoveto)
+    src.tag.remove(contentmovecount)
+  endif
+endif
+return 1
+
+on=@targon_ground
+return 1
+
+<<<<<<< .mine//tieto funkcie sa nikde nepouzivaju, ani ich nepouzivajte, nefunguje to dobre, mozno sa casom neco vymysli
+[function getdistance]
+//vzdialenost objektov/charov argv(0) a argv(1)
+if (<argv(0).mapplane>==<argv(1).mapplane>)
+//  src.say(<f_axisdistance(<argv(0).p_x>,<argv(1).p_x>)>)
+//  src.say(<f_axisdistance(<argv(0).p_y>,<argv(1).p_y>)>)
+  src.say(<sqrt(<f_axisdistance(<argv(0).p_x>,<argv(1).p_x>)>+<f_axisdistance(<argv(0).p_y>,<argv(1).p_y>)>)>)
+else
+  return 10000
+endif
+
+[function f_axisdistance]
+//argv(1) - x1, argv(2) - x2 
+if (<argv(0)> > <argv(1)>)
+  return <eval(<argv(0)>-<argv(1)>)>
+else
+  return <eval(<argv(1)>-<argv(0)>)>
+endif
+
+
+[function getdistancefrom]
+//vzdialenost this od argv(0)
+
+//[function sqrt] // vypocet druhej odmocniny no nieje to najspolahlivejsie
+//argv(0) - cislo na odmocnenie
+//arg(lastroot,<argv(0)>)
+//if (<argvcount> == 1)
+//  sqrt(<arg(lastroot)>*100,<arg(lastroot)>*100,0) //root_1, root_2, tries
+//else
+//  arg(tries,<argv(2)>)
+//  arg(tries,#+1)
+//  arg(root_1,<eval((<arg(lastroot)> / 2) + ((<argv(1)> / <arg(lastroot)>) / 2))>)
+// if (<arg(tries)> > 30)
+//    return -1
+//  endif
+//  if (<arg(lastroot)>==<arg(root_1)>)||(<arg(lastroot)>==(<arg(root_1)>/2))
+//		src.say("return 0: <?argv(0)?> 1: <?argv(1)?> 2: <?argv(2)?>")
+//    return <eval(arg(lastroot)/10)>
+//  else
+//		src.say("0: <?argv(0)?> 1: <?argv(1)?> 2: <?argv(2)?>")
+//    sqrt(<arg(root_1)>,<argv(1)>,<arg(tries)>)
+//  endif
+//endif
+
+=======//obnova mojich run
+>>>>>>> .theirs[defnames larryobnovaruny]
+pocet_run 59
+runa[0] Skalny Dol,2058,725
+runa[1] Osamely dol,1231,933
+runa[2] Severny Dol,533,666
+runa[3] MT Lockpick,5637,3790,-60
+runa[4] Zelezny Pas Dol,2042,2297
+runa[5] Krajske Doly,768,1541,1
+runa[6] kralovske doly,2828,2980
+runa[7] Erebor,4758,2159
+runa[8] Vychodni Marka,2718,2187
+runa[9] Fornost,1413,1093
+runa[10] Hurka,1571,1211
+runa[11] Dom nad edom,1687,2276,5
+runa[12] Gondorske uzemi 2,934,399
+runa[13] barad most,3393,2804,1
+runa[14] Forondon,1225,612
+runa[15] Dol a Hora,3189,1014
+runa[16] Helmuv zleb,5295,3722
+runa[17] Esgaroth,3118,1067
+runa[18] Kralovstvi lesnich elfu,2944,1237
+runa[19] Tharbad,1588,1940
+runa[20] sede pristavy,717,1361
+runa[21] Gondorske uzemi,753,1951
+runa[22] Linhir,2735,3282
+runa[23] Calembel,2495,2965
+runa[24] barad most 2,3393,2803,1
+runa[25] Radovsko,1312,1373
+runa[26] Stredozeme,4545,848,2
+runa[27] Lorien,2469,1925
+runa[28] Pelargir,2900,3196
+runa[29] Dol Amroth,2181,3242
+runa[30] Minas Morgul,3184,2977,20
+runa[31] Vetesnik,5581,3925,-40
+runa[32] MT,5671,3872,-80
+runa[33] hafodrapku-pozor!,2934,2865,1
+runa[34] poklad da,2549,3196
+runa[35] Ostrov piratu,701,484
+runa[36] drapaci novy,1474,2405,30
+runa[37] Obroviste,2164,1078
+runa[38] terathani u sedych,569,1114
+runa[39] Stone Harpy Gargoyl ...,969,865
+runa[40] Pri orloch,1880,554
+runa[41] Gondorske uzemi,2271,1314,35
+runa[42] most mordor-gondor,2741,2497
+runa[43] OT Nejblizsi breh,1119,2356,3
+runa[44] Dungeon pod Edorasom,2358,2677
+runa[45] Forondon Spiriti,1362,535
+runa[46] Gondorske uzemi,302,754
+runa[47] Teranti Tharbad,1272,1863,6
+runa[48] Jizni vrchy,1592,1616
+runa[49] Gondorske uzemi,1573,2755
+runa[50] Etini Lorien,2276,1912
+runa[51] prusmyk ed,2314,1999
+runa[52] Etin Lordi Tharbad,1318,2309
+runa[53] Krvavy Drapaci,1415,2510
+runa[54] voda,1120,3306
+runa[55] Beridor,675,1076
+runa[56] osg drapci,6020,3943,-80
+runa[57] Spiriti,1986,2761
+runa[58] cislopy,843,1784
+
+[function vratmirunytykokso]
+arg(i,0)
+while(<arg(i)><<pocet_run>)
+  //say(<return_nth(1,<runa[i]>)>)
+  arg(j,2)
+  arg(more_p,"")
+  while(<arg(j)><6)
+  	if (<eval(<return_nth(<arg(j)>,<runa[i]>)>)>!=0)
+  		if (<arg(j)>==2)
+  		  arg(more_p,<return_nth(<arg(j)>,<runa[i]>)>)
+  		else
+        arg(more_p,<arg(more_p)>,<return_nth(<arg(j)>,<runa[i]>)>)
+      endif
+    else
+      arg(j,10)
+    endif
+    arg(j,#+1)
+  endwhile
+//  src.say(<arg(more_p)>)
+  newitemsafe(i_rune_marker)
+  lastnew.name=<return_nth(1,<runa[i]>)>
+  lastnew.morep=<arg(more_p)>
+  lastnew.bounce
+  arg(i,#+1)
+endwhile
+
+[eof]
+

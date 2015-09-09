@@ -1,0 +1,53 @@
+/////  C  L  A  S  I  C    L  E  E  C  H  /////
+
+// tags to edit behavior:
+// tag.npc_lifeLeech=50,60 // monster adds 50 to 60 hps on every hit to itself
+[EVENTS e_lifeLeech]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (strlen(<tag(npc_lifeLeech)>))
+  arg(lifeLeech,<eval randombetween(<tag(npc_lifeLeech)>)>)
+else
+  arg(lifeLeech,<eval {((maxhits/300)+20) ((maxhits/200)+35)}>)
+endif
+if (<eval hits+arg(lifeLeech)> > <maxhits>)
+  hits=maxhits
+else
+  changestat(hits,<arg(lifeLeech)>)
+endif
+
+on=@beforedoeffect 
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+/////  V  A  M  P  I  R  E    L  E  E  C  H  /////
+// tag.npc_lifeLeech = 80,100 // monster adds 50 to 60 hps on every hit to itself
+// tag.npc_lifeLeech_cap = 20000 // the maximum number of npc's hits to which npc can reach by leeaching other chars. Default value == stats_MAXIMUM
+
+[EVENTS e_lifeLeech_vampire]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (strlen(<tag(npc_lifeLeech)>))
+  arg(hps,<randombetween(<tag(npc_lifeLeech)>)>)
+else
+  arg(hps,<eval {((maxhits/300)+20) ((maxhits/200)+35)}>)
+endif
+if (strlen(<tag(npc_lifeLeech_cap)>))
+  arg(cap,<eval tag(npc_lifeLeech_cap)>)
+else
+  arg(cap,<stats_MAXIMUM>)
+endif
+if (<eval hits+arg(hps)> > <arg(cap)>) //arg(cap) is not a safe value to assign to hits!
+  arg(hps,<eval arg(cap)-hits>)
+endif
+changestat(hits,<arg(hps)>) // adds hps to the hits stat
+
+on=@beforedoeffect 
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+
+[eof]

@@ -1,0 +1,48 @@
+[function showuid]
+src.sysmessage(UID: <uid>, evaled: <eval uid>)
+
+[function bearchange]
+var(polars_count,0)
+var(pocitadlo,0)
+while(pocitadlo < <eval 0ffffff>)
+ arg(pocitadlo2,0)
+ while(pocitadlo2 < 30000)  
+  if(<finduid(<hval pocitadlo>)>)
+   if(<finduid(<hval pocitadlo>).isitem>)
+    arg(item,<finduid(<hval pocitadlo>)>) 
+    //vsechny typy 
+    if(item.type==t_figurine)||(item.type==t_figurine_2)
+     if(item.baseid==i_pet_bear_polar)
+      var(polars_count,<eval var(polars_count)+1>)
+      src.newitemsafe(i_pet_ostard_zostrich)
+      arg(lastzost,<lastnew>)
+      lastzost.name=Zostrich
+      lastzost.tag(my_id,c_ostard_zostrich)
+      lastzost.tag(MYHITS,510)
+      lastzost.tag(MYFOOD,64)
+      lastzost.p=<item.p>
+      lastzost.more1=1
+      lastzost.type=t_figurine_2
+      if(strlen(<item.cont>))
+       lastzost.cont=<item.cont>   
+      endif
+      lastzost.update
+      item.remove   
+     endif
+    endif    
+   endif  
+  endif
+  var(pocitadlo,#+1)
+  if((pocitadlo % 10000) == 0)
+   logmsg(Napocteno zatim: <pocitadlo> itemu, aktualni uidcko: <hval pocitadlo>)
+  endif
+  arg(pocitadlo2,#+1)
+ endwhile 
+endwhile
+src.sysmessage(Prevedenych polaru je :<polars_count>, dopocital jsem do:<pocitadlo>)
+
+[events e_repeat_writing]
+on=@step
+redmessage(Informaci, ktere GM ti prozradilo citlive informace posli na mail dinivan@moria.cz)
+redmessage(Kdyz to vyresime takhle, nebudou muset prijit neprijemnejsi opatreni.)
+

@@ -1,0 +1,410 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                     Neutralni quest - Expert quest                               //
+//                         Last editor: Sir Glorg                                   //
+//                      Namet + puvodni podoba: -?-                                 //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+// Pozice kamene
+// Gondor: 2771 2761 
+// Mordor: 3723 2953
+
+[function f_expertMistrDClick]
+src.dialog(d_expert_mistr,<uid>,0)
+
+[speech spk_quest_expert]
+//on=*konec*
+//say("Jak si prejes. Expert quest ukoncen.")
+//tag(stone).f_expert_quest_end
+
+on=*hi*
+on=*ano*
+on=vim*
+on=ahoj
+on=*zdravim*
+
+if (<distance> > 4)
+  src.sysMessage("Rvat na sebe nebudete. Musis prijit bliz.")
+else
+  f_expertMistrDClick
+endif
+
+//////////////////////////
+// I T E M S
+//////////////////////////
+
+// Kamen portujici do quest dungu
+[ITEMDEF i_expert_quest_first]
+ID=01174
+TYPE=t_script
+NAME=Cesta k povyseni na experta
+
+on=@userdclick
+if (<src.tag(skillrank)>)
+  src.sysmessage("Ty uz mas tuto cestu za sebou.")
+elseif !(f_quest_expert_free)
+  src.sysmessage("Musis pockat, az se quest uvolni.")
+elseif (0<src.tag(level)> < 3)
+  src.sysmessage("Musis mit alespon level 3.")
+else
+  var(freestone).f_expert_quest_begin
+endif
+return 1
+
+
+// Kamen spawnujici quest npc a hlidajici prubeh questu
+[itemdef i_expert_quest_second]
+ID=01174
+TYPE=t_script
+NAME=Sprava cesty k povyseni na experta (supposed to be invis)
+
+on=@create
+attr_invis=1
+
+on=@userdclick
+if (src.isgm)
+  target("Zamer zakladni kamen k expertovi pro nalinkovani. (Nevis-li, o co jde, nesahat!)")
+  return 1
+endif
+
+on=@targon_item
+if (src.isgm)
+  if (src.targ.baseid==i_expert_quest_first)
+    src.targ.array_add(tag.sites,<uid>)
+    src.smsg OK
+  endif
+  return 1
+endif
+
+on=@timer
+more=<eval more-1>
+if (link)
+  if (region!=link.region)
+    f_expert_quest_end(0) // s argumentem nepresune link tzn. hrace jinam tzn. ke kamenu, kdyz bude uz venku
+    return 1
+  endif
+endif
+if (more)
+  link.sysmessage("Na vyreseni questu ti zbyva jeste <more> minut.")
+  timer=60
+else
+  f_expert_quest_end
+endif
+return 1
+
+
+[itemdef i_expertquest_end]
+ID=01174
+TYPE=t_script
+NAME=PortItem Expert End
+
+on=@create
+attr_invis=1
+
+on=@timer
+if (<tag(port)>)
+  if (link.tag(realm)==2)
+    link.go 3735,2962
+  else
+    link.go 2757,2757
+  endif
+endif
+tag(stone).link=""
+tag(stone).tag(mistr).remove
+remove
+
+
+
+/////////////////
+// C E D U L E //
+[itemdef i_expert_quest_sign]
+id=i_sign_brass
+type=t_normal
+
+on=@create
+name=Cedule s napisem
+attr_invis=1
+
+on=@userdclick
+if (src.isgm)
+  target("Zamer mistni kamen k expertovi pro nalinkovani. (Nevis-li, o co jde, nesahat!)")
+else
+  src.dialog(d_expert_sign,<tag(signSays)>)
+  src.events=+e_expert_signWatch
+endif
+return 1
+
+on=@targon_item
+if (src.isgm)
+  if (src.targ.baseid==i_expert_quest_second)
+    src.targ.array_add(tag.signs,<uid>)
+    src.smsg OK
+  endif
+  return 1
+endif
+
+
+
+
+///////////////////////////////
+// D I A L O G Y 
+///////////////////////////////
+
+[dialog d_expert_sign]
+SetLocation=220,200
+page 0
+resizepic(20,20,9300,300,160)	//20 20 9300 400 202
+argo.f_expertSignTxt_<argv(0)>(<argv(1)>)
+
+
+[dialog d_expert_mistr]
+5,5
+page 0
+argo.tag(mistr,<argv(0)>)
+resizepic 20 200 2620 640 350 
+gumppic 30 210 03182	// podklad pod ksichtiky
+gumppic 40 215 03001	// ksichtik   3000-3164
+text 220 210 52 0	// Jmeno a titul pozdraveneho
+button 160 330 0988 0988 0 2 0	// Otazky
+text 215 331 1152 1	// 
+button 490 330 0988 0988 1 0 10	// Konec
+text 556 331 142 2	//
+
+page 1	// pozdrav
+if (0<src.tag(otazka)> != 0)
+  if (<argv(1)> == 1)
+    argo.HTMLGUMP(170,230,440,100,4,0,36)
+  else
+    argo.HTMLGUMP(170,230,440,100,5,0,36)
+  endif
+else
+  argo.HTMLGUMP(170,230,440,100,3,0,36)
+endif
+
+page 2	// Otazky
+if (0<src.tag(otazka)> == 0)
+  argo.HTMLGUMP(170,230,440,100,6,0,36)
+elseif (0<src.tag(otazka)> == 1)
+  argo.HTMLGUMP(170,230,440,100,7,0,36)
+elseif (0<src.tag(otazka)> == 2)
+  argo.HTMLGUMP(170,230,440,100,8,0,36)
+endif
+
+argo.button 25 395 0fa5 0fa7 1 0 1  // prvni jmeno
+argo.text 60 398 152 9
+argo.button 25 415 0fa5 0fa7 1 0 2  // druhe jmeno
+argo.text 60 418 152 10
+argo.button 25 435 0fa5 0fa7 1 0 3  // treti jmeno
+argo.text 60 438 152 11
+argo.button 25 455 0fa5 0fa7 1 0 4  // ctvrte jmeno
+argo.text 60 458 152 12
+argo.button 25 475 0fa5 0fa7 1 0 5  // pate jmeno
+argo.text 60 478 152 13
+
+[dialog d_expert_mistr Text]
+Mistr
+Otazky								//1
+Konec								//2
+Vitam te tu! Zde se ukaze, jestli jsi <?src.sex(hoden,hodna)?> povyseni sveho titulu. Jsi pouhy novic, ktery se snazi dostat mezi zkusene bojovniky. V teto jeskyni zazijes svou prvni zkousku, pri ktere muzes prokazat, ze jsi <?src.sex(hoden,hodna)?> dalsiho postupu. Po stenach jeskyne jsou poveseny cedule s indiciemi, ktere ti napovi odpovedi na me tri otazky. Az budes <?src.sex(pripraven,pripravena)?>, muzu ti polozit prvni z nich.
+Spravne! Muzeme pristoupit k dalsi otazce?			//4
+Znas odpoved na mou dalsi otazku?				//5
+Ma prvni otazka zni:<br><br>Kdo se zivi bojem?			//6
+Ma druha otazka zni:<br><br>Kdo tancuje?			//7
+Ma treti a posledni otazka zni:<br><br>Kdo bojuje kopim?	//8
+<?exq_jmeno[0]?>						//9
+<?exq_jmeno[1]?>						//10
+<?exq_jmeno[2]?>						//11
+<?exq_jmeno[3]?>						//12
+<?exq_jmeno[4]?>						//13
+
+
+[dialog d_expert_mistr Button]
+on=1
+if (<src.f_expert_checkAnswer(<exq_jmeno[0]>,<argo.tag(mistr)>)>)
+  src.dialog(d_expert_mistr,<argo.tag(mistr)>,1)
+endif
+
+on=2
+if (<src.f_expert_checkAnswer(<exq_jmeno[1]>,<argo.tag(mistr)>)>)
+  src.dialog(d_expert_mistr,<argo.tag(mistr)>,1)
+endif
+
+on=3
+if (<src.f_expert_checkAnswer(<exq_jmeno[2]>,<argo.tag(mistr)>)>)
+  src.dialog(d_expert_mistr,<argo.tag(mistr)>,1)
+endif
+
+on=4
+if (<src.f_expert_checkAnswer(<exq_jmeno[3]>,<argo.tag(mistr)>)>)
+  src.dialog(d_expert_mistr,<argo.tag(mistr)>,1)
+endif
+
+on=5
+if (<src.f_expert_checkAnswer(<exq_jmeno[4]>,<argo.tag(mistr)>)>)
+  src.dialog(d_expert_mistr,<argo.tag(mistr)>,1)
+endif
+
+on=10
+argo.tag(mistr).tag(stone).f_expert_quest_end
+argo.tag(mistr).say("Snad budes mit priste vice stesti. Ukazu ti vychod..")
+
+[function f_expert_checkAnswer]
+if (tag.otazka==0)
+  if (!strcmpi(<argv(0)>,<exq_jmeno[<argv(1).tag(stone).tag(randar_4)>-1]>))
+    tag(otazka,1)
+    return 1
+  else
+    argv(1).say("<src.sex(Selhal,Selhala)> jsi. Quest ukoncen.")
+  endif
+elseif (tag.otazka==1)
+  if (!strcmpi(<argv(0)>,<exq_jmeno[<argv(1).tag(stone).tag(randar_3)>-1]>))
+    tag(otazka,2)
+    return 1
+  else
+    argv(1).say("<src.sex(Selhal,Selhala)> jsi. Quest ukoncen.")
+  endif
+elseif (tag.otazka==2)
+  if (!strcmpi(<argv(0)>,<exq_jmeno[<argv(1).tag(stone).tag(randar_3)>-1]>))
+    src.tag(skillrank,1)
+    src.setPlayer //updates it's status
+    argv(1).say("Uspesne jsi se <src.sex(stal,stala)> expertem.")	
+    if (isqueststone)
+      finduid(<return_nth(1,<questMenu_questStone>)>).tag.quest_expert=<finduid(<return_nth(1,<questMenu_questStone>)>).tag.quest_expert>+1
+    endif
+  endif
+endif
+argv(1).tag(stone).f_expert_quest_end
+
+
+/////////////////////
+//   F U N K C E   //
+/////////////////////
+
+
+[function f_quest_expert_free]
+var(freestone,0)
+arg(u,0) 
+while (tag(sites_<arg(u)>)) 
+  if (finduid(<tag(sites_<arg(u)>)>))
+    if !(tag(sites_<arg(u)>).link)
+      var(freestone,<tag(sites_<arg(u)>)>)
+      return <tag(sites_<arg(u)>)>
+    endif
+  else
+    array_remove(tag.sites,<arg(u)>)
+  endif
+  arg(u,<arg(u)>+1)
+endwhile 
+return 0
+
+
+
+[function f_expert_quest_begin]
+src.go(<p>)
+link=<src>
+timer=60
+more=60
+random_array(6)
+arg(i,0)
+while (arg(i)<6)
+  arg(randsign,<eval tag(randar_<arg(i)>)-1>)
+  arg(sign_<arg(i)>,<tag(signs_<arg(randsign)>)>)
+  arg(i,#+1)
+endwhile
+random_array(5)
+arg(sign_00).tag(signSays,"0,<exq_jmeno[<tag(randar_00)>-1]>")
+arg(sign_1).tag(signSays,"1,<exq_jmeno[<tag(randar_1)>-1]>")
+arg(sign_2).tag(signSays,"2,<exq_jmeno[<tag(randar_2)>-1]>")
+arg(sign_3).tag(signSays,"3,<exq_jmeno[<tag(randar_3)>-1]>")
+arg(sign_4).tag(signSays,"4,<exq_jmeno[<tag(randar_4)>-1]>")
+arg(sign_5).tag(signSays,"5,<exq_jmeno[<tag(randar_3)>-1]>")
+safe(tag(mistr).remove)
+src.newnpc c_quest_expert
+tag(mistr,<lastnewchar>)
+lastnewchar.home=<p>
+lastnewchar.homedist=5
+lastnewchar.tag(stone,<uid>)
+lastnewchar.tag(otazka,0)
+
+
+
+[function f_expert_quest_end]
+link.tag.remove(otazka)
+link.newitem(i_expertquest_end)
+arg(eqe,<lastnew>)
+eqe.p=<p>
+eqe.link=<link>
+eqe.timer=1
+eqe.tag(stone,<uid>)
+if (argvcount < 1)
+  eqe.tag(port,1)
+else
+  eqe.tag(port,0)
+endif
+
+
+[function f_expertSignTxt_00]
+texta(123,35,2305,"<?<argv(0)>?>")
+texta(63,70,2305,"Trpaslik <argv(0)>, ktery se zivi")
+texta(52,98,2305,"obchodem s drahym kamenim, dava")
+texta(88,126,2305,"v boji prednost sekere.")
+
+[function f_expertSignTxt_1]
+texta(123,35,2305,"<?<argv(0)>?>")
+texta(63,70,2305,"Tento hurecky minstrel nema")
+texta(112,98,2305,"rad mece ani kopi.")
+
+[function f_expertSignTxt_2]
+texta(123,35,2305,"<?<argv(0)>?>")
+texta(63,70,2305,"Elf <argv(0)> se nezivi ani tancem,")
+texta(66,98,2305,"ani bojem, ale je velmi zrucny")
+texta(96,126,2305,"v zachazeni s lukem.")
+
+[function f_expertSignTxt_3]
+texta(123,35,2305,"<?<argv(0)>?>")
+texta(47,70,2305,"Mec vyhovuje bojovnikovi, ktery se")
+texta(112,98,2305,"nejmenuje <argv(0)>.")
+
+[function f_expertSignTxt_4]
+texta(123,35,2305,"<?<argv(0)>?>")
+texta(76,70,2305,"Hobit <argv(0)> take netancuje,")
+texta(121,98,2305,"ani nefarmari.")
+
+[function f_expertSignTxt_5]
+texta(123,35,2305,"<?<argv(0)>?>")
+texta(93,70,2305,"<argv(0)> nebojuje nozem.")
+
+
+[function random_array]
+array_clear(tag.randar)
+arg(u,0) 
+while (arg(u)<eval(args))
+  arg(thisrand,<eval rand(args)+1>)
+  while (array_find(tag.randar,<arg(thisrand)>)>-1)
+    arg(thisrand,<eval rand(args)+1>)
+  endwhile
+  tag.randar_<arg(u)>=<arg(thisrand)>
+  arg(u,#+1)
+endwhile
+
+
+[events e_expert_signWatch]
+on=@Step
+dialogclose(d_expert_sign,0)
+events=-e_expert_signWatch
+
+
+[defnames expertquest]
+exq_jmeno[0]	Burin
+exq_jmeno[1]	Tilar
+exq_jmeno[2]	Armel
+exq_jmeno[3]	Koren
+exq_jmeno[4]	Sarod
+
+Burin		"B U R I N"
+Tilar		"T I L A R"
+Armel		"A R M E L"
+Koren		"K O R E N"
+Sarod		"S A R O D"
+
+[eof]

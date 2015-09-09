@@ -1,0 +1,589 @@
+[ITEMDEF i_garden]
+
+DEFNAME=i_garden
+
+ID=0914
+
+TYPE=t_multi
+
+
+
+CATEGORY=Custom
+
+SUBSECTION=Gardens
+
+DESCRIPTION=Garden
+
+
+
+MULTIREGION=-3,-3,3,3
+
+COMPONENT=2324,1,-1,0,0
+
+COMPONENT=2186,1,2,0,0
+
+COMPONENT=2186,-1,2,1,0
+
+COMPONENT=2186,-2,2,0,0
+
+COMPONENT=2187,-3,2,0,0
+
+COMPONENT=2187,2,2,0,0
+
+COMPONENT=2187,2,1,0,0
+
+COMPONENT=2186,2,2,0,0
+
+COMPONENT=2187,2,0,0,0
+
+COMPONENT=2187,2,-1,0,0
+
+COMPONENT=2187,2,-2,0,0
+
+COMPONENT=2187,-3,1,0,0
+
+COMPONENT=2187,-3,0,0,0
+
+COMPONENT=2187,-3,-1,0,0
+
+COMPONENT=2187,-3,-2,0,0
+
+COMPONENT=2324,-2,2,0,0
+
+COMPONENT=2324,-2,1,0,0
+
+COMPONENT=2324,-2,0,0,0
+
+COMPONENT=2324,-2,-1,0,0
+
+COMPONENT=2324,-2,-2,0,0
+
+COMPONENT=2324,0,-2,0,0
+
+COMPONENT=2324,0,-1,0,0
+
+COMPONENT=2324,0,0,0,0
+
+COMPONENT=2324,0,1,0,0
+
+COMPONENT=2324,0,2,0,0
+
+COMPONENT=2324,1,2,0,0
+
+COMPONENT=2324,1,1,0,0
+
+COMPONENT=2324,1,0,0,0
+
+COMPONENT=2324,1,-2,0,0
+
+COMPONENT=2324,2,-2,0,0
+
+COMPONENT=2324,2,2,0,0
+
+COMPONENT=2324,2,-1,0,0
+
+COMPONENT=2324,2,0,0,0
+
+COMPONENT=2324,2,1,0,0
+
+COMPONENT=2324,-1,2,1,0
+
+COMPONENT=2186,2,-3,0,0
+
+COMPONENT=2186,-2,-3,0,0
+
+COMPONENT=2186,-1,-3,0,0
+
+COMPONENT=2186,0,-3,0,0
+
+COMPONENT=2186,1,-3,0,0
+
+COMPONENT=2324,-1,1,1,0
+
+COMPONENT=2324,-1,0,1,0
+
+COMPONENT=2324,-1,-1,1,0
+
+COMPONENT=2324,-1,-2,1,0
+
+
+
+[ITEMDEF i_deed_garden]
+
+ID=i_deed
+
+NAME=Deed to a Garden
+
+TYPE=t_deed
+
+
+
+CATEGORY=Custom
+
+SUBSECTION=Deeds
+
+DESCRIPTION=Garden Deed
+
+
+
+On=@Create
+
+MORE=i_garden
+
+
+
+[ITEMDEF i_seed_mandrake]
+
+ID=i_deed
+
+TYPE=t_script
+
+NAME=Seeds for a Mandrake Plant
+
+
+
+CATEGORY=Custom
+
+SUBSECTION=Seeds
+
+DESCRIPTION=Mandrake Seed
+
+
+
+ON=@userDCLICK
+
+TARGET Where would you like to plant the seeds?
+
+Return 1
+
+
+
+On=@Targon_Char
+
+SRC.MESSAGE You cant plant the seed there!
+
+Return 1
+
+
+
+On=@Targon_Ground
+
+SRC.MESSAGE The seed will not grow there.
+
+Return 1
+
+
+
+On=@Targon_Item
+
+IF <SRC.TARG.ID>==0911
+
+SRC.NEWITEM=i_worldgem_bit
+
+SRC.ACT.TYPE=t_spawn_item
+
+SRC.ACT.MORE1=i_crop_mandrake
+
+SRC.ACT.MOREP=60,120
+
+SRC.ACT.ATTR=0b0
+
+SRC.ACT.TIMER=30
+
+SRC.ACT.P=<SRC.TARG.P>
+
+SRC.MESSAGE You have planted the seed.
+
+REMOVE
+
+Return 1
+
+ELSE
+
+SRC.MESSAGE You can not plant the seed here.
+
+Return 1
+
+ENDIF
+
+
+
+[ITEMDEF i_seed_garlic]
+
+ID=i_deed
+
+TYPE=t_script
+
+NAME=Seeds for a Garlic Plant
+
+
+
+CATEGORY=Custom
+
+SUBSECTION=Seeds
+
+DESCRIPTION=Garlic Seed
+
+
+
+ON=@userDCLICK
+
+TARGET Where would you like to plant the seeds?
+
+Return 1
+
+
+
+On=@Targon_Char
+
+SRC.MESSAGE You cant plant the seed there!
+
+Return 1
+
+
+
+On=@Targon_Ground
+
+SRC.MESSAGE The seed will not grow there.
+
+Return 1
+
+
+
+On=@Targon_Item
+
+IF <SRC.TARG.ID>==0911
+
+SRC.NEWITEM=i_worldgem_bit
+
+SRC.ACT.TYPE=t_spawn_item
+
+SRC.ACT.MORE1=i_crop_garlic
+
+SRC.ACT.MOREP=60,120
+
+SRC.ACT.ATTR=0b0
+
+SRC.ACT.TIMER=30
+
+SRC.ACT.P=<SRC.TARG.P>
+
+SRC.MESSAGE You have planted the seed.
+
+REMOVE
+
+Return 1
+
+ELSE
+
+SRC.MESSAGE You can not plant the seed here.
+
+Return 1
+
+ENDIF
+
+
+
+[ITEMDEF i_seed_nightshade]
+
+ID=i_deed
+
+TYPE=t_script
+
+NAME=Seeds for a Nightshade Plant
+
+
+
+CATEGORY=Custom
+
+SUBSECTION=Seeds
+
+DESCRIPTION=Nightshade Seed
+
+
+
+ON=@userDCLICK
+
+TARGET Where would you like to plant the seeds?
+
+Return 1
+
+
+
+On=@Targon_Char
+
+SRC.MESSAGE You cant plant the seed there!
+
+Return 1
+
+
+
+On=@Targon_Ground
+
+SRC.MESSAGE The seed will not grow there.
+
+Return 1
+
+
+
+On=@Targon_Item
+
+IF <SRC.TARG.ID>==0911
+
+SRC.NEWITEM=i_worldgem_bit
+
+SRC.ACT.TYPE=t_spawn_item
+
+SRC.ACT.MORE1=i_crop_nightshade
+
+SRC.ACT.MOREP=60,120
+
+SRC.ACT.ATTR=0b0
+
+SRC.ACT.TIMER=30
+
+SRC.ACT.P=<SRC.TARG.P>
+
+SRC.MESSAGE You have planted the seed.
+
+REMOVE
+
+Return 1
+
+ELSE
+
+SRC.MESSAGE You can not plant the seed here.
+
+Return 1
+
+ENDIF
+
+
+
+[ITEMDEF i_seed_ginseng]
+
+ID=i_deed
+
+TYPE=t_script
+
+NAME=Seeds for a Ginseng Plant
+
+
+
+CATEGORY=Custom
+
+SUBSECTION=Seeds
+
+DESCRIPTION=Ginseng Seed
+
+
+
+ON=@userDCLICK
+
+TARGET Where would you like to plant the seeds?
+
+Return 1
+
+
+
+On=@Targon_Char
+
+SRC.MESSAGE You cant plant the seed there!
+
+Return 1
+
+
+
+On=@Targon_Ground
+
+SRC.MESSAGE The seed will not grow there.
+
+Return 1
+
+
+
+On=@Targon_Item
+
+IF <SRC.TARG.ID>==0911
+
+SRC.NEWITEM=i_worldgem_bit
+
+SRC.ACT.TYPE=t_spawn_item
+
+SRC.ACT.MORE1=i_crop_ginseng
+
+SRC.ACT.MOREP=60,120
+
+SRC.ACT.ATTR=0b0
+
+SRC.ACT.TIMER=30
+
+SRC.ACT.P=<SRC.TARG.P>
+
+SRC.MESSAGE You have planted the seed.
+
+REMOVE
+
+Return 1
+
+ELSE
+
+SRC.MESSAGE You can not plant the seed here.
+
+Return 1
+
+ENDIF
+
+
+
+[ITEMDEF i_seed_cotton]
+
+ID=i_deed
+
+TYPE=t_script
+
+NAME=Seeds for a Cotton Plant
+
+
+
+CATEGORY=Custom
+
+SUBSECTION=Seeds
+
+DESCRIPTION=Cotton Seed
+
+
+
+ON=@userDCLICK
+
+TARGET Where would you like to plant the seeds?
+
+Return 1
+
+
+
+On=@Targon_Char
+
+SRC.MESSAGE You cant plant the seed there!
+
+Return 1
+
+
+
+On=@Targon_Ground
+
+SRC.MESSAGE The seed will not grow there.
+
+Return 1
+
+
+
+On=@Targon_Item
+
+IF <SRC.TARG.ID>==0911
+
+SRC.NEWITEM=i_worldgem_bit
+
+SRC.ACT.TYPE=t_spawn_item
+
+SRC.ACT.MORE1=i_crop_cotton1
+
+SRC.ACT.MOREP=60,120
+
+SRC.ACT.ATTR=0b0
+
+SRC.ACT.TIMER=30
+
+SRC.ACT.P=<SRC.TARG.P>
+
+SRC.MESSAGE You have planted the seed.
+
+REMOVE
+
+Return 1
+
+ELSE
+
+SRC.MESSAGE You can not plant the seed here.
+
+Return 1
+
+ENDIF
+
+
+[ITEMDEF i_seed_hay]
+
+ID=i_deed
+
+TYPE=t_script
+
+NAME=Seeds for a Hay
+
+
+
+CATEGORY=Custom
+
+SUBSECTION=Seeds
+
+DESCRIPTION=Hay seed
+
+
+
+ON=@userDCLICK
+
+TARGET Where would you like to plant the seeds?
+
+Return 1
+
+
+
+On=@Targon_Char
+
+SRC.MESSAGE You cant plant the seed there!
+
+Return 1
+
+
+
+On=@Targon_Ground
+
+SRC.MESSAGE The seed will not grow there.
+
+Return 1
+
+
+
+On=@Targon_Item
+
+IF <SRC.TARG.ID>==0911
+
+SRC.NEWITEM=i_worldgem_bit
+
+SRC.ACT.TYPE=t_spawn_item
+
+SRC.ACT.MORE1=i_crop_hay2
+
+SRC.ACT.MOREP=60,120
+
+SRC.ACT.ATTR=0b0
+
+SRC.ACT.TIMER=10
+
+SRC.ACT.P=<SRC.TARG.P>
+
+SRC.MESSAGE You have planted the seed.
+
+REMOVE
+
+Return 1
+
+ELSE
+
+SRC.MESSAGE You can not plant the seed here.
+
+Return 1
+
+ENDIF
+
+
+[EOF]

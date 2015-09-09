@@ -1,0 +1,69 @@
+[typedef t_lockpick]
+on=@userdclick
+TARGET Co chces odemknout ?
+return 1
+
+on=@targon_item
+if (src.findid(i_lockpick))||(src.findid(i_lockpick_2))||(src.findid(i_lockpick_3))
+  if (src.findid(i_mem_lockpick))
+    src.sysMessage "Tahle prace vyzaduje trpelivost!"
+    return 1
+  elseif (src.targ.distance>2)||!(src.targ.srccombatLOS)
+    src.sysMessage Jsi moc daleko.
+    return 1
+  elseif (src.nolightfizz(1))
+    return 1
+  elseif (src.targ.type==t_container_locked) || (src.targ.type==t_ship_hold_lock)
+    src.hungryhurts
+    src.reveal
+    sound(577)
+    src.consume=i_lockpick_3
+    src.consume=i_lockpick_2
+    src.consume=i_lockpick
+    src.newitem i_mem_lockpick
+    src.act.link=<src.targ>
+    src.act.cont=<src.Uid>
+    src.act.timer=2
+    return 1
+  else
+    src.sysMessage("Na tohle nelze pouzit paklic.")
+    return 1
+  endif
+endif
+
+[itemdef i_mem_lockpick]
+id=i_memory
+type=t_eq_script
+name=lockpicking
+
+on=@Create
+attr attr_decay
+
+on=@timer
+if (link.type==t_ship_hold_lock)
+  if ({300 1000} < <eval cont.lockpicking>)
+    link.type=t_ship_hold
+    cont.skillgain(skill_lockpick)
+    cont.sysMessage("<cont.sex(Odemkl,Odemkla)> jsi podpalubi!")
+  else
+    cont.sysMessage("Zamek odolal.")
+  endif
+else
+  if ({0 1000}<<eval <cont.lockpicking>-<link.tag(lockpick)>> )
+    lockpick_ok
+  else
+    cont.sysMessage("Zamek odolal.")
+    cont.skillgain(skill_lockpick)
+  endif
+endif
+remove
+return 1
+
+[function lockpick_ok]
+tag(wasSpawned,1)
+link.type=t_container
+cont.sysMessage("<cont.sex(Odemkl,Odemkla)> jsi zamek!")
+cont.skillgain(skill_lockpick)
+
+
+[eof]

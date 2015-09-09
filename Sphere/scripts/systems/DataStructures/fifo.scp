@@ -1,0 +1,72 @@
+///////////////////////////////////
+//           the STACK           //
+//      (c) GM Yavanna 2012      //
+///////////////////////////////////
+
+// uses tags as a data holders
+// all the functions should be triggered upon an object
+
+
+//MANIPULATE STACK FUNCTIONS:
+//the queue interface functions
+
+//removes all the fifo elements and its name
+//argv(0) fifo name
+[function fifo_remove]
+f_fifo_beginWork(<argv(0)>)
+arg(i,0)
+while (<arg(i)> < <f_fifo_size>)
+  tag.remove(<fifo_name>[<arg(i)>])
+  arg(i,#+1)
+endwhile
+tag.remove(<fifo_name>_Size)
+f_fifo_endWork
+
+//argv(0) fifo name
+//argv(1) the string to be stored
+[function fifo_push]
+f_fifo_beginWork(<argv(0)>)
+tag(<fifo_name>[<f_fifo_size>],<argv(1)>)
+f_fifo_inc
+f_fifo_endWork
+
+//argv(0) fifo name
+[function fifo_pop]
+f_fifo_beginWork(<argv(0)>)
+if (f_fifo_size > 0)
+  f_fifo_dec
+  arg(size,<f_fifo_size>)
+  arg(result,<tag(<fifo_name>[<size>])>)
+  tag.remove(<fifo_name>[<size>])
+  if (<arg(size)> == 0) //last element popped - no need to store any data
+    tag.remove(<fifo_name>Size)
+  endif
+endif
+f_fifo_endWork
+return<arg(result)>
+
+
+//SUPPORT FUNCTIONS : 
+//approach these as PRIVATE in OOP object
+
+//initialises variables
+//argv(0) fifo name
+[function f_fifo_beginWork]
+var(fifo_name,fifo_<argv(0)>)
+
+[function f_fifo_endWork]
+var(fifo_name,)
+
+//works only after calling beginWork
+[function f_fifo_size]
+return <eval tag(<fifo_name>_Size)>
+
+//increases the size counter
+//works only after calling beginWork
+[function f_fifo_inc]
+tag(<fifo_name>_size,<eval (<f_fifo_size>+1)>)
+
+//decreases the size counter
+//works only after calling beginWork
+[function f_fifo_dec]
+tag(<fifo_name>_Size,<eval (<f_fifo_size>-1)>)

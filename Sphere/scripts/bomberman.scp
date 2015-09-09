@@ -1,0 +1,1428 @@
+//////////////////////////////////////////////////////
+//                       BOMBERMAN                      //
+//                 (c) GM Scane/Herm                   //
+//////////////////////////////////////////////////////
+
+[itemdef i_bbman_stone]
+id=0edb
+name=Bomberman
+type=0
+
+ON=@Create
+dispid=0edc
+var(bbmanstone,<uid>)
+tag(size_x,10)
+tag(size_y,7)
+tag(start_x,<return_nth(1,<src.p>)>)
+tag(start_y,<return_nth(2,<src.p>)>)
+if(<return_nth(3,<src.p>)>)
+  tag(altitude,<return_nth(3,<src.p>)>)
+else 
+  tag(altitude,0)
+endif
+if(<return_nth(4,<src.p>)>)
+  tag(mapplan,<return_nth(4,<src.p>)>)
+else 
+  tag(maplan,0)
+endif
+tag(mapactive,0) // nactena mapa?
+tag(rangedeufalt,2) // deufalni vzdalenost bomby
+tag(rangemax,10) // maximalni dosazitelna vzalenost vybuchu bomby
+tag(numberoflife,3) // pocet zivotu deufalt
+tag(block,1) // pro Checkbox 
+tag(blockchance,1000) // sance na vygenerovani blocku, deufalt 100%
+tag(speed,1) // pro Checkbox 
+tag(speedchance,100) // sance na ziskani speedu (jezditka) z blocku, deufalt 10%
+tag(lives,1) // pro Checkbox 
+tag(liveschance,100) // sance na ziskani zivotu s blocku, deufalt 10%
+tag(colorteam_1,44) // Barva pro tym 1, deufalt
+tag(colorteam_2,22) // Barva pro tym 2, deufalt
+tag(colorteam_3,55) // Barva pro tym 3, deufalt
+tag(colorteam_4,33) // Barva pro tym 4, deufalt
+tag(timerespawn,10) // cas na oziveni hrace jestlize ma jeste zivoty
+tag(timebombmin,1)  // minimalni mozny cas bomby
+tag(timebombdeufalt,3) // cas bomby, deufalt 3 sekundy
+tag(timeonmap,60) // cas na mapu, 60 sekund deufalt
+tag(playercount,0) // pocet hracu ve hre
+
+ON=@UserDclick
+dialog d_bbman // setting dialog
+dialog d_bbman_map // map loader dialog
+dialog d_bbman_player // player added dialog
+return 1
+
+ON=@Timer
+if(<tag.mapactive> > 0)
+  if(<more1> > 0)
+    SAY(start za <eval(<more1>)>s)
+    more1 = <more1>-1
+    timer=1
+  else
+    DOSWITCH <tag(playercount)>-1
+      bbmanchat(Hrac <tag(player_1).name> zacal hrat sam.)
+      bbmanchat(Hra zacala s hraci <tag(player_1).name> a <tag(player_2).name>)
+      bbmanchat(Hra zacala s hraci <tag(player_1).name>, <tag(player_2).name> a <tag(player_3).name>)
+      bbmanchat(Hra zacala s hraci <tag(player_1).name>, <tag(player_2).name>, <tag(player_3).name> a <tag(player_3).name>)
+    ENDDO
+
+    arg(i,1)
+    while(<i><=<tag(playercount)>)
+      tag(player_<i>).findid(i_bbman_crystal).tag(inGame,1)
+      tag(player_<i>).go <finduid(<tag(player_<i>_position_gembit)>).p>
+      arg(i,#+1)
+    endwhile
+  endif
+endif
+return 1
+
+[dialog d_bbman]
+argo.SetLocation=20,20
+argo.tag(sirka,322)
+argo.tag(vyska,430)
+
+argo.dialog_prvni
+arg(i,0)
+while(i<17)
+  argo.dialog_pozadi(<argo.tag(nexty)>,1,150,50,50) 
+  arg(i,#+1)
+endwhile
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,182,"Bomberman menu")
+argo.textA(<argo.dialog_textpos(0,1)>,42,"val.1")
+argo.textA(<argo.dialog_textpos(0,2)>,42,"val.2")
+argo.textA(<argo.dialog_textpos(0,3)>,42,"But.")
+
+argo.textA(<argo.dialog_textpos(1,0)>,42,"Position:")
+argo.setText(100,<tag(start_x)>)
+argo.textEntryA(<argo.dialog_textpos(1,1)>,150,20,152,1,100)
+argo.setText(101,<tag(start_y)>)
+argo.textEntryA(<argo.dialog_textpos(1,2)>,150,20,152,2,101)
+argo.button(<argo.dialog_textpos(1,3)>,0fa5,0fa7,1,0,1)
+
+argo.textA(<argo.dialog_textpos(2,0)>,42,"Altitude/Mapplan:")
+argo.setText(120,<eval(<tag(altitude)>)>)
+argo.textEntryA(<argo.dialog_textpos(2,1)>,150,20,152,102,120)
+argo.setText(130,<eval(<tag(mapplan)>)>)
+argo.textEntryA(<argo.dialog_textpos(2,2)>,150,20,152,103,130)
+argo.button(<argo.dialog_textpos(2,3)>,0fa5,0fa7,1,0,130)
+
+argo.textA(<argo.dialog_textpos(4,0)>,152,"Player setting:")
+
+argo.textA(<argo.dialog_textpos(5,0)>,42,"Range deufalt/max:")
+argo.setText(140,<tag(rangedeufalt)>)
+argo.textEntryA(<argo.dialog_textpos(5,1)>,150,20,152,104,140)
+argo.setText(150,<tag(rangemax)>)
+argo.textEntryA(<argo.dialog_textpos(5,2)>,150,20,152,105,150)
+argo.button(<argo.dialog_textpos(5,3)>,0fa5,0fa7,1,0,150)
+
+argo.textA(<argo.dialog_textpos(6,0)>,42,"Time bombs default/min:")
+argo.setText(160,<tag(timebombdeufalt)>)
+argo.textEntryA(<argo.dialog_textpos(6,1)>,150,20,152,106,160)
+argo.setText(170,<tag(timebombmin)>)
+argo.textEntryA(<argo.dialog_textpos(6,2)>,150,20,152,107,170)
+argo.button(<argo.dialog_textpos(6,3)>,0fa5,0fa7,1,0,170)
+
+argo.textA(<argo.dialog_textpos(7,0)>,42,"Number of life:")
+argo.setText(180,<tag(numberoflife)>)
+argo.textEntryA(<argo.dialog_textpos(7,1)>,150,20,152,108,180)
+argo.button(<argo.dialog_textpos(7,3)>,0fa5,0fa7,1,0,180)
+
+argo.textA(<argo.dialog_textpos(8,0)>,42,"Color team 1st:")
+argo.setText(190,<tag(colorteam_1)>)
+argo.textEntryA(<argo.dialog_textpos(8,1)>,150,20,<tag(colorteam_1)>,109,190)
+argo.button(<argo.dialog_textpos(8,3)>,0fa5,0fa7,1,0,190)
+
+argo.textA(<argo.dialog_textpos(9,0)>,42,"Color team 2st:")
+argo.setText(200,<tag(colorteam_2)>)
+argo.textEntryA(<argo.dialog_textpos(9,1)>,150,20,<tag(colorteam_2)>,110,200)
+argo.button(<argo.dialog_textpos(9,3)>,0fa5,0fa7,1,0,200)
+
+argo.textA(<argo.dialog_textpos(10,0)>,42,"Color team 3st:")
+argo.setText(210,<tag(colorteam_3)>)
+argo.textEntryA(<argo.dialog_textpos(10,1)>,150,20,<tag(colorteam_3)>,111,210)
+argo.button(<argo.dialog_textpos(10,3)>,0fa5,0fa7,1,0,210)
+
+argo.textA(<argo.dialog_textpos(11,0)>,42,"Color team 4st:")
+argo.setText(220,<tag(colorteam_4)>)
+argo.textEntryA(<argo.dialog_textpos(11,1)>,150,20,<tag(colorteam_4)>,112,220)
+argo.button(<argo.dialog_textpos(11,3)>,0fa5,0fa7,1,0,220)
+
+argo.textA(<argo.dialog_textpos(13,0)>,152,"InGame setting:")
+argo.textA(<argo.dialog_textpos(13,1)>,42,"state")
+argo.textA(<argo.dialog_textpos(13,2)>,42,"chance")
+
+argo.textA(<argo.dialog_textpos(14,0)>,42,"Block:")
+argo.checkBox(<argo.dialog_textpos(14,1)>,210,211,<tag(block)>,1)
+argo.setText(230,<tag(blockchance)>)
+argo.textEntryA(<argo.dialog_textpos(14,2)>,150,20,1000,113,230)
+argo.button(<argo.dialog_textpos(14,3)>,0fa5,0fa7,1,0,230)
+
+argo.textA(<argo.dialog_textpos(15,0)>,42,"Speed (Llama):")
+argo.checkBox(<argo.dialog_textpos(15,1)>,210,211,<tag(speed)>,2)
+argo.setText(240,<tag(speedchance)>)
+argo.textEntryA(<argo.dialog_textpos(15,2)>,150,20,1000,114,240)
+argo.button(<argo.dialog_textpos(15,3)>,0fa5,0fa7,1,0,240)
+
+argo.textA(<argo.dialog_textpos(16,0)>,42,"Lives:")
+argo.checkBox(<argo.dialog_textpos(16,1)>,210,211,<tag(lives)>,3)
+argo.setText(250,<tag(liveschance)>)
+argo.textEntryA(<argo.dialog_textpos(16,2)>,150,20,1000,115,250)
+argo.button(<argo.dialog_textpos(16,3)>,0fa5,0fa7,1,0,250)
+
+argo.button(<d_def_okraj>+<d_def_skvira>,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb7,0fb9,1,0,1)		//ok
+argo.button(<d_def_okraj>+<d_def_skvira>+33,(<argo.tag(vyska)>-<d_def_okraj>)-23,0fb1,0fb3,1,0,0)	//cancel
+
+
+[dialog d_bbman BUTTON]
+on=0
+src.sysmessage Closed
+
+on=@anybutton
+if (argn==1)
+  tag(start_x,<return_nth(1,<src.p>)>)
+  tag(start_y,<return_nth(2,<src.p>)>)
+  tag(altitude,<return_nth(3,<src.p>)>)
+  tag(mapplan,<return_nth(4,<src.p>)>)
+endif
+
+if (<argChk(1)>)
+  tag(block,1)
+else
+  tag(block,0)
+endif
+
+if (<argChk(2)>)
+  tag(speed,1)
+else
+  tag(speed,0)
+endif
+
+if (<argChk(3)>)
+  tag(lives,1)
+else
+  tag(lives,0)
+endif
+
+if (argn==130)
+  tag(altitude,<argTxt(102)>)
+  tag(mapplan,<argTxt(103)>)
+endif
+if (argn==150)
+  if(<argTxt(104)> <= <argTxt(105)>)
+    tag(rangedeufalt,<argTxt(104)>)
+    tag(rangemax,<argTxt(105)>)
+  else
+    tag(rangedeufalt,<argTxt(104)>)
+    tag(rangemax,<tag(rangedeufalt)>)
+  endif
+endif
+if (argn==170)
+  if(<argTxt(106)> => <argTxt(107)>)
+    tag(timebombdeufalt,<argTxt(106)>)
+    tag(timebombmin,<argTxt(107)>)
+  else
+    tag(timebombmin,<argTxt(107)>)
+    tag(timebombdeufalt,<tag(timebombmin)>)
+  endif
+endif
+if (argn==180)
+  tag(numberoflife,<argTxt(108)>)
+endif
+if (argn==190)
+  tag(colorteam1,<argTxt(109)>)
+endif
+if (argn==200)
+  tag(colorteam2,<argTxt(110)>)
+endif
+if (argn==210)
+  tag(colorteam3,<argTxt(111)>)
+endif
+if (argn==220)
+  tag(colorteam4,<argTxt(112)>)
+endif
+if (argn==230)
+  tag(blockchance,<argTxt(113)>)
+endif
+if (argn==240)
+  tag(speedchance,<argTxt(114)>)
+endif
+if (argn==250)
+  tag(liveschance,<argTxt(115)>)
+endif
+dialog d_bbman
+
+////////////////MAP DIALOG////////////////
+
+[dialog d_bbman_map]
+argo.SetLocation=360,20
+argo.tag(sirka,300)
+argo.tag(vyska,155)
+
+argo.dialog_prvni
+
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)  
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)  
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,182,"Map Setting")
+
+argo.textA(<argo.dialog_textpos(1,0)>,42,"Create map:")
+if(<tag(mapactive)>)
+  argo.textA(<argo.dialog_textpos(1,1)>,152,"Map already exists.")  
+else
+  argo.button(<argo.dialog_textpos(1,1)>,0fa5,0fa7,1,0,1)
+endif
+
+argo.textA(<argo.dialog_textpos(2,0)>,42,"Loading map:")
+if(<tag(mapactive)>)
+  argo.textA(<argo.dialog_textpos(2,1)>,152,"Map already exists.")  
+else
+  argo.button(<argo.dialog_textpos(2,1)>,0fa5,0fa7,1,0,2)
+endif
+
+argo.textA(<argo.dialog_textpos(3,0)>,42,"Delete map:")
+if(<tag(mapactive)>)
+  argo.button(<argo.dialog_textpos(3,1)>,0fa5,0fa7,1,0,3)
+else
+  argo.textA(<argo.dialog_textpos(3,1)>,152,"No maps")  
+endif
+
+argo.textA(<argo.dialog_textpos(4,0)>,42,"Time respawn:")
+argo.textA(<argo.dialog_textpos(4,1)>,152,<tag(timerespawn)>)
+
+argo.textA(<argo.dialog_textpos(5,0)>,42,"Start map:")
+if(<tag(mapactive)>)
+  argo.button(<argo.dialog_textpos(5,1)>,0fa5,0fa7,1,0,3)
+else
+  argo.textA(<argo.dialog_textpos(5,1)>,152,"No maps")  
+endif
+
+[dialog d_bbman_map BUTTON]
+on=0
+
+on=@anybutton
+if (argn==2)
+  dialog d_bbman_map_browse
+endif
+if (argn==3)
+  arg(i,1)
+  arg(y,1)
+  while(y<=<?map_<tag(mapload)>_size_y?>)
+    while(i<=<?map_<tag(mapload)>_size_x?>)
+      if(<tag(map_<y>_<i>)>)
+        finduid(<tag(map_<y>_<i>)>).remove
+        tag.remove(map_<y>_<i>)
+      endif
+      arg(i,#+1)
+    endwhile
+    arg(i,1)
+    arg(y,#+1)
+  endwhile
+  arg(x,1)
+  while(<x><=<?map_<tag(mapload)>_player_count?>)
+    if(<tag(player_<x>_position_gembit)>)  
+      finduid(<tag(player_<x>_position_gembit)>).remove
+    else
+      src.sysmessage("Neexistuje worlgembit na pozici.")
+    endif
+    arg(x,#+1)
+  endwhile
+  tag(mapactive,0)
+  dialog d_bbman_map
+endif
+
+////////////////MAP BROWSE////////////////
+
+[dialog d_bbman_map_browse]
+argo.SetLocation=360,20
+argo.tag(sirka,350)
+argo.tag(vyska,150)
+
+argo.dialog_prvni
+
+argo.dialog_pozadi(<argo.tag(nexty)>,1,200,50) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,200,50) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,200,50)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,200,50)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,200,50)
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,182,"Map Browse")
+
+argo.textA(<argo.dialog_textpos(1,0)>,42,"Name:")
+argo.textA(<argo.dialog_textpos(1,1)>,42,"Prewie:")
+argo.textA(<argo.dialog_textpos(1,2)>,42,"Select:")
+
+arg(i,1)
+while(i<=<?maps_count?>)
+  argo.textA(<argo.dialog_textpos(<i>+1,0)>,42,"<?map_<i>?>")
+  argo.button(<argo.dialog_textpos(<i>+1,1)>,0fa5,0fa7,1,1,<i>)
+  argo.button(<argo.dialog_textpos(<i>+1,2)>,0fa5,0fa7,1,0,<i>+20)
+  arg(i,#+1)
+endwhile
+
+
+[dialog d_bbman_map_browse BUTTON]
+on=0
+dialog d_bbman_map
+
+on=@anybutton
+if (argn<20)&&(argn>0)
+  dialog d_bbman_map_prewie <argn>
+endif
+
+if (argn>20)
+  arg(i,1)
+  arg(y,1)
+  tag(typemap,load)
+  tag(mapload,<argn>-20)
+  tag(mapactive,1)
+  while(y<=<?map_<tag(mapload)>_size_y?>)
+    while(i<=<?map_<tag(mapload)>_size_x?>)
+      if(<?map_<tag(mapload)>_<y>_<i>?> == 1)
+        src.newitem = i_bbman_wall
+        lastnew.p = <tag(start_x)>+<i>-1,<tag(start_y)>+<y>-1,<eval(<tag(altitude)>)>,<eval(<tag(mapplan)>)>
+        tag(map_<y>_<i>,<lastnew.uid>)
+      endif
+      if(<tag(block)>)
+       if({0 1000} < <finduid(<bbmanstone>).tag(blockchance)>)
+        if(<?map_<tag(mapload)>_<y>_<i>?> == 2)
+          src.newitem = i_bbman_destroy
+          lastnew.p = <tag(start_x)>+<i>-1,<tag(start_y)>+<y>-1,<eval(<tag(altitude)>)>,<eval(<tag(mapplan)>)>
+          tag(map_<y>_<i>,<lastnew.uid>)
+        endif
+       endif 
+      endif
+      arg(i,#+1)
+    endwhile
+    arg(i,1)
+    arg(y,#+1)
+  endwhile
+  arg(x,1)
+  while(<x><=<?map_<tag(mapload)>_player_count?>)
+    src.newitem(i_worldgem_bit)
+    arg(posx,<tag(start_x)>+<?map_<tag(mapload)>_player_<x>_x?>-1)
+    arg(posy,<tag(start_y)>+<?map_<tag(mapload)>_player_<x>_y?>-1)
+    lastnew.p = <posx>,<posy>,<eval(<tag(altitude)>)>,<eval(<tag(mapplan)>)>   
+    tag(player_<x>_position_gembit,<lastnew>)
+    arg(x,#+1)
+  endwhile
+  dialog d_bbman_map
+endif
+
+////////////////MAP PREWIE////////////////
+
+[dialog d_bbman_map_prewie]
+argo.SetLocation=360,20
+argo.tag(sirka,40+<?map_<args(0)>_size_y?>*20)
+argo.tag(vyska,40+<?map_<args(0)>_size_x?>*20)
+
+argo.dialog_prvni
+
+arg(i,1)
+arg(y,1)
+while(y<=<?map_<args(0)>_size_y?>)
+  while(i<=<?map_<args(0)>_size_x?>)
+    if(<?map_<args(0)>_<y>_<i>?> == 1)
+      argo.gumppic(<i>*20,<y>*20, 216)
+   endif 
+   if(<?map_<args(0)>_<y>_<i>?> == 2)
+      argo.gumppic((<i>*20)-3,(<y>*20)-3, 210)
+    endif 
+    arg(i,#+1)
+  endwhile
+  arg(i,1)
+  arg(y,#+1)
+endwhile
+
+
+[dialog d_bbman_map_prewie BUTTON]
+on=0
+dialog d_bbman_map_browse
+
+
+////////////////PLAYER////////////////
+
+[dialog d_bbman_player]
+argo.SetLocation=360,200
+argo.tag(sirka,300)
+argo.tag(vyska,200)
+
+argo.dialog_prvni
+
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,50) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,50)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,50)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,50)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,50)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150,50)
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,182,"Players")
+argo.button(<argo.dialog_textpos(0,1)>,0fa5,0fa7,1,0,87)
+argo.button(<argo.dialog_textpos(0,2)>,0fa5,0fa7,1,0,88)
+
+argo.textA(<argo.dialog_textpos(1,0)>,152,"Name:")
+argo.textA(<argo.dialog_textpos(1,1)>,152,"Lives:")
+
+arg(i,1)
+while(i<=<finduid(<bbmanstone>).tag(playercount)>)
+  argo.textA(<argo.dialog_textpos(<i>+1,0)>,42,<finduid(<bbmanstone>).tag(player_<i>).name>)
+  argo.textA(<argo.dialog_textpos(<i>+1,1)>,1000,<finduid(<bbmanstone>).tag(player_<i>).findid(i_bbman_crystal).tag(life)>)
+  arg(i,#+1)  
+endwhile
+
+[dialog d_bbman_player BUTTON]
+on=@anybutton
+if(<argn>==87)
+  bbmanremplayers
+  d_bbman_player
+elseif (<argn>==88)
+  src.newitemsafe(i_bbman_target_player)
+  lastnew.timer=60
+  lastnew.equip
+endif
+
+[itemdef i_bbman_target_player]
+name=Zamerovac pro vybrani hrace na bbmana
+id=i_memory
+type=t_eq_script
+
+on=@create
+attr=010
+
+on=@timer
+remove
+
+on=@equip
+target("Zamer hrace.")
+
+on=@targon_char
+finduid(<bbmanstone>).tag(playercount,#+1)
+finduid(<bbmanstone>).tag(player_<finduid(<bbmanstone>).tag(playercount)>,<src.targ.uid>)
+src.redmessage(Hrac <src.targ.name> byl pridan do hry bbman.)
+if(!<src.targ.rescount(i_bbman_crystal)>)
+  src.targ.newitem i_bbman_crystal
+  lastnew.bounce <src.targ>
+  lastnew.tag(team,<finduid(<bbmanstone>).tag(playercount)>)
+else
+  src.targ.findid(i_bbman_crystal).tag(team,<finduid(<bbmanstone>).tag(playercount)>)
+endif
+src.d_bbman_player
+return 1
+
+[function bbmanremplayers]
+arg(i,1)
+while(i<=bbmanstone.tag(playercount)>)
+  bbmanstone.tag.remove(player_<i>)
+  arg(i,#+1)  
+endwhile
+src.redmessage("Vymazal si vsechny hrace z player listu.")
+finduid(<bbmanstone>).tag(playercount,0)
+
+////////////////BBMANCHAT/////////////////////
+
+[function bbmanchat]
+var(messagebbman,"*BBman* <args(0)>")
+serv.ALLCLIENTS(bbmanchatotag)
+
+[function bbmanchatotag]
+if (<rescount(i_bbman_crystal)> == 1)
+  redmessage(<messagebbman>)
+endif
+
+//////////////////////////////////////
+
+[function isbbman]
+if(<bbmanstone>)
+  return 0
+else
+  return 1
+endif
+
+[function bbmanrockdestroy]
+newitem = i_bbman_destroy
+lastnew.p <p>
+finduid(<bbmanstone>).change_nth(<return_nth(1,<lastnew.bbmanp>)>,bbman_<return_nth(2,<lastnew.bbmanp>)>,<lastnew.uid>,<finduid(<bbmanstone>).tag(bbman_<return_nth(2,<lastnew.bbmanp>)>)>)
+
+[function bbmanrock]
+newitem = i_bbman_wall
+lastnew.p <p>
+finduid(<bbmanstone>).change_nth(<return_nth(1,<lastnew.bbmanp>)>,bbman_<return_nth(2,<lastnew.bbmanp>)>,1,<finduid(<bbmanstone>).tag(bbman_<return_nth(2,<lastnew.bbmanp>)>)>)
+
+[function bbmanbomb]
+if(<findid(i_bbman_crystal).tag(inGame)>)
+  newitem i_bbman_bomb
+  lastnew.p = <p>
+  lastnew.link = <uid>
+  lastnew.more1 = <findid(i_bbman_crystal).tag(timebomb)>
+  lastnew.tag(range,<findid(i_bbman_crystal).tag(range)>)
+  lastnew.color = <findid(i_bbman_crystal).tag(color)>
+else
+  src.redMessage("Nyni nejsi ve hre!")
+endif
+
+[function bbmanp]
+return <eval(<return_nth(1,<p>)>-<finduid(<bbmanstone>).tag(start_x)>-1)>,<eval(<return_nth(2,<p>)>-<finduid(<bbmanstone>).tag(start_y)>-1)>
+
+[function bbmandir]
+arg(prvy_arg,<args(0)>)
+
+if(<prvy_arg> == 2)
+  if(<finduid(<bbmanstone>).tag(map_<return_nth(2,<bbmanp>)>_<eval(<return_nth(1,<bbmanp>)>+1)>)>)
+    return <finduid(<bbmanstone>).tag(map_<return_nth(2,<bbmanp>)>_<eval(<return_nth(1,<bbmanp>)>+1)>)>
+  endif
+endif
+if(<prvy_arg> == 6)
+  if(<finduid(<bbmanstone>).tag(map_<return_nth(2,<bbmanp>)>_<eval(<return_nth(1,<bbmanp>)>-1)>)>)
+    return <finduid(<bbmanstone>).tag(map_<return_nth(2,<bbmanp>)>_<eval(<return_nth(1,<bbmanp>)>-1)>)>
+  endif
+endif
+if(<prvy_arg> == 0)
+ if(<finduid(<bbmanstone>).tag(map_<eval(<return_nth(2,<bbmanp>)>-1)>_<return_nth(1,<bbmanp>)>)>)
+    return <finduid(<bbmanstone>).tag(map_<eval(<return_nth(2,<bbmanp>)>-1)>_<return_nth(1,<bbmanp>)>)>
+  endif
+endif
+if(<prvy_arg> == 4)
+ if(<finduid(<bbmanstone>).tag(map_<eval(<return_nth(2,<bbmanp>)>+1)>_<return_nth(1,<bbmanp>)>)>)
+    return <finduid(<bbmanstone>).tag(map_<eval(<return_nth(2,<bbmanp>)>+1)>_<return_nth(1,<bbmanp>)>)>
+  endif
+endif
+return 0
+
+[itemdef i_bbman_bomb]
+id=01771
+name=Bomb
+
+ON=@Create
+timer = 1
+
+ON=@Timer
+if(<more1> > 0)
+  say <eval(more1)>
+  timer = 1
+  more1 = <more1>-1
+  return 1
+else
+  sound 519
+  link.newitem i_bbman_fire
+  lastnew.p <p>
+  lastnew.name Test
+  lastnew.timer 1
+  
+  arg(STATICobj,<lastnew>)
+  arg(obj,<lastnew>)
+  arg(i,1)
+  while(<finduid(<obj>).bbmandir(2)> == 0) && (<i> <= <tag(range)>)
+    link.newitem i_bbman_fire
+    lastnew.p <p>
+    lastnew.move <i>,0
+    lastnew.timer 1
+    arg(obj,<lastnew>)
+    arg(i,#+1)
+  endwhile
+  if(<i>!=<tag(range)>+1)
+    bbmanisdestroyblock(<finduid(<obj>).bbmandir(2)>,<link>)
+  endif
+
+  arg(obj,<STATICobj>)
+  arg(i,1)
+  while(<finduid(<obj>).bbmandir(6)> == 0) && (<i> <= <tag(range)>)
+    link.newitem i_bbman_fire
+    lastnew.p <p>
+    lastnew.move <eval(-<i>)>,0
+    lastnew.timer 1
+    arg(obj,<lastnew>)
+    arg(i,#+1)
+  endwhile
+  if(<i>!=<tag(range)>+1)  
+    bbmanisdestroyblock(<finduid(<obj>).bbmandir(6)>,<link>)
+  endif
+
+  arg(obj,<STATICobj>)
+  arg(i,1)
+  while(<finduid(<obj>).bbmandir(4)> == 0) && (<i> <= <tag(range)>)
+    link.newitem i_bbman_fire
+    lastnew.p <p>
+    lastnew.move 0,<i>
+    lastnew.timer 1
+    arg(obj,<lastnew>)
+    arg(i,#+1)
+  endwhile
+  if(<i>!=<tag(range)>+1)
+    bbmanisdestroyblock(<finduid(<obj>).bbmandir(4)>,<link>)
+  endif
+
+  arg(obj,<STATICobj>)
+  arg(i,1)
+  while(<finduid(<obj>).bbmandir(0)> == 0) && (<i> <= <tag(range)>)
+    link.newitem i_bbman_fire
+    lastnew.p <p>
+    lastnew.move 0,<eval(-<i>)>
+    lastnew.timer 1
+    arg(obj,<lastnew>)
+    arg(i,#+1)
+  endwhile
+  if(<i>!=<tag(range)>+1)
+    bbmanisdestroyblock(<finduid(<obj>).bbmandir(0)>,<link>)
+  endif
+
+  remove
+  return 1
+endif
+
+[function bbmanisdestroyblock]
+arg(object,<finduid(<args(0)>)>)
+if(<object.id> == i_bbman_destroy)
+  if(<finduid(<bbmanstone>).tag(speed)>)
+    if({0 1000} < <finduid(<bbmanstone>).tag(speedchance)>)
+      return_nth(2,<args(1)>).newitem(i_bbman_speedbonus)
+      lastnew.p = <object.p>
+    endif
+  endif
+  finduid(<bbmanstone>).tag.remove(map_<return_nth(2,<object.bbmanp>)>_<return_nth(1,<object.bbmanp>)>)
+  object.remove
+endif
+
+[function bbmanstart]
+finduid(<bbmanstone>).more1 = 3
+finduid(<bbmanstone>).timer = 1
+
+[itemdef i_bbman_fire]
+id=i_fire_column
+name=Fire
+
+ON=@Timer
+remove
+return 1
+
+ON=@Create
+
+ON=@Step
+src.hits = 0
+if(<src.findid(i_bbman_crystal).tag(life)> > 0)
+  src.newitem(i_bbman_respawn)
+  src.equip(<lastnew>)
+  src.findid(i_bbman_crystal).tag(life,#-1)
+  src.redmessage(Zbyvaji ti <src.findid(i_bbman_crystal).tag(life)> zivoty.)
+else
+  src.redmessage("Game Over!")
+  src.bbmanchat(<src.name> skoncil.)
+endif
+
+[itemdef i_bbman_respawn]
+ID=i_memory
+NAME=BBman time respawn
+TYPE=T_EQ_SCRIPT
+
+ON=@EQUIP
+timer=<bbmanstone.tag(timerespawn)>
+
+ON=@CREATE
+ATTR=010|04
+
+ON=@Timer
+src.resurrect
+remove
+return 1
+
+[itemdef i_bbman_wall]
+id=076c
+name=Wall
+type=t_wall
+
+ON=@Create
+COLOR=00a84
+
+[itemdef i_bbman_destroy]
+id=i_crate_lg
+name=Wall
+type=t_wall
+
+ON=@Create
+COLOR=006d1
+
+[ITEMDEF i_bbman_crystal]
+ID=01ED0
+Name=BBman Crystal
+Type=0
+
+ON=@Create
+ATTR=010|04
+tag(range,<bbmanstone.tag(rangedeufalt)>)
+tag(life,<bbmanstone.tag(numberoflife)>)
+tag(timebomb,<bbmanstone.tag(timebombdeufalt)>)
+tag(countgame,0)
+tag(win,0)
+tag(losses,0)
+
+ON=@UserClick
+topobj.dialog d_bbman_player_window
+return 1
+
+ON=@UserDClick
+topobj.dialog d_bbman_player_window
+return 1
+
+ON=@Timer
+return 1
+
+[dialog d_bbman_player_window]
+argo.SetLocation=50,50
+argo.tag(sirka,300)
+argo.tag(vyska,275)
+
+argo.dialog_prvni
+
+argo.dialog_pozadi(<argo.tag(nexty)>,1) 
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+argo.dialog_pozadi(<argo.tag(nexty)>,1,150)
+
+argo.dialog_zpruhledni
+
+argo.textA(<argo.dialog_textpos(0,0)>,182,"Moje score a informace")
+
+argo.textA(<argo.dialog_textpos(1,0)>,152,"Info:")
+argo.textA(<argo.dialog_textpos(1,1)>,152,"Pocet:")
+
+arg(crystal,<src.findid(i_bbman_crystal)>)
+argo.textA(<argo.dialog_textpos(2,0)>,42,"Pocet odehranych her:")
+argo.textA(<argo.dialog_textpos(2,1)>,1000,<crystal.tag(countgame)>)
+argo.textA(<argo.dialog_textpos(3,0)>,42," - vitezvi:")
+argo.textA(<argo.dialog_textpos(3,1)>,1000,<crystal.tag(win)>)
+argo.textA(<argo.dialog_textpos(4,0)>,42," - proher:")
+argo.textA(<argo.dialog_textpos(4,1)>,1000,<crystal.tag(losses)>)
+argo.textA(<argo.dialog_textpos(5,0)>,42,"Celkove score")
+argo.textA(<argo.dialog_textpos(5,1)>,1000,<crystal.tag(score)>)
+
+argo.textA(<argo.dialog_textpos(7,0)>,152,"Hodnovy ve hre:")
+argo.textA(<argo.dialog_textpos(8,0)>,42,"Team:")
+argo.textA(<argo.dialog_textpos(8,1)>,1000,<crystal.tag(team)>)
+argo.textA(<argo.dialog_textpos(9,0)>,42,"Barva teamu:")
+argo.textA(<argo.dialog_textpos(9,1)>,<bbmanstone.tag(colorteam_<crystal.tag(team)>)>,"Moje barva")
+argo.textA(<argo.dialog_textpos(10,0)>,42,"Pocet zivotu:")
+argo.textA(<argo.dialog_textpos(10,1)>,1000,<crystal.tag(life)>)
+
+
+[itemdef i_bbman_speedbonus]
+id=i_pet_llama
+NAME=Speed Bonus
+
+ON=@Create
+color=0098c
+
+ON=@UserDclick
+return 1
+
+ON=@Step
+if(<src.findid(i_bbman_crystal).tag(speed)> != 1)
+  src.newitem(i_mt_bbman_speedllama)
+  lastnew.color=<bbmanstone.tag(colorteam<src.findid(i_bbman_crystal).tag(team)>)>
+  src.equip(<lastnew>)
+  src.findid(i_bbman_crystal).tag(speed,1)
+endif
+remove
+return 1
+
+[ITEMDEF i_mt_bbman_speedllama]
+id=i_mt_llama
+NAME=Speed Bonus
+
+ON=@Unequip
+cont.findid(i_bbman_crystal).tag(speed,0)
+
+ON=@Create
+return 1
+
+/////////////////////MAPS/////////////////////////
+
+[defnames bbmanmaps]
+maps_count 3
+map_1 Ctverec s blokovanym stredem
+map_1_size_x 7
+map_1_size_y 7
+
+map_1_1_1 1
+map_1_1_2 1
+map_1_1_3 1
+map_1_1_4 1
+map_1_1_5 1
+map_1_1_6 1
+map_1_1_7 1
+
+map_1_2_1 1
+map_1_2_2 2
+map_1_2_3 2
+map_1_2_4 2
+map_1_2_5 0
+map_1_2_6 0
+map_1_2_7 1
+
+map_1_3_1 1
+map_1_3_2 2
+map_1_3_3 1
+map_1_3_4 2
+map_1_3_5 1
+map_1_3_6 0
+map_1_3_7 1
+
+map_1_4_1 1
+map_1_4_2 2
+map_1_4_3 2
+map_1_4_4 2
+map_1_4_5 2
+map_1_4_6 2
+map_1_4_7 1
+
+map_1_5_1 1
+map_1_5_2 0
+map_1_5_3 1
+map_1_5_4 2
+map_1_5_5 1
+map_1_5_6 2
+map_1_5_7 1
+
+map_1_6_1 1
+map_1_6_2 0
+map_1_6_3 0
+map_1_6_4 2
+map_1_6_5 2
+map_1_6_6 2
+map_1_6_7 1
+
+map_1_7_1 1
+map_1_7_2 1
+map_1_7_3 1
+map_1_7_4 1
+map_1_7_5 1
+map_1_7_6 1
+map_1_7_7 1
+
+//MAP 2
+
+map_2 Velky cisty ctverec
+map_2_size_x 15
+map_2_size_y 15
+
+map_2_player_count 4
+map_2_player_1_x 2
+map_2_player_1_y 2
+map_2_player_2_x 2
+map_2_player_2_y 14
+map_2_player_3_x 14
+map_2_player_3_y 2
+map_2_player_4_x 14
+map_2_player_4_y 14
+
+map_2_1_1 1
+map_2_1_2 1
+map_2_1_3 1
+map_2_1_4 1
+map_2_1_5 1
+map_2_1_6 1
+map_2_1_7 1
+map_2_1_8 1
+map_2_1_9 1
+map_2_1_10 1
+map_2_1_11 1
+map_2_1_12 1
+map_2_1_13 1
+map_2_1_14 1
+map_2_1_15 1
+
+map_2_2_1 1
+map_2_2_2 0
+map_2_2_3 0
+map_2_2_4 2
+map_2_2_5 2
+map_2_2_6 2
+map_2_2_7 2
+map_2_2_8 2
+map_2_2_9 2
+map_2_2_10 2
+map_2_2_11 2
+map_2_2_12 2
+map_2_2_13 0
+map_2_2_14 0
+map_2_2_15 1
+
+map_2_3_1 1
+map_2_3_2 0
+map_2_3_3 2
+map_2_3_4 2
+map_2_3_5 2
+map_2_3_6 2
+map_2_3_7 2
+map_2_3_8 2
+map_2_3_9 2
+map_2_3_10 2
+map_2_3_11 2
+map_2_3_12 2
+map_2_3_13 2
+map_2_3_14 0
+map_2_3_15 1
+
+map_2_4_1 1
+map_2_4_2 2
+map_2_4_3 2
+map_2_4_4 2
+map_2_4_5 2
+map_2_4_6 2
+map_2_4_7 2
+map_2_4_8 2
+map_2_4_9 2
+map_2_4_10 2
+map_2_4_11 2
+map_2_4_12 2
+map_2_4_13 2
+map_2_4_14 2
+map_2_4_15 1
+
+map_2_5_1 1
+map_2_5_2 2
+map_2_5_3 2
+map_2_5_4 2
+map_2_5_5 2
+map_2_5_6 2
+map_2_5_7 2
+map_2_5_8 2
+map_2_5_9 2
+map_2_5_10 2
+map_2_5_11 2
+map_2_5_12 2
+map_2_5_13 2
+map_2_5_14 2
+map_2_5_15 1
+
+map_2_6_1 1
+map_2_6_2 2
+map_2_6_3 2
+map_2_6_4 2
+map_2_6_5 2
+map_2_6_6 2
+map_2_6_7 2
+map_2_6_8 2
+map_2_6_9 2
+map_2_6_10 2
+map_2_6_11 2
+map_2_6_12 2
+map_2_6_13 2
+map_2_6_14 2
+map_2_6_15 1
+
+map_2_7_1 1
+map_2_7_2 2
+map_2_7_3 2
+map_2_7_4 2
+map_2_7_5 2
+map_2_7_6 2
+map_2_7_7 2
+map_2_7_8 2
+map_2_7_9 2
+map_2_7_10 2
+map_2_7_11 2
+map_2_7_12 2
+map_2_7_13 2
+map_2_7_14 2
+map_2_7_15 1
+
+map_2_8_1 1
+map_2_8_2 2
+map_2_8_3 2
+map_2_8_4 2
+map_2_8_5 2
+map_2_8_6 2
+map_2_8_7 2
+map_2_8_8 2
+map_2_8_9 2
+map_2_8_10 2
+map_2_8_11 2
+map_2_8_12 2
+map_2_8_13 2
+map_2_8_14 2
+map_2_8_15 1
+
+map_2_9_1 1
+map_2_9_2 2
+map_2_9_3 2
+map_2_9_4 2
+map_2_9_5 2
+map_2_9_6 2
+map_2_9_7 2
+map_2_9_8 2
+map_2_9_9 2
+map_2_9_10 2
+map_2_9_11 2
+map_2_9_12 2
+map_2_9_13 2
+map_2_9_14 2
+map_2_9_15 1
+
+map_2_10_1 1
+map_2_10_2 2
+map_2_10_3 2
+map_2_10_4 2
+map_2_10_5 2
+map_2_10_6 2
+map_2_10_7 2
+map_2_10_8 2
+map_2_10_9 2
+map_2_10_10 2
+map_2_10_11 2
+map_2_10_12 2
+map_2_10_13 2
+map_2_10_14 2
+map_2_10_15 1
+
+map_2_11_1 1
+map_2_11_2 2
+map_2_11_3 2
+map_2_11_4 2
+map_2_11_5 2
+map_2_11_6 2
+map_2_11_7 2
+map_2_11_8 2
+map_2_11_9 2
+map_2_11_10 2
+map_2_11_11 2
+map_2_11_12 2
+map_2_11_13 2
+map_2_11_14 2
+map_2_11_15 1
+
+map_2_12_1 1
+map_2_12_2 2
+map_2_12_3 2
+map_2_12_4 2
+map_2_12_5 2
+map_2_12_6 2
+map_2_12_7 2
+map_2_12_8 2
+map_2_12_9 2
+map_2_12_10 2
+map_2_12_11 2
+map_2_12_12 2
+map_2_12_13 2
+map_2_12_14 2
+map_2_12_15 1
+
+map_2_13_1 1
+map_2_13_2 0
+map_2_13_3 2
+map_2_13_4 2
+map_2_13_5 2
+map_2_13_6 2
+map_2_13_7 2
+map_2_13_8 2
+map_2_13_9 2
+map_2_13_10 2
+map_2_13_11 2
+map_2_13_12 2
+map_2_13_13 2
+map_2_13_14 0
+map_2_13_15 1
+
+map_2_14_1 1
+map_2_14_2 0
+map_2_14_3 0
+map_2_14_4 2
+map_2_14_5 2
+map_2_14_6 2
+map_2_14_7 2
+map_2_14_8 2
+map_2_14_9 2
+map_2_14_10 2
+map_2_14_11 2
+map_2_14_12 2
+map_2_14_13 0
+map_2_14_14 0
+map_2_14_15 1
+
+map_2_15_1 1
+map_2_15_2 1
+map_2_15_3 1
+map_2_15_4 1
+map_2_15_5 1
+map_2_15_6 1
+map_2_15_7 1
+map_2_15_8 1
+map_2_15_9 1
+map_2_15_10 1
+map_2_15_11 1
+map_2_15_12 1
+map_2_15_13 1
+map_2_15_14 1
+map_2_15_15 1
+
+//MAP 3
+
+map_3 Velky ctverec s bloky
+map_3_size_x 15
+map_3_size_y 15
+
+map_3_player_count 4
+map_3_player_1_x 2
+map_3_player_1_y 2
+map_3_player_2_x 2
+map_3_player_2_y 14
+map_3_player_3_x 14
+map_3_player_3_y 2
+map_3_player_4_x 14
+map_3_player_4_y 14
+
+map_3_1_1 1
+map_3_1_2 1
+map_3_1_3 1
+map_3_1_4 1
+map_3_1_5 1
+map_3_1_6 1
+map_3_1_7 1
+map_3_1_8 1
+map_3_1_9 1
+map_3_1_10 1
+map_3_1_11 1
+map_3_1_12 1
+map_3_1_13 1
+map_3_1_14 1
+map_3_1_15 1
+
+map_3_2_1 1
+map_3_2_2 0
+map_3_2_3 0
+map_3_2_4 2
+map_3_2_5 2
+map_3_2_6 2
+map_3_2_7 2
+map_3_2_8 2
+map_3_2_9 2
+map_3_2_10 2
+map_3_2_11 2
+map_3_2_12 2
+map_3_2_13 0
+map_3_2_14 0
+map_3_2_15 1
+
+map_3_3_1 1
+map_3_3_2 0
+map_3_3_3 1
+map_3_3_4 1
+map_3_3_5 1
+map_3_3_6 1
+map_3_3_7 1
+map_3_3_8 0
+map_3_3_9 1
+map_3_3_10 1
+map_3_3_11 1
+map_3_3_12 1
+map_3_3_13 1
+map_3_3_14 0
+map_3_3_15 1
+
+map_3_4_1 1
+map_3_4_2 2
+map_3_4_3 1
+map_3_4_4 2
+map_3_4_5 2
+map_3_4_6 1
+map_3_4_7 1
+map_3_4_8 2
+map_3_4_9 1
+map_3_4_10 1
+map_3_4_11 2
+map_3_4_12 2
+map_3_4_13 1
+map_3_4_14 2
+map_3_4_15 1
+
+map_3_5_1 1
+map_3_5_2 2
+map_3_5_3 1
+map_3_5_4 2
+map_3_5_5 2
+map_3_5_6 1
+map_3_5_7 1
+map_3_5_8 2
+map_3_5_9 1
+map_3_5_10 1
+map_3_5_11 2
+map_3_5_12 2
+map_3_5_13 1
+map_3_5_14 2
+map_3_5_15 1
+
+map_3_6_1 1
+map_3_6_2 2
+map_3_6_3 1
+map_3_6_4 2
+map_3_6_5 2
+map_3_6_6 2
+map_3_6_7 2
+map_3_6_8 2
+map_3_6_9 2
+map_3_6_10 2
+map_3_6_11 2
+map_3_6_12 2
+map_3_6_13 1
+map_3_6_14 2
+map_3_6_15 1
+
+map_3_7_1 1
+map_3_7_2 2
+map_3_7_3 1
+map_3_7_4 2
+map_3_7_5 2
+map_3_7_6 2
+map_3_7_7 2
+map_3_7_8 2
+map_3_7_9 2
+map_3_7_10 2
+map_3_7_11 2
+map_3_7_12 2
+map_3_7_13 1
+map_3_7_14 2
+map_3_7_15 1
+
+map_3_8_1 1
+map_3_8_2 2
+map_3_8_3 2
+map_3_8_4 2
+map_3_8_5 2
+map_3_8_6 2
+map_3_8_7 2
+map_3_8_8 2
+map_3_8_9 2
+map_3_8_10 2
+map_3_8_11 2
+map_3_8_12 2
+map_3_8_13 2
+map_3_8_14 2
+map_3_8_15 1
+
+map_3_9_1 1
+map_3_9_2 2
+map_3_9_3 1
+map_3_9_4 2
+map_3_9_5 2
+map_3_9_6 2
+map_3_9_7 2
+map_3_9_8 2
+map_3_9_9 2
+map_3_9_10 2
+map_3_9_11 2
+map_3_9_12 2
+map_3_9_13 1
+map_3_9_14 2
+map_3_9_15 1
+
+map_3_10_1 1
+map_3_10_2 2
+map_3_10_3 1
+map_3_10_4 2
+map_3_10_5 2
+map_3_10_6 2
+map_3_10_7 2
+map_3_10_8 2
+map_3_10_9 2
+map_3_10_10 2
+map_3_10_11 2
+map_3_10_12 2
+map_3_10_13 1
+map_3_10_14 2
+map_3_10_15 1
+
+map_3_11_1 1
+map_3_11_2 2
+map_3_11_3 1
+map_3_11_4 2
+map_3_11_5 2
+map_3_11_6 1
+map_3_11_7 1
+map_3_11_8 2
+map_3_11_9 1
+map_3_11_10 1
+map_3_11_11 2
+map_3_11_12 2
+map_3_11_13 1
+map_3_11_14 2
+map_3_11_15 1
+
+map_3_12_1 1
+map_3_12_2 2
+map_3_12_3 1
+map_3_12_4 2
+map_3_12_5 2
+map_3_12_6 1
+map_3_12_7 1
+map_3_12_8 2
+map_3_12_9 1
+map_3_12_10 1
+map_3_12_11 2
+map_3_12_12 2
+map_3_12_13 1
+map_3_12_14 2
+map_3_12_15 1
+
+map_3_13_1 1
+map_3_13_2 0
+map_3_13_3 1
+map_3_13_4 1
+map_3_13_5 1
+map_3_13_6 1
+map_3_13_7 1
+map_3_13_8 0
+map_3_13_9 1
+map_3_13_10 1
+map_3_13_11 1
+map_3_13_12 1
+map_3_13_13 1
+map_3_13_14 0
+map_3_13_15 1
+
+map_3_14_1 1
+map_3_14_2 0
+map_3_14_3 0
+map_3_14_4 2
+map_3_14_5 2
+map_3_14_6 2
+map_3_14_7 2
+map_3_14_8 2
+map_3_14_9 2
+map_3_14_10 2
+map_3_14_11 2
+map_3_14_12 2
+map_3_14_13 0
+map_3_14_14 0
+map_3_14_15 1
+
+map_3_15_1 1
+map_3_15_2 1
+map_3_15_3 1
+map_3_15_4 1
+map_3_15_5 1
+map_3_15_6 1
+map_3_15_7 1
+map_3_15_8 1
+map_3_15_9 1
+map_3_15_10 1
+map_3_15_11 1
+map_3_15_12 1
+map_3_15_13 1
+map_3_15_14 1
+map_3_15_15 1

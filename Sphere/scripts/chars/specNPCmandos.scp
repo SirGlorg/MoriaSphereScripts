@@ -1,0 +1,456 @@
+////////////////////////////////////////////
+
+[CHARDEF c_h_strazce_lagru]
+NAME=Strazce pracovniho tabora
+ID=c_man
+
+TSPEECH=spk_strazcelagru
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Strazce lagru
+
+ON=@CREATE 
+NPC=brain_vendor
+COLOR=colors_skin
+
+STR={400 500} 
+INT={80 90} 
+DEX={200 300} 
+
+KARMA=-1000
+
+MAGERY={90.0 100.0} 
+WRESTLING={70.0 80.0} 
+TACTICS{40.0 60.0}
+
+flag_invul(1)
+tag(noanimate,1)
+
+ON=@NPCRESTOCK 
+ITEMNEWBIE=i_armor_female_skirt
+COLOR=0999
+ITEMNEWBIE=i_sash
+COLOR=0999
+ITEMNEWBIE=i_beard_goatee
+COLOR=01b5
+ITEMNEWBIE=i_hair_mohawk
+COLOR=01b5
+ITEMNEWBIE=i_beard_goatee
+COLOR=01b5
+ITEMNEWBIE=i_sandals
+COLOR=0455
+ITEMNEWBIE=i_bracelet_gold 
+ITEMNEWBIE=i_necklace_gold
+ITEMNEWBIE=i_earrings_gold 
+ITEMNEWBIE=i_club 
+COLOR=05e5
+
+ON=@npcseenewplayer
+say("U me muzes ziskat pilu, svetlo a vymenit drevo za propousteci zlataky.")
+
+////////////////////////////////////////////
+
+[chardef c_pokladnik]
+id=c_man
+name=definice pokladu
+can=0
+category=Moria
+subsection=(systemova NPC)
+description=Pokladnik (dynamicky poklad)
+
+on=@create
+STR=5000
+MAXHITS=5000
+INT=30
+flag_immobile(1)
+flag_invisible(1)
+flag_invul(1)
+flag_stone(1)
+tag(mytimer,72000)//timer spawnuti dalsi truhly je nastaven na 10 hodin
+tag(prachy,2)//kolika se deli stari truhly. Vysledek se da v podobe seku
+tag(lastopen,<serv.time>)
+newitem(i_mem_poklad)
+equip(act)
+itemnewbie=i_backpack
+
+on=@userclick
+invis=1
+//removefromview
+
+on=@hit
+return 1
+
+on=@gethit
+return 1
+
+on=@death
+hits=<maxhits>
+return 1
+
+////////////////////////////////////////
+
+[chardef c_erebor_opilec]
+id=c_man
+name=Giroin
+
+attack=50
+ARMOR=40
+moverate=4
+
+TSPEECH=spk_erebor_opilec
+TEVENTs=e_character
+
+CATEGORY=Moria
+SUBSECTION=Klajovi NPC
+DESCRIPTION=Ereborsky opilec
+
+on=@create
+TITLE=Opily trpaslik
+NPC=brain_human
+COLOR=color_clovek
+
+STR=500
+DEX=150
+INT=30
+
+maxhits={2000 2100}
+maxstam={150 200}
+maxmana=0
+
+WRESTLING=90.0 
+RESIST={120.0 130.0}
+TACTICS={90.0 100.0}
+PARRYING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+
+ITEMNEWBIE=i_hair_long
+COLOR=colors_hair
+ITEMNEWBIE=i_beard_long
+ITEMnewbie=i_cape
+ITEMnewbie=i_ringmail_sleeves
+ITEMnewbie=i_ringmail_tunic
+ITEMnewbie=i_chainmail_leggings 
+
+
+////////////////////////////////////////////
+
+[chardef c_harad_opilec] 
+id=c_man 
+name=Brast 
+
+attack=50
+ARMOR=40
+moverate=4
+
+TSPEECH=spk_harad_opilec 
+TEVENTs=e_character 
+
+CATEGORY=Moria
+SUBSECTION=Klajovi NPC
+DESCRIPTION=Haradsky opilec 
+
+on=@create 
+TITLE=Opily strazny 
+NPC=brain_human 
+COLOR=color_clovek 
+
+STR=500 
+DEX=150 
+INT=80 
+
+maxhits={2000 2100}
+maxstam={150 200}
+maxmana=0
+
+WRESTLING=90.0 
+RESIST={120.0 130.0}
+TACTICS={90.0 100.0}
+PARRYING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+
+ITEMNEWBIE=i_hair_long 
+COLOR=colors_hair 
+ITEMnewbie=i_cape 
+COLOR=098D 
+ITEMnewbie=i_golden_chainmail_tunic 
+ITEMnewbie=i_iron_ringmail_gloves 
+COLOR=098B 
+ITEMnewbie=i_golden_nose_helm 
+ITEMnewbie=i_spear_mithril 
+COLOR=099A 
+
+//////////////////////////////////////
+
+[chardef c_vendor_bloodhead]
+NAME=Kralovsky zrizenec
+id=c_man
+
+attack=50
+ARMOR=40
+moverate=4
+
+CAN=MT_WALK|mt_run
+TSPEECH=spk_hlavakrvaka
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=kralovsky zrizenec
+NPC=brain_vendor
+
+STR=1000
+DEX=150
+INT=100
+
+maxhits={2000 2100}
+maxstam={150 200}
+maxmana=0
+
+ARMSLORE={45.0 68.0}
+BLACKSMITHING={65.0 88.0}
+FENCING={45.0 68.0}
+PARRYING={55.0 78.0}
+SWORDSMANSHIP={45.0 68.0}
+WRESTLING={45.0 68.0}
+MACEFIGHTING={55.0 70.0}
+TACTICS={55.0 78.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_bardiche_iron
+ITEMnewbie=i_iron_platemail
+ITEMnewbie=i_iron_plate_helm
+ITEMnewbie=i_iron_platemail_gorget
+ITEMnewbie=i_iron_platemail_leggings
+ITEMnewbie=i_iron_platemail_arms
+ITEMnewbie=i_iron_platemail_gauntlets
+ITEMnewbie=i_boots_thigh
+
+CATEGORY=Kvesty
+SUBSECTION=Krvave prizraky
+DESCRIPTION=vykupuje hlavy krvaku
+
+/////////////////////////////////////////
+
+[chardef c_vendor_bloodhead_m]
+NAME=Marghuluv zmocnenec
+id=c_man
+CAN=MT_WALK|mt_run
+
+attack=50
+ARMOR=40
+moverate=4
+
+TSPEECH=spk_hlavakrvaka
+TEVENTS=e_character
+
+ON=@Create
+NAME=#NAMES_HUMANMALE
+Title=Marghuluv zmocnenec
+karma=-1000
+NPC=brain_vendor
+
+STR=1000
+DEX=150
+INT=100
+
+maxhits={2000 2100}
+maxstam={150 200}
+maxmana=0
+
+ARMSLORE={45.0 68.0}
+BLACKSMITHING={65.0 88.0}
+FENCING={45.0 68.0}
+PARRYING={55.0 78.0}
+SWORDSMANSHIP={45.0 68.0}
+WRESTLING={45.0 68.0}
+MACEFIGHTING={55.0 70.0}
+TACTICS={55.0 78.0}
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_bardiche_iron
+ITEMnewbie=i_iron_platemail
+ITEMnewbie=i_iron_plate_helm
+ITEMnewbie=i_iron_platemail_gorget
+ITEMnewbie=i_iron_platemail_leggings
+ITEMnewbie=i_iron_platemail_arms
+ITEMnewbie=i_iron_platemail_gauntlets
+ITEMnewbie=i_boots_thigh
+
+CATEGORY=Kvesty
+SUBSECTION=Krvave prizraky
+DESCRIPTION=vykupuje hlavy krvaku
+
+
+//////////////////////////////////////////////////////
+//jouda na prevoz z Umbaru na ostrov impu
+
+[CHARDEF c_prevoznik_imp]
+NAME=Prevoznik
+ID=c_man
+CAN=MT_WALK|mt_run
+
+attack=60
+ARMOR=80
+moverate=4
+
+TEVENTS=e_character
+
+CATEGORY=Moria
+SUBSECTION=(systemova NPC)
+DESCRIPTION=Prevoznik na ostrov imp
+
+ON=@Create
+COLOR=colors_skin
+NPC=brain_human
+
+STR=600
+DEX=200
+INT=100
+
+maxhits=3000
+maxstam=500
+maxmana=0
+
+speech=spk_go_imp
+
+tag.experience=0
+
+tag(resist_poison,700)
+tag.resist_para=<eval {500 650}>
+tag(resist_summon,450)
+tag(resist_bleed,200)
+
+tag(resist_sharp,50)
+tag(resist_slash,50)        //sekery
+tag(resist_pierce,-150)
+tag(resist_blunt,-150)
+
+tag(resist_fire,200)
+tag(resist_elect,-100)
+tag(resist_cold,100)
+
+parrying={100.0 110.0}
+resist=100.0
+tactics={90.0 110.0}
+wrestling={85.0 95.0}
+FENCING={90.0 105.0}
+SWORDSMANSHIP={90.0 105.0}
+MACEFIGHTING={100.0 105.0}
+peacemaking=100.0
+provocation=100.0
+
+ITEMnewbie=i_monster_create
+ITEMNEWBIE=i_staff_gnarled
+Color=0774
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=i_beard_long
+COLOR=match_hair
+itemnewbie=i_shirt_plain
+Color=098a
+itemnewbie=i_robe
+Color=098a
+itemnewbie=i_pants_long
+Color=098a
+itemnewbie=i_bracelet_gold
+Color=00
+itemnewbie=i_necklace_gold
+Color=00
+itemnewbie=i_hat_tricorne
+Color=098a
+
+ON=@NPCRestock
+
+/////////////////////////////////////////////
+//veci ke gulduru
+
+
+[CHARDEF 01d5]
+defname=c_roba
+NAME=Kracejici hruza
+SOUND=snd_MONSTER_ZOMBIE1
+CAN=MT_WALK|mt_run
+color=0076b
+
+attack=180
+ARMOR=25
+
+BLOODCOLOR=colors_green
+
+TEVENTS=e_monster
+TEVENTS=e_character
+
+tag.resist_poison=100.0 
+
+ON=@Create
+NPC=brain_undead
+FAME=10
+KARMA=-8000
+
+STR=100
+DEX=150
+INT=100
+
+tag.experience=<eval {3.0 4.0}>
+
+WRESTLING={85.0 100.0}
+
+ITEMnewbie=i_monster_create
+
+ON=@NPCRestock
+item=i_gold
+
+
+////////////////////////////
+
+[CHARDEF c_brinbor]
+NAME=vezen Brinbor
+ID=C_MAN
+ARMOR=95
+DAM=100
+CAN=MT_WALK|MT_run
+
+TEVENTS=e_character
+tevents=e_brinbor
+TSPEECH=brinborkecy
+
+CATEGORY=Dungy
+SUBSECTION=Guldur
+DESCRIPTION=Brinbor
+
+ON=@Create
+NPC=brain_human
+//COLOR=color_clovek
+
+STR=15
+DEX=15
+INT=20
+
+FAME=1
+KARMA=100
+
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_sandals
+ITEMnewbie=i_robe
+
+
+
+[EOF]

@@ -1,0 +1,284 @@
+/////////////////////////////////////////////////////////////////////
+//
+//       Vypravec
+//
+//
+//
+/////////////////////////////////////////////////////////////////////
+
+[SPEECH spk_vendor_custom_juri]
+on=*forget*
+on=*zapomen*
+if !(<safe.tag.mainowner>)
+ if (ismypet)
+  tag(mainowner,<src>)
+ endif
+endif
+if (<src>==<tag.mainowner>)
+ while (memoryfindtype(memory_ipet))
+ memoryfindtype(memory_ipet).remove
+ endwhile
+ newmemory(<src>)
+ act.color=memory_ipet
+ act.timer=-1
+endif
+ON=*inventory*
+checkvendor
+if (src.isgm)
+  FINDID(i_vendor_box).drop
+  FINDID(i_vendor_tag_box).drop
+  FINDID(i_buyer_box).drop
+  FINDID(i_buyer_goods_box).drop
+endif
+ON=*kdo*
+ON=*komu*
+say "Mym zamestavatelem je <?memoryfindtype(memory_ipet).link.sex(pan,pani)?> <?memoryfindtype(memory_ipet).link.name?>."
+ON=*oblect*
+on=*obleceni*
+on=*clothing*
+if (restrictside_juri)
+return 1
+endif
+checkvendor
+IF (ismypet)
+ eqlayers(cont=<findlayer(29)>)
+ src.eqlayers(logcont=<uid>)
+ findlayer(29).contents(logcont(<src>))//cont=<src>
+endif
+on=*nakup*
+on=*kup*
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+if (restrictside_juri)
+return 1
+endif
+checkvendor
+IF (FINDID(i_vendor_tag_box).RESCOUNT)
+ src.tag(cv_lastdialog,"")
+ FINDID(i_vendor_tag_box).DIALOG d_vendor
+ELSE
+ say Nemam nic na prodej.
+ENDIF
+ON=*stock* 
+on=*sklad*
+if (restrictside_juri)
+return 1
+endif
+checkvendor
+IF (ISMYPET)
+ SRC.FINDID(i_vendor_stock).REMOVE
+ SRC.NEWITEM i_vendor_stock
+ SRC.ACT.LINK=<FINDID(i_vendor_tag_box)>
+ SRC.ACT.CONT=<SRC>
+ SRC.ACT.TARGET Target an item in your pack to stock.
+ENDIF
+on=*cena*
+on=*price*
+on=*nastavit*
+if (restrictside_juri)
+return 1
+endif
+checkvendor
+setprice
+on=*gold*
+on=*penez*
+on=*penize*
+if (restrictside_juri)
+return 1
+endif
+if (ismypet)
+say Mam k dispozici <tag.gold> zlata.
+endif
+ON=*collect*  
+on=*vydelek*
+if (restrictside_juri)
+return 1
+endif
+checkvendor
+IF (ISMYPET)
+ IF !(<TAG.GOLD>)
+  say Dnes pro tebe nemam zadne penize...
+ Else
+  src.findlayer(21).givegold(<tag.gold>)
+  say Dostal jsi <tag.gold> zlata.
+  tag(gold,0)
+ endif
+ if (findid(i_buyer_goods_box).rescount)
+  newitem i_backpack
+  act.name="Collected from <?name?>"
+  act.logcont=<src.findlayer(29)>
+  findid(i_buyer_goods_box).contents(collectgoods(<act>))
+  say Nakoupene zbozi najdes v bance.
+ else
+  say Dnes pro tebe nemam zadne zbozi.
+ endif
+ENDIF
+ON=*Redeed*
+IF (src.isgm)
+ src.newitemsafe(i_backpack)
+ lastnew.name="From redeeded vendor <?name?>"
+ lastnew.logbounce 
+ lastnew.givegold(<tag.gold>)
+ FINDID(i_vendor_box).contents2(f_safeitem_restore(<lastnew>))
+ findid(i_buyer_goods_box).contents(collectgoods(<lastnew>))
+ eqlayers(logcont=<lastnew>)
+ SRC.NEWITEMsafe(i_deed_vendor)
+ SRC.ACT.logcont=<lastnew>
+ remove
+ENDIF
+on=*pridat*
+on=*add*
+if (restrictside_juri)
+return 1
+endif
+checkvendor
+IF (ISMYPET)
+ SRC.FINDID(i_vendor_gold).REMOVE
+ SRC.NEWITEM i_vendor_gold
+ SRC.ACT.LINK=<UID>
+ SRC.ACT.CONT=<SRC>
+ SRC.ACT.TARGET Target gold to add to vendors account.
+ENDIF
+on=*sell*
+on=*prod*
+if (restrictside_juri)
+return 1
+endif
+checkvendor
+vendorspk_sell
+on=*poptav*
+on=*desire*
+if (restrictside_juri)
+return 1
+endif
+checkvendor
+src.tag(cv_lastdialog,"")
+findid(i_buyer_box).dialog d_vendor_desire
+on=*info*
+on=*napove*
+on=*help*
+if (restrictside_juri)
+return 1
+endif
+if (ismypet)
+ src.informovat(20,11,Napoveda k ovladani vendora,cv_owner_help)
+else
+ src.informovat(16,4,Napoveda k ovladani vendora,cv_customer_help)
+endif
+//mandos
+ON=*ortodox*
+ON=*vlast*
+checkvendor
+IF (ISMYPET)
+tag.pure=1
+SAY "S neprateli meho pana nejednam !"
+endif
+ON=*zrad*
+ON=*duffer*
+checkvendor
+IF (ISMYPET)
+tag.pure=0
+SAY "Kdo ma penize, je nas pritel."
+endif
+//newitem i_infobook
+//act.logbounce
+//act.more=b_vendor_navod_<eval <ismypet>+1>
+//act.dclick
+
+[function restrictside_juri]
+if ((<src.tag(realm)>==<finduid(tag(mainowner)).tag(realm)>)||(src.isgm)||(<tag.pure>==0))
+ return 0
+elseif (<src.tag(realm)>==2)
+ say "S takovymi jako jsi ty nejednam!"
+ return 1
+else
+ say "Snad si nemyslis ze s tebou budu obchodovat?"
+ return 1
+endif
+
+
+[SPEECH spk_antisproste]
+ 
+
+//ON=**
+//ON=**
+//ON=**
+//ON=**
+//ON=**
+//ON=**
+//ON=*blbec*
+//ON=*blbce*
+//ON=*blbci*
+
+ON=*debil*
+ON=*debile*
+ON=*dylino*
+ON=*hovnoksichte*
+ON=*hovnousi*
+ON=*hovnousy*
+ON=*kedro*
+ON=*kokote*
+ON=*kokot*
+ON=*kokoti*
+ON=*zasrani*
+ON=*konomrd*
+ON=*konomrdi*
+ON=*ty*kravo*
+ON=*jsi*krava*
+ON=*kripl*
+ON=*kriple*
+ON=*kriplove*
+ON=*kundo*
+ON=*kundy*
+ON=*kundaci*
+ON=*kurva*
+ON=*kurvo*
+ON=*kurvaku*
+ON=*mrduch*
+ON=*ty*pico*
+ON=*pico*
+ON=*picusi*
+ON=*picusaci*
+ON=*poser*
+ON=*neposer*
+ON=*posuk*
+ON=*buzerant*
+ON=*buzerante*
+ON=*buzeranti*
+ON=*hajzle*
+ON=*debil*
+ON=*debile*
+ON=*idiote*
+ON=*idiot*
+ON=*ty*cubko*
+ON=*devko*
+ON=*devka*
+ON=*dement*
+ON=*demente*
+ON=*prdeolit*d
+ON=*prdeolite*
+ON=*xsicht*
+ON=*fuck*
+ON=*curak*
+ON=*curaku*
+ON=*kreten*
+ON=*kretene*
+ON=*xsicht*
+ON=*zmrd*
+ON=*zmrde*
+ON=*zmrdi*
+ON=*zkurvysyn*
+ON=*zkurvysyne*
+ON=*zamrdance*
+ON=*ty*pico*
+ON=*zasrance*
+     say *UKLADA DO LOGU* "To se budou GM divit..  To bude Jailu"
+//zde muze byt prikaz na rovnou odpalkovani do lagru nebo . kill :o)        
+//   nadavky  klidne jeste pridavejte  cokoliv  vas napadne ze by se 
+// nemelo rikat
+src.kill
+endif     
+
+
+[eof]

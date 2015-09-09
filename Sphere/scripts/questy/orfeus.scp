@@ -1,0 +1,446 @@
+[ITEMDEF i_divadlo_dvere_klic]
+ID=03B4
+NAME=Pochybna ohrada
+
+
+CATEGORY=Moria
+SUBSECTION=RP_Orfeus
+DESCRIPTION=vrata
+
+ON=@USERDCLICK
+IF <src.restest i_divadlo_dvere_klic_2>
+   MOVE n 18
+   Timer=3
+Else
+   src.sysmessage("Nemas klic!")
+   Return 1
+Endif
+
+On=@Timer
+move n -18
+Return 1
+
+On=@Create
+Color 003fe
+
+
+[ITEMDEF i_divadlo_dvere_klic_2]
+ID=i_key_magic
+NAME=Klic ke vchodu do divadla
+
+CATEGORY=Moria
+SUBSECTION=RP_Orfeus
+DESCRIPTION=Klic k vratum
+
+ON=@Create
+ATTR=010
+color=026
+
+
+
+
+[ITEMDEF i_divadlo_dvere_vyhazovadlo]
+ID=i_ingot_iron
+NAME=Vyhazovatko
+
+CATEGORY=Moria
+SUBSECTION=RP_Orfeus
+DESCRIPTION=Vyhazovatko z divadla
+
+ON=@USERDCLICK
+SRC.SYSMESSAGE("Cil bude vyhozen na souradnice: <morep>")
+TARGET
+RETURN 1
+
+ON=@TARGON_CHAR
+src.targ.sysmessage("Za ruseni v divadle jsi byl vyhozen. Prosim, uz se nevracej!")
+src.targ.go <morep>
+Return 1
+
+ON=@Create
+ATTR=010
+color=026
+
+
+
+[ITEMDEF i_divadlo_dvere_opona_1]
+ID=08f4
+NAME=Spoustec bile pary (5573,3940,-60)
+
+CATEGORY=Moria
+SUBSECTION=RP_Orfeus
+DESCRIPTION=Spoustec opony 1
+
+ON=@USERDCLICK
+SRC.SYSMESSAGE("Para vytvorena. Zmizi za 10 sekund!")
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 13
+src.ACT.MOVE s 6
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 13
+src.ACT.MOVE s 7
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 13
+src.ACT.MOVE s 8
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 13
+src.ACT.MOVE s 9
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 10
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 11
+src.ACT.MOVE w 1
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 12
+src.ACT.MOVE w 2
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 13
+src.ACT.MOVE w 3
+
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 11
+src.ACT.MOVE s 14
+src.ACT.MOVE w 4
+src.ACT.MOVE n 1
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=0481
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 10
+src.ACT.MOVE s 15
+src.ACT.MOVE w 5
+src.ACT.MOVE n 2
+
+ON=@Create
+ATTR=010
+color=0481
+
+[ITEMDEF i_divadlo_dvere_opona_2]
+ID=08f4
+NAME=Spoustec cerne pary (5575,3940,-59)
+
+CATEGORY=Moria
+SUBSECTION=RP_Orfeus
+DESCRIPTION=Spoustec opony 2
+
+ON=@USERDCLICK
+SRC.SYSMESSAGE("Para vytvorena. Zmizi za 10 sekund!")
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 11
+src.ACT.MOVE s 6
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 11
+src.ACT.MOVE s 7
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 11
+src.ACT.MOVE s 8
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 11
+src.ACT.MOVE s 9
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 10
+src.ACT.MOVE s 10
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 10
+src.ACT.MOVE s 11
+src.ACT.MOVE w 1
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 10
+src.ACT.MOVE s 12
+src.ACT.MOVE w 2
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 9
+src.ACT.MOVE s 13
+src.ACT.MOVE w 3
+
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 9
+src.ACT.MOVE s 14
+src.ACT.MOVE w 4
+src.ACT.MOVE n 1
+
+src.NEWITEM=i_fx_explode
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.COLOR=1
+SRC.ACT.NAME=Para
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 9
+src.ACT.MOVE s 15
+src.ACT.MOVE w 5
+src.ACT.MOVE n 2
+
+ON=@Create
+ATTR=010
+color=1
+
+
+[ITEMDEF i_divadlo_dvere_opona_3]
+ID=08f4
+NAME=Spoustec opony (5573,3942,-60)
+
+CATEGORY=Moria
+SUBSECTION=RP_Orfeus
+DESCRIPTION=Spoustec opony 1
+
+ON=@USERDCLICK
+SRC.SYSMESSAGE("Opona vytvorena. Zmizi za 10 sekund!")
+src.NEWITEM=0238
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 2
+
+src.NEWITEM=0238
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 3
+
+src.NEWITEM=0238
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 4
+
+src.NEWITEM=0238
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 5
+
+
+src.NEWITEM=0238
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 6
+
+src.NEWITEM=0238
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 7
+
+
+src.NEWITEM=I_wall_tent
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 7
+
+src.NEWITEM=I_wall_tent
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 11
+src.ACT.MOVE s 8
+
+
+src.NEWITEM=I_wall_tent
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 10
+src.ACT.MOVE s 9
+
+src.NEWITEM=I_wall_tent
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 9
+src.ACT.MOVE s 10
+
+
+src.NEWITEM=0239
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 12
+src.ACT.MOVE s 13
+src.ACT.MOVE w 3
+src.ACT.MOVE n 3
+
+src.NEWITEM=0239
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 11
+src.ACT.MOVE s 14
+src.ACT.MOVE w 4
+src.ACT.MOVE n 4
+
+src.NEWITEM=0239
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 10
+src.ACT.MOVE s 15
+src.ACT.MOVE w 5
+src.ACT.MOVE n 5
+
+src.NEWITEM=0239
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 11
+src.ACT.MOVE s 15
+src.ACT.MOVE w 5
+src.ACT.MOVE n 5
+
+src.NEWITEM=0239
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 9
+src.ACT.MOVE s 15
+src.ACT.MOVE w 5
+src.ACT.MOVE n 5
+
+src.NEWITEM=0239
+src.ACT.ATTR=attr_static|attr_decay 
+SRC.ACT.NAME=Opona
+src.ACT.TIMER=10
+src.ACT.P=<P> 
+src.ACT.MOVE e 13
+src.ACT.MOVE s 15
+src.ACT.MOVE w 5
+src.ACT.MOVE n 5
+
+ON=@Create
+ATTR=010

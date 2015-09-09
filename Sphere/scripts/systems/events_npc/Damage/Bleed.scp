@@ -1,0 +1,31 @@
+// tags to edit behavior:
+// tag.npc_bleed=250 // 25% chance to trigger this event | default ~ 100%
+
+[events e_npc_bleed]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (action==skill_magery) || (<wasHarmed>==0) || (<eval act.tag(energyofshield)>)
+  return 0
+endif
+if (<eval tag.npc_bleed>)
+  if !(chance(<tag(npc_bleed)>,3))
+    return 1
+  endif
+endif
+npc_bleed(<var(swingedchar)>)
+
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+[function npc_bleed]
+arg(bleeditem,<f_bleed_getMemory(<argv(0)>)>)
+arg(bleedpower,<eval var(ubrano)/3>)
+arg(bleeditem).link=<uid>
+arg(bleeditem).more1h={10 20}//opakovani krvaceni maximalne
+arg(bleeditem).more1l=<arg(bleeditem).more1h>//aktualnich opakovani
+arg(bleeditem).more2=<eval (arg(bleedpower)/2)+arg(bleeditem).more2> //damage
+
+[eof]

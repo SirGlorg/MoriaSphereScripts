@@ -1,0 +1,1310 @@
+/////////////////////////////
+//   N P C   F I Z Z E R   //
+/////////////////////////////
+[events e_npc_fizzer]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (<strlen(<tag(npc_fizzer_chance)>)>)
+  arg(chance,<eval tag(npc_fizzer_chance)>)
+else
+  arg(chance,333)
+endif
+if (chance(<arg(chance)>,3))
+  say("chance!")
+  act.stopmagery
+else
+  say("no way")
+endif
+
+on=@aftergetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+
+[function randombetween]
+if (<argvcount> == 1)
+  return<eval argv(0)>
+else
+  return <eval {<argv(0)> <argv(1)>}>
+endif
+
+//////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////
+//   N P C   C H A N G E   D M G   //
+//         (c)-Sir Glorg-          //
+/////////////////////////////////////
+
+[function f_npcChangeDmg]
+tag(changeDmgPercent,<argv(0)>)
+if !(isevent(e_npcChangeDmg))
+  events=+e_npcChangeDmg
+endif
+
+[function f_npcChangeDmgStop]
+tag.remove(changeDmgPercent)
+events=-e_npcChangeDmg
+
+
+[events e_npcChangeDmg]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+arg(uber,<eval (<var(ubrano)>*<tag.changeDmgPercent>)/100>)
+var(ubrano,<var(ubrano)>-<arg(uber)>)
+
+on=@aftergetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+//////////////////////////////////////////////////////////////////////////
+
+[events e_inexhaustible]
+//Na Verbatimovu objednavku, draci sou joudove
+on=@step
+stam=<eval (<stam>+1)>
+
+on=@aftergetswing
+stam=<eval (<stam>+1)>
+
+on=@beforegeteffect
+stam=<eval (<stam>+1)>
+
+on=@beforedoeffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+
+[events e_duplicator]
+on=@aftergetswing
+if (<eval tag(duped)> >= 0)
+  if(<eval tag(duped)> < <tag(dupecount)>)
+    tag(duped,<eval <eval tag(duped)>+1>) 
+    selfdupe
+    src.sysMessage(Obluda se rozdvojila!)
+  endif
+endif
+
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+
+[function selfdupe]
+newnpc(<obody>)
+lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+lastnewchar.update
+lastnewchar.events=-e_duplicator
+lastnewchar.tag(duped,-1) //uz se nebude duplikovat
+
+[EVENTS e_summoneater]
+on=@HitTry
+//say hittry
+if(act.issumon) //cil je summon
+  //say je to summon!
+  act.remove
+  return 1
+else
+  return 0
+endif
+
+on=@Created
+on=@DrinkingPotion
+on=@beforedoeffect
+on=@beforegeteffect
+on=@beforegetswing
+on=@aftergetswing
+on=@afterswing
+////////
+[EVENTS e_summoneater_vamp]
+on=@HitTry
+if(act.issumon) //cil je summon
+  //say je to summon!
+  str=<str>+<act.str>
+  dex=<dex>+<act.dex>
+  int=<int>+<act.int>
+  maxhits=<str>
+  hits=<hits>+<act.hits>
+  maxmana=<int>
+  mana=<mana>+<act.mana>
+  maxstam=<dex>
+  stam=<stam>+<act.stam>
+  act.remove
+  return 1
+else
+  return 0
+endif
+////////////////////////
+
+[events e_smrt] //vybrano z orcs.scp kde to nema co delat
+on=@death
+act.say Pred smrti zamumlal neco o sile sveho naroda a pak zemrel
+act.LINK=<uid>
+
+[events e_more_attackage] //vybrano z orcs.scp kde to nema co delat
+on=@hit 
+src.sound=snd_SPELL_LIGHTNING 
+SRC.EFFECT=2,i_FX_Energy_Ray,6,15,1 
+src.tag.dohit=1
+src.attackage <eval {1 10}> 
+return 0 
+
+[EVENTS e_scales] //vybrano z orcs.scp kde to nema co delat
+on=@gethit
+arg(scale,<eval Rand(3)>)
+if (<arg(scale)> ==0)
+  src.sysMessage("Jeho supiny absorbuji vetsinu tveho utoku!")
+  hits=<hits>-<eval {1 4}>
+  return 1
+else
+  return 0
+endif
+
+[EVENTS e_ovinovac]
+on=@PersonalSpace
+if(<eval tag(drzim)>||src.flag_invul)
+  return 1
+elseif src.isplayer
+  tag(narusitel,<src>)
+  attack(<src>)
+  tag(drzim,1)
+  src.flag_immobile=1 //to je nehejbat, jen utocit
+  src.sysMessage(Byl jsi omotan a nemuzes se hnout!)
+  flag_immobile=1
+  tag(narusitel).newequip(i_ovinovaccheck)
+  lastnew.tag(ovinovac,<UID>)
+  //say(drzim: <tag(drzim)>, narus:<tag(narusitel)>)
+endif
+
+on=@aftergetswing
+//say(Uspesny Zasah)
+if(<tag(drzim)>)
+ //say(Drzim)
+ if(strlen(<tag(kolik_ran)>))  
+   //say(Ran: <tag(kolik_ran)>)
+   if(<tag(kolik_ran)> > 0)
+    tag(kolik_ran,<eval (<tag(kolik_ran)>-1)>)
+   else
+    tag.remove(kolik_ran)
+    tag(narusitel).sysMessage(Sevreni povolilo...) 
+    tag(narusitel).flag_immobile=0
+    tag(narusitel).findid(i_ovinovaccheck).remove
+    tag.remove(narusitel)
+    tag(drzim,0)
+    flag_immobile=0
+   endif  
+ else
+   //say(Zacinam pocitat rany)
+   tag(kolik_ran,4)
+ endif
+endif
+
+on=@Death
+//say <uid.tag(narusitel)>
+if(strlen(<tag(narusitel)>))
+ tag(narusitel).sysMessage(Sevreni povolilo...) 
+ tag(narusitel).flag_immobile=0
+ tag(narusitel).findid(i_ovinovaccheck).remove
+ tag.remove(narusitel)
+ tag(drzim,0)
+endif
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@beforegeteffect
+on=@beforedoeffect
+
+[itemdef i_ovinovaccheck]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Ovinovac
+
+on=@create
+timer=3
+
+on=@unequip
+topobj.flag_immobile=0
+tag(ovinovac).flag_immobile=0
+tag(ovinovac).tag.remove(narusitel)
+
+on=@timer
+if (tag(ovinovac).p != topobj.p) || (tag(ovinovac).body==c_slime)
+ remove
+ return 1
+endif
+timer=2
+return 1
+
+/////////
+
+//[EVENTS e_immune_magic]
+//on=@spelleffect
+//src.redmessage(Cil se zda byt imunni vuci magii...)
+//return 1
+/////////
+//[EVENTS e_immune_bleed]
+//on=@aftergetswing
+//if(findid(i_krvaceni))
+// findid(i_krvaceni).remove
+// src.redmessage(Cil nemuze krvacet)
+//endif
+//return 1
+//////////////////////////////////
+
+[EVENTS e_looter]
+on=@ItemStep
+if (act.type==t_corpse) //108 ... t_corpse (pripadne lze "if(act.type==NID(t_corpse))")
+  if (act.rescount)
+    SRC.SAY Helemese co jsem nasel
+    act.contents(cont=<uid>)
+  endif
+endif
+
+[function selfresser] //argv(0) - time
+events=+e_selfreser
+tag(resstimer,<argv(0)>)
+
+//[events e_selfreser]
+//on=@create
+//events=+e_selfres
+
+[events e_selfreser]
+//on=@Death
+//tag(lastmurderbyf,<act>)
+//tag(killer,<act>) //ulozit na monstrum kdo ho zabil
+//finduid(#01).sysMessage(killer je act:<act>,src:<src>,uid:<uid> <tag(killer)>)
+
+on=@DeathCorpse
+//casovac oziveni
+//serv.sysMessage("killer: <tag(lastmurderbyf)>")
+//finduid(#01).sysMessage(killer je <tag(lastmurderbyf).name>)
+if !(strlen(<tag(lastmurderbyf)>))
+ return 1
+endif
+if !(safe <argo>) //kdyz nebude mrtvola tak na to seru ! 
+ return 1
+endif
+finduid(<tag(lastmurderbyf)>).newitemsafe(i_selfress_timer) //item vytvori jeste to monstrum
+arg(timerr,<lastnew>)
+arg(timerr).tag(mrtvola,<argo>) //ulozit si mrtvolu
+arg(timerr).tag(lastmurderbyf,<src.tag(lastmurderbyf)>) //kdo zabil monstrum
+arg(timerr).tag(jake_monstrum,<src.obody>) //co pak bude vytvaret
+arg(timerr).tag(jmenomonstra,<src.name>) //pro spravne prejmenovani
+arg(timerr).tag(pozice,<p>) //kam soupnout nove monstrum (na misto stareho)
+if !(<eval src.tag(resstimer)>)
+  arg(ressTimer,60)
+else
+  arg(ressTimer,<eval src.tag(resstimer)>)
+endif
+arg(timerr).timer=<eval arg(ressTimer)> //timer z toho monstra 
+arg(timerr).p=<p>
+arg(timerr).removefromview
+
+[itemdef i_selfress_timer]
+id=i_memory
+type=t_eq_script
+Name=Selfresstimer
+
+on=@create
+attr=090
+
+on=@timer
+if (strlen(<tag(mrtvola)>)) //existuje vubec jeste ta mrtvola? jestli ne tak na to serem !
+  if !(<finduid(<tag(mrtvola)>).isitem>)
+    remove
+    return 1
+  endif
+else
+  remove
+  return 1
+endif 
+if (<finduid(<tag(mrtvola)>).tag(rozrezano)>) //je li nalezene telo rozrezane
+  if (<strlen(<tag(lastmurderbyf)>)>)
+    if (tag(lastmurderbyf).isPlayer) // the murderer is a player and exists
+      finduid(<tag(lastmurderbyf)>).sysMessage("Mas stesti, zes telo <finduid(<tag(lastmurderbyf)>).sex("rozrezal","rozrezala")>!")
+    endif
+  endif
+else
+  //pomocne "zvedaci" NPCcko
+  //arg(vrah,<finduid(<tag(lastmurderbyf)>)>)
+  arg(vrah,<finduid(0109145)>)
+  vrah.invis=1
+  vrah.tag(oldp,<vrah.p>)
+  vrah.p=<tag(pozice)>  
+  vrah.newnpc(<tag(jake_monstrum)>)
+  arg(revivedNPC,<lastnewchar>)
+  revivedNPC.p=<tag(pozice)>
+  revivedNPC.home=<tag(pozice)>
+  revivedNPC.name=<tag(jmenomonstra)>  
+  //vrah.act.tag(resstimer,<tag(resstimer)>) - netreba protoze stejne ma decayer
+  revivedNPC.tag(experience,0) //nebudou za nej expy podruhe!
+  revivedNPC.giveitem(i_ressedmonster_decayer)
+  revivedNPC.findlayer(21).emptycont 
+  revivedNPC.tag(isSelfResurrected,1)
+  finduid(<tag(mrtvola)>).contents(cont=<revivedNPC.findlayer(21)>)
+  //////////////////////////
+  revivedNPC.update
+  revivedNPC.effect=3,i_fx_bless_effect,6,15,1
+  revivedNPC.sound=snd_spell_polymorph 
+  vrah.p=<vrah.tag(oldp)> //ozivovace NPCcek zpatky domu
+  if (<strlen(<tag(lastmurderbyf)>)>)
+    if (tag(lastmurderbyf).isPlayer) // the murderer is a player and exists
+      finduid(<tag(lastmurderbyf)>).sysMessage("Monstrum vstalo z mrtvych!")
+    endif
+  endif
+  finduid(tag(mrtvola)).remove 
+endif
+remove
+
+
+[itemdef i_ressedmonster_decayer]
+id=i_memory
+type=t_eq_script
+name=Decay timer
+
+on=@create
+attr=attr_movenever|attr_invis
+timer=3600
+
+on=@timer
+topobj.events=-e_selfreser
+topobj.hits=0
+remove
+
+[events e_npc_reactivearmor] 
+on=@aftergetswing 
+if (<distancefrom(<src>)> > 2) || (src.tag(class)==Mystik)
+  return 1
+endif
+src.effect(3,<s_harm.EFFECTID>,6,15,1)
+src.sound=00a1
+//say Hrac zasadil ranu za: <var(ubrano)>
+if (rand(5) == 0) // throw warning message once upon a time
+  src.message("Tva rana tvrde narazila na krunyr soupere.")
+endif
+src.damage_noresponse(<eval ((<var(ubrano)>*<tag(hit_damage)>)+50)/100>,<var(damage_flags)>)
+
+on=@beforegeteffect
+on=@Created
+on=@DrinkingPotion
+on=@beforegetswing
+on=@afterswing
+on=@beforedoeffect
+
+[events e_elem_terror]
+on=@death
+if !(strlen(<tag(death_damage)>))
+  arg(damageToGive,50)
+else
+  arg(damageToGive,<tag(death_damage)>)
+endif
+while (memoryfindtype(0209c))
+  memoryfindtype(0209c).link.multi_damage(<arg(damageToGive)>)
+  memoryfindtype(0209c).remove 
+endwhile
+
+ON=@npcseenewplayer
+sfx(00ef)
+
+
+[events e_necroslave]
+on=@death
+//finduid(#01).sysMessage(Umrel <name>)
+tag(undeadhandler,<undeadhandler>)
+
+on=@DeathCorpse
+//finduid(#01).sysMessage(Mrtvola <argo.name>)
+if (isplayer)
+  if !(region.tag(necro))
+    events=-e_necroslave
+    return 0
+  endif
+  newitemsafe(i_selfress_timer)
+elseif (issumon)
+  events=-e_necroslave
+  return 0
+else //this is a monster, that makes it's victoms corpses become undead after death
+  finduid(<tag(lastmurderbyf)>).newitemsafe(i_selfress_timer) //item vytvori jeste to monstrum
+endif
+if !(argo) //kdyz nebude mrtvola tak na to seru !
+  return 1
+endif
+arg(timerr,<lastnew>) // item i_selfress_timer
+//arg(timerr).cont=<argo>  //item do tela
+arg(timerr).tag(mrtvola,<argo>) //ulozit si mrtvolu
+if (isplayer)
+  arg(timerr).tag(lastmurderbyf,<src>)
+  arg(resstimer,10)
+else
+  arg(timerr).tag(lastmurderbyf,<src.tag(lastmurderbyf)>) //kdo zabil monstrum
+  arg(resstimer,<src.tag(resstimer)>) //timer z toho monstra
+endif
+arg(timerr).tag(jake_monstrum,<src.tag(undeadhandler)>) //co pak bude vytvaret
+arg(timerr).tag(jmenomonstra,<src.name>) //pro spravne prejmenovani
+arg(timerr).tag(pozice,<p>) //kam soupnout nove monstrum (na misto stareho)
+arg(timerr).timer=<eval arg(resstimer)>
+arg(timerr).p=<p>
+arg(timerr).removefromview
+
+on=@gethit
+if (flag_spawned)
+  z=<memoryfindtype(MEMORY_ISPAWNED).link.z>
+endif
+
+[function undeadhandler]
+if (src.brain==13)
+  arg(undeadhandler,c_dragon_bone)
+elseif (src.findlayer(2))
+  if (src.findlayer(2).isbow) || (src.findlayer(2).issword) || (src.findlayer(2).isshield)
+    arg(undeadhandler,c_skeleton<undeadhandlerlayer2>)
+  else
+    if (src.findlayer(1))  
+      arg(undeadhandler,c_skeleton<undeadhandlerlayer1>)
+    else
+      arg(undeadhandler,c_skeleton_mage<undeadhandlerlevel>)  
+    endif
+  endif
+elseif (src.findlayer(1))
+  arg(undeadhandler,c_skeleton<undeadhandlerlayer1>)
+else
+  arg(undeadhandler,c_skeleton_mage<undeadhandlerlevel>)  
+endif
+return<arg(undeadhandler)>
+
+[function undeadhandlerlevel]
+if (src.isplayer)//nastavi silu podle lvl hrace
+ if (src.tag(level)>11)&&(src.tag(level)<31)
+  arg(undeadlevel,_lvl_2)
+ elseif (src.tag(level)<51)&&(src.tag(level)>30)
+  dorand 3
+   arg(undeadlevel,_lvl_2)
+   arg(undeadlevel,_lvl_3)
+   arg(undeadlevel,_lvl_3)
+  enddo
+ elseif (src.tag(level)>50)
+  dorand 3
+   arg(undeadlevel,_lvl_4)
+   arg(undeadlevel,_lvl_3)
+   arg(undeadlevel,_lvl_3)
+  enddo
+ endif
+else//bude z npc
+  dorand 2
+   arg(undeadlevel,_lvl_2)
+   arg(undeadlevel,_lvl_3)
+  enddo
+endif
+return<arg(undeadlevel)>
+
+[function undeadhandlerlayer2]
+if (src.findlayer(2).isbow)
+ arg(undeadtype,_archer)
+elseif (src.findlayer(2).issword)
+ arg(undeadtype,_axe)
+elseif (src.findlayer(2).isshield)
+ arg(undeadtype,_knight)
+else
+ arg(undeadtype,_mage) 
+endif 
+return<arg.undeadtype><undeadhandlerlevel>
+
+
+[function undeadhandlerlayer1]
+if (src.findlayer(1).issword)||(src.findlayer(1).isfencing)
+ arg(undeadtype,_knight)
+else
+  arg(undeadtype,_mage)
+endif
+return<arg.undeadtype><undeadhandlerlevel>
+
+[EVENTS e_beridornecro]
+on=@aftergetswing
+tag(cnt,#+1)
+if (tag(cnt)==1)
+ say(Myslite, ze mate vyhrano ?)
+elseif (tag(cnt)==2)
+ say(Doufate, ze mne zastavite ?)
+elseif (tag(cnt)==3)
+ say(Teprve poznate silu temne magie !)
+elseif (tag(cnt) > 3)
+ dorand(3)
+  say(Aaaargh !)
+  say(Zhynte !)
+  say(Neeee!)  
+ enddo
+endif
+
+if (hits<(maxhits/2))&&(!(tag(drak)))
+  say(Konec legrace !)
+  Say(Heru Val Foalooke !)
+  say(Necht plamen pohlti vase duse!)
+  finduid(040033e25).timer=1
+  paralyze({200 300})
+  tag(drak,1)
+  newitem(i_zmizni)
+  lastnew.timer=4
+  equip(<lastnew>)
+  invisg
+endif
+
+on=@afterswing 
+on=@beforegetswing
+on=@beforedoeffect 
+on=@beforegeteffect
+
+[EVENTS e_berserk_potvora] 
+on=@aftergetswing 
+tag(start,1) 
+if (hits<(maxhits))&&(tag(start)==1)&&(!(tag(jedem))) 
+  tag(jedem,1) 
+  tag(npc_speed,400) 
+  tag(resist_fire,<tag.resist_fire>+150) 
+  tag(resist_phys,<tag.resist_phys>+150) 
+  temporary_null 
+elseif (hits< ((maxhits*10)/13))&&(tag(jedem)==1) 
+  tag(jedem,2) 
+  tag(npc_speed,600) 
+  tag(resist_fire,<tag.resist_fire>-20) 
+  tag(resist_phys,<tag.resist_phys>-20) 
+  temporary_null 
+elseif (hits<((maxhits*10)/15))&&(tag(jedem)==2) 
+  tag(jedem,3) 
+  tag(npc_speed,700) 
+  tag(resist_fire,<tag.resist_fire>-25) 
+  tag(resist_phys,<tag.resist_phys>-25) 
+  temporary_null 
+elseif (hits<((maxhits*10)/18))&&(tag(jedem)==3) 
+  tag(jedem,4) 
+  tag(npc_speed,800) 
+  temporary_null 
+  emote("becomes enraged.") 
+  tag(resist_fire,<tag.resist_fire>-50) 
+  tag(resist_phys,<tag.resist_phys>-50) 
+elseif (hits<(maxhits/2))&&(tag(jedem)==4) 
+  tag(jedem,5) 
+  tag(npc_speed,1200) 
+  temporary_null 
+  tag(resist_fire,<tag.resist_fire>-60) 
+  tag(resist_phys,<tag.resist_phys>-60) 
+elseif (hits<((maxhits*2)/3))&&(tag(jedem)==5) 
+  tag(jedem,6) 
+  tag(npc_speed,1800) 
+  temporary_null 
+  tag(resist_fire,<tag.resist_fire>-100) 
+  tag(resist_phys,<tag.resist_phys>-100) 
+  emote("becomes berserk.") 
+elseif (hits<(maxhits/3))&&(tag(jedem)==6) 
+  tag(jedem,7) 
+  tag(npc_speed,2000) 
+  temporary_null 
+  tag(resist_fire,<tag.resist_fire>-180) 
+  tag(resist_phys,<tag.resist_phys>-180) 
+elseif (hits<(maxhits/(4)))&&(tag(jedem)==7) 
+  emote("becomes frenzied.") 
+  tag(jedem,8)
+  tag(npc_speed,6000) 
+  temporary_null 
+  tag(resist_fire,<tag.resist_fire>-150) 
+  tag(resist_phys,<tag.resist_phys>-150) 
+  tag(resist_magic,<tag.resist_magic>-200) 
+  tag(resist_poison,<tag.resist_poison>-400) 
+endif 
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[EVENTS e_balrog]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+tag(spalil,"")
+if (rand(6)==1)
+  act.sysMessage("Popalil te Balroghuv ohen!")
+  act.effect=3,i_fire_column,6,16,0
+  act.damage_noresponse(<eval {10 26}>,dam_fire|dam_magic)
+  tag(spalil,1)
+  SFX=snd_spell_flamestrike
+elseif (rand(10)==1)&&(tag(spalil)!=1)
+  act.sysMessage("Balroghuv ohen te oslabil!")
+  act.effect=3,i_fire_column,6,16,0
+  act.stam=0
+  SFX=snd_spell_flamestrike
+endif
+
+on=@aftergetswing
+if (rand(8)==1)&&(src.hits>25)
+  src.sysMessage("Cast tveho uderu byla odrazena zpet!")
+  src.damage_noresponse(<eval {10 40}>,dam_magic)
+endif
+if (rand(6)==1)&&(src.hits<=25)
+  src.sysMessage("Cast tveho uderu byla odrazena zpet!")
+  src.hits=0
+endif
+on=@beforegetswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+on=@spelleffect
+if (!(tag(uzjsempryc)))&&(rand(6)==1)
+  act.effect=3,i_fx_glow_spike,6,120,0
+  tag(uzjsempryc,2)
+  act.newitem=i_zrus
+  act.act.timer=30
+  act.act.name=zruseni
+  act.equip=<act.act>
+  act.act.tag(znamte,<UID>)
+  act.newitem=i_prokleti_balroga
+  act.act.name=prokleti
+  act.act.tag(znamte,<UID>)
+  act.equip=<act.act>
+endif
+
+[itemdef i_zrus]
+id=i_memory
+type=t_eq_script
+on=@unequip
+src.findid(i_prokleti_balroga).remove
+
+on=@timer
+tag(znamte).tag(uzjsempryc,"")
+
+[itemdef i_prokleti_balroga]
+id=i_memory
+type=t_eq_script
+
+on=@create
+timer=2
+
+on=@equip
+src.events(+e_prokleti_balroga)
+src.sysMessage("Byl jsi zasazen stinovym kouzlem Balrogha!")
+
+on=@unequip
+src.events(-e_prokleti_balroga)
+src.sysMessage("Stin Balrogha te opustil, opet muzes volne dychat.")
+tag(znamte).tag(uzjsempryc,"")
+
+on=@timer
+tag(start,1)
+timer=4
+topobj.sysMessage("Dusis se!")
+if (topobj.mana>10)&&(tag(start)==1)&&(!(tag(efekt)))
+  topobj.mana=mana-10
+endif
+if (topobj.hits>5)
+  topobj.damage_noresponse(<eval{10 20}>,dam_magic)
+if (topobj.mana<10) //ta spodni cast je kvuli nepretoceni do zaporu-tudiz nechtenyho navyseni na strasny hodnoty
+  topobj.mana=0
+endif
+if (topobj.hits<5)
+  topobj.hits=0
+endif
+return 1
+
+[EVENTS e_prokleti_balroga]
+on=@spellcast
+sysMessage("Stin Balroga te pohlcuje, nejsi <sex("schopen","schopna")> se soustredit!")
+src.damage_noresponse(10,dam_magic)
+changestat(mana,-15)
+return 1
+
+[typedef t_telepad_block_macros]
+on=@step
+if (safe.link.more2)
+  return 1
+elseif (src.isplayer)
+  src.sysMessage("Cesta je pro tebe magicka zablokovana.")
+  src.go(<morep>)
+  return 1
+endif
+
+[events e_stunattack]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (<tag(ra_stuntattack)>)
+  if (<wasHarmed> && <act.npc>)
+  	if (tag(zmrazeni))
+      if (<tag(zmrazeni)> == 1)
+      	if (tag(weaponuid).type==T_WEAPON_MACE_SMITH)
+      	  if (f_stun_getfreezebyweapon(<eval <act.tag(experience)>/10>))
+        	  if (<tag(omraceni_next)> > <serv.time>)
+    				  act.paralyze(20)
+    				  classmessage("<?sex("Omracil","Omracila")?> jsi cil!")
+    			  else
+    				  sysmessage("Prilis dlouho si cekal a rana ti nevysla")
+    			  endif
+//    if ({0 10000}<eval(tag(ra_stuntattack)*nastaveni_stuntattack_chance)) && (action==skill_macefighting)
+//      if (tag(weaponuid).type==T_WEAPON_MACE_SMITH)
+//        classmessage("<?sex("Omracil","Omracila")?> jsi cil!")
+//        act.paralyze(<eval <nastaveni_stuntattack>*10>)
+//      endif
+//    endif
+	        endif
+	      endif
+	    endif
+	  endif
+  endif
+endif
+  if (tag(zmrazeni))
+    if (<tag(zmrazeni)> == 1)
+    	tag(zmrazeni,0)
+    endif
+  endif
+return 0
+on=@beforedoeffect
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+[function f_stun_getfreezebyweapon]
+arg(exp,<argv(0)>)
+arg(koeficient,0)
+if (tag(weaponuid).type==T_WEAPON_MACE_SMITH)
+	if (profession==class_war)
+	if (tag(ra_stuntattack_ucinnost))
+		if (<tag(ra_stuntattack_ucinnost)> > 0)
+			if (<tag(ra_stuntattack_ucinnost)> < 11)
+				<arg(koeficient,<tag(ra_stuntattack_ucinnost)>)
+			else
+				<arg(koeficient,<eval 10+<eval <eval <tag(ra_stuntattack_ucinnost)>-10>/2>>)
+			endif 
+		endif
+	endif
+	endif
+    if ((tag(weaponuid).color)==099a)
+      if (<arg(exp)> < <eval 51+<eval <eval 51*<arg(koeficient)>/100>>>)
+      	return 1
+      endif
+    elseif ((tag(weaponuid).color)==0763)
+      if (<arg(exp)> < <eval 101+<eval <eval 101*<arg(koeficient)>/100>>>)
+      	return 1
+      endif    
+    elseif ((tag(weaponuid).color)==097f)
+      if (<arg(exp)> < <eval 151+<eval <eval 151*<arg(koeficient)>/100>>>)
+      	return 1
+      endif    
+    elseif ((tag(weaponuid).color)==0985)
+      if (<arg(exp)> < <eval 251+<eval <eval 251*<arg(koeficient)>/100>>>)
+      	return 1
+      endif   
+    elseif ((tag(weaponuid).color)==0989)
+      if (<arg(exp)> < <eval 401+<eval <eval 401*<arg(koeficient)>/100>>>)
+      	return 1
+      endif    
+    elseif ((tag(weaponuid).color)==0999)
+      if (<arg(exp)> < <eval 601+<eval <eval 601*<arg(koeficient)>/100>>>)
+      	return 1
+      endif    
+    elseif ((tag(weaponuid).color)==098b)
+      if (<arg(exp)> < <eval 901+<eval <eval 901*<arg(koeficient)>/100>>>)
+      	return 1
+      endif    
+    endif
+endif
+return 0
+
+[EVENTS e_bleed_bolt]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (findlayer.layer_horse)
+  if (rand(10) == 1)
+    classmessage("V sedle nejsi <sex schopen schopna> s touto kusi dobre manipulovat")
+  endif
+else (action==Skill_archery)
+  if (chance(<eval (<tag(ra_bleed_bolt)>*45)>,3))
+    arg(arrowTypeNumber,<eval (<eval findtype(<tag(weaponuid).typedef.tdata3>).typedef.tdata1>+25)>) //the bleed bonus settings is moved by 25 positions, see nastaveni.scp:n_arrows for more detailed view
+    arg(boltMaterial_BleedCoefficient,<nastaveni_arrowdamage_<eval arg(arrowTypeNumber)>>)
+    arg(UC2BleedPower_Coefficient,<eval (<nastaveni_bleed_bolt>*<arg(boltMaterial_BleedCoefficient)>)/1000>)
+    f_thief_doBleed(<var(swingedchar)>,<eval ((<var(ubrano)>*<UC2BleedPower_Coefficient>)/1000)>) // arg1 - bleed target, arg2 - bleedpower
+  endif
+endif
+return 0
+on=@beforedoeffect
+on=@beforegetswing
+on=@aftergetswing
+on=@beforegeteffect
+
+
+[typedef t_weapon_bolt_jagged]
+
+[events e_dmgByLvl]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (rand(2)==1)
+  act.damage_noresponse(<eval <act.tag(level)>/3>,dam_god)
+  act.sysMessage("zranuju <eval <topobj.tag(level)>/3> hp")
+endif
+
+on=@beforedoeffect
+on=@aftergetswing
+on=@beforegeteffect
+
+[events e_nbdung]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+if (act.isplayer)
+ var(ubrano,0)
+ return 1
+endif
+on=@beforedoeffect
+if (act.isplayer)
+ if (uid==<act>)
+ else
+  var(spellpower,0)
+  return 1
+ endif
+endif
+
+on=@beforeGetSwing
+on=@aftergetswing
+on=@beforegeteffect
+
+[events e_npc_summoner]
+on=@beforeGetSwing
+on=@aftergetswing
+if rand(20)==1
+  SAY("Heru Ruin Val")
+  arg(i,0)
+  while (arg(i) < <eval tag(npc_summoner_count)>)
+    newnpc(<tag(npc_summoner_char[<arg(i)>])>)
+    lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+    lastnewchar.fame=0
+    lastnewchar.tag(experience,0)
+    lastnewchar.flag_conjured=1
+    lastnewchar.newequip(i_osklivejsmazse)
+    lastnew.timer=20
+    arg(i,#+1)
+  endwhile
+endif
+
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_npc_summoning]
+on=@aftergetswing
+if !(tag(npc_summoning_chance))
+  tag(npc_summoning_chance,50)  //5.0%
+endif
+if (chance(<tag.npc_summoning_chance>,3))
+  if !(tag(npc_summoning_time))
+    tag(npc_summoning_time,30)  //defaultne sa nastavi 30sekund
+  endif
+  if !(tag(npc_summoning_removeTime))
+    tag(npc_summoning_removeTime,7200)  //defaultne se nastavi 2 hodiny
+  endif
+  //  arg(server_time,<fixnumber((<serv.time>/10))>)  
+  //  arg(rozdiel,<fixnumber(<server_time>-<tag(last_summon_time)>)>)
+  //  if (<arg(rozdiel)> > <tag(npc_summoning_time)>)
+  
+	if !(tag(last_summon_time))
+		tag(last_summon_time,0)
+	  //tag(last_summon_time,<fixnumber((<serv.time>/10))>)
+	endif
+		if (<eval tag(last_summon_time)> < <serv.time>)
+    	tag(last_summon_time,<serv.time>+(<eval <tag(npc_summoning_time)>*10>))
+      //tag(last_summon_time,<fixnumber((<serv.time>/10))>)
+      SAY("Heru Ruin Val")
+      arg(i,0)
+      while (arg(i) < <eval tag(npc_summoning_count)>)
+        newnpc(<tag(npc_summoning_char[<arg(i)>])>)
+        lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+        lastnewchar.fame=0
+        lastnewchar.newequip(i_osklivejsmazse)
+        lastnew.timer=<tag(npc_summoning_removeTime)>
+        if (strlen(<tag(npc_summoner_experience)>))  //mame nejaky tag experience (i nulovy !)
+          lastnewchar.tag(experience,<tag(npc_summoner_experience)>)
+        endif
+        arg(i,#+1)
+      endwhile
+    endif
+endif
+
+on=@beforeGetSwing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_explosiondispell]
+on=@gethit
+f_explosiondispell_setVars
+if (chance(<tag(e_explosiondispell_chance)>,3))
+  arg(server_time,<fixnumber((<serv.time>/10))>)  //server time v sekundach
+  arg(rozdiel,<fixnumber(<server_time>-<tag(e_explosiondispell_last_time)>)>)
+  if (arg(rozdiel)>tag(e_explosiondispell_time))
+    tag(e_explosiondispell_last_time,<fixnumber((<serv.time>/10))>)
+    emote("throws dispell bomb")
+    arg(start_x,<eval(-tag(e_explosiondispell_range)+<rand(2*tag(e_explosiondispell_range)+1)>)>)
+    arg(start_y,<eval(-tag(e_explosiondispell_range)+<rand(2*tag(e_explosiondispell_range)+1)>)>)
+    newitem=i_potion_explosiondispell
+    lastnew.p=<p_x>+start_x,<p_y>+start_y,<p_z>,<mapplane>
+    lastnew.attr=attr_static|attr_decay|attr_move_never 
+    lastnew.trigger(userdclick)
+    lastnew.timer=6
+  endif
+endif
+
+on=@beforeGetSwing
+on=@aftergetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[function f_explosiondispell_setVars]
+if (strlen(<tag(explosionDispell_varsChecked)>) == 0)
+  if (strlen(<tag(e_explosiondispell_chance)>) == 0)
+    tag(e_explosiondispell_chance,50) //default 5.0%
+  endif
+  if (strlen(<tag(e_explosiondispell_range)>) == 0)
+    tag(e_explosiondispell_range,5)
+  endif
+  if (strlen(<tag(e_explosiondispell_last_time)>) == 0)  //kedy hodil bombu
+    tag(e_explosiondispell_last_time,<fixnumber((<serv.time>/10))>)  // v sekundach
+  endif
+  if (strlen(<tag(e_explosiondispell_time)>) == 0)  //cas za ktory hodi dalsiu
+    tag(e_explosiondispell_time,30)  // v sekundach
+  endif
+  tag(explosionDispell_varsChecked,1)
+endif
+
+[events e_pushall]
+on=@gethit
+if (chance(<tag(e_pushall_chance)>,3))
+  arg(server_time,<fixnumber((<serv.time>/10))>)  //server time v sekundach
+  arg(rozdiel,<fixnumber(<server_time>-<tag(e_pushall_last_time)>)>)
+  if (arg(rozdiel)><tag(e_pushall_time)>)
+    tag(e_pushall_last_time,<fixnumber((<serv.time>/10))>)
+    pushall
+  endif
+endif
+f_pushall_setVars
+
+on=@beforeGetSwing
+on=@aftergetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[function f_pushall_setVars]
+if (<eval tag(pushall_varsChecked)> == 0)
+  if !(tag(e_pushall_chance))
+    tag(e_pushall_chance,50) //default 5.0% chance
+  endif
+  if !(tag(e_pushall_last_time))  //naposledy pouzil
+    tag(e_pushall_last_time,<fixnumber((<serv.time>/10))>)  // v sekundach
+  endif
+  if !(tag(e_pushall_time))  //cas za ktory hodi dalsiu
+    tag(e_pushall_time,30)  // v sekundach
+  endif
+  tag(pushall_varsChecked,1)
+endif
+
+
+[events e_pullall]
+on=@gethit
+f_pullall_setVars
+if (chance(<tag(e_pullall_chance)>,3))
+  arg(server_time,<eval (<serv.time>/10)>)  //server time v sekundach
+  arg(rozdiel,<eval (<server_time>-<tag(e_pullall_last_time)>)>)
+  if (arg(rozdiel)><tag(e_pullall_time)>)
+    tag(e_pullall_last_time,<eval(<serv.time>/10)>)
+    pullall(9) // distance
+  endif
+endif
+
+on=@beforeGetSwing
+on=@aftergetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswming
+on=@beforedoeffect
+on=@beforegeteffect
+
+[function f_pullall_setVars]
+if (strlen(<tag(pullall_varsChecked)>) == 0)
+  if !(tag(e_pullall_chance))
+    tag(e_pullall_chance,50) //5.0% chance
+  endif
+  if !(tag(e_pullall_last_time))  //naposledy pouzil
+    tag(e_pullall_last_time,<eval <serv.time>/10>)  // v sekundach
+  endif
+  if !(tag(e_pullall_time))  //cas za ktory hodi dalsiu
+    tag(e_pullall_time,30)  // v sekundach
+  endif
+  tag(pullall_varsChecked,1)
+endif
+
+
+[events e_npc_summoning2]
+on=@aftergetswing
+if (strlen(<tag(npc_summoning2_chance)>) == 0)
+  tag(npc_summoning2_chance,50)  //default 5% chance
+endif
+if (strlen(<tag(npc_summoning2_time)>) == 0)
+  tag(npc_summoning2_time,30)  //defaultne sa nastavi 30sekund
+endif
+
+if (chance(<tag(npc_summoning2_chance)>,3))
+  if !(tag(last_summon2_time))
+    tag(last_summon2_time,<eval(<serv.time>/10)>)  // v sekundach
+  else
+    arg(server_time,<eval <serv.time>/10>)  //server time v sekundach
+    arg(rozdiel,<eval(<server_time>-<tag(last_summon2_time)>)>)
+    if (arg(rozdiel)>tag(npc_summoning2_time))
+      tag(last_summon2_time,<eval(<serv.time>/10)>)
+      SAY("Heru Ruin Val")
+      arg(i,0)
+      while (arg(i) < <eval tag(npc_summoning2_count)>)
+        newnpc(<tag(npc_summoning2_char[<arg(i)>])>)
+        lastnewchar.p=<eval(<p_x>+{-1 1})>,<eval(<p_y>+{-1 1})>,<p_z>,<mapplane>
+        lastnewchar.fame=0
+        arg(i,#+1)
+      endwhile
+    endif
+  endif
+endif
+
+on=@beforeGetSwing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_managain]
+on=gethit
+if !(tag(e_managain_hits))
+  tag(e_managain_hits,<hits>)
+endif
+if !(tag(e_managain_percent_hp))
+  tag(e_managain_percent_hp,<eval(maxhits/100)>*5)
+endif
+if (<hits> < <tag(e_managain_hits)>-<tag(e_managain_percent_hp)>)
+  if (<mana> < <maxmana>)
+    mana=<mana>+<maxmana>/4
+  endif
+  tag.remove(e_managain_hits)
+endif
+if (<hits> > <tag(e_managain_hits)>+<tag(e_managain_percent_hp)>)
+  tag.remove(e_managain_hits)
+endif
+
+on=@beforeGetSwing
+on=@aftergetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforedoeffect
+on=@beforegeteffect
+
+[events e_npc_nobody]
+on=@deathCorpse
+if (itemExists(<argo>))
+  argo.remove
+  return 1
+endif
+
+//default chance 1:4 (value 200)
+[events e_npc_stam_dmg]
+on=@beforeGetSwing
+on=@aftergetswing
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+arg(chance,200)
+if (<eval tag(stam_dmg_chance)>)
+  arg(chance,<eval tag(stam_dmg_chance)>)
+endif
+if (chance(<tag(stam_dmg_chance)>,3)
+	reducestamina(<tag(stam_dmg_power)>)
+endif
+on=@beforedoeffect
+on=@beforegeteffect
+
+// mass mana reduce
+// tag.npc_curse_mana_chance=250       // 25% chance to trigger this event
+// tag.npc_curse_mana_delay=12,15      // delay between another possible strike
+// tag.npc_curse_mana_dmg=50,60        // mana reduce in between 50 and 60
+
+[events e_npc_curse_mana]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+e_f_npc_curse_mana
+
+on=@beforedoeffect
+on=@beforegeteffect
+
+[function e_f_npc_curse_mana]
+if (<eval tag(npc_curse_mana_time)> < <serv.time>)
+  if (strlen(<tag(npc_curse_mana_chance)>))
+    arg(chance,<chance(<tag(npc_curse_mana_chance)>,2)>)
+  else
+    arg(chance,<chance(110,3)>)
+  endif
+  if (<arg(chance)>)
+    if (<strlen(<tag(npc_curse_mana_delay)>)>)
+      tag(npc_curse_mana_time,<serv.time>+<eval (<randombetween(<tag(npc_curse_mana_delay)>)>*10)>)
+    else
+      tag(npc_curse_mana_time,<serv.time>+30)
+    endif
+    newitem(i_src_changer_npcCurseMana)
+    lastnew.p=<p>
+    lastnew.link=(<UID>)
+    var(cursingmanamonster,<UID>)
+  endif
+endif
+
+[itemdef i_src_changer_npcCurseMana]
+id=i_memory
+type=t_eq_script
+name=srcchanger npc curse mana
+
+on=@create
+timer=0
+
+on=@timer
+sector.allchars(f_npcCurseMana_effect(<UID>))
+
+[function f_npcCurseMana_effect]
+if (isPlayer)
+  if (isGM) || (isDead)
+    return 0
+  endif
+elseif !(isPet) // summons & Pets
+  return 0
+endif
+if (distancefrom(<var(cursingmanamonster)>) > 8)
+  return 0
+endif
+if (<UID> == <var(cursingmanamonster)>)
+  return 0
+endif
+if (f_canseelos(<argv(0)>)) && !(isgm) && !(flag_invisible==1)  && !(flag_insubstantial==1) && !(flag_hidden==1)
+  if (<argv(0).link.act> != <uid>) // this is NOT the same player that the NPC is attacking
+    if (strlen(<var(cursingmanamonster).tag(npc_curse_mana_dmg)>))
+      arg(damage,<randomBetween(<var(cursingmanamonster).tag(npc_curse_mana_dmg)>)>)
+    else
+      arg(damage,<eval {40 80}>)
+    endif
+    if (npc)
+      arg(damage,#*5)
+    endif
+    logmsg("Monstrum plosne vysava manu v hodnote: <arg(damage)>")
+    effect(3,<s_curse.EFFECTID>,6,15,1)
+    if (<mana> < <arg(damage)>)
+      mana = 0
+    else
+      mana = <mana>-<arg(damage)>
+    endif
+    sysMessage("Citis, jak z tebe mocna a temna sila vysala magickou energii!")
+  endif
+endif
+
+// mass stam reduce
+// tag.npc_curse_stam_chance=250       // 25% chance to trigger this event
+// tag.npc_curse_stam_delay=12,15      // delay between another possible strike
+// tag.npc_curse_stam_dmg=50,60        // stam reduce in between 50 and 60
+
+
+[events e_npc_curse_stam]
+on=@Created
+on=@DrinkingPotion
+on=@afterswing
+on=@beforegetswing
+on=@aftergetswing
+e_f_npc_curse_stam
+
+on=@beforedoeffect
+on=@beforegeteffect
+
+[function e_f_npc_curse_stam]
+if (<eval tag(npc_curse_stam_time)> < <serv.time>)
+  if (strlen(<tag(npc_curse_stam_chance)>))
+    arg(chance,<chance(<tag(npc_curse_stam_chance)>,2)>)
+  else
+    arg(chance,<chance(110,3)>)
+  endif
+  if (<arg(chance)>)
+    if (<strlen(<tag(npc_curse_stam_delay)>)>)
+      tag(npc_curse_stam_time,<serv.time>+<eval (<randombetween(<tag(npc_curse_stam_delay)>)>*10)>)
+    else
+      tag(npc_curse_stam_time,<serv.time>+30)
+    endif
+    newitem(i_src_changer_npcCursestam)
+    lastnew.p=<p>
+    lastnew.link=(<UID>)
+    var(cursingstammonster,<UID>)
+  endif
+endif
+
+[itemdef i_src_changer_npcCursestam]
+id=i_memory
+type=t_eq_script
+name=srcchanger npc curse stam
+
+on=@create
+timer=0
+
+on=@timer
+sector.allchars(f_npcCursestam_effect(<UID>))
+
+[function f_npcCursestam_effect]
+if (isPlayer)
+  if (isGM) || (isDead)
+    return 0
+  endif
+elseif !(isPet) // summons & Pets
+  return 0
+endif
+if (distancefrom(<var(cursingstammonster)>) > 8)
+  return 0
+endif
+if (<UID> == <var(cursingstammonster)>)
+  return 0
+endif
+if (f_canseelos(<argv(0)>)) && !(isgm) && !(flag_invisible==1)  && !(flag_insubstantial==1) && !(flag_hidden==1)
+  if (<argv(0).link.act> != <uid>) // this is NOT the same player that the NPC is attacking
+    if (strlen(<var(cursingstammonster).tag(npc_curse_stam_dmg)>))
+      arg(damage,<randomBetween(<var(cursingstammonster).tag(npc_curse_stam_dmg)>)>)
+    else
+      arg(damage,<eval {40 80}>)
+    endif
+    if (npc)
+      arg(damage,#*5)
+    endif
+    effect(3,<s_curse.EFFECTID>,6,15,1)
+    logmsg("Monstrum plosne vysava staminu v hodnote: <arg(damage)>")
+    if (<stam> < <arg(damage)>)
+      stam = 0
+    else
+      stam = <stam>-<arg(damage)>
+    endif
+    sysMessage("Citis, jak z tebe mocna a temna sila vysala magickou energii!")
+  endif
+endif
+
+[EOF]

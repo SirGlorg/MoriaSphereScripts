@@ -1,0 +1,457 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+//                 Kvest Neutralni-007 Haradirovo Selatko                           //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_Haradir]
+NAME=Haradir
+ID=C_MAN
+
+
+TSPEECH=spk_q007_haradir
+
+
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Haradir
+
+on=@UserDclick
+if (SRC.TARG.DISTANCE > 3)
+ SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_haradir_DClick
+endif
+
+
+ON=@Create
+NPC=brain_human
+STR=1000
+DEX=1000
+INT=1000
+
+MEDITATION=10
+INSCRIPTION=10
+MAGERY=10
+WRESTLING=10
+Resist=10
+TACTICS=10
+
+ITEMNEWBIE=i_hair_long
+COLOR=0047
+//ITEMNEWBIE=i_beard_long
+
+ON=@NPCRestock
+//ITEMnewbie=i_hat_wizards
+ITEMnewbie=i_hair_long
+color=083f
+ITEMnewbie=i_skull_cap
+color=0483
+ITEMnewbie=i_doublet
+color=08fe
+ITEMnewbie=i_pants_long
+color=073a
+ITEMnewbie=i_boots_calf
+color=0750
+ITEMnewbie=i_bow
+color=05f7
+
+
+/////////////////////////////
+
+
+
+[CHARDEF c_hospod]
+NAME=Hospodsky
+ID=C_MAN
+
+
+TSPEECH=spk_q007_hospodsky
+
+
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Hospodsky
+
+on=@UserDclick
+if (SRC.TARG.DISTANCE > 3)
+ SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_hospodsky_DClick
+endif
+
+ON=@Create
+NPC=brain_human
+STR=1000
+DEX=1000
+INT=1000
+
+MEDITATION=10
+INSCRIPTION=10
+MAGERY=10
+WRESTLING=10
+Resist=10
+TACTICS=10
+cooking=100.0
+
+ITEMNEWBIE=i_hair_long
+COLOR=color_o_copper
+ITEMNEWBIE=i_beard_mustache
+COLOR=color_o_copper
+
+
+ON=@NPCRestock
+ITEMnewbie=i_sandals
+ITEMnewbie=i_shirt_fancy
+COLOR=color_o_copper
+ITEMnewbie=i_necklace_gold
+COLOR=color_o_iron
+ITEMnewbie=i_bracelet_gold
+color=color_o_iron
+ITEMnewbie=i_pants_long
+
+
+
+/////////////////////////////////
+
+
+
+[CHARDEF c_rachel]
+NAME=Rachel Carodejnice
+ID=C_WOMAN
+
+TSPEECH=spk_q007_Carodejnice
+
+
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Rachel carodejnice
+
+on=@UserDclick
+if (SRC.TARG.DISTANCE > 3)
+ SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_carodejnice_DClick
+endif
+
+ON=@Create
+NPC=brain_human
+STR=1000
+DEX=1000
+INT=1000
+
+MEDITATION=10
+INSCRIPTION=10
+MAGERY=100.0
+WRESTLING=10
+Resist=10
+TACTICS=10
+
+ITEMNEWBIE=i_hair_long
+COLOR=001
+
+
+ON=@NPCRestock
+ITEMnewbie=i_hat_wizards
+COLOR=0035
+ITEMnewbie=i_sandals
+ITEMnewbie=i_robe
+COLOR=0035
+ITEMnewbie=i_necklace_gold
+
+
+
+
+/////////////////////////////////////////
+
+
+[CHARDEF c_kovarskej]
+NAME=Prastary Kovar
+ID=C_MAN
+
+TSPEECH=spk_q007_kovar
+
+
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=KOVAR
+
+on=@UserDclick
+if (SRC.TARG.DISTANCE > 3)
+ SRC.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_kovar_DClick
+endif
+
+ON=@Create
+NPC=brain_human
+STR=1000
+DEX=1000
+INT=1000
+
+BLACKSMITHING=100.0
+
+
+ITEMNEWBIE=i_hair_long
+ITEMNEWBIE=i_beard_long_med
+
+ON=@NPCRestock
+ITEMnewbie=i_adamantinum_kladivko
+ITEMnewbie=i_sandals
+ITEMnewbie=i_robe
+COLOR=0997
+
+
+
+
+/////////////////////////////////////
+
+
+
+[CHARDEF c_maginscript]
+NAME=Stary Inscripter
+ID=C_MAN
+CAN=MT_WALK|mt_run|MT_fire_immune
+ARMOR=150
+attack=120
+moverate=3
+
+TSPEECH=spk_q007_maginscript
+
+
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Stary Incripter
+
+ON=@UserDClick
+if (SRC.TARG.distance > 3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_maginscript_DClick
+endif
+
+ON=@Create
+color=01
+NPC=brain_vendor
+STR=8000
+DEX=400
+INT=400
+
+maxhits={10000 11000}
+maxstam={350 390}
+maxmana={5000 6000}
+
+tag.experience=<eval {30.0 50.0}>
+tag(hypnotizable,2)
+tag.weapflag=dam_physical
+tag.resist_poison=<eval {850 995}>
+tag.resist_para=<eval {700 750}>
+tag.resist_summon=<eval {750 850}>
+tag.resist_fire=<eval {350 750}>
+
+PEACEMAKING=100.0
+PROVOCATION=100.0
+POISONING=250.0
+MEDITATION=10
+INSCRIPTION=100.0
+MAGERY=120.1
+EI=150.0
+WRESTLING=120.0
+RESIST=250
+TACTICS=30.0
+
+tag(noanimate,1)
+
+itemnewbie=i_spellbook
+addspell=s_mass_dispel
+addspell=s_mass_curse
+addspell=s_magic_reflection
+addspell=s_lightning
+addspell=s_mana_drain
+addspell=s_blade_spirits
+addspell=s_dispel
+addspell=s_paralyze
+addspell=s_flamestrike
+
+ITEMnewbie=i_monster_create
+
+ITEMNEWBIE=i_hair_long
+color=083a
+ITEMNEWBIE=i_beard_long_med
+color=color_o_obsidian
+
+ON=@NPCRestock
+ITEMnewbie=i_sandals
+color=color_o_obsidian
+ITEMnewbie=i_cape
+color=1259
+ITEMnewbie=i_deathshroud_npc
+color=1259
+ITEMnewbie=i_staff_black_mithril
+
+
+///////////////////////////////
+
+
+[CHARDEF c_divous]
+NAME=Divous
+ID=C_MAN
+
+TSPEECH=spk_q007_divous
+
+
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Kseftar s magickym perem
+
+ON=@UserDclick
+if (src.TARG.distance > 3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_divous_DClick
+endif
+
+ON=@Create
+NPC=brain_vendor
+STR=1000
+DEX=1000
+INT=1000
+
+tag(noanimate,1)
+
+ITEMNEWBIE=random_male_hair
+ITEMNEWBIE=random_facial_hair
+
+ON=@NPCRestock
+ITEMnewbie=i_hat_wizards
+color=071a
+ITEMnewbie=i_sandals
+ITEMnewbie=i_cape
+color=071a
+ITEMnewbie=i_robe
+color=05e0
+
+
+/////////////////////////////////////////////
+
+
+[CHARDEF c_rodrigo]
+NAME=Pirat Rodrigo
+ID=c_pirat
+
+dam=60
+ARMOR=80
+CAN=MT_WALK|mt_run
+TSPEECH=spk_q007_rodrigo
+
+
+TEVENTS=e_character
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Rodrigo pirat
+
+ON=@UserDclick
+if (src.TARG.distance > 3)
+ src.SYSMESSAGE="Na takovou vzdalenost s tebou jednat nebude"
+else
+ f_q007_rodrigo_DClick
+endif
+
+ON=@Create
+STR=600
+DEX=200
+INT=100
+NPC=brain_human
+tag.experience=<eval {10.0 15.0}>
+WRESTLING=120.0
+fencing=100.0
+tactics=100.0
+
+
+/////////////////////////////////////////////////
+
+
+
+[CHARDEF c_Zla_Dryada]
+NAME=Zla Dryada
+ID=C_WOMAN
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+//ANIM=079c7f
+
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+ARMOR=120
+DAM=80
+ATTACK=70
+
+
+RESOURCES=9 i_ore_copper 
+
+
+TEVENTS=e_monster
+TEVENTS=e_character
+TEVENTS=e_getwpn
+TEVENTS=e_looter
+
+CATEGORY=Kvesty
+SUBSECTION=Kvest Neutralni-007 Haradirovo Selatko
+DESCRIPTION=Questovni Dryada
+
+ON=@Create
+COLOR=color_o_verite
+NPC=brain_monster
+FAME=100
+KARMA=-6000
+STR=1000
+DEX=400
+INT=50
+
+maxhits={4000 5000}
+maxstam={100 120}
+maxmana=1200 
+
+tag.experience=<eval {100.0 130.0}>
+tag.hypnotizable=2
+tag.resist_para=950
+tag.resist_poison=750
+tag.resist_bleed=500
+RESIST=150.0
+WRESTLING=150.0
+ARCHERY=150.0
+TACTICS=150.0
+
+ITEMnewbie=i_monster_create
+
+ITEM=i_npc_mount
+tag.mount=i_mt_ostard_forest
+tag.mountcolor=color_o_verite
+
+ITEMNEWBIE=i_hair_ponytail
+COLOR=color_o_verite
+ITEMnewbie=i_monster_create
+ITEMnewbie=i_armor_female_leather
+COLOR=color_o_verite
+ITEMnewbie=i_sandals
+COLOR=color_o_verite
+
+ON=@NPCRestock
+item=i_lukdryady
+item=i_arrow,{400 700}
+
+
+
+
+[eof]
